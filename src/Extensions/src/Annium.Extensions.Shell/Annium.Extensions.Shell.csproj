@@ -9,6 +9,6 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Logging.Console" Version="0.1.0" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
     </ItemGroup>
 </Project>

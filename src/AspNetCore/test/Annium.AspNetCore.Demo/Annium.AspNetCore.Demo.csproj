@@ -11,9 +11,9 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Extensions.DependencyInjection" Version="0.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
         <PackageReference Include="Microsoft.AspNetCore.Server.Kestrel" Version="2.2.0" />
     </ItemGroup>

@@ -9,7 +9,9 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Extensions.DependencyInjection" Version="0.1.0" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="NodaTime" Version="2.4.4" />
     </ItemGroup>
 </Project>
