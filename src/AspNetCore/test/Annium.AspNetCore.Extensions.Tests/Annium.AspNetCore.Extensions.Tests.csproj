@@ -10,7 +10,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.AspNetCore.Demo/Annium.AspNetCore.Demo.csproj" />
-        <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
         <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>

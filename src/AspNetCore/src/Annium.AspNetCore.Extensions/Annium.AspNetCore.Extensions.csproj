@@ -10,7 +10,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
