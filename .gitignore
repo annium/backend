@@ -1,0 +1,5 @@
+# xs ignore patterns
+.xs.ignore
+.xs.credentials
+nuget.config
+lcov.info
