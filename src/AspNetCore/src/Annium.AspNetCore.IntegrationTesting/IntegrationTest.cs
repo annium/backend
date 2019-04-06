@@ -1,6 +1,5 @@
 using System;
 using Annium.Extensions.Net.Http;
-using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
@@ -14,7 +13,7 @@ namespace Annium.AspNetCore.IntegrationTesting
 
         public IntegrationTest()
         {
-            var client = new WebApplicationFactory<TStartup>().CreateClient();
+            var client = new TestWebApplicationFactory<TStartup>().CreateClient();
             getRequest = () => Http.Open().UseClient(client);
         }
 
