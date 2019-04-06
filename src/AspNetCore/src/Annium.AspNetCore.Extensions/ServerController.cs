@@ -10,12 +10,15 @@ namespace Annium.AspNetCore.Extensions
     public class ServerController : ControllerBase
     {
 
+        [NonAction]
         public IActionResult Created(object result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Created };
 
+        [NonAction]
         public IActionResult Conflict(IResult result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
 
+        [NonAction]
         public override BadRequestObjectResult BadRequest(ModelStateDictionary modelState)
         {
             var result = Result.Failure();
@@ -26,9 +29,11 @@ namespace Annium.AspNetCore.Extensions
             return new BadRequestObjectResult(result);
         }
 
+        [NonAction]
         public IActionResult Forbidden(IResult result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Forbidden };
 
+        [NonAction]
         public IActionResult ServerError(IResult result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.InternalServerError };
     }
