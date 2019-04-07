@@ -11,5 +11,7 @@ namespace Annium.Logging.Abstractions
         Warn = 3,
 
         Error = 4,
+
+        None = 5,
     }
 }
