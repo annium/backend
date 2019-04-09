@@ -19,6 +19,10 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
+        public IActionResult Conflict(string error) =>
+            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
+
+        [NonAction]
         public override BadRequestObjectResult BadRequest(ModelStateDictionary modelState)
         {
             var result = Result.Failure();
@@ -30,11 +34,23 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
+        public IActionResult BadRequest(string error) =>
+            new BadRequestObjectResult(Result.Failure().Error(error));
+
+        [NonAction]
         public IActionResult Forbidden(IResult result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
+        public IActionResult Forbidden(string error) =>
+            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
+
+        [NonAction]
         public IActionResult ServerError(IResult result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.InternalServerError };
+
+        [NonAction]
+        public IActionResult ServerError(string error) =>
+            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.InternalServerError };
     }
 }
