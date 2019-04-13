@@ -21,11 +21,25 @@ namespace Annium.Extensions.Localization
             this.root = root;
         }
 
-        public LocalizedString this[string name] =>
-            new LocalizedString(name, GetTranslation(name) ?? name);
+        public LocalizedString this[string name]
+        {
+            get
+            {
+                var translation = GetTranslation(name);
 
-        public LocalizedString this[string name, params object[] arguments] =>
-            new LocalizedString(name, string.Format(GetTranslation(name) ?? name, arguments));
+                return new LocalizedString(name, translation ?? name, translation == null);
+            }
+        }
+
+        public LocalizedString this[string name, params object[] arguments]
+        {
+            get
+            {
+                var translation = GetTranslation(name);
+
+                return new LocalizedString(name, string.Format(translation ?? name, arguments), translation == null);
+            }
+        }
 
         public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures) =>
             throw new NotImplementedException();
