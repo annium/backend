@@ -1,4 +1,3 @@
-using System.Linq;
 using Annium.Testing;
 
 namespace Annium.Extensions.Primitives.Tests

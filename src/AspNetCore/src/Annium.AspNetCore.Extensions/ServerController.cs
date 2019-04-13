@@ -9,7 +9,6 @@ namespace Annium.AspNetCore.Extensions
 {
     public class ServerController : ControllerBase
     {
-
         [NonAction]
         public IActionResult Created(object result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Created };
@@ -19,7 +18,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
-        public IActionResult Conflict(string error) =>
+        public virtual IActionResult Conflict(string error) =>
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
@@ -34,7 +33,7 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
-        public IActionResult BadRequest(string error) =>
+        public virtual IActionResult BadRequest(string error) =>
             new BadRequestObjectResult(Result.Failure().Error(error));
 
         [NonAction]
@@ -42,7 +41,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
-        public IActionResult Forbidden(string error) =>
+        public virtual IActionResult Forbidden(string error) =>
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
@@ -50,7 +49,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.InternalServerError };
 
         [NonAction]
-        public IActionResult ServerError(string error) =>
+        public virtual IActionResult ServerError(string error) =>
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.InternalServerError };
     }
 }
