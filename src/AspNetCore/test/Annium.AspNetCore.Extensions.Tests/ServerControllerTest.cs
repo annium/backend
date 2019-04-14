@@ -78,6 +78,20 @@ namespace Annium.AspNetCore.Extensions.Tests
         }
 
         [Fact]
+        public async Task NotFound_Works()
+        {
+            // arrange
+            var expected = Serialize(Result.Failure());
+
+            // act
+            var response = await http.Get("/not-found").RunAsync();
+
+            // assert
+            response.StatusCode.IsEqual(HttpStatusCode.NotFound);
+            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
+        }
+
+        [Fact]
         public async Task ServerError_Works()
         {
             // arrange

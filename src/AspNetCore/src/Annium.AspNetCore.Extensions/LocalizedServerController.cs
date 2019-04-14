@@ -20,10 +20,6 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
-        public override IActionResult Conflict(string error) =>
-            new ObjectResult(Result.Failure().Error(localizer[error])) { StatusCode = (int) HttpStatusCode.Conflict };
-
-        [NonAction]
         public override BadRequestObjectResult BadRequest(ModelStateDictionary modelState)
         {
             var result = Result.Failure();
@@ -41,6 +37,14 @@ namespace Annium.AspNetCore.Extensions
         [NonAction]
         public override IActionResult Forbidden(string error) =>
             new ObjectResult(Result.Failure().Error(localizer[error])) { StatusCode = (int) HttpStatusCode.Forbidden };
+
+        [NonAction]
+        public override IActionResult Conflict(string error) =>
+            new ObjectResult(Result.Failure().Error(localizer[error])) { StatusCode = (int) HttpStatusCode.Conflict };
+
+        [NonAction]
+        public override IActionResult NotFound(string error) =>
+            new ObjectResult(Result.Failure().Error(localizer[error])) { StatusCode = (int) HttpStatusCode.NotFound };
 
         [NonAction]
         public override IActionResult ServerError(string error) =>

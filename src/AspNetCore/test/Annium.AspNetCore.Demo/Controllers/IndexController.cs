@@ -19,12 +19,6 @@ namespace Annium.AspNetCore.Demo.Controllers
             return Ok("Hello World from Annium.AspNetCore.Demo");
         }
 
-        [HttpGet("conflict")]
-        public new IActionResult Conflict()
-        {
-            return Conflict(Result.Failure());
-        }
-
         [HttpGet("created")]
         public IActionResult Created()
         {
@@ -44,6 +38,18 @@ namespace Annium.AspNetCore.Demo.Controllers
         public IActionResult Forbidden()
         {
             return Forbidden(Result.Failure());
+        }
+
+        [HttpGet("conflict")]
+        public new IActionResult Conflict()
+        {
+            return Conflict(Result.Failure());
+        }
+
+        [HttpGet("not-found")]
+        public new IActionResult NotFound()
+        {
+            return NotFound(Result.Failure());
         }
 
         [HttpGet("server-error")]

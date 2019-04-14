@@ -14,14 +14,6 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Created };
 
         [NonAction]
-        public IActionResult Conflict(IResult result) =>
-            new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
-
-        [NonAction]
-        public virtual IActionResult Conflict(string error) =>
-            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
-
-        [NonAction]
         public override BadRequestObjectResult BadRequest(ModelStateDictionary modelState)
         {
             var result = Result.Failure();
@@ -43,6 +35,22 @@ namespace Annium.AspNetCore.Extensions
         [NonAction]
         public virtual IActionResult Forbidden(string error) =>
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
+
+        [NonAction]
+        public IActionResult Conflict(IResult result) =>
+            new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
+
+        [NonAction]
+        public virtual IActionResult Conflict(string error) =>
+            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
+
+        [NonAction]
+        public IActionResult NotFound(IResult result) =>
+            new ObjectResult(result) { StatusCode = (int) HttpStatusCode.NotFound };
+
+        [NonAction]
+        public virtual IActionResult NotFound(string error) =>
+            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.NotFound };
 
         [NonAction]
         public IActionResult ServerError(IResult result) =>
