@@ -31,6 +31,12 @@ namespace Annium.Testing
 
         private void FindTestClassTests(Type testClass, Action<Test> handleTestFound)
         {
+            if (testClass.GetCustomAttribute<SkipAttribute>() != null)
+            {
+                logger.LogDebug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
+                return;
+            }
+
             logger.LogDebug($"{nameof(FindTestClassTests)} in {testClass.FullName}");
             foreach (var test in testClass.GetMethods().Where(IsTest).Select(method => new Test(method)))
                 handleTestFound(test);
@@ -38,6 +44,7 @@ namespace Annium.Testing
 
         private bool IsTest(MethodInfo candidate) =>
             candidate.GetCustomAttribute<FactAttribute>() != null &&
+            candidate.GetCustomAttribute<SkipAttribute>() == null &&
             !candidate.IsGenericMethod &&
             candidate.GetParameters().Length == 0;
     }
