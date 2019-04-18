@@ -1,4 +1,3 @@
-using Annium.AspNetCore.Extensions;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 
@@ -12,15 +11,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IMvcBuilder WithJsonOptions(
             this IMvcBuilder builder,
-            bool nodaTime = false,
-            string[] abstractTypesSources = null
+            string[] abstractTypesSources
         ) => builder.AddJsonOptions(opts =>
         {
-            if (nodaTime)
-                opts.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
+            opts.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
 
-            if (abstractTypesSources?.Length > 0)
-                opts.SerializerSettings.Converters.Add(new AbstractJsonConverter(abstractTypesSources));
+            opts.SerializerSettings.ConfigureAbstractConverter(abstractTypesSources);
         });
     }
 }

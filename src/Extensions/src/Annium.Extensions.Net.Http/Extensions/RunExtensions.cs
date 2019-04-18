@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
@@ -11,6 +12,7 @@ namespace Annium.Extensions.Net.Http
     public static class RunExtensions
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
+            .ConfigureAbstractConverter()
             .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
 
         public static async Task<string> AsStringAsync(this IRequest request)

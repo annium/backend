@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace Annium.AspNetCore.Extensions
+namespace Annium.Data.Serialization.Json
 {
     public class AbstractJsonConverter : JsonConverter
     {
