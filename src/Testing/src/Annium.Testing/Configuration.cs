@@ -6,11 +6,15 @@ namespace Annium.Testing
     {
         public LoggerConfiguration Logger { get; }
 
+        public string Filter { get; }
+
         public Configuration(
-            LoggerConfiguration logger
+            LoggerConfiguration logger,
+            string filter
         )
         {
             Logger = logger;
+            Filter = filter;
         }
     }
 }

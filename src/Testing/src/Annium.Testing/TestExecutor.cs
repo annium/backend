@@ -11,24 +11,32 @@ namespace Annium.Testing
 {
     public class TestExecutor
     {
+        private readonly Configuration cfg;
+
         private readonly IServiceProvider provider;
 
         private readonly PipelineExecutor executor;
+
         private readonly ILogger logger;
 
         public TestExecutor(
+            Configuration cfg,
             IServiceProvider provider,
             PipelineExecutor executor,
             ILogger logger
         )
         {
+            this.cfg = cfg;
             this.provider = provider;
             this.executor = executor;
             this.logger = logger;
         }
 
-        public Task RunTestsAsync(IEnumerable<Test> tests, Action<Test, TestResult> handleResult) =>
-            Task.WhenAll(tests.Select(async test =>
+        public async Task RunTestsAsync(IEnumerable<Test> tests, Action<Test, TestResult> handleResult)
+        {
+            logger.LogDebug("Start tests execution");
+
+            await Task.WhenAll(tests.FilterMask(cfg.Filter).Select(async test =>
             {
                 logger.LogDebug($"Run test {test.DisplayName}");
 
@@ -38,8 +46,13 @@ namespace Annium.Testing
 
                     await executor.ExecuteAsync(target);
 
+                    logger.LogDebug($"Complete test {test.DisplayName}");
+
                     handleResult(target.Test, target.Result);
                 }
             }));
+
+            logger.LogDebug("Complete tests execution");
+        }
     }
 }

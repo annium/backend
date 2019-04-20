@@ -80,12 +80,17 @@ namespace Annium.Testing.TestAdapter
             return RunTestsAsync(assembly, tests, frameworkHandle);
         }
 
-        private Task RunTestsAsync(Assembly assembly, IEnumerable<Test> tests, IFrameworkHandle frameworkHandle) =>
-            GetExecutor(assembly, tests)
-            .RunTestsAsync(
-                tests,
-                (test, result) => frameworkHandle.RecordResult(testResultConverter.Convert(assembly, test, result))
-            );
+        private Task RunTestsAsync(Assembly assembly, IEnumerable<Test> tests, IFrameworkHandle frameworkHandle)
+        {
+            var cfg = provider.GetRequiredService<Configuration>();
+            tests = tests.FilterMask(cfg.Filter);
+
+            return GetExecutor(assembly, tests)
+                .RunTestsAsync(
+                    tests,
+                    (test, result) => frameworkHandle.RecordResult(testResultConverter.Convert(assembly, test, result))
+                );
+        }
 
         private TestExecutor GetExecutor(Assembly assembly, IEnumerable<Test> tests)
         {
