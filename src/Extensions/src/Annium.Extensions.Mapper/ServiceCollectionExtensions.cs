@@ -25,7 +25,8 @@ namespace Annium.Extensions.Mapper
             var cfg = MapperConfiguration
                 .Merge(provider.GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
 
-            var mapBuilder = new MapBuilder(cfg);
+            var typeResolver = new TypeResolver();
+            var mapBuilder = new MapBuilder(cfg, typeResolver);
             var mapper = new Mapper(mapBuilder);
 
             services.AddSingleton<IMapper>(mapper);

@@ -14,9 +14,15 @@ namespace Annium.Extensions.Mapper
 
         private readonly MapperConfiguration cfg;
 
-        public MapBuilder(MapperConfiguration cfg)
+        private readonly TypeResolver typeResolver;
+
+        public MapBuilder(
+            MapperConfiguration cfg,
+            TypeResolver typeResolver
+        )
         {
             this.cfg = cfg;
+            this.typeResolver = typeResolver;
         }
 
         public Delegate GetMap(Type src, Type tgt)

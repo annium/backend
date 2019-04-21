@@ -13,11 +13,14 @@ namespace Annium.Extensions.Mapper.Tests
             var value = new [] { new A() { Name = "name" } };
 
             // act
-            var result = mapper.Map<B[]>(value);
+            var one = mapper.Map<B[]>(value);
+            var two = mapper.Map<C[]>(value);
 
             // assert
-            result.Has(1);
-            result.At(0).Name.IsEqual(value[0].Name);
+            one.Has(1);
+            one.At(0).Name.IsEqual(value[0].Name);
+            two.Has(1);
+            two.At(0).Name.IsEqual(value[0].Name);
         }
 
         [Fact]
@@ -52,7 +55,7 @@ namespace Annium.Extensions.Mapper.Tests
 
         private IMapper GetMapper()
         {
-            var builder = new MapBuilder(new MapperConfiguration());
+            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver);
 
             return new Mapper(builder);
         }
@@ -70,6 +73,11 @@ namespace Annium.Extensions.Mapper.Tests
             {
                 Name = name;
             }
+        }
+
+        private class C
+        {
+            public string Name { get; set; }
         }
     }
 }

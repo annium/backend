@@ -46,9 +46,9 @@ namespace Annium.Extensions.Mapper.Tests
             result.Name.IsEqual(value.Name);
         }
 
-        private IMapper GetMapper()
+        private static IMapper GetMapper()
         {
-            var builder = new MapBuilder(new MapperConfiguration());
+            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver);
 
             return new Mapper(builder);
         }
