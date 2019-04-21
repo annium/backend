@@ -23,13 +23,18 @@ namespace Annium.Extensions.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new A() { Name = "name" };
+            var first = new A() { Name = "first" };
+            var second = new A() { Name = "second" };
 
             // act
-            var result = mapper.Map<B>(value);
+            var one = mapper.Map<B>(first);
+            var arr = mapper.Map<B[]>(new [] { first, second });
 
             // assert
-            result.Name.IsEqual(value.Name);
+            one.Name.IsEqual(first.Name);
+            arr.Has(2);
+            arr.At(0).Name.IsEqual(first.Name);
+            arr.At(1).Name.IsEqual(second.Name);
         }
 
         [Fact]

@@ -7,7 +7,7 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private Expression BuildAssignmentMap(Type src, Type tgt, Expression source)
+        private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt) => (Expression source) =>
         {
             var sources = src.GetProperties();
             var targets = tgt.GetProperties();
@@ -20,11 +20,11 @@ namespace Annium.Extensions.Mapper
                     var prop = sources.FirstOrDefault(p => p.Name == target.Name) ??
                         throw new MappingException(src, tgt, $"No property found for target property {target}");
 
-                    var map = ResolveMap(prop.PropertyType, target.PropertyType, Expression.Property(source, prop));
+                    var map = ResolveMap(prop.PropertyType, target.PropertyType);
                     if (map == null)
                         return Expression.Assign(Expression.Property(instance, target), Expression.Property(source, prop));
 
-                    return Expression.Assign(Expression.Property(instance, target), map);
+                    return Expression.Assign(Expression.Property(instance, target), map(Expression.Property(source, prop)));
                 })
                 .ToArray();
 
@@ -34,6 +34,6 @@ namespace Annium.Extensions.Mapper
                 .Concat(assignments)
                 .Concat(new [] { instance })
             );
-        }
+        };
     }
 }

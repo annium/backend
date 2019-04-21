@@ -8,7 +8,7 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private Expression BuildEnumerableMap(Type src, Type tgt, Expression source)
+        private Func<Expression, Expression> BuildEnumerableMap(Type src, Type tgt) => (Expression source) =>
         {
             var srcEl = GetEnumerableElementType(src);
             var tgtEl = GetEnumerableElementType(tgt);
@@ -17,7 +17,7 @@ namespace Annium.Extensions.Mapper
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
             var param = Expression.Parameter(srcEl);
-            var map = ResolveMap(srcEl, tgtEl, param);
+            var map = ResolveMap(srcEl, tgtEl) (param);
             var lambda = Expression.Lambda(map, param);
             var selection = Expression.Call(select, source, lambda);
 
@@ -39,7 +39,7 @@ namespace Annium.Extensions.Mapper
 
                 return Expression.New(constructor, selection);
             }
-        }
+        };
 
         private Type GetEnumerableElementType(Type type)
         {

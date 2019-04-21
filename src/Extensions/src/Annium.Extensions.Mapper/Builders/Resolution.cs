@@ -5,7 +5,7 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private Expression BuildResolutionMap(Type src, Type tgt, Expression source)
+        private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt) => (Expression source) =>
         {
             var type = Expression.Variable(typeof(Type));
             var resolveFn = typeof(TypeResolver).GetMethod(nameof(TypeResolver.Resolve));
@@ -28,6 +28,6 @@ namespace Annium.Extensions.Mapper
                 assignment,
                 instance
             );
-        }
+        };
     }
 }

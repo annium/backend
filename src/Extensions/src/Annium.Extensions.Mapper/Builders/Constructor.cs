@@ -8,7 +8,7 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private Expression BuildConstructorMap(Type src, Type tgt, Expression source)
+        private Func<Expression, Expression> BuildConstructorMap(Type src, Type tgt) => (Expression source) =>
         {
             var constructor = tgt.GetConstructors().OrderByDescending(c => c.GetParameters().Length).First();
 
@@ -20,16 +20,16 @@ namespace Annium.Extensions.Mapper
                     var prop = properties.FirstOrDefault(p => p.Name.CamelCase() == param.Name) ??
                         throw new MappingException(src, tgt, $"No property found for constructor parameter {param}");
 
-                    var map = ResolveMap(prop.PropertyType, param.ParameterType, Expression.Property(source, prop));
+                    var map = ResolveMap(prop.PropertyType, param.ParameterType);
                     if (map == null)
                         return Expression.Property(source, prop);
 
-                    return map;
+                    return map(Expression.Property(source, prop));
 
                 })
                 .ToArray();
 
             return Expression.New(constructor, values);
-        }
+        };
     }
 }
