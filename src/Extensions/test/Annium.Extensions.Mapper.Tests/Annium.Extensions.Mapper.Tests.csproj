@@ -15,5 +15,6 @@
         <PackageReference Include="Annium.Testing.TestAdapter" Version="0.1.0" />
         <PackageReference Include="coverlet.msbuild" Version="2.5.1" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="NodaTime" Version="2.4.4" />
     </ItemGroup>
 </Project>

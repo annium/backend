@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 
 namespace Annium.Extensions.Mapper
 {
@@ -25,13 +26,22 @@ namespace Annium.Extensions.Mapper
             var cfg = MapperConfiguration
                 .Merge(provider.GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
 
+            ConfigureMapping(cfg);
+
             var typeResolver = new TypeResolver();
-            var mapBuilder = new MapBuilder(cfg, typeResolver);
+            var repacker = new Repacker();
+            var mapBuilder = new MapBuilder(cfg, typeResolver, repacker);
             var mapper = new Mapper(mapBuilder);
 
             services.AddSingleton<IMapper>(mapper);
 
             return services;
+        }
+
+        private static void ConfigureMapping(MapperConfiguration cfg)
+        {
+            cfg.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
+            cfg.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
         }
     }
 }

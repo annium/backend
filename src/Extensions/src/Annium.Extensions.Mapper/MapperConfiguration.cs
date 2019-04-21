@@ -16,6 +16,8 @@ namespace Annium.Extensions.Mapper
             return result;
         }
 
+        public IReadOnlyDictionary<ValueTuple<Type, Type>, LambdaExpression> Maps => maps;
+
         private Dictionary<ValueTuple<Type, Type>, LambdaExpression> maps =
             new Dictionary<ValueTuple<Type, Type>, LambdaExpression>();
 

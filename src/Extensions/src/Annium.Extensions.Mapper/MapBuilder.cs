@@ -12,17 +12,17 @@ namespace Annium.Extensions.Mapper
         private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> raw =
             new Dictionary<ValueTuple<Type, Type>, Func<Expression, Expression>>();
 
-        private readonly MapperConfiguration cfg;
-
         private readonly TypeResolver typeResolver;
 
         public MapBuilder(
             MapperConfiguration cfg,
-            TypeResolver typeResolver
+            TypeResolver typeResolver,
+            Repacker repacker
         )
         {
-            this.cfg = cfg;
             this.typeResolver = typeResolver;
+            foreach (var(key, map) in cfg.Maps)
+                raw[key] = repacker.Repack(map.Body);
         }
 
         public Delegate GetMap(Type src, Type tgt)

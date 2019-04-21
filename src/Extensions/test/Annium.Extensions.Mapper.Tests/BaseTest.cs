@@ -53,7 +53,7 @@ namespace Annium.Extensions.Mapper.Tests
 
         private static IMapper GetMapper()
         {
-            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver);
+            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver, new Repacker());
 
             return new Mapper(builder);
         }
