@@ -8,20 +8,20 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private LambdaExpression BuildEnumerableMap(Type src, Type tgt, ParameterExpression source)
+        private Expression BuildEnumerableMap(Type src, Type tgt, Expression source)
         {
             var srcEl = GetEnumerableElementType(src);
             var tgtEl = GetEnumerableElementType(tgt);
-            var map = ResolveMap(srcEl, tgtEl);
 
             var select = typeof(Enumerable).GetMethods()
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
-            var selection = Expression.Call(select, source, map);
+            var param = Expression.Parameter(srcEl);
+            var map = ResolveMap(srcEl, tgtEl, param);
+            var lambda = Expression.Lambda(map, param);
+            var selection = Expression.Call(select, source, lambda);
 
-            var body = tgt.IsArray? BuildArrayMap() : BuildConstructorMap();
-
-            return Expression.Lambda(body, source);
+            return tgt.IsArray? BuildArrayMap() : BuildConstructorMap();
 
             Expression BuildArrayMap()
             {
@@ -50,7 +50,7 @@ namespace Annium.Extensions.Mapper
                 return null;
 
             return type.GetTypeInfo().ImplementedInterfaces
-                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof(IEnumerable<>))?
+                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
                 .GenericTypeArguments[0];
         }
     }

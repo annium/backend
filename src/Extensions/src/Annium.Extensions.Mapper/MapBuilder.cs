@@ -9,8 +9,8 @@ namespace Annium.Extensions.Mapper
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> maps =
             new Dictionary<ValueTuple<Type, Type>, Delegate>();
 
-        private readonly IDictionary<ValueTuple<Type, Type>, LambdaExpression> raw =
-            new Dictionary<ValueTuple<Type, Type>, LambdaExpression>();
+        private readonly IDictionary<ValueTuple<Type, Type>, Expression> raw =
+            new Dictionary<ValueTuple<Type, Type>, Expression>();
 
         private readonly MapperConfiguration cfg;
 
@@ -25,14 +25,17 @@ namespace Annium.Extensions.Mapper
             if (maps.TryGetValue(key, out var map))
                 return map;
 
-            var ex = ResolveMap(src, tgt);
-            if (ex == null)
+            var param = Expression.Parameter(src);
+            var body = ResolveMap(src, tgt, param);
+            if (body == null)
                 throw new MappingException(src, tgt, $"No map found.");
 
-            return maps[key] = ex.Compile();
+            var result = Expression.Lambda(body, param);
+
+            return maps[key] = result.Compile();
         }
 
-        private LambdaExpression ResolveMap(Type src, Type tgt)
+        private Expression ResolveMap(Type src, Type tgt, Expression param)
         {
             if (src == tgt)
                 return null;
@@ -41,7 +44,7 @@ namespace Annium.Extensions.Mapper
             if (raw.TryGetValue(key, out var map))
                 return map;
 
-            return raw[key] = BuildMap(src, tgt);
+            return raw[key] = BuildMap(src, tgt, param);
         }
     }
 }

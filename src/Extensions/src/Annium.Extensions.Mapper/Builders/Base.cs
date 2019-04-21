@@ -5,10 +5,8 @@ namespace Annium.Extensions.Mapper
 {
     public partial class MapBuilder
     {
-        private LambdaExpression BuildMap(Type src, Type tgt)
+        private Expression BuildMap(Type src, Type tgt, Expression source)
         {
-            var source = Expression.Parameter(src);
-
             if (GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null)
                 return BuildEnumerableMap(src, tgt, source);
 
