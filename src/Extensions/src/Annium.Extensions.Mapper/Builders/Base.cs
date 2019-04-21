@@ -1,0 +1,21 @@
+using System;
+using System.Linq.Expressions;
+
+namespace Annium.Extensions.Mapper
+{
+    public partial class MapBuilder
+    {
+        private LambdaExpression BuildMap(Type src, Type tgt)
+        {
+            var source = Expression.Parameter(src);
+
+            if (GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null)
+                return BuildEnumerableMap(src, tgt, source);
+
+            if (tgt.GetConstructor(Type.EmptyTypes) == null)
+                return BuildConstructorMap(src, tgt, source);
+
+            return BuildAssignmentMap(src, tgt, source);
+        }
+    }
+}

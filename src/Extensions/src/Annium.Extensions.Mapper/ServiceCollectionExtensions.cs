@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using AutoMapper;
-using AutoMapper.Configuration;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Extensions.Mapper
@@ -10,25 +9,28 @@ namespace Annium.Extensions.Mapper
     {
         public static IServiceCollection AddMapperConfiguration(
             this IServiceCollection services,
-            Func<MapperConfigurationExpression> configure
+            Action<MapperConfiguration> configure
         )
         {
-            services.AddSingleton<MapperConfigurationExpression>(configure());
+            var cfg = new MapperConfiguration();
+            configure(cfg);
+
+            services.AddSingleton<MapperConfiguration>(cfg);
 
             return services;
         }
 
-        public static void AddMapper(this IServiceCollection services, IServiceProvider provider)
+        public static IServiceCollection AddMapper(this IServiceCollection services, IServiceProvider provider)
         {
-            var cfg = new MapperConfigurationExpression();
-            foreach (var profile in provider.GetRequiredService<IEnumerable<MapperConfigurationExpression>>())
-                cfg.AddProfile(profile);
+            var cfg = MapperConfiguration
+                .Merge(provider.GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
 
-            var mapperConfiguration = new MapperConfiguration(cfg);
+            var mapBuilder = new MapBuilder(cfg);
+            var mapper = new Mapper(mapBuilder);
 
-            mapperConfiguration.AssertConfigurationIsValid();
+            services.AddSingleton<IMapper>(mapper);
 
-            services.AddSingleton<IMapper>(mapperConfiguration.CreateMapper());
+            return services;
         }
     }
 }

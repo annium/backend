@@ -1,3 +1,5 @@
+/.vscode/
+
 # xs ignore patterns
 .xs.ignore
 .xs.credentials
