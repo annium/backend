@@ -28,11 +28,31 @@ namespace Annium.Extensions.Mapper
                 })
                 .ToArray();
 
+            if (src.IsValueType)
+                return Expression.Block(
+                    new [] { instance },
+                    new Expression[] { init }
+                    .Concat(assignments)
+                    .Concat(new Expression[] { instance })
+                );
+
+            var returnTarget = Expression.Label(tgt);
+            var defaultValue = Expression.Default(tgt);
+            var returnExpression = Expression.Return(returnTarget, defaultValue, tgt);
+            var returnLabel = Expression.Label(returnTarget, defaultValue);
+
+            var nullCheck = Expression.IfThen(
+                Expression.Equal(source, Expression.Default(src)),
+                returnExpression
+            );
+
+            var result = Expression.Return(returnTarget, instance, tgt);
+
             return Expression.Block(
                 new [] { instance },
-                new Expression[] { init }
+                new Expression[] { nullCheck, init }
                 .Concat(assignments)
-                .Concat(new [] { instance })
+                .Concat(new Expression[] { result, returnLabel })
             );
         };
     }

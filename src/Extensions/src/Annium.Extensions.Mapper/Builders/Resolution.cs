@@ -7,6 +7,16 @@ namespace Annium.Extensions.Mapper
     {
         private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt) => (Expression source) =>
         {
+            var returnTarget = Expression.Label(tgt);
+            var defaultValue = Expression.Default(tgt);
+            var returnExpression = Expression.Return(returnTarget, defaultValue, tgt);
+            var returnLabel = Expression.Label(returnTarget, defaultValue);
+
+            var nullCheck = Expression.IfThen(
+                Expression.Equal(source, Expression.Default(src)),
+                returnExpression
+            );
+
             var type = Expression.Variable(typeof(Type));
             var resolveFn = typeof(TypeResolver).GetMethod(nameof(TypeResolver.Resolve));
             var resolution = Expression.Assign(type, Expression.Call(Expression.Constant(typeResolver), resolveFn, source, Expression.Constant(tgt)));
@@ -21,12 +31,16 @@ namespace Annium.Extensions.Mapper
             var instance = Expression.Variable(tgt);
             var assignment = Expression.Assign(instance, Expression.Convert(result, tgt));
 
+            var returnedResult = Expression.Return(returnTarget, instance, tgt);
+
             return Expression.Block(
                 new [] { type, map, instance },
+                nullCheck,
                 resolution,
                 mapping,
                 assignment,
-                instance
+                returnedResult,
+                returnLabel
             );
         };
     }

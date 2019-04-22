@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace Annium.Extensions.Mapper
 {
@@ -13,12 +14,22 @@ namespace Annium.Extensions.Mapper
 
         public T Map<T>(object source)
         {
+            if (source == null)
+                return default(T);
+
             if (source.GetType() == typeof(T))
                 return (T) source;
 
             var map = mapBuilder.GetMap(source.GetType(), typeof(T));
 
-            return (T) map.DynamicInvoke(source);
+            try
+            {
+                return (T) map.DynamicInvoke(source);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         public object Map(object source, Type type)
@@ -28,7 +39,14 @@ namespace Annium.Extensions.Mapper
 
             var map = mapBuilder.GetMap(source.GetType(), type);
 
-            return map.DynamicInvoke(source);
+            try
+            {
+                return map.DynamicInvoke(source);
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw ex.InnerException;
+            }
         }
     }
 }

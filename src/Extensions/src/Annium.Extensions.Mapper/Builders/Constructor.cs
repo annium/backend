@@ -10,7 +10,10 @@ namespace Annium.Extensions.Mapper
     {
         private Func<Expression, Expression> BuildConstructorMap(Type src, Type tgt) => (Expression source) =>
         {
-            var constructor = tgt.GetConstructors().OrderByDescending(c => c.GetParameters().Length).First();
+            var constructor = tgt
+                .GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .OrderByDescending(c => c.GetParameters().Length)
+                .First();
 
             var properties = src.GetProperties();
             var parameters = constructor.GetParameters();
@@ -25,11 +28,17 @@ namespace Annium.Extensions.Mapper
                         return Expression.Property(source, prop);
 
                     return map(Expression.Property(source, prop));
-
                 })
                 .ToArray();
 
-            return Expression.New(constructor, values);
+            if (src.IsValueType)
+                return Expression.New(constructor, values);
+
+            return Expression.Condition(
+                Expression.Equal(source, Expression.Default(src)),
+                Expression.Default(tgt),
+                Expression.New(constructor, values)
+            );
         };
     }
 }

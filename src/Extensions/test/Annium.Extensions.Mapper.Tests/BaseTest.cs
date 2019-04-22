@@ -51,6 +51,36 @@ namespace Annium.Extensions.Mapper.Tests
             result.Name.IsEqual(value.Name);
         }
 
+        [Fact]
+        public void Nesting_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new D(new A() { Name = "name" }, "nice");
+
+            // act
+            var result = mapper.Map<E>(value);
+
+            // assert
+            result.Inner.Name.IsEqual(value.Inner.Name);
+            result.Value.IsEqual(value.Value);
+        }
+
+        [Fact]
+        public void NullableNesting_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new D(null, "nice");
+
+            // act
+            var result = mapper.Map<E>(value);
+
+            // assert
+            result.Inner.IsDefault();
+            result.Value.IsEqual(value.Value);
+        }
+
         private static IMapper GetMapper()
         {
             var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver, new Repacker());
@@ -76,6 +106,26 @@ namespace Annium.Extensions.Mapper.Tests
         private class C
         {
             public string Name { get; set; }
+        }
+
+        private class D
+        {
+            public A Inner { get; }
+
+            public string Value { get; }
+
+            public D(A inner, string value)
+            {
+                Inner = inner;
+                Value = value;
+            }
+        }
+
+        private class E
+        {
+            public B Inner { get; set; }
+
+            public string Value { get; set; }
         }
     }
 }

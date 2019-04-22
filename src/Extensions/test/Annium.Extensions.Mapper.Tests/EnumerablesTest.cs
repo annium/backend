@@ -53,6 +53,36 @@ namespace Annium.Extensions.Mapper.Tests
             result.At("one").Name.IsEqual(value["one"].Name);
         }
 
+        [Fact]
+        public void ToIEnumerable_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new [] { new A() { Name = "name" } };
+
+            // act
+            var result = mapper.Map<IEnumerable<B>>(value);
+
+            // assert
+            result.Has(1);
+            result.At(0).Name.IsEqual(value[0].Name);
+        }
+
+        [Fact]
+        public void ToIDictionary_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new Dictionary<string, A> { { "one", new A() { Name = "name" } } };
+
+            // act
+            var result = mapper.Map<IReadOnlyDictionary<string, B>>(value);
+
+            // assert
+            result.Has(1);
+            result.At("one").Name.IsEqual(value["one"].Name);
+        }
+
         private IMapper GetMapper()
         {
             var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver, new Repacker());

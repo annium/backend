@@ -7,11 +7,11 @@ namespace Annium.Extensions.Mapper
     {
         private Func<Expression, Expression> BuildMap(Type src, Type tgt) => (Expression source) =>
         {
-            if (tgt.IsAbstract || tgt.IsInterface)
-                return BuildResolutionMap(src, tgt) (source);
-
             if (GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null)
                 return BuildEnumerableMap(src, tgt) (source);
+
+            if (tgt.IsAbstract || tgt.IsInterface)
+                return BuildResolutionMap(src, tgt) (source);
 
             if (tgt.GetConstructor(Type.EmptyTypes) == null)
                 return BuildConstructorMap(src, tgt) (source);

@@ -13,22 +13,29 @@ namespace Annium.Extensions.Mapper
             var srcEl = GetEnumerableElementType(src);
             var tgtEl = GetEnumerableElementType(tgt);
 
+            if (tgt.IsInterface)
+            {
+                var def = tgt.GetGenericTypeDefinition();
+                if (def == typeof(IEnumerable<>))
+                    tgt = tgtEl.MakeArrayType();
+                if (def == typeof(IDictionary<,>) || def == typeof(IReadOnlyDictionary<,>))
+                    tgt = typeof(Dictionary<,>).MakeGenericType(tgt.GenericTypeArguments);
+            }
+
             var select = typeof(Enumerable).GetMethods()
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
+            var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)).MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
             var map = ResolveMap(srcEl, tgtEl) (param);
             var lambda = Expression.Lambda(map, param);
-            var selection = Expression.Call(select, source, lambda);
+            var selection = Expression.Condition(
+                Expression.Equal(source, Expression.Default(src)),
+                Expression.NewArrayInit(tgtEl),
+                Expression.Call(toArray, Expression.Call(select, source, lambda))
+            );
 
-            return tgt.IsArray? BuildArrayMap() : BuildConstructorMap();
-
-            Expression BuildArrayMap()
-            {
-                var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)).MakeGenericMethod(tgtEl);
-
-                return Expression.Call(toArray, selection);
-            }
+            return tgt.IsArray? selection : BuildConstructorMap();
 
             Expression BuildConstructorMap()
             {
@@ -49,8 +56,11 @@ namespace Annium.Extensions.Mapper
             if (type.GenericTypeArguments.Length == 0)
                 return null;
 
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return type.GenericTypeArguments[0];
+
             return type.GetTypeInfo().ImplementedInterfaces
-                .FirstOrDefault(i => i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
+                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
                 .GenericTypeArguments[0];
         }
     }

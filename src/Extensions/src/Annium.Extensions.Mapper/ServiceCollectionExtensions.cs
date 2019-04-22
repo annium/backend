@@ -8,6 +8,8 @@ namespace Annium.Extensions.Mapper
 {
     public static class ServiceCollectionExtensions
     {
+        private static Lazy<TypeResolver> TypeResolver = new Lazy<TypeResolver>(() => new TypeResolver(), true);
+
         public static IServiceCollection AddMapperConfiguration(
             this IServiceCollection services,
             Action<MapperConfiguration> configure
@@ -21,14 +23,14 @@ namespace Annium.Extensions.Mapper
             return services;
         }
 
-        public static IServiceCollection AddMapper(this IServiceCollection services, IServiceProvider provider)
+        public static IServiceCollection AddMapper(this IServiceCollection services, IServiceProvider provider, bool statically = false)
         {
             var cfg = MapperConfiguration
                 .Merge(provider.GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
 
             ConfigureMapping(cfg);
 
-            var typeResolver = new TypeResolver();
+            var typeResolver = statically ? TypeResolver.Value : new TypeResolver();
             var repacker = new Repacker();
             var mapBuilder = new MapBuilder(cfg, typeResolver, repacker);
             var mapper = new Mapper(mapBuilder);
