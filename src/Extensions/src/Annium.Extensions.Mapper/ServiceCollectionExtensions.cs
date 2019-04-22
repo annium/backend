@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Extensions.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
@@ -33,7 +34,7 @@ namespace Annium.Extensions.Mapper
             var typeResolver = statically ? TypeResolver.Value : new TypeResolver();
             var repacker = new Repacker();
             var mapBuilder = new MapBuilder(cfg, typeResolver, repacker);
-            var mapper = new Mapper(mapBuilder);
+            var mapper = new Mapper.Mapper(mapBuilder);
 
             services.AddSingleton<IMapper>(mapper);
 

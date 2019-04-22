@@ -3,7 +3,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.EntityFrameworkCore.Extensions
+namespace Annium.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
