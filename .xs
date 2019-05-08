@@ -1,1 +1,1 @@
-https://brutallord.ddns.net:9901/
+https://api.pkg.annium.com/
