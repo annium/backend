@@ -5,7 +5,7 @@ namespace Annium.Extensions.Mapper
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt) => (Expression source) =>
+        private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt, Map cfg) => (Expression source) =>
         {
             var returnTarget = Expression.Label(tgt);
             var defaultValue = Expression.Default(tgt);

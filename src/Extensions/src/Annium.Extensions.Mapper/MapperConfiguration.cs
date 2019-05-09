@@ -16,14 +16,22 @@ namespace Annium.Extensions.Mapper
             return result;
         }
 
-        internal IReadOnlyDictionary<ValueTuple<Type, Type>, LambdaExpression> Maps => maps;
+        internal IReadOnlyDictionary<ValueTuple<Type, Type>, Map> Maps => maps;
 
-        private Dictionary<ValueTuple<Type, Type>, LambdaExpression> maps =
-            new Dictionary<ValueTuple<Type, Type>, LambdaExpression>();
+        private Dictionary<ValueTuple<Type, Type>, Map> maps =
+            new Dictionary<ValueTuple<Type, Type>, Map>();
 
         public MapperConfiguration Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> map)
         {
-            maps[(typeof(TSource), typeof(TTarget))] = map;
+            var cfg = new Map();
+            cfg.TypeMap = map;
+
+            return SaveMap(typeof(TSource), typeof(TTarget), cfg);
+        }
+
+        private MapperConfiguration SaveMap(Type src, Type tgt, Map cfg)
+        {
+            maps[(src, tgt)] = cfg;
 
             return this;
         }

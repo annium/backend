@@ -7,7 +7,7 @@ namespace Annium.Extensions.Mapper
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt) => (Expression source) =>
+        private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt, Map cfg) => (Expression source) =>
         {
             var sources = src.GetProperties();
             var targets = tgt.GetProperties();

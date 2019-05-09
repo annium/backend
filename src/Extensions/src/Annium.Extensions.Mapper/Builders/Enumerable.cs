@@ -8,7 +8,7 @@ namespace Annium.Extensions.Mapper
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildEnumerableMap(Type src, Type tgt) => (Expression source) =>
+        private Func<Expression, Expression> BuildEnumerableMap(Type src, Type tgt, Map cfg) => (Expression source) =>
         {
             var srcEl = GetEnumerableElementType(src);
             var tgtEl = GetEnumerableElementType(tgt);

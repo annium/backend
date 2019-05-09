@@ -12,6 +12,8 @@ namespace Annium.Extensions.Mapper
         private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> raw =
             new Dictionary<ValueTuple<Type, Type>, Func<Expression, Expression>>();
 
+        private readonly MapperConfiguration cfg;
+
         private readonly TypeResolver typeResolver;
 
         public MapBuilder(
@@ -20,9 +22,13 @@ namespace Annium.Extensions.Mapper
             Repacker repacker
         )
         {
+            this.cfg = cfg;
             this.typeResolver = typeResolver;
+
+            // save complete type maps directly to raw resolutions
             foreach (var(key, map) in cfg.Maps)
-                raw[key] = repacker.Repack(map.Body);
+                if (map.TypeMap != null)
+                    raw[key] = repacker.Repack(map.TypeMap.Body);
         }
 
         public Delegate GetMap(Type src, Type tgt)
@@ -50,7 +56,9 @@ namespace Annium.Extensions.Mapper
             if (raw.TryGetValue(key, out var map))
                 return map;
 
-            return raw[key] = BuildMap(src, tgt);
+            this.cfg.Maps.TryGetValue(key, out var cfg);
+
+            return raw[key] = BuildMap(src, tgt, cfg);
         }
     }
 }
