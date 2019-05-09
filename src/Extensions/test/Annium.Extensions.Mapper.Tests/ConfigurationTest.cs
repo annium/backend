@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Annium.Extensions.DependencyInjection;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Extensions.Mapper.Tests
@@ -27,15 +29,15 @@ namespace Annium.Extensions.Mapper.Tests
             result.At(1).As<LinkModel>().Created.IsEqual(instant.ToDateTimeUtc());
         }
 
-        private IMapper GetMapper()
+        private IMapper GetMapper() => new ServiceCollection()
+            .AddMapper(new ServiceCollection().AddMapperConfiguration(ConfigureMapping).BuildServiceProvider())
+            .BuildServiceProvider()
+            .GetRequiredService<IMapper>();
+
+        private void ConfigureMapping(MapperConfiguration cfg)
         {
-            var cfg = new MapperConfiguration();
             cfg.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
             cfg.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
-
-            var builder = new MapBuilder(cfg, TypeResolverAccessor.TypeResolver, new Repacker());
-
-            return new Mapper(builder);
         }
 
         private abstract class Payload { }

@@ -7,7 +7,7 @@ namespace Annium.Extensions.Mapper
 {
     public class MapperConfiguration
     {
-        public static MapperConfiguration Merge(params MapperConfiguration[] configurations)
+        internal static MapperConfiguration Merge(params MapperConfiguration[] configurations)
         {
             var result = new MapperConfiguration();
             foreach (var(key, map) in configurations.SelectMany(c => c.maps))
@@ -16,7 +16,7 @@ namespace Annium.Extensions.Mapper
             return result;
         }
 
-        public IReadOnlyDictionary<ValueTuple<Type, Type>, LambdaExpression> Maps => maps;
+        internal IReadOnlyDictionary<ValueTuple<Type, Type>, LambdaExpression> Maps => maps;
 
         private Dictionary<ValueTuple<Type, Type>, LambdaExpression> maps =
             new Dictionary<ValueTuple<Type, Type>, LambdaExpression>();

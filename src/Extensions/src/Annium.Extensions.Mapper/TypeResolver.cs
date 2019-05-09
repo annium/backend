@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Annium.Extensions.Mapper
 {
-    public class TypeResolver
+    internal class TypeResolver
     {
         private readonly IDictionary<Type, Type[]> types;
 

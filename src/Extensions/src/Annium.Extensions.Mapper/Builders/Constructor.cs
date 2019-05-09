@@ -6,7 +6,7 @@ using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Mapper
 {
-    public partial class MapBuilder
+    internal partial class MapBuilder
     {
         private Func<Expression, Expression> BuildConstructorMap(Type src, Type tgt) => (Expression source) =>
         {

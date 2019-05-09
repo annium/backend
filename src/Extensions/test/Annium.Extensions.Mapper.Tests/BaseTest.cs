@@ -1,4 +1,6 @@
+using Annium.Extensions.DependencyInjection;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Extensions.Mapper.Tests
 {
@@ -81,12 +83,8 @@ namespace Annium.Extensions.Mapper.Tests
             result.Value.IsEqual(value.Value);
         }
 
-        private static IMapper GetMapper()
-        {
-            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver, new Repacker());
-
-            return new Mapper(builder);
-        }
+        private IMapper GetMapper() =>
+            new ServiceCollection().AddMapper().BuildServiceProvider().GetRequiredService<IMapper>();
 
         private class A
         {

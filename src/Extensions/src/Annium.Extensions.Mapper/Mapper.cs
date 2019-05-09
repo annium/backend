@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Annium.Extensions.Mapper
 {
-    public class Mapper : IMapper
+    internal class Mapper : IMapper
     {
         private readonly MapBuilder mapBuilder;
 

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Annium.Extensions.DependencyInjection;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Extensions.Mapper.Tests
 {
@@ -21,12 +23,8 @@ namespace Annium.Extensions.Mapper.Tests
             result.At(1).As<LinkModel>().Link.IsEqual("lnk");
         }
 
-        private IMapper GetMapper()
-        {
-            var builder = new MapBuilder(new MapperConfiguration(), TypeResolverAccessor.TypeResolver, new Repacker());
-
-            return new Mapper(builder);
-        }
+        private IMapper GetMapper() =>
+            new ServiceCollection().AddMapper().BuildServiceProvider().GetRequiredService<IMapper>();
 
         private abstract class Payload { }
 

@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Annium.Extensions.Mapper
 {
-    public partial class MapBuilder
+    internal partial class MapBuilder
     {
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> maps =
             new Dictionary<ValueTuple<Type, Type>, Delegate>();

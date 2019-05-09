@@ -3,7 +3,7 @@ using System.Linq.Expressions;
 
 namespace Annium.Extensions.Mapper
 {
-    public partial class MapBuilder
+    internal partial class MapBuilder
     {
         private Func<Expression, Expression> BuildMap(Type src, Type tgt) => (Expression source) =>
         {

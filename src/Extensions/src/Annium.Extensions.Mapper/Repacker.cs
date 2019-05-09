@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Annium.Extensions.Mapper
 {
-    public class Repacker
+    internal class Repacker
     {
         public Func<Expression, Expression> Repack(Expression ex) => (Expression source) =>
         {

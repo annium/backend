@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Annium.Extensions.Mapper
 {
-    public partial class MapBuilder
+    internal partial class MapBuilder
     {
         private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt) => (Expression source) =>
         {
