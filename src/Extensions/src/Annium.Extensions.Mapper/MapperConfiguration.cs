@@ -23,17 +23,20 @@ namespace Annium.Extensions.Mapper
 
         public MapperConfiguration Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> map)
         {
-            var cfg = new Map();
-            cfg.TypeMap = map;
+            var cfg = Map<TSource, TTarget>();
 
-            return SaveMap(typeof(TSource), typeof(TTarget), cfg);
-        }
-
-        private MapperConfiguration SaveMap(Type src, Type tgt, Map cfg)
-        {
-            maps[(src, tgt)] = cfg;
+            cfg.Type(map);
 
             return this;
+        }
+
+        public MapConfiguration<TSource, TTarget> Map<TSource, TTarget>()
+        {
+            var cfg = new MapConfiguration<TSource, TTarget>();
+
+            maps[(typeof(TSource), typeof(TTarget))] = cfg;
+
+            return cfg;
         }
     }
 }

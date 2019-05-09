@@ -16,6 +16,8 @@ namespace Annium.Extensions.Mapper
 
         private readonly TypeResolver typeResolver;
 
+        private readonly Repacker repacker;
+
         public MapBuilder(
             MapperConfiguration cfg,
             TypeResolver typeResolver,
@@ -24,11 +26,12 @@ namespace Annium.Extensions.Mapper
         {
             this.cfg = cfg;
             this.typeResolver = typeResolver;
+            this.repacker = repacker;
 
             // save complete type maps directly to raw resolutions
             foreach (var(key, map) in cfg.Maps)
-                if (map.TypeMap != null)
-                    raw[key] = repacker.Repack(map.TypeMap.Body);
+                if (map.Type != null)
+                    raw[key] = repacker.Repack(map.Type.Body);
         }
 
         public Delegate GetMap(Type src, Type tgt)

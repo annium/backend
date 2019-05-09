@@ -1,53 +1,79 @@
-// using System;
-// using System.Collections.Generic;
-// using Annium.Testing;
-// using NodaTime;
+using Annium.Extensions.DependencyInjection;
+using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
-// namespace Annium.Extensions.Mapper.Tests
-// {
-//     public class FieldMappingTest
-//     {
-//         [Fact]
-//         public void ConfigurationMapping_Works()
-//         {
-//             // arrange
-//             var mapper = GetMapper();
-//             var date = new DateTime(2000, 10, 7).ToUniversalTime();
-//             var instant = Instant.FromDateTimeUtc(new DateTime(2002, 6, 17).ToUniversalTime());
-//             var value = new Payload[] { new ImagePayload("img", date), new LinkPayload { Link = "lnk", Created = instant } };
+namespace Annium.Extensions.Mapper.Tests
+{
+    public class FieldMappingTest
+    {
+        [Fact]
+        public void AssignmentMapping_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new A { Text = "Some Text" };
 
-//             // act
-//             var result = mapper.Map<List<Model>>(value);
+            // act
+            var result = mapper.Map<B>(value);
 
-//             // assert
-//             result.Has(2);
-//             result.At(0).As<ImageModel>().Image.IsEqual("img");
-//             result.At(0).As<ImageModel>().Created.ToDateTimeUtc().IsEqual(date);
-//             result.At(1).As<LinkModel>().Link.IsEqual("lnk");
-//             result.At(1).As<LinkModel>().Created.IsEqual(instant.ToDateTimeUtc());
-//         }
+            // assert
+            result.Ignored.IsEqual(0);
+            result.LowerText.IsEqual("some text");
+        }
 
-//         private IMapper GetMapper()
-//         {
-//             var cfg = new MapperConfiguration();
-//             cfg.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
-//             cfg.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
+        [Fact]
+        public void ConstructorMapping_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new A { Text = "Some Text" };
 
-//             var builder = new MapBuilder(cfg, TypeResolverAccessor.TypeResolver, new Repacker());
+            // act
+            var result = mapper.Map<C>(value);
 
-//             return new Mapper(builder);
-//         }
+            // assert
+            result.Ignored.IsEqual(0);
+            result.LowerText.IsEqual("some text");
+        }
 
-//         private class A
-//         {
-//             public string Text { get; set; }
-//         }
+        private IMapper GetMapper() => new ServiceCollection()
+            .AddMapper(new ServiceCollection().AddMapperConfiguration(ConfigureMapping).BuildServiceProvider())
+            .BuildServiceProvider()
+            .GetRequiredService<IMapper>();
 
-//         private class B
-//         {
-//             public int Ignored { get; set; }
+        private void ConfigureMapping(MapperConfiguration cfg)
+        {
+            cfg.Map<A, B>()
+                .Field(e => e.Text.ToLower(), e => e.LowerText)
+                .Ignore(e => e.Ignored);
+            cfg.Map<A, C>()
+                .Field(e => e.Text.ToLower(), c => c.LowerText)
+                .Ignore(e => e.Ignored);
+        }
 
-//             public string LowerText { get; set; }
-//         }
-//     }
-// }
+        private class A
+        {
+            public string Text { get; set; }
+        }
+
+        private class B
+        {
+            public int Ignored { get; set; }
+
+            public string LowerText { get; set; }
+        }
+
+        private class C
+        {
+            public int Ignored { get; }
+
+            public string LowerText { get; }
+
+            public C(int ignored, string lowerText)
+            {
+                Ignored = ignored;
+                LowerText = lowerText;
+            }
+        }
+    }
+}
