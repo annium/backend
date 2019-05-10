@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -11,7 +12,15 @@ namespace Annium.Extensions.Net.Http
 {
     internal partial class Request : IRequest
     {
-        private static readonly HttpClient defaultClient = new HttpClient();
+        private static readonly HttpClient defaultClient;
+
+        static Request()
+        {
+            var handler = new HttpClientHandler();
+            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+
+            defaultClient = new HttpClient(handler);
+        }
 
         private HttpClient client = defaultClient;
 
@@ -143,7 +152,7 @@ namespace Annium.Extensions.Net.Http
 
             var baseUri = this.baseUri ?? client.BaseAddress;
             var uri = baseUri != null ? new Uri(baseUri, this.uri) : new Uri(this.uri);
-            message.RequestUri =  new UriBuilder(uri) { Query = queryBuilder.ToString() }.Uri;
+            message.RequestUri = new UriBuilder(uri) { Query = queryBuilder.ToString() }.Uri;
 
             foreach (var(name, values) in headers)
                 message.Headers.Add(name, values);
