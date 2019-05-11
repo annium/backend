@@ -3,7 +3,7 @@ using Annium.Extensions.DependencyInjection;
 using Annium.Extensions.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mapping
+namespace Demo.Extensions.Mapping
 {
     internal class ServicePack : ServicePackBase
     {

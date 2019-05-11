@@ -4,7 +4,7 @@ using Annium.Extensions.Entrypoint;
 using Annium.Extensions.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Mapping
+namespace Demo.Extensions.Mapping
 {
     public class Program
     {
