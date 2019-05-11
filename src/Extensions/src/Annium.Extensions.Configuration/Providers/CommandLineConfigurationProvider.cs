@@ -62,10 +62,10 @@ namespace Annium.Extensions.Configuration
             foreach (var name in flags)
                 data[name] = true.ToString();
 
-            foreach (var (name, value) in options)
+            foreach (var(name, value) in options)
                 data[name] = value;
 
-            foreach (var (name, values) in multiOptions)
+            foreach (var(name, values) in multiOptions)
                 for (var i = 0; i < values.Count; i++)
                     data[$"{name}{ConfigurationBuilder.Separator}{i}"] = values[i];
 
@@ -107,7 +107,12 @@ namespace Annium.Extensions.Configuration
     {
         public static IConfigurationBuilder AddCommandLineArgs(this IConfigurationBuilder builder)
         {
-            var configuration = new CommandLineConfigurationProvider(Environment.GetCommandLineArgs().Skip(1).ToArray()).Read();
+            return AddCommandLineArgs(builder, Environment.GetCommandLineArgs().Skip(1).ToArray());
+        }
+
+        public static IConfigurationBuilder AddCommandLineArgs(this IConfigurationBuilder builder, string[] args)
+        {
+            var configuration = new CommandLineConfigurationProvider(args).Read();
 
             return builder.Add(configuration);
         }

@@ -53,10 +53,10 @@ namespace Annium.Extensions.Configuration
             {
                 context.Push(index.ToString());
 
-                if (item is JObject obj)
-                    Process(obj);
-                else if (item is JArray arr)
+                if (item is JArray arr)
                     Process(arr);
+                else if (item is JObject obj)
+                    Process(obj);
                 else
                     Process(item);
 

@@ -10,8 +10,6 @@ namespace Annium.Extensions.Configuration
     {
         internal const string Separator = "<$>";
 
-        private bool isAlreadyBuilt = false;
-
         private IDictionary<string, string> config = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private Stack<string> context = new Stack<string>();
@@ -20,19 +18,14 @@ namespace Annium.Extensions.Configuration
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string, string> config)
         {
-            foreach (var (key, value) in config)
+            foreach (var(key, value) in config)
                 this.config[key] = value;
 
             return this;
         }
 
-        public T Build<T>()
-        where T : class, new()
+        public T Build<T>() where T : class, new()
         {
-            if (isAlreadyBuilt)
-                throw new InvalidOperationException($"Configuration is already built");
-            isAlreadyBuilt = true;
-
             return (T) Process(typeof(T));
         }
 
@@ -59,7 +52,7 @@ namespace Annium.Extensions.Configuration
             var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
             var result = (IDictionary) Activator.CreateInstance(type);
 
-            foreach (var (key, value) in items)
+            foreach (var(key, value) in items)
             {
                 var name = key.Substring(path.Length + Separator.Length).Split(Separator) [0];
                 context.Push(name);
@@ -69,7 +62,6 @@ namespace Annium.Extensions.Configuration
 
             return result;
         }
-
         private object ProcessList(Type type)
         {
             var elementType = type.GetGenericArguments() [0];
@@ -94,9 +86,9 @@ namespace Annium.Extensions.Configuration
 
         private object ProcessArray(Type type)
         {
-            var raw = (IList) ProcessList(type);
-
             var elementType = type.GetElementType();
+            var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
+
             var result = (IList) Array.CreateInstance(elementType, raw.Count);
 
             for (var index = 0; index < raw.Count; index++)
