@@ -6,6 +6,8 @@ namespace Annium.Extensions.Mapper
 {
     internal class TypeResolver
     {
+        public static Lazy<TypeResolver> Instance = new Lazy<TypeResolver>(() => new TypeResolver(), true);
+
         private readonly IDictionary<Type, Type[]> types;
 
         private readonly IDictionary<Type, string[]> signatures;

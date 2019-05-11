@@ -9,8 +9,6 @@ namespace Annium.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        private static Lazy<TypeResolver> TypeResolver = new Lazy<TypeResolver>(() => new TypeResolver(), true);
-
         public static IServiceCollection AddMapperConfiguration(
             this IServiceCollection services,
             Action<MapperConfiguration> configure
@@ -32,7 +30,7 @@ namespace Annium.Extensions.DependencyInjection
 
             ConfigureMapping(cfg);
 
-            var typeResolver = statically ? TypeResolver.Value : new TypeResolver();
+            var typeResolver = statically ? TypeResolver.Instance.Value : new TypeResolver();
             var repacker = new Repacker();
             var mapBuilder = new MapBuilder(cfg, typeResolver, repacker);
             var mapper = new Mapper.Mapper(mapBuilder);
