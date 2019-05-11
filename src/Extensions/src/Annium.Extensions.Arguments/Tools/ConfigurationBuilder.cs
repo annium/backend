@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Extensions.Conversion;
 using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Arguments
@@ -155,7 +154,7 @@ namespace Annium.Extensions.Arguments
             if (values != null && !values.Contains(value))
                 throw new Exception($"Given value '{value}' isn't in allowed values: {string.Join(", ",values)}");
 
-            return Converter.Convert(value, type);
+            return Mapper.Mapper.Map(value, type);
         }
     }
 }

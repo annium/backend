@@ -34,6 +34,8 @@ namespace Annium.Extensions.Mapper
                     raw[key] = repacker.Repack(map.Type.Body);
         }
 
+        public bool HasMap(Type src, Type tgt) => src == tgt || raw.ContainsKey((src, tgt));
+
         public Delegate GetMap(Type src, Type tgt)
         {
             var key = (src, tgt);

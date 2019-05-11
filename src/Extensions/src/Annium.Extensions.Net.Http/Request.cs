@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Annium.Extensions.Conversion;
 using Microsoft.AspNetCore.Http.Extensions;
 
 namespace Annium.Extensions.Net.Http
@@ -107,7 +106,7 @@ namespace Annium.Extensions.Net.Http
 
         public IRequest Param<T>(string key, T value)
         {
-            parameters[key] = Converter.Convert<T, string>(value);
+            parameters[key] = Mapper.Mapper.Map<string>(value);
 
             return this;
         }

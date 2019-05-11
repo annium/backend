@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Extensions.Conversion;
+// using Annium.Extensions.Conversion;
 
 namespace Annium.Extensions.Configuration
 {
@@ -39,7 +39,7 @@ namespace Annium.Extensions.Configuration
                 return ProcessList(type);
             if (type.IsArray)
                 return ProcessArray(type);
-            if (Converter.CanConvert(typeof(string), type))
+            if (Mapper.Mapper.HasMap(string.Empty, type))
                 return ProcessValue(type);
             return ProcessObject(type);
         }
@@ -56,7 +56,7 @@ namespace Annium.Extensions.Configuration
             {
                 var name = key.Substring(path.Length + Separator.Length).Split(Separator) [0];
                 context.Push(name);
-                result[Converter.Convert(name, keyType)] = Process(valueType);
+                result[Mapper.Mapper.Map(name, keyType)] = Process(valueType);
                 context.Pop();
             }
 
@@ -117,7 +117,7 @@ namespace Annium.Extensions.Configuration
 
         private object ProcessValue(Type type)
         {
-            return Converter.Convert(config[path], type);
+            return Mapper.Mapper.Map(config[path], type);
         }
     }
 }

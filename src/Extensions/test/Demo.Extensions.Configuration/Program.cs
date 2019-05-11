@@ -16,7 +16,7 @@ namespace Demo.Extensions.Configuration
             CancellationToken token
         )
         {
-            TestCli();
+            // TestCli();
             TestJson();
         }
 
