@@ -11,9 +11,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Extensions.DependencyInjection" Version="0.1.0" />
-        <PackageReference Include="Annium.Extensions.Entrypoint" Version="0.1.0" />
+        <ProjectReference Include="../../src/Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
+        <ProjectReference Include="../../src/Annium.Extensions.Entrypoint/Annium.Extensions.Entrypoint.csproj" />
     </ItemGroup>
 </Project>
