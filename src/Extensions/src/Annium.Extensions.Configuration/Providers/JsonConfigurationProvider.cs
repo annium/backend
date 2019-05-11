@@ -9,9 +9,9 @@ namespace Annium.Extensions.Configuration
     {
         private readonly string filePath;
 
-        private Dictionary<string, string> data = new Dictionary<string, string>();
+        private Dictionary<string, string> data;
 
-        private Stack<string> context = new Stack<string>();
+        private Stack<string> context;
 
         private string path => string.Join(ConfigurationBuilder.Separator, context.Reverse());
 
@@ -22,6 +22,9 @@ namespace Annium.Extensions.Configuration
 
         public IReadOnlyDictionary<string, string> Read()
         {
+            data = new Dictionary<string, string>();
+            context = new Stack<string>();
+
             var token = JObject.Parse(File.ReadAllText(filePath));
 
             Process(token);
