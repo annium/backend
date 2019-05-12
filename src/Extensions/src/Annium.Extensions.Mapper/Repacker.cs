@@ -6,7 +6,7 @@ namespace Annium.Extensions.Mapper
 {
     // Summary:
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression
-    internal class Repacker
+    public class Repacker
     {
         public Func<Expression, Expression> Repack(Expression ex) => (Expression source) =>
         {
@@ -15,12 +15,16 @@ namespace Annium.Extensions.Mapper
 
             switch (ex)
             {
+                case ConstantExpression constant:
+                    return constant;
                 case LambdaExpression lambda:
                     return Lambda(lambda) (source);
                 case MemberExpression member:
                     return Member(member) (source);
                 case MethodCallExpression call:
                     return Call(call) (source);
+                case NewExpression construction:
+                    return New(construction) (source);
                 case ParameterExpression param:
                     return source;
                 default:
@@ -36,5 +40,8 @@ namespace Annium.Extensions.Mapper
 
         private Func<Expression, Expression> Call(MethodCallExpression ex) => (Expression source) =>
             Expression.Call(Repack(ex.Object) (source), ex.Method, ex.Arguments.Select(a => Repack(a) (source)).ToArray());
+
+        private Func<Expression, Expression> New(NewExpression ex) => (Expression source) =>
+            Expression.New(ex.Constructor, ex.Arguments.Select(a => Repack(a) (source)));
     }
 }
