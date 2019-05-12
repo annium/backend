@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using Annium.Extensions.Mapper;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -8,51 +8,11 @@ namespace Annium.Data.Serialization.Json
 {
     public class AbstractJsonConverter : JsonConverter
     {
-        private readonly IDictionary<Type, Type[]> types;
-
-        private readonly IDictionary<Type, string[]> signatures;
-
-        public AbstractJsonConverter(params string[] matches)
-        {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
-            if (matches.Length > 0)
-            {
-                matches = matches.Select(m => m.ToLowerInvariant()).ToArray();
-                assemblies = assemblies.Where(a =>
-                {
-                    var name = a.GetName().Name.ToLowerInvariant();
-                    return matches.Any(m => name.Contains(m));
-                }).ToArray();
-            }
-
-            var types = assemblies
-                .SelectMany(domainAssembly => domainAssembly.GetTypes())
-                .ToArray();
-
-            this.types = types
-                .ToDictionary(
-                    t => t,
-                    t => types.Where(s => s != t && t.IsAssignableFrom(s) && s.IsClass && !s.IsAbstract).ToArray()
-                )
-                .Where(p => p.Value.Length > 0)
-                .ToDictionary(p => p.Key, p => p.Value);
-
-            this.signatures = this.types.Values
-                .SelectMany(v => v)
-                .Distinct()
-                .ToDictionary(
-                    t => t,
-                    t => t.GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray()
-                )
-                .Where(p => p.Value.Length > 0)
-                .ToDictionary(p => p.Key, p => p.Value);
-        }
-
         public override bool CanRead => true;
 
         public override bool CanWrite => false;
 
-        public override bool CanConvert(Type objectType) => types.ContainsKey(objectType);
+        public override bool CanConvert(Type objectType) => TypeResolver.Instance.CanResolve(objectType);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -75,7 +35,7 @@ namespace Annium.Data.Serialization.Json
         {
             var properties = obj.Properties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray();
 
-            return types[objectType].FirstOrDefault(type => properties.SequenceEqual(signatures[type])) ?? objectType;
+            return TypeResolver.Instance.ResolveBySignature(properties, objectType, true);
         }
     }
 }

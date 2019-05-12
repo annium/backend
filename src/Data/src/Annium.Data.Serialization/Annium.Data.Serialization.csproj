@@ -9,6 +9,9 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
         <PackageReference Include="NodaTime" Version="2.4.5" />
         <PackageReference Include="NodaTime.Serialization.JsonNet" Version="2.2.0" />

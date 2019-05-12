@@ -25,7 +25,7 @@ namespace Annium.Extensions.Mapper.Tests
             var value = new { ForB = 5 };
 
             // act
-            var result = resolver.ResolveBySignature(value, typeof(A));
+            var result = resolver.ResolveBySignature(value, typeof(A), true);
 
             // assert
             result.IsEqual(typeof(B));
@@ -39,7 +39,7 @@ namespace Annium.Extensions.Mapper.Tests
             var value = new { ForB = 5 };
 
             // assert
-            ((Func<Type>) (() => resolver.ResolveBySignature(value, typeof(B)))).Throws<MappingException>();
+            ((Func<Type>) (() => resolver.ResolveBySignature(value, typeof(B), false))).Throws<MappingException>();
         }
 
         private class A { }

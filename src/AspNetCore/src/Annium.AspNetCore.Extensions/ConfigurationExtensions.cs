@@ -10,13 +10,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 opts.DataAnnotationLocalizerProvider = (_, factory) => factory.Create(typeof(TAnnotationsResource)));
 
         public static IMvcBuilder WithJsonOptions(
-            this IMvcBuilder builder,
-            string[] abstractTypesSources
+            this IMvcBuilder builder
         ) => builder.AddJsonOptions(opts =>
         {
             opts.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
 
-            opts.SerializerSettings.ConfigureAbstractConverter(abstractTypesSources);
+            opts.SerializerSettings.ConfigureAbstractConverter();
         });
     }
 }

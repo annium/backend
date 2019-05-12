@@ -42,7 +42,7 @@ namespace Annium.Data.Serialization.Tests.Json
         }
 
         private JsonSerializerSettings GetSettings() => new JsonSerializerSettings()
-            .ConfigureAbstractConverter("annium");
+            .ConfigureAbstractConverter();
 
         public abstract class Base { }
 
