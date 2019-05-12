@@ -8,7 +8,7 @@ namespace Annium.Extensions.Configuration
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        internal const string Separator = "<$>";
+        internal const string Separator = "|";
 
         private IDictionary<string, string> config = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 

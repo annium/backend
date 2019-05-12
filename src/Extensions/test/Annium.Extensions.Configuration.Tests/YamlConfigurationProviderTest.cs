@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Annium.Testing;
-using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace Annium.Extensions.Configuration.Tests
 {
-    public class JsonConfigurationProviderTest
+    public class YamlConfigurationProviderTest
     {
         [Fact]
-        public void JsonConfiguration_Works()
+        public void YamlConfiguration_Works()
         {
             // arrange
             var cfg = new Config();
@@ -21,14 +21,15 @@ namespace Annium.Extensions.Configuration.Tests
             cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
             cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
 
-            string jsonFile = null;
+            string yamlFile = null;
             try
             {
-                jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, JsonConvert.SerializeObject(cfg));
+                yamlFile = Path.GetTempFileName();
+                var serializer = new SerializerBuilder().Build();
+                File.WriteAllText(yamlFile, serializer.Serialize(cfg));
 
                 var builder = new ConfigurationBuilder();
-                builder.AddJsonFile(jsonFile);
+                builder.AddYamlFile(yamlFile);
 
                 // act
                 var result = builder.Build<Config>();
@@ -43,7 +44,7 @@ namespace Annium.Extensions.Configuration.Tests
                 result.Matrix.At(1).SequenceEqual(new [] { 5, 4 }).IsTrue();
                 result.List.Has(2);
                 result.List[0].Plain.IsEqual(8);
-                result.List[0].Array.IsEmpty();
+                result.List[0].Array.IsDefault();
                 result.List[1].Plain.IsEqual(0);
                 result.List[1].Array.SequenceEqual(new [] { 2m, 6m }).IsTrue();
                 IDictionary<string, Val> dict = result.Dictionary;
@@ -55,8 +56,8 @@ namespace Annium.Extensions.Configuration.Tests
             }
             finally
             {
-                if (!string.IsNullOrWhiteSpace(jsonFile) && File.Exists(jsonFile))
-                    File.Delete(jsonFile);
+                if (!string.IsNullOrWhiteSpace(yamlFile) && File.Exists(yamlFile))
+                    File.Delete(yamlFile);
             }
         }
     }

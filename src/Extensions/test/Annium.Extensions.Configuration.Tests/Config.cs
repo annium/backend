@@ -10,6 +10,8 @@ namespace Annium.Extensions.Configuration.Tests
 
         public int[] Array { get; set; }
 
+        public List<int[]> Matrix { get; set; }
+
         public List<Val> List { get; set; }
 
         public Dictionary<string, Val> Dictionary { get; set; }

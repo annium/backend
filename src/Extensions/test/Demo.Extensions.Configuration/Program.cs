@@ -5,6 +5,7 @@ using System.Threading;
 using Annium.Extensions.Configuration;
 using Annium.Extensions.Entrypoint;
 using Newtonsoft.Json;
+using YamlDotNet.Serialization;
 
 namespace Demo.Extensions.Configuration
 {
@@ -17,7 +18,8 @@ namespace Demo.Extensions.Configuration
         )
         {
             // TestCli();
-            TestJson();
+            // TestJson();
+            TestYaml();
         }
 
         private static void TestCli()
@@ -61,6 +63,35 @@ namespace Demo.Extensions.Configuration
             {
                 if (!string.IsNullOrWhiteSpace(jsonFile) && File.Exists(jsonFile))
                     File.Delete(jsonFile);
+            }
+        }
+
+        private static void TestYaml()
+        {
+            var cfg = new Config();
+            cfg.Plain = 7;
+            cfg.Array = new [] { 4, 7 };
+            cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
+            cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
+            cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
+
+            string yamlFile = null;
+            try
+            {
+                yamlFile = Path.GetTempFileName();
+                var serializer = new SerializerBuilder().Build();
+                File.WriteAllText(yamlFile, serializer.Serialize(cfg));
+
+                var builder = new ConfigurationBuilder();
+                builder.AddYamlFile(yamlFile);
+
+                // act
+                var result = builder.Build<Config>();
+            }
+            finally
+            {
+                if (!string.IsNullOrWhiteSpace(yamlFile) && File.Exists(yamlFile))
+                    File.Delete(yamlFile);
             }
         }
 
