@@ -20,15 +20,23 @@ namespace Annium.Extensions.Mapper
 
         public bool CanResolve(Type baseType) => types.Value.ContainsKey(baseType);
 
-        public Type ResolveBySignature(object instance, Type baseType)
-        {
-            var properties = instance.GetType().GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray();
+        public Type ResolveBySignature(object instance, Type baseType) =>
+            ResolveBySignature(
+                instance.GetType(),
+                instance.GetType().GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray(),
+                baseType
+            );
 
+        public Type ResolveBySignature(string[] signature, Type baseType) =>
+            ResolveBySignature(typeof(object), signature, baseType);
+
+        private Type ResolveBySignature(Type src, string[] signature, Type baseType)
+        {
             if (!types.Value.TryGetValue(baseType, out var descendants))
-                throw new MappingException(instance.GetType(), baseType, "No descendants found");
+                throw new MappingException(src, baseType, "No descendants found");
 
             return descendants
-                .OrderByDescending(type => signatures.Value[type].Intersect(properties).Count())
+                .OrderByDescending(type => signatures.Value[type].Intersect(signature).Count())
                 .First();
         }
 
