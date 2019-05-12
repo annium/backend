@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Annium.Extensions.Mapper
 {
-    internal class TypeResolver
+    public class TypeResolver
     {
         public static TypeResolver Instance = new TypeResolver();
 
@@ -12,13 +12,15 @@ namespace Annium.Extensions.Mapper
 
         private readonly Lazy<IDictionary<Type, string[]>> signatures;
 
-        public TypeResolver()
+        internal TypeResolver()
         {
             types = new Lazy<IDictionary<Type, Type[]>>(CollectTypes, true);
             signatures = new Lazy<IDictionary<Type, string[]>>(() => CollectSignatures(types.Value));
         }
 
-        public Type Resolve(object instance, Type baseType)
+        public bool CanResolve(Type baseType) => types.Value.ContainsKey(baseType);
+
+        public Type ResolveBySignature(object instance, Type baseType)
         {
             var properties = instance.GetType().GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray();
 
