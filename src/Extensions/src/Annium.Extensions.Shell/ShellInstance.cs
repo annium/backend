@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,8 @@ namespace Annium.Extensions.Shell
 
         private ProcessStartInfo startInfo;
 
+        private bool pipe;
+
         public ShellInstance(
             string cmd,
             ILogger<Shell> logger
@@ -27,6 +30,13 @@ namespace Annium.Extensions.Shell
         public IShellInstance Configure(ProcessStartInfo startInfo)
         {
             this.startInfo = startInfo;
+
+            return this;
+        }
+
+        public IShellInstance Pipe(bool pipe)
+        {
+            this.pipe = pipe;
 
             return this;
         }
@@ -118,6 +128,12 @@ namespace Annium.Extensions.Shell
 
             process.Start();
 
+            if (pipe)
+            {
+                Task.Run(() => pipeOut(process.StandardOutput));
+                Task.Run(() => pipeOut(process.StandardError));
+            }
+
             return tcs;
 
             void handleExit()
@@ -137,6 +153,18 @@ namespace Annium.Extensions.Shell
                 catch (Exception e)
                 {
                     logger.Warn($"Process.Dispose() failed: {e}");
+                }
+            }
+
+            void pipeOut(StreamReader src)
+            {
+                while (true)
+                {
+                    var line = src.ReadLine();
+                    if (line == null)
+                        return;
+
+                    Console.WriteLine(line);
                 }
             }
         }

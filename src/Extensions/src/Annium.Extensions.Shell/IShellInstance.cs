@@ -9,6 +9,8 @@ namespace Annium.Extensions.Shell
     {
         IShellInstance Configure(ProcessStartInfo startInfo);
 
+        IShellInstance Pipe(bool pipe);
+
         Task<ShellResult> RunAsync(TimeSpan timeout);
 
         Task<ShellResult> RunAsync(CancellationToken token = default(CancellationToken));
