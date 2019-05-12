@@ -6,27 +6,20 @@ using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Configuration
 {
-    internal class CommandLineConfigurationProvider : IConfigurationProvider
+    internal class CommandLineConfigurationProvider : ConfigurationProviderBase
     {
         private const string separator = "|";
 
         private readonly string[] args;
-
-        private Dictionary<string[], string> data;
-
-        private Stack<string> context;
-
-        private string[] path => context.Reverse().ToArray();
 
         public CommandLineConfigurationProvider(string[] args)
         {
             this.args = args;
         }
 
-        public IReadOnlyDictionary<string[], string> Read()
+        public override IReadOnlyDictionary<string[], string> Read()
         {
-            data = new Dictionary<string[], string>();
-            context = new Stack<string>();
+            Init();
 
             var flags = new List<string>();
             var options = new Dictionary<string, string>();

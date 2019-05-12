@@ -1,29 +1,21 @@
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using YamlDotNet.RepresentationModel;
 
 namespace Annium.Extensions.Configuration
 {
-    internal class YamlConfigurationProvider : IConfigurationProvider
+    internal class YamlConfigurationProvider : ConfigurationProviderBase
     {
         private readonly string filePath;
-
-        private Dictionary<string[], string> data;
-
-        private Stack<string> context;
-
-        private string[] path => context.Reverse().ToArray();
 
         public YamlConfigurationProvider(string filePath)
         {
             this.filePath = filePath;
         }
 
-        public IReadOnlyDictionary<string[], string> Read()
+        public override IReadOnlyDictionary<string[], string> Read()
         {
-            data = new Dictionary<string[], string>();
-            context = new Stack<string>();
+            Init();
 
             var stream = new YamlStream();
             using(var fs = File.OpenText(filePath))
