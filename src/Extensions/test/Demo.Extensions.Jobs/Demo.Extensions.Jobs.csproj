@@ -9,8 +9,8 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Extensions.Jobs/Annium.Extensions.Jobs.csproj" />
         <ProjectReference Include="../../src/Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
         <ProjectReference Include="../../src/Annium.Extensions.Entrypoint/Annium.Extensions.Entrypoint.csproj" />
+        <ProjectReference Include="../../src/Annium.Extensions.Jobs/Annium.Extensions.Jobs.csproj" />
     </ItemGroup>
 </Project>

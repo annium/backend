@@ -13,7 +13,7 @@
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="coverlet.msbuild" Version="2.5.1" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+        <PackageReference Include="coverlet.msbuild" Version="2.6.1" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.0" />
     </ItemGroup>
 </Project>

@@ -13,6 +13,6 @@
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     </ItemGroup>
 </Project>
