@@ -9,8 +9,10 @@ namespace Annium.Extensions.Configuration.Tests
         public void BaseBuilding_Works()
         {
             // arrange
-            var cfg = new Dictionary<string, string>();
-            cfg["value"] = "something";
+            var cfg = new Dictionary<string[], string>();
+            cfg[new [] { "plain" }] = "10";
+            cfg[new [] { "abstract", "type" }] = "ConfigOne";
+            cfg[new [] { "abstract", "value" }] = "14";
             var builder = new ConfigurationBuilder();
             builder.Add(cfg);
 
@@ -19,12 +21,10 @@ namespace Annium.Extensions.Configuration.Tests
 
             // assert
             result.IsNotDefault();
-            result.Value.IsEqual("something");
-        }
-
-        private class Config
-        {
-            public string Value { get; set; }
+            result.Plain.IsEqual(10);
+            result.Abstract.IsNotDefault();
+            result.Abstract.As<ConfigOne>().Type.IsEqual("ConfigOne");
+            result.Abstract.As<ConfigOne>().Value.IsEqual(14U);
         }
     }
 }

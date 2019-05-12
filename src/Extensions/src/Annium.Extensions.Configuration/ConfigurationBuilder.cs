@@ -2,24 +2,25 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-// using Annium.Extensions.Conversion;
+using System.Reflection;
+using Annium.Extensions.Mapper;
 
 namespace Annium.Extensions.Configuration
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        internal const string Separator = "|";
+        private const string separator = "|";
 
         private IDictionary<string, string> config = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         private Stack<string> context = new Stack<string>();
 
-        private string path => string.Join(Separator, context.Reverse());
+        private string path => string.Join(separator, context.Reverse());
 
-        public IConfigurationBuilder Add(IReadOnlyDictionary<string, string> config)
+        public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
             foreach (var(key, value) in config)
-                this.config[key] = value;
+                this.config[string.Join(separator, key)] = value;
 
             return this;
         }
@@ -54,7 +55,7 @@ namespace Annium.Extensions.Configuration
 
             foreach (var(key, value) in items)
             {
-                var name = key.Substring(path.Length + Separator.Length).Split(Separator) [0];
+                var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
                 context.Push(name);
                 result[Mapper.Mapper.Map(name, keyType)] = Process(valueType);
                 context.Pop();
@@ -99,6 +100,27 @@ namespace Annium.Extensions.Configuration
 
         private object ProcessObject(Type type)
         {
+            if (type.IsAbstract || type.IsInterface)
+            {
+                if (!TypeResolver.Instance.CanResolve(type))
+                    throw new ArgumentException($"Can't resolve abstract type {type}");
+
+                var resolveFields = type.GetProperties().Where(p => p.GetCustomAttribute<ResolveFieldAttribute>() != null);
+                if (resolveFields.Count() > 1)
+                    throw new ArgumentException($"Type {type} has multiple resolution fields defined: {string.Join(", ", resolveFields.Select(f => f.Name))}.");
+
+                var resolveField = resolveFields.FirstOrDefault() ??
+                    throw new ArgumentException($"Type {type} has no resolution fields. Define on, marking it with {nameof(ResolveFieldAttribute)}.");
+
+                context.Push(resolveField.Name);
+                var hasKey = config.TryGetValue(path, out var key);
+                context.Pop();
+                if (!hasKey)
+                    return null;
+
+                type = TypeResolver.Instance.ResolveByKey(key, type);
+            }
+
             var result = Activator.CreateInstance(type);
 
             foreach (var property in type.GetProperties().Where(e => e.CanWrite))

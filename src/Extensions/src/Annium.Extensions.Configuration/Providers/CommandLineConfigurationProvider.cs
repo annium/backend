@@ -2,27 +2,30 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Configuration
 {
     internal class CommandLineConfigurationProvider : IConfigurationProvider
     {
+        private const string separator = "|";
+
         private readonly string[] args;
 
-        private Dictionary<string, string> data;
+        private Dictionary<string[], string> data;
 
         private Stack<string> context;
 
-        private string path => string.Join(ConfigurationBuilder.Separator, context.Reverse());
+        private string[] path => context.Reverse().ToArray();
 
         public CommandLineConfigurationProvider(string[] args)
         {
             this.args = args;
         }
 
-        public IReadOnlyDictionary<string, string> Read()
+        public IReadOnlyDictionary<string[], string> Read()
         {
-            data = new Dictionary<string, string>();
+            data = new Dictionary<string[], string>();
             context = new Stack<string>();
 
             var flags = new List<string>();
@@ -63,14 +66,17 @@ namespace Annium.Extensions.Configuration
             }
 
             foreach (var name in flags)
-                data[name] = true.ToString();
+                data[name.Split(separator)] = true.ToString();
 
             foreach (var(name, value) in options)
-                data[name] = value;
+                data[name.Split(separator)] = value;
 
             foreach (var(name, values) in multiOptions)
+            {
+                var path = name.Split(separator);
                 for (var i = 0; i < values.Count; i++)
-                    data[$"{name}{ConfigurationBuilder.Separator}{i}"] = values[i];
+                    data[path.Append(i.ToString()).ToArray()] = values[i];
+            }
 
             return data;
         }
@@ -87,23 +93,12 @@ namespace Annium.Extensions.Configuration
         private bool IsOptionLike(string value) =>
             value.StartsWith('-');
 
-        private string ParseName(string value)
-        {
-            var name = string.Join(
-                ConfigurationBuilder.Separator,
-                Regex.Replace(value.Trim(), @"^-+", string.Empty)
-                .Split('.')
-                .Where(e => !string.IsNullOrWhiteSpace(e))
-            );
-
-            return string.Join("",
-                name
-                .Split('-')
-                .Select(e => e.Trim())
-                .Where(e => !string.IsNullOrEmpty(e))
-                .Select(e => e.Substring(0, 1).ToUpperInvariant() + e.Substring(1).ToLowerInvariant())
-            );
-        }
+        private string ParseName(string value) => string.Join(separator,
+            Regex.Replace(value.Trim(), @"^-+", string.Empty)
+            .Split('.')
+            .Where(e => !string.IsNullOrWhiteSpace(e))
+            .Select(e => e.PascalCase())
+        );
     }
 
     public static class CommandLineConfigurationProviderExtensions

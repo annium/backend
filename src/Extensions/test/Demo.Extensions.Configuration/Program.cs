@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using Annium.Extensions.Configuration;
 using Annium.Extensions.Entrypoint;
+using Annium.Extensions.Mapper;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
@@ -74,6 +75,7 @@ namespace Demo.Extensions.Configuration
             cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
             cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
             cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
+            cfg.Abstract = new ConfigOne { Type = nameof(ConfigOne), Value = 17 };
 
             string yamlFile = null;
             try
@@ -99,7 +101,7 @@ namespace Demo.Extensions.Configuration
             .UseServicePack<ServicePack>()
             .Run(Run, args);
 
-        private class Config
+        internal class Config
         {
             public int Plain { get; set; }
 
@@ -110,13 +112,33 @@ namespace Demo.Extensions.Configuration
             public Dictionary<string, Val> Dictionary { get; set; }
 
             public Val Nested { get; set; }
+
+            public SomeConfig Abstract { get; set; }
         }
 
-        private class Val
+        internal class Val
         {
             public int Plain { get; set; }
 
             public decimal[] Array { get; set; }
+        }
+
+        internal abstract class SomeConfig
+        {
+            [ResolveField]
+            public string Type { get; set; }
+        }
+
+        [ResolveKey(nameof(ConfigOne))]
+        internal class ConfigOne : SomeConfig
+        {
+            public uint Value { get; set; }
+        }
+
+        [ResolveKey(nameof(ConfigTwo))]
+        internal class ConfigTwo : SomeConfig
+        {
+            public long Value { get; set; }
         }
     }
 

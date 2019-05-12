@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Extensions.Mapper;
 
 namespace Annium.Extensions.Configuration.Tests
 {
@@ -17,6 +18,8 @@ namespace Annium.Extensions.Configuration.Tests
         public Dictionary<string, Val> Dictionary { get; set; }
 
         public Val Nested { get; set; }
+
+        public SomeConfig Abstract { get; set; }
     }
 
     internal class Val
@@ -24,5 +27,23 @@ namespace Annium.Extensions.Configuration.Tests
         public int Plain { get; set; }
 
         public decimal[] Array { get; set; }
+    }
+
+    internal abstract class SomeConfig
+    {
+        [ResolveField]
+        public string Type { get; set; }
+    }
+
+    [ResolveKey(nameof(ConfigOne))]
+    internal class ConfigOne : SomeConfig
+    {
+        public uint Value { get; set; }
+    }
+
+    [ResolveKey(nameof(ConfigTwo))]
+    internal class ConfigTwo : SomeConfig
+    {
+        public long Value { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Annium.Extensions.Mapper
 {
@@ -29,7 +30,27 @@ namespace Annium.Extensions.Mapper
             );
 
         public Type ResolveBySignature(string[] signature, Type baseType, bool exact) =>
-            ResolveBySignature(typeof(object), signature, baseType, exact);
+            ResolveBySignature(
+                typeof(object),
+                signature.Select(p => p.ToLowerInvariant()).OrderBy(p => p).ToArray(),
+                baseType,
+                exact
+            );
+
+        public Type ResolveByKey(string key, Type baseType)
+        {
+            if (!types.Value.TryGetValue(baseType, out var descendants))
+                throw new MappingException(typeof(object), baseType, "No descendants found");
+
+            var resolutions = descendants
+                .Where(type => type.GetTypeInfo().GetCustomAttribute<ResolveKeyAttribute>()?.Key == key)
+                .ToList();
+
+            if (resolutions.Count > 1)
+                throw new MappingException(typeof(object), baseType, $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
+
+            return resolutions.FirstOrDefault();
+        }
 
         private Type ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
         {
@@ -37,6 +58,7 @@ namespace Annium.Extensions.Mapper
                 throw new MappingException(src, baseType, "No descendants found");
 
             var lookup = descendants
+                .Where(type => signatures.Value.ContainsKey(type))
                 .Select(type => (type: type, match: signatures.Value[type].Intersect(signature).Count()))
                 .OrderByDescending(p => p.match)
                 .ToList();
@@ -48,7 +70,7 @@ namespace Annium.Extensions.Mapper
             {
                 var rivals = lookup.Where(p => p.match == lookup[0].match).Select(p => p.type.FullName).ToArray();
                 if (rivals.Length > 1)
-                    throw new MappingException(src, baseType, $"Ambiguous resolution between {string.Join(", ",rivals)}");
+                    throw new MappingException(src, baseType, $"Ambiguous resolution between {string.Join(", ", rivals)}");
             }
 
             var resolution = lookup[0];

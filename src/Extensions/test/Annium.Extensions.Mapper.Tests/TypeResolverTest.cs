@@ -18,7 +18,18 @@ namespace Annium.Extensions.Mapper.Tests
         }
 
         [Fact]
-        public void SignatureResolution_Normally_Works()
+        public void ResolveBySignature_NoDescendants_Throws()
+        {
+            // arrange
+            var resolver = TypeResolver.Instance;
+            var value = new { ForB = 5 };
+
+            // assert
+            ((Func<Type>) (() => resolver.ResolveBySignature(value, typeof(B), false))).Throws<MappingException>();
+        }
+
+        [Fact]
+        public void ResolveBySignature_FromInstance_Works()
         {
             // arrange
             var resolver = TypeResolver.Instance;
@@ -32,14 +43,52 @@ namespace Annium.Extensions.Mapper.Tests
         }
 
         [Fact]
-        public void SignatureResolution_NoDescendants_Throws()
+        public void ResolveBySignature_FromSignature_Works()
         {
             // arrange
             var resolver = TypeResolver.Instance;
-            var value = new { ForB = 5 };
+
+            // act
+            var result = resolver.ResolveBySignature(new [] { nameof(B.ForB) }, typeof(A), true);
 
             // assert
-            ((Func<Type>) (() => resolver.ResolveBySignature(value, typeof(B), false))).Throws<MappingException>();
+            result.IsEqual(typeof(B));
+        }
+
+        [Fact]
+        public void ResolveByKey_NoDescendants_Throws()
+        {
+            // arrange
+            var resolver = TypeResolver.Instance;
+            var key = "key";
+
+            // assert
+            ((Func<Type>) (() => resolver.ResolveByKey(key, typeof(F)))).Throws<MappingException>();
+        }
+
+        [Fact]
+        public void ResolveByKey_Ambiguity_Throws()
+        {
+            // arrange
+            var resolver = TypeResolver.Instance;
+            var key = "F";
+
+            // assert
+            ((Func<Type>) (() => resolver.ResolveByKey(key, typeof(D)))).Throws<MappingException>();
+        }
+
+        [Fact]
+        public void ResolveByKey_Normally_Works()
+        {
+            // arrange
+            var resolver = TypeResolver.Instance;
+            var key = "E";
+
+            // act
+            var result = resolver.ResolveByKey(key, typeof(D));
+
+            // assert
+            result.IsEqual(typeof(E));
         }
 
         private class A { }
@@ -53,5 +102,20 @@ namespace Annium.Extensions.Mapper.Tests
         {
             public int ForC { get; set; }
         }
+
+        private class D
+        {
+            [ResolveField]
+            public string Type { get; set; }
+        }
+
+        [ResolveKey(nameof(E))]
+        private class E : D { }
+
+        [ResolveKey(nameof(F))]
+        private class F : D { }
+
+        [ResolveKey(nameof(F))]
+        private class X : D { }
     }
 }

@@ -18,8 +18,8 @@ namespace Annium.Extensions.Mapper
             );
 
             var type = Expression.Variable(typeof(Type));
-            var resolveFn = typeof(TypeResolver).GetMethod(nameof(TypeResolver.ResolveBySignature), new [] { typeof(object), typeof(Type) });
-            var resolution = Expression.Assign(type, Expression.Call(Expression.Constant(typeResolver), resolveFn, source, Expression.Constant(tgt)));
+            var resolveFn = typeof(TypeResolver).GetMethod(nameof(TypeResolver.ResolveBySignature), new [] { typeof(object), typeof(Type), typeof(bool) });
+            var resolution = Expression.Assign(type, Expression.Call(Expression.Constant(typeResolver), resolveFn, source, Expression.Constant(tgt), Expression.Constant(true)));
 
             var map = Expression.Variable(typeof(Delegate));
             var mapFn = typeof(MapBuilder).GetMethod(nameof(MapBuilder.GetMap));

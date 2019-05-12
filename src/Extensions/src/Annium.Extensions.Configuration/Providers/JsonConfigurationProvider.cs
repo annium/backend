@@ -9,20 +9,20 @@ namespace Annium.Extensions.Configuration
     {
         private readonly string filePath;
 
-        private Dictionary<string, string> data;
+        private Dictionary<string[], string> data;
 
         private Stack<string> context;
 
-        private string path => string.Join(ConfigurationBuilder.Separator, context.Reverse());
+        private string[] path => context.Reverse().ToArray();
 
         public JsonConfigurationProvider(string filePath)
         {
             this.filePath = filePath;
         }
 
-        public IReadOnlyDictionary<string, string> Read()
+        public IReadOnlyDictionary<string[], string> Read()
         {
-            data = new Dictionary<string, string>();
+            data = new Dictionary<string[], string>();
             context = new Stack<string>();
 
             var token = JObject.Parse(File.ReadAllText(filePath));

@@ -4,6 +4,6 @@ namespace Annium.Extensions.Configuration
 {
     internal interface IConfigurationProvider
     {
-        IReadOnlyDictionary<string, string> Read();
+        IReadOnlyDictionary<string[], string> Read();
     }
 }
