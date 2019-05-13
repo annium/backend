@@ -1,7 +1,7 @@
 using Annium.AspNetCore.Extensions;
 using Microsoft.AspNetCore.Builder;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Annium.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

@@ -1,5 +1,5 @@
+using Annium.Extensions.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Annium.Data.Serialization.Tests.Json

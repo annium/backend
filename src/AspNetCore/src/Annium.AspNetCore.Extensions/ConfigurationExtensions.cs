@@ -1,7 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Annium.Extensions.DependencyInjection
 {
     public static class ConfigurationExtensions
     {
