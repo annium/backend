@@ -4,23 +4,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Extensions.Mapper;
+using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Configuration
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        private const string separator = "|";
-
-        private IDictionary<string, string> config = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private IDictionary<string[], string> config = new Dictionary<string[], string>(new KeyComparer());
 
         private Stack<string> context = new Stack<string>();
 
-        private string path => string.Join(separator, context.Reverse());
+        protected string[] path => context.Reverse().ToArray();
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
             foreach (var(key, value) in config)
-                this.config[string.Join(separator, key)] = value;
+                this.config[key] = value;
 
             return this;
         }
@@ -50,12 +49,13 @@ namespace Annium.Extensions.Configuration
             var keyType = type.GetGenericArguments() [0];
             var valueType = type.GetGenericArguments() [1];
             var path = this.path;
-            var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
+            // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
+            var items = GetDescendants();
             var result = (IDictionary) Activator.CreateInstance(type);
 
-            foreach (var(key, value) in items)
+            foreach (var name in items)
             {
-                var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
+                // var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
                 context.Push(name);
                 result[Mapper.Mapper.Map(name, keyType)] = Process(valueType);
                 context.Pop();
@@ -68,17 +68,12 @@ namespace Annium.Extensions.Configuration
             var elementType = type.GetGenericArguments() [0];
             var result = (IList) Activator.CreateInstance(type);
 
-            var process = true;
-            for (var index = 0; process; index++)
+            var items = GetDescendants();
+
+            foreach (var index in items)
             {
-                context.Push(index.ToString());
-
-                var path = this.path;
-                if (config.Keys.Any(e => e.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
-                    result.Add(Process(elementType));
-                else
-                    process = false;
-
+                context.Push(index);
+                result.Add(Process(elementType));
                 context.Pop();
             }
 
@@ -122,15 +117,12 @@ namespace Annium.Extensions.Configuration
             }
 
             var result = Activator.CreateInstance(type);
-
-            foreach (var property in type.GetProperties().Where(e => e.CanWrite))
+            var properties = type.GetProperties().Where(e => e.CanWrite).ToArray();
+            foreach (var property in properties)
             {
                 context.Push(property.Name);
-
-                var path = this.path;
-                if (config.Keys.Any(e => e.StartsWith(path, StringComparison.OrdinalIgnoreCase)))
+                if (KeyExists())
                     property.SetValue(result, Process(property.PropertyType));
-
                 context.Pop();
             }
 
@@ -139,7 +131,82 @@ namespace Annium.Extensions.Configuration
 
         private object ProcessValue(Type type)
         {
-            return Mapper.Mapper.Map(config[path], type);
+            if (config.TryGetValue(path, out var value))
+                return Mapper.Mapper.Map(value, type);
+
+            throw new ArgumentException($"Key {string.Join('.', path)} not found in configuration.");
+        }
+
+        private string[] GetDescendants()
+        {
+            var path = normalize(this.path);
+            if (path.Length == 0)
+                return config.Keys.Select(k => k.First()).Distinct().ToArray();
+
+            return config.Keys
+                .Where(k => k.Length > path.Length)
+                .Where(k => normalize(k.Take(path.Length)).SequenceEqual(path))
+                .Select(k => k.Skip(path.Length).First())
+                .Distinct()
+                .ToArray();
+
+            string[] normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
+        }
+
+        private bool KeyExists()
+        {
+            var path = normalize(this.path);
+            if (path.Length == 0)
+                return config.Keys.Count() > 0;
+
+            return config.Keys
+                .Where(k => k.Length >= path.Length)
+                .Select(k => k.Take(path.Length))
+                .Where(k => normalize(k).SequenceEqual(path))
+                .Count() > 0;
+
+            string[] normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
+        }
+
+        private class KeyComparer : IEqualityComparer<string[]>
+        {
+            public bool Equals(string[] x, string[] y)
+            {
+                // if same reference or both null, then equality is true
+                if (object.ReferenceEquals(x, y))
+                    return true;
+
+                // if any is null, or length doesn't match - false
+                if (x == null || y == null || x.Length != y.Length)
+                    return false;
+
+                // check, that all elements are equal case independently
+                for (int i = 0; i < x.Length; i++)
+                    if (x[i].CamelCase() != y[i].CamelCase())
+                        return false;
+
+                // if no mismatches, equal
+                return true;
+            }
+
+            public int GetHashCode(string[] obj)
+            {
+                if (obj == null)
+                    return 0;
+
+                unchecked
+                {
+                    int hash = 17;
+
+                    // get hash code for all items in array
+                    foreach (var item in obj)
+                    {
+                        hash = hash * 23 + (item == null ? 0 : item.CamelCase().GetHashCode());
+                    }
+
+                    return hash;
+                }
+            }
         }
     }
 }

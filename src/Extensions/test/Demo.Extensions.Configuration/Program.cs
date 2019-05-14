@@ -18,9 +18,24 @@ namespace Demo.Extensions.Configuration
             CancellationToken token
         )
         {
+            TestBuilder();
             // TestCli();
             // TestJson();
-            TestYaml();
+            // TestYaml();
+        }
+
+        private static void TestBuilder()
+        {
+            // arrange
+            var cfg = new Dictionary<string[], string>();
+            cfg[new [] { "plain" }] = "10";
+            cfg[new [] { "abstract_config", "type" }] = "ConfigOne";
+            cfg[new [] { "abstract_config", "value" }] = "14";
+            var builder = new ConfigurationBuilder();
+            builder.Add(cfg);
+
+            // act
+            var result = builder.Build<Config>();
         }
 
         private static void TestCli()
@@ -75,7 +90,7 @@ namespace Demo.Extensions.Configuration
             cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
             cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
             cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
-            cfg.Abstract = new ConfigOne { Type = nameof(ConfigOne), Value = 17 };
+            cfg.AbstractConfig = new ConfigOne { Type = nameof(ConfigOne), Value = 17 };
 
             string yamlFile = null;
             try
@@ -113,7 +128,7 @@ namespace Demo.Extensions.Configuration
 
             public Val Nested { get; set; }
 
-            public SomeConfig Abstract { get; set; }
+            public SomeConfig AbstractConfig { get; set; }
         }
 
         internal class Val
