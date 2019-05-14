@@ -95,7 +95,7 @@ namespace Annium.Extensions.Primitives
                         break;
                     default:
                         // check if we can enter word
-                        if (s == Symbol.Upper || s == Symbol.Lower)
+                        if (s == Symbol.Upper || s == Symbol.Lower || s == Symbol.Digit)
                         {
                             from = i;
                             pos = s;

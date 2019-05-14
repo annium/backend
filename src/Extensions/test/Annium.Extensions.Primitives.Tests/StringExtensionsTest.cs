@@ -46,6 +46,7 @@ namespace Annium.Extensions.Primitives.Tests
             (null as string).PascalCase().IsEqual(null);
             "".PascalCase().IsEqual(string.Empty);
             " ".PascalCase().IsEqual(string.Empty);
+            "0".PascalCase().IsEqual("0");
             "A B".PascalCase().IsEqual("AB");
             " - test that__".PascalCase().IsEqual("TestThat");
             "Foo Bar".PascalCase().IsEqual("FooBar");
