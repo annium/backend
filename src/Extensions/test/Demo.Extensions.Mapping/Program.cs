@@ -16,8 +16,8 @@ namespace Demo.Extensions.Mapping
         {
             var mapper = provider.GetRequiredService<IMapper>();
 
-            var a = new A { Text = "Some Text" };
-            var b = mapper.Map<B>(a);
+            var value = new Plain { ClientName = "Den" };
+            var result = mapper.Map<Complex>(value);
         }
 
         public static int Main(string[] args) => new Entrypoint()

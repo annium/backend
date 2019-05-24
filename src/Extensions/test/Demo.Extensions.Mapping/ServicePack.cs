@@ -19,6 +19,10 @@ namespace Demo.Extensions.Mapping
 
         private void ConfigureMapping(MapperConfiguration cfg)
         {
+            cfg.Map<Plain, Complex>()
+                .Field(e => new Client { Name = e.ClientName }, e => e.Client);
+            cfg.Map<Complex, Plain>()
+                .Field(e => e.Client.Name, e => e.ClientName);
             cfg.Map<A, B>()
                 .Field(a => a.Text.ToLower(), b => b.LowerText)
                 .Ignore(b => b.Ignored);
@@ -41,5 +45,20 @@ namespace Demo.Extensions.Mapping
             Ignored = ignored;
             LowerText = lowerText;
         }
+    }
+
+    internal class Plain
+    {
+        public string ClientName { get; set; }
+    }
+
+    internal class Complex
+    {
+        public Client Client { get; set; }
+    }
+
+    internal class Client
+    {
+        public string Name { get; set; }
     }
 }
