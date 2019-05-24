@@ -9,7 +9,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="MongoDB.Driver" Version="2.8.0" />
+        <PackageReference Include="MongoDB.Driver" Version="2.8.1" />
         <PackageReference Include="NodaTime" Version="2.4.5" />
     </ItemGroup>
 </Project>
