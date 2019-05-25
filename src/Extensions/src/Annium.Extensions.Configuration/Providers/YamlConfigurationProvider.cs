@@ -79,7 +79,7 @@ namespace Annium.Extensions.Configuration
                 if (optional)
                     return builder;
                 else
-                    throw new FileNotFoundException($"Json configuration file {path} not found and is not optional");
+                    throw new FileNotFoundException($"Yaml configuration file {path} not found and is not optional");
 
             var configuration = new YamlConfigurationProvider(path).Read();
 
