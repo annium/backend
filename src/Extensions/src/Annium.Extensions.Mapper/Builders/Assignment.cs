@@ -29,7 +29,7 @@ namespace Annium.Extensions.Mapper
                         return Expression.Assign(Expression.Property(instance, target), repacker.Repack(cfg.Fields[target].Body) (source));
 
                     // otherwise - target field must match respective source field
-                    var prop = sources.FirstOrDefault(p => p.Name == target.Name) ??
+                    var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == target.Name.ToLowerInvariant()) ??
                         throw new MappingException(src, tgt, $"No property found for target property {target}");
 
                     // resolve map for conversion and use it, if necessary

@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Mapper
 {
@@ -24,18 +23,18 @@ namespace Annium.Extensions.Mapper
             var values = parameters
                 .Select<ParameterInfo, Expression>(param =>
                 {
-                    var paramName = param.Name.PascalCase();
+                    var paramName = param.Name.ToLowerInvariant();
 
                     // if respective property is ignored - use default value for parameter
-                    if (cfg?.Ignores.Any(i => i.Name == paramName) ?? false)
+                    if (cfg?.Ignores.Any(i => i.Name.ToLowerInvariant() == paramName) ?? false)
                         return Expression.Default(param.ParameterType);
 
                     // if target field is explicitly configured in mapping - use that mapping
-                    if (cfg?.Fields.Any(p => p.Key.Name == paramName) ?? false)
-                        return repacker.Repack(cfg.Fields.First(p => p.Key.Name == paramName).Value.Body) (source);
+                    if (cfg?.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName) ?? false)
+                        return repacker.Repack(cfg.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body) (source);
 
                     // otherwise - parameter must match respective source field
-                    var prop = sources.FirstOrDefault(p => p.Name == paramName) ??
+                    var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??
                         throw new MappingException(src, tgt, $"No property found for constructor parameter {param}");
 
                     // resolve map for conversion and use it, if necessary
