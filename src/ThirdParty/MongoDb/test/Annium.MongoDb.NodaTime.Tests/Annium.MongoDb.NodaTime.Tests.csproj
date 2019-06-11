@@ -10,7 +10,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.MongoDb.NodaTime/Annium.MongoDb.NodaTime.csproj" />
-        <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
+        <ProjectReference Include="../../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.msbuild" Version="2.6.2" />
