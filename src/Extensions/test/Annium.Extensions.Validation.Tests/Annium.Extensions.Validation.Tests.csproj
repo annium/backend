@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>Annium.Extensions.Validation.Tests</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>Annium.Extensions.Validation.Tests</Description>
+        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <OutputType>Library</OutputType>
+        <DebugType>portable</DebugType>
+        <WarningsAsErrors>true</WarningsAsErrors>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Annium.Extensions.Validation/Annium.Extensions.Validation.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Annium.Testing.TestAdapter" Version="0.1.0" />
+        <PackageReference Include="coverlet.msbuild" Version="2.6.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.1.1" />
+    </ItemGroup>
+</Project>
