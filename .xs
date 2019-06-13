@@ -1,1 +1,2 @@
-https://api.pkg.annium.com/
+registry: https://api.pkg.annium.com/
+types: []

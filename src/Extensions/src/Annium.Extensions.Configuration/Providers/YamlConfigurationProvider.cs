@@ -23,6 +23,9 @@ namespace Annium.Extensions.Configuration
                 stream.Load(fs);
             }
 
+            if (stream.Documents.Count == 0)
+                return data;
+
             Process((YamlMappingNode) stream.Documents[0].RootNode);
 
             return data;
