@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Core.Application.Types;
 using Annium.Extensions.Mapper;
 
 namespace Annium.Extensions.Configuration.Tests

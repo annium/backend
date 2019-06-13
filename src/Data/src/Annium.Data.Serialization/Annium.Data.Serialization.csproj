@@ -9,7 +9,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Application/Annium.Core.Application.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

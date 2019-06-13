@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Annium.Core.Application.Types;
 
 namespace Annium.Extensions.Mapper
 {
@@ -14,18 +15,18 @@ namespace Annium.Extensions.Mapper
 
         private readonly MapperConfiguration cfg;
 
-        private readonly TypeResolver typeResolver;
+        private readonly TypeManager typeManager;
 
         private readonly Repacker repacker;
 
         public MapBuilder(
             MapperConfiguration cfg,
-            TypeResolver typeResolver,
+            TypeManager typeManager,
             Repacker repacker
         )
         {
             this.cfg = cfg;
-            this.typeResolver = typeResolver;
+            this.typeManager = typeManager;
             this.repacker = repacker;
 
             // save complete type maps directly to raw resolutions

@@ -9,6 +9,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../Core/src/Annium.Core.Application/Annium.Core.Application.csproj" />
         <ProjectReference Include="../Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>

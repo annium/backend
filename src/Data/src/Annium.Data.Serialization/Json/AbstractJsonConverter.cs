@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Annium.Extensions.Mapper;
+using Annium.Core.Application.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -12,7 +12,7 @@ namespace Annium.Data.Serialization.Json
 
         public override bool CanWrite => false;
 
-        public override bool CanConvert(Type objectType) => TypeResolver.Instance.CanResolve(objectType);
+        public override bool CanConvert(Type objectType) => TypeManager.Instance.CanResolve(objectType);
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
@@ -35,7 +35,7 @@ namespace Annium.Data.Serialization.Json
         {
             var properties = obj.Properties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray();
 
-            return TypeResolver.Instance.ResolveBySignature(properties, objectType, true);
+            return TypeManager.Instance.ResolveBySignature(properties, objectType, true);
         }
     }
 }

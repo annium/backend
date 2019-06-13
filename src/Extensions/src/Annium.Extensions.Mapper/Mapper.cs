@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Application.Types;
 
 namespace Annium.Extensions.Mapper
 {
@@ -43,7 +44,7 @@ namespace Annium.Extensions.Mapper
         {
             var builder = new MapBuilder(
                 MapperConfiguration.Merge(configurations.ToArray()),
-                TypeResolver.Instance,
+                TypeManager.Instance,
                 new Repacker()
             );
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Application.Types
 {
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
 

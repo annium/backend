@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Extensions.Mapper;
+using Annium.Core.Application.Types;
 using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Configuration
@@ -97,7 +97,7 @@ namespace Annium.Extensions.Configuration
         {
             if (type.IsAbstract || type.IsInterface)
             {
-                if (!TypeResolver.Instance.CanResolve(type))
+                if (!TypeManager.Instance.CanResolve(type))
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
                 var resolveFields = type.GetProperties().Where(p => p.GetCustomAttribute<ResolveFieldAttribute>() != null);
@@ -113,7 +113,7 @@ namespace Annium.Extensions.Configuration
                 if (!hasKey)
                     return null;
 
-                type = TypeResolver.Instance.ResolveByKey(key, type);
+                type = TypeManager.Instance.ResolveByKey(key, type);
             }
 
             var result = Activator.CreateInstance(type);

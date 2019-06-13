@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using Annium.Core.Application.Types;
 using Annium.Extensions.Configuration;
 using Annium.Extensions.Entrypoint;
 using Annium.Extensions.Mapper;
