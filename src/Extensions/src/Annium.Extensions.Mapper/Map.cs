@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using Annium.Core.Application.Types;
 
 namespace Annium.Extensions.Mapper
 {
@@ -21,7 +22,7 @@ namespace Annium.Extensions.Mapper
             Expression<Func<T, object>> field
         )
         {
-            fields[resolve(field)] = map;
+            fields[TypeHelper.ResolveProperty(field)] = map;
 
             return this;
         }
@@ -30,36 +31,9 @@ namespace Annium.Extensions.Mapper
             Expression<Func<T, object>> field
         )
         {
-            ignores.Add(resolve(field));
+            ignores.Add(TypeHelper.ResolveProperty(field));
 
             return this;
-        }
-
-        private PropertyInfo resolve(Expression<Func<T, object>> map)
-        {
-            if (map.Body is MemberExpression member)
-                return resolve(member);
-
-            if (map.Body is UnaryExpression unary)
-                return resolve(unary);
-
-            throw new ArgumentException($"Can't resolve property from {map}");
-        }
-
-        private PropertyInfo resolve(MemberExpression ex)
-        {
-            if (ex.Member is PropertyInfo property)
-                return property;
-
-            throw new ArgumentException($"{ex} is not a property access exception");
-        }
-
-        private PropertyInfo resolve(UnaryExpression ex)
-        {
-            if (ex.Operand is MemberExpression member)
-                return resolve(member);
-
-            throw new ArgumentException($"{ex} is not a property access exception");
         }
     }
 
