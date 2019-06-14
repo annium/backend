@@ -6,7 +6,10 @@ namespace Annium.Core.Application.Types
 {
     public static class TypeHelper
     {
-        public static PropertyInfo ResolveProperty<TObject>(Expression<Func<TObject, object>> map)
+        public static PropertyInfo ResolveProperty<TObject>(Expression<Func<TObject, object>> map) =>
+            ResolveProperty<TObject, object>(map);
+
+        public static PropertyInfo ResolveProperty<TObject, TField>(Expression<Func<TObject, TField>> map)
         {
             if (map.Body is MemberExpression member)
                 return ResolveProperty(member);
