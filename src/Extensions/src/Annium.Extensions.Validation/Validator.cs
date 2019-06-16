@@ -12,7 +12,7 @@ namespace Annium.Extensions.Validation
     {
         private IDictionary<PropertyInfo, IRuleContainer<TValue>> rules = new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
-        protected IRule<TField> Field<TField>(Expression<Func<TValue, TField>> accessor)
+        protected IRuleBuilder<TField> Field<TField>(Expression<Func<TValue, TField>> accessor)
         {
             if (accessor is null)
                 throw new ArgumentNullException(nameof(accessor));
@@ -27,17 +27,19 @@ namespace Annium.Extensions.Validation
 
         public BooleanResult Validate(TValue value, string label = null)
         {
+            var hasLabel = !string.IsNullOrWhiteSpace(label);
+
             if (value == null)
-                return string.IsNullOrWhiteSpace(label) ?
-                    Result.Failure().Error("Value is null") :
-                    Result.Failure().Error(label, "Value is null");
+                return hasLabel ?
+                    Result.Failure().Error(label, "Value is null") :
+                    Result.Failure().Error("Value is null");
 
             var results = new List<IResult>();
 
             foreach (var(property, rule) in rules)
             {
-                var propertyLabel = string.IsNullOrWhiteSpace(label) ? property.Name : $"{label}.{property.Name}";
-                var result = rule.Validate(value, propertyLabel);
+                var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
+                var result = rule.Validate(value, new ValidationContext<TValue>(value, propertyLabel, property.Name));
                 results.Add(result);
             };
 

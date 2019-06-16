@@ -4,6 +4,6 @@ namespace Annium.Extensions.Validation
 {
     public interface IRuleContainer<T>
     {
-        BooleanResult Validate(T value, string label = null);
+        BooleanResult Validate(T value, ValidationContext<T> context);
     }
 }
