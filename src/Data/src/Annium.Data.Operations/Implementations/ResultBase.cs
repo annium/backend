@@ -17,6 +17,7 @@ namespace Annium.Data.Operations
 
         public T Error(string error)
         {
+            lock(plainErrors)
             plainErrors.Add(error);
 
             return this as T;
@@ -24,6 +25,7 @@ namespace Annium.Data.Operations
 
         public T Error(string label, string error)
         {
+            lock(labeledErrors)
             labeledErrors[label] = error;
 
             return this as T;
@@ -31,6 +33,7 @@ namespace Annium.Data.Operations
 
         public T Errors(params string[] errors)
         {
+            lock(plainErrors)
             foreach (var error in errors)
                 plainErrors.Add(error);
 
@@ -39,6 +42,7 @@ namespace Annium.Data.Operations
 
         public T Errors(ICollection<string> errors)
         {
+            lock(plainErrors)
             foreach (var error in errors)
                 plainErrors.Add(error);
 
@@ -47,6 +51,7 @@ namespace Annium.Data.Operations
 
         public T Errors(params ValueTuple<string, string>[] errors)
         {
+            lock(labeledErrors)
             foreach (var(label, error) in errors)
                 labeledErrors[label] = error;
 
@@ -55,6 +60,7 @@ namespace Annium.Data.Operations
 
         public T Errors(IReadOnlyCollection<KeyValuePair<string, string>> errors)
         {
+            lock(labeledErrors)
             foreach (var(label, error) in errors)
                 labeledErrors[label] = error;
 
