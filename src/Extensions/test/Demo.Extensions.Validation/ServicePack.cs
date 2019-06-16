@@ -21,7 +21,7 @@ namespace Demo.Extensions.Validation
     {
         public AValidator()
         {
-            Field(o => o.Text).IsRequired();
+            Field(o => o.Text).Required();
         }
     }
 }

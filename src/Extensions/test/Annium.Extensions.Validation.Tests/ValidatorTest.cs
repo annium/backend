@@ -82,7 +82,7 @@ namespace Annium.Extensions.Validation.Tests
         {
             public PersonValidator()
             {
-                Field(p => p.Name).IsRequired();
+                Field(p => p.Name).Required();
             }
         }
 
@@ -95,7 +95,7 @@ namespace Annium.Extensions.Validation.Tests
         {
             public BadValidator()
             {
-                Field<string>(null).IsRequired();
+                Field<string>(null).Required();
             }
         }
     }

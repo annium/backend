@@ -45,7 +45,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             public PersonValidator()
             {
                 Field(p => p.Name)
-                    .IsRequired()
+                    .Required()
                     .Then()
                     .Add(async(context, value) =>
                     {
