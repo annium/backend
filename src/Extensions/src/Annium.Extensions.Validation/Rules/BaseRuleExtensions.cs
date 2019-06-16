@@ -4,13 +4,13 @@ namespace Annium.Extensions.Validation
 {
     public static class BaseRuleExtensions
     {
-        public static IRuleBuilder<T> IsRequired<T>(this IRuleBuilder<T> rule, string message = null) where T : class =>
-            rule.Add(v =>
-            {
-                if (EqualityComparer<T>.Default.Equals(v, default(T)))
-                    return message ?? "Value is required";
-
-                return null;
-            });
+        public static IRuleBuilder<TValue, TField> IsRequired<TValue, TField>(
+            this IRuleBuilder<TValue, TField> rule,
+            string message = null
+        ) => rule.Add((context, value) =>
+        {
+            if (EqualityComparer<TField>.Default.Equals(value, default(TField)))
+                context.Error(message ?? "Value is required");
+        });
     }
 }

@@ -1,19 +1,20 @@
 using System;
+using Annium.Data.Operations;
 
 namespace Annium.Extensions.Validation
 {
     public class ValidationContext<TValue>
     {
         public TValue Root { get; }
-
         public string Label { get; }
-
         public string Name { get; }
+        private readonly BooleanResult result;
 
-        public ValidationContext(
+        internal ValidationContext(
             TValue root,
             string label,
-            string name
+            string name,
+            BooleanResult result
         )
         {
             if (string.IsNullOrWhiteSpace(label))
@@ -25,6 +26,12 @@ namespace Annium.Extensions.Validation
             Root = root;
             Label = label;
             Name = name;
+            this.result = result;
+        }
+
+        public void Error(string error)
+        {
+            result.Error(Label, error);
         }
     }
 }

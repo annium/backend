@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.Application.Types;
@@ -12,7 +11,7 @@ namespace Annium.Extensions.Validation
     {
         private IDictionary<PropertyInfo, IRuleContainer<TValue>> rules = new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
-        protected IRuleBuilder<TField> Field<TField>(Expression<Func<TValue, TField>> accessor)
+        protected IRuleBuilder<TValue, TField> Field<TField>(Expression<Func<TValue, TField>> accessor)
         {
             if (accessor is null)
                 throw new ArgumentNullException(nameof(accessor));
@@ -34,16 +33,15 @@ namespace Annium.Extensions.Validation
                     Result.Failure().Error(label, "Value is null") :
                     Result.Failure().Error("Value is null");
 
-            var results = new List<IResult>();
-
+            var result = Result.Success();
             foreach (var(property, rule) in rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
-                var result = rule.Validate(value, new ValidationContext<TValue>(value, propertyLabel, property.Name));
-                results.Add(result);
-            };
+                var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, result);
+                rule.Validate(value, context);
+            }
 
-            return Result.Success().Join(results);
+            return result;
         }
     }
 }

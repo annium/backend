@@ -1,9 +1,12 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Annium.Extensions.Validation
 {
-    public interface IRuleBuilder<T>
+    public interface IRuleBuilder<TValue, TField>
     {
-        IRuleBuilder<T> Add(Func<T, string> validate);
+        IRuleBuilder<TValue, TField> Add(Action<ValidationContext<TValue>, TField> validate);
+
+        IRuleBuilder<TValue, TField> Add(Func<ValidationContext<TValue>, TField, Task> validate);
     }
 }
