@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Annium.Data.Operations;
 
 namespace Annium.Extensions.Validation
 {
@@ -20,25 +19,35 @@ namespace Annium.Extensions.Validation
 
         public IRuleBuilder<TValue, TField> Add(Action<ValidationContext<TValue>, TField> validate)
         {
-            chain.Add(new SyncRule<TValue, TField>(validate, false));
+            chain.Add(new SyncRule<TValue, TField>(validate));
 
             return this;
         }
 
         public IRuleBuilder<TValue, TField> Add(Func<ValidationContext<TValue>, TField, Task> validate)
         {
-            chain.Add(new AsyncRule<TValue, TField>(validate, false));
+            chain.Add(new AsyncRule<TValue, TField>(validate));
 
             return this;
         }
 
-        public async Task<BooleanResult> Validate(TValue value, ValidationContext<TValue> context)
+        public IRuleBuilder<TValue, TField> Then()
+        {
+            chain.Add(new ThenRule<TValue, TField>());
+
+            return this;
+        }
+
+        public async Task Validate(TValue value, ValidationContext<TValue> context)
         {
             var field = getField(value);
-            var result = Result.Success();
 
             foreach (var rule in chain)
             {
+                // short-circuting rule in chain stops execution
+                if (context.Result.HasErrors && rule.ShortCircuit)
+                    return;
+
                 switch (rule)
                 {
                     case SyncRule<TValue, TField> syncRule:
@@ -47,12 +56,8 @@ namespace Annium.Extensions.Validation
                     case AsyncRule<TValue, TField> asyncRule:
                         await asyncRule.Validate.Invoke(context, field);
                         break;
-                    default:
-                        break;
                 }
             }
-
-            return result;
         }
     }
 }

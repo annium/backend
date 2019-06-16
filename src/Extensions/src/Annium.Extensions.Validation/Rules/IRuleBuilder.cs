@@ -8,5 +8,7 @@ namespace Annium.Extensions.Validation
         IRuleBuilder<TValue, TField> Add(Action<ValidationContext<TValue>, TField> validate);
 
         IRuleBuilder<TValue, TField> Add(Func<ValidationContext<TValue>, TField, Task> validate);
+
+        IRuleBuilder<TValue, TField> Then();
     }
 }

@@ -1,32 +1,18 @@
+using System.Threading.Tasks;
 using Annium.Testing;
 
 namespace Annium.Extensions.Validation.Tests.Rules
 {
-    public class BaseRulesTest : ValidatorTest
+    public class BaseRulesTest : TestBase
     {
         [Fact]
-        public void IsRequired_ReferenceTypeNull_ReturnsFailure()
+        public async Task IsRequired_ReferenceTypeNotNull_ReturnsFailure()
         {
             // arrange
             var validator = GetValidator<Person>();
 
             // act
-            var result = validator.Validate(null);
-
-            // assert
-            result.IsFailure.IsTrue();
-            result.PlainErrors.Has(1);
-            result.PlainErrors.At(0).IsEqual("Value is null");
-        }
-
-        [Fact]
-        public void IsRequired_ReferenceTypeNotNull_ReturnsFailure()
-        {
-            // arrange
-            var validator = GetValidator<Person>();
-
-            // act
-            var result = validator.Validate(new Person());
+            var result = await validator.Validate(new Person());
 
             // assert
             result.IsFailure.IsTrue();

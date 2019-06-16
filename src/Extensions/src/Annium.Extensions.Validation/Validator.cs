@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Annium.Core.Application.Types;
 using Annium.Data.Operations;
 
@@ -24,7 +25,7 @@ namespace Annium.Extensions.Validation
             return rule;
         }
 
-        public BooleanResult Validate(TValue value, string label = null)
+        public async Task<BooleanResult> Validate(TValue value, string label = null)
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
@@ -38,7 +39,7 @@ namespace Annium.Extensions.Validation
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, result);
-                rule.Validate(value, context);
+                await rule.Validate(value, context);
             }
 
             return result;

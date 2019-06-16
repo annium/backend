@@ -7,8 +7,8 @@ namespace Annium.Extensions.Validation
     {
         public TValue Root { get; }
         public string Label { get; }
-        public string Name { get; }
-        private readonly BooleanResult result;
+        public string Field { get; }
+        internal BooleanResult Result { get; }
 
         internal ValidationContext(
             TValue root,
@@ -17,21 +17,15 @@ namespace Annium.Extensions.Validation
             BooleanResult result
         )
         {
-            if (string.IsNullOrWhiteSpace(label))
-                throw new ArgumentException("label must be specified", nameof(label));
-
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("name must be specified", nameof(name));
-
             Root = root;
             Label = label;
-            Name = name;
-            this.result = result;
+            Field = name;
+            Result = result;
         }
 
         public void Error(string error)
         {
-            result.Error(Label, error);
+            Result.Error(Label, error);
         }
     }
 }
