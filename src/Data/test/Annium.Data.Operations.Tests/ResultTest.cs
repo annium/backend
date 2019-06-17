@@ -42,7 +42,7 @@ namespace Annium.Data.Operations.Tests
             // assert
             result.HasErrors.IsTrue();
             result.LabeledErrors.Count.IsEqual(1);
-            result.LabeledErrors.At("label").IsEqual("plain");
+            result.LabeledErrors.At("label").At(0).IsEqual("plain");
         }
 
         [Fact]
@@ -82,12 +82,13 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(("label", "plain"), ("other", "prev"), ("other", "another"));
+            result.Errors(("label", new [] { "plain" }), ("other", new [] { "prev" }), ("other", new [] { "another" }));
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);
-            result.LabeledErrors.At("label").IsEqual("plain");
-            result.LabeledErrors.At("other").IsEqual("another");
+            result.LabeledErrors.At("label").At(0).IsEqual("plain");
+            result.LabeledErrors.At("other").At(0).IsEqual("prev");
+            result.LabeledErrors.At("other").At(1).IsEqual("another");
         }
 
         [Fact]
@@ -97,12 +98,12 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(new Dictionary<string, string>() { { "label", "plain" }, { "other", "another" } });
+            result.Errors(new Dictionary<string, IEnumerable<string>>() { { "label", new [] { "plain" } }, { "other", new [] { "another" } } });
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);
-            result.LabeledErrors.At("label").IsEqual("plain");
-            result.LabeledErrors.At("other").IsEqual("another");
+            result.LabeledErrors.At("label").At(0).IsEqual("plain");
+            result.LabeledErrors.At("other").At(0).IsEqual("another");
         }
 
         [Fact]
@@ -111,7 +112,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", "va"), ("b", "vb"));
+            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
 
             // act
             result.Join(plain, labeled);
@@ -123,9 +124,9 @@ namespace Annium.Data.Operations.Tests
             result.PlainErrors.At(1).IsEqual("plain");
             result.PlainErrors.At(2).IsEqual("another");
             result.LabeledErrors.Count.IsEqual(3);
-            result.LabeledErrors.At("label").IsEqual("mine");
-            result.LabeledErrors.At("a").IsEqual("va");
-            result.LabeledErrors.At("b").IsEqual("vb");
+            result.LabeledErrors.At("label").At(0).IsEqual("mine");
+            result.LabeledErrors.At("a").At(0).IsEqual("va");
+            result.LabeledErrors.At("b").At(0).IsEqual("vb");
         }
 
         [Fact]
@@ -134,7 +135,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", "va"), ("b", "vb"));
+            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
 
             // act
             result.Join(new List<IResult>() { plain, labeled });
@@ -146,9 +147,9 @@ namespace Annium.Data.Operations.Tests
             result.PlainErrors.At(1).IsEqual("plain");
             result.PlainErrors.At(2).IsEqual("another");
             result.LabeledErrors.Count.IsEqual(3);
-            result.LabeledErrors.At("label").IsEqual("mine");
-            result.LabeledErrors.At("a").IsEqual("va");
-            result.LabeledErrors.At("b").IsEqual("vb");
+            result.LabeledErrors.At("label").At(0).IsEqual("mine");
+            result.LabeledErrors.At("a").At(0).IsEqual("va");
+            result.LabeledErrors.At("b").At(0).IsEqual("vb");
         }
     }
 }

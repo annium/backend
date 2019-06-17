@@ -25,7 +25,11 @@ namespace Annium.AspNetCore.Extensions
             var result = Result.Failure();
 
             foreach (var(field, entry) in modelState)
-                result.Error(field.CamelCase(), string.Join("; ", entry.Errors.Select(e => localizer[e.ErrorMessage])));
+            {
+                var label = field.CamelCase();
+                foreach (var error in entry.Errors)
+                    result.Error(label, localizer[error.ErrorMessage]);
+            }
 
             return new BadRequestObjectResult(result);
         }

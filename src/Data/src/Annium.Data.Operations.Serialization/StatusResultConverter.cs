@@ -57,8 +57,8 @@ namespace Annium.Data.Operations.Serialization
                 .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
             if (obj[nameof(StatusResult<object>.LabeledErrors).CamelCase()] is JObject labeledErrors)
                 typeof(StatusResult<>).MakeGenericType(statusType)
-                .GetMethod(nameof(StatusResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, string>>) })
-                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string>>() });
+                .GetMethod(nameof(StatusResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })
+                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
 
             return result;
         }
@@ -85,8 +85,8 @@ namespace Annium.Data.Operations.Serialization
                 .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
             if (obj[nameof(StatusResult<object>.LabeledErrors).CamelCase()] is JObject labeledErrors)
                 typeof(StatusResult<,>).MakeGenericType(statusType, dataType)
-                .GetMethod(nameof(StatusResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, string>>) })
-                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string>>() });
+                .GetMethod(nameof(StatusResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })
+                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
 
             return result;
         }

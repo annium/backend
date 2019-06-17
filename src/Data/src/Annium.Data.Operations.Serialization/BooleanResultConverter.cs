@@ -46,7 +46,7 @@ namespace Annium.Data.Operations.Serialization
             if (obj[nameof(BooleanResult.PlainErrors).CamelCase()] is JArray plainErrors)
                 result.Errors(plainErrors.ToObject<string[]>());
             if (obj[nameof(BooleanResult.LabeledErrors).CamelCase()] is JObject labeledErrors)
-                result.Errors(labeledErrors.ToObject<Dictionary<string, string>>());
+                result.Errors(labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>));
 
             return result;
         }
@@ -72,8 +72,8 @@ namespace Annium.Data.Operations.Serialization
                 .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
             if (obj[nameof(BooleanResult.LabeledErrors).CamelCase()] is JObject labeledErrors)
                 typeof(BooleanResult<>).MakeGenericType(dataType)
-                .GetMethod(nameof(BooleanResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, string>>) })
-                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string>>() });
+                .GetMethod(nameof(BooleanResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })
+                .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
 
             return result;
         }

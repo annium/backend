@@ -22,7 +22,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var str = JsonConvert.SerializeObject(Result.New(5).Error("plain").Error("label", "another"), GetSettings());
 
             // assert
-            str.IsEqual(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":""another""}}");
+            str.IsEqual(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
         }
 
         [Fact]
@@ -59,14 +59,14 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<StatusResult<int>>(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":""another""}}", GetSettings());
+            var result = JsonConvert.DeserializeObject<StatusResult<int>>(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.Status.IsEqual(5);
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At("label").IsEqual("another");
+            result.LabeledErrors.At("label").At(0).IsEqual("another");
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var str = JsonConvert.SerializeObject(Result.New(5, "some").Error("plain").Error("label", "another"), GetSettings());
 
             // assert
-            str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":""another""}}");
+            str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
         }
 
         [Fact]
@@ -126,7 +126,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<StatusResult<int, string>>(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":""another""}}", GetSettings());
+            var result = JsonConvert.DeserializeObject<StatusResult<int, string>>(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.Status.IsEqual(5);
@@ -134,7 +134,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At("label").IsEqual("another");
+            result.LabeledErrors.At("label").At(0).IsEqual("another");
         }
 
         private JsonSerializerSettings GetSettings() => new JsonSerializerSettings().ConfigureForOperations();
