@@ -11,7 +11,7 @@ namespace Annium.Data.Operations
 
         T Errors(params string[] errors);
 
-        T Errors(ICollection<string> errors);
+        T Errors(IEnumerable<string> errors);
 
         T Errors(params ValueTuple<string, string>[] errors);
 
@@ -19,12 +19,12 @@ namespace Annium.Data.Operations
 
         T Join(params IResult[] results);
 
-        T Join(ICollection<IResult> results);
+        T Join(IEnumerable<IResult> results);
     }
 
     public interface IResult
     {
-        ICollection<string> PlainErrors { get; }
+        IEnumerable<string> PlainErrors { get; }
 
         IReadOnlyDictionary<string, string> LabeledErrors { get; }
 

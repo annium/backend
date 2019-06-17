@@ -5,7 +5,7 @@ namespace Annium.Data.Operations
 {
     public abstract class ResultBase<T> : IResult<T> where T : ResultBase<T>
     {
-        public ICollection<string> PlainErrors => plainErrors;
+        public IEnumerable<string> PlainErrors => plainErrors;
 
         public IReadOnlyDictionary<string, string> LabeledErrors => labeledErrors;
 
@@ -40,7 +40,7 @@ namespace Annium.Data.Operations
             return this as T;
         }
 
-        public T Errors(ICollection<string> errors)
+        public T Errors(IEnumerable<string> errors)
         {
             lock(plainErrors)
             foreach (var error in errors)
@@ -78,7 +78,7 @@ namespace Annium.Data.Operations
             return this as T;
         }
 
-        public T Join(ICollection<IResult> results)
+        public T Join(IEnumerable<IResult> results)
         {
             foreach (var result in results)
             {

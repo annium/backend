@@ -26,7 +26,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             result.HasErrors.IsTrue();
-            result.PlainErrors.Count.IsEqual(1);
+            result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");
         }
 
@@ -55,7 +55,7 @@ namespace Annium.Data.Operations.Tests
             result.Errors("plain", "another", "another");
 
             // assert
-            result.PlainErrors.Count.IsEqual(2);
+            result.PlainErrors.Has(2);
             result.PlainErrors.At(0).IsEqual("plain");
             result.PlainErrors.At(1).IsEqual("another");
         }
@@ -70,7 +70,7 @@ namespace Annium.Data.Operations.Tests
             result.Errors(new List<string>() { "plain", "another", "another" });
 
             // assert
-            result.PlainErrors.Count.IsEqual(2);
+            result.PlainErrors.Has(2);
             result.PlainErrors.At(0).IsEqual("plain");
             result.PlainErrors.At(1).IsEqual("another");
         }
@@ -118,7 +118,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             result.HasErrors.IsTrue();
-            result.PlainErrors.Count.IsEqual(3);
+            result.PlainErrors.Has(3);
             result.PlainErrors.At(0).IsEqual("own");
             result.PlainErrors.At(1).IsEqual("plain");
             result.PlainErrors.At(2).IsEqual("another");
@@ -141,7 +141,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             result.HasErrors.IsTrue();
-            result.PlainErrors.Count.IsEqual(3);
+            result.PlainErrors.Has(3);
             result.PlainErrors.At(0).IsEqual("own");
             result.PlainErrors.At(1).IsEqual("plain");
             result.PlainErrors.At(2).IsEqual("another");
