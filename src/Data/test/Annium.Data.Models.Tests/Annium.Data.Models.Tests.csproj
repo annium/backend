@@ -7,6 +7,7 @@
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <WarningsAsErrors>true</WarningsAsErrors>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Data.Models/Annium.Data.Models.csproj" />

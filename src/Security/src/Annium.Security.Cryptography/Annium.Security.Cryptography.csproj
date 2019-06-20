@@ -7,6 +7,7 @@
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <WarningsAsErrors>true</WarningsAsErrors>
+        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="PemUtils" Version="3.0.0.81" />
