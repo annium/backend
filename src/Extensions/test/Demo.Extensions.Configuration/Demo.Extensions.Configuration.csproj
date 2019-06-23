@@ -6,9 +6,9 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <OutputType>Exe</OutputType>
         <DebugType>portable</DebugType>
+        <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
-        <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Extensions.Configuration/Annium.Extensions.Configuration.csproj" />
