@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Testing.Elements;
 using Annium.Testing.Executors;
@@ -36,21 +37,34 @@ namespace Annium.Testing
         {
             logger.LogDebug("Start tests execution");
 
-            await Task.WhenAll(tests.FilterMask(cfg.Filter).Select(async test =>
+            var concurrency = Environment.ProcessorCount;
+
+            using(var semaphore = new Semaphore(concurrency, concurrency))
             {
-                logger.LogDebug($"Run test {test.DisplayName}");
-
-                using(var scope = provider.CreateScope())
+                await Task.WhenAll(tests.FilterMask(cfg.Filter).Select(async test =>
                 {
-                    var target = new Target(scope, test, new TestResult());
+                    try
+                    {
+                        semaphore.WaitOne();
+                        logger.LogDebug($"Run test {test.DisplayName}");
 
-                    await executor.ExecuteAsync(target);
+                        using(var scope = provider.CreateScope())
+                        {
+                            var target = new Target(scope, test, new TestResult());
 
-                    logger.LogDebug($"Complete test {test.DisplayName}");
+                            await executor.ExecuteAsync(target);
 
-                    handleResult(target.Test, target.Result);
-                }
-            }));
+                            logger.LogDebug($"Complete test {test.DisplayName}");
+
+                            handleResult(target.Test, target.Result);
+                        }
+                    }
+                    finally
+                    {
+                        semaphore.Release();
+                    }
+                }));
+            }
 
             logger.LogDebug("Complete tests execution");
         }
