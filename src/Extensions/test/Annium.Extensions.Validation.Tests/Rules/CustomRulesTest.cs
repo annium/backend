@@ -17,7 +17,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             // assert
             result.IsFailure.IsTrue();
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At(nameof(Person.Name)).IsEqual("Value is required");
+            result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
         }
 
         [Fact]
@@ -32,7 +32,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             // assert
             result.IsFailure.IsTrue();
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At(nameof(Person.Name)).IsEqual($"{nameof(Person.Name)} value is too short");
+            result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual($"{nameof(Person.Name)} value is too short");
         }
 
         private class Person

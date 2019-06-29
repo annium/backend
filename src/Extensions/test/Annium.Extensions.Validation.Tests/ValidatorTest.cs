@@ -40,7 +40,7 @@ namespace Annium.Extensions.Validation.Tests
             // assert
             result.IsFailure.IsTrue();
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At("nested").IsEqual("Value is null");
+            result.LabeledErrors.At("nested").At(0).IsEqual("Value is null");
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Annium.Extensions.Validation.Tests
             // assert
             result.IsFailure.IsTrue();
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At(nameof(Person.Name)).IsEqual("Value is required");
+            result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
         }
 
         [Fact]
@@ -70,7 +70,7 @@ namespace Annium.Extensions.Validation.Tests
             // assert
             result.IsFailure.IsTrue();
             result.LabeledErrors.Has(1);
-            result.LabeledErrors.At($"nested.{nameof(Person.Name)}").IsEqual("Value is required");
+            result.LabeledErrors.At($"nested.{nameof(Person.Name)}").At(0).IsEqual("Value is required");
         }
 
         private class Person

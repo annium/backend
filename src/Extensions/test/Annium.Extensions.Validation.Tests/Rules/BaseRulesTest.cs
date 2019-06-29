@@ -18,7 +18,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Name)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Name)).IsEqual("Value is required");
+            resultBad.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
         }
 
         [Fact]
@@ -33,7 +33,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Age)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Age)).IsEqual("Value is required");
+            resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).IsEqual("Value is required");
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Fixed)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Fixed)).IsEqual("Value is not equal to given");
+            resultBad.LabeledErrors.At(nameof(Person.Fixed)).At(0).IsEqual("Value is not equal to given");
         }
 
         [Fact]
@@ -63,7 +63,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.OneOf)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.OneOf)).IsEqual("Value is not in given");
+            resultBad.LabeledErrors.At(nameof(Person.OneOf)).At(0).IsEqual("Value is not in given");
         }
 
         [Fact]
@@ -78,7 +78,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.SameAsName)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.SameAsName)).IsEqual("Value is not equal to given");
+            resultBad.LabeledErrors.At(nameof(Person.SameAsName)).At(0).IsEqual("Value is not equal to given");
         }
 
         [Fact]
@@ -93,7 +93,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotFixed)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.NotFixed)).IsEqual("Value is equal to given");
+            resultBad.LabeledErrors.At(nameof(Person.NotFixed)).At(0).IsEqual("Value is equal to given");
         }
 
         [Fact]
@@ -108,7 +108,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotOneOf)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.NotOneOf)).IsEqual("Value is in given");
+            resultBad.LabeledErrors.At(nameof(Person.NotOneOf)).At(0).IsEqual("Value is in given");
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotSameAsName)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.NotSameAsName)).IsEqual("Value is equal to given");
+            resultBad.LabeledErrors.At(nameof(Person.NotSameAsName)).At(0).IsEqual("Value is equal to given");
         }
 
         [Fact]
@@ -139,8 +139,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MinMaxLength)).IsFalse();
-            resultBadMin.LabeledErrors.At(nameof(Person.MinMaxLength)).IsEqual("Value length is less, than 2");
-            resultBadMax.LabeledErrors.At(nameof(Person.MinMaxLength)).IsEqual("Value length is greater, than 5");
+            resultBadMin.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).IsEqual("Value length is less, than 2");
+            resultBadMax.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).IsEqual("Value length is greater, than 5");
         }
 
         [Fact]
@@ -155,7 +155,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MinLength)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.MinLength)).IsEqual("Value length is less, than 2");
+            resultBad.LabeledErrors.At(nameof(Person.MinLength)).At(0).IsEqual("Value length is less, than 2");
         }
 
         [Fact]
@@ -170,7 +170,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MaxLength)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.MaxLength)).IsEqual("Value length is greater, than 5");
+            resultBad.LabeledErrors.At(nameof(Person.MaxLength)).At(0).IsEqual("Value length is greater, than 5");
         }
 
         [Fact]
@@ -186,8 +186,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Between)).IsFalse();
-            resultBadMin.LabeledErrors.At(nameof(Person.Between)).IsEqual("Value is less, than given minimum");
-            resultBadMax.LabeledErrors.At(nameof(Person.Between)).IsEqual("Value is greater, than given maximum");
+            resultBadMin.LabeledErrors.At(nameof(Person.Between)).At(0).IsEqual("Value is less, than given minimum");
+            resultBadMax.LabeledErrors.At(nameof(Person.Between)).At(0).IsEqual("Value is greater, than given maximum");
         }
 
         [Fact]
@@ -202,7 +202,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThan)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.LessThan)).IsEqual("Value is greater, than given maximum");
+            resultBad.LabeledErrors.At(nameof(Person.LessThan)).At(0).IsEqual("Value is greater, than given maximum");
         }
 
         [Fact]
@@ -217,7 +217,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThanOrEqual)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.LessThanOrEqual)).IsEqual("Value is greater, than given maximum");
+            resultBad.LabeledErrors.At(nameof(Person.LessThanOrEqual)).At(0).IsEqual("Value is greater, than given maximum");
         }
 
         [Fact]
@@ -232,7 +232,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThan)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.GreaterThan)).IsEqual("Value is less, than given minimum");
+            resultBad.LabeledErrors.At(nameof(Person.GreaterThan)).At(0).IsEqual("Value is less, than given minimum");
         }
 
         [Fact]
@@ -247,7 +247,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThanOrEqual)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.GreaterThanOrEqual)).IsEqual("Value is less, than given minimum");
+            resultBad.LabeledErrors.At(nameof(Person.GreaterThanOrEqual)).At(0).IsEqual("Value is less, than given minimum");
         }
 
         [Fact]
@@ -262,7 +262,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Regex)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Regex)).IsEqual("Value doesn't match specified regex");
+            resultBad.LabeledErrors.At(nameof(Person.Regex)).At(0).IsEqual("Value doesn't match specified regex");
         }
 
         [Fact]
@@ -277,7 +277,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Email)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Email)).IsEqual("Value is not an email");
+            resultBad.LabeledErrors.At(nameof(Person.Email)).At(0).IsEqual("Value is not an email");
         }
 
         [Fact]
@@ -299,7 +299,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Enum)).IsEqual("Value is not in expected range");
+            resultBad.LabeledErrors.At(nameof(Person.Enum)).At(0).IsEqual("Value is not in expected range");
         }
 
         private class Person

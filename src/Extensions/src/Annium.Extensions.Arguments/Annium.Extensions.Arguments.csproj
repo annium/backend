@@ -12,6 +12,5 @@
     <ItemGroup>
         <ProjectReference Include="../Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
         <ProjectReference Include="../Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
-        <ProjectReference Include="../Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
 </Project>

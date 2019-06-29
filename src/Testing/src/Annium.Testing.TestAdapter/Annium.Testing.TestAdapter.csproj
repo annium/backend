@@ -18,6 +18,6 @@
         <ProjectReference Include="../Annium.Testing/Annium.Testing.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.1.1" />
+        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="16.2.0" />
     </ItemGroup>
 </Project>
