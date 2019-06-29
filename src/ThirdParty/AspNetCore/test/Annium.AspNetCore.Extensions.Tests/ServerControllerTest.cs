@@ -11,12 +11,9 @@ using Newtonsoft.Json.Serialization;
 
 namespace Annium.AspNetCore.Extensions.Tests
 {
-    public class ServerControllerTest : IntegrationTest<Startup<ServicePack>>
+    public class ServerControllerTest : IntegrationTest
     {
-        public ServerControllerTest()
-        {
-            Configure(request => request);
-        }
+        private IRequest http => GetRequest<Startup<ServicePack>>();
 
         [Fact]
         public async Task Conlfict_Works()

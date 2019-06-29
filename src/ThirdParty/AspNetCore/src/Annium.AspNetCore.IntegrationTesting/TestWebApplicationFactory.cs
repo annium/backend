@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
+    internal class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
         protected override IWebHostBuilder CreateWebHostBuilder()
         {

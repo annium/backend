@@ -6,12 +6,9 @@ using Annium.Testing;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
-    public class SampleTest : IntegrationTest<Startup<ServicePack>>
+    public class SampleTest : IntegrationTest
     {
-        public SampleTest()
-        {
-            Configure(request => request);
-        }
+        private IRequest http => GetRequest<Startup<ServicePack>>();
 
         [Fact]
         public async Task True_IsTrue()

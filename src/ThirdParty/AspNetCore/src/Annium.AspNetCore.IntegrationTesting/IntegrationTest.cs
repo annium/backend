@@ -1,23 +1,24 @@
 using System;
+using System.Collections.Concurrent;
 using Annium.Extensions.Net.Http;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public class IntegrationTest<TStartup> where TStartup : class
+    public class IntegrationTest
     {
-        protected IRequest http => configureRequest(getRequest()).Clone();
+        private ConcurrentDictionary<Type, IRequest> requestSamples = new ConcurrentDictionary<Type, IRequest>();
 
-        private readonly Func<IRequest> getRequest;
-
-        private Func<IRequest, IRequest> configureRequest = r => r;
-
-        public IntegrationTest()
+        protected IRequest GetRequest<TStartup>(Func<IRequest, IRequest> configureRequest = null)
+        where TStartup : class
         {
-            var client = new TestWebApplicationFactory<TStartup>().CreateClient();
-            getRequest = () => Http.Open().UseClient(client);
-        }
+            var request = requestSamples.GetOrAdd(typeof(TStartup), _ =>
+            {
+                var client = new TestWebApplicationFactory<TStartup>().CreateClient();
 
-        protected void Configure(Func<IRequest, IRequest> configureRequest) =>
-            this.configureRequest = configureRequest;
+                return Http.Open().UseClient(client);
+            }).Clone();
+
+            return configureRequest == null ? request : configureRequest(request);
+        }
     }
 }
