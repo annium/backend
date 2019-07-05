@@ -1,12 +1,11 @@
-using System;
-using Annium.Extensions.DependencyInjection;
+using Annium.Extensions.Arguments;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.DependencyInjection
 {
-    public class ServicePack : ServicePackBase
+    public static class ServiceCollectionExtensions
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public static void AddArguments(this IServiceCollection services)
         {
             services.AddSingleton<IArgumentProcessor, ArgumentProcessor>();
             services.AddSingleton<IConfigurationBuilder, ConfigurationBuilder>();
