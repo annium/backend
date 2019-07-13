@@ -9,4 +9,7 @@
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
+    </ItemGroup>
 </Project>
