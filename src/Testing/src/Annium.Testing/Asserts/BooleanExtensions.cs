@@ -5,13 +5,13 @@ namespace Annium.Testing
         public static void IsTrue(this bool value, string message = null)
         {
             if (!value)
-                throw new AssertionFailedException(message ?? $"{value} != true");
+                throw new AssertionFailedException(message ?? $"{value} != True");
         }
 
         public static void IsFalse(this bool value, string message = null)
         {
             if (value)
-                throw new AssertionFailedException(message ?? $"{value} != false");
+                throw new AssertionFailedException(message ?? $"{value} != False");
         }
     }
 }
