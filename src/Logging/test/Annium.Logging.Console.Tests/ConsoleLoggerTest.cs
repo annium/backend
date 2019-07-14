@@ -17,7 +17,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var services = new ServiceCollection();
             services.AddSingleton(getInstant);
-            services.AddConsole(new LoggerConfiguration(LogLevel.Trace));
+            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
             var provider = services.BuildServiceProvider();
             var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
 
@@ -37,7 +37,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var services = new ServiceCollection();
             services.AddSingleton(getInstant);
-            services.AddConsole(new LoggerConfiguration(LogLevel.Trace));
+            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
             var provider = services.BuildServiceProvider();
             var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
 
@@ -62,7 +62,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var services = new ServiceCollection();
             services.AddSingleton(getInstant);
-            services.AddConsole(new LoggerConfiguration(LogLevel.Trace));
+            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
             var provider = services.BuildServiceProvider();
             var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
 
