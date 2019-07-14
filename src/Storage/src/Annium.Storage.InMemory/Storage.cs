@@ -7,11 +7,17 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.InMemory
 {
-    public class InMemoryStorage : StorageBase
+    internal class Storage : StorageBase
     {
         private IDictionary<string, byte[]> storage = new Dictionary<string, byte[]>();
 
-        public InMemoryStorage(ILogger<InMemoryStorage> logger) : base(logger) { }
+        public Storage(
+            Configuration configuration,
+            ILogger<Storage> logger
+        ) : base(logger)
+        {
+
+        }
 
         protected override Task DoSetupAsync() => Task.CompletedTask;
 

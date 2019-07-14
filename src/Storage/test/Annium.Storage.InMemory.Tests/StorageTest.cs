@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Extensions.DependencyInjection;
 using Annium.Logging.Abstractions;
+using Annium.Storage.Abstractions;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Storage.InMemory.Tests
 {
-    public class InMemoryStorageTest
+    public class StorageTest
     {
         private readonly Random random = new Random();
 
@@ -17,7 +20,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task Setup_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
 
             // act
             await storage.SetupAsync();
@@ -27,7 +30,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task List_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
             var blob = GenerateBlob();
             await storage.UploadAsync(new MemoryStream(blob), "demo");
 
@@ -43,7 +46,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task Upload_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
             var blob = GenerateBlob();
 
             // act
@@ -59,7 +62,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task Download_Missing_ThrowsKeyNotFoundException()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
 
             // act
             var e = new Exception();
@@ -78,7 +81,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task Download_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
             var blob = GenerateBlob();
             await storage.UploadAsync(new MemoryStream(blob), "demo");
 
@@ -98,7 +101,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task NameVerification_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
 
             // assert
             var e = new Exception();
@@ -117,7 +120,7 @@ namespace Annium.Storage.InMemory.Tests
         public async Task Delete_Works()
         {
             // arrange
-            var storage = new InMemoryStorage(GetLogger());
+            var storage = GetStorage();
             var blob = GenerateBlob();
             await storage.UploadAsync(new MemoryStream(blob), "demo");
 
@@ -130,8 +133,19 @@ namespace Annium.Storage.InMemory.Tests
             second.IsFalse();
         }
 
-        private ILogger<InMemoryStorage> GetLogger() =>
-            new InMemoryLogger<InMemoryStorage>(new LoggerConfiguration(LogLevel.Trace), () => Instant.MinValue);
+        private StorageBase GetStorage()
+        {
+            var services = new ServiceCollection();
+            services.AddStorage().AddInMemoryStorage();
+            services.AddInMemoryLogger(new LoggerConfiguration(LogLevel.Trace));
+            services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
+
+            var provider = services.BuildServiceProvider();
+
+            var factory = provider.GetRequiredService<IStorageFactory>();
+
+            return factory.CreateStorage(new Configuration());
+        }
 
         private byte[] GenerateBlob() => Enumerable
             .Range(0, 100)
