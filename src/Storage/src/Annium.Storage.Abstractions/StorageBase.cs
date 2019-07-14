@@ -73,17 +73,28 @@ namespace Annium.Storage.Abstractions
 
         protected void VerifyName(string name)
         {
+            if (name == null)
+                throw new ArgumentNullException(nameof(name));
+
             if (!nameRe.IsMatch(name))
                 throw new ArgumentException("Name has invalid format");
         }
 
         protected void VerifyPath(string path)
         {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
+
             if (!path.StartsWith('/'))
                 throw new ArgumentException("Path must be absolute");
-            foreach (var part in path.Split('/'))
+
+            foreach (var part in getPathParts())
                 if (!nameRe.IsMatch(part))
                     throw new ArgumentException("Path part has invalid format");
+
+            string[] getPathParts() => Regex
+                .Replace(path, "^/|/$", string.Empty)
+                .Split('/');
         }
     }
 }
