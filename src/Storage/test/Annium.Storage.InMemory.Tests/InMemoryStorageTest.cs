@@ -95,6 +95,25 @@ namespace Annium.Storage.InMemory.Tests
         }
 
         [Fact]
+        public async Task NameVerification_Works()
+        {
+            // arrange
+            var storage = new InMemoryStorage(GetLogger());
+
+            // assert
+            var e = new Exception();
+            try
+            {
+                await storage.DownloadAsync(".");
+            }
+            catch (Exception ex)
+            {
+                e = ex;
+            }
+            e.Is<ArgumentException>();
+        }
+
+        [Fact]
         public async Task Delete_Works()
         {
             // arrange

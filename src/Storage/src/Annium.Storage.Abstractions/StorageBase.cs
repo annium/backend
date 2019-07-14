@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
@@ -7,6 +8,8 @@ namespace Annium.Storage.Abstractions
 {
     public abstract class StorageBase
     {
+        private static readonly Regex nameRe = new Regex(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+
         private readonly ILogger logger;
 
         public StorageBase(
@@ -70,12 +73,17 @@ namespace Annium.Storage.Abstractions
 
         protected void VerifyName(string name)
         {
-
+            if (!nameRe.IsMatch(name))
+                throw new ArgumentException("Name has invalid format");
         }
 
         protected void VerifyPath(string path)
         {
-
+            if (!path.StartsWith('/'))
+                throw new ArgumentException("Path must be absolute");
+            foreach (var part in path.Split('/'))
+                if (!nameRe.IsMatch(part))
+                    throw new ArgumentException("Path part has invalid format");
         }
     }
 }
