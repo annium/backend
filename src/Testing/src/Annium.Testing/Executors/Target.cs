@@ -12,23 +12,23 @@ namespace Annium.Testing.Executors
 
         public TestResult Result { get; }
 
-        private readonly IServiceScope scope;
+        private readonly IServiceProvider provider;
 
         public Target(
-            IServiceScope scope,
+            IServiceProvider provider,
             Test test,
             TestResult result
         )
         {
             Test = test;
             Result = result;
-            this.scope = scope;
+            this.provider = provider;
         }
 
         public void Init()
         {
             if (Instance == null)
-                Instance = scope.ServiceProvider.GetRequiredService(Test.Method.DeclaringType);
+                Instance = provider.GetRequiredService(Test.Method.DeclaringType);
             else
                 throw new InvalidOperationException("Instance already created");
         }

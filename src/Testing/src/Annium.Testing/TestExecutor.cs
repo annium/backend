@@ -50,7 +50,7 @@ namespace Annium.Testing
 
                         using(var scope = provider.CreateScope())
                         {
-                            var target = new Target(scope, test, new TestResult());
+                            var target = new Target(scope.ServiceProvider, test, new TestResult());
 
                             await executor.ExecuteAsync(target);
 
