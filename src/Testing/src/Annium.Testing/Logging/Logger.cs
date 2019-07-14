@@ -10,7 +10,7 @@ namespace Annium.Testing.Logging
         private readonly LoggerConfiguration configuration;
 
         public Logger(
-            Configuration configuration
+            TestingConfiguration configuration
         )
         {
             this.configuration = configuration.Logger;

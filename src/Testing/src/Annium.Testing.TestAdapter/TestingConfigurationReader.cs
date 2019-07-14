@@ -4,15 +4,15 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 
 namespace Annium.Testing.TestAdapter
 {
-    internal static class ConfigurationReader
+    internal static class TestingConfigurationReader
     {
-        public static Configuration Read(IDiscoveryContext context)
+        public static TestingConfiguration Read(IDiscoveryContext context)
         {
             var logLevel = GetLogLevel(XElement.Parse(context.RunSettings.SettingsXml).Element("logLevel"));
             var filter = XElement.Parse(context.RunSettings.SettingsXml).Element("filter")?.Value;
 
             var loggerConfiguration = new LoggerConfiguration(logLevel);
-            var configuration = new Configuration(loggerConfiguration, filter);
+            var configuration = new TestingConfiguration(loggerConfiguration, filter);
 
             return configuration;
         }

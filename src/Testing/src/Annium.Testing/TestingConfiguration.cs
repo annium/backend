@@ -2,13 +2,13 @@ using Annium.Testing.Logging;
 
 namespace Annium.Testing
 {
-    public class Configuration
+    public class TestingConfiguration
     {
         public LoggerConfiguration Logger { get; }
 
         public string Filter { get; }
 
-        public Configuration(
+        public TestingConfiguration(
             LoggerConfiguration logger,
             string filter
         )

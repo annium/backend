@@ -10,7 +10,7 @@ namespace Annium.Testing.TestAdapter
         public static IServiceProvider Build(IDiscoveryContext discoveryContext)
         {
             var services = new ServiceCollection();
-            services.AddSingleton(ConfigurationReader.Read(discoveryContext));
+            services.AddSingleton(TestingConfigurationReader.Read(discoveryContext));
 
             return new ServiceProviderBuilder(services)
                 .UseServicePack<Testing.ServicePack>()

@@ -82,7 +82,7 @@ namespace Annium.Testing.TestAdapter
 
         private Task RunTestsAsync(Assembly assembly, IEnumerable<Test> tests, IFrameworkHandle frameworkHandle)
         {
-            var cfg = provider.GetRequiredService<Configuration>();
+            var cfg = provider.GetRequiredService<TestingConfiguration>();
             tests = tests.FilterMask(cfg.Filter);
 
             return GetExecutor(assembly, tests)
@@ -97,7 +97,7 @@ namespace Annium.Testing.TestAdapter
             logger.LogTrace($"Build test executor for assembly {assembly.FullName} and given {tests.Count()} tests.");
 
             var services = AssemblyServicesCollector.Collect(assembly, tests);
-            services.AddSingleton(this.provider.GetRequiredService<Configuration>());
+            services.AddSingleton(this.provider.GetRequiredService<TestingConfiguration>());
 
             var provider = new ServiceProviderBuilder(services)
                 .UseServicePack<Testing.ServicePack>()

@@ -12,7 +12,7 @@ namespace Annium.Testing
 {
     public class TestExecutor
     {
-        private readonly Configuration cfg;
+        private readonly TestingConfiguration cfg;
 
         private readonly IServiceProvider provider;
 
@@ -21,7 +21,7 @@ namespace Annium.Testing
         private readonly ILogger logger;
 
         public TestExecutor(
-            Configuration cfg,
+            TestingConfiguration cfg,
             IServiceProvider provider,
             PipelineExecutor executor,
             ILogger logger
