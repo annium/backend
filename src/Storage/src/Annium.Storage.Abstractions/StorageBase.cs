@@ -85,7 +85,7 @@ namespace Annium.Storage.Abstractions
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            if (!path.StartsWith('/'))
+            if (!path.StartsWith('/') && !path.EndsWith('/'))
                 throw new ArgumentException("Path must be absolute");
 
             foreach (var part in getPathParts())

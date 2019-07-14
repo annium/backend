@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Annium.Extensions.DependencyInjection;
 using Annium.Logging.Abstractions;
@@ -147,9 +148,6 @@ namespace Annium.Storage.InMemory.Tests
             return factory.CreateStorage(new Configuration());
         }
 
-        private byte[] GenerateBlob() => Enumerable
-            .Range(0, 100)
-            .Select(i => (byte) random.Next(byte.MaxValue))
-            .ToArray();
+        private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
     }
 }

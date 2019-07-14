@@ -11,8 +11,9 @@ using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
-namespace Annium.Storage.FileSystem.Tests
+namespace Annium.Storage.S3.Tests
 {
+    [Skip]
     public class StorageTest : IDisposable
     {
         private readonly Random random = new Random();
@@ -21,7 +22,7 @@ namespace Annium.Storage.FileSystem.Tests
 
         public StorageTest()
         {
-            directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
         }
 
         [Fact]
@@ -144,7 +145,7 @@ namespace Annium.Storage.FileSystem.Tests
         private async Task<StorageBase> GetStorage()
         {
             var services = new ServiceCollection();
-            services.AddStorage().AddFileSystemStorage();
+            services.AddStorage().AddS3Storage();
             services.AddInMemoryLogger(new LoggerConfiguration(LogLevel.Trace));
             services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
 
@@ -152,6 +153,11 @@ namespace Annium.Storage.FileSystem.Tests
 
             var factory = provider.GetRequiredService<IStorageFactory>();
             var configuration = new Configuration();
+            configuration.Server = "https://server-address.com";
+            configuration.AccessKey = "access-key";
+            configuration.AccessSecret = "access-secret";
+            configuration.Region = "us-east-1";
+            configuration.Bucket = "annium.tests";
             configuration.Directory = directory;
 
             var storage = factory.CreateStorage(configuration);
@@ -164,7 +170,9 @@ namespace Annium.Storage.FileSystem.Tests
 
         public void Dispose()
         {
-            Directory.Delete(directory, true);
+            var storage = GetStorage().Result;
+            foreach (var item in storage.ListAsync().Result)
+                storage.DeleteAsync(item).GetAwaiter().GetResult();
         }
     }
 }
