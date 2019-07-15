@@ -6,7 +6,7 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Storage.Abstractions
 {
-    public abstract class StorageBase
+    public abstract class StorageBase : IStorage
     {
         private static readonly Regex nameRe = new Regex(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 

@@ -142,7 +142,7 @@ namespace Annium.Storage.S3.Tests
             second.IsFalse();
         }
 
-        private async Task<StorageBase> GetStorage()
+        private async Task<IStorage> GetStorage()
         {
             var services = new ServiceCollection();
             services.AddStorage().AddS3Storage();

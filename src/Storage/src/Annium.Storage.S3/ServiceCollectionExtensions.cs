@@ -14,8 +14,7 @@ namespace Annium.Extensions.DependencyInjection
             Func<IServiceProvider, Func<Configuration, S3Storage>> factory =
                 sp => configuration => new S3Storage(configuration, sp.GetRequiredService<ILogger<S3Storage>>());
 
-            services.AddSingleton<Func<Configuration, StorageBase>>(factory);
-            services.AddSingleton<Func<Configuration, S3Storage>>(factory);
+            services.AddSingleton<Func<Configuration, IStorage>>(factory);
 
             return services;
         }

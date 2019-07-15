@@ -14,8 +14,7 @@ namespace Annium.Extensions.DependencyInjection
             Func<IServiceProvider, Func<Configuration, MemoryStorage>> factory =
                 sp => configuration => new MemoryStorage(configuration, sp.GetRequiredService<ILogger<MemoryStorage>>());
 
-            services.AddSingleton<Func<Configuration, StorageBase>>(factory);
-            services.AddSingleton<Func<Configuration, MemoryStorage>>(factory);
+            services.AddSingleton<Func<Configuration, IStorage>>(factory);
 
             return services;
         }

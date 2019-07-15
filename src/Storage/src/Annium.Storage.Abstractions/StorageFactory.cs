@@ -15,15 +15,15 @@ namespace Annium.Storage.Abstractions
             this.provider = provider;
         }
 
-        public StorageBase CreateStorage(ConfigurationBase configuration)
+        public IStorage CreateStorage(ConfigurationBase configuration)
         {
-            var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(StorageBase));
+            var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(IStorage));
 
             var factory = (Delegate) provider.GetRequiredService(factoryType);
 
             try
             {
-                var storage = (StorageBase) factory.DynamicInvoke(configuration);
+                var storage = (IStorage) factory.DynamicInvoke(configuration);
 
                 return storage;
             }

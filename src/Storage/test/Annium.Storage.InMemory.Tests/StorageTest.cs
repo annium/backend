@@ -134,7 +134,7 @@ namespace Annium.Storage.InMemory.Tests
             second.IsFalse();
         }
 
-        private StorageBase GetStorage()
+        private IStorage GetStorage()
         {
             var services = new ServiceCollection();
             services.AddStorage().AddInMemoryStorage();

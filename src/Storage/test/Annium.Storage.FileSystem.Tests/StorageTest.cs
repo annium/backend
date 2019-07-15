@@ -141,7 +141,7 @@ namespace Annium.Storage.FileSystem.Tests
             second.IsFalse();
         }
 
-        private async Task<StorageBase> GetStorage()
+        private async Task<IStorage> GetStorage()
         {
             var services = new ServiceCollection();
             services.AddStorage().AddFileSystemStorage();
