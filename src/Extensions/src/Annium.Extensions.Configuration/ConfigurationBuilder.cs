@@ -114,6 +114,8 @@ namespace Annium.Extensions.Configuration
                     return null;
 
                 type = TypeManager.Instance.ResolveByKey(key, type);
+                if (type == null)
+                    throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
             }
 
             var result = Activator.CreateInstance(type);
