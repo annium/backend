@@ -17,6 +17,9 @@ namespace Annium.Storage.Abstractions
 
         public IStorage CreateStorage(ConfigurationBase configuration)
         {
+            if (configuration == null)
+                throw new ArgumentNullException(nameof(configuration));
+
             var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(IStorage));
 
             var factory = (Delegate) provider.GetRequiredService(factoryType);

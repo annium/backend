@@ -16,6 +16,9 @@ namespace Annium.Storage.FileSystem
             ILogger<Storage> logger
         ) : base(logger)
         {
+            if (configuration is null)
+                throw new System.ArgumentNullException(nameof(configuration));
+
             VerifyPath(configuration.Directory);
 
             directory = configuration.Directory;

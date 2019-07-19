@@ -16,7 +16,8 @@ namespace Annium.Storage.InMemory
             ILogger<Storage> logger
         ) : base(logger)
         {
-
+            if (configuration is null)
+                throw new System.ArgumentNullException(nameof(configuration));
         }
 
         protected override Task DoSetupAsync() => Task.CompletedTask;

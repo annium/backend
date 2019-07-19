@@ -22,9 +22,11 @@ namespace Annium.Storage.S3
             ILogger<Storage> logger
         ) : base(logger)
         {
+            this.configuration = configuration ??
+                throw new ArgumentNullException(nameof(configuration));
+
             VerifyPath(configuration.Directory);
 
-            this.configuration = configuration;
             this.directory = configuration.Directory == "/" ?
                 string.Empty :
                 configuration.Directory.Substring(1, configuration.Directory.Length - 2);
