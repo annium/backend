@@ -13,7 +13,8 @@ namespace Demo.Extensions.Primitives
             CancellationToken token
         )
         {
-            Console.WriteLine("0".PascalCase());
+            var str = "07DC22";
+            var result = str.TryFromHexStringToByteArray(out var byteArray);
         }
 
         public static int Main(string[] args) => new Entrypoint()

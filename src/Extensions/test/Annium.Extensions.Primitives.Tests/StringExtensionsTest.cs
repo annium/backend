@@ -1,3 +1,4 @@
+using System;
 using Annium.Testing;
 
 namespace Annium.Extensions.Primitives.Tests
@@ -105,6 +106,72 @@ namespace Annium.Extensions.Primitives.Tests
         public void ToWords_WorksCorrectly()
         {
             (null as string).ToWords().Has(0);
+        }
+
+        [Fact]
+        public void FromHexStringToByteArray_Null_ThrowsArgumentNullOrReturnsFalse()
+        {
+            // arrange
+            string str = null;
+
+            // act
+            var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
+
+            // assert
+            ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<ArgumentNullException>();
+            tryResult.IsFalse();
+            byteArray.IsDefault();
+        }
+
+        [Fact]
+        public void FromHexStringToByteArray_InvalidFormat_ThrowsFormatOrReturnsFalse()
+        {
+            // arrange
+            var str = "a";
+
+            // act
+            var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
+
+            // assert
+            ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<FormatException>();
+            tryResult.IsFalse();
+            byteArray.IsDefault();
+        }
+
+        [Fact]
+        public void FromHexStringToByteArray_InvalidChars_ThrowsOverflowOrReturnsFalse()
+        {
+            // arrange
+            var str1 = "ag";
+            var str2 = "g0";
+
+            // act
+            var tryResult1 = str1.TryFromHexStringToByteArray(out var byteArray1);
+            var tryResult2 = str2.TryFromHexStringToByteArray(out var byteArray2);
+
+            // assert
+            ((Func<byte[]>) (() => str1.FromHexStringToByteArray())).Throws<OverflowException>();
+            ((Func<byte[]>) (() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
+            tryResult1.IsFalse();
+            tryResult2.IsFalse();
+            byteArray1.IsDefault();
+            byteArray2.IsDefault();
+        }
+
+        [Fact]
+        public void FromHexStringToByteArray_Valid_Works()
+        {
+            // arrange
+            var str = "07DC22";
+
+            // act
+            var result = str.FromHexStringToByteArray();
+            var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
+
+            // assert
+            result.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
+            tryResult.IsTrue();
+            byteArray.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
         }
     }
 }
