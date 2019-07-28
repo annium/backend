@@ -5,9 +5,10 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Annium.Extensions.Mapper;
 using Microsoft.AspNetCore.Http.Extensions;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     internal partial class Request : IRequest
     {
@@ -106,7 +107,7 @@ namespace Annium.Extensions.Net.Http
 
         public IRequest Param<T>(string key, T value)
         {
-            parameters[key] = Mapper.Mapper.Map<string>(value);
+            parameters[key] = Mapper.Map<string>(value);
 
             return this;
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Net.Http;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     public static class MethodExtensions
     {

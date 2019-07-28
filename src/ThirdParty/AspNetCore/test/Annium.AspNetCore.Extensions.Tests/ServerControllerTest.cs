@@ -4,7 +4,7 @@ using Annium.AspNetCore.Demo;
 using Annium.AspNetCore.IntegrationTesting;
 using Annium.Data.Operations;
 using Annium.Data.Operations.Serialization;
-using Annium.Extensions.Net.Http;
+using Annium.Net.Http;
 using Annium.Testing;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;

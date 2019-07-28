@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using Annium.Extensions.Net.Http;
+using Annium.Net.Http;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {

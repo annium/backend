@@ -3,7 +3,7 @@ using System.Net.Mime;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     public static class ContentExtensions
     {

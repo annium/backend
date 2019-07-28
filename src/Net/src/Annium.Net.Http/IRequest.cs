@@ -2,7 +2,7 @@ using System;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     public partial interface IRequest
     {

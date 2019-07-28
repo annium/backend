@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     public static class Http
     {

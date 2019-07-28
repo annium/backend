@@ -1,7 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Annium.AspNetCore.Demo;
-using Annium.Extensions.Net.Http;
+using Annium.Net.Http;
 using Annium.Testing;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests

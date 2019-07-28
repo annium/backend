@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
 
-namespace Annium.Extensions.Net.Http
+namespace Annium.Net.Http
 {
     public static class RunExtensions
     {
