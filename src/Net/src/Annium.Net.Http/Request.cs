@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Annium.Extensions.Mapper;
 using Microsoft.AspNetCore.Http.Extensions;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Annium.Net.Http
 {
@@ -146,12 +147,20 @@ namespace Annium.Net.Http
 
             message.Method = method;
 
+            // evaluate URI
+            var baseUri = this.baseUri ?? client.BaseAddress;
+            var uri = baseUri != null ? new Uri(baseUri, this.uri) : new Uri(this.uri);
+
+            // build query
             var queryBuilder = new QueryBuilder();
+            // if any query in source uri - add it to queryBuilder
+            if (!string.IsNullOrWhiteSpace(uri.Query))
+                foreach (var(name, value) in QueryHelpers.ParseQuery(uri.Query))
+                    queryBuilder.Add(name, (IEnumerable<string>) value);
+            // add manually defined params to queryBuilder
             foreach (var(name, value) in parameters)
                 queryBuilder.Add(name, value);
 
-            var baseUri = this.baseUri ?? client.BaseAddress;
-            var uri = baseUri != null ? new Uri(baseUri, this.uri) : new Uri(this.uri);
             message.RequestUri = new UriBuilder(uri) { Query = queryBuilder.ToString() }.Uri;
 
             foreach (var(name, values) in headers)
