@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Annium.Extensions.Primitives
 {
@@ -58,6 +59,15 @@ namespace Annium.Extensions.Primitives
 
             string snakeCase(string result, string word) =>
                 result + (result == string.Empty ? string.Empty : "_") + word.ToLowerInvariant();
+        }
+
+        public static string Repeat(this string value, int count)
+        {
+            if (string.IsNullOrEmpty(value) || count <= 0) return value;
+
+            return new StringBuilder(value.Length * count)
+                .AppendJoin(value, new string[count + 1])
+                .ToString();
         }
 
         public static IEnumerable<string> ToWords(this string value)

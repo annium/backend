@@ -109,6 +109,15 @@ namespace Annium.Extensions.Primitives.Tests
         }
 
         [Fact]
+        public void Repeat_WorksCorrectly()
+        {
+            // assert
+            (null as string).Repeat(2).IsDefault();
+            "demo".Repeat(-2).IsEqual("demo");
+            "demo".Repeat(2).IsEqual("demodemo");
+        }
+
+        [Fact]
         public void FromHexStringToByteArray_Null_ThrowsArgumentNullOrReturnsFalse()
         {
             // arrange
