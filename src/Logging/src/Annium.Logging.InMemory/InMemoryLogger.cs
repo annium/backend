@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Annium.Logging.Abstractions;
 using NodaTime;
 
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.InMemory
 {
     public class InMemoryLogger<T> : BaseLogger<T> where T : class
     {

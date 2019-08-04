@@ -146,7 +146,8 @@ namespace Annium.Storage.S3.Tests
         {
             var services = new ServiceCollection();
             services.AddStorage().AddS3Storage();
-            services.AddInMemoryLogger(new LoggerConfiguration(LogLevel.Trace));
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddInMemoryLogger();
             services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
 
             var provider = services.BuildServiceProvider();

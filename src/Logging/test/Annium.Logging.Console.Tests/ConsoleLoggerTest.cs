@@ -15,11 +15,7 @@ namespace Annium.Logging.Console.Tests
         public void LogMessage_WritesLogMessageToConsole()
         {
             // arrange
-            var services = new ServiceCollection();
-            services.AddSingleton(getInstant);
-            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
-            var provider = services.BuildServiceProvider();
-            var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
+            var logger = GetLogger();
 
             using(var capture = ConsoleCapture.Start())
             {
@@ -35,11 +31,7 @@ namespace Annium.Logging.Console.Tests
         public void LogAggregateException_WritesErrorsCountAndAllErrorsToConsole()
         {
             // arrange
-            var services = new ServiceCollection();
-            services.AddSingleton(getInstant);
-            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
-            var provider = services.BuildServiceProvider();
-            var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
+            var logger = GetLogger();
 
             using(var capture = ConsoleCapture.Start())
             {
@@ -60,11 +52,7 @@ namespace Annium.Logging.Console.Tests
         public void LogException_WritesExceptionToConsole()
         {
             // arrange
-            var services = new ServiceCollection();
-            services.AddSingleton(getInstant);
-            services.AddConsoleLogger(new LoggerConfiguration(LogLevel.Trace));
-            var provider = services.BuildServiceProvider();
-            var logger = provider.GetRequiredService<ILogger<ConsoleLoggerTest>>();
+            var logger = GetLogger();
 
             using(var capture = ConsoleCapture.Start())
             {
@@ -77,6 +65,16 @@ namespace Annium.Logging.Console.Tests
                 // assert
                 capture.Output.Contains("xxx").IsTrue();
             }
+        }
+
+        private ILogger<ConsoleLoggerTest> GetLogger()
+        {
+            var services = new ServiceCollection();
+            services.AddSingleton(getInstant);
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddConsoleLogger();
+
+            return services.BuildServiceProvider().GetRequiredService<ILogger<ConsoleLoggerTest>>();
         }
     }
 }

@@ -138,7 +138,8 @@ namespace Annium.Storage.InMemory.Tests
         {
             var services = new ServiceCollection();
             services.AddStorage().AddInMemoryStorage();
-            services.AddInMemoryLogger(new LoggerConfiguration(LogLevel.Trace));
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddInMemoryLogger();
             services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
 
             var provider = services.BuildServiceProvider();

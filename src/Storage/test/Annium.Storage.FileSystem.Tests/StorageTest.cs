@@ -145,7 +145,8 @@ namespace Annium.Storage.FileSystem.Tests
         {
             var services = new ServiceCollection();
             services.AddStorage().AddFileSystemStorage();
-            services.AddInMemoryLogger(new LoggerConfiguration(LogLevel.Trace));
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddInMemoryLogger();
             services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
 
             var provider = services.BuildServiceProvider();

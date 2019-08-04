@@ -10,6 +10,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
         <ProjectReference Include="../../src/Annium.Storage.InMemory/Annium.Storage.InMemory.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>

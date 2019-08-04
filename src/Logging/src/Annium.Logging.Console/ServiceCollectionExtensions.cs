@@ -6,9 +6,8 @@ namespace Annium.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddConsoleLogger(this IServiceCollection services, LoggerConfiguration configuration)
+        public static IServiceCollection AddConsoleLogger(this IServiceCollection services)
         {
-            services.AddSingleton(configuration);
             services.AddSingleton(typeof(ILogger<>), typeof(ConsoleLogger<>));
 
             return services;

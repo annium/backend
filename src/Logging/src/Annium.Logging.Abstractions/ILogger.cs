@@ -19,5 +19,5 @@ namespace Annium.Logging.Abstractions
         void Error(string message);
     }
 
-    public interface ILogger<T> : ILogger where T : class { }
+    public interface ILogger<out T> : ILogger where T : class { }
 }
