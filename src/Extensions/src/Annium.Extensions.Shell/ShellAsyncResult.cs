@@ -6,11 +6,8 @@ namespace Annium.Extensions.Shell
     public class ShellAsyncResult
     {
         public StreamWriter Input { get; }
-
         public StreamReader Output { get; }
-
         public StreamReader Error { get; }
-
         public Task<ShellResult> Result { get; }
 
         public ShellAsyncResult(

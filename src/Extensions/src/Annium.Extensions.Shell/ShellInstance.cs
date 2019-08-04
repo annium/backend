@@ -11,11 +11,8 @@ namespace Annium.Extensions.Shell
     internal class ShellInstance : IShellInstance
     {
         private readonly string cmd;
-
         private readonly ILogger<Shell> logger;
-
         private ProcessStartInfo startInfo;
-
         private bool pipe;
 
         public ShellInstance(
@@ -158,14 +155,8 @@ namespace Annium.Extensions.Shell
 
             void pipeOut(StreamReader src)
             {
-                while (true)
-                {
-                    var line = src.ReadLine();
-                    if (line == null)
-                        return;
-
-                    Console.WriteLine(line);
-                }
+                while (!src.EndOfStream)
+                    Console.Write((char) src.Read());
             }
         }
 
