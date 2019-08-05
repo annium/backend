@@ -8,7 +8,7 @@
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>false</IsPackable>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="PemUtils" Version="3.0.0.81" />

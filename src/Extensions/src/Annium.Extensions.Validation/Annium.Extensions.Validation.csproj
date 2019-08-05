@@ -8,7 +8,7 @@
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>false</IsPackable>
+        <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Application/Annium.Core.Application.csproj" />
