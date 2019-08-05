@@ -1,6 +1,6 @@
 using System;
 using System.Threading;
-using Annium.Extensions.Entrypoint;
+using Annium.Core.Entrypoint;
 using Annium.Extensions.Primitives;
 
 namespace Demo.Extensions.Primitives

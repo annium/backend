@@ -1,7 +1,7 @@
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.Entrypoint
+namespace Annium.Core.Entrypoint
 {
     internal class RunPack
     {

@@ -1,8 +1,8 @@
-using Annium.Extensions.Localization;
+using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

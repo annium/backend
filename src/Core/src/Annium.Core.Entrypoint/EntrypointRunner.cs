@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Entrypoint
+namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {

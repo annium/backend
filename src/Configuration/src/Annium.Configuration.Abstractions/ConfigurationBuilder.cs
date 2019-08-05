@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Application.Types;
+using Annium.Core.Mapper;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Extensions.Configuration
+namespace Annium.Configuration.Abstractions
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
@@ -39,7 +40,7 @@ namespace Annium.Extensions.Configuration
                 return ProcessList(type);
             if (type.IsArray)
                 return ProcessArray(type);
-            if (Mapper.Mapper.HasMap(string.Empty, type))
+            if (Mapper.HasMap(string.Empty, type))
                 return ProcessValue(type);
             return ProcessObject(type);
         }
@@ -57,7 +58,7 @@ namespace Annium.Extensions.Configuration
             {
                 // var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
                 context.Push(name);
-                result[Mapper.Mapper.Map(name, keyType)] = Process(valueType);
+                result[Mapper.Map(name, keyType)] = Process(valueType);
                 context.Pop();
             }
 
@@ -134,7 +135,7 @@ namespace Annium.Extensions.Configuration
         private object ProcessValue(Type type)
         {
             if (config.TryGetValue(path, out var value))
-                return Mapper.Mapper.Map(value, type);
+                return Mapper.Map(value, type);
 
             throw new ArgumentException($"Key {string.Join('.', path)} not found in configuration.");
         }

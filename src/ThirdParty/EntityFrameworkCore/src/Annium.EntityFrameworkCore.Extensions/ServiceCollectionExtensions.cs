@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

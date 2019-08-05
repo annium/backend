@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Annium.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;

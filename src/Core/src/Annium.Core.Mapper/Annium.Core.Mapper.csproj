@@ -2,7 +2,7 @@
     <PropertyGroup>
         <PackageId>Annium.Core.Mapper</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Extensions.Mapper</Description>
+        <Description>Annium.Core.Mapper</Description>
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>

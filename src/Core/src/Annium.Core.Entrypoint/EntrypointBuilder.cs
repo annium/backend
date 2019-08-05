@@ -2,7 +2,7 @@ using System;
 using System.Runtime.Loader;
 using System.Threading;
 
-namespace Annium.Extensions.Entrypoint
+namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {

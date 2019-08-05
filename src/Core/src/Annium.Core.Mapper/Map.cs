@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.Application.Types;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     public class MapConfiguration<S, T> : Map
     {

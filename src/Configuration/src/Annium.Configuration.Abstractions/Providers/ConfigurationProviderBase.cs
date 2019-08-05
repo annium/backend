@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Annium.Extensions.Configuration
+namespace Annium.Configuration.Abstractions
 {
     internal abstract class ConfigurationProviderBase
     {

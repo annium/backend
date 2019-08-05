@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     public class MapperConfiguration
     {

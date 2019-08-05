@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public abstract class ServicePackBase
     {

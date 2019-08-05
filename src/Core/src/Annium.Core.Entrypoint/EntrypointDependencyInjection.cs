@@ -1,6 +1,6 @@
-using Annium.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
-namespace Annium.Extensions.Entrypoint
+namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {

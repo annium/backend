@@ -4,7 +4,7 @@ using System.Linq;
 using Annium.Testing;
 using Newtonsoft.Json;
 
-namespace Annium.Extensions.Configuration.Tests
+namespace Annium.Configuration.Abstractions.Tests
 {
     public class JsonConfigurationProviderTest
     {

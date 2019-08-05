@@ -2,7 +2,7 @@ using Annium.Core.Application.Types;
 using Annium.Extensions.Validation;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

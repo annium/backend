@@ -5,7 +5,7 @@ using Annium.Storage.FileSystem;
 using Microsoft.Extensions.DependencyInjection;
 using FsStorage = Annium.Storage.FileSystem.Storage;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

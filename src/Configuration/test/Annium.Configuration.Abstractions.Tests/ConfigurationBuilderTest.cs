@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Annium.Testing;
 
-namespace Annium.Extensions.Configuration.Tests
+namespace Annium.Configuration.Abstractions.Tests
 {
     public class ConfigurationBuilderTest
     {

@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Annium.Core.Application.Types;
-using Annium.Extensions.Mapper;
+using Annium.Core.Mapper;
 
-namespace Annium.Extensions.Configuration.Tests
+namespace Annium.Configuration.Abstractions.Tests
 {
     internal class Config
     {

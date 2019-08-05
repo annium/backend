@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     // Summary:
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression

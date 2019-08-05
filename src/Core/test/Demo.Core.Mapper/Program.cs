@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
-using Annium.Extensions.Entrypoint;
-using Annium.Extensions.Mapper;
+using Annium.Core.Entrypoint;
+using Annium.Core.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Mapping

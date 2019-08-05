@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Annium.Extensions.Configuration
+namespace Annium.Configuration.Abstractions
 {
     public interface IConfigurationBuilder
     {

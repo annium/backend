@@ -2,7 +2,7 @@ using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

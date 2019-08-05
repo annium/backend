@@ -5,7 +5,7 @@ using Annium.Storage.InMemory;
 using Microsoft.Extensions.DependencyInjection;
 using MemoryStorage = Annium.Storage.InMemory.Storage;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {

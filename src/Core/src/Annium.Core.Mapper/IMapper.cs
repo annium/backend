@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     public interface IMapper
     {

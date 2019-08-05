@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Annium.Testing;
 
-namespace Annium.Extensions.Mapper.Tests
+namespace Annium.Core.Mapper.Tests
 {
     public class RepackerTest
     {

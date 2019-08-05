@@ -1,7 +1,7 @@
 using System;
 using NodaTime;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     internal static class DefaultConfiguration
     {

@@ -1,7 +1,7 @@
 using Annium.Data.Serialization.Json;
 using Newtonsoft.Json;
 
-namespace Annium.Extensions.DependencyInjection
+namespace Annium.Core.DependencyInjection
 {
     public static class ConfigurationExtensions
     {

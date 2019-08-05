@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Application.Types;
 
-namespace Annium.Extensions.Mapper
+namespace Annium.Core.Mapper
 {
     public static class Mapper
     {

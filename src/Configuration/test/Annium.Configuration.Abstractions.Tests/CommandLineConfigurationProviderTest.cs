@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Testing;
 
-namespace Annium.Extensions.Configuration.Tests
+namespace Annium.Configuration.Abstractions.Tests
 {
     public class CommandLineConfigurationProviderTest
     {

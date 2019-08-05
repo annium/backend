@@ -1,9 +1,9 @@
 using System.Collections.Generic;
-using Annium.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.Mapper.Tests
+namespace Annium.Core.Mapper.Tests
 {
     public class AbstractionsTest
     {

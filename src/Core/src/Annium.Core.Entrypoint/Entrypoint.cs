@@ -1,4 +1,4 @@
-namespace Annium.Extensions.Entrypoint
+namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {

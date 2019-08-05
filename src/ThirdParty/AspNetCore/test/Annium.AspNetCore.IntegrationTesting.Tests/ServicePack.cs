@@ -1,4 +1,4 @@
-using Annium.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {

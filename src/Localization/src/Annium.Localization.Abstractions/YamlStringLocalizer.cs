@@ -5,7 +5,7 @@ using System.IO;
 using Microsoft.Extensions.Localization;
 using YamlDotNet.Serialization;
 
-namespace Annium.Extensions.Localization
+namespace Annium.Localization.Abstractions
 {
     public class YamlStringLocalizer : IStringLocalizer
     {

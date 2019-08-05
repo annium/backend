@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Extensions.Configuration
+namespace Annium.Configuration.Abstractions
 {
     internal class CommandLineConfigurationProvider : ConfigurationProviderBase
     {
