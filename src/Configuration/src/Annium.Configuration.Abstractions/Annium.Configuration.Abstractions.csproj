@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Extensions.Configuration</PackageId>
+        <PackageId>Annium.Configuration.Abstractions</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Extension library for building configuration from multiple sources.</Description>
         <TargetFramework>netcoreapp2.2</TargetFramework>
@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
