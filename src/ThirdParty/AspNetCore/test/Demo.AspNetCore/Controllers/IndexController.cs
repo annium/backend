@@ -3,7 +3,7 @@ using Annium.AspNetCore.Extensions;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Annium.AspNetCore.Demo.Controllers
+namespace Demo.AspNetCore.Controllers
 {
     [Route("/")]
     public class IndexController : ServerController
@@ -16,7 +16,7 @@ namespace Annium.AspNetCore.Demo.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            return Ok("Hello World from Annium.AspNetCore.Demo");
+            return Ok("Hello World from Demo.AspNetCore");
         }
 
         [HttpGet("created")]

@@ -1,6 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
-using Annium.AspNetCore.Demo;
+using Demo.AspNetCore;
 using Annium.Net.Http;
 using Annium.Testing;
 

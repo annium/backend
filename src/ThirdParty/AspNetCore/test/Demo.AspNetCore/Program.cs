@@ -2,7 +2,7 @@ using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
-namespace Annium.AspNetCore.Demo
+namespace Demo.AspNetCore
 {
     internal class Program
     {

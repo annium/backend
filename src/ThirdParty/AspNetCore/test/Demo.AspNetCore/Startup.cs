@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.AspNetCore.Demo
+namespace Demo.AspNetCore
 {
     public class Startup<TServicePack> where TServicePack : ServicePackBase, new()
     {

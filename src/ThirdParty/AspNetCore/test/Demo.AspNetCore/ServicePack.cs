@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.AspNetCore.Demo
+namespace Demo.AspNetCore
 {
     internal class ServicePack : ServicePackBase
     {
