@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />

@@ -12,6 +12,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
-        <ProjectReference Include="../../src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
     </ItemGroup>
 </Project>

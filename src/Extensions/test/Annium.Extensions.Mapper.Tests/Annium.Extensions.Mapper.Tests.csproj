@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Extensions.Mapper/Annium.Extensions.Mapper.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>
