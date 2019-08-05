@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Extensions.DependencyInjection</PackageId>
+        <PackageId>Annium.Core.DependencyInjection</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Extension library for simplifying and powering up Microsoft DI container. Bundles and reuses services via ServicePack concept.</Description>
         <TargetFramework>netcoreapp2.2</TargetFramework>

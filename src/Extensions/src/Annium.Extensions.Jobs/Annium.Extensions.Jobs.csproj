@@ -10,7 +10,7 @@
         <LangVersion>latest</LangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Extensions.DependencyInjection/Annium.Extensions.DependencyInjection.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="NodaTime" Version="2.4.6" />

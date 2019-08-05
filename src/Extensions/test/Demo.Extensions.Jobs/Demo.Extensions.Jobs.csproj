@@ -11,7 +11,7 @@
         <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Extensions.Entrypoint/Annium.Extensions.Entrypoint.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Extensions.Jobs/Annium.Extensions.Jobs.csproj" />
     </ItemGroup>
 </Project>
