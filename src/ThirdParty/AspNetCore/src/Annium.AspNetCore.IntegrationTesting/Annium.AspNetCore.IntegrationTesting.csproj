@@ -6,8 +6,9 @@
         <TargetFramework>netcoreapp2.2</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <LangVersion>latest</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>false</IsPackable>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../../Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
