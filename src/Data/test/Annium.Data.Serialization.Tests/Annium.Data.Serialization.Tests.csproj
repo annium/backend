@@ -8,6 +8,7 @@
         <DebugType>portable</DebugType>
         <WarningsAsErrors>true</WarningsAsErrors>
         <LangVersion>latest</LangVersion>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />

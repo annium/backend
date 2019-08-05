@@ -8,6 +8,7 @@
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
