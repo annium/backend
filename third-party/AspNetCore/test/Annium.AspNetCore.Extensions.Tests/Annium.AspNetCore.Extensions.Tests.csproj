@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
-        <ProjectReference Include="../../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
+        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
         <ProjectReference Include="../Demo.AspNetCore/Demo.AspNetCore.csproj" />
     </ItemGroup>
     <ItemGroup>

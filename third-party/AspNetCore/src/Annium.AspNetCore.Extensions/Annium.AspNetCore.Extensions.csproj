@@ -11,9 +11,9 @@
         <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
-        <ProjectReference Include="../../../../Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
-        <ProjectReference Include="../../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
+        <ProjectReference Include="../../../../base/Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
+        <ProjectReference Include="../../../../base/Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
+        <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />
