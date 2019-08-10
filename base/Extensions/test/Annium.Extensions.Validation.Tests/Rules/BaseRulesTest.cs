@@ -13,8 +13,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Name = "some" });
-            var resultBad = await validator.Validate(new Person() { Name = " " });
+            var resultGood = await validator.ValidateAsync(new Person() { Name = "some" });
+            var resultBad = await validator.ValidateAsync(new Person() { Name = " " });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Name)).IsFalse();
@@ -28,8 +28,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Age = 1 });
-            var resultBad = await validator.Validate(new Person());
+            var resultGood = await validator.ValidateAsync(new Person() { Age = 1 });
+            var resultBad = await validator.ValidateAsync(new Person());
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Age)).IsFalse();
@@ -43,8 +43,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Fixed = "fixed value" });
-            var resultBad = await validator.Validate(new Person() { Fixed = "other value" });
+            var resultGood = await validator.ValidateAsync(new Person() { Fixed = "fixed value" });
+            var resultBad = await validator.ValidateAsync(new Person() { Fixed = "other value" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Fixed)).IsFalse();
@@ -58,8 +58,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { OneOf = "one" });
-            var resultBad = await validator.Validate(new Person() { OneOf = "three" });
+            var resultGood = await validator.ValidateAsync(new Person() { OneOf = "one" });
+            var resultBad = await validator.ValidateAsync(new Person() { OneOf = "three" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.OneOf)).IsFalse();
@@ -73,8 +73,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Name = "some", SameAsName = "some" });
-            var resultBad = await validator.Validate(new Person() { Name = "some", SameAsName = "other" });
+            var resultGood = await validator.ValidateAsync(new Person() { Name = "some", SameAsName = "some" });
+            var resultBad = await validator.ValidateAsync(new Person() { Name = "some", SameAsName = "other" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.SameAsName)).IsFalse();
@@ -88,8 +88,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { NotFixed = "other value" });
-            var resultBad = await validator.Validate(new Person() { NotFixed = "fixed value" });
+            var resultGood = await validator.ValidateAsync(new Person() { NotFixed = "other value" });
+            var resultBad = await validator.ValidateAsync(new Person() { NotFixed = "fixed value" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotFixed)).IsFalse();
@@ -103,8 +103,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { NotOneOf = "three" });
-            var resultBad = await validator.Validate(new Person() { NotOneOf = "one" });
+            var resultGood = await validator.ValidateAsync(new Person() { NotOneOf = "three" });
+            var resultBad = await validator.ValidateAsync(new Person() { NotOneOf = "one" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotOneOf)).IsFalse();
@@ -118,8 +118,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Name = "some", NotSameAsName = "other" });
-            var resultBad = await validator.Validate(new Person() { Name = "some", NotSameAsName = "some" });
+            var resultGood = await validator.ValidateAsync(new Person() { Name = "some", NotSameAsName = "other" });
+            var resultBad = await validator.ValidateAsync(new Person() { Name = "some", NotSameAsName = "some" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.NotSameAsName)).IsFalse();
@@ -133,9 +133,9 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { MinMaxLength = "other" });
-            var resultBadMin = await validator.Validate(new Person() { MinMaxLength = "x" });
-            var resultBadMax = await validator.Validate(new Person() { MinMaxLength = "otherx" });
+            var resultGood = await validator.ValidateAsync(new Person() { MinMaxLength = "other" });
+            var resultBadMin = await validator.ValidateAsync(new Person() { MinMaxLength = "x" });
+            var resultBadMax = await validator.ValidateAsync(new Person() { MinMaxLength = "otherx" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MinMaxLength)).IsFalse();
@@ -150,8 +150,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { MinLength = "other" });
-            var resultBad = await validator.Validate(new Person() { MinLength = "x" });
+            var resultGood = await validator.ValidateAsync(new Person() { MinLength = "other" });
+            var resultBad = await validator.ValidateAsync(new Person() { MinLength = "x" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MinLength)).IsFalse();
@@ -165,8 +165,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { MaxLength = "other" });
-            var resultBad = await validator.Validate(new Person() { MaxLength = "otherx" });
+            var resultGood = await validator.ValidateAsync(new Person() { MaxLength = "other" });
+            var resultBad = await validator.ValidateAsync(new Person() { MaxLength = "otherx" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.MaxLength)).IsFalse();
@@ -180,9 +180,9 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Between = 2 });
-            var resultBadMin = await validator.Validate(new Person() { Between = 1 });
-            var resultBadMax = await validator.Validate(new Person() { Between = 4 });
+            var resultGood = await validator.ValidateAsync(new Person() { Between = 2 });
+            var resultBadMin = await validator.ValidateAsync(new Person() { Between = 1 });
+            var resultBadMax = await validator.ValidateAsync(new Person() { Between = 4 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Between)).IsFalse();
@@ -197,8 +197,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { LessThan = 2 });
-            var resultBad = await validator.Validate(new Person() { LessThan = 3 });
+            var resultGood = await validator.ValidateAsync(new Person() { LessThan = 2 });
+            var resultBad = await validator.ValidateAsync(new Person() { LessThan = 3 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThan)).IsFalse();
@@ -212,8 +212,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { LessThanOrEqual = 3 });
-            var resultBad = await validator.Validate(new Person() { LessThanOrEqual = 4 });
+            var resultGood = await validator.ValidateAsync(new Person() { LessThanOrEqual = 3 });
+            var resultBad = await validator.ValidateAsync(new Person() { LessThanOrEqual = 4 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThanOrEqual)).IsFalse();
@@ -227,8 +227,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { GreaterThan = 4 });
-            var resultBad = await validator.Validate(new Person() { GreaterThan = 3 });
+            var resultGood = await validator.ValidateAsync(new Person() { GreaterThan = 4 });
+            var resultBad = await validator.ValidateAsync(new Person() { GreaterThan = 3 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThan)).IsFalse();
@@ -242,8 +242,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { GreaterThanOrEqual = 3 });
-            var resultBad = await validator.Validate(new Person() { GreaterThanOrEqual = 2 });
+            var resultGood = await validator.ValidateAsync(new Person() { GreaterThanOrEqual = 3 });
+            var resultBad = await validator.ValidateAsync(new Person() { GreaterThanOrEqual = 2 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThanOrEqual)).IsFalse();
@@ -257,8 +257,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Regex = "yes" });
-            var resultBad = await validator.Validate(new Person() { Regex = "yoda" });
+            var resultGood = await validator.ValidateAsync(new Person() { Regex = "yes" });
+            var resultBad = await validator.ValidateAsync(new Person() { Regex = "yoda" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Regex)).IsFalse();
@@ -272,8 +272,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Email = "yes@xx" });
-            var resultBad = await validator.Validate(new Person() { Email = "yoda@" });
+            var resultGood = await validator.ValidateAsync(new Person() { Email = "yes@xx" });
+            var resultBad = await validator.ValidateAsync(new Person() { Email = "yoda@" });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Email)).IsFalse();
@@ -284,7 +284,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
         public void Enum_NotEnumType_ThrowsArgumentException()
         {
             // act
-            ((Func<Validator<BadEnum>>) (() => GetValidator<BadEnum>())).Throws<ArgumentException>();
+            ((Func<IValidator<BadEnum>>) (() => GetValidator<BadEnum>())).Throws<ArgumentException>();
         }
 
         [Fact]
@@ -294,8 +294,8 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.Validate(new Person() { Enum = LogLevel.Debug });
-            var resultBad = await validator.Validate(new Person() { Enum = (LogLevel) 0 });
+            var resultGood = await validator.ValidateAsync(new Person() { Enum = LogLevel.Debug });
+            var resultBad = await validator.ValidateAsync(new Person() { Enum = (LogLevel) 0 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();

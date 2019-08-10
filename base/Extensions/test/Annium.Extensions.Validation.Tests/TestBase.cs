@@ -5,9 +5,9 @@ namespace Annium.Extensions.Validation.Tests
 {
     public class TestBase
     {
-        protected Validator<T> GetValidator<T>() => new ServiceCollection()
+        protected IValidator<T> GetValidator<T>() => new ServiceCollection()
             .AddValidation()
             .BuildServiceProvider()
-            .GetRequiredService<Validator<T>>();
+            .GetRequiredService<IValidator<T>>();
     }
 }

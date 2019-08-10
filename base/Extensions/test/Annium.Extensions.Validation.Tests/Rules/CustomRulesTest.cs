@@ -12,7 +12,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(new Person());
+            var result = await validator.ValidateAsync(new Person());
 
             // assert
             result.IsFailure.IsTrue();
@@ -27,7 +27,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(new Person() { Name = "ho" });
+            var result = await validator.ValidateAsync(new Person() { Name = "ho" });
 
             // assert
             result.IsFailure.IsTrue();

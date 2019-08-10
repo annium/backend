@@ -10,7 +10,7 @@ namespace Annium.Extensions.Validation.Tests
         public void Field_AccessorIsNull_ThrowsArgumentNullException()
         {
             // act
-            ((Func<Validator<Bad>>) (() => GetValidator<Bad>())).Throws<ArgumentNullException>();
+            ((Func<IValidator<Bad>>) (() => GetValidator<Bad>())).Throws<ArgumentNullException>();
         }
 
         [Fact]
@@ -20,7 +20,7 @@ namespace Annium.Extensions.Validation.Tests
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(null);
+            var result = await validator.ValidateAsync(null);
 
             // assert
             result.IsFailure.IsTrue();
@@ -35,7 +35,7 @@ namespace Annium.Extensions.Validation.Tests
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(null, "nested");
+            var result = await validator.ValidateAsync(null, "nested");
 
             // assert
             result.IsFailure.IsTrue();
@@ -50,7 +50,7 @@ namespace Annium.Extensions.Validation.Tests
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(new Person());
+            var result = await validator.ValidateAsync(new Person());
 
             // assert
             result.IsFailure.IsTrue();
@@ -65,7 +65,7 @@ namespace Annium.Extensions.Validation.Tests
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.Validate(new Person(), "nested");
+            var result = await validator.ValidateAsync(new Person(), "nested");
 
             // assert
             result.IsFailure.IsTrue();

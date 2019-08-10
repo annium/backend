@@ -1,3 +1,4 @@
+using System.Linq;
 using Annium.Core.Application.Types;
 using Annium.Extensions.Validation;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,15 +11,15 @@ namespace Annium.Core.DependencyInjection
         {
             var typeManager = TypeManager.Instance;
 
-            var baseType = typeof(Validator<>);
+            var baseType = typeof(IValidator<>);
             var validatorTypes = typeManager.GetImplementations(baseType);
-            foreach (var implementationType in validatorTypes)
+            foreach (var type in validatorTypes)
             {
-                var serviceType = implementationType;
-                while (!serviceType.IsGenericType || serviceType.GetGenericTypeDefinition() != baseType)
-                    serviceType = serviceType.BaseType;
+                var @interface = type.GetInterfaces()
+                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
 
-                services.AddSingleton(serviceType, implementationType);
+                if (!@interface.ContainsGenericParameters)
+                    services.AddScoped(@interface, type);
             }
 
             return services;

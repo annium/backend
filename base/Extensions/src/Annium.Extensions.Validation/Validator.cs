@@ -8,7 +8,7 @@ using Annium.Data.Operations;
 
 namespace Annium.Extensions.Validation
 {
-    public abstract class Validator<TValue>
+    public abstract class Validator<TValue> : IValidator<TValue>
     {
         private IDictionary<PropertyInfo, IRuleContainer<TValue>> rules = new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
@@ -25,7 +25,7 @@ namespace Annium.Extensions.Validation
             return rule;
         }
 
-        public async Task<BooleanResult> Validate(TValue value, string label = null)
+        public async Task<BooleanResult> ValidateAsync(TValue value, string label = null)
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
