@@ -1,7 +1,15 @@
+using System.Collections.Generic;
+
 namespace Annium.Data.Operations
 {
     public static class Result
     {
+        public static BooleanResult Join(params IResult[] results) =>
+            new BooleanResult(true).Join(results);
+
+        public static BooleanResult Join(IEnumerable<IResult> results) =>
+            new BooleanResult(true).Join(results);
+
         public static BooleanResult New() =>
             new BooleanResult(true);
 
