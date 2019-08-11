@@ -1,4 +1,3 @@
-using System;
 using Annium.Core.Application.Types;
 using Annium.Testing;
 

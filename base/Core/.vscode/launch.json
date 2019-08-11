@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+            "name": "Core.Application",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/Demo.Core.Application/bin/Debug/netcoreapp2.2/Demo.Core.Application.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/Demo.Core.Application",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Core.Mapper",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/Demo.Core.Mapper/bin/Debug/netcoreapp2.2/Demo.Core.Mapper.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/Demo.Core.Mapper",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
+            "name": "Core.Mediator",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/Demo.Core.Mediator/bin/Debug/netcoreapp2.2/Demo.Core.Mediator.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/Demo.Core.Mediator",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        }
+    ]
+}
