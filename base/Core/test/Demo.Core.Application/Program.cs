@@ -15,9 +15,10 @@ namespace Demo.Core.Application
         {
             Type target = null;
             Type implementation = null;
+            target = typeof(IGeneric<int, bool>);
+            implementation = typeof(ComplexPlain<>).ResolveByImplentation(target);
+            // var ownInterfaces = typeof(OpenComplex<int>).GetOwnInterfaces();
             // implementation = typeof(int).GetImplementationOf(typeof(System.ValueType));
-            target = typeof(IGenericConstrained<,>).MakeGenericType(typeof(BasePlain), typeof(GenericPlain<>));
-            implementation = typeof(OpenComplex<long>).GetImplementationOf(target);
             // implementation = typeof(OpenComplex<long>).GetImplementationOf(typeof(IGenericConstrained<,>).MakeGenericType(typeof(BasePlain), typeof(OtherComplex<>)));
             // implementation = typeof(OpenComplex<int>).GetImplementationOf(typeof(ComplexPlain<>));
             // implementation = typeof(IGeneric<,>).GetImplementationOf(typeof(IPlain));
@@ -27,13 +28,21 @@ namespace Demo.Core.Application
             .UseServicePack<ServicePack>()
             .Run(Run, args);
 
+        private class Other<T> : Next<int, T> { }
+
+        private class Next<T1, T2> : Derived<T2, T1> { }
+
+        private class Derived<T1, T2> : Base<T2, T1> { }
+
+        private class Base<T1, T2> : IGeneric<T1, T2> { }
+
         private class OtherComplete : OtherComplex<bool>, IGeneric<bool, string> { }
 
         private class OtherComplex<T> : BasePlain { }
 
         private class OtherPlain { }
 
-        private class OpenComplex<T> : ComplexPlain<T>, IGenericConstrained<BasePlain, GenericPlain<T>> { }
+        private class OpenComplex<T> : ComplexPlain<T>, IGenericConstrained<BasePlain, GenericPlain<T>>, IPlain { }
 
         private class CompleteComplex : ComplexPlain<bool>, IGenericConstrained<BasePlain, GenericPlain<bool>> { }
 
