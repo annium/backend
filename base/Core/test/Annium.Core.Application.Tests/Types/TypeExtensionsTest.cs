@@ -9,40 +9,46 @@ namespace Annium.Core.Application.Tests.Types
         [Fact]
         public void ResolveByImplentation_Null_ThrowsArgumentNullException()
         {
-            ((Action) (() => (null as Type).ResolveByImplentation(typeof(int)))).Throws<ArgumentNullException>();
-            ((Action) (() => typeof(int).ResolveByImplentation(null))).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type).ResolveByImplentations(typeof(int)))).Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void ResolveByImplentation_Defined_IsReturned()
         {
-            typeof(BasePlain).ResolveByImplentation(typeof(IPlain)).IsEqual(typeof(BasePlain));
+            typeof(BasePlain).ResolveByImplentations(typeof(IPlain)).IsEqual(typeof(BasePlain));
         }
 
         [Fact]
         public void ResolveByImplentation_Interface_BuildsInterfaceImplementation()
         {
-            typeof(ComplexPlain<>).ResolveByImplentation(typeof(IGeneric<int, int>)).IsEqual(typeof(ComplexPlain<int>));
+            typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<int, int>)).IsEqual(typeof(ComplexPlain<int>));
         }
 
         [Fact]
         public void ResolveByImplentation_Class_BuildsClassImplementation()
         {
-            typeof(OpenComplex<>).ResolveByImplentation(typeof(GenericPlain<bool>)).IsEqual(typeof(OpenComplex<bool>));
+            typeof(OpenComplex<>).ResolveByImplentations(typeof(GenericPlain<bool>)).IsEqual(typeof(OpenComplex<bool>));
+        }
+
+        [Fact]
+        public void ResolveByImplentation_Complex_BuildsClassImplementation()
+        {
+            typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>))
+                .IsEqual(typeof(MultiComplex<bool, long>));
         }
 
         [Fact]
         public void ResolveByImplentation_UnbuildableClass_ReturnsNull()
         {
-            typeof(Other<>).ResolveByImplentation(typeof(Base<int, bool>)).IsEqual(typeof(Other<bool>));
-            typeof(Other<>).ResolveByImplentation(typeof(Base<long, bool>)).IsDefault();
+            typeof(Other<>).ResolveByImplentations(typeof(Base<int, bool>)).IsEqual(typeof(Other<bool>));
+            typeof(Other<>).ResolveByImplentations(typeof(Base<long, bool>)).IsDefault();
         }
 
         [Fact]
         public void ResolveByImplentation_UnbuildableInterface_ReturnsNull()
         {
-            typeof(ComplexPlain<>).ResolveByImplentation(typeof(IGeneric<bool, int>)).IsEqual(typeof(ComplexPlain<bool>));
-            typeof(ComplexPlain<>).ResolveByImplentation(typeof(IGeneric<int, bool>)).IsDefault();
+            typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<bool, int>)).IsEqual(typeof(ComplexPlain<bool>));
+            typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<int, bool>)).IsDefault();
         }
 
         [Fact]
@@ -108,6 +114,8 @@ namespace Annium.Core.Application.Tests.Types
         private class OtherComplex<T> : BasePlain { }
 
         private class OtherPlain { }
+
+        private class MultiComplex<T1, T2> : OtherComplex<T1>, IGeneric<T2, int> { }
 
         private class OpenComplex<T> : ComplexPlain<T>, IGenericConstrained<BasePlain, GenericPlain<T>>, IPlain { }
 

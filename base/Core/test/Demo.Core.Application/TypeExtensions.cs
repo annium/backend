@@ -6,8 +6,60 @@ namespace Annium.Core.Application.Types
 {
     public static class TypeExtensions
     {
-        // ResolveByImplentation - get implementation of given type, that may contain generic parameters, that implements concrete target type
-        public static Type ResolveByImplentation(this Type type, Type target)
+        // Get implementation of given type, that may contain generic parameters, that implements concrete target type
+        public static Type ResolveByImplentations(this Type type, params Type[] targets)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            // if type is defined - no need for resolution
+            if (!type.ContainsGenericParameters)
+                return type;
+
+            var args = type.ResolveGenericArgumentsByImplentations(targets);
+            if (args is null || args.Any(arg => arg is null))
+                return null;
+
+            var result = type.GetGenericTypeDefinition().MakeGenericType(args);
+
+            return targets.All(target => target.IsAssignableFrom(result)) ? result : null;
+        }
+
+        public static Type[] ResolveGenericArgumentsByImplentations(this Type type, params Type[] targets)
+        {
+            var argsMatrix = targets
+                .Select(t =>
+                    type.ResolveGenericArgumentsByImplentation(t) ?
+                    .Select(a => a.IsGenericTypeParameter ? null : a)
+                    .ToArray()
+                )
+                .OfType<Type[]>()
+                .ToList();
+
+            if (argsMatrix.Count == 0)
+                return null;
+
+            var args = argsMatrix[0];
+
+            foreach (var argsSet in argsMatrix.Skip(1))
+                for (var i = 0; i < args.Length; i++)
+                {
+                    var arg = args[i];
+                    var otherArg = argsSet[i];
+
+                    if (otherArg is null)
+                        continue;
+
+                    if (arg is null || arg == otherArg)
+                        args[i] = otherArg;
+                    else
+                        return null;
+                }
+
+            return args;
+        }
+
+        private static Type[] ResolveGenericArgumentsByImplentation(this Type type, Type target)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -15,36 +67,39 @@ namespace Annium.Core.Application.Types
             if (target is null)
                 throw new ArgumentNullException(nameof(target));
 
-            // if type is defined - no need for resolution
-            if (!type.ContainsGenericParameters)
-                return type;
+            // TODO: skipped, cause recursive pipeline
+            // if (target.ContainsGenericParameters)
+            //     throw new ArgumentException($"Can't resolve by generic implementation type with parameters");
 
-            if (target.ContainsGenericParameters)
-                throw new ArgumentException($"Can't resolve by generic implementation type with parameters");
+            // if type is not generic - return empty array, meaning successful resolution
+            if (!type.IsGenericType)
+                return Type.EmptyTypes;
 
-            // if target is not generic - can't resolve
-            if (!target.IsGenericType)
-                return null;
+            // if type is defined or target is not generic - no need for resolution, just return type's generic args
+            if (!type.ContainsGenericParameters || !target.IsGenericType)
+                return type.GetGenericArguments();
 
-            // if same generic - return target
+            // if same generic - return target's arguments
             if (type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
-                return target;
+                return target.GetGenericArguments();
+
+            // type is generic with parameters, target is generic without parameters
+
+            if (target.IsValueType)
+                return null;
 
             if (target.IsClass)
             {
                 var baseType = type.BaseType;
-                if (baseType is null)
+
+                // if no base type or it's not generic - resolution fails, cause types' generic definitions are different
+                if (baseType is null || !baseType.IsGenericType)
                     return null;
 
                 if (baseType.GetGenericTypeDefinition() != target.GetGenericTypeDefinition())
-                {
-                    var unboundBaseType = type.GetUnboundBaseType();
-                    var baseImplementation = unboundBaseType.ResolveByImplentation(target);
+                    return resolveBase();
 
-                    return baseImplementation is null ? null : type.ResolveByImplentation(baseImplementation);
-                }
-
-                return buildImplementation(baseType);
+                return buildArgs(baseType);
             }
 
             if (target.IsInterface)
@@ -54,44 +109,54 @@ namespace Annium.Core.Application.Types
                 var implementation = type.GetOwnInterfaces()
                     .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetBase);
 
-                if (implementation is null)
-                {
-                    if (type.BaseType is null)
-                        return null;
+                if (implementation != null)
+                    return buildArgs(implementation);
 
-                    var unboundBaseType = type.GetUnboundBaseType();
-                    var baseImplementation = unboundBaseType.ResolveByImplentation(target);
+                if (type.BaseType is null)
+                    return null;
 
-                    return baseImplementation is null ? null : type.ResolveByImplentation(baseImplementation);
-                }
-
-                return buildImplementation(implementation);
+                return resolveBase();
             }
 
             // otherwise - not implemented or don't know how to resolve
             throw new NotImplementedException($"Can't resolve {type.Name} implementation of {target.Name}");
 
-            Type buildImplementation(Type implementation)
+            Type[] resolveBase()
             {
-                // restore args from interface
-                var args = type.GetGenericArguments();
-                var baseArgs = implementation.GetGenericArguments();
-                var targetArgs = target.GetGenericArguments();
-
-                for (var i = 0; i < baseArgs.Length; i++)
-                    if (baseArgs[i].IsGenericTypeParameter)
-                        args[baseArgs[i].GenericParameterPosition] = targetArgs[i];
-
-                if (args.Any(arg => arg.IsGenericParameter))
+                var unboundBaseType = type.GetUnboundBaseType();
+                var baseArgs = unboundBaseType.ResolveGenericArgumentsByImplentation(target);
+                if (baseArgs is null)
                     return null;
 
-                var result = type.GetGenericTypeDefinition().MakeGenericType(args);
+                var baseImplementation = type.BaseType.GetGenericTypeDefinition().MakeGenericType(baseArgs);
 
-                return target.IsAssignableFrom(result) ? result : null;
+                return type.ResolveGenericArgumentsByImplentation(baseImplementation);
+            }
+
+            Type[] buildArgs(Type sourceType)
+            {
+                var args = type.GetGenericArguments();
+                fillArgs(args, sourceType, target);
+
+                return args;
+            }
+
+            void fillArgs(Type[] args, Type sourceType, Type targetType)
+            {
+                var sourceArgs = sourceType.GetGenericArguments();
+                var targetArgs = targetType.GetGenericArguments();
+
+                for (var i = 0; i < sourceArgs.Length; i++)
+                {
+                    if (sourceArgs[i].IsGenericTypeParameter)
+                        args[sourceArgs[i].GenericParameterPosition] = targetArgs[i];
+                    else if (sourceArgs[i].ContainsGenericParameters)
+                        fillArgs(args, sourceArgs[i], targetArgs[i]);
+                }
             }
         }
 
-        // GetTargetImplementation - get base of given concrete type, that implements target type, that may contain generic parameters
+        // Get base of given concrete type, that implements target type, that may contain generic parameters
         public static Type GetTargetImplementation(this Type type, Type target)
         {
             if (type is null)
@@ -105,6 +170,9 @@ namespace Annium.Core.Application.Types
 
             if (target.IsAssignableFrom(type))
                 return target;
+
+            if (target.IsValueType)
+                return null;
 
             if (target.IsGenericParameter)
             {

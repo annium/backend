@@ -16,7 +16,9 @@ namespace Demo.Core.Application
             Type target = null;
             Type implementation = null;
             target = typeof(IGeneric<int, bool>);
-            implementation = typeof(ComplexPlain<>).ResolveByImplentation(target);
+            // var arguments = typeof(MultiComplex<,>).ResolveGenericArgumentsByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
+            // implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
+            implementation = typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             // var ownInterfaces = typeof(OpenComplex<int>).GetOwnInterfaces();
             // implementation = typeof(int).GetImplementationOf(typeof(System.ValueType));
             // implementation = typeof(OpenComplex<long>).GetImplementationOf(typeof(IGenericConstrained<,>).MakeGenericType(typeof(BasePlain), typeof(OtherComplex<>)));
@@ -41,6 +43,8 @@ namespace Demo.Core.Application
         private class OtherComplex<T> : BasePlain { }
 
         private class OtherPlain { }
+
+        private class MultiComplex<T1, T2> : OtherComplex<T1>, IGeneric<T2, int> { }
 
         private class OpenComplex<T> : ComplexPlain<T>, IGenericConstrained<BasePlain, GenericPlain<T>>, IPlain { }
 
