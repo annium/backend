@@ -20,7 +20,22 @@ namespace Annium.Core.Mapper
             AddConfiguration(cfg);
         }
 
-        public static void AddConfiguration(MapperConfiguration configuration)
+        public static void AddConfiguration(Action<MapperConfiguration> configure)
+        {
+            var cfg = new MapperConfiguration();
+            configure(cfg);
+            AddConfiguration(cfg);
+        }
+
+        public static bool HasMap<T>(object source) => HasMap(source, typeof(T));
+
+        public static bool HasMap(object source, Type type) => mapper.HasMap(source, type);
+
+        public static T Map<T>(object source) => mapper.Map<T>(source);
+
+        public static object Map(object source, Type type) => mapper.Map(source, type);
+
+        private static void AddConfiguration(MapperConfiguration configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
@@ -31,14 +46,6 @@ namespace Annium.Core.Mapper
                 mapper = CreateMapper();
             }
         }
-
-        public static bool HasMap<T>(object source) => HasMap(source, typeof(T));
-
-        public static bool HasMap(object source, Type type) => mapper.HasMap(source, type);
-
-        public static T Map<T>(object source) => mapper.Map<T>(source);
-
-        public static object Map(object source, Type type) => mapper.Map(source, type);
 
         private static IMapper CreateMapper()
         {
