@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Configuration",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Configuration/bin/Debug/netcoreapp2.2/Demo.Configuration.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Configuration",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}
