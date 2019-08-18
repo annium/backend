@@ -1,24 +1,36 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Mediator;
+using Annium.Logging.Abstractions;
+using Demo.Core.Mediator.Db;
+using Demo.Core.Mediator.Handlers;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 
 namespace Demo.Core.Mediator
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Configure(IServiceCollection services)
-        {
-            // register configurations
-        }
-
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
-            // register and setup services
+            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
+            services.AddMediatorConfiguration(ConfigureMediator);
+            services.AddMediator();
+
+            services.AddSingleton<TodoRepository>();
+
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddConsoleLogger();
         }
 
-        public override void Setup(System.IServiceProvider provider)
+        private void ConfigureMediator(MediatorConfiguration cfg)
         {
-            // setup post-configured services
+            cfg.Add(typeof(LoggingHandler<,>));
+            cfg.Add(typeof(ConversionHandler<,>));
+            cfg.Add(typeof(ExceptionHandler<,>));
+            cfg.Add(typeof(ValidationHandler<,>));
+            cfg.Add(typeof(AuthorizationHandler<,>));
+            cfg.Add(typeof(TodoCommandHandler));
         }
     }
 }
