@@ -24,9 +24,11 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddMapper(this IServiceCollection services, IServiceProvider provider = null)
         {
-            var cfg = provider == null ?
-                new MapperConfiguration() :
-                MapperConfiguration.Merge(provider.GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
+            var configurations = services.BuildServiceProvider().GetRequiredService<IEnumerable<MapperConfiguration>>();
+            if (provider != null)
+                configurations = configurations.Union(provider.GetRequiredService<IEnumerable<MapperConfiguration>>());
+
+            var cfg = MapperConfiguration.Merge(configurations.ToArray());
 
             DefaultConfiguration.Apply(cfg);
 
