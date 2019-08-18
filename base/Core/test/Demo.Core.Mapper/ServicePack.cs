@@ -14,7 +14,7 @@ namespace Demo.Extensions.Mapping
 
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
-            services.AddMapper(provider);
+            services.AddMapper();
         }
 
         private void ConfigureMapping(MapperConfiguration cfg)

@@ -22,13 +22,9 @@ namespace Annium.Core.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddMapper(this IServiceCollection services, IServiceProvider provider = null)
+        public static IServiceCollection AddMapper(this IServiceCollection services)
         {
-            var configurations = services.BuildServiceProvider().GetRequiredService<IEnumerable<MapperConfiguration>>();
-            if (provider != null)
-                configurations = configurations.Union(provider.GetRequiredService<IEnumerable<MapperConfiguration>>());
-
-            var cfg = MapperConfiguration.Merge(configurations.ToArray());
+            var cfg = MapperConfiguration.Merge(services.BuildServiceProvider().GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
 
             DefaultConfiguration.Apply(cfg);
 

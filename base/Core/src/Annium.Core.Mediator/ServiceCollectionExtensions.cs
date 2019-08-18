@@ -21,13 +21,9 @@ namespace Annium.Core.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddMediator(this IServiceCollection services, IServiceProvider provider = null)
+        public static IServiceCollection AddMediator(this IServiceCollection services)
         {
-            var configurations = services.BuildServiceProvider().GetRequiredService<IEnumerable<MediatorConfiguration>>();
-            if (provider != null)
-                configurations = configurations.Union(provider.GetRequiredService<IEnumerable<MediatorConfiguration>>());
-
-            var cfg = MediatorConfiguration.Merge(configurations.ToArray());
+            var cfg = MediatorConfiguration.Merge(services.BuildServiceProvider().GetRequiredService<IEnumerable<MediatorConfiguration>>().ToArray());
 
             services.AddSingleton(cfg);
             foreach (var handler in cfg.Handlers)
