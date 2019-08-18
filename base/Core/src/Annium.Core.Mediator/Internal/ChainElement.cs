@@ -10,7 +10,7 @@ namespace Annium.Core.Mediator.Internal
         public Type ResponseIn { get; }
         public Type ResponseOut { get; }
 
-        internal ChainElement(
+        public ChainElement(
             Type implementation,
             Type requestIn,
             Type requestOut,

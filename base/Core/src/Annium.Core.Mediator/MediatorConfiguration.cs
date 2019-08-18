@@ -18,6 +18,8 @@ namespace Annium.Core.Mediator
         internal IEnumerable<Handler> Handlers => handlers;
         private IList<Handler> handlers = new List<Handler>();
 
+        internal MediatorConfiguration() { }
+
         public void Add(Type handlerType)
         {
             // ensure type is pipe or final handler

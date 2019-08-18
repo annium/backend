@@ -21,6 +21,8 @@ namespace Annium.Core.Mapper
         private Dictionary<ValueTuple<Type, Type>, Map> maps =
             new Dictionary<ValueTuple<Type, Type>, Map>();
 
+        internal MapperConfiguration() { }
+
         public MapperConfiguration Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> map)
         {
             var cfg = Map<TSource, TTarget>();
