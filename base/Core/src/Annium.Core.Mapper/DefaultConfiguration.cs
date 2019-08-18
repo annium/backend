@@ -9,6 +9,8 @@ namespace Annium.Core.Mapper
         {
             cfg.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
             cfg.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
+            cfg.Map<DateTimeOffset, NodaTime.Instant>(d => Instant.FromDateTimeOffset(d));
+            cfg.Map<NodaTime.Instant, DateTimeOffset>(i => i.ToDateTimeOffset());
 
             // string -> xxx
             cfg.Map<string, bool>(s => bool.Parse(s));
