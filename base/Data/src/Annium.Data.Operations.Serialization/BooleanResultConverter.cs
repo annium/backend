@@ -42,10 +42,10 @@ namespace Annium.Data.Operations.Serialization
         {
             var obj = JObject.Load(reader);
 
-            var result = (obj[nameof(BooleanResult.IsSuccess).CamelCase()]?.Value<bool>() ?? false) ? Result.Success() : Result.Failure();
-            if (obj[nameof(BooleanResult.PlainErrors).CamelCase()] is JArray plainErrors)
+            var result = (obj.Get(nameof(BooleanResult.IsSuccess))?.Value<bool>() ?? false) ? Result.Success() : Result.Failure();
+            if (obj.Get(nameof(BooleanResult.PlainErrors)) is JArray plainErrors)
                 result.Errors(plainErrors.ToObject<string[]>());
-            if (obj[nameof(BooleanResult.LabeledErrors).CamelCase()] is JObject labeledErrors)
+            if (obj.Get(nameof(BooleanResult.LabeledErrors)) is JObject labeledErrors)
                 result.Errors(labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>));
 
             return result;
@@ -55,22 +55,22 @@ namespace Annium.Data.Operations.Serialization
         {
             var obj = JObject.Load(reader);
 
-            var isSuccess = obj[nameof(BooleanResult.IsSuccess).CamelCase()]?.Value<bool>() ?? false;
+            var isSuccess = obj.Get(nameof(BooleanResult.IsSuccess))?.Value<bool>() ?? false;
 
-            var data = obj[nameof(BooleanResult<object>.Data).CamelCase()] == null ?
+            var data = obj.Get(nameof(BooleanResult<object>.Data)) == null ?
                 (dataType.IsValueType ? Activator.CreateInstance(dataType) : null) :
-                obj[nameof(BooleanResult<object>.Data).CamelCase()].ToObject(dataType);
+                obj.Get(nameof(BooleanResult<object>.Data)).ToObject(dataType);
 
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == (isSuccess ? nameof(Result.Success) : nameof(Result.Failure)) && m.IsGenericMethod)
                 .MakeGenericMethod(dataType)
                 .Invoke(null, new [] { data });
 
-            if (obj[nameof(BooleanResult.PlainErrors).CamelCase()] is JArray plainErrors)
+            if (obj.Get(nameof(BooleanResult.PlainErrors)) is JArray plainErrors)
                 typeof(BooleanResult<>).MakeGenericType(dataType)
                 .GetMethod(nameof(BooleanResult<object>.Errors), new [] { typeof(ICollection<string>) })
                 .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
-            if (obj[nameof(BooleanResult.LabeledErrors).CamelCase()] is JObject labeledErrors)
+            if (obj.Get(nameof(BooleanResult.LabeledErrors)) is JObject labeledErrors)
                 typeof(BooleanResult<>).MakeGenericType(dataType)
                 .GetMethod(nameof(BooleanResult<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })
                 .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
