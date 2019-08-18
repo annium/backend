@@ -20,6 +20,9 @@ namespace Annium.Core.Application.Types
             if (args is null || args.Any(arg => arg is null))
                 return null;
 
+            if (type.IsGenericParameter)
+                return args.FirstOrDefault();
+
             var result = type.GetGenericTypeDefinition().MakeGenericType(args);
 
             return targets.All(target => target.IsAssignableFrom(result)) ? result : null;
@@ -30,7 +33,7 @@ namespace Annium.Core.Application.Types
             var argsMatrix = targets
                 .Select(t =>
                     type.ResolveGenericArgumentsByImplentation(t) ?
-                    .Select(a => a.IsGenericTypeParameter ? null : a)
+                    .Select(a => a.IsGenericParameter ? null : a)
                     .ToArray()
                 )
                 .OfType<Type[]>()
@@ -67,16 +70,30 @@ namespace Annium.Core.Application.Types
             if (target is null)
                 throw new ArgumentNullException(nameof(target));
 
-            // TODO: skipped, cause recursive pipeline
-            // if (target.ContainsGenericParameters)
-            //     throw new ArgumentException($"Can't resolve by generic implementation type with parameters");
+            if (type.IsGenericParameter)
+            {
+                var attrs = type.GenericParameterAttributes;
+
+                // if reference type required, but target is not class
+                if (attrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint) && !target.IsClass)
+                    return null;
+
+                // if not nullable value type required, but target is not not-nullable value type
+                if (attrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint) && !target.IsNotNullableValueType())
+                    return null;
+
+                var meetsConstraints = type.GetGenericParameterConstraints()
+                    .All(constraint => target.GetTargetImplementation(constraint) != null);
+
+                return meetsConstraints ? new [] { target } : null;
+            }
 
             // if type is not generic - return empty array, meaning successful resolution
             if (!type.IsGenericType)
                 return Type.EmptyTypes;
 
             // if type is defined or target is not generic - no need for resolution, just return type's generic args
-            if (!type.ContainsGenericParameters || !target.IsGenericType)
+            if (!type.ContainsGenericParameters)
                 return type.GetGenericArguments();
 
             // if same generic - return target's arguments
@@ -148,7 +165,7 @@ namespace Annium.Core.Application.Types
 
                 for (var i = 0; i < sourceArgs.Length; i++)
                 {
-                    if (sourceArgs[i].IsGenericTypeParameter)
+                    if (sourceArgs[i].IsGenericParameter)
                         args[sourceArgs[i].GenericParameterPosition] = targetArgs[i];
                     else if (sourceArgs[i].ContainsGenericParameters)
                         fillArgs(args, sourceArgs[i], targetArgs[i]);
@@ -270,7 +287,7 @@ namespace Annium.Core.Application.Types
 
             var genericArgs = baseType.GetGenericTypeDefinition().GetGenericArguments();
             var unboundBaseArgs = baseType.GetGenericArguments()
-                .Select((arg, i) => arg.IsGenericTypeParameter ? genericArgs[i] : arg)
+                .Select((arg, i) => arg.IsGenericParameter ? genericArgs[i] : arg)
                 .ToArray();
 
             return baseType.GetGenericTypeDefinition().MakeGenericType(unboundBaseArgs);
@@ -290,6 +307,22 @@ namespace Annium.Core.Application.Types
             return interfaces
                 .Where(i => !baseInterfaces.Contains(i))
                 .ToArray();
+        }
+
+        public static bool IsNotNullableValueType(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            return type.IsValueType && Nullable.GetUnderlyingType(type) is null;
+        }
+
+        public static bool IsNullableValueType(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            return type.IsValueType && Nullable.GetUnderlyingType(type) != null;
         }
     }
 }

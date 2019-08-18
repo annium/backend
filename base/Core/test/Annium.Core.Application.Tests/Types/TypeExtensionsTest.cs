@@ -7,45 +7,51 @@ namespace Annium.Core.Application.Tests.Types
     public class TypeExtensionsTest
     {
         [Fact]
-        public void ResolveByImplentation_Null_ThrowsArgumentNullException()
+        public void ResolveByImplentations_Null_ThrowsArgumentNullException()
         {
             ((Action) (() => (null as Type).ResolveByImplentations(typeof(int)))).Throws<ArgumentNullException>();
         }
 
         [Fact]
-        public void ResolveByImplentation_Defined_IsReturned()
+        public void ResolveByImplentations_Defined_IsReturned()
         {
             typeof(BasePlain).ResolveByImplentations(typeof(IPlain)).IsEqual(typeof(BasePlain));
         }
 
         [Fact]
-        public void ResolveByImplentation_Interface_BuildsInterfaceImplementation()
+        public void ResolveByImplentations_Interface_BuildsInterfaceImplementation()
         {
             typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<int, int>)).IsEqual(typeof(ComplexPlain<int>));
         }
 
         [Fact]
-        public void ResolveByImplentation_Class_BuildsClassImplementation()
+        public void ResolveByImplentations_Parameter_ReturnsTargetIfMatchesRequirements()
+        {
+            typeof(ComplexPlain<>).GetGenericArguments() [0].ResolveByImplentations(typeof(IGeneric<int, int>)).IsEqual(typeof(IGeneric<int, int>));
+        }
+
+        [Fact]
+        public void ResolveByImplentations_Class_BuildsClassImplementation()
         {
             typeof(OpenComplex<>).ResolveByImplentations(typeof(GenericPlain<bool>)).IsEqual(typeof(OpenComplex<bool>));
         }
 
         [Fact]
-        public void ResolveByImplentation_Complex_BuildsClassImplementation()
+        public void ResolveByImplentations_Complex_BuildsClassImplementation()
         {
             typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>))
                 .IsEqual(typeof(MultiComplex<bool, long>));
         }
 
         [Fact]
-        public void ResolveByImplentation_UnbuildableClass_ReturnsNull()
+        public void ResolveByImplentations_UnbuildableClass_ReturnsNull()
         {
             typeof(Other<>).ResolveByImplentations(typeof(Base<int, bool>)).IsEqual(typeof(Other<bool>));
             typeof(Other<>).ResolveByImplentations(typeof(Base<long, bool>)).IsDefault();
         }
 
         [Fact]
-        public void ResolveByImplentation_UnbuildableInterface_ReturnsNull()
+        public void ResolveByImplentations_UnbuildableInterface_ReturnsNull()
         {
             typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<bool, int>)).IsEqual(typeof(ComplexPlain<bool>));
             typeof(ComplexPlain<>).ResolveByImplentations(typeof(IGeneric<int, bool>)).IsDefault();
