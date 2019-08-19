@@ -94,7 +94,7 @@ namespace Annium.Core.Application.Types
                 return Type.EmptyTypes;
 
             // if type is defined or target is not generic - no need for resolution, just return type's generic args
-            if (!type.ContainsGenericParameters)
+            if (!type.ContainsGenericParameters || !target.IsGenericType)
                 return type.GetGenericArguments();
 
             // if same generic - return target's arguments
