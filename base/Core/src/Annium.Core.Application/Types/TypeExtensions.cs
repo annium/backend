@@ -23,7 +23,8 @@ namespace Annium.Core.Application.Types
             if (type.IsGenericParameter)
                 return args.FirstOrDefault();
 
-            var result = type.GetGenericTypeDefinition().MakeGenericType(args);
+            if (!type.GetGenericTypeDefinition().TryMakeGenericType(out var result, args))
+                return null;
 
             return targets.All(target => target.IsAssignableFrom(result)) ? result : null;
         }
@@ -145,7 +146,8 @@ namespace Annium.Core.Application.Types
                 if (baseArgs is null)
                     return null;
 
-                var baseImplementation = type.BaseType.GetGenericTypeDefinition().MakeGenericType(baseArgs);
+                if (!type.BaseType.GetGenericTypeDefinition().TryMakeGenericType(out var baseImplementation, baseArgs))
+                    return null;
 
                 return type.ResolveGenericArgumentsByImplentation(baseImplementation);
             }
@@ -250,7 +252,7 @@ namespace Annium.Core.Application.Types
                 try
                 {
                     if (target.IsGenericTypeDefinition)
-                        return target.MakeGenericType(implementation.GetGenericArguments());
+                        return target.TryMakeGenericType(out var borrowedResult, implementation.GetGenericArguments()) ? borrowedResult : null;
 
                     var targetArgs = target.GenericTypeArguments;
                     var implementationArgs = implementation.GetGenericArguments();
@@ -262,7 +264,8 @@ namespace Annium.Core.Application.Types
                     if (args.Any(arg => arg is null))
                         return null;
 
-                    var result = target.GetGenericTypeDefinition().MakeGenericType(args);
+                    if (!target.GetGenericTypeDefinition().TryMakeGenericType(out var result, args))
+                        return null;
 
                     return result.IsAssignableFrom(type) ? result : null;
                 }
@@ -290,7 +293,7 @@ namespace Annium.Core.Application.Types
                 .Select((arg, i) => arg.IsGenericParameter ? genericArgs[i] : arg)
                 .ToArray();
 
-            return baseType.GetGenericTypeDefinition().MakeGenericType(unboundBaseArgs);
+            return baseType.GetGenericTypeDefinition().TryMakeGenericType(out var result, unboundBaseArgs) ? result : null;
         }
 
         public static Type[] GetOwnInterfaces(this Type type)
@@ -323,6 +326,25 @@ namespace Annium.Core.Application.Types
                 throw new ArgumentNullException(nameof(type));
 
             return type.IsValueType && Nullable.GetUnderlyingType(type) != null;
+        }
+
+        public static bool TryMakeGenericType(this Type type, out Type result, params Type[] typeArguments)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            try
+            {
+                result = type.MakeGenericType(typeArguments);
+
+                return true;
+            }
+            catch
+            {
+                result = null;
+
+                return false;
+            }
         }
     }
 }
