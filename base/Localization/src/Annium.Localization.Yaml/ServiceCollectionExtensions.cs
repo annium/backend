@@ -1,4 +1,4 @@
-using Annium.Localization.Abstractions;
+using Annium.Localization.Yaml;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Localization;
 

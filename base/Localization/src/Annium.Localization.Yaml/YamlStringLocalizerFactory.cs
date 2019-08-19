@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using Microsoft.Extensions.Localization;
 
-namespace Annium.Localization.Abstractions
+namespace Annium.Localization.Yaml
 {
     public class YamlStringLocalizerFactory : IStringLocalizerFactory
     {
