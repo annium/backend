@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,6 +10,8 @@ namespace Annium.Core.Mediator.Internal
     {
         private readonly ChainBuilder chainBuilder;
         private readonly IServiceProvider provider;
+        private IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> chainCache =
+            new Dictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>>();
 
         public Mediator(
             ChainBuilder chainBuilder,
@@ -26,13 +29,25 @@ namespace Annium.Core.Mediator.Internal
         )
         {
             // get execution chain with last item, being final one
-            var chain = chainBuilder.BuildExecutionChain(typeof(TRequest), typeof(TResponse));
+            var chain = GetChain(typeof(TRequest), typeof(TResponse));
 
             // get scoped service provider
             var scopeProvider = serviceProvider ?? provider.CreateScope().ServiceProvider;
 
             // execute chain
             return (TResponse) await ChainExecutor.ExecuteAsync(scopeProvider, chain, request, cancellationToken);
+        }
+
+        private IReadOnlyList<ChainElement> GetChain(Type input, Type output)
+        {
+            lock(chainCache)
+            {
+                var key = (input, output);
+                if (chainCache.TryGetValue(key, out var chain))
+                    return chain;
+
+                return chainCache[key] = chainBuilder.BuildExecutionChain(input, output);
+            }
         }
     }
 }
