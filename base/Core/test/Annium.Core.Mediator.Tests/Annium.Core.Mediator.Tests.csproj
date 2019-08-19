@@ -12,6 +12,7 @@
         <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../src/Annium.Core.Mediator/Annium.Core.Mediator.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>
