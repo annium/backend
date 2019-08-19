@@ -8,12 +8,15 @@ namespace Annium.Core.Mediator.Internal
     internal class ChainBuilder
     {
         private readonly MediatorConfiguration configuration;
+        private readonly NextBuilder nextBuilder;
 
         public ChainBuilder(
-            MediatorConfiguration configuration
+            MediatorConfiguration configuration,
+            NextBuilder nextBuilder
         )
         {
             this.configuration = configuration;
+            this.nextBuilder = nextBuilder;
         }
 
         public IReadOnlyList<ChainElement> BuildExecutionChain(Type input, Type output)
@@ -51,7 +54,7 @@ namespace Annium.Core.Mediator.Internal
                 var outputArgs = serviceOutput.GetGenericArguments();
                 input = outputArgs[0];
                 output = outputArgs[1];
-                chain.Add(new ChainElement(service, (input, output)));
+                chain.Add(new ChainElement(service, nextBuilder.BuildNextPrototype(input, output)));
             }
 
             if (!isFinalized)

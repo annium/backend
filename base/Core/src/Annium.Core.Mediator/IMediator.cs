@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -7,7 +8,8 @@ namespace Annium.Core.Mediator
     {
         Task<TResponse> SendAsync<TRequest, TResponse>(
             TRequest request,
-            CancellationToken cancellationToken = default
+            CancellationToken cancellationToken = default,
+            IServiceProvider serviceProvider = default
         );
     }
 }

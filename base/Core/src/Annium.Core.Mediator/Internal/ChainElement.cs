@@ -5,7 +5,7 @@ namespace Annium.Core.Mediator.Internal
     internal class ChainElement
     {
         public Type Handler { get; }
-        public ValueTuple<Type, Type> Output { get; }
+        public NextPrototype Next { get; }
 
         public ChainElement(
             Type handler
@@ -16,10 +16,10 @@ namespace Annium.Core.Mediator.Internal
 
         public ChainElement(
             Type handler,
-            ValueTuple<Type, Type> output
+            NextPrototype next
         ) : this(handler)
         {
-            Output = output;
+            Next = next;
         }
     }
 }
