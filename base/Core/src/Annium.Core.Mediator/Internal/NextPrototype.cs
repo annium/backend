@@ -60,7 +60,7 @@ namespace Annium.Core.Mediator.Internal
             var result = Expression.Convert(resultObject, output);
 
             // wrap to task
-            var body = Expression.Call(null, fromResult.MakeGenericMethod(output), result);
+            var body = Expression.Call(null, fromResult, result);
 
             return Expression.Lambda(body, request).Compile();
         }

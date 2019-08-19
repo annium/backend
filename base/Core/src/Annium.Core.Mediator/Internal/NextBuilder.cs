@@ -9,7 +9,7 @@ namespace Annium.Core.Mediator.Internal
     internal class NextBuilder
     {
         private readonly MethodInfo executeAsync = typeof(ChainExecutor)
-            .GetMethod(nameof(ChainExecutor.ExecuteAsync), BindingFlags.NonPublic | BindingFlags.Static);
+            .GetMethod(nameof(ChainExecutor.ExecuteAsync), BindingFlags.Public | BindingFlags.Static);
 
         private readonly MethodInfo getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter));
 
