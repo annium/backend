@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Application.Types;
@@ -15,14 +12,17 @@ namespace Annium.Core.Mediator.Internal
     {
         private readonly MediatorConfiguration configuration;
         private readonly IServiceProvider provider;
+        private readonly NextBuilder nextBuilder;
 
         public Mediator(
             MediatorConfiguration configuration,
-            IServiceProvider provider
+            IServiceProvider provider,
+            NextBuilder nextBuilder
         )
         {
             this.configuration = configuration;
             this.provider = provider;
+            this.nextBuilder = nextBuilder;
         }
 
         public async Task<TResponse> SendAsync<TRequest, TResponse>(
@@ -37,20 +37,21 @@ namespace Annium.Core.Mediator.Internal
             return (TResponse) await ExecuteAsync(chain, request, cancellationToken);
         }
 
-        private async Task<object> ExecuteAsync(
-            IReadOnlyList<Type> chain,
+        internal async Task<object> ExecuteAsync(
+            IReadOnlyList<ChainElement> chain,
             object request,
             CancellationToken cancellationToken,
             int index = 0
         )
         {
             var isFinal = index < chain.Count() - 1;
-            var handler = chain[index];
+            var element = chain[index];
 
             var parameters = new List<object> { request, cancellationToken };
             if (isFinal)
-                parameters.Add(BuildNext(handler, chain, cancellationToken, index + 1));
+                parameters.Add(nextBuilder.BuildNext(this, element, chain, cancellationToken, index + 1));
 
+            var handler = element.Handler;
             var handleMethodName = isFinal ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
             var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray());
             var result = handleMethod.Invoke(provider.GetRequiredService(handler), parameters.ToArray());
@@ -60,52 +61,10 @@ namespace Annium.Core.Mediator.Internal
                 .GetGetMethod().Invoke(result, Array.Empty<object>());
         }
 
-        private Delegate BuildNext(
-            Type handler,
-            IReadOnlyList<Type> chain,
-            CancellationToken cancellationToken,
-            int index
-        )
-        {
-            var nextTypes = handler.GetTargetImplementation(typeof(IRequestHandlerOutput<,>)).GetGenericArguments();
-            var input = nextTypes[0];
-            var output = nextTypes[1];
-
-            // single parameter, that will be passed by handler to next function
-            var requestParameter = Expression.Parameter(input);
-
-            // next function, returns Task<object>
-            var next = Expression.Call(
-                Expression.Constant(this),
-                this.GetType().GetMethod(nameof(ExecuteAsync), BindingFlags.NonPublic | BindingFlags.Instance),
-                Expression.Constant(chain),
-                requestParameter,
-                Expression.Constant(cancellationToken),
-                Expression.Constant(index)
-            );
-
-            // get task awaiter
-            var getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter));
-            var awaiter = Expression.Call(next, getAwaiter);
-
-            // get awaiter result
-            var getResult = typeof(TaskAwaiter<object>).GetMethod(nameof(TaskAwaiter<int>.GetResult));
-            var resultObject = Expression.Call(awaiter, getResult);
-
-            // convert to real output type
-            var result = Expression.Convert(resultObject, output);
-
-            // wrap to task
-            var fromResult = typeof(Task).GetMethod(nameof(Task.FromResult)).MakeGenericMethod(output);
-            var body = Expression.Call(null, fromResult, result);
-
-            return Expression.Lambda(body, requestParameter).Compile();
-        }
-
-        private IReadOnlyList<Type> GetExecutionChain(Type input, Type output)
+        private IReadOnlyList<ChainElement> GetExecutionChain(Type input, Type output)
         {
             var handlers = configuration.Handlers.ToList();
-            var chain = new List<Type>();
+            var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
@@ -125,12 +84,11 @@ namespace Annium.Core.Mediator.Internal
                 if (service is null)
                     break;
 
-                chain.Add(service);
-
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
                 if (serviceOutput is null)
                 {
+                    chain.Add(new ChainElement(service));
                     isFinalized = true;
                     break;
                 }
@@ -138,6 +96,7 @@ namespace Annium.Core.Mediator.Internal
                 var outputArgs = serviceOutput.GetGenericArguments();
                 input = outputArgs[0];
                 output = outputArgs[1];
+                chain.Add(new ChainElement(service, (input, output)));
             }
 
             if (!isFinalized)

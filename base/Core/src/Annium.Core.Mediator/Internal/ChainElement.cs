@@ -5,24 +5,21 @@ namespace Annium.Core.Mediator.Internal
     internal class ChainElement
     {
         public Type Handler { get; }
-        public Type RequestIn { get; }
-        public Type RequestOut { get; }
-        public Type ResponseIn { get; }
-        public Type ResponseOut { get; }
+        public ValueTuple<Type, Type> Output { get; }
 
         public ChainElement(
-            Type implementation,
-            Type requestIn,
-            Type requestOut,
-            Type responseIn,
-            Type responseOut
+            Type handler
         )
         {
-            Handler = implementation;
-            RequestIn = requestIn;
-            RequestOut = requestOut;
-            ResponseIn = responseIn;
-            ResponseOut = responseOut;
+            Handler = handler;
+        }
+
+        public ChainElement(
+            Type handler,
+            ValueTuple<Type, Type> output
+        ) : this(handler)
+        {
+            Output = output;
         }
     }
 }

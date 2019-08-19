@@ -50,6 +50,18 @@ namespace Annium.Core.Mediator.Tests
             logs.At(1).Item3.IsEqual(request.GetHashCode().ToString());
         }
 
+        [Fact]
+        public async Task PerformanceTest()
+        {
+            // arrange
+            var(mediator, logs) = GetMediator(typeof(OpenFinalHandler<,>));
+            var request = new Two { Second = 2, Value = "one two three" };
+
+            // act
+            for (var i = 0; i < 1000000; i++)
+                await mediator.SendAsync<Two, Base>(request);
+        }
+
         private ValueTuple<IMediator, IReadOnlyList<ValueTuple<Instant, LogLevel, string>>> GetMediator(params Type[] handlerTypes)
         {
             var logger = new InMemoryLogger<MediatorTest>(
