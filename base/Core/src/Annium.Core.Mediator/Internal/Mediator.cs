@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Application.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.Mediator.Internal
 {
     internal class Mediator : IMediator
     {
+        private readonly ChainBuilder chainBuilder;
+        private readonly NextBuilder nextBuilder;
         private readonly MediatorConfiguration configuration;
         private readonly IServiceProvider provider;
-        private readonly NextBuilder nextBuilder;
 
         public Mediator(
+            ChainBuilder chainBuilder,
+            NextBuilder nextBuilder,
             MediatorConfiguration configuration,
-            IServiceProvider provider,
-            NextBuilder nextBuilder
+            IServiceProvider provider
         )
         {
+            this.chainBuilder = chainBuilder;
+            this.nextBuilder = nextBuilder;
             this.configuration = configuration;
             this.provider = provider;
-            this.nextBuilder = nextBuilder;
         }
 
         public async Task<TResponse> SendAsync<TRequest, TResponse>(
@@ -31,7 +33,7 @@ namespace Annium.Core.Mediator.Internal
         )
         {
             // get execution chain with last item, being final one
-            var chain = GetExecutionChain(typeof(TRequest), typeof(TResponse));
+            var chain = chainBuilder.BuildExecutionChain(typeof(TRequest), typeof(TResponse));
 
             // execute chain
             return (TResponse) await ExecuteAsync(chain, request, cancellationToken);
@@ -59,67 +61,6 @@ namespace Annium.Core.Mediator.Internal
 
             return result.GetType().GetProperty(Constants.TaskResultName)
                 .GetGetMethod().Invoke(result, Array.Empty<object>());
-        }
-
-        private IReadOnlyList<ChainElement> GetExecutionChain(Type input, Type output)
-        {
-            var handlers = configuration.Handlers.ToList();
-            var chain = new List<ChainElement>();
-            var isFinalized = false;
-
-            while (true)
-            {
-                Type service = null;
-
-                foreach (var handler in handlers.ToArray())
-                {
-                    service = resolveHandler(handler);
-                    if (service is null)
-                        continue;
-
-                    handlers.Remove(handler);
-                    break;
-                }
-
-                if (service is null)
-                    break;
-
-                var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
-                // if final handler - break
-                if (serviceOutput is null)
-                {
-                    chain.Add(new ChainElement(service));
-                    isFinalized = true;
-                    break;
-                }
-
-                var outputArgs = serviceOutput.GetGenericArguments();
-                input = outputArgs[0];
-                output = outputArgs[1];
-                chain.Add(new ChainElement(service, (input, output)));
-            }
-
-            if (!isFinalized)
-                throw new InvalidOperationException($"Can't resolve request handler by input {input} and output {output}");
-
-            return chain;
-
-            Type resolveHandler(Handler handler)
-            {
-                var requestIn = input.GetTargetImplementation(handler.RequestIn);
-                var responseOut = handler.ResponseOut.ResolveByImplentations(output);
-                // var responseOut = output.GetTargetImplementation(handler.ResponseOut);
-
-                if (requestIn is null || responseOut is null)
-                    return null;
-
-                var handlerInput = typeof(IRequestHandlerInput<,>).MakeGenericType(requestIn, responseOut);
-                var service = handler.Implementation.ResolveByImplentations(handlerInput);
-                if (service is null)
-                    throw new InvalidOperationException($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
-
-                return service;
-            }
         }
     }
 }

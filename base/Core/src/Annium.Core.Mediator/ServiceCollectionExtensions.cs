@@ -29,6 +29,7 @@ namespace Annium.Core.DependencyInjection
             foreach (var handler in cfg.Handlers)
                 services.AddScoped(handler.Implementation);
 
+            services.AddSingleton<Mediator.Internal.ChainBuilder>();
             services.AddSingleton<Mediator.Internal.NextBuilder>();
             services.AddScoped<IMediator, Mediator.Internal.Mediator>();
 
