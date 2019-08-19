@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Configuration.Tests;
 using Annium.Testing;
 
 namespace Annium.Configuration.Abstractions.Tests

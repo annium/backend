@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Annium.Configuration.Abstractions;
+using Annium.Configuration.Tests;
 using Annium.Testing;
 using Newtonsoft.Json;
 
-namespace Annium.Configuration.Abstractions.Tests
+namespace Annium.Configuration.Json.Tests
 {
     public class JsonConfigurationProviderTest
     {

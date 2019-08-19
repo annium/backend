@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Annium.Configuration.Abstractions
 {
-    internal abstract class ConfigurationProviderBase
+    public abstract class ConfigurationProviderBase
     {
         protected Dictionary<string[], string> data;
 

@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Configuration.Abstractions;
+using Annium.Configuration.Tests;
 using Annium.Testing;
 
-namespace Annium.Configuration.Abstractions.Tests
+namespace Annium.Configuration.CommandLine.Tests
 {
     public class CommandLineConfigurationProviderTest
     {

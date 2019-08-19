@@ -1,10 +1,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Annium.Configuration.Abstractions;
+using Annium.Configuration.Tests;
 using Annium.Testing;
 using YamlDotNet.Serialization;
 
-namespace Annium.Configuration.Abstractions.Tests
+namespace Annium.Configuration.Yaml.Tests
 {
     public class YamlConfigurationProviderTest
     {

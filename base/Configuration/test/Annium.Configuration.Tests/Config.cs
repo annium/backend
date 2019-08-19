@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using Annium.Core.Application.Types;
-using Annium.Core.Mapper;
 
-namespace Annium.Configuration.Abstractions.Tests
+namespace Annium.Configuration.Tests
 {
-    internal class Config
+    public class Config
     {
         public bool Flag { get; set; }
 
@@ -23,27 +22,27 @@ namespace Annium.Configuration.Abstractions.Tests
         public SomeConfig Abstract { get; set; }
     }
 
-    internal class Val
+    public class Val
     {
         public int Plain { get; set; }
 
         public decimal[] Array { get; set; }
     }
 
-    internal abstract class SomeConfig
+    public abstract class SomeConfig
     {
         [ResolveField]
         public string Type { get; set; }
     }
 
     [ResolveKey(nameof(ConfigOne))]
-    internal class ConfigOne : SomeConfig
+    public class ConfigOne : SomeConfig
     {
         public uint Value { get; set; }
     }
 
     [ResolveKey(nameof(ConfigTwo))]
-    internal class ConfigTwo : SomeConfig
+    public class ConfigTwo : SomeConfig
     {
         public long Value { get; set; }
     }
