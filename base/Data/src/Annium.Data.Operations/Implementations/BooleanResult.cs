@@ -21,6 +21,14 @@ namespace Annium.Data.Operations
             succeed = IsSuccess;
             data = Data;
         }
+
+        public override BooleanResult<T> Clone()
+        {
+            var clone = new BooleanResult<T>(value, Data);
+            this.CloneTo(clone);
+
+            return clone;
+        }
     }
 
     public sealed class BooleanResult : ResultBase<BooleanResult>, IBooleanResult<BooleanResult>
@@ -34,6 +42,14 @@ namespace Annium.Data.Operations
         internal BooleanResult(bool value)
         {
             this.value = value;
+        }
+
+        public override BooleanResult Clone()
+        {
+            var clone = new BooleanResult(value);
+            this.CloneTo(clone);
+
+            return clone;
         }
     }
 }

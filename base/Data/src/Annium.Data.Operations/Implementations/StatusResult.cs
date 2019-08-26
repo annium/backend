@@ -17,6 +17,14 @@ namespace Annium.Data.Operations
             status = Status;
             data = Data;
         }
+
+        public override StatusResult<S, D> Clone()
+        {
+            var clone = new StatusResult<S, D>(Status, Data);
+            this.CloneTo(clone);
+
+            return clone;
+        }
     }
 
     public sealed class StatusResult<S> : ResultBase<StatusResult<S>>, IStatusResult<StatusResult<S>, S>
@@ -26,6 +34,14 @@ namespace Annium.Data.Operations
         internal StatusResult(S status)
         {
             Status = status;
+        }
+
+        public override StatusResult<S> Clone()
+        {
+            var clone = new StatusResult<S>(Status);
+            this.CloneTo(clone);
+
+            return clone;
         }
     }
 }

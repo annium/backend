@@ -28,6 +28,54 @@ namespace Annium.Data.Operations.Tests
             data.IsEqual(5);
         }
 
+        [Fact]
+        public void StatusResult_Clone_ReturnsValidClone()
+        {
+            // arrange
+            var succeed = Result.New(Access.Allowed);
+            var failed = Result.New(Access.Denied).Error("plain").Error("label", "value");
+
+            // act
+            var succeedClone = succeed.Clone();
+            var failedClone = failed.Clone();
+
+            // assert
+            succeedClone.Status.IsEqual(Access.Allowed);
+            succeedClone.HasErrors.IsFalse();
+            failedClone.Status.IsEqual(Access.Denied);
+            failedClone.HasErrors.IsTrue();
+            failedClone.PlainErrors.Has(1);
+            failedClone.PlainErrors.At(0).IsEqual("plain");
+            failedClone.LabeledErrors.Has(1);
+            failedClone.LabeledErrors.At("label").Has(1);
+            failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+        }
+
+        [Fact]
+        public void StatusResult_CloneWithData_ReturnsValidClone()
+        {
+            // arrange
+            var succeed = Result.New(Access.Allowed, "welcome");
+            var failed = Result.New(Access.Denied, "goodbye").Error("plain").Error("label", "value");
+
+            // act
+            var succeedClone = succeed.Clone();
+            var failedClone = failed.Clone();
+
+            // assert
+            succeedClone.Status.IsEqual(Access.Allowed);
+            succeedClone.HasErrors.IsFalse();
+            succeedClone.Data.IsEqual("welcome");
+            failedClone.Status.IsEqual(Access.Denied);
+            failedClone.HasErrors.IsTrue();
+            failedClone.PlainErrors.Has(1);
+            failedClone.PlainErrors.At(0).IsEqual("plain");
+            failedClone.LabeledErrors.Has(1);
+            failedClone.LabeledErrors.At("label").Has(1);
+            failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+            failedClone.Data.IsEqual("goodbye");
+        }
+
         private enum Access
         {
             Allowed,

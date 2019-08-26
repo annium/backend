@@ -7,15 +7,21 @@ namespace Annium.Data.Operations
     public abstract class ResultBase<T> : IResult<T> where T : ResultBase<T>
     {
         public IEnumerable<string> PlainErrors => plainErrors;
-
         public IReadOnlyDictionary<string, IEnumerable<string>> LabeledErrors =>
         labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IEnumerable<string>);
-
         public bool HasErrors => plainErrors.Count > 0 || labeledErrors.Count > 0;
-
         private HashSet<string> plainErrors = new HashSet<string>();
-
         private Dictionary<string, HashSet<string>> labeledErrors = new Dictionary<string, HashSet<string>>();
+
+        public abstract T Clone();
+
+        public T Clear()
+        {
+            plainErrors.Clear();
+            labeledErrors.Clear();
+
+            return this as T;
+        }
 
         public T Error(string error)
         {
@@ -107,6 +113,12 @@ namespace Annium.Data.Operations
             }
 
             return this as T;
+        }
+
+        protected void CloneTo(T clone)
+        {
+            clone.Errors(PlainErrors);
+            clone.Errors(LabeledErrors);
         }
     }
 }

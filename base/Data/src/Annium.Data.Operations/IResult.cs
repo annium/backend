@@ -5,6 +5,8 @@ namespace Annium.Data.Operations
 {
     public interface IResult<T> : IResult where T : IResult<T>
     {
+        T Clone();
+        T Clear();
         T Error(string error);
 
         T Error(string label, string error);

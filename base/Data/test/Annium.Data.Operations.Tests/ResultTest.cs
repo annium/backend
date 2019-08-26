@@ -16,6 +16,19 @@ namespace Annium.Data.Operations.Tests
         }
 
         [Fact]
+        public void Clear_RemovesErrors()
+        {
+            // arrange
+            var result = Result.New().Error("plain").Error("label", "value");
+
+            // act
+            result.Clear();
+
+            // assert
+            result.HasErrors.IsFalse();
+        }
+
+        [Fact]
         public void PlainError_IsAddedToPlainErrors()
         {
             // arrange
@@ -150,6 +163,52 @@ namespace Annium.Data.Operations.Tests
             result.LabeledErrors.At("label").At(0).IsEqual("mine");
             result.LabeledErrors.At("a").At(0).IsEqual("va");
             result.LabeledErrors.At("b").At(0).IsEqual("vb");
+        }
+
+        [Fact]
+        public void JoinStatic_Params_IsDoneCorrectly()
+        {
+            // arrange
+            var result = Result.New().Error("own").Error("label", "mine");
+            var plain = Result.New().Errors("plain", "another");
+            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+
+            // act
+            var output = Result.Join(result, plain, labeled);
+
+            // assert
+            output.HasErrors.IsTrue();
+            output.PlainErrors.Has(3);
+            output.PlainErrors.At(0).IsEqual("own");
+            output.PlainErrors.At(1).IsEqual("plain");
+            output.PlainErrors.At(2).IsEqual("another");
+            output.LabeledErrors.Count.IsEqual(3);
+            output.LabeledErrors.At("label").At(0).IsEqual("mine");
+            output.LabeledErrors.At("a").At(0).IsEqual("va");
+            output.LabeledErrors.At("b").At(0).IsEqual("vb");
+        }
+
+        [Fact]
+        public void JoinStatic_Collection_IsDoneCorrectly()
+        {
+            // arrange
+            var result = Result.New().Error("own").Error("label", "mine");
+            var plain = Result.New().Errors("plain", "another");
+            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+
+            // act
+            var output = Result.Join(new List<IResult>() { result, plain, labeled });
+
+            // assert
+            output.HasErrors.IsTrue();
+            output.PlainErrors.Has(3);
+            output.PlainErrors.At(0).IsEqual("own");
+            output.PlainErrors.At(1).IsEqual("plain");
+            output.PlainErrors.At(2).IsEqual("another");
+            output.LabeledErrors.Count.IsEqual(3);
+            output.LabeledErrors.At("label").At(0).IsEqual("mine");
+            output.LabeledErrors.At("a").At(0).IsEqual("va");
+            output.LabeledErrors.At("b").At(0).IsEqual("vb");
         }
     }
 }

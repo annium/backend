@@ -81,5 +81,53 @@ namespace Annium.Data.Operations.Tests
             data.IsEqual(5);
             succeed.IsFalse();
         }
+
+        [Fact]
+        public void BooleanResult_Clone_ReturnsValidClone()
+        {
+            // arrange
+            var succeed = Result.Success();
+            var failed = Result.Failure().Error("plain").Error("label", "value");
+
+            // act
+            var succeedClone = succeed.Clone();
+            var failedClone = failed.Clone();
+
+            // assert
+            succeedClone.IsSuccess.IsTrue();
+            succeedClone.HasErrors.IsFalse();
+            failedClone.IsFailure.IsTrue();
+            failedClone.HasErrors.IsTrue();
+            failedClone.PlainErrors.Has(1);
+            failedClone.PlainErrors.At(0).IsEqual("plain");
+            failedClone.LabeledErrors.Has(1);
+            failedClone.LabeledErrors.At("label").Has(1);
+            failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+        }
+
+        [Fact]
+        public void BooleanResult_CloneWithData_ReturnsValidClone()
+        {
+            // arrange
+            var succeed = Result.Success("x");
+            var failed = Result.Failure(10).Error("plain").Error("label", "value");
+
+            // act
+            var succeedClone = succeed.Clone();
+            var failedClone = failed.Clone();
+
+            // assert
+            succeedClone.IsSuccess.IsTrue();
+            succeedClone.HasErrors.IsFalse();
+            succeedClone.Data.IsEqual("x");
+            failedClone.IsFailure.IsTrue();
+            failedClone.HasErrors.IsTrue();
+            failedClone.PlainErrors.Has(1);
+            failedClone.PlainErrors.At(0).IsEqual("plain");
+            failedClone.LabeledErrors.Has(1);
+            failedClone.LabeledErrors.At("label").Has(1);
+            failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+            failedClone.Data.IsEqual(10);
+        }
     }
 }
