@@ -18,7 +18,7 @@ namespace Annium.Extensions.Validation
                 throw new ArgumentNullException(nameof(accessor));
 
             var property = TypeHelper.ResolveProperty(accessor);
-            var rule = new Rule<TValue, TField>(accessor.Compile());
+            var rule = new RuleContainer<TValue, TField>(accessor.Compile());
 
             rules[property] = rule;
 

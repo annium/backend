@@ -4,13 +4,13 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Validation
 {
-    internal class Rule<TValue, TField> : IRuleContainer<TValue>, IRuleBuilder<TValue, TField>
+    internal class RuleContainer<TValue, TField> : IRuleContainer<TValue>, IRuleBuilder<TValue, TField>
     {
         private readonly Func<TValue, TField> getField;
 
         private readonly IList<IRule<TValue, TField>> chain = new List<IRule<TValue, TField>>();
 
-        public Rule(
+        public RuleContainer(
             Func<TValue, TField> getField
         )
         {
