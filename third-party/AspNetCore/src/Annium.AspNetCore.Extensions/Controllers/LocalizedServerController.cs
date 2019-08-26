@@ -34,6 +34,22 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
+        public virtual BadRequestObjectResult BadRequest<T>(IResult<T> result)
+        where T : IResult<T>
+        {
+            var returned = result.Clone().Clear();
+
+            foreach (var error in result.PlainErrors)
+                returned.Error(localizer[error]);
+
+            foreach (var(label, errors) in result.LabeledErrors)
+                foreach (var error in errors)
+                    returned.Error(label, localizer[error]);
+
+            return new BadRequestObjectResult(returned);
+        }
+
+        [NonAction]
         public override IActionResult BadRequest(string error) =>
             new BadRequestObjectResult(Result.Failure().Error(localizer[error]));
 
