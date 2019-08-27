@@ -10,7 +10,7 @@ namespace Annium.Localization.Abstractions.Tests
     public class LocalizerTest
     {
         [Fact]
-        public void Localization_Works()
+        public void Localization_Base_Works()
         {
             // arrange
             var localizer = GetLocalizer(opts => { });
@@ -26,6 +26,25 @@ namespace Annium.Localization.Abstractions.Tests
             iv.IsEqual("test");
             en.IsEqual("demo");
             ru.IsEqual("демо");
+        }
+
+        [Fact]
+        public void Localization_WithParams_Works()
+        {
+            // arrange
+            var localizer = GetLocalizer(opts => { });
+
+            // act
+            var iv = localizer["test params", 5];
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
+            var en = localizer["test params", 5];
+            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
+            var ru = localizer["test params", 5];
+
+            // assert
+            iv.IsEqual("test params");
+            en.IsEqual("demo 5");
+            ru.IsEqual("демо 5");
         }
 
         [Fact]
@@ -71,8 +90,8 @@ namespace Annium.Localization.Abstractions.Tests
             var services = new ServiceCollection();
 
             var locales = new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
-            locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string>() { { "test", "demo" } };
-            locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string>() { { "test", "демо" } };
+            locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string>() { { "test", "demo" }, { "test params", "demo {0}" } };
+            locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string>() { { "test", "демо" }, { "test params", "демо {0}" } };
 
             services.AddLocalization(opts => configure(opts.UseInMemoryStorage(locales)));
 

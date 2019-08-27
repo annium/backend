@@ -20,19 +20,22 @@ namespace Annium.Localization.Abstractions
             this.getCulture = getCulture;
         }
 
-        public string this[string entry]
-        {
-            get
-            {
-                var locale = ResolveLocale();
+        public string this[string entry] => Translate(entry);
 
-                return locale.TryGetValue(entry, out var translation) ? translation : entry;
-            }
-        }
+        public string this[string entry, params object[] arguments] => string.Format(getCulture(), Translate(entry), arguments);
 
-        private IReadOnlyDictionary<string, string> ResolveLocale()
+        public string this[string entry, IEnumerable<object> arguments] => string.Format(getCulture(), Translate(entry), arguments);
+
+        private string Translate(string entry)
         {
             var culture = getCulture();
+            var locale = ResolveLocale(culture);
+
+            return locale.TryGetValue(entry, out var translation) ? translation : entry;
+        }
+
+        private IReadOnlyDictionary<string, string> ResolveLocale(CultureInfo culture)
+        {
             lock(locales)
             {
                 if (locales.TryGetValue(culture, out var locale))

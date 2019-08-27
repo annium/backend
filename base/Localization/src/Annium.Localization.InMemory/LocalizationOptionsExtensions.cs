@@ -10,12 +10,12 @@ namespace Annium.Core.DependencyInjection
     {
         public static LocalizationOptions UseInMemoryStorage(
             this LocalizationOptions options,
-            IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
+            IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales = default
         )
         {
             options.SetLocaleStorage(services =>
             {
-                var storage = new Storage(locales);
+                var storage = new Storage(locales ?? new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>());
                 services.AddSingleton<ILocaleStorage>(storage);
             });
 
