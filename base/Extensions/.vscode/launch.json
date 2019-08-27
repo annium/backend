@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Validation",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Extensions.Validation/bin/Debug/netcoreapp2.2/Demo.Extensions.Validation.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Extensions.Validation",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}

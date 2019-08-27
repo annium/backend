@@ -7,6 +7,7 @@ namespace Annium.Extensions.Validation.Tests
     {
         protected IValidator<T> GetValidator<T>() => new ServiceCollection()
             .AddValidation()
+            .AddLocalization(opts => opts.UseInMemoryStorage())
             .BuildServiceProvider()
             .GetRequiredService<IValidator<T>>();
     }

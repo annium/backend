@@ -93,10 +93,10 @@ namespace Annium.Extensions.Validation
         ) => rule.Add((context, value) =>
         {
             if (value?.Length < minLength)
-                context.Error(message ?? $"Value length is less, than {minLength}");
+                context.Error(message ?? "Value length is less, than {0}", minLength);
 
             if (value?.Length > maxLength)
-                context.Error(message ?? $"Value length is greater, than {maxLength}");
+                context.Error(message ?? "Value length is greater, than {0}", maxLength);
         });
 
         public static IRuleBuilder<TValue, string> MinLength<TValue>(
@@ -106,7 +106,7 @@ namespace Annium.Extensions.Validation
         ) => rule.Add((context, value) =>
         {
             if (value?.Length < minLength)
-                context.Error(message ?? $"Value length is less, than {minLength}");
+                context.Error(message ?? "Value length is less, than {0}", minLength);
         });
 
         public static IRuleBuilder<TValue, string> MaxLength<TValue>(
@@ -116,7 +116,7 @@ namespace Annium.Extensions.Validation
         ) => rule.Add((context, value) =>
         {
             if (value?.Length > maxLength)
-                context.Error(message ?? $"Value length is greater, than {maxLength}");
+                context.Error(message ?? "Value length is greater, than {0}", maxLength);
         });
 
         public static IRuleBuilder<TValue, TField> Between<TValue, TField>(

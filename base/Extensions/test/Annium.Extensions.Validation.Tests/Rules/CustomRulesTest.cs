@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Annium.Localization.Abstractions;
 using Annium.Testing;
 
 namespace Annium.Extensions.Validation.Tests.Rules
@@ -42,7 +43,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class PersonValidator : Validator<Person>
         {
-            public PersonValidator()
+            public PersonValidator(ILocalizer<PersonValidator> localizer) : base(localizer)
             {
                 Field(p => p.Name)
                     .Required()
@@ -51,7 +52,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
                     {
                         await Task.CompletedTask;
                         if (value.Length < 3)
-                            context.Error($"{context.Field} value is too short");
+                            context.Error("{0} value is too short", context.Field);
                     });
             }
         }

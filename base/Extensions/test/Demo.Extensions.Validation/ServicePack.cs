@@ -1,5 +1,6 @@
 using Annium.Core.DependencyInjection;
 using Annium.Extensions.Validation;
+using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Validation
@@ -8,6 +9,7 @@ namespace Demo.Extensions.Validation
     {
         public override void Configure(IServiceCollection services)
         {
+            services.AddLocalization(opts => opts.UseInMemoryStorage());
             services.AddValidation();
         }
     }
@@ -19,7 +21,7 @@ namespace Demo.Extensions.Validation
 
     internal class AValidator : Validator<A>
     {
-        public AValidator()
+        public AValidator(ILocalizer<AValidator> localizer) : base(localizer)
         {
             Field(o => o.Text).Required();
         }

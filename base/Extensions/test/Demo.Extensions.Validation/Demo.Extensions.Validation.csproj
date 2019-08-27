@@ -13,5 +13,6 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Extensions.Validation/Annium.Extensions.Validation.csproj" />
+        <ProjectReference Include="../../../Localization/src/Annium.Localization.InMemory/Annium.Localization.InMemory.csproj" />
     </ItemGroup>
 </Project>
