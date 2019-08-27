@@ -1,18 +1,18 @@
 using System.Net;
 using Annium.Data.Operations;
 using Annium.Extensions.Primitives;
+using Annium.Localization.Abstractions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Localization;
 
 namespace Annium.AspNetCore.Extensions
 {
     public class LocalizedServerController : ServerController
     {
-        protected readonly IStringLocalizer localizer;
+        protected readonly ILocalizer localizer;
 
         protected LocalizedServerController(
-            IStringLocalizer localizer
+            ILocalizer localizer
         )
         {
             this.localizer = localizer;
