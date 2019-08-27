@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Localization",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Localization/bin/Debug/netcoreapp2.2/Demo.Localization.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Localization",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}
