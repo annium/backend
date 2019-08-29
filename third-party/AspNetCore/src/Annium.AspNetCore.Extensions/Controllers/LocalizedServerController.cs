@@ -34,8 +34,8 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
-        public virtual BadRequestObjectResult BadRequest<T>(IResult<T> result)
-        where T : IResult<T>
+        public virtual BadRequestObjectResult BadRequest<T>(IResultBase<T> result)
+        where T : IResultBase<T>
         {
             var returned = result.Clone().Clear();
 

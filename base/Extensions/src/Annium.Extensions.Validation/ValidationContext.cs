@@ -8,14 +8,14 @@ namespace Annium.Extensions.Validation
         public TValue Root { get; }
         public string Label { get; }
         public string Field { get; }
-        internal BooleanResult Result { get; }
+        internal IBooleanResult Result { get; }
         private readonly ILocalizer localizer;
 
         internal ValidationContext(
             TValue root,
             string label,
             string name,
-            BooleanResult result,
+            IBooleanResult result,
             ILocalizer localizer
         )
         {

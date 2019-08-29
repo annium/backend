@@ -35,7 +35,7 @@ namespace Annium.Extensions.Validation
             return rule;
         }
 
-        public async Task<BooleanResult> ValidateAsync(TValue value, string label = null)
+        public async Task<IBooleanResult> ValidateAsync(TValue value, string label = null)
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 

@@ -5,6 +5,6 @@ namespace Annium.Extensions.Validation
 {
     public interface IValidator<TValue>
     {
-        Task<BooleanResult> ValidateAsync(TValue value, string label = null);
+        Task<IBooleanResult> ValidateAsync(TValue value, string label = null);
     }
 }

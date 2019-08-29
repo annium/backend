@@ -1,42 +1,37 @@
-namespace Annium.Data.Operations
+namespace Annium.Data.Operations.Implementations
 {
-    public sealed class BooleanResult<T> : ResultBase<BooleanResult<T>>, IBooleanResult<BooleanResult<T>, T>
+    internal sealed class BooleanResult<D> : ResultBase<IBooleanResult<D>>, IBooleanResult<D>
     {
         public bool IsSuccess => value && !HasErrors;
-
         public bool IsFailure => !value || HasErrors;
-
-        public T Data { get; }
-
+        public D Data { get; }
         private readonly bool value;
 
-        internal BooleanResult(bool value, T data)
+        internal BooleanResult(bool value, D data)
         {
             this.value = value;
             Data = data;
         }
 
-        public void Deconstruct(out bool succeed, out T data)
+        public void Deconstruct(out bool succeed, out D data)
         {
             succeed = IsSuccess;
             data = Data;
         }
 
-        public override BooleanResult<T> Clone()
+        public override IBooleanResult<D> Clone()
         {
-            var clone = new BooleanResult<T>(value, Data);
+            var clone = new BooleanResult<D>(value, Data);
             this.CloneTo(clone);
 
             return clone;
         }
     }
 
-    public sealed class BooleanResult : ResultBase<BooleanResult>, IBooleanResult<BooleanResult>
+    internal sealed class BooleanResult : ResultBase<IBooleanResult>, IBooleanResult
     {
         public bool IsSuccess => value && !HasErrors;
-
         public bool IsFailure => !value || HasErrors;
-
         private readonly bool value;
 
         internal BooleanResult(bool value)
@@ -44,7 +39,7 @@ namespace Annium.Data.Operations
             this.value = value;
         }
 
-        public override BooleanResult Clone()
+        public override IBooleanResult Clone()
         {
             var clone = new BooleanResult(value);
             this.CloneTo(clone);

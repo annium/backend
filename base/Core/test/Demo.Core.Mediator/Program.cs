@@ -28,7 +28,7 @@ namespace Demo.Core.Mediator
 
             var request = new CreateTodoRequest("wake up");
             var payload = encode(request);
-            var result = await mediator.SendAsync<Request<CreateTodoRequest>, Response<BooleanResult<int>>>(payload, token);
+            var result = await mediator.SendAsync<Request<CreateTodoRequest>, Response<IBooleanResult<int>>>(payload, token);
             var response = decode(result);
 
             /*

@@ -1,14 +1,13 @@
 using System;
-using Annium.Extensions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Annium.Data.Operations.Serialization
 {
-    public class BooleanResultConverter : ResultConverterBase
+    public class ResultConverter : ResultConverterBase
     {
         protected override bool IsConvertibleInterface(Type type) =>
-            type == typeof(IBooleanResult);
+            type == typeof(IResult);
 
         public override object ReadJson(
             JsonReader reader,
@@ -17,11 +16,9 @@ namespace Annium.Data.Operations.Serialization
             JsonSerializer serializer
         )
         {
-            var obj = JObject.Load(reader);
+            var result = Result.New();
 
-            var result = (obj.Get(nameof(IBooleanResult.IsSuccess))?.Value<bool>() ?? false) ? Result.Success() : Result.Failure();
-
-            ReadErrors(obj, result);
+            ReadErrors(JObject.Load(reader), result);
 
             return result;
         }
@@ -33,12 +30,6 @@ namespace Annium.Data.Operations.Serialization
         )
         {
             writer.WriteStartObject();
-
-            writer.WritePropertyName(nameof(IBooleanResult.IsSuccess).CamelCase());
-            serializer.Serialize(writer, value.GetPropertyValue(nameof(IBooleanResult.IsSuccess)));
-
-            writer.WritePropertyName(nameof(IBooleanResult.IsFailure).CamelCase());
-            serializer.Serialize(writer, value.GetPropertyValue(nameof(IBooleanResult.IsFailure)));
 
             WriteErrors(value, writer, serializer);
 

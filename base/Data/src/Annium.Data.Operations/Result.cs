@@ -4,31 +4,31 @@ namespace Annium.Data.Operations
 {
     public static class Result
     {
-        public static BooleanResult Join(params IResult[] results) =>
-            new BooleanResult(true).Join(results);
+        public static IResult Join(params IResult[] results) =>
+            new Implementations.Result().Join(results);
 
-        public static BooleanResult Join(IEnumerable<IResult> results) =>
-            new BooleanResult(true).Join(results);
+        public static IResult Join(IEnumerable<IResult> results) =>
+            new Implementations.Result().Join(results);
 
-        public static BooleanResult New() =>
-            new BooleanResult(true);
+        public static IResult New() =>
+            new Implementations.Result();
 
-        public static BooleanResult Success() =>
-            new BooleanResult(true);
+        public static IBooleanResult Success() =>
+            new Implementations.BooleanResult(true);
 
-        public static BooleanResult Failure() =>
-            new BooleanResult(false);
+        public static IBooleanResult Failure() =>
+            new Implementations.BooleanResult(false);
 
-        public static BooleanResult<D> Success<D>(D data) =>
-            new BooleanResult<D>(true, data);
+        public static IBooleanResult<D> Success<D>(D data) =>
+            new Implementations.BooleanResult<D>(true, data);
 
-        public static BooleanResult<D> Failure<D>(D data) =>
-            new BooleanResult<D>(false, data);
+        public static IBooleanResult<D> Failure<D>(D data) =>
+            new Implementations.BooleanResult<D>(false, data);
 
-        public static StatusResult<S> New<S>(S status) =>
-            new StatusResult<S>(status);
+        public static IStatusResult<S> New<S>(S status) =>
+            new Implementations.StatusResult<S>(status);
 
-        public static StatusResult<S, D> New<S, D>(S status, D data) =>
-            new StatusResult<S, D>(status, data);
+        public static IStatusResult<S, D> New<S, D>(S status, D data) =>
+            new Implementations.StatusResult<S, D>(status, data);
     }
 }

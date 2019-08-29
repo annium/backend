@@ -59,7 +59,7 @@ namespace Annium.Core.Mediator.Tests
             var payload = new Request<Two>(request);
 
             // act
-            var response = (await mediator.SendAsync<Request<Two>, Response<BooleanResult<Base>>>(new Request<Two>(request))).Value;
+            var response = (await mediator.SendAsync<Request<Two>, Response<IBooleanResult<Base>>>(new Request<Two>(request))).Value;
 
             // assert
             response.IsSuccess.IsTrue();
@@ -70,7 +70,7 @@ namespace Annium.Core.Mediator.Tests
             logs.At(2).Item3.IsEqual($"Status of {typeof(Two).Name} validation: {true}");
             logs.At(3).Item3.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
             logs.At(4).Item3.IsEqual(request.GetHashCode().ToString());
-            logs.At(5).Item3.IsEqual($"Serialize {typeof(BooleanResult<Base>).Name} to Response");
+            logs.At(5).Item3.IsEqual($"Serialize {typeof(IBooleanResult<Base>).Name} to Response");
         }
 
         private ValueTuple<IMediator, IReadOnlyList<ValueTuple<Instant, LogLevel, string>>> GetMediator(params Type[] handlerTypes)
@@ -146,7 +146,7 @@ namespace Annium.Core.Mediator.Tests
             }
         }
 
-        internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, BooleanResult<TResponse>>
+        internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
         {
             private readonly Func<TRequest, bool> validate;
             private readonly ILogger<MediatorTest> logger;
@@ -160,7 +160,7 @@ namespace Annium.Core.Mediator.Tests
                 this.logger = logger;
             }
 
-            public async Task<BooleanResult<TResponse>> HandleAsync(
+            public async Task<IBooleanResult<TResponse>> HandleAsync(
                 TRequest request,
                 CancellationToken cancellationToken,
                 Func<TRequest, Task<TResponse>> next

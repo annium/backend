@@ -6,16 +6,6 @@ namespace Annium.Data.Operations.Serialization.Tests
     public class BooleanResultConverterTest
     {
         [Fact]
-        public void BaseWrite_Base_WritesCorrectly()
-        {
-            // act
-            var str = JsonConvert.SerializeObject(Result.New(), GetSettings());
-
-            // assert
-            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[],""labeledErrors"":{}}");
-        }
-
-        [Fact]
         public void BaseWrite_Blank_WritesCorrectly()
         {
             // act
@@ -39,7 +29,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult>("{}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult>("{}", GetSettings());
 
             // assert
             result.IsSuccess.IsFalse();
@@ -50,7 +40,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult>(@"{""isSuccess"":true}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult>(@"{""isSuccess"":true}", GetSettings());
 
             // assert
             result.IsSuccess.IsTrue();
@@ -61,7 +51,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult>(@"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult>(@"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.IsSuccess.IsFalse();
@@ -96,7 +86,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_BlankValueType_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult<int>>("{}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult<int>>("{}", GetSettings());
 
             // assert
             result.Data.IsEqual(0);
@@ -108,7 +98,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_BlankReferenceType_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult<string>>("{}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult<string>>("{}", GetSettings());
 
             // assert
             result.Data.IsEqual(null);
@@ -120,7 +110,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings());
 
             // assert
             result.Data.IsEqual(5);
@@ -132,7 +122,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<BooleanResult<int>>(@"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonConvert.DeserializeObject<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.Data.IsEqual(5);

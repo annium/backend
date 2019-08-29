@@ -32,7 +32,7 @@ namespace Annium.AspNetCore.Extensions
             new BadRequestObjectResult(Result.Failure().Error(error));
 
         [NonAction]
-        public IActionResult Forbidden(IResult result) =>
+        public IActionResult Forbidden(IResultBase result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
@@ -40,7 +40,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
-        public IActionResult Conflict(IResult result) =>
+        public IActionResult Conflict(IResultBase result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
@@ -48,7 +48,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
-        public IActionResult NotFound(IResult result) =>
+        public IActionResult NotFound(IResultBase result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.NotFound };
 
         [NonAction]
@@ -56,7 +56,7 @@ namespace Annium.AspNetCore.Extensions
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.NotFound };
 
         [NonAction]
-        public IActionResult ServerError(IResult result) =>
+        public IActionResult ServerError(IResultBase result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.InternalServerError };
 
         [NonAction]

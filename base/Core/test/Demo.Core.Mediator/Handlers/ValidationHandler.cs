@@ -10,7 +10,7 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Core.Mediator.Handlers
 {
-    internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, BooleanResult<TResponse>>
+    internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
     {
         private readonly IEnumerable<IValidator<TRequest>> validators;
         private readonly ILogger<ValidationHandler<TRequest, TResponse>> logger;
@@ -24,7 +24,7 @@ namespace Demo.Core.Mediator.Handlers
             this.logger = logger;
         }
 
-        public async Task<BooleanResult<TResponse>> HandleAsync(
+        public async Task<IBooleanResult<TResponse>> HandleAsync(
             TRequest request,
             CancellationToken cancellationToken,
             Func<TRequest, Task<TResponse>> next

@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Annium.Data.Operations
+namespace Annium.Data.Operations.Implementations
 {
-    public abstract class ResultBase<T> : IResult<T> where T : ResultBase<T>
+    internal abstract class ResultBase<T> : IResultBase<T> where T : class, IResultBase<T>
     {
         public IEnumerable<string> PlainErrors => plainErrors;
         public IReadOnlyDictionary<string, IEnumerable<string>> LabeledErrors =>
@@ -12,6 +12,8 @@ namespace Annium.Data.Operations
         public bool HasErrors => plainErrors.Count > 0 || labeledErrors.Count > 0;
         private HashSet<string> plainErrors = new HashSet<string>();
         private Dictionary<string, HashSet<string>> labeledErrors = new Dictionary<string, HashSet<string>>();
+
+        protected ResultBase() { }
 
         public abstract T Clone();
 
@@ -93,7 +95,7 @@ namespace Annium.Data.Operations
             return this as T;
         }
 
-        public T Join(params IResult[] results)
+        public T Join(params IResultBase[] results)
         {
             foreach (var result in results)
             {
@@ -104,7 +106,7 @@ namespace Annium.Data.Operations
             return this as T;
         }
 
-        public T Join(IEnumerable<IResult> results)
+        public T Join(IEnumerable<IResultBase> results)
         {
             foreach (var result in results)
             {
