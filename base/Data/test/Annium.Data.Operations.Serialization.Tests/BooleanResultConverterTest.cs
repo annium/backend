@@ -22,7 +22,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var str = JsonConvert.SerializeObject(Result.Success().Error("plain").Error("label", "another"), GetSettings());
 
             // assert
-            str.IsEqual(@"{""isSuccess"":false,""isFailure"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
         }
 
         [Fact]

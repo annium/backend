@@ -48,8 +48,10 @@ namespace Annium.Extensions.Validation
             foreach (var(property, rule) in rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
-                var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, result, localizer);
+                var ruleResult = Result.New();
+                var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
                 await rule.Validate(value, context);
+                result.Join(ruleResult);
             }
 
             return result;

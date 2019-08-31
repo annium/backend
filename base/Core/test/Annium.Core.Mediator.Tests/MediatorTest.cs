@@ -81,7 +81,10 @@ namespace Annium.Core.Mediator.Tests
             );
 
             var provider = new ServiceCollection()
+                .AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant)
                 .AddSingleton<ILogger<MediatorTest>>(logger)
+                .AddSingleton(new LoggerConfiguration(LogLevel.Trace))
+                .AddInMemoryLogger()
                 .AddSingleton<Func<One, bool>>(value => value.First % 2 == 1)
                 .AddSingleton<Func<Two, bool>>(value => value.Second % 2 == 0)
                 .AddMediatorConfiguration(cfg =>
