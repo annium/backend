@@ -16,7 +16,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var result = await validator.ValidateAsync(new Person());
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.LabeledErrors.Has(1);
             result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
         }
@@ -31,7 +31,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var result = await validator.ValidateAsync(new Person() { Name = "ho" });
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.LabeledErrors.Has(1);
             result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual($"{nameof(Person.Name)} value is too short");
         }

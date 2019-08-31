@@ -35,16 +35,16 @@ namespace Annium.Extensions.Validation
             return rule;
         }
 
-        public async Task<IBooleanResult> ValidateAsync(TValue value, string label = null)
+        public async Task<IResult> ValidateAsync(TValue value, string label = null)
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
             if (value == null)
                 return hasLabel ?
-                    Result.Failure().Error(label, "Value is null") :
-                    Result.Failure().Error("Value is null");
+                    Result.New().Error(label, "Value is null") :
+                    Result.New().Error("Value is null");
 
-            var result = Result.Success();
+            var result = Result.New();
             foreach (var(property, rule) in rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;

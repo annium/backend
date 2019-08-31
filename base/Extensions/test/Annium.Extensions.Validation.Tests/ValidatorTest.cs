@@ -24,7 +24,7 @@ namespace Annium.Extensions.Validation.Tests
             var result = await validator.ValidateAsync(null);
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("Value is null");
         }
@@ -39,7 +39,7 @@ namespace Annium.Extensions.Validation.Tests
             var result = await validator.ValidateAsync(null, "nested");
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.LabeledErrors.Has(1);
             result.LabeledErrors.At("nested").At(0).IsEqual("Value is null");
         }
@@ -54,7 +54,7 @@ namespace Annium.Extensions.Validation.Tests
             var result = await validator.ValidateAsync(new Person());
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.LabeledErrors.Has(1);
             result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
         }
@@ -69,7 +69,7 @@ namespace Annium.Extensions.Validation.Tests
             var result = await validator.ValidateAsync(new Person(), "nested");
 
             // assert
-            result.IsFailure.IsTrue();
+            result.HasErrors.IsTrue();
             result.LabeledErrors.Has(1);
             result.LabeledErrors.At($"nested.{nameof(Person.Name)}").At(0).IsEqual("Value is required");
         }
