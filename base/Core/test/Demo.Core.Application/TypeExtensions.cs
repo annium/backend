@@ -190,9 +190,6 @@ namespace Annium.Core.Application.Types
             if (target.IsAssignableFrom(type))
                 return target;
 
-            if (target.IsValueType)
-                return null;
-
             if (target.IsGenericParameter)
             {
                 var attrs = target.GenericParameterAttributes;
@@ -210,6 +207,12 @@ namespace Annium.Core.Application.Types
 
                 return meetsConstraints ? type : null;
             }
+
+            if (type.IsGenericType && target.IsGenericType && type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
+                return type;
+
+            if (target.IsValueType)
+                return null;
 
             if (target.IsClass)
             {

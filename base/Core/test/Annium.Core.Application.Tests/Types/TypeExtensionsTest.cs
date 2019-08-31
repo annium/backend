@@ -71,6 +71,13 @@ namespace Annium.Core.Application.Tests.Types
         }
 
         [Fact]
+        public void GetTargetImplementation_SameGenericDefinition_ReturnsType()
+        {
+            var target = typeof(ValueTuple<,>);
+            typeof(ValueTuple<int, bool>).GetTargetImplementation(target).IsEqual(typeof(ValueTuple<int, bool>));
+        }
+
+        [Fact]
         public void GetTargetImplementation_Interface_BuildsInterfaceImplementation()
         {
             var target = typeof(IGenericConstrained<,>).MakeGenericType(typeof(BasePlain), typeof(GenericPlain<>));

@@ -19,7 +19,9 @@ namespace Demo.Core.Application
             // var arguments = typeof(MultiComplex<,>).ResolveGenericArgumentsByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             // implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
             // implementation = typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
+            implementation = typeof(ValueTuple<int, bool>).GetTargetImplementation(typeof(ValueTuple<,>));
             implementation = typeof(MultiComplex<,>).GetGenericArguments() [0].ResolveByImplentations(typeof(OtherComplex<bool>));
+            // implementation = typeof(MultiComplex<,>).GetGenericArguments() [0].ResolveByImplentations(typeof(OtherComplex<bool>));
             // var ownInterfaces = typeof(OpenComplex<int>).GetOwnInterfaces();
             // implementation = typeof(int).GetImplementationOf(typeof(System.ValueType));
             // implementation = typeof(OpenComplex<long>).GetImplementationOf(typeof(IGenericConstrained<,>).MakeGenericType(typeof(BasePlain), typeof(OtherComplex<>)));
