@@ -18,13 +18,13 @@ namespace Annium.Localization.Yaml
         public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
         {
             var assembly = target.GetTypeInfo().Assembly;
-            var location = assembly.Location;
-            var file = Path.Combine(
-                Path.GetDirectoryName(location),
-                Path.Combine(target.Namespace.Substring(assembly.GetName().Name.Length).Split('.')),
-                "locale",
-                $"{culture.TwoLetterISOLanguageName}.yml"
-            );
+            var location = Path.GetDirectoryName(assembly.Location);
+
+            var assemblyNamePath = Path.Combine(assembly.GetName().Name.Split('.'));
+            var targetNamespacePath = Path.Combine(target.Namespace.Split('.'));
+            var localeRelativePath = Path.GetRelativePath(assemblyNamePath, targetNamespacePath);
+
+            var file = Path.Combine(location, localeRelativePath, "locale", $"{culture.TwoLetterISOLanguageName}.yml");
 
             return ResolveLocale(file);
         }
