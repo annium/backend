@@ -54,8 +54,8 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonConvert.DeserializeObject<IBooleanResult>(@"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
+            result.IsSuccess.IsTrue();
+            result.IsFailure.IsFalse();
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");
             result.LabeledErrors.Has(1);
@@ -79,7 +79,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var str = JsonConvert.SerializeObject(Result.Success(5).Error("plain").Error("label", "another"), GetSettings());
 
             // assert
-            str.IsEqual(@"{""isSuccess"":false,""isFailure"":true,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
         }
 
         [Fact]
@@ -126,8 +126,8 @@ namespace Annium.Data.Operations.Serialization.Tests
 
             // assert
             result.Data.IsEqual(5);
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
+            result.IsSuccess.IsTrue();
+            result.IsFailure.IsFalse();
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");
             result.LabeledErrors.Has(1);

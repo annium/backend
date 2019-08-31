@@ -2,8 +2,8 @@ namespace Annium.Data.Operations.Implementations
 {
     internal sealed class BooleanResult<D> : ResultBase<IBooleanResult<D>>, IBooleanResult<D>
     {
-        public bool IsSuccess => value && !HasErrors;
-        public bool IsFailure => !value || HasErrors;
+        public bool IsSuccess => value;
+        public bool IsFailure => !value;
         public D Data { get; }
         private readonly bool value;
 
@@ -30,8 +30,8 @@ namespace Annium.Data.Operations.Implementations
 
     internal sealed class BooleanResult : ResultBase<IBooleanResult>, IBooleanResult
     {
-        public bool IsSuccess => value && !HasErrors;
-        public bool IsFailure => !value || HasErrors;
+        public bool IsSuccess => value;
+        public bool IsFailure => !value;
         private readonly bool value;
 
         internal BooleanResult(bool value)

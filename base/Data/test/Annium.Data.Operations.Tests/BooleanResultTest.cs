@@ -16,14 +16,14 @@ namespace Annium.Data.Operations.Tests
         }
 
         [Fact]
-        public void BooleanResult_SuccessWithError_IsFailure()
+        public void BooleanResult_SuccessWithError_IsSuccess()
         {
             // arrange
             var result = Result.Success().Error("plain");
 
             // assert
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
+            result.IsSuccess.IsTrue();
+            result.IsFailure.IsFalse();
         }
 
         [Fact]
@@ -53,7 +53,7 @@ namespace Annium.Data.Operations.Tests
         }
 
         [Fact]
-        public void BooleanResult_SuccessWithDataWithError_IsFailure()
+        public void BooleanResult_SuccessWithDataWithError_IsSuccess()
         {
             // arrange
             var result = Result.Success(5).Error("plain");
@@ -61,10 +61,10 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             result.Data.IsEqual(data);
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
+            result.IsSuccess.IsTrue();
+            result.IsFailure.IsFalse();
             data.IsEqual(5);
-            succeed.IsFalse();
+            succeed.IsTrue();
         }
 
         [Fact]
