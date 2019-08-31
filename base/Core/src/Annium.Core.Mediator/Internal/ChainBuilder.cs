@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Application.Types;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Core.Mediator.Internal
 {
@@ -9,29 +10,40 @@ namespace Annium.Core.Mediator.Internal
     {
         private readonly MediatorConfiguration configuration;
         private readonly NextBuilder nextBuilder;
+        private readonly ILogger<ChainBuilder> logger;
 
         public ChainBuilder(
             MediatorConfiguration configuration,
-            NextBuilder nextBuilder
+            NextBuilder nextBuilder,
+            ILogger<ChainBuilder> logger
         )
         {
             this.configuration = configuration;
             this.nextBuilder = nextBuilder;
+            this.logger = logger;
         }
 
         public IReadOnlyList<ChainElement> BuildExecutionChain(Type input, Type output)
         {
             var handlers = configuration.Handlers.ToList();
+
+            logger.Trace($"Build execution chain for {input} -> {output} from {handlers.Count} handler(s) available");
+
             var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
             {
+                logger.Trace($"Find chain element for {input} -> {output}");
+
                 Type service = null;
 
                 foreach (var handler in handlers.ToArray())
                 {
                     service = resolveHandler(handler);
+
+                    logger.Trace($"Resolved {handler.RequestIn} -> {handler.ResponseOut} handler into {service}");
+
                     if (service is null)
                         continue;
 
@@ -40,7 +52,12 @@ namespace Annium.Core.Mediator.Internal
                 }
 
                 if (service is null)
+                {
+                    logger.Trace($"No handler resolved for {input} -> {output}");
                     break;
+                }
+
+                logger.Trace($"Add {service} to chain");
 
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
@@ -48,6 +65,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     chain.Add(new ChainElement(service));
                     isFinalized = true;
+                    logger.Trace("Resolved handler is final");
                     break;
                 }
 
@@ -59,6 +77,10 @@ namespace Annium.Core.Mediator.Internal
 
             if (!isFinalized)
                 throw new InvalidOperationException($"Can't resolve request handler by input {input} and output {output}");
+
+            logger.Trace($"Chain built with {chain.Count} handler(s):");
+            foreach (var element in chain)
+                logger.Trace($"- {element.Handler}");
 
             return chain;
 

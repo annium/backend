@@ -45,7 +45,7 @@ namespace Annium.Core.Mediator.Internal
                 executeAsync,
                 Expression.Constant(provider),
                 Expression.Constant(chain),
-                request,
+                Expression.Convert(request, typeof(object)),
                 Expression.Constant(cancellationToken),
                 Expression.Constant(index)
             );
