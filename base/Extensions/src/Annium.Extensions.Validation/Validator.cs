@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -44,14 +45,25 @@ namespace Annium.Extensions.Validation
                     Result.New().Error(label, "Value is null") :
                     Result.New().Error("Value is null");
 
+            if (rules.Count == 0)
+                return Result.New();
+
             var result = Result.New();
-            foreach (var(property, rule) in rules)
+            var stageCount = rules.Max(r => r.Value.StageCount);
+            for (var stage = 0; stage < stageCount; stage++)
             {
-                var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
-                var ruleResult = Result.New();
-                var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
-                await rule.Validate(value, context);
-                result.Join(ruleResult);
+                foreach (var(property, rule) in rules)
+                {
+                    var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
+                    var ruleResult = Result.New();
+                    var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
+                    await rule.Validate(context, value, stage);
+                    result.Join(ruleResult);
+                }
+
+                // short-circuit if any errors after stage execution
+                if (result.HasErrors)
+                    return result;
             }
 
             return result;

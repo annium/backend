@@ -4,6 +4,8 @@ namespace Annium.Extensions.Validation
 {
     public interface IRuleContainer<T>
     {
-        Task Validate(T value, ValidationContext<T> context);
+        int StageCount { get; }
+
+        Task Validate(ValidationContext<T> context, T value, int stage);
     }
 }
