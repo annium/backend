@@ -15,7 +15,4 @@
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
-    </ItemGroup>
 </Project>

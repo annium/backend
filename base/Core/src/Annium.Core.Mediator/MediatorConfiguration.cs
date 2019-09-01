@@ -20,7 +20,7 @@ namespace Annium.Core.Mediator
 
         internal MediatorConfiguration() { }
 
-        public void Add(Type handlerType)
+        public MediatorConfiguration Add(Type handlerType)
         {
             // ensure type is pipe or final handler
             var interfaces = handlerType.GetInterfaces()
@@ -33,7 +33,7 @@ namespace Annium.Core.Mediator
             {
                 var args = serviceType.GetGenericArguments();
                 handlers.Add(new Handler(handlerType, args[0], args[1], args[2], args[3]));
-                return;
+                return this;
             }
 
             serviceType = interfaces.FirstOrDefault(i => i.GetGenericTypeDefinition() == Constants.FinalHandlerType);
@@ -41,7 +41,7 @@ namespace Annium.Core.Mediator
             {
                 var args = serviceType.GetGenericArguments();;
                 handlers.Add(new Handler(handlerType, args[0], null, null, args[1]));
-                return;
+                return this;
             }
 
             throw new InvalidOperationException(
