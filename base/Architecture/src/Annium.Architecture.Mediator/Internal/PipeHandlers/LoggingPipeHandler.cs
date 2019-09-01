@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.Mediator.PipeHandlers
+namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
     internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>
     {

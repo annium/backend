@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace Annium.AspNetCore.Extensions
+namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
     public class ExceptionMiddleware
     {

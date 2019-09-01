@@ -1,4 +1,4 @@
-using Annium.AspNetCore.Extensions;
+using Annium.AspNetCore.Extensions.Internal.Middlewares;
 using Microsoft.AspNetCore.Builder;
 
 namespace Annium.Core.DependencyInjection

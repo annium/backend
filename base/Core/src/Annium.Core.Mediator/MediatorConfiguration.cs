@@ -48,12 +48,5 @@ namespace Annium.Core.Mediator
                 $"To register {handlerType.FullName} as Mediator request handler, it must implement {Constants.PipeHandlerType.FullName} or {Constants.FinalHandlerType.FullName}"
             );
         }
-
-        // TODO: allow, if will be needed
-        // public void Add<THandler, TRequestIn, TRequestOut, TResponseIn, TResponseOut>()
-        // where THandler : IRequestHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>
-        // {
-        //     handlers.Add(new Record(typeof(TRequestIn), typeof(TRequestOut), typeof(TResponseIn), typeof(TResponseOut), typeof(THandler)));
-        // }
     }
 }

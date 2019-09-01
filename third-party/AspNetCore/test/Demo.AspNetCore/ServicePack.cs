@@ -14,6 +14,7 @@ namespace Demo.AspNetCore
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
             // register and setup services
+            services.AddMediator();
         }
 
         public override void Setup(System.IServiceProvider provider)

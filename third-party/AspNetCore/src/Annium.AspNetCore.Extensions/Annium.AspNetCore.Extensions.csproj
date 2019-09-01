@@ -11,10 +11,11 @@
         <IsPackable>true</IsPackable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../base/Architecture/src/Annium.Architecture.Http/Annium.Architecture.Http.csproj" />
+        <ProjectReference Include="../../../../base/Core/src/Annium.Core.Mediator/Annium.Core.Mediator.csproj" />
         <ProjectReference Include="../../../../base/Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
         <ProjectReference Include="../../../../base/Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
         <ProjectReference Include="../../../../base/Localization/src/Annium.Localization.Abstractions/Annium.Localization.Abstractions.csproj" />
-        <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.2.0" />

@@ -1,4 +1,4 @@
-using Annium.Architecture.ViewModel.Internal;
+using Annium.Architecture.ViewModel.Internal.PipeHandlers;
 
 namespace Annium.Core.Mediator
 {

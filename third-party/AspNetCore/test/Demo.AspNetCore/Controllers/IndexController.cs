@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Annium.AspNetCore.Extensions;
+using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace Demo.AspNetCore.Controllers
     [Route("/")]
     public class IndexController : ServerController
     {
-        public IndexController()
+        public IndexController(IMediator mediator) : base(mediator)
         {
 
         }

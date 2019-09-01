@@ -1,4 +1,7 @@
+using System;
 using System.Net;
+using System.Threading.Tasks;
+using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Primitives;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +11,15 @@ namespace Annium.AspNetCore.Extensions
 {
     public class ServerController : ControllerBase
     {
+        protected readonly IMediator mediator;
+
+        protected ServerController(
+            IMediator mediator
+        )
+        {
+            this.mediator = mediator;
+        }
+
         [NonAction]
         public IActionResult Created(object result) =>
             new ObjectResult(result) { StatusCode = (int) HttpStatusCode.Created };
@@ -62,5 +74,13 @@ namespace Annium.AspNetCore.Extensions
         [NonAction]
         public virtual IActionResult ServerError(string error) =>
             new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.InternalServerError };
+
+        [NonAction]
+        protected async Task<IActionResult> HandleAsync<TRequest, TResponse>(TRequest request)
+        {
+            var result = await mediator.SendAsync<ValueTuple<ModelStateDictionary, TRequest>, IStatusResult<HttpStatusCode, TResponse>>((ModelState, request));
+
+            return new ObjectResult(result) { StatusCode = (int) result.Status };
+        }
     }
 }

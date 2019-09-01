@@ -5,7 +5,7 @@ using Annium.Core.Mapper;
 using Annium.Core.Mediator;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.ViewModel.Internal
+namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
 {
     internal class RequestMappingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<IRequest<TRequest>, TRequest, TResponse, TResponse>
     {
