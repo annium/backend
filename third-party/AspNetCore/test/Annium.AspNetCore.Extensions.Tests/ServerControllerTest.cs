@@ -1,11 +1,11 @@
 using System.Net;
 using System.Threading.Tasks;
-using Demo.AspNetCore;
 using Annium.AspNetCore.IntegrationTesting;
 using Annium.Data.Operations;
 using Annium.Data.Operations.Serialization;
 using Annium.Net.Http;
 using Annium.Testing;
+using Demo.AspNetCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -13,7 +13,7 @@ namespace Annium.AspNetCore.Extensions.Tests
 {
     public class ServerControllerTest : IntegrationTest
     {
-        private IRequest http => GetRequest<Startup<ServicePack>>();
+        private IRequest http => GetRequest<Startup<Demo.AspNetCore.ServicePack>>();
 
         [Fact]
         public async Task Conlfict_Works()

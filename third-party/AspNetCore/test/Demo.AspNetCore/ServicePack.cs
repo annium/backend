@@ -1,10 +1,12 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Logging.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 
 namespace Demo.AspNetCore
 {
-    internal class ServicePack : ServicePackBase
+    public class ServicePack : ServicePackBase
     {
         public override void Configure(IServiceCollection services)
         {
@@ -14,7 +16,10 @@ namespace Demo.AspNetCore
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
             // register and setup services
+            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
             services.AddMediator();
+            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
+            services.AddInMemoryLogger();
         }
 
         public override void Setup(System.IServiceProvider provider)
