@@ -2,10 +2,10 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Validation
 {
-    public interface IRuleContainer<T>
+    internal interface IRuleContainer<TValue>
     {
         int StageCount { get; }
 
-        Task Validate(ValidationContext<T> context, T value, int stage);
+        Task ValidateAsync(ValidationContext<TValue> context, TValue value, int stage);
     }
 }

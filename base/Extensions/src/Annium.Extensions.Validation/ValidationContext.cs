@@ -8,27 +8,27 @@ namespace Annium.Extensions.Validation
         public TValue Root { get; }
         public string Label { get; }
         public string Field { get; }
-        internal IResult Result { get; }
+        private readonly IResult result;
         private readonly ILocalizer localizer;
 
         internal ValidationContext(
             TValue root,
             string label,
-            string name,
+            string field,
             IResult result,
             ILocalizer localizer
         )
         {
             Root = root;
             Label = label;
-            Field = name;
-            Result = result;
+            Field = field;
+            this.result = result;
             this.localizer = localizer;
         }
 
         public void Error(string error, params object[] arguments)
         {
-            Result.Error(Label, localizer[error, arguments]);
+            result.Error(Label, localizer[error, arguments]);
         }
     }
 }

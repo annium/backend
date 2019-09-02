@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Validation
 {
-    internal class RuleContainer<TValue, TField> : IRuleContainer<TValue>, IRuleBuilder<TValue, TField>
+    internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRuleContainer<TValue>
     {
         public int StageCount => chains.Count;
         private readonly Func<TValue, TField> getField;
@@ -41,7 +41,7 @@ namespace Annium.Extensions.Validation
             return this;
         }
 
-        public async Task Validate(
+        public async Task ValidateAsync(
             ValidationContext<TValue> context,
             TValue value,
             int stage

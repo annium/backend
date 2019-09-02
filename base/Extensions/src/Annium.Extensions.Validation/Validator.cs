@@ -57,7 +57,7 @@ namespace Annium.Extensions.Validation
                     var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                     var ruleResult = Result.New();
                     var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
-                    await rule.Validate(context, value, stage);
+                    await rule.ValidateAsync(context, value, stage);
                     result.Join(ruleResult);
                 }
 
