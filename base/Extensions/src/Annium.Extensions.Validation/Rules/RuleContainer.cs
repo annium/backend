@@ -8,7 +8,7 @@ namespace Annium.Extensions.Validation
     {
         public int StageCount => chains.Count;
         private readonly Func<TValue, TField> getField;
-        private readonly IList<IList<IRule<TValue, TField>>> chains = new List<IList<IRule<TValue, TField>>>();
+        private readonly IList<IList<Delegate>> chains = new List<IList<Delegate>>();
 
         public RuleContainer(
             Func<TValue, TField> getField
@@ -22,21 +22,21 @@ namespace Annium.Extensions.Validation
 
         public IRuleBuilder<TValue, TField> Add(Action<ValidationContext<TValue>, TField> validate)
         {
-            chains[chains.Count - 1].Add(new SyncRule<TValue, TField>(validate));
+            chains[chains.Count - 1].Add(validate);
 
             return this;
         }
 
         public IRuleBuilder<TValue, TField> Add(Func<ValidationContext<TValue>, TField, Task> validate)
         {
-            chains[chains.Count - 1].Add(new AsyncRule<TValue, TField>(validate));
+            chains[chains.Count - 1].Add(validate);
 
             return this;
         }
 
         public IRuleBuilder<TValue, TField> Then()
         {
-            chains.Add(new List<IRule<TValue, TField>>());
+            chains.Add(new List<Delegate>());
 
             return this;
         }
@@ -56,11 +56,11 @@ namespace Annium.Extensions.Validation
             foreach (var rule in chains[stage])
                 switch (rule)
                 {
-                    case SyncRule<TValue, TField> syncRule:
-                        syncRule.Validate.Invoke(context, field);
+                    case Action<ValidationContext<TValue>, TField> validate:
+                        validate(context, field);
                         break;
-                    case AsyncRule<TValue, TField> asyncRule:
-                        await asyncRule.Validate.Invoke(context, field);
+                    case Func<ValidationContext<TValue>, TField, Task> validate:
+                        await validate(context, field);
                         break;
                 }
         }
