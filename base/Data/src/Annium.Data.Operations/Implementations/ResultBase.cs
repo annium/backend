@@ -27,7 +27,6 @@ namespace Annium.Data.Operations.Implementations
 
         public T Error(string error)
         {
-            lock(plainErrors)
             plainErrors.Add(error);
 
             return this as T;
