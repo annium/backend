@@ -117,6 +117,7 @@ namespace Annium.Core.Application.Types
                 if (baseType.GetGenericTypeDefinition() != target.GetGenericTypeDefinition())
                     return resolveBase();
 
+                // base type is generic class type with same base definition, as target
                 return buildArgs(baseType);
             }
 
@@ -128,6 +129,7 @@ namespace Annium.Core.Application.Types
                     .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetBase);
 
                 if (implementation != null)
+                    // implementation is generic interface type with same base definition, as target
                     return buildArgs(implementation);
 
                 if (type.BaseType is null)
@@ -155,7 +157,31 @@ namespace Annium.Core.Application.Types
             Type[] buildArgs(Type sourceType)
             {
                 var args = type.GetGenericArguments();
+
                 fillArgs(args, sourceType, target);
+
+                var unresolvedArgs = args.Count(a => a.IsGenericTypeParameter);
+                if (unresolvedArgs == 0 || unresolvedArgs == args.Length)
+                    return args;
+
+                var originalArgs = type.GetGenericArguments();
+
+                while (true)
+                {
+                    for (var i = 0; i < args.Length; i++)
+                    {
+                        var arg = args[i];
+                        if (arg.IsGenericTypeParameter)
+                            continue;
+
+                        foreach (var constraint in originalArgs[i].GetGenericParameterConstraints())
+                            fillArgs(args, constraint, arg);
+                    }
+
+                    var currentlyUnresolved = args.Count(a => a.IsGenericTypeParameter);
+                    if (currentlyUnresolved == 0 || currentlyUnresolved == unresolvedArgs)
+                        break;
+                }
 
                 return args;
             }
@@ -163,7 +189,7 @@ namespace Annium.Core.Application.Types
             void fillArgs(Type[] args, Type sourceType, Type targetType)
             {
                 var sourceArgs = sourceType.GetGenericArguments();
-                var targetArgs = targetType.GetGenericArguments();
+                var targetArgs = targetType.GetTargetImplementation(sourceType).GetGenericArguments();
 
                 for (var i = 0; i < sourceArgs.Length; i++)
                 {
