@@ -11,6 +11,13 @@ namespace Annium.Core.Mediator
             return cfg;
         }
 
+        public static MediatorConfiguration AddCompositionHandler(this MediatorConfiguration cfg)
+        {
+            cfg.Add(typeof(CompositionPipeHandler<,>));
+
+            return cfg;
+        }
+
         public static MediatorConfiguration AddLoggingHandler(this MediatorConfiguration cfg)
         {
             cfg.Add(typeof(LoggingPipeHandler<,>));

@@ -7,14 +7,14 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
 {
-    internal class RequestMappingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<IRequest<TRequest>, TRequest, TResponse, TResponse>
+    internal class RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse> : IPipeRequestHandler<TRequestIn, TRequestOut, TResponse, TResponse> where TRequestIn : IRequest<TRequestOut>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<RequestMappingPipeHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger;
 
         public RequestMappingPipeHandler(
             IMapper mapper,
-            ILogger<RequestMappingPipeHandler<TRequest, TResponse>> logger
+            ILogger<RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger
         )
         {
             this.mapper = mapper;
@@ -22,13 +22,13 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
         }
 
         public Task<TResponse> HandleAsync(
-            IRequest<TRequest> request,
+            TRequestIn request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<TResponse>> next
+            Func<TRequestOut, Task<TResponse>> next
         )
         {
-            logger.Trace($"Map request: {request?.GetType() ?? typeof(IRequest<TRequest>)} -> {typeof(TResponse)}");
-            var mappedRequest = mapper.Map<TRequest>(request);
+            logger.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
+            var mappedRequest = mapper.Map<TRequestOut>(request);
 
             return next(mappedRequest);
         }

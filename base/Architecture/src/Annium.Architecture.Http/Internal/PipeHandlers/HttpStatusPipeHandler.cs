@@ -33,8 +33,20 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
 
         private HttpStatusCode MapToStatusCode(OperationStatus status)
         {
+            if (status == OperationStatus.BadRequest)
+                return HttpStatusCode.BadRequest;
+
+            if (status == OperationStatus.Forbidden)
+                return HttpStatusCode.Forbidden;
+
             if (status == OperationStatus.OK)
                 return HttpStatusCode.OK;
+
+            if (status == OperationStatus.NotFound)
+                return HttpStatusCode.NotFound;
+
+            if (status == OperationStatus.UncaughtException)
+                return HttpStatusCode.InternalServerError;
 
             // if mapping fails - it's critical error
             return HttpStatusCode.InternalServerError;

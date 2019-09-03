@@ -6,8 +6,8 @@ namespace Annium.Core.Mediator
     {
         public static MediatorConfiguration AddViewMappingHandlers(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(RequestMappingPipeHandler<,>));
-            cfg.Add(typeof(RequestResponseMappingPipeHandler<,>));
+            cfg.Add(typeof(RequestResponseMappingPipeHandler<, , ,>));
+            cfg.Add(typeof(RequestMappingPipeHandler<, ,>));
 
             return cfg;
         }

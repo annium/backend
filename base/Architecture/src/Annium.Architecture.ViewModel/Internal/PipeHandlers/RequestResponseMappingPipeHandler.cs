@@ -1,41 +1,43 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Architecture.Base;
 using Annium.Core.Mapper;
 using Annium.Core.Mediator;
+using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
 {
-    internal class RequestResponseMappingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<IRequest<TRequest>, TRequest, TResponse, IResponse<TResponse>>
+    internal class RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut> : IPipeRequestHandler<TRequestIn, TRequestOut, IStatusResult<OperationStatus, TResponseIn>, IStatusResult<OperationStatus, TResponseOut>> where TRequestIn : IRequest<TRequestOut> where TResponseOut : IResponse<TResponseIn>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<RequestResponseMappingPipeHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger;
 
         public RequestResponseMappingPipeHandler(
             IMapper mapper,
-            ILogger<RequestResponseMappingPipeHandler<TRequest, TResponse>> logger
+            ILogger<RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger
         )
         {
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<IResponse<TResponse>> HandleAsync(
-            IRequest<TRequest> request,
+        public async Task<IStatusResult<OperationStatus, TResponseOut>> HandleAsync(
+            TRequestIn request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<TResponse>> next
+            Func<TRequestOut, Task<IStatusResult<OperationStatus, TResponseIn>>> next
         )
         {
-            logger.Trace($"Map request: {request?.GetType() ?? typeof(IRequest<TRequest>)} -> {typeof(TResponse)}");
-            var mappedRequest = mapper.Map<TRequest>(request);
+            logger.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
+            var mappedRequest = mapper.Map<TRequestOut>(request);
 
             var response = await next(mappedRequest);
 
-            logger.Trace($"Map response: {response?.GetType() ?? typeof(TResponse)} -> {typeof(IResponse<TResponse>)}");
-            var mappedResponse = mapper.Map<IResponse<TResponse>>(response);
+            logger.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
+            var mappedResponse = mapper.Map<TResponseOut>(response.Data);
 
-            return mappedResponse;
+            return Result.New(response.Status, mappedResponse).Join(response);
         }
     }
 }
