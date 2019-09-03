@@ -24,5 +24,7 @@ namespace Annium.Core.Mediator.Internal
             ResponseIn = responseIn;
             ResponseOut = responseOut;
         }
+
+        public override string ToString() => Implementation.ToString();
     }
 }

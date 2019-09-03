@@ -75,20 +75,18 @@ namespace Annium.Core.Mediator.Internal
                 chain.Add(new ChainElement(service, nextBuilder.BuildNextPrototype(input, output)));
             }
 
+            traceChain();
+
             if (!isFinalized)
                 throw new InvalidOperationException($"Can't resolve request handler by input {input} and output {output}");
-
-            logger.Trace($"Chain built with {chain.Count} handler(s):");
-            foreach (var element in chain)
-                logger.Trace($"- {element.Handler}");
 
             return chain;
 
             Type resolveHandler(Handler handler)
             {
                 var requestIn = input.GetTargetImplementation(handler.RequestIn);
-                var responseOut = handler.ResponseOut.ResolveByImplentations(output);
-                // var responseOut = output.GetTargetImplementation(handler.ResponseOut);
+                // var responseOut = handler.ResponseOut.ResolveByImplentations(output);
+                var responseOut = output.GetTargetImplementation(handler.ResponseOut);
 
                 if (requestIn is null || responseOut is null)
                     return null;
@@ -99,6 +97,13 @@ namespace Annium.Core.Mediator.Internal
                     throw new InvalidOperationException($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
 
                 return service;
+            }
+
+            void traceChain()
+            {
+                logger.Trace($"Composed chain with {chain.Count} handler(s):");
+                foreach (var element in chain)
+                    logger.Trace($"- {element.Handler}");
             }
         }
     }

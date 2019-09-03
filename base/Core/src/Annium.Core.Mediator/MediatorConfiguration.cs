@@ -28,21 +28,24 @@ namespace Annium.Core.Mediator
 
                 .ToArray();
 
-            var serviceType = interfaces.FirstOrDefault(i => i.GetGenericTypeDefinition() == Constants.PipeHandlerType);
-            if (serviceType != null)
+            var isRegistered = false;
+
+            foreach (var serviceType in interfaces.Where(i => i.GetGenericTypeDefinition() == Constants.PipeHandlerType))
             {
                 var args = serviceType.GetGenericArguments();
                 handlers.Add(new Handler(handlerType, args[0], args[1], args[2], args[3]));
-                return this;
+                isRegistered = true;
             }
 
-            serviceType = interfaces.FirstOrDefault(i => i.GetGenericTypeDefinition() == Constants.FinalHandlerType);
-            if (serviceType != null)
+            foreach (var serviceType in interfaces.Where(i => i.GetGenericTypeDefinition() == Constants.FinalHandlerType))
             {
-                var args = serviceType.GetGenericArguments();;
+                var args = serviceType.GetGenericArguments();
                 handlers.Add(new Handler(handlerType, args[0], null, null, args[1]));
-                return this;
+                isRegistered = true;
             }
+
+            if (isRegistered)
+                return this;
 
             throw new InvalidOperationException(
                 $"To register {handlerType.FullName} as Mediator request handler, it must implement {Constants.PipeHandlerType.FullName} or {Constants.FinalHandlerType.FullName}"

@@ -21,5 +21,7 @@ namespace Annium.Core.Mediator.Internal
         {
             Next = next;
         }
+
+        public override string ToString() => Handler.ToString();
     }
 }
