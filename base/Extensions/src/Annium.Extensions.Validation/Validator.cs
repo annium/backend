@@ -53,18 +53,16 @@ namespace Annium.Extensions.Validation
             for (var stage = 0; stage < stageCount; stage++)
             {
                 // validate all async
-                result.Join(await Task.WhenAll(rules.Select(async p =>
+                foreach (var(property, rule) in rules)
                 {
-                    var(property, rule) = p;
-
                     var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                     var ruleResult = Result.New();
                     var context = new ValidationContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
 
                     await rule.ValidateAsync(context, value, stage);
 
-                    return ruleResult;
-                })));
+                    result.Join(ruleResult);
+                };
 
                 // short-circuit if any errors after stage execution
                 if (result.HasErrors)

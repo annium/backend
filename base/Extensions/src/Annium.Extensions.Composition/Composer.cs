@@ -52,10 +52,8 @@ namespace Annium.Extensions.Composition
                     Result.New(OperationStatus.BadRequest).Error("Value is null");
 
             var result = Result.New();
-            await Task.WhenAll(containers.Select(async c =>
+            foreach (var(field, container) in containers)
             {
-                var(field, container) = c;
-
                 var propertyLabel = hasLabel ? $"{label}.{field.Name}" : field.Name;
                 var ruleResult = Result.New();
                 var context = new CompositionContext<TValue>(value, propertyLabel, field.Name, ruleResult, localizer);
@@ -63,7 +61,7 @@ namespace Annium.Extensions.Composition
                 await container.ComposeAsync(context, value);
 
                 result.Join(ruleResult);
-            }));
+            };
 
             return Result.New(result.HasErrors ? OperationStatus.NotFound : OperationStatus.OK).Join(result);
         }
