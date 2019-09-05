@@ -13,7 +13,7 @@ namespace Annium.Core.Mediator
                 cfg.Add(handler);
 
             var queryHandlers = TypeManager.Instance.GetImplementations(typeof(IQueryHandler<,>));
-            foreach (var handler in commandHandlers)
+            foreach (var handler in queryHandlers)
                 cfg.Add(handler);
 
             return cfg;
