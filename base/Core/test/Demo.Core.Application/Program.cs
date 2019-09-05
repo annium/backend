@@ -20,7 +20,7 @@ namespace Demo.Core.Application
             // implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
             // implementation = typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             // implementation = typeof(ValueTuple<int, bool>).GetTargetImplementation(typeof(ValueTuple<,>));
-            implementation = typeof(ConstrainedComplext<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>));
+            implementation = typeof(ConstrainedComplex<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>));
             // implementation = typeof(MultiComplex<,>).GetGenericArguments() [0].ResolveByImplentations(typeof(OtherComplex<bool>));
             // var ownInterfaces = typeof(OpenComplex<int>).GetOwnInterfaces();
             // implementation = typeof(int).GetImplementationOf(typeof(System.ValueType));
@@ -47,7 +47,7 @@ namespace Demo.Core.Application
 
         private class OtherPlain { }
 
-        private class ConstrainedComplext<T1, T2, T3, T4> : IOther<T1> where T1 : IGeneric<T2, T3> where T3 : IGeneric<T2, T4> { }
+        private class ConstrainedComplex<T1, T2, T3, T4> : IOther<T1> where T1 : IGeneric<T2, T3> where T3 : IGeneric<T2, T4> { }
 
         private class MultiComplex<T1, T2> : OtherComplex<T1>, IGeneric<T2, int> { }
 

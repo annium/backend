@@ -44,6 +44,13 @@ namespace Annium.Core.Application.Tests.Types
         }
 
         [Fact]
+        public void ResolveByImplentations_InferableByConstraints_BuildsClassImplementation()
+        {
+            typeof(ConstrainedComplex<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>))
+                .IsEqual(typeof(ConstrainedComplex<IGeneric<bool, IGeneric<bool, int>>, bool, IGeneric<bool, int>, int >));
+        }
+
+        [Fact]
         public void ResolveByImplentations_UnbuildableClass_ReturnsNull()
         {
             typeof(Other<>).ResolveByImplentations(typeof(Base<int, bool>)).IsEqual(typeof(Other<bool>));
@@ -128,6 +135,8 @@ namespace Annium.Core.Application.Tests.Types
 
         private class OtherPlain { }
 
+        private class ConstrainedComplex<T1, T2, T3, T4> : IOther<T1> where T1 : IGeneric<T2, T3> where T3 : IGeneric<T2, T4> { }
+
         private class MultiComplex<T1, T2> : OtherComplex<T1>, IGeneric<T2, int> { }
 
         private class OpenComplex<T> : ComplexPlain<T>, IGenericConstrained<BasePlain, GenericPlain<T>>, IPlain { }
@@ -143,6 +152,8 @@ namespace Annium.Core.Application.Tests.Types
         private interface IPlain { }
 
         private interface IGeneric<T1, T2> { }
+
+        private interface IOther<T> { }
 
         private interface IGenericConstrained<T1, T2> where T2 : class, T1, new() where T1 : IPlain { }
     }

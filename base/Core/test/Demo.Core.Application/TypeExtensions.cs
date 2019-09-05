@@ -189,7 +189,8 @@ namespace Annium.Core.Application.Types
             void fillArgs(Type[] args, Type sourceType, Type targetType)
             {
                 var sourceArgs = sourceType.GetGenericArguments();
-                var targetArgs = targetType.GetTargetImplementation(sourceType).GetGenericArguments();
+                targetType = targetType.GetTargetImplementation(sourceType);
+                var targetArgs = targetType.IsGenericType ? targetType.GetGenericArguments() : Array.Empty<Type>();
 
                 for (var i = 0; i < sourceArgs.Length; i++)
                 {

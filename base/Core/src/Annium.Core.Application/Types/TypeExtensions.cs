@@ -181,6 +181,8 @@ namespace Annium.Core.Application.Types
                     var currentlyUnresolved = args.Count(a => a.IsGenericTypeParameter);
                     if (currentlyUnresolved == 0 || currentlyUnresolved == unresolvedArgs)
                         break;
+
+                    unresolvedArgs = currentlyUnresolved;
                 }
 
                 return args;
@@ -188,8 +190,12 @@ namespace Annium.Core.Application.Types
 
             void fillArgs(Type[] args, Type sourceType, Type targetType)
             {
+                targetType = targetType.GetTargetImplementation(sourceType);
+                if (targetType is null)
+                    return;
+
                 var sourceArgs = sourceType.GetGenericArguments();
-                var targetArgs = targetType.GetTargetImplementation(sourceType).GetGenericArguments();
+                var targetArgs = targetType.IsGenericType ? targetType.GetGenericArguments() : Array.Empty<Type>();
 
                 for (var i = 0; i < sourceArgs.Length; i++)
                 {
