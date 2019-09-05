@@ -94,7 +94,10 @@ namespace Annium.Core.Mediator.Internal
                 var handlerInput = typeof(IRequestHandlerInput<,>).MakeGenericType(requestIn, responseOut);
                 var service = handler.Implementation.ResolveByImplentations(handlerInput);
                 if (service is null)
-                    throw new InvalidOperationException($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
+                {
+                    logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
+                    return null;
+                }
 
                 return service;
             }
