@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -375,6 +376,30 @@ namespace Annium.Core.Application.Types
 
                 return false;
             }
+        }
+
+        public static Type[] GetAncestors(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (type.IsValueType)
+                return new [] { typeof(ValueType) };
+
+            if (type.IsClass)
+            {
+                var ancestors = new List<Type>();
+
+                while (type.BaseType != null)
+                {
+                    ancestors.Add(type.BaseType);
+                    type = type.BaseType;
+                }
+
+                return ancestors.ToArray();
+            }
+
+            return Array.Empty<Type>();
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -181,8 +182,6 @@ namespace Annium.Core.Application.Types
                     var currentlyUnresolved = args.Count(a => a.IsGenericTypeParameter);
                     if (currentlyUnresolved == 0 || currentlyUnresolved == unresolvedArgs)
                         break;
-
-                    unresolvedArgs = currentlyUnresolved;
                 }
 
                 return args;
@@ -190,11 +189,8 @@ namespace Annium.Core.Application.Types
 
             void fillArgs(Type[] args, Type sourceType, Type targetType)
             {
-                targetType = targetType.GetTargetImplementation(sourceType);
-                if (targetType is null)
-                    return;
-
                 var sourceArgs = sourceType.GetGenericArguments();
+                targetType = targetType.GetTargetImplementation(sourceType);
                 var targetArgs = targetType.IsGenericType ? targetType.GetGenericArguments() : Array.Empty<Type>();
 
                 for (var i = 0; i < sourceArgs.Length; i++)
@@ -380,6 +376,30 @@ namespace Annium.Core.Application.Types
 
                 return false;
             }
+        }
+
+        public static Type[] GetAncestors(this Type type)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
+            if (type.IsValueType)
+                return new [] { typeof(ValueType) };
+
+            if (type.IsClass)
+            {
+                var ancestors = new List<Type>();
+
+                while (type.BaseType != null)
+                {
+                    ancestors.Add(type.BaseType);
+                    type = type.BaseType;
+                }
+
+                return ancestors.ToArray();
+            }
+
+            return Array.Empty<Type>();
         }
     }
 }

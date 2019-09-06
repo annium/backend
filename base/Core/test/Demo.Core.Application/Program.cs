@@ -17,10 +17,11 @@ namespace Demo.Core.Application
             Type implementation = null;
             target = typeof(IGeneric<int, bool>);
             // var arguments = typeof(MultiComplex<,>).ResolveGenericArgumentsByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
-            // implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
+            implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
+            var ancestors = implementation.GetAncestors();
             // implementation = typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             // implementation = typeof(ValueTuple<int, bool>).GetTargetImplementation(typeof(ValueTuple<,>));
-            implementation = typeof(ConstrainedComplex<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>));
+            // implementation = typeof(ConstrainedComplex<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>));
             // implementation = typeof(MultiComplex<,>).GetGenericArguments() [0].ResolveByImplentations(typeof(OtherComplex<bool>));
             // var ownInterfaces = typeof(OpenComplex<int>).GetOwnInterfaces();
             // implementation = typeof(int).GetImplementationOf(typeof(System.ValueType));
