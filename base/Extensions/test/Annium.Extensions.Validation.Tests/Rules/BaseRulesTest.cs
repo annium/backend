@@ -335,7 +335,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class PersonValidator : Validator<Person>
         {
-            public PersonValidator(ILocalizer<PersonValidator> localizer) : base(localizer)
+            public PersonValidator()
             {
                 Field(p => p.Name).Required();
                 Field(p => p.Age).Required();
@@ -366,7 +366,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class BadEnumValidator : Validator<BadEnum>
         {
-            public BadEnumValidator(ILocalizer<BadEnumValidator> localizer) : base(localizer)
+            public BadEnumValidator()
             {
                 Field(e => e.Name).Enum();
             }

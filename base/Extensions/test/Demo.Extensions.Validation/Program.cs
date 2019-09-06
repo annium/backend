@@ -15,9 +15,9 @@ namespace Demo.Extensions.Validation
             CancellationToken token
         )
         {
-            var validator = provider.GetRequiredService<IValidator<A>>();
+            var validator = provider.GetRequiredService<IValidator<User>>();
 
-            var value = new A();
+            var value = new User();
             var result = await validator.ValidateAsync(value);
         }
 

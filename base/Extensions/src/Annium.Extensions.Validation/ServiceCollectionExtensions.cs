@@ -11,16 +11,18 @@ namespace Annium.Core.DependencyInjection
         {
             var typeManager = TypeManager.Instance;
 
-            var baseType = typeof(IValidator<>);
-            var validatorTypes = typeManager.GetImplementations(baseType);
+            var validatorBase = typeof(IValidationContainer<>);
+            var validatorTypes = typeManager.GetImplementations(validatorBase);
             foreach (var type in validatorTypes)
             {
-                var @interface = type.GetInterfaces()
-                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
+                var baseType = type.GetInterfaces()
+                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == validatorBase);
 
-                if (!@interface.ContainsGenericParameters)
-                    services.AddScoped(@interface, type);
+                if (!baseType.ContainsGenericParameters)
+                    services.AddScoped(baseType, type);
             }
+
+            services.AddScoped(typeof(IValidator<>), typeof(ValidationExecutor<>));
 
             return services;
         }

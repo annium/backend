@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Localization.Abstractions;
 using Annium.Testing;
 
 namespace Annium.Extensions.Validation.Tests
@@ -74,6 +73,54 @@ namespace Annium.Extensions.Validation.Tests
             result.LabeledErrors.At($"nested.{nameof(Person.Name)}").At(0).IsEqual("Value is required");
         }
 
+        [Fact]
+        public async Task Validation_CompoundThroughInterfaces()
+        {
+            // arrange
+            var validator = GetValidator<User>();
+
+            // act
+            var result = await validator.ValidateAsync(new User());
+
+            // assert
+            result.HasErrors.IsTrue();
+            result.LabeledErrors.Has(2);
+            result.LabeledErrors.At(nameof(User.Email)).At(0).IsEqual("Value is required");
+            result.LabeledErrors.At(nameof(User.Login)).At(0).IsEqual("Value is required");
+        }
+
+        private class User : IEmail, ILogin
+        {
+            public string Email { get; set; }
+            public string Login { get; set; }
+        }
+
+        private interface IEmail
+        {
+            string Email { get; set; }
+        }
+
+        private interface ILogin
+        {
+            string Login { get; set; }
+        }
+
+        private class EmailValidator : Validator<IEmail>
+        {
+            public EmailValidator()
+            {
+                Field(p => p.Email).Required();
+            }
+        }
+
+        private class LoginValidator : Validator<ILogin>
+        {
+            public LoginValidator()
+            {
+                Field(p => p.Login).Required();
+            }
+        }
+
         private class Person
         {
             public string Name { get; set; }
@@ -81,7 +128,7 @@ namespace Annium.Extensions.Validation.Tests
 
         private class PersonValidator : Validator<Person>
         {
-            public PersonValidator(ILocalizer<PersonValidator> localizer) : base(localizer)
+            public PersonValidator()
             {
                 Field(p => p.Name).Required();
             }
@@ -94,7 +141,7 @@ namespace Annium.Extensions.Validation.Tests
 
         private class BadValidator : Validator<Bad>
         {
-            public BadValidator(ILocalizer<PersonValidator> localizer) : base(localizer)
+            public BadValidator()
             {
                 Field<string>(null).Required();
             }

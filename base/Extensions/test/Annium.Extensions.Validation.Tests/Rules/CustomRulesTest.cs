@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Annium.Localization.Abstractions;
 using Annium.Testing;
 
 namespace Annium.Extensions.Validation.Tests.Rules
@@ -43,7 +42,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class PersonValidator : Validator<Person>
         {
-            public PersonValidator(ILocalizer<PersonValidator> localizer) : base(localizer)
+            public PersonValidator()
             {
                 Field(p => p.Name)
                     .Required()

@@ -6,7 +6,6 @@ namespace Annium.Extensions.Validation
 {
     internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRuleContainer<TValue>
     {
-        public int StageCount => chains.Count;
         private readonly Func<TValue, TField> getField;
         private readonly IList<IList<Delegate>> chains = new List<IList<Delegate>>();
 
@@ -41,7 +40,7 @@ namespace Annium.Extensions.Validation
             return this;
         }
 
-        public async Task ValidateAsync(
+        public async Task<bool> ValidateAsync(
             ValidationContext<TValue> context,
             TValue value,
             int stage
@@ -49,7 +48,7 @@ namespace Annium.Extensions.Validation
         {
             // no validation if no chain at this stage
             if (stage >= chains.Count)
-                return;
+                return false;
 
             var field = getField(value);
 
@@ -63,6 +62,8 @@ namespace Annium.Extensions.Validation
                         await validate(context, field);
                         break;
                 }
+
+            return true;
         }
     }
 }
