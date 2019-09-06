@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Annium.Core.Application.Types;
 using Annium.Core.Entrypoint;
@@ -18,7 +19,7 @@ namespace Demo.Core.Application
             target = typeof(IGeneric<int, bool>);
             // var arguments = typeof(MultiComplex<,>).ResolveGenericArgumentsByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             implementation = typeof(Other<>).ResolveByImplentations(typeof(IGeneric<int, bool>));
-            var ancestors = implementation.GetAncestors();
+            var inheritanceChain = implementation.GetInheritanceChain();
             // implementation = typeof(MultiComplex<,>).ResolveByImplentations(typeof(OtherComplex<bool>), typeof(IGeneric<long, int>));
             // implementation = typeof(ValueTuple<int, bool>).GetTargetImplementation(typeof(ValueTuple<,>));
             // implementation = typeof(ConstrainedComplex<, , ,>).ResolveByImplentations(typeof(IOther<IGeneric<bool, IGeneric<bool, int>>>));

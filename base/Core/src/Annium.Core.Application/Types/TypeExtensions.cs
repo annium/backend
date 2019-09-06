@@ -182,6 +182,8 @@ namespace Annium.Core.Application.Types
                     var currentlyUnresolved = args.Count(a => a.IsGenericTypeParameter);
                     if (currentlyUnresolved == 0 || currentlyUnresolved == unresolvedArgs)
                         break;
+
+                    unresolvedArgs = currentlyUnresolved;
                 }
 
                 return args;
@@ -189,9 +191,12 @@ namespace Annium.Core.Application.Types
 
             void fillArgs(Type[] args, Type sourceType, Type targetType)
             {
-                var sourceArgs = sourceType.GetGenericArguments();
                 targetType = targetType.GetTargetImplementation(sourceType);
-                var targetArgs = targetType.IsGenericType ? targetType.GetGenericArguments() : Array.Empty<Type>();
+                if (targetType is null || !targetType.IsGenericType)
+                    return;
+
+                var sourceArgs = sourceType.GetGenericArguments();
+                var targetArgs = targetType.GetGenericArguments();
 
                 for (var i = 0; i < sourceArgs.Length; i++)
                 {
@@ -378,25 +383,39 @@ namespace Annium.Core.Application.Types
             }
         }
 
-        public static Type[] GetAncestors(this Type type)
+        public static Type[] GetInheritanceChain(
+            this Type type,
+            bool self = false,
+            bool root = false
+        )
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
+            var chain = new List<Type>();
+            if (self)
+                chain.Add(type);
+
             if (type.IsValueType)
-                return new [] { typeof(ValueType) };
+            {
+                if (root)
+                    chain.Add(typeof(ValueType));
+
+                return chain.ToArray();
+            }
 
             if (type.IsClass)
             {
-                var ancestors = new List<Type>();
-
-                while (type.BaseType != null)
+                while (type.BaseType != typeof(object))
                 {
-                    ancestors.Add(type.BaseType);
+                    chain.Add(type.BaseType);
                     type = type.BaseType;
                 }
 
-                return ancestors.ToArray();
+                if (root)
+                    chain.Add(typeof(object));
+
+                return chain.ToArray();
             }
 
             return Array.Empty<Type>();
