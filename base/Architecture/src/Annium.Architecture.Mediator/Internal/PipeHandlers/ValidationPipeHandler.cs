@@ -13,15 +13,15 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
     internal class ValidationPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>>
     {
-        private readonly IEnumerable<IValidator<TRequest>> validators;
+        private readonly IValidator<TRequest> validator;
         private readonly ILogger<ValidationPipeHandler<TRequest, TResponse>> logger;
 
         public ValidationPipeHandler(
-            IEnumerable<IValidator<TRequest>> validators,
+            IValidator<TRequest> validator,
             ILogger<ValidationPipeHandler<TRequest, TResponse>> logger
         )
         {
-            this.validators = validators;
+            this.validator = validator;
             this.logger = logger;
         }
 
@@ -32,7 +32,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
         )
         {
             logger.Trace($"Validate {typeof(TRequest)}");
-            var result = Result.Join(await Task.WhenAll(validators.Select(v => v.ValidateAsync(request))));
+            var result = await validator.ValidateAsync(request);
             if (result.HasErrors)
             {
                 logger.Trace($"Validation of {typeof(TRequest)} failed");
