@@ -9,7 +9,7 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
-    internal class CompositionPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>>
+    internal class CompositionPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>> where TRequest : class
     {
         private readonly IComposer<TRequest> composer;
         private readonly ILogger<CompositionPipeHandler<TRequest, TResponse>> logger;

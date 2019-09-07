@@ -1,6 +1,15 @@
 {
     "version": "0.2.0",
     "configurations": [{
+        "name": "Composition",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Extensions.Composition/bin/Debug/netcoreapp2.2/Demo.Extensions.Composition.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Extensions.Composition",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }, {
         "name": "Validation",
         "type": "coreclr",
         "request": "launch",

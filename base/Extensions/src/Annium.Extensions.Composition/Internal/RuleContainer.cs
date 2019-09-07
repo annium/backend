@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Composition
 {
-    internal class CompositionContainer<TValue, TField> : ICompositionBuilder<TValue, TField>, ICompositionContainer<TValue>
+    internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRuleContainer<TValue>
     {
         private readonly MethodInfo setTarget;
         private Delegate load;
         private string message;
         private bool allowDefault;
 
-        public CompositionContainer(
+        public RuleContainer(
             MethodInfo setTarget
         )
         {

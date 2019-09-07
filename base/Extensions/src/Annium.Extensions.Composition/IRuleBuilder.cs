@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Composition
 {
-    public interface ICompositionBuilder<TValue, TField>
+    public interface IRuleBuilder<TValue, TField>
     {
         void LoadWith(Func<CompositionContext<TValue>, Task<TField>> load, string message = null, bool allowDefault = false);
 

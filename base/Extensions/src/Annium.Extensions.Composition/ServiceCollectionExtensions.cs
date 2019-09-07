@@ -11,16 +11,18 @@ namespace Annium.Core.DependencyInjection
         {
             var typeManager = TypeManager.Instance;
 
-            var baseType = typeof(IComposer<>);
-            var composerTypes = typeManager.GetImplementations(baseType);
+            var composerBase = typeof(ICompositionContainer<>);
+            var composerTypes = typeManager.GetImplementations(composerBase);
             foreach (var type in composerTypes)
             {
-                var @interface = type.GetInterfaces()
-                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
+                var baseType = type.GetInterfaces()
+                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == composerBase);
 
-                if (!@interface.ContainsGenericParameters)
-                    services.AddScoped(@interface, type);
+                if (!baseType.ContainsGenericParameters)
+                    services.AddScoped(baseType, type);
             }
+
+            services.AddScoped(typeof(IComposer<>), typeof(CompositionExecutor<>));
 
             return services;
         }

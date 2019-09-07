@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -11,20 +10,13 @@ using Annium.Localization.Abstractions;
 
 namespace Annium.Extensions.Composition
 {
-    public abstract class Composer<TValue> : IComposer<TValue>
+    public abstract class Composer<TValue> : ICompositionContainer<TValue> where TValue : class
     {
-        private readonly IDictionary<PropertyInfo, ICompositionContainer<TValue>> containers =
-        new Dictionary<PropertyInfo, ICompositionContainer<TValue>>();
-        private readonly ILocalizer localizer;
+        public IEnumerable<PropertyInfo> Fields => rules.Keys;
+        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> rules =
+            new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
-        public Composer(
-            ILocalizer localizer
-        )
-        {
-            this.localizer = localizer;
-        }
-
-        protected ICompositionBuilder<TValue, TField> Field<TField>(
+        protected IRuleBuilder<TValue, TField> Field<TField>(
             Expression<Func<TValue, TField>> targetAccessor
         )
         {
@@ -35,30 +27,25 @@ namespace Annium.Extensions.Composition
             var targetSetter = target.GetSetMethod(nonPublic: true) ??
                 throw new ArgumentException("Target property has no setter", nameof(targetAccessor));
 
-            var container = new CompositionContainer<TValue, TField>(targetSetter);
+            var rule = new RuleContainer<TValue, TField>(targetSetter);
 
-            containers[target] = container;
+            rules[target] = rule;
 
-            return container;
+            return rule;
         }
 
-        public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = null)
+        public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label, ILocalizer localizer)
         {
+            var result = Result.New();
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            if (value == null)
-                return hasLabel ?
-                    Result.New(OperationStatus.BadRequest).Error(label, "Value is null") :
-                    Result.New(OperationStatus.BadRequest).Error("Value is null");
-
-            var result = Result.New();
-            foreach (var(field, container) in containers)
+            foreach (var(property, rule) in rules)
             {
-                var propertyLabel = hasLabel ? $"{label}.{field.Name}" : field.Name;
+                var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var ruleResult = Result.New();
-                var context = new CompositionContext<TValue>(value, propertyLabel, field.Name, ruleResult, localizer);
+                var context = new CompositionContext<TValue>(value, propertyLabel, property.Name, ruleResult, localizer);
 
-                await container.ComposeAsync(context, value);
+                await rule.ComposeAsync(context, value);
 
                 result.Join(ruleResult);
             };
