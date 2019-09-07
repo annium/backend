@@ -4,16 +4,16 @@ namespace Annium.Core.Mediator
 {
     public static class MediatorConfigurationExtensions
     {
-        public static MediatorConfiguration AddExceptionHandler(this MediatorConfiguration cfg)
+        public static MediatorConfiguration AddCompositionHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(ExceptionPipeHandler<,>));
+            cfg.Add(typeof(CompositionPipeHandler<,>));
 
             return cfg;
         }
 
-        public static MediatorConfiguration AddCompositionHandler(this MediatorConfiguration cfg)
+        public static MediatorConfiguration AddExceptionHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(CompositionPipeHandler<,>));
+            cfg.Add(typeof(ExceptionPipeHandler<,>));
 
             return cfg;
         }

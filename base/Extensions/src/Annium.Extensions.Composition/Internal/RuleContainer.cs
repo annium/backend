@@ -55,7 +55,7 @@ namespace Annium.Extensions.Composition
             }
 
             if (target == null || (!allowDefault && target.Equals(default(TField))))
-                context.Error(message ?? "{1} not found", context.Field);
+                context.Error(message ?? "{0} not found", context.Field);
             else
                 setTarget.Invoke(value, new object[] { target });
         }
