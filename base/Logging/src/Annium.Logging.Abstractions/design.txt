@@ -1,0 +1,5 @@
+ILogger<T> - introduces entrypoint for log routing subsystem
+LogRouter :ILogger<T> - is direct and single implementation
+All destinations are regsitered as routes, working in sync mode
+Routes.
+Logging configuration uses filter, applied for each message

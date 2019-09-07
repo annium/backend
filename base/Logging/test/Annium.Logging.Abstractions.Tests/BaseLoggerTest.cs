@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Logging.Abstractions.Tests
@@ -10,134 +12,146 @@ namespace Annium.Logging.Abstractions.Tests
         private readonly Func<Instant> getInstant =
             () => Instant.FromUnixTimeSeconds(60);
 
-        private readonly IList<ValueTuple<Instant, LogLevel, string>> entries =
-            new List<ValueTuple<Instant, LogLevel, string>>();
+        private readonly IList<LogMessage> messages = new List<LogMessage>();
 
         [Fact]
         public void Log_ValidLevel_WritesLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Trace), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Log(LogLevel.Trace, "sample");
 
             // assert
-            entries.Has(1).At(0).IsEqual((getInstant(), LogLevel.Trace, "sample"));
+            messages.Has(1);
+            messages.At(0).Instant.IsEqual(getInstant());
+            messages.At(0).Level.IsEqual(LogLevel.Trace);
+            messages.At(0).Source.IsEqual(typeof(BaseLoggerTest));
+            messages.At(0).Message.IsEqual("sample");
         }
 
         [Fact]
         public void Log_InvalidLevel_OmitsLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Debug), getInstant);
+            var logger = GetLogger(LogLevel.Debug);
 
             // act
             logger.Log(LogLevel.Trace, "sample");
 
             // assert
-            entries.IsEmpty();
+            messages.IsEmpty();
         }
 
         [Fact]
         public void LogTrace_WritesTraceLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Trace), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Trace("sample");
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Trace);
+            messages.At(0).Level.IsEqual(LogLevel.Trace);
         }
 
         [Fact]
         public void LogDebug_WritesDebugLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Debug), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Debug("sample");
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Debug);
+            messages.At(0).Level.IsEqual(LogLevel.Debug);
         }
 
         [Fact]
         public void LogInfo_WritesInfoLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Info), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Info("sample");
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Info);
+            messages.At(0).Level.IsEqual(LogLevel.Info);
         }
 
         [Fact]
         public void LogWarn_WritesWarnLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Warn), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Warn("sample");
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Warn);
+            messages.At(0).Level.IsEqual(LogLevel.Warn);
         }
 
         [Fact]
         public void LogErrorException_WritesErrorExceptionLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Error), getInstant);
+            var logger = GetLogger();
+            var exception = new Exception("sample");
 
             // act
-            logger.Error(new Exception("sample"));
+            logger.Error(exception);
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Error);
-            entries.At(0).Item3.IsEqual("sample");
+            messages.At(0).Level.IsEqual(LogLevel.Error);
+            messages.At(0).Message.IsEqual(exception.Message);
+            messages.At(0).Exception.IsEqual(exception);
         }
 
         [Fact]
         public void LogErrorMessage_WritesErrorMessageLogEntry()
         {
             // arrange
-            var logger = new Logger(entries, new LoggerConfiguration(LogLevel.Error), getInstant);
+            var logger = GetLogger();
 
             // act
             logger.Error("sample");
 
             // assert
-            entries.At(0).Item2.IsEqual(LogLevel.Error);
-            entries.At(0).Item3.IsEqual("sample");
+            messages.At(0).Level.IsEqual(LogLevel.Error);
+            messages.At(0).Message.IsEqual("sample");
+        }
+
+        private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
+        {
+            var services = new ServiceCollection();
+
+            services.AddSingleton<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60));
+
+            services.AddLogging(route => route
+                .For(m => m.Level >= minLogLevel)
+                .Use(ServiceDescriptor.Singleton<LogHandler>(new LogHandler(messages)))
+            );
+
+            return services.BuildServiceProvider().GetRequiredService<ILogger<BaseLoggerTest>>();
         }
     }
 
-    [Fixture]
-    public class Logger : BaseLogger<BaseLoggerTest>
+    public class LogHandler : ILogHandler
     {
-        public IList<ValueTuple<Instant, LogLevel, string>> Entries { get; }
+        public IList<LogMessage> Messages { get; }
 
-        public Logger(
-            IList<ValueTuple<Instant, LogLevel, string>> entries,
-            LoggerConfiguration configuration,
-            Func<Instant> getInstant
-        ) : base(configuration, getInstant)
+        public LogHandler(
+            IList<LogMessage> messages
+        )
         {
-            Entries = entries;
+            Messages = messages;
         }
 
-        protected override void LogException(Instant instant, LogLevel level, Exception exception) =>
-        Entries.Add((instant, level, exception.Message));
-
-        protected override void LogMessage(Instant instant, LogLevel level, string message) =>
-        Entries.Add((instant, level, message));
+        public void Handle(LogMessage message) => Messages.Add(message);
     }
 }

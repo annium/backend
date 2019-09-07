@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Demo.Logging",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Logging/bin/Debug/netcoreapp2.2/Demo.Logging.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Logging",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}

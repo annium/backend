@@ -67,12 +67,15 @@ namespace Annium.Logging.Console.Tests
             }
         }
 
-        private ILogger<ConsoleLoggerTest> GetLogger()
+        private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
         {
             var services = new ServiceCollection();
-            services.AddSingleton(getInstant);
-            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
-            services.AddConsoleLogger();
+
+            services.AddSingleton<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60));
+
+            services.AddLogging(route => route
+                .For(m => m.Level >= minLogLevel)
+                .UseConsole());
 
             return services.BuildServiceProvider().GetRequiredService<ILogger<ConsoleLoggerTest>>();
         }
