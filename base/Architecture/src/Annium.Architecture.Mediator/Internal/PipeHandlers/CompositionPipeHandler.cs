@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
@@ -17,11 +15,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
         private readonly ILogger<CompositionPipeHandler<TRequest, TResponse>> logger;
 
         public CompositionPipeHandler(
-            IEnumerable<IComposer<TRequest>> composers,
+            IComposer<TRequest> composer,
             ILogger<CompositionPipeHandler<TRequest, TResponse>> logger
         )
         {
-            this.composer = composers.FirstOrDefault();
+            this.composer = composer;
             this.logger = logger;
         }
 
@@ -31,9 +29,6 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, Task<IStatusResult<OperationStatus, TResponse>>> next
         )
         {
-            if (composer is null)
-                return await next(request);
-
             logger.Trace($"Compose {typeof(TRequest)}");
             var result = await composer.ComposeAsync(request);
             if (result.HasErrors)
