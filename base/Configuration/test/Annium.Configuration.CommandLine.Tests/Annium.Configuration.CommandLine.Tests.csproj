@@ -9,6 +9,7 @@
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Configuration.CommandLine/Annium.Configuration.CommandLine.csproj" />

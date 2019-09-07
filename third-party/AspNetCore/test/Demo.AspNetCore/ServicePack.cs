@@ -18,8 +18,7 @@ namespace Demo.AspNetCore
             // register and setup services
             services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
             services.AddMediator();
-            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
-            services.AddInMemoryLogger();
+            services.AddLogging(route => route.UseInMemory());
         }
 
         public override void Setup(System.IServiceProvider provider)

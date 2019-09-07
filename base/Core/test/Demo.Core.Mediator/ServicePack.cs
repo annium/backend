@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
-using Annium.Logging.Abstractions;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Handlers;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,8 +18,7 @@ namespace Demo.Core.Mediator
 
             services.AddSingleton<TodoRepository>();
 
-            services.AddSingleton(new LoggerConfiguration(LogLevel.Trace));
-            services.AddConsoleLogger();
+            services.AddLogging(route => route.UseConsole());
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg)

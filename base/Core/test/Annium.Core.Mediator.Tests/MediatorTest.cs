@@ -29,8 +29,8 @@ namespace Annium.Core.Mediator.Tests
             // assert
             response.GetHashCode().IsEqual(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
             logs.Has(2);
-            logs.At(0).Item3.IsEqual(typeof(ClosedFinalHandler).FullName);
-            logs.At(1).Item3.IsEqual(request.GetHashCode().ToString());
+            logs.At(0).Message.IsEqual(typeof(ClosedFinalHandler).FullName);
+            logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
         }
 
         [Fact]
@@ -46,8 +46,8 @@ namespace Annium.Core.Mediator.Tests
             // assert
             response.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
             logs.Has(2);
-            logs.At(0).Item3.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
-            logs.At(1).Item3.IsEqual(request.GetHashCode().ToString());
+            logs.At(0).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
+            logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
         }
 
         [Fact]
@@ -65,26 +65,21 @@ namespace Annium.Core.Mediator.Tests
             response.IsSuccess.IsTrue();
             response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
             logs.Has(6);
-            logs.At(0).Item3.IsEqual($"Deserialize Request to {typeof(Two).Name}");
-            logs.At(1).Item3.IsEqual($"Start {typeof(Two).Name} validation");
-            logs.At(2).Item3.IsEqual($"Status of {typeof(Two).Name} validation: {true}");
-            logs.At(3).Item3.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
-            logs.At(4).Item3.IsEqual(request.GetHashCode().ToString());
-            logs.At(5).Item3.IsEqual($"Serialize {typeof(IBooleanResult<Base>).Name} to Response");
+            logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).Name}");
+            logs.At(1).Message.IsEqual($"Start {typeof(Two).Name} validation");
+            logs.At(2).Message.IsEqual($"Status of {typeof(Two).Name} validation: {true}");
+            logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
+            logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
+            logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).Name} to Response");
         }
 
-        private ValueTuple<IMediator, IReadOnlyList<ValueTuple<Instant, LogLevel, string>>> GetMediator(params Type[] handlerTypes)
+        private ValueTuple<IMediator, IReadOnlyList<LogMessage>> GetMediator(params Type[] handlerTypes)
         {
-            var logger = new InMemoryLogger<MediatorTest>(
-                new LoggerConfiguration(LogLevel.Trace),
-                SystemClock.Instance.GetCurrentInstant
-            );
+            var logHandler = new InMemoryLogHandler();
 
             var provider = new ServiceCollection()
                 .AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant)
-                .AddSingleton<ILogger<MediatorTest>>(logger)
-                .AddSingleton(new LoggerConfiguration(LogLevel.Trace))
-                .AddInMemoryLogger()
+                .AddLogging(route => route.For(m => m.Source == typeof(MediatorTest)).UseInMemory(logHandler))
                 .AddSingleton<Func<One, bool>>(value => value.First % 2 == 1)
                 .AddSingleton<Func<Two, bool>>(value => value.Second % 2 == 0)
                 .AddMediatorConfiguration(cfg =>
@@ -95,7 +90,7 @@ namespace Annium.Core.Mediator.Tests
                 .AddMediator()
                 .BuildServiceProvider();
 
-            return (provider.GetRequiredService<IMediator>(), logger.Logs);
+            return (provider.GetRequiredService<IMediator>(), logHandler.Logs);
         }
 
         internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
