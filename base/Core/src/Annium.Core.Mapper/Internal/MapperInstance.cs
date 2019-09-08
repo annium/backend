@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper.Internal
 {
     internal class MapperInstance : IMapper
     {

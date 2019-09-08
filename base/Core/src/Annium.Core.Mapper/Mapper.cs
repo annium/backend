@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Application.Types;
+using Annium.Core.Mapper.Internal;
 
 namespace Annium.Core.Mapper
 {

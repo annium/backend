@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.Mapper;
+using Annium.Core.Mapper.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection

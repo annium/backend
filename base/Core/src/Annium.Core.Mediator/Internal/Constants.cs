@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 
 namespace Annium.Core.Mediator.Internal
 {

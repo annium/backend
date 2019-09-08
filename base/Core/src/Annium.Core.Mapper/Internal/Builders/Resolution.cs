@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Annium.Core.Application.Types;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper.Internal
 {
     internal partial class MapBuilder
     {

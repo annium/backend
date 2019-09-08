@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper.Internal
 {
     internal partial class MapBuilder
     {
