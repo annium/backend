@@ -11,6 +11,5 @@ namespace Annium.Core.Mediator.Internal
         public static readonly string FinalHandlerHandleAsyncName = nameof(IFinalRequestHandler<int, int>.HandleAsync);
         public static readonly Type HandlerInputType = typeof(IRequestHandlerInput<,>);
         public static readonly Type HandlerOutputType = typeof(IRequestHandlerOutput<,>);
-        public static readonly string TaskResultName = nameof(Task<int>.Result);
     }
 }

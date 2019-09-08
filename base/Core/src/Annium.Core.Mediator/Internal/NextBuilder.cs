@@ -1,8 +1,10 @@
 using System;
-using System.Linq.Expressions;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
+using Ex = System.Linq.Expressions.Expression;
 
 namespace Annium.Core.Mediator.Internal
 {
@@ -17,16 +19,37 @@ namespace Annium.Core.Mediator.Internal
 
         private readonly MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult));
 
-        public NextPrototype BuildNextPrototype(
+        public Delegate BuildNext(
             Type input,
             Type output
-        ) => new NextPrototype(
-            executeAsync,
-            Expression.Parameter(input),
-            getAwaiter,
-            getResult,
-            output,
-            fromResult.MakeGenericMethod(output)
-        );
+        )
+        {
+            var provider = Ex.Parameter(typeof(IServiceProvider));
+            var chain = Ex.Parameter(typeof(IReadOnlyList<ChainElement>));
+            var index = Ex.Parameter(typeof(int));
+            var token = Ex.Parameter(typeof(CancellationToken));
+            var request = Ex.Parameter(input);
+
+            // get next lambda, as awaiting call to next
+            var next = Ex.Lambda(
+                Ex.Call(
+                    null,
+                    fromResult.MakeGenericMethod(output),
+                    Ex.Convert(
+                        Ex.Call(
+                            Ex.Call(
+                                Ex.Call(null, executeAsync, provider, chain, request, token, index),
+                                getAwaiter
+                            ),
+                            getResult
+                        ),
+                        output
+                    )
+                ),
+                request
+            );
+
+            return Ex.Lambda(next, provider, chain, token, index).Compile();
+        }
     }
 }

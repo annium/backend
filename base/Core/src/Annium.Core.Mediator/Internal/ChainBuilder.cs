@@ -72,7 +72,7 @@ namespace Annium.Core.Mediator.Internal
                 var outputArgs = serviceOutput.GetGenericArguments();
                 input = outputArgs[0];
                 output = outputArgs[1];
-                chain.Add(new ChainElement(service, nextBuilder.BuildNextPrototype(input, output)));
+                chain.Add(new ChainElement(service, nextBuilder.BuildNext(input, output)));
             }
 
             traceChain();
@@ -91,7 +91,7 @@ namespace Annium.Core.Mediator.Internal
                 if (requestIn is null || responseOut is null)
                     return null;
 
-                var handlerInput = typeof(IRequestHandlerInput<,>).MakeGenericType(requestIn, responseOut);
+                var handlerInput = Constants.HandlerInputType.MakeGenericType(requestIn, responseOut);
                 var service = handler.Implementation.ResolveByImplentations(handlerInput);
                 if (service is null)
                 {
