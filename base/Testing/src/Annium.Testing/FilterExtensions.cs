@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Annium.Testing.Elements;
 
 namespace Annium.Testing
@@ -9,13 +9,10 @@ namespace Annium.Testing
     {
         public static IEnumerable<Test> FilterMask(this IEnumerable<Test> tests, string mask)
         {
-            if (string.IsNullOrWhiteSpace(mask))
-                return tests;
+            var list = tests.ToList();
+            var comparison = StringComparison.CurrentCultureIgnoreCase;
 
-            var pattern = Regex.Escape(mask).Replace(@"\*", ".*").Replace(@"\?", ".");
-            var regex = new Regex($"^{pattern}$", RegexOptions.IgnoreCase);
-
-            return tests.Where(t => regex.IsMatch(t.DisplayName)).ToArray();
+            return list.Where(t => t.DisplayName.Contains(mask, comparison)).ToArray();
         }
     }
 }
