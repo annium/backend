@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Annium.Core.Application.Types;
 
@@ -20,12 +21,12 @@ namespace Annium.Core.Mapper
         private readonly Repacker repacker;
 
         public MapBuilder(
-            MapperConfiguration cfg,
+            IEnumerable<MapperConfiguration> configs,
             TypeManager typeManager,
             Repacker repacker
         )
         {
-            this.cfg = cfg;
+            this.cfg = MapperConfiguration.Merge(configs.ToArray());
             this.typeManager = typeManager;
             this.repacker = repacker;
 

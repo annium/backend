@@ -50,7 +50,7 @@ namespace Annium.Core.Mapper
         private static IMapper CreateMapper()
         {
             var builder = new MapBuilder(
-                MapperConfiguration.Merge(configurations.ToArray()),
+                configurations.ToArray(),
                 TypeManager.Instance,
                 new Repacker()
             );

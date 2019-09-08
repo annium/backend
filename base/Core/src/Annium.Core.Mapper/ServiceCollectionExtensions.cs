@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using Annium.Core.Application.Types;
 using Annium.Core.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,15 +21,13 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddMapper(this IServiceCollection services)
         {
-            var cfg = MapperConfiguration.Merge(services.BuildServiceProvider().GetRequiredService<IEnumerable<MapperConfiguration>>().ToArray());
+            services.AddCore();
 
-            DefaultConfiguration.Apply(cfg);
+            services.AddMapperConfiguration(DefaultConfiguration.Apply);
 
-            var repacker = new Repacker();
-            var mapBuilder = new MapBuilder(cfg, TypeManager.Instance, repacker);
-            var mapper = new MapperInstance(mapBuilder);
-
-            services.AddSingleton<IMapper>(mapper);
+            services.AddSingleton<Repacker>();
+            services.AddSingleton<MapBuilder>();
+            services.AddSingleton<IMapper, MapperInstance>();
 
             return services;
         }
