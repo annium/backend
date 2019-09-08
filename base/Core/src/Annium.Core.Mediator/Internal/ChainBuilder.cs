@@ -13,12 +13,12 @@ namespace Annium.Core.Mediator.Internal
         private readonly ILogger<ChainBuilder> logger;
 
         public ChainBuilder(
-            MediatorConfiguration configuration,
+            IEnumerable<MediatorConfiguration> configurations,
             NextBuilder nextBuilder,
             ILogger<ChainBuilder> logger
         )
         {
-            this.configuration = configuration;
+            this.configuration = MediatorConfiguration.Merge(configurations.ToArray());
             this.nextBuilder = nextBuilder;
             this.logger = logger;
         }
