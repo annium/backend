@@ -44,18 +44,18 @@ namespace Annium.Extensions.Composition
 
             if (value == null)
                 return hasLabel ?
-                    Result.New(OperationStatus.BadRequest).Error(label, "Value is null") :
-                    Result.New(OperationStatus.BadRequest).Error("Value is null");
+                    Result.Status(OperationStatus.BadRequest).Error(label, "Value is null") :
+                    Result.Status(OperationStatus.BadRequest).Error("Value is null");
 
             if (composers.Length == 0)
-                return Result.New(OperationStatus.OK);
+                return Result.Status(OperationStatus.OK);
 
             var result = Result.New();
 
             foreach (var composer in composers)
                 result.Join(await composer.ComposeAsync(value, label, localizer));
 
-            return Result.New(result.HasErrors ? OperationStatus.NotFound : OperationStatus.OK).Join(result);
+            return Result.Status(result.HasErrors ? OperationStatus.NotFound : OperationStatus.OK).Join(result);
         }
 
         private IReadOnlyDictionary<PropertyInfo, IList<Type>> GetDuplicates(ICompositionContainer<TValue>[] composers)

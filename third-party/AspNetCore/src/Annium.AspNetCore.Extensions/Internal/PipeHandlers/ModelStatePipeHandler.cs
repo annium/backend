@@ -39,7 +39,7 @@ namespace Annium.AspNetCore.Extensions.Internal.PipeHandlers
 
         private IStatusResult<OperationStatus, TResponse> GetBadRequestResult(ModelStateDictionary modelState)
         {
-            var result = Result.New<OperationStatus, TResponse>(OperationStatus.BadRequest, default(TResponse));
+            var result = Result.Status<OperationStatus, TResponse>(OperationStatus.BadRequest, default(TResponse));
 
             foreach (var(field, entry) in modelState)
             {

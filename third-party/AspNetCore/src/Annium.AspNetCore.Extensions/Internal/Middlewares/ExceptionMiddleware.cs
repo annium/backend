@@ -37,7 +37,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
                 context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
                 context.Response.ContentType = MediaTypeNames.Text.Plain;
 
-                var result = Result.New(OperationStatus.UncaughtException).Error(exception.ToString());
+                var result = Result.Status(OperationStatus.UncaughtException).Error(exception.ToString());
 
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
             }

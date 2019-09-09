@@ -35,7 +35,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             {
                 logger.Trace($"Validation of {typeof(TRequest)} failed");
 
-                return Result.New(OperationStatus.BadRequest, default(TResponse)).Join(result);
+                return Result.Status(OperationStatus.BadRequest, default(TResponse)).Join(result);
             }
 
             return await next(request);

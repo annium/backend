@@ -45,7 +45,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         {
             // arrange
             var expected = Serialize(
-                Result.Failure()
+                Result.New()
                 .Error("name", "The Name field is required.")
                 .Error("email", "The Email field is required.")
             );

@@ -44,7 +44,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
         {
             logger.Trace($"Failure of {typeof(TRequest)}: {exception}");
 
-            return Result.New(OperationStatus.UncaughtException, default(TResponse)).Error(exception.Message);
+            return Result.Status(OperationStatus.UncaughtException, default(TResponse)).Error(exception.Message);
         }
     }
 }

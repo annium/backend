@@ -28,7 +28,7 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
         {
             var response = await next(request);
 
-            return Result.New(MapToStatusCode(response.Status), response.Data).Join(response);
+            return Result.Status(MapToStatusCode(response.Status), response.Data).Join(response);
         }
 
         private HttpStatusCode MapToStatusCode(OperationStatus status)

@@ -18,6 +18,7 @@ namespace Annium.Data.Operations.Serialization
         private static void AddDefaultConverters(IList<JsonConverter> converters)
         {
             converters.Add(new ResultConverter());
+            converters.Add(new ResultDataConverter());
             converters.Add(new StatusResultConverter());
             converters.Add(new StatusDataResultConverter());
             converters.Add(new BooleanResultConverter());

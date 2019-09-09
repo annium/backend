@@ -16,6 +16,17 @@ namespace Annium.Data.Operations.Tests
         }
 
         [Fact]
+        public void Blank_WithData_IsCorrect()
+        {
+            // arrange
+            var result = Result.New(5);
+
+            // assert
+            result.HasErrors.IsFalse();
+            result.Data.IsEqual(5);
+        }
+
+        [Fact]
         public void Clear_RemovesErrors()
         {
             // arrange
@@ -163,6 +174,45 @@ namespace Annium.Data.Operations.Tests
             result.LabeledErrors.At("label").At(0).IsEqual("mine");
             result.LabeledErrors.At("a").At(0).IsEqual("va");
             result.LabeledErrors.At("b").At(0).IsEqual("vb");
+        }
+
+        [Fact]
+        public void Result_Clone_ReturnsValidClone()
+        {
+            // arrange
+            var result = Result.New().Error("plain").Error("label", "value");
+
+            // act
+            var clone = result.Clone();
+
+            // assert
+            clone.HasErrors.IsTrue();
+            clone.HasErrors.IsTrue();
+            clone.PlainErrors.Has(1);
+            clone.PlainErrors.At(0).IsEqual("plain");
+            clone.LabeledErrors.Has(1);
+            clone.LabeledErrors.At("label").Has(1);
+            clone.LabeledErrors.At("label").At(0).IsEqual("value");
+        }
+
+        [Fact]
+        public void Result_CloneWithData_ReturnsValidClone()
+        {
+            // arrange
+            var result = Result.New(10).Error("plain").Error("label", "value");
+
+            // act
+            var clone = result.Clone();
+
+            // assert
+            clone.Data.IsEqual(10);
+            clone.HasErrors.IsTrue();
+            clone.PlainErrors.Has(1);
+            clone.PlainErrors.At(0).IsEqual("plain");
+            clone.LabeledErrors.Has(1);
+            clone.LabeledErrors.At("label").Has(1);
+            clone.LabeledErrors.At("label").At(0).IsEqual("value");
+            clone.Data.IsEqual(10);
         }
 
         [Fact]

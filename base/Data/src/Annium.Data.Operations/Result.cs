@@ -13,6 +13,9 @@ namespace Annium.Data.Operations
         public static IResult New() =>
             new Implementations.Result();
 
+        public static IResult<D> New<D>(D data) =>
+            new Implementations.Result<D>(data);
+
         public static IBooleanResult Success() =>
             new Implementations.BooleanResult(true);
 
@@ -25,10 +28,10 @@ namespace Annium.Data.Operations
         public static IBooleanResult<D> Failure<D>(D data) =>
             new Implementations.BooleanResult<D>(false, data);
 
-        public static IStatusResult<S> New<S>(S status) =>
+        public static IStatusResult<S> Status<S>(S status) =>
             new Implementations.StatusResult<S>(status);
 
-        public static IStatusResult<S, D> New<S, D>(S status, D data) =>
+        public static IStatusResult<S, D> Status<S, D>(S status, D data) =>
             new Implementations.StatusResult<S, D>(status, data);
     }
 }

@@ -6,10 +6,10 @@ using Newtonsoft.Json.Linq;
 
 namespace Annium.Data.Operations.Serialization
 {
-    public class StatusResultConverter : ResultConverterBase
+    public class ResultDataConverter : ResultConverterBase
     {
         protected override bool IsConvertibleInterface(Type type) =>
-            type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IStatusResult<>);
+            type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IResult<>);
 
         public override object ReadJson(
             JsonReader reader,
@@ -18,18 +18,19 @@ namespace Annium.Data.Operations.Serialization
             JsonSerializer serializer
         )
         {
-            var statusType = GetImplementation(objectType).GetGenericArguments() [0];
+            var typeArgs = GetImplementation(objectType).GetGenericArguments();
+            var dataType = typeArgs[0];
 
             var obj = JObject.Load(reader);
 
-            var status = obj.Get(nameof(IStatusResult<object>.Status)) == null ?
-                (statusType.IsValueType ? Activator.CreateInstance(statusType) : null) :
-                obj.Get(nameof(IStatusResult<object>.Status)).ToObject(statusType);
+            var data = obj.Get(nameof(IResult<object>.Data)) == null ?
+                (dataType.IsValueType ? Activator.CreateInstance(dataType) : null) :
+                obj.Get(nameof(IResult<object>.Data)).ToObject(dataType);
 
             var result = typeof(Result).GetMethods()
-                .First(m => m.Name == nameof(Result.Status) && m.IsGenericMethod && m.GetGenericArguments().Length == 1)
-                .MakeGenericMethod(statusType)
-                .Invoke(null, new [] { status });
+                .First(m => m.Name == nameof(Result.New) && m.IsGenericMethod && m.GetGenericArguments().Length == 1)
+                .MakeGenericMethod(dataType)
+                .Invoke(null, new [] { data });
 
             ReadErrors(obj, result);
 
@@ -44,8 +45,8 @@ namespace Annium.Data.Operations.Serialization
         {
             writer.WriteStartObject();
 
-            writer.WritePropertyName(nameof(IStatusResult<object>.Status).CamelCase());
-            serializer.Serialize(writer, value.GetPropertyValue(nameof(IStatusResult<object>.Status)));
+            writer.WritePropertyName(nameof(IResult<object>.Data).CamelCase());
+            serializer.Serialize(writer, value.GetPropertyValue(nameof(IResult<object>.Data)));
 
             WriteErrors(value, writer, serializer);
 

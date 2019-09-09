@@ -35,7 +35,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             {
                 logger.Trace($"Composition of {typeof(TRequest)} failed");
 
-                return Result.New(result.Status, default(TResponse)).Join(result);
+                return Result.Status(result.Status, default(TResponse)).Join(result);
             }
 
             return await next(request);

@@ -17,7 +17,7 @@ namespace Annium.Architecture.Mediator.Tests
             if (request.Throw)
                 throw new InvalidOperationException("TEST EXCEPTION");
 
-            return Task.FromResult(Result.New(OperationStatus.OK, request));
+            return Task.FromResult(Result.Status(OperationStatus.OK, request));
         }
     }
 

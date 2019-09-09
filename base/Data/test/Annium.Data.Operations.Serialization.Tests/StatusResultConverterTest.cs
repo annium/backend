@@ -9,7 +9,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseWrite_Blank_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5), GetSettings());
+            var str = JsonConvert.SerializeObject(Result.Status(5), GetSettings());
 
             // assert
             str.IsEqual(@"{""status"":5,""plainErrors"":[],""labeledErrors"":{}}");
@@ -19,7 +19,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseWrite_WithErrors_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5).Error("plain").Error("label", "another"), GetSettings());
+            var str = JsonConvert.SerializeObject(Result.Status(5).Error("plain").Error("label", "another"), GetSettings());
 
             // assert
             str.IsEqual(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
@@ -73,7 +73,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataWrite_Blank_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5, "some"), GetSettings());
+            var str = JsonConvert.SerializeObject(Result.Status(5, "some"), GetSettings());
 
             // assert
             str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[],""labeledErrors"":{}}");
@@ -83,7 +83,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataWrite_WithErrors_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5, "some").Error("plain").Error("label", "another"), GetSettings());
+            var str = JsonConvert.SerializeObject(Result.Status(5, "some").Error("plain").Error("label", "another"), GetSettings());
 
             // assert
             str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");

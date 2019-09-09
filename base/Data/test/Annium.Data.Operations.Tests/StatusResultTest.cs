@@ -8,7 +8,7 @@ namespace Annium.Data.Operations.Tests
         public void StatusResult_WithoutData_WorksCorrectly()
         {
             // arrange
-            var result = Result.New(Access.Allowed);
+            var result = Result.Status(Access.Allowed);
 
             // assert
             result.Status.IsEqual(Access.Allowed);
@@ -18,7 +18,7 @@ namespace Annium.Data.Operations.Tests
         public void StatusResult_WithData_WorksCorrectly()
         {
             // arrange
-            var result = Result.New(Access.Allowed, 5);
+            var result = Result.Status(Access.Allowed, 5);
             var(status, data) = result;
 
             // assert
@@ -32,8 +32,8 @@ namespace Annium.Data.Operations.Tests
         public void StatusResult_Clone_ReturnsValidClone()
         {
             // arrange
-            var succeed = Result.New(Access.Allowed);
-            var failed = Result.New(Access.Denied).Error("plain").Error("label", "value");
+            var succeed = Result.Status(Access.Allowed);
+            var failed = Result.Status(Access.Denied).Error("plain").Error("label", "value");
 
             // act
             var succeedClone = succeed.Clone();
@@ -55,8 +55,8 @@ namespace Annium.Data.Operations.Tests
         public void StatusResult_CloneWithData_ReturnsValidClone()
         {
             // arrange
-            var succeed = Result.New(Access.Allowed, "welcome");
-            var failed = Result.New(Access.Denied, "goodbye").Error("plain").Error("label", "value");
+            var succeed = Result.Status(Access.Allowed, "welcome");
+            var failed = Result.Status(Access.Denied, "goodbye").Error("plain").Error("label", "value");
 
             // act
             var succeedClone = succeed.Clone();
