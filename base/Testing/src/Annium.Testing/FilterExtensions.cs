@@ -9,6 +9,9 @@ namespace Annium.Testing
     {
         public static IEnumerable<Test> FilterMask(this IEnumerable<Test> tests, string mask)
         {
+            if (string.IsNullOrWhiteSpace(mask))
+                return tests;
+
             var list = tests.ToList();
             var comparison = StringComparison.CurrentCultureIgnoreCase;
 

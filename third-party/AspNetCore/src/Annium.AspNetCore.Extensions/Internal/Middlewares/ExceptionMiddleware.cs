@@ -2,8 +2,11 @@ using System;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Annium.Architecture.Base;
+using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
@@ -34,7 +37,9 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
                 context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
                 context.Response.ContentType = MediaTypeNames.Text.Plain;
 
-                await context.Response.WriteAsync(exception.ToString());
+                var result = Result.New(OperationStatus.UncaughtException).Error(exception.ToString());
+
+                await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
             }
         }
     }

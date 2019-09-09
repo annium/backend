@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
+using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Primitives;
@@ -27,7 +28,7 @@ namespace Annium.AspNetCore.Extensions
         [NonAction]
         public override BadRequestObjectResult BadRequest(ModelStateDictionary modelState)
         {
-            var result = Result.Failure();
+            var result = Result.New(OperationStatus.BadRequest);
 
             foreach (var(field, entry) in modelState)
             {
@@ -41,7 +42,7 @@ namespace Annium.AspNetCore.Extensions
 
         [NonAction]
         public virtual IActionResult BadRequest(string error) =>
-            new BadRequestObjectResult(Result.Failure().Error(error));
+            new BadRequestObjectResult(Result.New(OperationStatus.BadRequest).Error(error));
 
         [NonAction]
         public IActionResult Forbidden(IResultBase result) =>
@@ -49,7 +50,7 @@ namespace Annium.AspNetCore.Extensions
 
         [NonAction]
         public virtual IActionResult Forbidden(string error) =>
-            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
+            new ObjectResult(Result.New(OperationStatus.BadRequest).Error(error)) { StatusCode = (int) HttpStatusCode.Forbidden };
 
         [NonAction]
         public IActionResult Conflict(IResultBase result) =>
@@ -57,7 +58,7 @@ namespace Annium.AspNetCore.Extensions
 
         [NonAction]
         public virtual IActionResult Conflict(string error) =>
-            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
+            new ObjectResult(Result.New(OperationStatus.Conflict).Error(error)) { StatusCode = (int) HttpStatusCode.Conflict };
 
         [NonAction]
         public IActionResult NotFound(IResultBase result) =>
@@ -65,7 +66,7 @@ namespace Annium.AspNetCore.Extensions
 
         [NonAction]
         public virtual IActionResult NotFound(string error) =>
-            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.NotFound };
+            new ObjectResult(Result.New(OperationStatus.NotFound).Error(error)) { StatusCode = (int) HttpStatusCode.NotFound };
 
         [NonAction]
         public IActionResult ServerError(IResultBase result) =>
@@ -73,7 +74,7 @@ namespace Annium.AspNetCore.Extensions
 
         [NonAction]
         public virtual IActionResult ServerError(string error) =>
-            new ObjectResult(Result.Failure().Error(error)) { StatusCode = (int) HttpStatusCode.InternalServerError };
+            new ObjectResult(Result.New(OperationStatus.UncaughtException).Error(error)) { StatusCode = (int) HttpStatusCode.InternalServerError };
 
         [NonAction]
         protected async Task<IActionResult> HandleAsync<TRequest, TResponse>(TRequest request)
