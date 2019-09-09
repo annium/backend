@@ -38,7 +38,7 @@ namespace Annium.Core.Mediator.Internal
                     Ex.Convert(
                         Ex.Call(
                             Ex.Call(
-                                Ex.Call(null, executeAsync, provider, chain, request, token, index),
+                                Ex.Call(null, executeAsync, provider, chain, Ex.Convert(request, typeof(object)), token, index),
                                 getAwaiter
                             ),
                             getResult
