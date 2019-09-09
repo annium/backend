@@ -81,7 +81,7 @@ namespace Annium.AspNetCore.Extensions
         {
             var result = await mediator.SendAsync<ValueTuple<ModelStateDictionary, TRequest>, IStatusResult<HttpStatusCode, TResponse>>((ModelState, request));
 
-            return new ObjectResult(Result.New().Join(result)) { StatusCode = (int) result.Status };
+            return new ObjectResult(Result.New(result.Data).Join(result)) { StatusCode = (int) result.Status };
         }
     }
 }
