@@ -13,6 +13,7 @@ namespace Annium.Net.Http
     {
         private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
             .ConfigureAbstractConverter()
+            .ConfigureForOperations()
             .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
 
         public static async Task<string> AsStringAsync(this IRequest request)

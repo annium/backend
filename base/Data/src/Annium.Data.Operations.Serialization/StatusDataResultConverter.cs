@@ -26,11 +26,11 @@ namespace Annium.Data.Operations.Serialization
 
             var status = obj.Get(nameof(IStatusResult<object, object>.Status)) == null ?
                 (statusType.IsValueType ? Activator.CreateInstance(statusType) : null) :
-                obj.Get(nameof(IStatusResult<object, object>.Status)).ToObject(statusType);
+                obj.Get(nameof(IStatusResult<object, object>.Status)).ToObject(statusType, serializer);
 
             var data = obj.Get(nameof(IStatusResult<object, object>.Data)) == null ?
                 (dataType.IsValueType ? Activator.CreateInstance(dataType) : null) :
-                obj.Get(nameof(IStatusResult<object, object>.Data)).ToObject(dataType);
+                obj.Get(nameof(IStatusResult<object, object>.Data)).ToObject(dataType, serializer);
 
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == nameof(Result.Status) && m.IsGenericMethod && m.GetGenericArguments().Length == 2)

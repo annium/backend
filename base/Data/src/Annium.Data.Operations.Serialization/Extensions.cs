@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using Annium.Data.Operations.Serialization;
 using Newtonsoft.Json;
 
-namespace Annium.Data.Operations.Serialization
+namespace Annium.Core.DependencyInjection
 {
     public static class Extensions
     {

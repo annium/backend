@@ -1,6 +1,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting;
+using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Data.Operations.Serialization;
 using Annium.Net.Http;

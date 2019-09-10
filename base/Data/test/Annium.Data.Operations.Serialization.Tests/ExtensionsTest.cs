@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Newtonsoft.Json;
 

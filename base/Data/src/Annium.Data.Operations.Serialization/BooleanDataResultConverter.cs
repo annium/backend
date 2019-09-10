@@ -27,7 +27,7 @@ namespace Annium.Data.Operations.Serialization
 
             var data = obj.Get(nameof(IBooleanResult<object>.Data)) == null ?
                 (dataType.IsValueType ? Activator.CreateInstance(dataType) : null) :
-                obj.Get(nameof(IBooleanResult<object>.Data)).ToObject(dataType);
+                obj.Get(nameof(IBooleanResult<object>.Data)).ToObject(dataType, serializer);
 
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == (isSuccess ? nameof(Result.Success) : nameof(Result.Failure)) && m.IsGenericMethod)

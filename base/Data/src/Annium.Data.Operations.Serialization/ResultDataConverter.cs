@@ -25,7 +25,7 @@ namespace Annium.Data.Operations.Serialization
 
             var data = obj.Get(nameof(IResult<object>.Data)) == null ?
                 (dataType.IsValueType ? Activator.CreateInstance(dataType) : null) :
-                obj.Get(nameof(IResult<object>.Data)).ToObject(dataType);
+                obj.Get(nameof(IResult<object>.Data)).ToObject(dataType, serializer);
 
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == nameof(Result.New) && m.IsGenericMethod && m.GetGenericArguments().Length == 1)
