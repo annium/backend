@@ -10,7 +10,7 @@ namespace Annium.Core.Mediator.Internal
     {
         private readonly ChainBuilder chainBuilder;
         private readonly IServiceProvider provider;
-        private IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> chainCache =
+        private readonly IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> chainCache =
             new Dictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>>();
 
         public Mediator(
@@ -31,11 +31,13 @@ namespace Annium.Core.Mediator.Internal
             // get execution chain with last item, being final one
             var chain = GetChain(typeof(TRequest), typeof(TResponse));
 
-            // get scoped service provider
-            var scopeProvider = serviceProvider ?? provider.CreateScope().ServiceProvider;
+            // use given serviceProvider, if passed
+            if (serviceProvider != null)
+                return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request, cancellationToken);
 
-            // execute chain
-            return (TResponse) await ChainExecutor.ExecuteAsync(scopeProvider, chain, request, cancellationToken);
+            // use scoped service provider
+            using(var scope = provider.CreateScope())
+            return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request, cancellationToken);
         }
 
         private IReadOnlyList<ChainElement> GetChain(Type input, Type output)

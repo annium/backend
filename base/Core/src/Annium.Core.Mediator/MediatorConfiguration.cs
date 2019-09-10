@@ -9,10 +9,10 @@ namespace Annium.Core.Mediator
     {
         internal static MediatorConfiguration Merge(params MediatorConfiguration[] configurations)
         {
-            var result = new MediatorConfiguration();
-            result.handlers = configurations.SelectMany(c => c.Handlers).ToList();
-
-            return result;
+            return new MediatorConfiguration
+            {
+                handlers = configurations.SelectMany(c => c.Handlers).ToList()
+            };
         }
 
         internal IEnumerable<Handler> Handlers => handlers;

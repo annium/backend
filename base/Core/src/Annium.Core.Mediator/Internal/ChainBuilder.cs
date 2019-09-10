@@ -18,7 +18,7 @@ namespace Annium.Core.Mediator.Internal
             ILogger<ChainBuilder> logger
         )
         {
-            this.configuration = MediatorConfiguration.Merge(configurations.ToArray());
+            configuration = MediatorConfiguration.Merge(configurations.ToArray());
             this.nextBuilder = nextBuilder;
             this.logger = logger;
         }
@@ -95,6 +95,7 @@ namespace Annium.Core.Mediator.Internal
                 var service = handler.Implementation.ResolveByImplentations(handlerInput);
                 if (service is null)
                 {
+                    traceChain();
                     logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
                     return null;
                 }

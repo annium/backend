@@ -14,7 +14,7 @@ namespace Annium.Core.DependencyInjection
             var cfg = new MediatorConfiguration();
             configure(cfg);
 
-            services.AddSingleton<MediatorConfiguration>(cfg);
+            services.AddSingleton(cfg);
             foreach (var handler in cfg.Handlers)
                 services.AddScoped(handler.Implementation);
 
