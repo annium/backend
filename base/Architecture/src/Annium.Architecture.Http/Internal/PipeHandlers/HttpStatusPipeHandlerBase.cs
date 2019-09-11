@@ -3,35 +3,25 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.Core.Mediator;
-using Annium.Data.Operations;
-using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Http.Internal.PipeHandlers
 {
-    public class HttpStatusPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<HttpStatusCode, TResponse>>
+    internal abstract class HttpStatusPipeHandlerBase<TRequest, TResponseIn, TResponseOut>
     {
-        private readonly ILogger<HttpStatusPipeHandler<TRequest, TResponse>> logger;
-
-        public HttpStatusPipeHandler(
-            ILogger<HttpStatusPipeHandler<TRequest, TResponse>> logger
-        )
-        {
-            this.logger = logger;
-        }
-
-        public async Task<IStatusResult<HttpStatusCode, TResponse>> HandleAsync(
+        public async Task<TResponseOut> HandleAsync(
             TRequest request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<IStatusResult<OperationStatus, TResponse>>> next
+            Func<TRequest, Task<TResponseIn>> next
         )
         {
             var response = await next(request);
 
-            return Result.Status(MapToStatusCode(response.Status), response.Data).Join(response);
+            return GetResponse(response);
         }
 
-        private HttpStatusCode MapToStatusCode(OperationStatus status)
+        protected abstract TResponseOut GetResponse(TResponseIn response);
+
+        protected HttpStatusCode MapToStatusCode(OperationStatus status)
         {
             if (status == OperationStatus.BadRequest)
                 return HttpStatusCode.BadRequest;

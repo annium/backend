@@ -7,16 +7,16 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
+namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.RequestResponse
 {
-    internal class RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut> : IPipeRequestHandler<TRequestIn, TRequestOut, IStatusResult<OperationStatus, TResponseIn>, IStatusResult<OperationStatus, TResponseOut>> where TRequestIn : IRequest<TRequestOut> where TResponseOut : IResponse<TResponseIn>
+    internal class MappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut> : IPipeRequestHandler<TRequestIn, TRequestOut, IStatusResult<OperationStatus, TResponseIn>, IStatusResult<OperationStatus, TResponseOut>> where TRequestIn : IRequest<TRequestOut> where TResponseOut : IResponse<TResponseIn>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger;
+        private readonly ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger;
 
-        public RequestResponseMappingPipeHandler(
+        public MappingPipeHandler(
             IMapper mapper,
-            ILogger<RequestResponseMappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger
+            ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>> logger
         )
         {
             this.mapper = mapper;

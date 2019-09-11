@@ -83,5 +83,13 @@ namespace Annium.AspNetCore.Extensions
 
             return new ObjectResult(Result.New(result.Data).Join(result)) { StatusCode = (int) result.Status };
         }
+
+        [NonAction]
+        protected async Task<IActionResult> HandleAsync<TRequest>(TRequest request)
+        {
+            var result = await mediator.SendAsync<ValueTuple<ModelStateDictionary, TRequest>, IStatusResult<HttpStatusCode>>((ModelState, request));
+
+            return new ObjectResult(Result.New().Join(result)) { StatusCode = (int) result.Status };
+        }
     }
 }

@@ -5,16 +5,16 @@ using Annium.Core.Mapper;
 using Annium.Core.Mediator;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.ViewModel.Internal.PipeHandlers
+namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
 {
-    internal class RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse> : IPipeRequestHandler<TRequestIn, TRequestOut, TResponse, TResponse> where TRequestIn : IRequest<TRequestOut>
+    internal class MappingPipeHandler<TRequestIn, TRequestOut, TResponse> : IPipeRequestHandler<TRequestIn, TRequestOut, TResponse, TResponse> where TRequestIn : IRequest<TRequestOut>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger;
+        private readonly ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger;
 
-        public RequestMappingPipeHandler(
+        public MappingPipeHandler(
             IMapper mapper,
-            ILogger<RequestMappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger
+            ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger
         )
         {
             this.mapper = mapper;

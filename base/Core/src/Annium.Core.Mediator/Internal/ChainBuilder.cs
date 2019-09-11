@@ -95,7 +95,6 @@ namespace Annium.Core.Mediator.Internal
                 var service = handler.Implementation.ResolveByImplentations(handlerInput);
                 if (service is null)
                 {
-                    traceChain();
                     logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
                     return null;
                 }

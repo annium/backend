@@ -1,32 +1,30 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Architecture.Base;
-using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Validation;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
-    internal class ValidationPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>>
+    internal abstract class ValidationPipeHandlerBase<TRequest, TResponse>
     {
         private readonly IValidator<TRequest> validator;
-        private readonly ILogger<ValidationPipeHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<ValidationPipeHandlerBase<TRequest, TResponse>> logger;
 
-        public ValidationPipeHandler(
+        public ValidationPipeHandlerBase(
             IValidator<TRequest> validator,
-            ILogger<ValidationPipeHandler<TRequest, TResponse>> logger
+            ILogger<ValidationPipeHandlerBase<TRequest, TResponse>> logger
         )
         {
             this.validator = validator;
             this.logger = logger;
         }
 
-        public async Task<IStatusResult<OperationStatus, TResponse>> HandleAsync(
+        public async Task<TResponse> HandleAsync(
             TRequest request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<IStatusResult<OperationStatus, TResponse>>> next
+            Func<TRequest, Task<TResponse>> next
         )
         {
             logger.Trace($"Validate {typeof(TRequest)}");
@@ -35,10 +33,12 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             {
                 logger.Trace($"Validation of {typeof(TRequest)} failed");
 
-                return Result.Status(OperationStatus.BadRequest, default(TResponse)).Join(result);
+                return GetResponse(result);
             }
 
             return await next(request);
         }
+
+        protected abstract TResponse GetResponse(IResult validationResult);
     }
 }
