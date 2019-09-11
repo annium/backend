@@ -8,12 +8,12 @@ namespace Annium.Architecture.Base
     {
         private static List<OperationStatus> statuses = new List<OperationStatus>();
 
-        public static OperationStatus BadRequest { get; } = OperationStatus.Register(nameof(BadRequest));
-        public static OperationStatus Conflict { get; } = OperationStatus.Register(nameof(Conflict));
-        public static OperationStatus Forbidden { get; } = OperationStatus.Register(nameof(Forbidden));
-        public static OperationStatus NotFound { get; } = OperationStatus.Register(nameof(NotFound));
-        public static OperationStatus OK { get; } = OperationStatus.Register(nameof(OK));
-        public static OperationStatus UncaughtException { get; } = OperationStatus.Register(nameof(UncaughtException));
+        public static OperationStatus BadRequest { get; } = Register(nameof(BadRequest));
+        public static OperationStatus Conflict { get; } = Register(nameof(Conflict));
+        public static OperationStatus Forbidden { get; } = Register(nameof(Forbidden));
+        public static OperationStatus NotFound { get; } = Register(nameof(NotFound));
+        public static OperationStatus OK { get; } = Register(nameof(OK));
+        public static OperationStatus UncaughtException { get; } = Register(nameof(UncaughtException));
 
         public static OperationStatus Register(string name)
         {

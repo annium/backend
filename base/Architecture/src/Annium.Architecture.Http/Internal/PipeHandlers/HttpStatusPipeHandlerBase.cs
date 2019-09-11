@@ -26,6 +26,9 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
             if (status == OperationStatus.BadRequest)
                 return HttpStatusCode.BadRequest;
 
+            if (status == OperationStatus.Conflict)
+                return HttpStatusCode.Conflict;
+
             if (status == OperationStatus.Forbidden)
                 return HttpStatusCode.Forbidden;
 
