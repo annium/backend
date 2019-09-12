@@ -54,6 +54,20 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
+        public void PropertyMapping_WithExcessProperties_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new A() { Name = "name" };
+
+            // act
+            var result = mapper.Map<F>(value);
+
+            // assert
+            result.IsNotDefault();
+        }
+
+        [Fact]
         public void Nesting_Works()
         {
             // arrange
@@ -124,6 +138,11 @@ namespace Annium.Core.Mapper.Tests
             public B Inner { get; set; }
 
             public string Value { get; set; }
+        }
+
+        private class F
+        {
+
         }
     }
 }

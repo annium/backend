@@ -3,6 +3,7 @@ using System.IO;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Data.Operations;
 using Newtonsoft.Json;
 using NodaTime;
 using NodaTime.Serialization.JsonNet;
@@ -11,7 +12,7 @@ namespace Annium.Net.Http
 {
     public static class RunExtensions
     {
-        private static JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
+        private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
             .ConfigureAbstractConverter()
             .ConfigureForOperations()
             .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
@@ -36,6 +37,8 @@ namespace Annium.Net.Http
 
             return await response.Content.ReadAsStreamAsync();
         }
+
+        public static Task<IResult<T>> AsResultAsync<T>(this IRequest request) => request.AsAsync<IResult<T>>();
 
         public static async Task<T> AsAsync<T>(this IRequest request)
         {
