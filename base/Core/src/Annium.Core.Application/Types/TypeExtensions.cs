@@ -15,6 +15,7 @@ namespace Annium.Core.Application.Types
 
             // if type is defined - no need for resolution
             if (!type.ContainsGenericParameters)
+                // TODO: fix
                 return type;
 
             var args = type.ResolveGenericArgumentsByImplentations(targets);
@@ -242,6 +243,7 @@ namespace Annium.Core.Application.Types
             }
 
             if (type.IsGenericType && target.IsGenericType && type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
+                // TODO: fix
                 return type;
 
             if (target.IsValueType)
