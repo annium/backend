@@ -2,7 +2,7 @@ using System;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Annium.Core.Application.Types
+namespace Annium.Core.Application
 {
     public static class TypeHelper
     {

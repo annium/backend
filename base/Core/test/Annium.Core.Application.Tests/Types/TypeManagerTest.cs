@@ -1,5 +1,5 @@
 using System;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Annium.Testing;
 
 namespace Annium.Core.Application.Tests.Types

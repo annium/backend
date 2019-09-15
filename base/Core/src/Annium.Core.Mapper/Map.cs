@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 
 namespace Annium.Core.Mapper
 {

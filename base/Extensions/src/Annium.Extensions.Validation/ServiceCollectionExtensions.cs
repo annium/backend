@@ -1,5 +1,5 @@
 using System.Linq;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Annium.Extensions.Validation;
 using Microsoft.Extensions.DependencyInjection;
 

@@ -1,4 +1,4 @@
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 
 namespace Annium.Storage.Abstractions
 {

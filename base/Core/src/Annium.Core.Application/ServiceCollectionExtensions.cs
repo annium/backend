@@ -1,4 +1,4 @@
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection

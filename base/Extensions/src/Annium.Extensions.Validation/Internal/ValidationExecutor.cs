@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Core.Application.Types
+namespace Annium.Core.Application
 {
     public class TypeResolutionException : Exception
     {

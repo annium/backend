@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Annium.Core.Mapper;
 using Annium.Extensions.Primitives;
 

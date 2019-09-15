@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

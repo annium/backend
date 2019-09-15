@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.Core.Application.Types;
+using Annium.Core.Application;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 
