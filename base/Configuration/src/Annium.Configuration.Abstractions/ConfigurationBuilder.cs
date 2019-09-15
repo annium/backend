@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Application;
 using Annium.Core.Mapper;
+using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 
 namespace Annium.Configuration.Abstractions

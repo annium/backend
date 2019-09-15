@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Threading;
-using Annium.Core.Application;
-using Annium.Core.Application.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
+using Annium.Core.Reflection;
+using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
 using Annium.Core.Entrypoint;
 
 namespace Demo.Core.Application

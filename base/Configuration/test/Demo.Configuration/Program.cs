@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Annium.Configuration.Abstractions;
-using Annium.Core.Application;
 using Annium.Core.Entrypoint;
+using Annium.Core.Reflection;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 

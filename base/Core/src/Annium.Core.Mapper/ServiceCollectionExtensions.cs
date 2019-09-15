@@ -22,7 +22,7 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddMapper(this IServiceCollection services)
         {
-            services.AddCore();
+            services.AddReflectionTools();
 
             services.AddMapperConfiguration(DefaultConfiguration.Apply);
 

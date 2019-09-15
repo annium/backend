@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Annium.Core.Application;
+using Annium.Core.Reflection;
 
 namespace Annium.Configuration.Tests
 {
