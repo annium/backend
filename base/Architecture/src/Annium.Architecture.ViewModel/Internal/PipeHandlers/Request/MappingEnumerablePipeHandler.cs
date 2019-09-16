@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mapper;
@@ -7,14 +8,14 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
 {
-    internal class MappingPipeHandler<TRequestIn, TRequestOut, TResponse> : IPipeRequestHandler<TRequestIn, TRequestOut, TResponse, TResponse> where TRequestIn : IRequest<TRequestOut>
+    internal class MappingEnumerablePipeHandler<TRequestIn, TRequestInBase, TRequestOut, TRequestOutBase, TResponse> : IPipeRequestHandler<TRequestIn, TRequestOut, TResponse, TResponse> where TRequestIn : IEnumerable<TRequestInBase> where TRequestOut : IEnumerable<TRequestOutBase> where TRequestInBase : IRequest<TRequestOutBase>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger;
+        private readonly ILogger<MappingEnumerablePipeHandler<TRequestIn, TRequestInBase, TRequestOut, TRequestOutBase, TResponse>> logger;
 
-        public MappingPipeHandler(
+        public MappingEnumerablePipeHandler(
             IMapper mapper,
-            ILogger<MappingPipeHandler<TRequestIn, TRequestOut, TResponse>> logger
+            ILogger<MappingEnumerablePipeHandler<TRequestIn, TRequestInBase, TRequestOut, TRequestOutBase, TResponse>> logger
         )
         {
             this.mapper = mapper;
