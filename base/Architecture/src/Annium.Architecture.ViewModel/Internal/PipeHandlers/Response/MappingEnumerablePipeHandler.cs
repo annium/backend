@@ -10,30 +10,30 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
 {
-    internal class MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseInBase, TResponseOut, TResponseOutBase> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponseIn>, IStatusResult<OperationStatus, TResponseOut>> where TResponseIn : IEnumerable<TResponseInBase> where TResponseOut : IEnumerable<TResponseOutBase> where TResponseOutBase : IResponse<TResponseInBase>
+    internal class MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, IEnumerable<TResponseIn>>, IStatusResult<OperationStatus, IEnumerable<TResponseOut>>> where TResponseOut : IResponse<TResponseIn>
     {
         private readonly IMapper mapper;
-        private readonly ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseInBase, TResponseOut, TResponseOutBase>> logger;
+        private readonly ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut>> logger;
 
         public MappingEnumerablePipeHandler(
             IMapper mapper,
-            ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseInBase, TResponseOut, TResponseOutBase>> logger
+            ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut>> logger
         )
         {
             this.mapper = mapper;
             this.logger = logger;
         }
 
-        public async Task<IStatusResult<OperationStatus, TResponseOut>> HandleAsync(
+        public async Task<IStatusResult<OperationStatus, IEnumerable<TResponseOut>>> HandleAsync(
             TRequest request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<IStatusResult<OperationStatus, TResponseIn>>> next
+            Func<TRequest, Task<IStatusResult<OperationStatus, IEnumerable<TResponseIn>>>> next
         )
         {
             var response = await next(request);
 
             logger.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
-            var mappedResponse = mapper.Map<TResponseOut>(response.Data);
+            var mappedResponse = mapper.Map<IEnumerable<TResponseOut>>(response.Data);
 
             return Result.Status(response.Status, mappedResponse).Join(response);
         }
