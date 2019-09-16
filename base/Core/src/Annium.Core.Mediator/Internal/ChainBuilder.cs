@@ -92,7 +92,7 @@ namespace Annium.Core.Mediator.Internal
                     return null;
 
                 var handlerInput = Constants.HandlerInputType.MakeGenericType(requestIn, responseOut);
-                var service = handler.Implementation.ResolveByImplentations(handlerInput);
+                var service = handler.Implementation.ResolveByImplementation(handlerInput);
                 if (service is null)
                 {
                     logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
