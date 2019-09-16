@@ -7,7 +7,7 @@ using Annium.Core.Reflection;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
 using Annium.Core.Entrypoint;
 
-namespace Demo.Core.Application
+namespace Demo.Core.Reflection
 {
     public class Program
     {

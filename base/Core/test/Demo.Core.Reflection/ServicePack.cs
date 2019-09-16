@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Demo.Core.Application
+namespace Demo.Core.Reflection
 {
     internal class ServicePack : ServicePackBase
     {
