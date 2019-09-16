@@ -6,7 +6,7 @@ namespace Annium.Core.Reflection
     public static class ResolveByImplementationsExtension
     {
         // Get implementation of given type, that may contain generic parameters, that implements concrete target type
-        public static Type ResolveByImplentations(this Type type, params Type[] targets)
+        public static Type ResolveByImplementations(this Type type, params Type[] targets)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
