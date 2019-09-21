@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Localization.Abstractions;
 using Annium.Testing;
 
 namespace Annium.Extensions.Validation.Tests.Rules
@@ -20,6 +19,23 @@ namespace Annium.Extensions.Validation.Tests.Rules
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Name)).IsFalse();
             resultBad.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
+        }
+
+        [Fact]
+        public async Task Required_Nullable_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { Nullable = null });
+            var resultGood2 = await validator.ValidateAsync(new Person() { Nullable = 2 });
+            var resultBad = await validator.ValidateAsync(new Person() { Nullable = 0 });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.Nullable)).IsFalse();
+            resultGood2.LabeledErrors.ContainsKey(nameof(Person.Nullable)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.Nullable)).At(0).IsEqual("Value is required");
         }
 
         [Fact]
@@ -307,6 +323,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
         {
             public string Name { get; set; }
             public uint Age { get; set; }
+            public long? Nullable { get; set; }
             public string Fixed { get; set; }
             public string OneOf { get; set; }
             public string SameAsName { get; set; }
@@ -339,6 +356,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             {
                 Field(p => p.Name).Required();
                 Field(p => p.Age).Required();
+                Field(p => p.Nullable).Required();
                 Field(p => p.Fixed).Equal("fixed value");
                 Field(p => p.OneOf).In(new [] { "one", "two" });
                 Field(p => p.SameAsName).Equal(p => p.Name);

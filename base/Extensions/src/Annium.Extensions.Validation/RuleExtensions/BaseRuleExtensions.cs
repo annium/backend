@@ -16,6 +16,15 @@ namespace Annium.Extensions.Validation
                 context.Error(message ?? "Value is required");
         });
 
+        public static IRuleBuilder<TValue, TField?> Required<TValue, TField>(
+            this IRuleBuilder<TValue, TField?> rule,
+            string message = null
+        ) where TField : struct => rule.Add((context, value) =>
+        {
+            if (value.HasValue && Equals(value, default(TField)))
+                context.Error(message ?? "Value is required");
+        });
+
         public static IRuleBuilder<TValue, TField> Required<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             string message = null
