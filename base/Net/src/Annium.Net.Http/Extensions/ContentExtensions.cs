@@ -7,7 +7,13 @@ namespace Annium.Net.Http
 {
     public static class ContentExtensions
     {
-        public static IRequest JsonContent<T>(this IRequest request, T data) =>
-            request.Content(new StringContent(JsonConvert.SerializeObject(data), Encoding.UTF8, MediaTypeNames.Application.Json));
+        public static IRequest JsonContent<T>(this IRequest request, T data)
+        {
+            var settings = new JsonSerializerSettings();
+            settings.NullValueHandling = NullValueHandling.Ignore;
+            var content = JsonConvert.SerializeObject(data, settings);
+
+            return request.Content(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
+        }
     }
 }

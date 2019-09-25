@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Annium.Core.Mapper;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 
@@ -108,7 +107,7 @@ namespace Annium.Net.Http
 
         public IRequest Param<T>(string key, T value)
         {
-            parameters[key] = Mapper.Map<string>(value);
+            parameters[key] = value.ToString();
 
             return this;
         }
@@ -148,8 +147,25 @@ namespace Annium.Net.Http
             message.Method = method;
 
             // evaluate URI
-            var baseUri = this.baseUri ?? client.BaseAddress;
-            var uri = baseUri != null ? new Uri(baseUri, this.uri) : new Uri(this.uri);
+            var uri = buildUri();
+            Uri buildUri()
+            {
+                var baseUri = this.baseUri ?? client.BaseAddress;
+
+                // if null or relative base
+                if (baseUri is null || !baseUri.IsAbsoluteUri)
+                {
+                    if (string.IsNullOrWhiteSpace(this.uri))
+                        throw new ArgumentException($"Request URI is empty");
+
+                    return new Uri(this.uri);
+                }
+
+                if (string.IsNullOrWhiteSpace(this.uri))
+                    return baseUri;
+
+                return new Uri($"{baseUri.ToString().TrimEnd('/')}/{this.uri?.TrimStart('/')}");
+            }
 
             // build query
             var queryBuilder = new QueryBuilder();
