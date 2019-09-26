@@ -77,7 +77,7 @@ namespace Annium.Storage.Abstractions
                 throw new ArgumentNullException(nameof(name));
 
             if (!nameRe.IsMatch(name))
-                throw new ArgumentException("Name has invalid format");
+                throw new ArgumentException($"Name {name} in invalid");
         }
 
         protected void VerifyPath(string path)
@@ -85,15 +85,18 @@ namespace Annium.Storage.Abstractions
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
 
-            if (!path.StartsWith('/') && !path.EndsWith('/'))
-                throw new ArgumentException("Path must be absolute");
+            if (!path.StartsWith('/'))
+                throw new ArgumentException($"Path {path} is not absolute");
+
+            if (path.EndsWith('/'))
+                throw new ArgumentException($"Path {path} must not end with /");
 
             foreach (var part in getPathParts())
                 if (!nameRe.IsMatch(part))
-                    throw new ArgumentException("Path part has invalid format");
+                    throw new ArgumentException($"Path part {part} has invalid format");
 
-            string[] getPathParts() => Regex
-                .Replace(path, "^/|/$", string.Empty)
+            string[] getPathParts() => path
+                .TrimStart('/')
                 .Split('/');
         }
     }

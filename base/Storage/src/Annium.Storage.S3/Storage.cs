@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.S3;
@@ -27,9 +26,9 @@ namespace Annium.Storage.S3
 
             VerifyPath(configuration.Directory);
 
-            this.directory = configuration.Directory == "/" ?
+            directory = configuration.Directory == "/" ?
                 string.Empty :
-                configuration.Directory.Substring(1, configuration.Directory.Length - 2);
+                configuration.Directory.TrimStart('/');
         }
 
         protected override async Task DoSetupAsync()
