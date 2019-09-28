@@ -1,24 +1,43 @@
 using System;
 using System.Collections.Concurrent;
+using Annium.Core.DependencyInjection;
 using Annium.Net.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
     public class IntegrationTest
     {
-        private ConcurrentDictionary<Type, IRequest> requestSamples = new ConcurrentDictionary<Type, IRequest>();
+        private readonly Action<IHostBuilder> configureHost;
+        private readonly ConcurrentDictionary<Type, IRequest> requestSamples = new ConcurrentDictionary<Type, IRequest>();
 
-        protected IRequest GetRequest<TStartup>(Func<IRequest, IRequest> configureRequest = null)
-        where TStartup : class
+        public IntegrationTest(Action<IHostBuilder> configureHost)
         {
-            var request = requestSamples.GetOrAdd(typeof(TStartup), _ =>
+            this.configureHost = configureHost;
+        }
+
+        public IntegrationTest(Action<IServiceProviderBuilder> configureContainer)
+        {
+            var providerFactory = new ServiceProviderFactory(configureContainer);
+
+            configureHost = builder =>
             {
-                var client = new TestWebApplicationFactory<TStartup>().CreateClient();
+                builder.UseServiceProviderFactory(providerFactory);
+            };
+        }
+
+        protected IRequest GetRequest<TStartup>() where TStartup : class =>
+            GetRequestBase<TStartup>();
+
+        protected IRequest GetRequest<TStartup>(Func<IRequest, IRequest> configureRequest) where TStartup : class =>
+            configureRequest(GetRequestBase<TStartup>());
+
+        private IRequest GetRequestBase<TStartup>() where TStartup : class =>
+            requestSamples.GetOrAdd(typeof(TStartup), _ =>
+            {
+                var client = new TestWebApplicationFactory<TStartup>(configureHost).CreateClient();
 
                 return Http.Open().UseClient(client);
             }).Clone();
-
-            return configureRequest == null ? request : configureRequest(request);
-        }
     }
 }

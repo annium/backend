@@ -1,7 +1,6 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Primitives;

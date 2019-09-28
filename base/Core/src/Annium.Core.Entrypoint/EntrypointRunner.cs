@@ -39,7 +39,7 @@ namespace Annium.Core.Entrypoint
 
             try
             {
-                using(provider) main(provider, args, token);
+                main(provider, args, token);
 
                 return 0;
             }
@@ -55,6 +55,8 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
+                if (provider is IDisposable disposableProvider)
+                    disposableProvider.Dispose();
                 gate.Set();
             }
         }
@@ -68,7 +70,7 @@ namespace Annium.Core.Entrypoint
 
             try
             {
-                using(provider) await main(provider, args, token);
+                await main(provider, args, token);
 
                 return 0;
             }
@@ -84,6 +86,8 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
+                if (provider is IDisposable disposableProvider)
+                    disposableProvider.Dispose();
                 gate.Set();
             }
         }

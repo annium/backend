@@ -26,7 +26,8 @@ namespace Annium.Testing.TestAdapter
 
         public AdapterTestExecutor()
         {
-            var provider = new ServiceProviderBuilder().UseServicePack<ServicePack>().Build();
+            var factory = new ServiceProviderFactory();
+            var provider = factory.CreateServiceProvider(factory.CreateBuilder(new ServiceCollection()).UseServicePack<ServicePack>());
             testConverter = provider.GetRequiredService<TestConverter>();
             testResultConverter = provider.GetRequiredService<TestResultConverter>();
         }
@@ -99,9 +100,8 @@ namespace Annium.Testing.TestAdapter
             var services = AssemblyServicesCollector.Collect(assembly, tests);
             services.AddSingleton(this.provider.GetRequiredService<TestingConfiguration>());
 
-            var provider = new ServiceProviderBuilder(services)
-                .UseServicePack<Testing.ServicePack>()
-                .Build();
+            var factory = new ServiceProviderFactory();
+            var provider = factory.CreateServiceProvider(factory.CreateBuilder(services).UseServicePack<Testing.ServicePack>());
 
             return provider.GetRequiredService<TestExecutor>();
         }

@@ -1,16 +1,30 @@
+using System;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
     internal class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
-        protected override IWebHostBuilder CreateWebHostBuilder()
+        private readonly Action<IHostBuilder> configureHost;
+
+        public TestWebApplicationFactory(Action<IHostBuilder> configureHost)
         {
-            return new WebHostBuilder()
+            this.configureHost = configureHost;
+        }
+
+        protected override IHostBuilder CreateHostBuilder()
+        {
+            var hostBuilder = Host.CreateDefaultBuilder();
+
+            configureHost(hostBuilder);
+
+            return hostBuilder.ConfigureWebHostDefaults(builder => builder
                 .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<TStartup>();
+                .UseStartup<TStartup>()
+            );
         }
     }
 }

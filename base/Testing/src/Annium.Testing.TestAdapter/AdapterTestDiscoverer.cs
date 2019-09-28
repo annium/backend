@@ -23,7 +23,9 @@ namespace Annium.Testing.TestAdapter
 
         public AdapterTestDiscoverer()
         {
-            var provider = new ServiceProviderBuilder().UseServicePack<ServicePack>().Build();
+            var factory = new ServiceProviderFactory();
+            var provider = factory.CreateServiceProvider(factory.CreateBuilder(new ServiceCollection()).UseServicePack<ServicePack>());
+
             testConverter = provider.GetRequiredService<TestConverter>();
         }
 

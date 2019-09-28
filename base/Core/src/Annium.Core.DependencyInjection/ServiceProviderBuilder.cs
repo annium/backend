@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
-    public class ServiceProviderBuilder
+    internal class ServiceProviderBuilder : IServiceProviderBuilder
     {
         private bool isAlreadyBuilt = false;
 
@@ -13,12 +13,17 @@ namespace Annium.Core.DependencyInjection
 
         private IList<ServicePackBase> packs { get; } = new List<ServicePackBase>();
 
-        public ServiceProviderBuilder(IServiceCollection services = null)
+        public ServiceProviderBuilder()
         {
-            this.services = services ?? new ServiceCollection();
+            services = new ServiceCollection();
         }
 
-        public ServiceProviderBuilder UseServicePack<TServicePack>()
+        public ServiceProviderBuilder(IServiceCollection services)
+        {
+            this.services = services;
+        }
+
+        public IServiceProviderBuilder UseServicePack<TServicePack>()
         where TServicePack : ServicePackBase, new()
         {
             if (!packs.Any(e => e.GetType() == typeof(TServicePack)))

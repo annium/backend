@@ -1,5 +1,5 @@
+using System;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.Entrypoint
 {
@@ -9,12 +9,13 @@ namespace Annium.Core.Entrypoint
 
         public CancellationToken Token { get; }
 
-        public ServiceProvider Provider { get; }
+        public IServiceProvider Provider { get; }
 
         public RunPack(
             ManualResetEventSlim gate,
             CancellationToken token,
-            ServiceProvider provider)
+            IServiceProvider provider
+        )
         {
             Gate = gate;
             Token = token;
@@ -24,7 +25,7 @@ namespace Annium.Core.Entrypoint
         public void Deconstruct(
             out ManualResetEventSlim gate,
             out CancellationToken token,
-            out ServiceProvider provider
+            out IServiceProvider provider
         )
         {
             gate = Gate;

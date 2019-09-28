@@ -14,6 +14,7 @@
         <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../base/Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
         <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
     </ItemGroup>
     <ItemGroup>

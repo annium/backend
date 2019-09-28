@@ -19,7 +19,7 @@ namespace Annium.Core.Entrypoint
             return new RunPack(
                 gate,
                 GetCancellationToken(gate),
-                serviceProviderBuilder.Build()
+                serviceProviderFactory.CreateServiceProvider(serviceProviderBuilder)
             );
         }
 

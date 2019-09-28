@@ -1,3 +1,5 @@
+.idea/
+
 # xs ignore patterns
 .xs.ignore
 .xs.credentials

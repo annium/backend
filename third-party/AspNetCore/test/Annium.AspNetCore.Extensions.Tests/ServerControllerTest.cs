@@ -14,7 +14,9 @@ namespace Annium.AspNetCore.Extensions.Tests
 {
     public class ServerControllerTest : IntegrationTest
     {
-        private IRequest http => GetRequest<Startup<Demo.AspNetCore.ServicePack>>();
+        public ServerControllerTest() : base(container => container.UseServicePack<Demo.AspNetCore.ServicePack>()) { }
+
+        private IRequest http => GetRequest<Startup>();
 
         [Fact]
         public async Task Conlfict_Works()

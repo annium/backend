@@ -12,9 +12,8 @@ namespace Annium.Testing.TestAdapter
             var services = new ServiceCollection();
             services.AddSingleton(TestingConfigurationReader.Read(discoveryContext));
 
-            return new ServiceProviderBuilder(services)
-                .UseServicePack<Testing.ServicePack>()
-                .Build();
+            var factory = new ServiceProviderFactory();
+            return factory.CreateServiceProvider(factory.CreateBuilder(services).UseServicePack<Testing.ServicePack>());
         }
     }
 }
