@@ -3,7 +3,7 @@
         <PackageId>Demo.Core.Mapper</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Mapping demo</Description>
-        <TargetFramework>netcoreapp2.2</TargetFramework>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>
