@@ -9,9 +9,12 @@
         <LangVersion>latest</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Core.Reflection.Tests/Annium.Core.Reflection.Tests.csproj" />
         <ProjectReference Include="../../src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
+        <ProjectReference Include="../Annium.Core.Reflection.Tests/Annium.Core.Reflection.Tests.csproj" />
     </ItemGroup>
 </Project>
