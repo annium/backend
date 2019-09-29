@@ -8,24 +8,17 @@ namespace Annium.Core.Mapper
 {
     public static class Mapper
     {
-        private static object locker = new object();
+        private static readonly object locker = new object();
 
-        private static IList<MapperConfiguration> configurations = new List<MapperConfiguration>();
+        private static readonly IList<MapperConfiguration> configurations = new List<MapperConfiguration>();
 
-        private static IMapper mapper;
-
-        static Mapper()
-        {
-            var cfg = new MapperConfiguration();
-            DefaultConfiguration.Apply(cfg);
-            AddConfiguration(cfg);
-        }
+        private static IMapper mapper = InitMapper();
 
         public static void AddConfiguration(Action<MapperConfiguration> configure)
         {
             var cfg = new MapperConfiguration();
             configure(cfg);
-            AddConfiguration(cfg);
+            mapper = AddConfiguration(cfg);
         }
 
         public static bool HasMap<T>(object source) => HasMap(source, typeof(T));
@@ -36,7 +29,14 @@ namespace Annium.Core.Mapper
 
         public static object Map(object source, Type type) => mapper.Map(source, type);
 
-        private static void AddConfiguration(MapperConfiguration configuration)
+        private static IMapper InitMapper()
+        {
+            var cfg = new MapperConfiguration();
+            DefaultConfiguration.Apply(cfg);
+            return AddConfiguration(cfg);
+        }
+
+        private static IMapper AddConfiguration(MapperConfiguration configuration)
         {
             if (configuration == null)
                 throw new ArgumentNullException(nameof(configuration));
@@ -44,7 +44,7 @@ namespace Annium.Core.Mapper
             lock(locker)
             {
                 configurations.Add(configuration);
-                mapper = CreateMapper();
+                return CreateMapper();
             }
         }
 

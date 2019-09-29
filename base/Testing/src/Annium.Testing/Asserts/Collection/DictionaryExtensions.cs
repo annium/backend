@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace Annium.Testing
 {
     public static class DictionaryExtensions
     {
-        public static void IsEqual<TKey, TValue>(this IDictionary<TKey, TValue> value, IDictionary<TKey, TValue> data, string message = null)
+        public static void IsEqual<TKey, TValue>(this IDictionary<TKey, TValue> value, IDictionary<TKey, TValue> data, string message = "")
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -24,13 +26,14 @@ namespace Annium.Testing
                     fail();
 
             void fail() =>
-                throw new AssertionFailedException(message ?? $"{serialize(value)} != {serialize(data)}");
+                throw new AssertionFailedException(string.IsNullOrEmpty(message) ? $"{serialize(value)} != {serialize(data)}" : message);
 
-            string serialize(IDictionary<TKey, TValue> dictionary) =>
+            static string serialize(IDictionary<TKey, TValue> dictionary) =>
                 $"{{{string.Join(", ", dictionary.Select(p => $@"""{p.Key}"": ""{p.Value}"""))}}}";
         }
 
-        public static void IsEqual<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, IReadOnlyDictionary<TKey, TValue> data, string message = null)
+        public static void IsEqual<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, IReadOnlyDictionary<TKey, TValue> data, string message = "")
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -48,13 +51,14 @@ namespace Annium.Testing
                     fail();
 
             void fail() =>
-                throw new AssertionFailedException(message ?? $"{serialize(value)} != {serialize(data)}");
+                throw new AssertionFailedException(string.IsNullOrEmpty(message) ? $"{serialize(value)} != {serialize(data)}" : message);
 
-            string serialize(IReadOnlyDictionary<TKey, TValue> dictionary) =>
-                $"{{{string.Join(", ", dictionary.Select(p => $@"""{p.Key}"": ""{p.Value}"""))}}}";
+            static string serialize(IReadOnlyDictionary<TKey, TValue> dictionary) =>
+                JsonSerializer.Serialize(dictionary);
         }
 
         public static TValue At<TKey, TValue>(this IDictionary<TKey, TValue> value, TKey key)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -65,6 +69,7 @@ namespace Annium.Testing
         }
 
         public static TValue At<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, TKey key)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -75,6 +80,7 @@ namespace Annium.Testing
         }
 
         public static IDictionary<TKey, TValue> Has<TKey, TValue>(this IDictionary<TKey, TValue> value, int count)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -86,6 +92,7 @@ namespace Annium.Testing
         }
 
         public static IReadOnlyDictionary<TKey, TValue> Has<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, int count)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -97,6 +104,7 @@ namespace Annium.Testing
         }
 
         public static IDictionary<TKey, TValue> IsEmpty<TKey, TValue>(this IDictionary<TKey, TValue> value)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -108,6 +116,7 @@ namespace Annium.Testing
         }
 
         public static IReadOnlyDictionary<TKey, TValue> IsEmpty<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value)
+        where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));

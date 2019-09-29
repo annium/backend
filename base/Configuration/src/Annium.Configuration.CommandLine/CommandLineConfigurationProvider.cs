@@ -32,7 +32,7 @@ namespace Annium.Configuration.Abstractions
                     continue;
 
                 var name = ParseName(value);
-                var next = i < args.Length - 1 ? args[i + 1] : null;
+                var next = i < args.Length - 1 ? args[i + 1] : string.Empty;
 
                 if (IsOption(value, next))
                 {
@@ -78,10 +78,10 @@ namespace Annium.Configuration.Abstractions
             !IsOptionLike(value);
 
         private bool IsOption(string value, string next) =>
-            IsOptionLike(value) && next != null && !IsOptionLike(next);
+            IsOptionLike(value) && next != string.Empty && !IsOptionLike(next);
 
         private bool IsFlag(string value, string next) =>
-            IsOptionLike(value) && (next == null || IsOptionLike(next));
+            IsOptionLike(value) && (next == string.Empty || IsOptionLike(next));
 
         private bool IsOptionLike(string value) =>
             value.StartsWith('-');

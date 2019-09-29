@@ -26,13 +26,11 @@ namespace Annium.Storage.Abstractions
 
             try
             {
-                var storage = (IStorage) factory.DynamicInvoke(configuration);
-
-                return storage;
+                return (IStorage) factory.DynamicInvoke(configuration) !;
             }
             catch (TargetInvocationException ex)
             {
-                throw ex.InnerException;
+                throw ex.InnerException!;
             }
         }
     }

@@ -32,7 +32,7 @@ namespace Annium.Data.Operations.Serialization
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == (isSuccess ? nameof(Result.Success) : nameof(Result.Failure)) && m.IsGenericMethod)
                 .MakeGenericMethod(dataType)
-                .Invoke(null, new [] { data });
+                .Invoke(null, new [] { data }) !;
 
             ReadErrors(obj, result);
 

@@ -16,8 +16,10 @@ namespace Annium.Net.Http
 
         static Request()
         {
-            var handler = new HttpClientHandler();
-            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            var handler = new HttpClientHandler
+            {
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
 
             defaultClient = new HttpClient(handler);
         }
@@ -28,35 +30,40 @@ namespace Annium.Net.Http
 
         private HttpMethod method = HttpMethod.Get;
 
-        private Uri baseUri;
+        private Uri? baseUri;
 
-        private string uri;
+        private string? uri;
 
-        private HttpRequestHeaders headers;
+        private readonly HttpRequestHeaders headers;
 
-        private IDictionary<string, string> parameters = new Dictionary<string, string>();
+        private readonly IDictionary<string, string> parameters = new Dictionary<string, string>();
 
-        private HttpContent content;
+        private HttpContent? content;
 
-        private Func<IResponse, Task<string>> getFailureMessage;
+        private Func<IResponse, Task<string>> ? getFailureMessage;
 
-        public Request(Uri baseUri)
+        internal Request(Uri baseUri) : this()
+        {
+            this.baseUri = baseUri;
+        }
+
+        internal Request()
         {
             createClient = () => client;
-            this.baseUri = baseUri;
-            using(var message = new HttpRequestMessage()) this.headers = message.Headers;
+            using var message = new HttpRequestMessage();
+            headers = message.Headers;
         }
 
         private Request(
             HttpClient client,
             Func<HttpClient> createClient,
             HttpMethod method,
-            Uri baseUri,
-            string uri,
+            Uri? baseUri,
+            string? uri,
             HttpRequestHeaders headers,
             IDictionary<string, string> parameters,
-            HttpContent content,
-            Func<IResponse, Task<string>> getFailureMessage
+            HttpContent? content,
+            Func<IResponse, Task<string>> ? getFailureMessage
         )
         {
             this.client = client;
@@ -107,7 +114,7 @@ namespace Annium.Net.Http
 
         public IRequest Param<T>(string key, T value)
         {
-            parameters[key] = value.ToString();
+            parameters[key] = value?.ToString() ?? string.Empty;
 
             return this;
         }
@@ -142,9 +149,7 @@ namespace Annium.Net.Http
         {
             var client = createClient();
 
-            var message = new HttpRequestMessage();
-
-            message.Method = method;
+            var message = new HttpRequestMessage { Method = method };
 
             // evaluate URI
             var uri = buildUri();

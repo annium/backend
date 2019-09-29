@@ -6,6 +6,6 @@ namespace Annium.Extensions.Composition
 {
     public interface IComposer<TValue> where TValue : class
     {
-        Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = null);
+        Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "");
     }
 }

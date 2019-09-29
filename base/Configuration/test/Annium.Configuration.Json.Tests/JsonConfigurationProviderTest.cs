@@ -14,16 +14,19 @@ namespace Annium.Configuration.Json.Tests
         public void JsonConfiguration_Works()
         {
             // arrange
-            var cfg = new Config();
-            cfg.Flag = true;
-            cfg.Plain = 7;
-            cfg.Array = new [] { 4, 7 };
-            cfg.Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } };
-            cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
-            cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
-            cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
+            var cfg = new Config
+            {
+                Flag = true,
+                Plain = 7,
+                Array = new [] { 4, 7 },
+                Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
+                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
+                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } },
+                Abstract = new ConfigTwo { Value = 10 },
+            };
 
-            string jsonFile = null;
+            string jsonFile = string.Empty;
             try
             {
                 jsonFile = Path.GetTempFileName();
@@ -54,6 +57,7 @@ namespace Annium.Configuration.Json.Tests
                 dict.At("demo").Array.SequenceEqual(new [] { 3m, 15m }).IsTrue();
                 result.Nested.Plain.IsEqual(4);
                 result.Nested.Array.SequenceEqual(new [] { 4m, 13m }).IsTrue();
+                result.Abstract.As<ConfigTwo>().Value.IsEqual(10);
             }
             finally
             {

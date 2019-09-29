@@ -9,9 +9,9 @@ namespace Annium.Core.DependencyInjection
     {
         private bool isAlreadyBuilt = false;
 
-        private IServiceCollection services { get; }
+        private readonly IServiceCollection services;
 
-        private IList<ServicePackBase> packs { get; } = new List<ServicePackBase>();
+        private readonly IList<ServicePackBase> packs = new List<ServicePackBase>();
 
         public ServiceProviderBuilder()
         {

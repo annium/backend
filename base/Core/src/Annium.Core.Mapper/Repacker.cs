@@ -11,27 +11,19 @@ namespace Annium.Core.Mapper
         public Func<Expression, Expression> Repack(Expression ex) => (Expression source) =>
         {
             if (ex == null)
-                return null;
+                return null!;
 
-            switch (ex)
+            return ex switch
             {
-                case ConstantExpression constant:
-                    return constant;
-                case LambdaExpression lambda:
-                    return Lambda(lambda) (source);
-                case MemberExpression member:
-                    return Member(member) (source);
-                case MemberInitExpression memberInit:
-                    return MemberInit(memberInit) (source);
-                case MethodCallExpression call:
-                    return Call(call) (source);
-                case NewExpression construction:
-                    return New(construction) (source);
-                case ParameterExpression param:
-                    return source;
-                default:
-                    throw new InvalidOperationException($"Can't repack {ex.NodeType} expression");
-            }
+                ConstantExpression constant => constant,
+                LambdaExpression lambda => Lambda(lambda)(source),
+                MemberExpression member => Member(member)(source),
+                MemberInitExpression memberInit => MemberInit(memberInit)(source),
+                MethodCallExpression call => Call(call)(source),
+                NewExpression construction => New(construction)(source),
+                ParameterExpression param => source,
+                _ => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
+            };
         };
 
         private Func<Expression, Expression> Lambda(LambdaExpression ex) => (Expression source) =>

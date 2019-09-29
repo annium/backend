@@ -8,7 +8,7 @@ namespace Annium.Extensions.Arguments
 {
     public abstract class Group : CommandBase
     {
-        private List<Type> commands = new List<Type>();
+        private readonly List<Type> commands = new List<Type>();
 
         public Group Add<T>()
         where T : CommandBase
@@ -20,7 +20,8 @@ namespace Annium.Extensions.Arguments
 
         public override void Process(string command, string[] args, CancellationToken token)
         {
-            var commands = this.commands.Select(Root.Provider.GetRequiredService).OfType<CommandBase>().ToArray();
+            var root = Root!;
+            var commands = this.commands.Select(root.Provider.GetRequiredService).OfType<CommandBase>().ToArray();
             CommandBase cmd;
 
             // if any args - try to find command by id and execute it
@@ -31,7 +32,7 @@ namespace Annium.Extensions.Arguments
                 cmd = commands.FirstOrDefault(e => e.Id == id);
                 if (cmd != null)
                 {
-                    cmd.Root = Root;
+                    cmd.SetRoot(root);
                     cmd.Process($"{command} {id}".Trim(), args.Skip(1).ToArray(), token);
                     return;
                 }
@@ -41,14 +42,14 @@ namespace Annium.Extensions.Arguments
             cmd = commands.FirstOrDefault(e => e.Id == string.Empty);
             if (cmd != null)
             {
-                cmd.Root = Root;
+                cmd.SetRoot(root);
                 cmd.Process(command, args, token);
                 return;
             }
 
-            if (Root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
+            if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
             {
-                Console.WriteLine(Root.HelpBuilder.BuildHelp(command, Description, commands));
+                Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, commands));
                 return;
             }
         }

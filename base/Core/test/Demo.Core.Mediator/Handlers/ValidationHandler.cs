@@ -31,7 +31,7 @@ namespace Demo.Core.Mediator.Handlers
         )
         {
             logger.Trace($"Start {typeof(TRequest).Name} validation");
-            var result = Result.Failure(default(TResponse))
+            var result = Result.Failure(default(TResponse) !)
                 .Join(await Task.WhenAll(validators.Select(v => v.ValidateAsync(request))));
             logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
             if (result.HasErrors)

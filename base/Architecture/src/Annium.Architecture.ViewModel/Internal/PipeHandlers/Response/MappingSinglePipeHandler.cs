@@ -32,7 +32,7 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
             var response = await next(request);
 
             logger.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
-            var mappedResponse = mapper.Map<TResponseOut>(response.Data);
+            var mappedResponse = mapper.Map<TResponseOut>(response.Data!);
 
             return Result.Status(response.Status, mappedResponse).Join(response);
         }

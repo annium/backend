@@ -54,7 +54,7 @@ namespace Annium.Core.Reflection
                             if (checkedType == baseType)
                                 return true;
 
-                            t = t.BaseType;
+                            t = t.BaseType!;
                         }
 
                         return false;
@@ -69,7 +69,7 @@ namespace Annium.Core.Reflection
 
         // resolve target type by base type and source instance
         // exact requires exact properties matching, otherwise - best matching type is selected
-        public Type ResolveBySignature(object instance, Type baseType, bool exact) =>
+        public Type? ResolveBySignature(object instance, Type baseType, bool exact) =>
             ResolveBySignature(
                 instance.GetType(),
                 instance.GetType().GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray(),
@@ -79,7 +79,7 @@ namespace Annium.Core.Reflection
 
         // resolve target type by base type and source signature
         // exact requires exact properties matching, otherwise - best matching type is selected
-        public Type ResolveBySignature(string[] signature, Type baseType, bool exact) =>
+        public Type? ResolveBySignature(string[] signature, Type baseType, bool exact) =>
             ResolveBySignature(
                 typeof(object),
                 signature.Select(p => p.ToLowerInvariant()).OrderBy(p => p).ToArray(),
@@ -104,7 +104,7 @@ namespace Annium.Core.Reflection
         }
 
         // find type, derived
-        private Type ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
+        private Type? ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
         {
             if (!descendants.Value.TryGetValue(baseType, out var typeDescendants))
                 throw new TypeResolutionException(src, baseType, "No descendants found");

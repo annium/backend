@@ -18,7 +18,7 @@ namespace Annium.Core.Mapper
 
         internal IReadOnlyDictionary<ValueTuple<Type, Type>, Map> Maps => maps;
 
-        private Dictionary<ValueTuple<Type, Type>, Map> maps =
+        private readonly Dictionary<ValueTuple<Type, Type>, Map> maps =
             new Dictionary<ValueTuple<Type, Type>, Map>();
 
         internal MapperConfiguration() { }

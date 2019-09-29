@@ -25,7 +25,7 @@ namespace Annium.Core.Mapper.Internal
         public T Map<T>(object source)
         {
             if (source == null)
-                return default(T);
+                return default !;
 
             return (T) Map(source, typeof(T));
         }
@@ -36,23 +36,23 @@ namespace Annium.Core.Mapper.Internal
                 throw new ArgumentNullException(nameof(type));
 
             if (source == null)
-                return Activator.CreateInstance(type);
+                return Activator.CreateInstance(type) !;
 
             if (source.GetType() == type)
                 return source;
 
             if (type.IsEnum)
-                return Enum.Parse(type, source.ToString(), ignoreCase : true);
+                return Enum.Parse(type, source.ToString() !, ignoreCase : true);
 
             var map = mapBuilder.GetMap(source.GetType(), type);
 
             try
             {
-                return map.DynamicInvoke(source);
+                return map.DynamicInvoke(source) !;
             }
             catch (TargetInvocationException ex)
             {
-                throw ex.InnerException;
+                throw ex.InnerException!;
             }
         }
     }

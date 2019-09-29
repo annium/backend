@@ -5,12 +5,12 @@ namespace Annium.Extensions.Arguments
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
     public class OptionAttribute : BaseAttribute
     {
-        public string Alias { get; }
+        public string? Alias { get; }
 
         public bool IsRequired { get; }
 
         public OptionAttribute(
-            string alias = null,
+            string? alias = null,
             bool isRequired = false
         )
         {

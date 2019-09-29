@@ -6,7 +6,7 @@ namespace Annium.Localization.Abstractions
 {
     public class LocalizationOptions
     {
-        internal IServiceCollection LocaleStorageServices { get; private set; }
+        internal IServiceCollection LocaleStorageServices { get; private set; } = new ServiceCollection();
         internal Func<CultureInfo> CultureAccessor { get; private set; } = () => CultureInfo.CurrentCulture;
 
         internal LocalizationOptions() { }

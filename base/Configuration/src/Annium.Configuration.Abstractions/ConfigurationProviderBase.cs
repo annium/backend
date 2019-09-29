@@ -5,11 +5,11 @@ namespace Annium.Configuration.Abstractions
 {
     public abstract class ConfigurationProviderBase
     {
-        protected Dictionary<string[], string> data;
+        protected Dictionary<string[], string> data = new Dictionary<string[], string>();
 
-        protected Stack<string> context;
+        protected Stack<string> context = new Stack<string>();
 
-        protected string[] path => context.Reverse().ToArray();
+        protected string[] Path => context.Reverse().ToArray();
 
         public abstract IReadOnlyDictionary<string[], string> Read();
 

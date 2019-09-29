@@ -35,16 +35,16 @@ namespace Annium.Data.Models.Tests
         {
             // arrange
             var a = new Point(1, 2);
-            Point b = null;
-            Point c = null;
+            Point b = null!;
+            Point c = null!;
 
             // assert
-            (!(a == null)).IsTrue();
-            (a != null).IsTrue();
-            (null != a).IsTrue();
+            (!(a == null!)).IsTrue();
+            (a! != null!).IsTrue();
+            (null! != a!).IsTrue();
             (b == c).IsTrue();
-            (!a.Equals(null)).IsTrue();
-            (!a.Equals((Point) null)).IsTrue();
+            (!a!.Equals(null!)).IsTrue();
+            (!a!.Equals(null!)).IsTrue();
         }
 
         [Fact]

@@ -32,12 +32,12 @@ namespace Annium.Data.Operations.Serialization
         {
             if (obj.Get(nameof(IResultBase.PlainErrors)) is JArray plainErrors)
                 result.GetType()
-                .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(ICollection<string>) })
+                .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(ICollection<string>) }) !
                 .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
 
             if (obj.Get(nameof(IResultBase.LabeledErrors)) is JObject labeledErrors)
                 result.GetType()
-                .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })
+                .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) }) !
                 .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
         }
 

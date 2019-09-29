@@ -90,14 +90,14 @@ namespace Annium.Core.Mapper.Tests
 
         private class A
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
         private class B
         {
-            public string Name { get; }
+            public string? Name { get; }
 
-            public B(string name)
+            public B(string? name)
             {
                 Name = name;
             }
@@ -105,7 +105,7 @@ namespace Annium.Core.Mapper.Tests
 
         private class C
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
     }
 }

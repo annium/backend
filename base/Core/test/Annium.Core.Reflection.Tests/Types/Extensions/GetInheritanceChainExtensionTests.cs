@@ -9,7 +9,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void GetInheritanceChain_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).GetInheritanceChain())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.GetInheritanceChain())).Throws<ArgumentNullException>();
         }
 
         [Fact]

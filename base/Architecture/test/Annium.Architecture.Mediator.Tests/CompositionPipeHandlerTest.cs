@@ -46,8 +46,8 @@ namespace Annium.Architecture.Mediator.Tests
         private class LoginRequest : IUserName, IPassword, IThrowing
         {
             public bool IsComposedSuccessfully { get; set; }
-            public string UserName { get; set; }
-            public string Password { get; set; }
+            public string UserName { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
             public bool Throw { get; } = false;
         }
 
@@ -70,7 +70,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             public UserNameComposer()
             {
-                Field(e => e.UserName).LoadWith(ctx => ctx.Root.IsComposedSuccessfully ? ctx.Label.ToLower() : null);
+                Field(e => e.UserName).LoadWith(ctx => ctx.Root.IsComposedSuccessfully ? ctx.Label.ToLower() : null!);
             }
         }
 
@@ -78,7 +78,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             public PasswordComposer()
             {
-                Field(e => e.Password).LoadWith(ctx => ctx.Root.IsComposedSuccessfully ? ctx.Label.ToLower() : null);
+                Field(e => e.Password).LoadWith(ctx => ctx.Root.IsComposedSuccessfully ? ctx.Label.ToLower() : null!);
             }
         }
     }

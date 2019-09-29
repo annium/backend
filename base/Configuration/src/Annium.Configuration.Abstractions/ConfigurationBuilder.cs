@@ -11,11 +11,11 @@ namespace Annium.Configuration.Abstractions
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        private IDictionary<string[], string> config = new Dictionary<string[], string>(new KeyComparer());
+        private readonly IDictionary<string[], string> config = new Dictionary<string[], string>(new KeyComparer());
 
-        private Stack<string> context = new Stack<string>();
+        private readonly Stack<string> context = new Stack<string>();
 
-        protected string[] path => context.Reverse().ToArray();
+        protected string[] Path => context.Reverse().ToArray();
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
@@ -49,10 +49,10 @@ namespace Annium.Configuration.Abstractions
         {
             var keyType = type.GetGenericArguments() [0];
             var valueType = type.GetGenericArguments() [1];
-            var path = this.path;
+
             // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
             var items = GetDescendants();
-            var result = (IDictionary) Activator.CreateInstance(type);
+            var result = (IDictionary) Activator.CreateInstance(type) !;
 
             foreach (var name in items)
             {
@@ -67,7 +67,7 @@ namespace Annium.Configuration.Abstractions
         private object ProcessList(Type type)
         {
             var elementType = type.GetGenericArguments() [0];
-            var result = (IList) Activator.CreateInstance(type);
+            var result = (IList) Activator.CreateInstance(type) !;
 
             var items = GetDescendants();
 
@@ -83,7 +83,7 @@ namespace Annium.Configuration.Abstractions
 
         private object ProcessArray(Type type)
         {
-            var elementType = type.GetElementType();
+            var elementType = type.GetElementType() !;
             var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
 
             var result = (IList) Array.CreateInstance(elementType, raw.Count);
@@ -109,17 +109,17 @@ namespace Annium.Configuration.Abstractions
                     throw new ArgumentException($"Type {type} has no resolution fields. Define on, marking it with {nameof(ResolveFieldAttribute)}.");
 
                 context.Push(resolveField.Name);
-                var hasKey = config.TryGetValue(path, out var key);
+                var hasKey = config.TryGetValue(Path, out var key);
                 context.Pop();
                 if (!hasKey)
-                    return null;
+                    return null!;
 
-                type = TypeManager.Instance.ResolveByKey(key, type);
+                type = TypeManager.Instance.ResolveByKey(key!, type);
                 if (type == null)
                     throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
             }
 
-            var result = Activator.CreateInstance(type);
+            var result = Activator.CreateInstance(type) !;
             var properties = type.GetProperties().Where(e => e.CanWrite).ToArray();
             foreach (var property in properties)
             {
@@ -134,15 +134,15 @@ namespace Annium.Configuration.Abstractions
 
         private object ProcessValue(Type type)
         {
-            if (config.TryGetValue(path, out var value))
+            if (config.TryGetValue(Path, out var value))
                 return Mapper.Map(value, type);
 
-            throw new ArgumentException($"Key {string.Join('.', path)} not found in configuration.");
+            throw new ArgumentException($"Key {string.Join('.', Path)} not found in configuration.");
         }
 
         private string[] GetDescendants()
         {
-            var path = normalize(this.path);
+            var path = normalize(this.Path);
             if (path.Length == 0)
                 return config.Keys.Select(k => k.First()).Distinct().ToArray();
 
@@ -158,7 +158,7 @@ namespace Annium.Configuration.Abstractions
 
         private bool KeyExists()
         {
-            var path = normalize(this.path);
+            var path = normalize(this.Path);
             if (path.Length == 0)
                 return config.Keys.Count() > 0;
 

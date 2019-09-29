@@ -8,7 +8,6 @@ namespace Annium.Testing
     {
         public static TException Throws<TException>(this Delegate value) where TException : Exception
         {
-            Exception ex = null;
             try
             {
                 var result = value.DynamicInvoke();
@@ -16,10 +15,10 @@ namespace Annium.Testing
             }
             catch (TargetInvocationException exception)
             {
-                ex = exception.InnerException;
+                return exception.InnerException!.Is<TException>();
             }
 
-            return ex.Is<TException>();
+            throw new AssertionFailedException($"{typeof(TException).Name} was not thrown");
         }
 
         internal static TException Is<TException>(this Exception value) where TException : Exception =>

@@ -62,7 +62,7 @@ namespace Annium.Configuration.Abstractions
 
         private void Process(JToken token)
         {
-            data[path] = token.ToString();
+            data[Path] = token.ToString();
         }
     }
 

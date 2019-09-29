@@ -11,7 +11,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void HasDefaultConstructor_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).HasDefaultConstructor())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.HasDefaultConstructor())).Throws<ArgumentNullException>();
         }
 
         [Fact]

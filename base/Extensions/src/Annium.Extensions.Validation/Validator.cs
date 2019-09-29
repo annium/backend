@@ -18,9 +18,6 @@ namespace Annium.Extensions.Validation
             Expression<Func<TValue, TField>> accessor
         )
         {
-            if (accessor is null)
-                throw new ArgumentNullException(nameof(accessor));
-
             var property = TypeHelper.ResolveProperty(accessor);
             var rule = new RuleContainer<TValue, TField>(accessor.Compile());
 

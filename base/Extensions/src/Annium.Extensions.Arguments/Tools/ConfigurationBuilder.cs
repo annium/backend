@@ -104,8 +104,8 @@ namespace Annium.Extensions.Arguments
             // for array properties - set values from multioptions with fallback to options
             foreach (var(property, attribute) in arrayProperties)
             {
-                string key = null;
-                string[] raw = null;
+                string? key = null;
+                string[] raw = Array.Empty<string>();
                 if ((key = FindOptionName(multiOptions.Keys, property.Name, attribute.Alias)) != null)
                     raw = multiOptions[key].ToArray();
                 else if ((key = FindOptionName(plainOptions.Keys, property.Name, attribute.Alias)) != null)
@@ -115,7 +115,7 @@ namespace Annium.Extensions.Arguments
                 else
                     continue;
 
-                var type = property.PropertyType.GetElementType();
+                var type = property.PropertyType.GetElementType() !;
                 var array = (IList) Array.CreateInstance(type, raw.Count());
                 for (var i = 0; i < array.Count; i++)
                     array[i] = GetValue(property, type, raw[i]);
@@ -133,7 +133,7 @@ namespace Annium.Extensions.Arguments
                 property.SetValue(value, GetValue(property, property.PropertyType, raw));
         }
 
-        private string FindOptionName(IEnumerable<string> names, string name, string alias)
+        private string? FindOptionName(IEnumerable<string> names, string name, string? alias)
         {
             if (alias == null)
                 return names.Contains(name) ? name : null;

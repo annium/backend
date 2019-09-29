@@ -37,7 +37,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class Person
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
         }
 
         private class PersonValidator : Validator<Person>

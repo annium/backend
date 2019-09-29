@@ -6,12 +6,16 @@ namespace Annium.Core.DependencyInjection
 {
     public static class LogRouteExtensions
     {
-        public static LogRoute UseInMemory(this LogRoute route, InMemoryLogHandler handler = null)
+        public static LogRoute UseInMemory(this LogRoute route)
         {
-            route.Use(handler is null ?
-                ServiceDescriptor.Singleton<InMemoryLogHandler, InMemoryLogHandler>() :
-                ServiceDescriptor.Singleton<InMemoryLogHandler>(handler)
-            );
+            route.Use(ServiceDescriptor.Singleton<InMemoryLogHandler, InMemoryLogHandler>());
+
+            return route;
+        }
+
+        public static LogRoute UseInMemory(this LogRoute route, InMemoryLogHandler handler)
+        {
+            route.Use(ServiceDescriptor.Singleton(handler));
 
             return route;
         }

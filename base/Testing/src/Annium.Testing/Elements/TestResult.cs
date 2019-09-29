@@ -7,7 +7,7 @@ namespace Annium.Testing.Elements
     {
         public TestOutcome Outcome { get; set; } = TestOutcome.None;
 
-        public Exception Failure { get; set; }
+        public Exception? Failure { get; set; }
 
         public Stopwatch Watch { get; } = new Stopwatch();
 

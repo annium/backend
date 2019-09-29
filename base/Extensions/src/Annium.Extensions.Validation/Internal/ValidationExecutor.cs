@@ -11,7 +11,8 @@ namespace Annium.Extensions.Validation
 {
     internal class ValidationExecutor<TValue> : IValidator<TValue>
     {
-        private static Type[] validatorSets = typeof(TValue).GetInheritanceChain(self: true, root: false)
+        private readonly static Type[] validatorSets = typeof(TValue)
+        .GetInheritanceChain(self: true, root: false)
         .Concat(typeof(TValue).GetInterfaces())
         .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(IValidationContainer<>).MakeGenericType(t)))
         .ToArray();
@@ -32,13 +33,13 @@ namespace Annium.Extensions.Validation
             localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
         }
 
-        public async Task<IResult> ValidateAsync(TValue value, string label = null)
+        public async Task<IResult> ValidateAsync(TValue value, string? label = null)
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
             if (value == null)
                 return hasLabel ?
-                    Result.New().Error(label, "Value is null") :
+                    Result.New().Error(label!, "Value is null") :
                     Result.New().Error("Value is null");
 
             if (validators.Length == 0)
@@ -46,14 +47,14 @@ namespace Annium.Extensions.Validation
 
             var result = Result.New();
             var stage = 0;
-            var ranStage = false;
+            bool ranStage;
             do
             {
                 ranStage = false;
 
                 foreach (var validator in validators)
                 {
-                    var(validatorResult, hasRun) = await validator.ValidateAsync(value, label, stage, localizer);
+                    var(validatorResult, hasRun) = await validator.ValidateAsync(value, label ?? string.Empty, stage, localizer);
 
                     result.Join(validatorResult);
                     ranStage = hasRun || ranStage;

@@ -57,7 +57,7 @@ namespace Annium.Core.Mapper.Internal
         private Func<Expression, Expression> ResolveMap(Type src, Type tgt)
         {
             if (src == tgt)
-                return null;
+                return null!;
 
             var key = (src, tgt);
             if (raw.TryGetValue(key, out var map))
@@ -65,7 +65,7 @@ namespace Annium.Core.Mapper.Internal
 
             this.cfg.Maps.TryGetValue(key, out var cfg);
 
-            return raw[key] = BuildMap(src, tgt, cfg);
+            return raw[key] = BuildMap(src, tgt, cfg!);
         }
     }
 }

@@ -31,7 +31,7 @@ namespace Annium.Extensions.Arguments
                 }
 
                 var name = value.PascalCase();
-                var next = i < args.Length - 1 ? args[i + 1] : null;
+                var next = i < args.Length - 1 ? args[i + 1] : string.Empty;
 
                 if (IsOption(value, next))
                 {
@@ -70,10 +70,10 @@ namespace Annium.Extensions.Arguments
             !IsOptionLike(value);
 
         private bool IsOption(string value, string next) =>
-            IsOptionLike(value) && next != null && !IsOptionLike(next);
+            IsOptionLike(value) && !string.IsNullOrEmpty(next) && !IsOptionLike(next);
 
         private bool IsFlag(string value, string next) =>
-            IsOptionLike(value) && (next == null || IsOptionLike(next));
+            IsOptionLike(value) && (string.IsNullOrEmpty(next) || IsOptionLike(next));
 
         private bool IsRawDelimeter(string value) =>
             value.All(c => c == Constants.OptionSign);

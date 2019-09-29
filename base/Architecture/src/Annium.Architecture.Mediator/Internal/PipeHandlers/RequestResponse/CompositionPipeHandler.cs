@@ -18,7 +18,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse
 
         protected override IStatusResult<OperationStatus, TResponse> GetResponse(IStatusResult<OperationStatus> compositionResult)
         {
-            return Result.Status(compositionResult.Status, default(TResponse)).Join(compositionResult);
+            return Result.Status(compositionResult.Status, default(TResponse)!).Join(compositionResult);
         }
     }
 }

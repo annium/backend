@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using Annium.Configuration.Abstractions;
+using Annium.Configuration.Tests;
 using Annium.Core.Entrypoint;
-using Annium.Core.Reflection;
 using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
@@ -20,22 +20,24 @@ namespace Demo.Extensions.Configuration
         {
             TestBuilder();
             // TestCli();
-            // TestJson();
+            TestJson();
             // TestYaml();
         }
 
         private static void TestBuilder()
         {
             // arrange
-            var cfg = new Dictionary<string[], string>();
-            cfg[new [] { "plain" }] = "10";
-            cfg[new [] { "abstract_config", "type" }] = "ConfigOne";
-            cfg[new [] { "abstract_config", "value" }] = "14";
+            var cfg = new Dictionary<string[], string>
+                {
+                    [new [] { "plain" }] = "10",
+                    [new [] { "abstract_config", "type" }] = "ConfigOne",
+                    [new [] { "abstract_config", "value" }] = "14"
+                };
             var builder = new ConfigurationBuilder();
             builder.Add(cfg);
 
             // act
-            var result = builder.Build<Config>();
+            _ = builder.Build<Config>();
         }
 
         private static void TestCli()
@@ -51,19 +53,23 @@ namespace Demo.Extensions.Configuration
             builder.AddCommandLineArgs(args.ToArray());
 
             // act
-            var result = builder.Build<Config>();
+            _ = builder.Build<Config>();
         }
 
         private static void TestJson()
         {
-            var cfg = new Config();
-            cfg.Plain = 7;
-            cfg.Array = new [] { 4, 7 };
-            cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
-            cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
-            cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
+            var cfg = new Config
+            {
+                Flag = true,
+                Plain = 7,
+                Array = new [] { 4, 7 },
+                Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
+                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
+                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } }
+            };
 
-            string jsonFile = null;
+            string jsonFile = string.Empty;
             try
             {
                 jsonFile = Path.GetTempFileName();
@@ -84,15 +90,18 @@ namespace Demo.Extensions.Configuration
 
         private static void TestYaml()
         {
-            var cfg = new Config();
-            cfg.Plain = 7;
-            cfg.Array = new [] { 4, 7 };
-            cfg.List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } };
-            cfg.Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } };
-            cfg.Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } };
-            cfg.AbstractConfig = new ConfigOne { Type = nameof(ConfigOne), Value = 17 };
+            var cfg = new Config
+            {
+                Flag = true,
+                Plain = 7,
+                Array = new [] { 4, 7 },
+                Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
+                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
+                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } }
+            };
 
-            string yamlFile = null;
+            string yamlFile = string.Empty;
             try
             {
                 yamlFile = Path.GetTempFileName();
@@ -115,46 +124,6 @@ namespace Demo.Extensions.Configuration
         public static int Main(string[] args) => new Entrypoint()
             .UseServicePack<ServicePack>()
             .Run(Run, args);
-
-        internal class Config
-        {
-            public int Plain { get; set; }
-
-            public int[] Array { get; set; }
-
-            public List<Val> List { get; set; }
-
-            public Dictionary<string, Val> Dictionary { get; set; }
-
-            public Val Nested { get; set; }
-
-            public SomeConfig AbstractConfig { get; set; }
-        }
-
-        internal class Val
-        {
-            public int Plain { get; set; }
-
-            public decimal[] Array { get; set; }
-        }
-
-        internal abstract class SomeConfig
-        {
-            [ResolveField]
-            public string Type { get; set; }
-        }
-
-        [ResolveKey(nameof(ConfigOne))]
-        internal class ConfigOne : SomeConfig
-        {
-            public uint Value { get; set; }
-        }
-
-        [ResolveKey(nameof(ConfigTwo))]
-        internal class ConfigTwo : SomeConfig
-        {
-            public long Value { get; set; }
-        }
     }
 
     internal static class ListExtensions

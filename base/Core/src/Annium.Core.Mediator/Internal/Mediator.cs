@@ -24,20 +24,29 @@ namespace Annium.Core.Mediator.Internal
 
         public async Task<TResponse> SendAsync<TRequest, TResponse>(
             TRequest request,
-            CancellationToken cancellationToken = default,
-            IServiceProvider serviceProvider = default
+            CancellationToken cancellationToken = default
         )
         {
             // get execution chain with last item, being final one
             var chain = GetChain(typeof(TRequest), typeof(TResponse));
 
-            // use given serviceProvider, if passed
-            if (serviceProvider != null)
-                return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request, cancellationToken);
-
             // use scoped service provider
-            using(var scope = provider.CreateScope())
-            return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request, cancellationToken);
+            using var scope = provider.CreateScope();
+
+            return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!, cancellationToken);
+        }
+
+        public async Task<TResponse> SendAsync<TRequest, TResponse>(
+            IServiceProvider serviceProvider,
+            TRequest request,
+            CancellationToken cancellationToken = default
+        )
+        {
+            // get execution chain with last item, being final one
+            var chain = GetChain(typeof(TRequest), typeof(TResponse));
+
+            // use given service provider
+            return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request!, cancellationToken);
         }
 
         private IReadOnlyList<ChainElement> GetChain(Type input, Type output)

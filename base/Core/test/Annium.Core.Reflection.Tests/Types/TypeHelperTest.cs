@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.Reflection;
 using Annium.Testing;
 
 namespace Annium.Core.Reflection.Tests.Types
@@ -10,31 +9,31 @@ namespace Annium.Core.Reflection.Tests.Types
         public void ResolveProperty_Unary_Works()
         {
             // assert
-            TypeHelper.ResolveProperty<A>(obj => obj.Demo).IsEqual(typeof(A).GetProperty(nameof(A.Demo)));
+            TypeHelper.ResolveProperty<A>(obj => obj.Demo!).IsEqual(typeof(A).GetProperty(nameof(A.Demo)));
         }
 
         [Fact]
         public void ResolveProperty_Inner_Works()
         {
             // assert
-            TypeHelper.ResolveProperty<B>(obj => obj.Inner.Demo).IsEqual(typeof(A).GetProperty(nameof(A.Demo)));
+            TypeHelper.ResolveProperty<B>(obj => obj.Inner!.Demo!).IsEqual(typeof(A).GetProperty(nameof(A.Demo)));
         }
 
         [Fact]
         public void ResolveProperty_NotProperty_Fails()
         {
             // assert
-            ((Action) (() => TypeHelper.ResolveProperty<B>(obj => obj.Inner.ToString()))).Throws<ArgumentException>();
+            ((Action) (() => TypeHelper.ResolveProperty<B>(obj => obj.Inner!.ToString() !))).Throws<ArgumentException>();
         }
 
         private class B
         {
-            public A Inner { get; set; }
+            public A? Inner { get; set; }
         }
 
         private class A
         {
-            public string Demo { get; set; }
+            public string? Demo { get; set; }
         }
     }
 }

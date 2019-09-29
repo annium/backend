@@ -13,8 +13,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void GetTargetImplementation_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).GetTargetImplementation(typeof(bool)))).Throws<ArgumentNullException>();
-            ((Action) (() => typeof(bool).GetTargetImplementation(null))).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.GetTargetImplementation(typeof(bool)))).Throws<ArgumentNullException>();
+            ((Action) (() => typeof(bool).GetTargetImplementation(null!))).Throws<ArgumentNullException>();
         }
 
         [Fact]
@@ -51,7 +51,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             //assert
             typeof(ParentOne<long, bool>).GetTargetImplementation(typeof(Base<, , ,>))
                 .IsEqual(typeof(Base<List<bool>, long, int, IEnumerable<List<bool>>>));
-            typeof(ParentTwo<long, Array>).GetTargetImplementation(typeof(ParentOne<,>).BaseType)
+            typeof(ParentTwo<long, Array>).GetTargetImplementation(typeof(ParentOne<,>).BaseType!)
                 .IsEqual(typeof(Base<List<IReadOnlyList<Array>>, long, int, IEnumerable<List<IReadOnlyList<Array>>>>));
         }
 
@@ -59,7 +59,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void GetTargetImplementation_ClassOfClass_ImplementingTargetGenericDefinition_MixedTarget_UnresolvedArg_ReturnsNull()
         {
             //assert
-            typeof(ParentOther<int, int>).GetTargetImplementation(typeof(ParentOne<,>).BaseType).IsDefault();
+            typeof(ParentOther<int, int>).GetTargetImplementation(typeof(ParentOne<,>).BaseType!).IsDefault();
         }
 
         [Fact]
@@ -75,7 +75,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             //assert
             typeof(ParentOne<long, bool>).GetTargetImplementation(typeof(IBase<, , ,>))
                 .IsEqual(typeof(IBase<List<bool>, long, int, IEnumerable<List<bool>>>));
-            typeof(ParentTwo<long, Array>).GetTargetImplementation(typeof(IParentOne<,>).GetInterface("IBase`4"))
+            typeof(ParentTwo<long, Array>).GetTargetImplementation(typeof(IParentOne<,>).GetInterface("IBase`4") !)
                 .IsEqual(typeof(IBase<List<IReadOnlyList<Array>>, long, int, IEnumerable<List<IReadOnlyList<Array>>>>));
         }
 
@@ -83,7 +83,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void GetTargetImplementation_ClassOfInterface_ImplementingTargetGenericDefinition_MixedTarget_UnresolvedArg_ReturnsNull()
         {
             //assert
-            typeof(ParentOther<int, int>).GetTargetImplementation(typeof(IParentOne<,>).GetInterface("IBase`4")).IsDefault();
+            typeof(ParentOther<int, int>).GetTargetImplementation(typeof(IParentOne<,>).GetInterface("IBase`4") !).IsDefault();
         }
 
         [Fact]

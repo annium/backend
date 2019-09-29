@@ -4,7 +4,7 @@ namespace Annium.Testing.Elements
 {
     public class Test
     {
-        public string File { get; private set; }
+        public string File { get; private set; } = string.Empty;
 
         public int Line { get; private set; }
 
@@ -12,25 +12,26 @@ namespace Annium.Testing.Elements
 
         public string DisplayName { get; private set; }
 
-        public MethodInfo Before { get; private set; }
+        public MethodInfo? Before { get; private set; }
 
         public MethodInfo Method { get; }
 
-        public MethodInfo After { get; private set; }
+        public MethodInfo? After { get; private set; }
 
         public bool IsSkipped { get; private set; }
 
         public Test(MethodInfo method)
         {
             Method = method;
-            SetupSkipped();
-            SetupName();
+            DisplayName = $"{Method.DeclaringType!.Name}.{Method.Name}";
+            FullyQualifiedName = $"{Method.DeclaringType.FullName}.{Method.Name}";
             SetupBefore();
             SetupAfter();
+            SetupSkipped();
             SetupLocation();
         }
 
-        public override string ToString() => Method.ToString();
+        public override string ToString() => Method.ToString() !;
 
         private void SetupSkipped()
         {
@@ -42,18 +43,12 @@ namespace Annium.Testing.Elements
             }
         }
 
-        private void SetupName()
-        {
-            DisplayName = $"{Method.DeclaringType.Name}.{Method.Name}";
-            FullyQualifiedName = $"{Method.DeclaringType.FullName}.{Method.Name}";
-        }
-
         private void SetupBefore()
         {
             var attribute = Method.GetCustomAttribute<BeforeAttribute>();
             if (attribute != null)
             {
-                Before = Method.DeclaringType.GetMethod(attribute.SetUpName);
+                Before = Method.DeclaringType!.GetMethod(attribute.SetUpName) !;
                 UpdateLine(attribute.Line);
             }
         }
@@ -63,7 +58,7 @@ namespace Annium.Testing.Elements
             var attribute = Method.GetCustomAttribute<AfterAttribute>();
             if (attribute != null)
             {
-                After = Method.DeclaringType.GetMethod(attribute.TearDownName);
+                After = Method.DeclaringType!.GetMethod(attribute.TearDownName) !;
                 UpdateLine(attribute.Line);
             }
         }
@@ -71,7 +66,7 @@ namespace Annium.Testing.Elements
         private void SetupLocation()
         {
             var attribute = Method.GetCustomAttribute<FactAttribute>();
-            File = attribute.File;
+            File = attribute!.File;
             UpdateLine(attribute.Line);
         }
 

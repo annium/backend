@@ -29,7 +29,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             }
             catch (TargetInvocationException exception)
             {
-                return Failure(exception.InnerException);
+                return Failure(exception.InnerException!);
             }
             catch (Exception exception)
             {

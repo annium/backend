@@ -25,7 +25,7 @@ namespace Annium.Core.Mapper.Internal
             var select = typeof(Enumerable).GetMethods()
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
-            var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)).MakeGenericMethod(tgtEl);
+            var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)) !.MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
             var map = ResolveMap(srcEl, tgtEl) (param);
             var lambda = Expression.Lambda(map, param);
@@ -51,17 +51,18 @@ namespace Annium.Core.Mapper.Internal
         private Type GetEnumerableElementType(Type type)
         {
             if (type.IsArray)
-                return type.GetElementType();
+                return type.GetElementType() !;
 
             if (type.GenericTypeArguments.Length == 0)
-                return null;
+                return null!;
 
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 return type.GenericTypeArguments[0];
 
-            return type.GetTypeInfo().ImplementedInterfaces
-                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>)) ?
-                .GenericTypeArguments[0];
+            var iface = type.GetTypeInfo().ImplementedInterfaces
+                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+            return iface?.GenericTypeArguments[0] !;
         }
     }
 }

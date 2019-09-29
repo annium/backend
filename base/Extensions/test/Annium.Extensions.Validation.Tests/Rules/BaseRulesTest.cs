@@ -312,7 +312,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
             // act
             var resultGood = await validator.ValidateAsync(new Person() { Enum = LogLevel.Debug });
-            var resultBad = await validator.ValidateAsync(new Person() { Enum = (LogLevel) 0 });
+            var resultBad = await validator.ValidateAsync(new Person() { Enum = 0 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();
@@ -321,25 +321,25 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class Person
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
             public uint Age { get; set; }
             public long? Nullable { get; set; }
-            public string Fixed { get; set; }
-            public string OneOf { get; set; }
-            public string SameAsName { get; set; }
-            public string NotFixed { get; set; }
-            public string NotOneOf { get; set; }
-            public string NotSameAsName { get; set; }
-            public string MinMaxLength { get; set; }
-            public string MinLength { get; set; }
-            public string MaxLength { get; set; }
+            public string Fixed { get; set; } = string.Empty;
+            public string OneOf { get; set; } = string.Empty;
+            public string SameAsName { get; set; } = string.Empty;
+            public string NotFixed { get; set; } = string.Empty;
+            public string NotOneOf { get; set; } = string.Empty;
+            public string NotSameAsName { get; set; } = string.Empty;
+            public string MinMaxLength { get; set; } = string.Empty;
+            public string MinLength { get; set; } = string.Empty;
+            public string MaxLength { get; set; } = string.Empty;
             public long Between { get; set; }
             public long LessThan { get; set; }
             public long LessThanOrEqual { get; set; }
             public long GreaterThan { get; set; }
             public long GreaterThanOrEqual { get; set; }
-            public string Regex { get; set; }
-            public string Email { get; set; }
+            public string Regex { get; set; } = string.Empty;
+            public string Email { get; set; } = string.Empty;
             public LogLevel Enum { get; set; }
         }
 
@@ -379,7 +379,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
 
         private class BadEnum
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
         }
 
         private class BadEnumValidator : Validator<BadEnum>

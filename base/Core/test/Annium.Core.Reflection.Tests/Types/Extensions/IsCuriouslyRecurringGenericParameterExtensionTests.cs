@@ -10,7 +10,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void IsCuriouslyRecurringGenericParameter_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).IsCuriouslyRecurringGenericParameter())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.IsCuriouslyRecurringGenericParameter())).Throws<ArgumentNullException>();
         }
 
         [Fact]

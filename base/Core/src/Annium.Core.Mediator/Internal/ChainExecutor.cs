@@ -22,15 +22,15 @@ namespace Annium.Core.Mediator.Internal
 
             var parameters = new List<object> { request, cancellationToken };
             if (isFinal)
-                parameters.Add(element.Next.DynamicInvoke(provider, chain, cancellationToken, index + 1));
+                parameters.Add(element.Next!.DynamicInvoke(provider, chain, cancellationToken, index + 1)!);
 
             var handler = element.Handler;
             var handleMethodName = isFinal ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
-            var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray());
-            var result = handleMethod.Invoke(provider.GetRequiredService(handler), parameters.ToArray());
-            await ((Task) result);
+            var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray())!;
+            var result = handleMethod.Invoke(provider.GetRequiredService(handler), parameters.ToArray())!;
+            await (Task) result;
 
-            return result.GetType().GetProperty(nameof(Task<int>.Result)).GetGetMethod().Invoke(result, Array.Empty<object>());
+            return result.GetType().GetProperty(nameof(Task<int>.Result))!.GetGetMethod()!.Invoke(result, Array.Empty<object>())!;
         }
     }
 }

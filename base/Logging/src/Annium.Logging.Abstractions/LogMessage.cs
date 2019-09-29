@@ -9,14 +9,14 @@ namespace Annium.Logging.Abstractions
         public LogLevel Level { get; }
         public Type Source { get; }
         public string Message { get; }
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         internal LogMessage(
             Instant instant,
             LogLevel level,
             Type source,
             string message,
-            Exception exception
+            Exception? exception
         )
         {
             Instant = instant;

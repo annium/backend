@@ -58,7 +58,7 @@ namespace Annium.Core.Mapper.Tests
 
         private class LinkPayload : Payload
         {
-            public string Link { get; set; }
+            public string? Link { get; set; }
 
             public Instant Created { get; set; }
         }
@@ -67,18 +67,18 @@ namespace Annium.Core.Mapper.Tests
 
         private class ImageModel : Model
         {
-            public string Image { get; set; }
+            public string? Image { get; set; }
 
             public Instant Created { get; set; }
         }
 
         private class LinkModel : Model
         {
-            public string Link { get; }
+            public string? Link { get; }
 
             public DateTime Created { get; }
 
-            public LinkModel(string link, DateTime created)
+            public LinkModel(string? link, DateTime created)
             {
                 Link = link;
                 Created = created;

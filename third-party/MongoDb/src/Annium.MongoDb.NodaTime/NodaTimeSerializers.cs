@@ -16,8 +16,8 @@ namespace Annium.MongoDb.NodaTime
 
             foreach (var type in types)
             {
-                var target = type.BaseType.GenericTypeArguments[0];
-                var serializer = (IBsonSerializer) Activator.CreateInstance(type.AsType());
+                var target = type.BaseType!.GenericTypeArguments[0];
+                var serializer = (IBsonSerializer) Activator.CreateInstance(type.AsType()) !;
 
                 try
                 {

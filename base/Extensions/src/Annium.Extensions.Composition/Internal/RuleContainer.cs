@@ -7,8 +7,8 @@ namespace Annium.Extensions.Composition
     internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRuleContainer<TValue>
     {
         private readonly MethodInfo setTarget;
-        private Delegate load;
-        private string message;
+        private Delegate? load;
+        private string message = string.Empty;
         private bool allowDefault;
 
         public RuleContainer(
@@ -20,7 +20,7 @@ namespace Annium.Extensions.Composition
 
         public void LoadWith(
             Func<CompositionContext<TValue>, Task<TField>> load,
-            string message = null,
+            string message = "",
             bool allowDefault = false
         )
         {
@@ -31,7 +31,7 @@ namespace Annium.Extensions.Composition
 
         public void LoadWith(
             Func<CompositionContext<TValue>, TField> load,
-            string message = null,
+            string message = "",
             bool allowDefault = false
         )
         {
@@ -42,7 +42,7 @@ namespace Annium.Extensions.Composition
 
         public async Task ComposeAsync(CompositionContext<TValue> context, TValue value)
         {
-            TField target = default(TField);
+            TField target = default !;
 
             switch (load)
             {
@@ -54,8 +54,8 @@ namespace Annium.Extensions.Composition
                     break;
             }
 
-            if (target == null || (!allowDefault && target.Equals(default(TField))))
-                context.Error(message ?? "{0} not found", context.Field);
+            if (target == null || (!allowDefault && target.Equals(default(TField) !)))
+                context.Error(string.IsNullOrEmpty(message) ? "{0} not found" : message, context.Field);
             else
                 setTarget.Invoke(value, new object[] { target });
         }

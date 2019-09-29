@@ -11,12 +11,21 @@ namespace Annium.MongoDb.NodaTime
     {
         private readonly IPattern<TValue> pattern;
 
-        private readonly Func<TValue, TValue> valueConverter;
+        private readonly Func<TValue, TValue> valueConverter = (v => v);
 
-        protected PatternSerializer(IPattern<TValue> pattern, Func<TValue, TValue> valueConverter = null)
+        protected PatternSerializer(
+            IPattern<TValue> pattern,
+            Func<TValue, TValue> valueConverter
+        ) : this(pattern)
+        {
+            this.valueConverter = valueConverter ?? (v => v);
+        }
+
+        protected PatternSerializer(
+            IPattern<TValue> pattern
+        )
         {
             this.pattern = pattern;
-            this.valueConverter = valueConverter ?? (v => v);
         }
 
         public override TValue Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
@@ -25,14 +34,14 @@ namespace Annium.MongoDb.NodaTime
             switch (type)
             {
                 case BsonType.String:
-                    return this.valueConverter(this.pattern.CheckedParse(context.Reader.ReadString()));
+                    return valueConverter(pattern.CheckedParse(context.Reader.ReadString()));
                 case BsonType.Null:
                     if (typeof(TValue).GetTypeInfo().IsValueType)
                         throw new InvalidOperationException($"{typeof(TValue).Name} is a value type, but the BsonValue is null.");
 
                     context.Reader.ReadNull();
 
-                    return default(TValue);
+                    return default !;
                 default:
                     throw new NotSupportedException($"Cannot convert a {type} to a {typeof(TValue).Name}.");
             }

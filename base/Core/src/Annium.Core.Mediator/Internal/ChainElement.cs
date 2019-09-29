@@ -5,7 +5,7 @@ namespace Annium.Core.Mediator.Internal
     internal class ChainElement
     {
         public Type Handler { get; }
-        public Delegate Next { get; }
+        public Delegate? Next { get; }
 
         public ChainElement(
             Type handler

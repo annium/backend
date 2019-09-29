@@ -29,7 +29,7 @@ namespace Annium.Extensions.Jobs
             ));
 
             var type = typeof(ZonedDateTime);
-            var parts = new Expression[]
+            var parts = new Expression?[]
             {
                 GetPartExpression("second", "0", 0, 59,
                         Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Second)))),
@@ -61,9 +61,9 @@ namespace Annium.Extensions.Jobs
                 new ParameterExpression[] { instant }
             );
 
-            return expression.Compile() as Func<Instant, bool>;
+            return (Func<Instant, bool>) expression.Compile();
 
-            Expression GetPartExpression(string name, string part, uint min, uint max, Expression getPart)
+            Expression? GetPartExpression(string name, string part, uint min, uint max, Expression getPart)
             {
                 // if any - return null
                 if (part == "*")

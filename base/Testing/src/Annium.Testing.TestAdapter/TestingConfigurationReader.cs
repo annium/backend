@@ -9,7 +9,7 @@ namespace Annium.Testing.TestAdapter
         public static TestingConfiguration Read(IDiscoveryContext context)
         {
             var logLevel = GetLogLevel(XElement.Parse(context.RunSettings.SettingsXml).Element("logLevel"));
-            var filter = XElement.Parse(context.RunSettings.SettingsXml).Element("filter")?.Value;
+            var filter = XElement.Parse(context.RunSettings.SettingsXml).Element("filter")?.Value ?? string.Empty;
 
             var loggerConfiguration = new LoggerConfiguration(logLevel);
             var configuration = new TestingConfiguration(loggerConfiguration, filter);

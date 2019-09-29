@@ -37,7 +37,7 @@ namespace Annium.MongoDb.NodaTime.Tests
 
         private class Test
         {
-            public Period Period { get; set; }
+            public Period Period { get; set; } = Period.Zero;
         }
     }
 }

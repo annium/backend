@@ -20,7 +20,7 @@ namespace Annium.Testing.Executors
 
         public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
         {
-            logger.LogTrace($"Start execution of {method.DeclaringType.Name}.{method.Name}");
+            logger.LogTrace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
             var watch = new Stopwatch();
             watch.Start();
@@ -32,7 +32,7 @@ namespace Annium.Testing.Executors
             }
             catch (TargetInvocationException exception)
             {
-                HandleException(method, result, exception.InnerException);
+                HandleException(method, result, exception.InnerException!);
             }
             catch (Exception exception)
             {
@@ -43,7 +43,7 @@ namespace Annium.Testing.Executors
                 watch.Stop();
                 result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
 
-                logger.LogTrace($"Finished execution of {method.DeclaringType.Name}.{method.Name}");
+                logger.LogTrace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Testing.Executors
             result.Outcome = TestOutcome.Failed;
             result.Failure = exception;
 
-            logger.LogTrace($"Failed execution of {method.DeclaringType.Name}.{method.Name}: {exception}");
+            logger.LogTrace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
         }
     }
 }

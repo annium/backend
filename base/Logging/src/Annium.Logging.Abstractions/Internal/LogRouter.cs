@@ -23,7 +23,7 @@ namespace Annium.Logging.Abstractions
             this.getInstant = getInstant;
         }
 
-        public void Send(LogLevel level, Type source, string message, Exception exception)
+        public void Send(LogLevel level, Type source, string message, Exception? exception)
         {
             var instant = getInstant();
             var msg = new LogMessage(instant, level, source, message, exception);
@@ -40,7 +40,7 @@ namespace Annium.Logging.Abstractions
                 if (handlers.TryGetValue(route, out var handler))
                     return handler;
 
-                return handlers[route] = (ILogHandler) provider.GetRequiredService(route.Service.ServiceType);
+                return handlers[route] = (ILogHandler) provider.GetRequiredService(route.Service!.ServiceType);
             }
         }
     }

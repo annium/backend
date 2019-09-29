@@ -35,7 +35,7 @@ namespace Annium.Data.Operations.Serialization
             var result = typeof(Result).GetMethods()
                 .First(m => m.Name == nameof(Result.Status) && m.IsGenericMethod && m.GetGenericArguments().Length == 2)
                 .MakeGenericMethod(statusType, dataType)
-                .Invoke(null, new [] { status, data });
+                .Invoke(null, new [] { status, data })!;
 
             ReadErrors(obj, result);
 

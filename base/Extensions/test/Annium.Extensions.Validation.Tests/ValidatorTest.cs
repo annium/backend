@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Annium.Testing;
 
@@ -7,20 +6,13 @@ namespace Annium.Extensions.Validation.Tests
     public class ValidatorTest : TestBase
     {
         [Fact]
-        public void Field_AccessorIsNull_ThrowsArgumentNullException()
-        {
-            // act
-            ((Func<IValidator<Bad>>) (() => GetValidator<Bad>())).Throws<ArgumentNullException>();
-        }
-
-        [Fact]
         public async Task Validation_NullWithoutLabel_UsesPlainError()
         {
             // arrange
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.ValidateAsync(null);
+            var result = await validator.ValidateAsync(null!);
 
             // assert
             result.HasErrors.IsTrue();
@@ -35,7 +27,7 @@ namespace Annium.Extensions.Validation.Tests
             var validator = GetValidator<Person>();
 
             // act
-            var result = await validator.ValidateAsync(null, "nested");
+            var result = await validator.ValidateAsync(null!, "nested");
 
             // assert
             result.HasErrors.IsTrue();
@@ -91,8 +83,8 @@ namespace Annium.Extensions.Validation.Tests
 
         private class User : IEmail, ILogin
         {
-            public string Email { get; set; }
-            public string Login { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Login { get; set; } = string.Empty;
         }
 
         private interface IEmail
@@ -123,7 +115,7 @@ namespace Annium.Extensions.Validation.Tests
 
         private class Person
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
         }
 
         private class PersonValidator : Validator<Person>
@@ -131,19 +123,6 @@ namespace Annium.Extensions.Validation.Tests
             public PersonValidator()
             {
                 Field(p => p.Name).Required();
-            }
-        }
-
-        private class Bad
-        {
-            public string Name { get; set; }
-        }
-
-        private class BadValidator : Validator<Bad>
-        {
-            public BadValidator()
-            {
-                Field<string>(null).Required();
             }
         }
     }

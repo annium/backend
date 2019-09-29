@@ -43,7 +43,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonConvert.DeserializeObject<IStatusResult<string>>("{}", GetSettings());
 
             // assert
-            result.Status.IsEqual(null);
+            result.Status.IsEqual(null!);
         }
 
         [Fact]
@@ -108,8 +108,8 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonConvert.DeserializeObject<IStatusResult<string, string>>("{}", GetSettings());
 
             // assert
-            result.Status.IsEqual(null);
-            result.Data.IsEqual(null);
+            result.Status.IsEqual(null!);
+            result.Data.IsEqual(null!);
         }
 
         [Fact]

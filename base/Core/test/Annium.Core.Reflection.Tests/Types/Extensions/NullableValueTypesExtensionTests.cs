@@ -9,14 +9,14 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void IsNotNullableValueType_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).IsNotNullableValueType())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.IsNotNullableValueType())).Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void IsNullableValueType_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).IsNullableValueType())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.IsNullableValueType())).Throws<ArgumentNullException>();
         }
 
         [Fact]

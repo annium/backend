@@ -70,7 +70,7 @@ namespace Annium.Core.Reflection.Tests.Types
             var value = new { ForB = 5 };
 
             // assert
-            ((Func<Type>) (() => manager.ResolveBySignature(value, typeof(B), false))).Throws<TypeResolutionException>();
+            ((Func<Type>) (() => manager.ResolveBySignature(value, typeof(B), false) !)).Throws<TypeResolutionException>();
         }
 
         [Fact]
@@ -149,17 +149,22 @@ namespace Annium.Core.Reflection.Tests.Types
         private class D
         {
             [ResolveField]
-            public string Type { get; set; }
+            public string Type { get; }
+
+            protected D(string type)
+            {
+                Type = type;
+            }
         }
 
         [ResolveKey(nameof(E))]
-        private class E : D { }
+        private class E : D { public E() : base(nameof(E)) { } }
 
         [ResolveKey(nameof(F))]
-        private class F : D { }
+        private class F : D { public F() : base(nameof(F)) { } }
 
         [ResolveKey(nameof(F))]
-        private class X : D { }
+        private class X : D { public X() : base(nameof(F)) { } }
 
         private interface IGenericInterface<T1, T2> { }
         private class GenericInterfaceDemoA<T> : IGenericInterface<T, int> { }

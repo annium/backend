@@ -10,6 +10,10 @@ namespace Annium.Testing
 
         public int Line { get; }
 
-        public SkipAttribute([CallerFilePath] string file = "", [CallerLineNumber] int line = 0) { }
+        public SkipAttribute([CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        {
+            File = file;
+            Line = line;
+        }
     }
 }

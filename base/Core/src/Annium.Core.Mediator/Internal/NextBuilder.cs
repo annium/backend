@@ -11,13 +11,13 @@ namespace Annium.Core.Mediator.Internal
     internal class NextBuilder
     {
         private readonly MethodInfo executeAsync = typeof(ChainExecutor)
-            .GetMethod(nameof(ChainExecutor.ExecuteAsync), BindingFlags.Public | BindingFlags.Static);
+            .GetMethod(nameof(ChainExecutor.ExecuteAsync), BindingFlags.Public | BindingFlags.Static)!;
 
-        private readonly MethodInfo getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter));
+        private readonly MethodInfo getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter))!;
 
-        private readonly MethodInfo getResult = typeof(TaskAwaiter<object>).GetMethod(nameof(TaskAwaiter<int>.GetResult));
+        private readonly MethodInfo getResult = typeof(TaskAwaiter<object>).GetMethod(nameof(TaskAwaiter<int>.GetResult))!;
 
-        private readonly MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult));
+        private readonly MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
 
         public Delegate BuildNext(
             Type input,

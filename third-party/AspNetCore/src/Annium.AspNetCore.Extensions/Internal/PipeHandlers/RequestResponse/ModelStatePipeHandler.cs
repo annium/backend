@@ -18,7 +18,7 @@ namespace Annium.AspNetCore.Extensions.Internal.PipeHandlers.RequestResponse
 
         protected override IStatusResult<OperationStatus, TResponse> GetResponse(IStatusResult<OperationStatus> result)
         {
-            return Result.Status(result.Status, default(TResponse)).Join(result);
+            return Result.Status(result.Status, default(TResponse) !).Join(result);
         }
     }
 }

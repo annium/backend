@@ -45,32 +45,32 @@ namespace Annium.Core.Mapper.Tests
         private void ConfigureMapping(MapperConfiguration cfg)
         {
             cfg.Map<A, B>()
-                .Field(e => e.Text.ToLower(), e => e.LowerText)
+                .Field(e => e.Text!.ToLower(), e => e.LowerText!)
                 .Ignore(e => e.Ignored);
             cfg.Map<A, C>()
-                .Field(e => e.Text.ToLower(), c => c.LowerText)
+                .Field(e => e.Text!.ToLower(), c => c.LowerText!)
                 .Ignore(e => e.Ignored);
         }
 
         private class A
         {
-            public string Text { get; set; }
+            public string? Text { get; set; }
         }
 
         private class B
         {
             public int Ignored { get; set; }
 
-            public string LowerText { get; set; }
+            public string? LowerText { get; set; }
         }
 
         private class C
         {
             public int Ignored { get; }
 
-            public string LowerText { get; }
+            public string? LowerText { get; }
 
-            public C(int ignored, string lowerText)
+            public C(int ignored, string? lowerText)
             {
                 Ignored = ignored;
                 LowerText = lowerText;

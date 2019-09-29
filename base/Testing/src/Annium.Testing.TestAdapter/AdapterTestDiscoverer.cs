@@ -17,9 +17,9 @@ namespace Annium.Testing.TestAdapter
     {
         private readonly TestConverter testConverter;
 
-        private TestDiscoverer testDiscoverer;
+        private TestDiscoverer? testDiscoverer;
 
-        private ILogger logger;
+        private ILogger? logger;
 
         public AdapterTestDiscoverer()
         {
@@ -52,9 +52,9 @@ namespace Annium.Testing.TestAdapter
         {
             var assembly = Source.Resolve(source);
 
-            this.logger.LogDebug($"Start discovery of {assembly.FullName}.");
+            logger!.LogDebug($"Start discovery of {assembly.FullName}.");
 
-            return testDiscoverer.FindTestsAsync(
+            return testDiscoverer!.FindTestsAsync(
                 assembly,
                 test => discoverySink.SendTestCase(testConverter.Convert(assembly, test))
             );

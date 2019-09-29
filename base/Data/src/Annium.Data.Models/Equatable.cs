@@ -8,7 +8,7 @@ namespace Annium.Data.Models
 
         public bool Equals(T obj) => GetHashCode() == obj?.GetHashCode();
 
-        public override bool Equals(object obj) => Equals(obj as T);
+        public override bool Equals(object? obj) => Equals((T) obj!);
 
         public static bool operator ==(Equatable<T> a, Equatable<T> b)
         {
@@ -17,7 +17,7 @@ namespace Annium.Data.Models
                 return true;
 
             // If one is null, but not both, return false.
-            if (ReferenceEquals(a, null) || ReferenceEquals(b, null))
+            if (a is null || b is null)
                 return false;
 
             // Return true if the fields match:

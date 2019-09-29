@@ -16,6 +16,7 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Configuration.CommandLine/Annium.Configuration.CommandLine.csproj" />
         <ProjectReference Include="../../src/Annium.Configuration.Json/Annium.Configuration.Json.csproj" />
+        <ProjectReference Include="../Annium.Configuration.Tests/Annium.Configuration.Tests.csproj" />
         <ProjectReference Include="../../src/Annium.Configuration.Yaml/Annium.Configuration.Yaml.csproj" />
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
     </ItemGroup>

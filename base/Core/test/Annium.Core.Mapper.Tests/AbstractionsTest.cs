@@ -40,14 +40,14 @@ namespace Annium.Core.Mapper.Tests
 
         private class LinkPayload : Payload
         {
-            public string Link { get; set; }
+            public string Link { get; set; } = string.Empty;
         }
 
         private abstract class Model { }
 
         private class ImageModel : Model
         {
-            public string Image { get; set; }
+            public string Image { get; set; } = string.Empty;
         }
 
         private class LinkModel : Model

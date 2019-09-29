@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace Annium.Testing
 {
     public static class EnumerableExtensions
     {
-        public static void IsEqual<T>(this IEnumerable<T> value, IEnumerable<T> data, string message = null)
+        public static void IsEqual<T>(this IEnumerable<T> value, IEnumerable<T> data, string message = "")
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -24,10 +25,10 @@ namespace Annium.Testing
                     fail();
 
             void fail() =>
-                throw new AssertionFailedException(message ?? $"{serialize(value)} != {serialize(data)}");
+                throw new AssertionFailedException(string.IsNullOrEmpty(message) ? $"{serialize(value)} != {serialize(data)}" : message);
 
-            string serialize(IEnumerable<T> enumerable) =>
-                $"[{string.Join(", ", enumerable)}]";
+            static string serialize(IEnumerable<T> enumerable) =>
+                JsonSerializer.Serialize(enumerable);
         }
 
         public static T At<T>(this IEnumerable<T> value, int key)

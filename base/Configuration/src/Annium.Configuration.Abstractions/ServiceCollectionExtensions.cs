@@ -31,7 +31,7 @@ namespace Annium.Core.DependencyInjection
                 .ToList();
 
             foreach (var prop in props)
-                Register(services, prop.GetValue(cfg));
+                Register(services, prop.GetValue(cfg)!);
         }
     }
 }

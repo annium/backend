@@ -24,7 +24,7 @@ namespace Annium.Data.Operations.Serialization
             if (string.IsNullOrWhiteSpace(property))
                 throw new ArgumentException("Can't get value by empty property name", nameof(property));
 
-            return obj.GetType().GetProperty(property).GetGetMethod().Invoke(obj, Array.Empty<object>());
+            return obj.GetType().GetProperty(property) !.GetGetMethod() !.Invoke(obj, Array.Empty<object>()) !;
         }
     }
 }

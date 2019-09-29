@@ -78,7 +78,7 @@ namespace Annium.Core.Mapper.Tests
             var result = mapper.Map<E>(value);
 
             // assert
-            result.Inner.Name.IsEqual(value.Inner.Name);
+            result.Inner!.Name.IsEqual(value.Inner!.Name);
             result.Value.IsEqual(value.Value);
         }
 
@@ -102,14 +102,14 @@ namespace Annium.Core.Mapper.Tests
 
         private class A
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
         private class B
         {
-            public string Name { get; }
+            public string? Name { get; }
 
-            public B(string name)
+            public B(string? name)
             {
                 Name = name;
             }
@@ -117,16 +117,16 @@ namespace Annium.Core.Mapper.Tests
 
         private class C
         {
-            public string Name { get; set; }
+            public string? Name { get; set; }
         }
 
         private class D
         {
-            public A Inner { get; }
+            public A? Inner { get; }
 
-            public string Value { get; }
+            public string? Value { get; }
 
-            public D(A inner, string value)
+            public D(A? inner, string? value)
             {
                 Inner = inner;
                 Value = value;
@@ -135,9 +135,9 @@ namespace Annium.Core.Mapper.Tests
 
         private class E
         {
-            public B Inner { get; set; }
+            public B? Inner { get; set; }
 
-            public string Value { get; set; }
+            public string? Value { get; set; }
         }
 
         private class F

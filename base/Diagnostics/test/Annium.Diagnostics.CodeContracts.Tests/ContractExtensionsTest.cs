@@ -9,7 +9,7 @@ namespace Annium.Diagnostics.CodeContracts.Tests
         public void IfNull_ThrowsArgumentNullException()
         {
             // arrange
-            string value = null;
+            string value = null!;
 
             // assert
             ((Action) (() => value.NotNull())).Throws<ArgumentNullException>();

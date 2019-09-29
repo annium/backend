@@ -22,6 +22,7 @@ namespace Annium.Extensions.Shell
         {
             this.cmd = cmd;
             this.logger = logger;
+            startInfo = new ProcessStartInfo();
         }
 
         public IShellInstance Configure(ProcessStartInfo startInfo)
@@ -38,25 +39,26 @@ namespace Annium.Extensions.Shell
             return this;
         }
 
-        public Task<ShellResult> RunAsync(TimeSpan timeout)
+        public async Task<ShellResult> RunAsync(TimeSpan timeout)
         {
-            var token = timeout == TimeSpan.Zero ?
-                CancellationToken.None :
-                new CancellationTokenSource(timeout).Token;
+            if (timeout == TimeSpan.Zero)
+                return await RunAsync(CancellationToken.None);
 
-            return RunAsync(token);
+            using var cts = new CancellationTokenSource(timeout);
+
+            return await RunAsync(cts.Token);
         }
 
-        public Task<ShellResult> RunAsync(CancellationToken token = default(CancellationToken))
+        public Task<ShellResult> RunAsync(CancellationToken token = default)
         {
-            var process = GetProcess();
+            using var process = GetProcess();
 
             return StartProcess(process, token).Task;
         }
 
-        public ShellAsyncResult Start(CancellationToken token = default(CancellationToken))
+        public ShellAsyncResult Start(CancellationToken token = default)
         {
-            var process = GetProcess();
+            using var process = GetProcess();
 
             var result = StartProcess(process, token).Task;
 
@@ -70,9 +72,7 @@ namespace Annium.Extensions.Shell
 
         private Process GetProcess()
         {
-            var process = new Process();
-
-            process.EnableRaisingEvents = true;
+            var process = new Process { EnableRaisingEvents = true };
 
             if (startInfo != null)
                 process.StartInfo = startInfo;

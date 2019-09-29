@@ -18,7 +18,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse
 
         protected override IStatusResult<OperationStatus, TResponse> GetResponse(IResult validationResult)
         {
-            return Result.Status(OperationStatus.BadRequest, default(TResponse)).Join(validationResult);
+            return Result.Status(OperationStatus.BadRequest, default(TResponse)!).Join(validationResult);
         }
     }
 }

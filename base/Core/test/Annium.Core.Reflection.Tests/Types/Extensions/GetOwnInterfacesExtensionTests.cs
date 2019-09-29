@@ -9,7 +9,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void GetOwnInterfaces_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).GetOwnInterfaces())).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.GetOwnInterfaces())).Throws<ArgumentNullException>();
         }
 
         [Fact]

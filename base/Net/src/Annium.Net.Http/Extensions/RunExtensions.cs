@@ -44,7 +44,7 @@ namespace Annium.Net.Http
         {
             var response = await request.RunAsync();
             if (!response.IsSuccessStatusCode)
-                return default(T);
+                return default!;
 
             return parse(await response.Content.ReadAsStringAsync());
 

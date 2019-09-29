@@ -23,14 +23,14 @@ namespace Demo.Core.Mediator
         )
         {
             var mediator = provider.GetRequiredService<IMediator>();
-            var repository = provider.GetRequiredService<TodoRepository>();
+            _ = provider.GetRequiredService<TodoRepository>();
 
             var settings = new JsonSerializerSettings().ConfigureForOperations();
 
             var request = new CreateTodoRequest("wake up");
             var payload = encode(request);
             var result = await mediator.SendAsync<Request<CreateTodoRequest>, Response<IBooleanResult<int>>>(payload, token);
-            var response = decode(result);
+            _ = decode(result);
 
             /*
             emulation:

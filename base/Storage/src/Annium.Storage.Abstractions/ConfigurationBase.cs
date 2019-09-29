@@ -5,6 +5,6 @@ namespace Annium.Storage.Abstractions
     public abstract class ConfigurationBase
     {
         [ResolveField]
-        public string Type { get; set; }
+        public string Type { get; set; } = string.Empty;
     }
 }

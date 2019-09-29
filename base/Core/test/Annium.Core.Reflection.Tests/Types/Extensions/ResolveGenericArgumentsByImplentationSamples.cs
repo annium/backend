@@ -10,8 +10,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsB
     public class ParentOne<T1, T2> : Base<List<T2>, T1, int, IEnumerable<List<T2>>>, IParentOne<T1, T2> where T1 : struct { }
     public class Base<T1, T2, T3, T4> : IBase<T1, T2, T3, T4> where T1 : class where T2 : struct where T4 : IEnumerable<T1> { }
 
-    public class ParentDictionary<T1, T2> : CustomDicitonary<T2, T1> { }
-    public class CustomDicitonary<T1, T2> : Dictionary<T1, T2> { }
+    public class ParentDictionary<T1, T2> : CustomDicitonary<T2, T1> where T2 : notnull { }
+    public class CustomDicitonary<T1, T2> : Dictionary<T1, T2> where T1 : notnull { }
     public class ClassParametered<T> : ClassBase { public T X { get; } public ClassParametered(T x) { X = x; } }
     public class ClassBase { }
 

@@ -11,14 +11,15 @@ namespace Annium.Extensions.Arguments
 
         public override void Process(string command, string[] args, CancellationToken token)
         {
-            if (Root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
+            var root = Root!;
+            if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
             {
-                Console.WriteLine(Root.HelpBuilder.BuildHelp(command, Description, typeof(T1), typeof(T2)));
+                Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, typeof(T1), typeof(T2)));
                 return;
             }
 
-            var cfg1 = Root.ConfigurationBuilder.Build<T1>(args);
-            var cfg2 = Root.ConfigurationBuilder.Build<T2>(args);
+            var cfg1 = root.ConfigurationBuilder.Build<T1>(args);
+            var cfg2 = root.ConfigurationBuilder.Build<T2>(args);
 
             Handle(cfg1, cfg2, token);
         }

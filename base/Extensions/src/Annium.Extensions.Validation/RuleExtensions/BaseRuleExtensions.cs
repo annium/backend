@@ -9,203 +9,203 @@ namespace Annium.Extensions.Validation
     {
         public static IRuleBuilder<TValue, string> Required<TValue>(
             this IRuleBuilder<TValue, string> rule,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (string.IsNullOrWhiteSpace(value))
-                context.Error(message ?? "Value is required");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is required" : message);
         });
 
         public static IRuleBuilder<TValue, TField?> Required<TValue, TField>(
             this IRuleBuilder<TValue, TField?> rule,
-            string message = null
+            string message = ""
         ) where TField : struct => rule.Add((context, value) =>
         {
             if (value.HasValue && Equals(value, default(TField)))
-                context.Error(message ?? "Value is required");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is required" : message);
         });
 
         public static IRuleBuilder<TValue, TField> Required<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
-            if (Equals(value, default(TField)))
-                context.Error(message ?? "Value is required");
+            if (Equals(value, default !))
+                context.Error(string.IsNullOrEmpty(message) ? "Value is required" : message);
         });
 
         public static IRuleBuilder<TValue, TField> Equal<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField target,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (!Equals(value, target))
-                context.Error(message ?? "Value is not equal to given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is not equal to given" : message);
         });
 
         public static IRuleBuilder<TValue, TField> In<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             IEnumerable<TField> targets,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (!targets.Any(target => Equals(value, target)))
-                context.Error(message ?? "Value is not in given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is not in given" : message);
         });
 
         public static IRuleBuilder<TValue, TField> Equal<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             Func<TValue, TField> target,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (!Equals(value, target(context.Root)))
-                context.Error(message ?? "Value is not equal to given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is not equal to given" : message);
         });
 
         public static IRuleBuilder<TValue, TField> NotEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField target,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (Equals(value, target))
-                context.Error(message ?? "Value is equal to given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is equal to given" : message);
         });
 
         public static IRuleBuilder<TValue, TField> NotIn<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             IEnumerable<TField> targets,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (targets.Any(target => Equals(value, target)))
-                context.Error(message ?? "Value is in given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is in given" : message);
         });
 
         public static IRuleBuilder<TValue, TField> NotEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             Func<TValue, TField> target,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (Equals(value, target(context.Root)))
-                context.Error(message ?? "Value is equal to given");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is equal to given" : message);
         });
 
         public static IRuleBuilder<TValue, string> Length<TValue>(
             this IRuleBuilder<TValue, string> rule,
             int minLength,
             int maxLength,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (value?.Length < minLength)
-                context.Error(message ?? "Value length is less, than {0}", minLength);
+                context.Error(string.IsNullOrEmpty(message) ? "Value length is less, than {0}" : message, minLength);
 
             if (value?.Length > maxLength)
-                context.Error(message ?? "Value length is greater, than {0}", maxLength);
+                context.Error(string.IsNullOrEmpty(message) ? "Value length is greater, than {0}" : message, maxLength);
         });
 
         public static IRuleBuilder<TValue, string> MinLength<TValue>(
             this IRuleBuilder<TValue, string> rule,
             int minLength,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (value?.Length < minLength)
-                context.Error(message ?? "Value length is less, than {0}", minLength);
+                context.Error(string.IsNullOrEmpty(message) ? "Value length is less, than {0}" : message, minLength);
         });
 
         public static IRuleBuilder<TValue, string> MaxLength<TValue>(
             this IRuleBuilder<TValue, string> rule,
             int maxLength,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             if (value?.Length > maxLength)
-                context.Error(message ?? "Value length is greater, than {0}", maxLength);
+                context.Error(string.IsNullOrEmpty(message) ? "Value length is greater, than {0}" : message, maxLength);
         });
 
         public static IRuleBuilder<TValue, TField> Between<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField min,
             TField max,
-            string message = null
+            string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
             if (value?.CompareTo(min) == -1)
-                context.Error(message ?? "Value is less, than given minimum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is less, than given minimum" : message);
 
             if (value?.CompareTo(max) == 1)
-                context.Error(message ?? "Value is greater, than given maximum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is greater, than given maximum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> LessThan<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField min,
-            string message = null
+            string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
             if (value?.CompareTo(min) >= 0)
-                context.Error(message ?? "Value is greater, than given maximum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is greater, than given maximum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> LessThanOrEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField min,
-            string message = null
+            string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
             if (value?.CompareTo(min) > 0)
-                context.Error(message ?? "Value is greater, than given maximum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is greater, than given maximum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> GreaterThan<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField max,
-            string message = null
+            string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
             if (value?.CompareTo(max) <= 0)
-                context.Error(message ?? "Value is less, than given minimum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is less, than given minimum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> GreaterThanOrEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
             TField max,
-            string message = null
+            string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
             if (value?.CompareTo(max) < 0)
-                context.Error(message ?? "Value is less, than given minimum");
+                context.Error(string.IsNullOrEmpty(message) ? "Value is less, than given minimum" : message);
         });
 
         public static IRuleBuilder<TValue, string> Matches<TValue>(
             this IRuleBuilder<TValue, string> rule,
             string regex,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             var re = new Regex(regex, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
             if (value != null && !re.IsMatch(value))
-                context.Error(message ?? "Value doesn't match specified regex");
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
         });
 
         public static IRuleBuilder<TValue, string> Email<TValue>(
             this IRuleBuilder<TValue, string> rule,
-            string message = null
+            string message = ""
         ) => rule.Add((context, value) =>
         {
             var index = value?.IndexOf('@') ?? -1;
-            if (index < 1 || index >= value.Length - 1)
-                context.Error(message ?? "Value is not an email");
+            if (index < 1 || index >= value!.Length - 1)
+                context.Error(string.IsNullOrEmpty(message) ? "Value is not an email" : message);
         });
 
         public static IRuleBuilder<TValue, TField> Enum<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            string message = null
+            string message = ""
         )
         {
             var type = typeof(TField);
@@ -214,8 +214,8 @@ namespace Annium.Extensions.Validation
 
             return rule.Add((context, value) =>
             {
-                if (!System.Enum.IsDefined(type, value))
-                    context.Error(message ?? "Value is not in expected range");
+                if (!System.Enum.IsDefined(type, value!))
+                    context.Error(string.IsNullOrEmpty(message) ? "Value is not in expected range" : message);
             });
         }
 

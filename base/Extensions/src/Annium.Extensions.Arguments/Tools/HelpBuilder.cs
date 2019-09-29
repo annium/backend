@@ -57,7 +57,7 @@ namespace Annium.Extensions.Arguments
             if (options.Count > 0)
                 foreach (var(option, (optionAlias, isRequired, type)) in options)
                 {
-                    var optionView = optionAlias == null ? Option(option) : $"{Option(optionAlias)}|{Option(option)}";
+                    var optionView = optionAlias is null ? Option(option) : $"{Option(optionAlias)}|{Option(option)}";
                     var optionUsage = Usage(option, true);
 
                     switch (type)
@@ -131,14 +131,14 @@ namespace Annium.Extensions.Arguments
                 e => e.attribute.IsRequired
             );
 
-        private IReadOnlyDictionary<string, ValueTuple<string, bool, OptionType>> GetOptions(Type[] types) => types
+        private IReadOnlyDictionary<string, ValueTuple<string?, bool, OptionType>> GetOptions(Type[] types) => types
             .SelectMany(t => configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(t))
             .OrderBy(e => e.attribute.IsRequired)
             .ThenBy(e => e.property.Name)
             .ToDictionary(
                 e => e.property.Name.KebabCase(),
                 e => (
-                    e.attribute.Alias == null ? null : e.attribute.Alias.KebabCase(),
+                    e.attribute.Alias?.KebabCase(),
                     e.attribute.IsRequired,
                     e.property.PropertyType.IsArray ? OptionType.Multi : (
                         e.property.PropertyType == typeof(bool) ? OptionType.Flag : OptionType.Normal

@@ -20,9 +20,6 @@ namespace Annium.Extensions.Composition
             Expression<Func<TValue, TField>> targetAccessor
         )
         {
-            if (targetAccessor is null)
-                throw new ArgumentNullException(nameof(targetAccessor));
-
             var target = TypeHelper.ResolveProperty(targetAccessor);
             var targetSetter = target.GetSetMethod(nonPublic: true) ??
                 throw new ArgumentException("Target property has no setter", nameof(targetAccessor));

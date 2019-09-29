@@ -34,7 +34,7 @@ namespace Demo.Core.Mediator.Handlers
             catch (Exception exception)
             {
                 logger.Trace($"Request {typeof(TRequest).Name} failed with {exception}");
-                return Result.Failure<TResponse>(default(TResponse)).Error(exception.Message);
+                return Result.Failure(default(TResponse) !).Error(exception.Message);
             }
         }
     }

@@ -17,13 +17,15 @@ namespace Annium.Testing.TestAdapter
 
         public TestCase Convert(Assembly assembly, Test test)
         {
-            var testCase = new TestCase();
-            testCase.ExecutorUri = executorUri;
-            testCase.Source = assembly.FullName;
-            testCase.CodeFilePath = test.File;
-            testCase.LineNumber = test.Line;
-            testCase.FullyQualifiedName = test.FullyQualifiedName;
-            testCase.DisplayName = test.DisplayName;
+            var testCase = new TestCase
+            {
+                ExecutorUri = executorUri,
+                Source = assembly.FullName,
+                CodeFilePath = test.File,
+                LineNumber = test.Line,
+                FullyQualifiedName = test.FullyQualifiedName,
+                DisplayName = test.DisplayName
+            };
 
             return testCase;
         }
@@ -32,9 +34,10 @@ namespace Annium.Testing.TestAdapter
         {
             var fqn = test.FullyQualifiedName.Split('.');
             var type = string.Join('.', fqn.SkipLast(1));
-            var name = fqn[fqn.Length - 1];
+            var name = fqn[ ^ 1];
 
-            var method = assembly.GetType(type).GetMethod(name);
+            var method = assembly.GetType(type)?.GetMethod(name) ??
+                throw new InvalidOperationException($"Failed to resolve {type}.{name} method");
 
             return new Test(method);
         }

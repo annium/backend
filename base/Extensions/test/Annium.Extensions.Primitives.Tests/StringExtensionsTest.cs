@@ -8,7 +8,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void IsNullOrEmpty_WorksCorrectly()
         {
-            (null as string).IsNullOrEmpty().IsTrue();
             "".IsNullOrEmpty().IsTrue();
             " ".IsNullOrEmpty().IsFalse();
         }
@@ -16,7 +15,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void IsNullOrWhiteSpace_WorksCorrectly()
         {
-            (null as string).IsNullOrWhiteSpace().IsTrue();
             "".IsNullOrWhiteSpace().IsTrue();
             " ".IsNullOrWhiteSpace().IsTrue();
         }
@@ -24,7 +22,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void UpperFirst_WorksCorrectly()
         {
-            (null as string).UpperFirst().IsEqual(null);
             "".UpperFirst().IsEqual(string.Empty);
             " ".UpperFirst().IsEqual(string.Empty);
             " ab ".UpperFirst().IsEqual("Ab");
@@ -34,7 +31,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void LowerFirst_WorksCorrectly()
         {
-            (null as string).LowerFirst().IsEqual(null);
             "".LowerFirst().IsEqual(string.Empty);
             " ".LowerFirst().IsEqual(string.Empty);
             " AB ".LowerFirst().IsEqual("aB");
@@ -44,7 +40,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void PascalCase_WorksCorrectly()
         {
-            (null as string).PascalCase().IsEqual(null);
             "".PascalCase().IsEqual(string.Empty);
             " ".PascalCase().IsEqual(string.Empty);
             "0".PascalCase().IsEqual("0");
@@ -60,7 +55,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void CamelCase_WorksCorrectly()
         {
-            (null as string).CamelCase().IsEqual(null);
             "".CamelCase().IsEqual(string.Empty);
             " ".CamelCase().IsEqual(string.Empty);
             "A B".CamelCase().IsEqual("aB");
@@ -75,7 +69,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void KebabCase_WorksCorrectly()
         {
-            (null as string).KebabCase().IsEqual(null);
             "".KebabCase().IsEqual(string.Empty);
             " ".KebabCase().IsEqual(string.Empty);
             "A B".KebabCase().IsEqual("a-b");
@@ -90,7 +83,6 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void SnakeCase_WorksCorrectly()
         {
-            (null as string).SnakeCase().IsEqual(null);
             "".SnakeCase().IsEqual(string.Empty);
             " ".SnakeCase().IsEqual(string.Empty);
             "A B".SnakeCase().IsEqual("a_b");
@@ -105,14 +97,13 @@ namespace Annium.Extensions.Primitives.Tests
         [Fact]
         public void ToWords_WorksCorrectly()
         {
-            (null as string).ToWords().Has(0);
+            "".ToWords().Has(0);
         }
 
         [Fact]
         public void Repeat_WorksCorrectly()
         {
             // assert
-            (null as string).Repeat(2).IsDefault();
             "demo".Repeat(-2).IsEqual("demo");
             "demo".Repeat(2).IsEqual("demodemo");
         }
@@ -121,15 +112,14 @@ namespace Annium.Extensions.Primitives.Tests
         public void FromHexStringToByteArray_Null_ThrowsArgumentNullOrReturnsFalse()
         {
             // arrange
-            string str = null;
+            var str = string.Empty;
 
             // act
             var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
 
             // assert
-            ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<ArgumentNullException>();
             tryResult.IsFalse();
-            byteArray.IsDefault();
+            byteArray.IsEmpty();
         }
 
         [Fact]
@@ -144,7 +134,7 @@ namespace Annium.Extensions.Primitives.Tests
             // assert
             ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<FormatException>();
             tryResult.IsFalse();
-            byteArray.IsDefault();
+            byteArray.IsEmpty();
         }
 
         [Fact]
@@ -163,8 +153,8 @@ namespace Annium.Extensions.Primitives.Tests
             ((Func<byte[]>) (() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
             tryResult1.IsFalse();
             tryResult2.IsFalse();
-            byteArray1.IsDefault();
-            byteArray2.IsDefault();
+            byteArray1.IsEmpty();
+            byteArray2.IsEmpty();
         }
 
         [Fact]

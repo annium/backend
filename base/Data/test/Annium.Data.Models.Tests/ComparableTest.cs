@@ -13,12 +13,10 @@ namespace Annium.Data.Models.Tests
             var a = new Money(1, 1);
             var b = new Money(1, 2);
             var c = new Money(2, 1);
-            Action deniedObjectNull = () => a.CompareTo(null as object);
             Action deniedObjectOther = () => a.CompareTo(10);
 
             // assert
-            a.CompareTo(null as Money).IsEqual(1);
-            deniedObjectNull.Throws<ArgumentException>();
+            a.CompareTo((null as Money) !).IsEqual(1);
             deniedObjectOther.Throws<ArgumentException>();
             a.CompareTo(a as object).IsEqual(0);
             a.CompareTo(b as object).IsEqual(-1);
@@ -42,23 +40,23 @@ namespace Annium.Data.Models.Tests
             new [] { a, b, c, null }.Max().IsEqual(c);
             // reference comparison
             (a > d).IsFalse();
-            ((null as Money) <= (null as Money)).IsTrue();
+            ((null as Money) ! <= (null as Money) !).IsTrue();
             // >
             (a > b).IsFalse();
-            (null > a).IsFalse();
-            (a > null).IsTrue();
+            (null! > a).IsFalse();
+            (a > null!).IsTrue();
             // <
             (a < b).IsTrue();
-            (null < a).IsTrue();
-            (a < null).IsFalse();
+            (null! < a).IsTrue();
+            (a < null!).IsFalse();
             // >=
             (a >= b).IsFalse();
-            (null >= a).IsFalse();
-            (a >= null).IsTrue();
+            (null! >= a).IsFalse();
+            (a >= null!).IsTrue();
             // <=
             (a <= b).IsTrue();
-            (null <= a).IsTrue();
-            (a <= null).IsFalse();
+            (null! <= a).IsTrue();
+            (a <= null!).IsFalse();
         }
     }
 }

@@ -8,10 +8,10 @@ namespace Annium.Core.Reflection
     public static class GetTargetImplementationExtension
     {
         // Get base of given concrete type, that implements target type, that may contain generic parameters
-        public static Type GetTargetImplementation(this Type type, Type target) =>
+        public static Type? GetTargetImplementation(this Type type, Type target) =>
             type.GetTargetImplementation(target, new HashSet<Type>());
 
-        private static Type GetTargetImplementation(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetTargetImplementation(this Type type, Type target, HashSet<Type> genericParameters)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -35,7 +35,7 @@ namespace Annium.Core.Reflection
             // - type is concrete type (no generic parameters)
             // - target is open type with generic parameters
 
-            Type implementation;
+            Type? implementation;
             if (type.IsClass)
                 implementation = type.GetClassImplementationOfTarget(target, genericParameters);
             else if (type.IsValueType)
@@ -52,7 +52,7 @@ namespace Annium.Core.Reflection
             return implementation.IsAssignableFrom(type) ? implementation : null;
         }
 
-        private static Type GetClassImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetClassImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
         {
             if (target.IsGenericParameter)
                 return type.GetClassImplementationOfGenericParameter(target, genericParameters);
@@ -66,7 +66,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type GetStructImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetStructImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
         {
             if (target.IsGenericParameter)
                 return type.GetStructImplementationOfGenericParameter(target, genericParameters);
@@ -80,7 +80,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type GetInterfaceImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetInterfaceImplementationOfTarget(this Type type, Type target, HashSet<Type> genericParameters)
         {
             if (target.IsGenericParameter)
                 return type.GetInterfaceImplementationOfGenericParameter(target, genericParameters);
@@ -94,7 +94,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type GetClassImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetClassImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
         {
             genericParameters.Add(target);
 
@@ -114,7 +114,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type : null;
         }
 
-        private static Type GetClassImplementationOfClass(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetClassImplementationOfClass(this Type type, Type target, HashSet<Type> genericParameters)
         {
             // special handling for array types (array is not generic type, but can contain generic parameters)
             if (target.IsArray)
@@ -122,13 +122,13 @@ namespace Annium.Core.Reflection
                 if (!type.IsArray)
                     return null;
 
-                var elementImplementation = type.GetElementType().GetTargetImplementation(target.GetElementType(), genericParameters);
+                var elementImplementation = type.GetElementType()!.GetTargetImplementation(target.GetElementType()!, genericParameters);
 
                 return elementImplementation?.MakeArrayType();
             }
 
             var targetBase = target.GetGenericTypeDefinition();
-            var implementation = type;
+            Type? implementation = type;
 
             // go deep in inheritance, until targetBase implementation found
             while (implementation != null)
@@ -145,7 +145,7 @@ namespace Annium.Core.Reflection
             return BuildImplementation(implementation, target, genericParameters);
         }
 
-        private static Type GetClassImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetClassImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
         {
             var targetBase = target.GetGenericTypeDefinition();
             var implementation = type.GetInterfaces()
@@ -157,7 +157,7 @@ namespace Annium.Core.Reflection
             return BuildImplementation(implementation, target, genericParameters);
         }
 
-        private static Type GetStructImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetStructImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
         {
             genericParameters.Add(target);
 
@@ -181,7 +181,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type : null;
         }
 
-        private static Type GetStructImplementationOfStruct(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetStructImplementationOfStruct(this Type type, Type target, HashSet<Type> genericParameters)
         {
             if (!type.IsGenericType || type.GetGenericTypeDefinition() != target.GetGenericTypeDefinition())
                 return null;
@@ -189,7 +189,7 @@ namespace Annium.Core.Reflection
             return BuildImplementation(type, target, genericParameters);
         }
 
-        private static Type GetStructImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetStructImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
         {
             var targetBase = target.GetGenericTypeDefinition();
             var implementation = type.GetInterfaces()
@@ -201,7 +201,7 @@ namespace Annium.Core.Reflection
             return BuildImplementation(implementation, target, genericParameters);
         }
 
-        private static Type GetInterfaceImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetInterfaceImplementationOfGenericParameter(this Type type, Type target, HashSet<Type> genericParameters)
         {
             genericParameters.Add(target);
 
@@ -221,7 +221,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type : null;
         }
 
-        private static Type GetInterfaceImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
+        private static Type? GetInterfaceImplementationOfInterface(this Type type, Type target, HashSet<Type> genericParameters)
         {
             var targetBase = target.GetGenericTypeDefinition();
             var implementation = type.GetInterfaces().Append(type)
@@ -246,7 +246,7 @@ namespace Annium.Core.Reflection
         ///     implementation target
         /// </param>
         /// <returns></returns>
-        private static Type BuildImplementation(Type implementation, Type target, HashSet<Type> genericParameters)
+        private static Type? BuildImplementation(Type implementation, Type target, HashSet<Type> genericParameters)
         {
             if (target.IsGenericTypeDefinition)
                 return implementation;
@@ -266,7 +266,7 @@ namespace Annium.Core.Reflection
             if (args.Any(arg => arg is null))
                 return null;
 
-            if (!target.GetGenericTypeDefinition().TryMakeGenericType(out var result, args))
+            if (!target.GetGenericTypeDefinition().TryMakeGenericType(out var result, args!))
                 return null;
 
             return result;

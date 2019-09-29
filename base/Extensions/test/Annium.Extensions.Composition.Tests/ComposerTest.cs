@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Annium.Testing;
 
@@ -7,20 +6,13 @@ namespace Annium.Extensions.Composition.Tests
     public class ComposerTest : TestBase
     {
         [Fact]
-        public void Field_AccessorIsNull_ThrowsArgumentNullException()
-        {
-            // act
-            ((Func<IComposer<Bad>>) (() => GetComposer<Bad>())).Throws<ArgumentNullException>();
-        }
-
-        [Fact]
         public async Task Composition_NullWithoutLabel_UsesPlainError()
         {
             // arrange
             var composer = GetComposer<Person>();
 
             // act
-            var result = await composer.ComposeAsync(null);
+            var result = await composer.ComposeAsync(null!);
 
             // assert
             result.HasErrors.IsTrue();
@@ -35,7 +27,7 @@ namespace Annium.Extensions.Composition.Tests
             var composer = GetComposer<Person>();
 
             // act
-            var result = await composer.ComposeAsync(null, "nested");
+            var result = await composer.ComposeAsync(null!, "nested");
 
             // assert
             result.HasErrors.IsTrue();
@@ -76,8 +68,8 @@ namespace Annium.Extensions.Composition.Tests
 
         private class User : IEmail, ILogin
         {
-            public string Email { get; set; }
-            public string Login { get; set; }
+            public string Email { get; set; } = string.Empty;
+            public string Login { get; set; } = string.Empty;
         }
 
         private interface IEmail
@@ -108,7 +100,7 @@ namespace Annium.Extensions.Composition.Tests
 
         private class Person
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
         }
 
         private class PersonComposer : Composer<Person>
@@ -121,15 +113,7 @@ namespace Annium.Extensions.Composition.Tests
 
         private class Bad
         {
-            public string Name { get; set; }
-        }
-
-        private class BadComposer : Composer<Bad>
-        {
-            public BadComposer()
-            {
-                Field<string>(null).LoadWith(ctx => ctx.Label);
-            }
+            public string Name { get; set; } = string.Empty;
         }
     }
 }

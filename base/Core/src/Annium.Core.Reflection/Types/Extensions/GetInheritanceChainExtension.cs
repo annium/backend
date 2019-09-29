@@ -30,10 +30,10 @@ namespace Annium.Core.Reflection
             if (type.IsClass)
             {
                 if (type.BaseType != null)
-                    while (type.BaseType != typeof(object))
+                    while (type!.BaseType != typeof(object))
                     {
-                        chain.Add(type.BaseType);
-                        type = type.BaseType;
+                        chain.Add(type!.BaseType!);
+                        type = type.BaseType!;
                     }
 
                 if (root)

@@ -7,7 +7,7 @@ namespace Annium.Logging.Abstractions
     public class LogRoute
     {
         internal Func<LogMessage, bool> Filter { get; private set; } = m => true;
-        internal ServiceDescriptor Service { get; private set; }
+        internal ServiceDescriptor? Service { get; private set; }
         private readonly Action<LogRoute> registerRoute;
 
         internal LogRoute(Action<LogRoute> registerRoute)

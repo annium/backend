@@ -5,7 +5,7 @@ namespace Annium.Core.Reflection
 {
     public static class GetUnboundBaseTypeExtension
     {
-        public static Type GetUnboundBaseType(this Type type)
+        public static Type? GetUnboundBaseType(this Type type)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));

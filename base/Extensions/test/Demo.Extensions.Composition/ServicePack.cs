@@ -16,8 +16,8 @@ namespace Demo.Extensions.Composition
 
     internal class User : IEmail, ILogin
     {
-        public string Email { get; set; }
-        public string Login { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Login { get; set; } = string.Empty;
     }
 
     internal interface IEmail

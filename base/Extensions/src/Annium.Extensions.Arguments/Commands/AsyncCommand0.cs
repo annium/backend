@@ -10,9 +10,10 @@ namespace Annium.Extensions.Arguments
 
         public override void Process(string command, string[] args, CancellationToken token)
         {
-            if (Root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
+            var root = Root!;
+            if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
             {
-                Console.WriteLine(Root.HelpBuilder.BuildHelp(command, Description));
+                Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description));
                 return;
             }
 

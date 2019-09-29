@@ -39,7 +39,7 @@ namespace Annium.Core.Mapper
 
     public class Map
     {
-        internal LambdaExpression Type { get; set; }
+        internal LambdaExpression? Type { get; set; }
 
         internal IReadOnlyDictionary<PropertyInfo, LambdaExpression> Fields => fields;
 

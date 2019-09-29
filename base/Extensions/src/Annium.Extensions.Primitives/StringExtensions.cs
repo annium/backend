@@ -33,7 +33,7 @@ namespace Annium.Extensions.Primitives
         {
             return Compound(value, pascalCase);
 
-            string pascalCase(string result, string word) =>
+            static string pascalCase(string result, string word) =>
                 result + word.ToLowerInvariant().UpperFirst();
         }
 
@@ -41,7 +41,7 @@ namespace Annium.Extensions.Primitives
         {
             return Compound(value, camelCase);
 
-            string camelCase(string result, string word) =>
+            static string camelCase(string result, string word) =>
                 result + (result == string.Empty ? word.ToLowerInvariant().LowerFirst() : word.ToLowerInvariant().UpperFirst());
         }
 
@@ -49,7 +49,7 @@ namespace Annium.Extensions.Primitives
         {
             return Compound(value, kebabCase);
 
-            string kebabCase(string result, string word) =>
+            static string kebabCase(string result, string word) =>
                 result + (result == string.Empty ? string.Empty : "-") + word.ToLowerInvariant();
         }
 
@@ -57,7 +57,7 @@ namespace Annium.Extensions.Primitives
         {
             return Compound(value, snakeCase);
 
-            string snakeCase(string result, string word) =>
+            static string snakeCase(string result, string word) =>
                 result + (result == string.Empty ? string.Empty : "_") + word.ToLowerInvariant();
         }
 
@@ -122,7 +122,7 @@ namespace Annium.Extensions.Primitives
             string end(int i, Symbol s)
             {
                 pos = s;
-                var result = value.Substring(from, i - from);
+                var result = value[from..i];
                 from = i;
 
                 return result;
@@ -131,9 +131,6 @@ namespace Annium.Extensions.Primitives
 
         public static byte[] FromHexStringToByteArray(this string str)
         {
-            if (str is null)
-                throw new ArgumentNullException(nameof(str));
-
             if (str.Length % 2 != 0)
                 throw new FormatException("Hex string must contain even chars count");
 
@@ -158,9 +155,9 @@ namespace Annium.Extensions.Primitives
 
         public static bool TryFromHexStringToByteArray(this string str, out byte[] byteArray)
         {
-            byteArray = null;
+            byteArray = Array.Empty<byte>();
 
-            if (str is null || str.Length % 2 != 0)
+            if (string.IsNullOrEmpty(str) || str.Length % 2 != 0)
                 return false;
 
             var lookup = hexLookup;
@@ -189,7 +186,7 @@ namespace Annium.Extensions.Primitives
             return ToWords(value).Aggregate(string.Empty, callback);
         }
 
-        private static string Preprocess(string value) => value?.Trim();
+        private static string Preprocess(string value) => value?.Trim() ?? string.Empty;
 
         private static Symbol GetSymbol(char c)
         {
@@ -201,32 +198,31 @@ namespace Annium.Extensions.Primitives
 
         private static IReadOnlyDictionary<char, byte> CreateHexLookup()
         {
-            var result = new Dictionary<char, byte>();
-
-            result['0'] = 0;
-            result['1'] = 1;
-            result['2'] = 2;
-            result['3'] = 3;
-            result['4'] = 4;
-            result['5'] = 5;
-            result['6'] = 6;
-            result['7'] = 7;
-            result['8'] = 8;
-            result['9'] = 9;
-            result['A'] = 10;
-            result['B'] = 11;
-            result['C'] = 12;
-            result['D'] = 13;
-            result['E'] = 14;
-            result['F'] = 15;
-            result['a'] = 10;
-            result['b'] = 11;
-            result['c'] = 12;
-            result['d'] = 13;
-            result['e'] = 14;
-            result['f'] = 15;
-
-            return result;
+            return new Dictionary<char, byte>
+            {
+                ['0'] = 0,
+                ['1'] = 1,
+                ['2'] = 2,
+                ['3'] = 3,
+                ['4'] = 4,
+                ['5'] = 5,
+                ['6'] = 6,
+                ['7'] = 7,
+                ['8'] = 8,
+                ['9'] = 9,
+                ['A'] = 10,
+                ['B'] = 11,
+                ['C'] = 12,
+                ['D'] = 13,
+                ['E'] = 14,
+                ['F'] = 15,
+                ['a'] = 10,
+                ['b'] = 11,
+                ['c'] = 12,
+                ['d'] = 13,
+                ['e'] = 14,
+                ['f'] = 15
+            };
         }
 
         private enum Symbol

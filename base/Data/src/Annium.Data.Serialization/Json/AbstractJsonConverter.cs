@@ -22,7 +22,7 @@ namespace Annium.Data.Serialization.Json
             var obj = JObject.Load(reader);
             objectType = getRealType(obj, objectType);
 
-            existingValue = Activator.CreateInstance(objectType);
+            existingValue = Activator.CreateInstance(objectType) !;
             serializer.Populate(obj.CreateReader(), existingValue);
 
             return existingValue;
@@ -35,7 +35,7 @@ namespace Annium.Data.Serialization.Json
         {
             var properties = obj.Properties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray();
 
-            return TypeManager.Instance.ResolveBySignature(properties, objectType, true);
+            return TypeManager.Instance.ResolveBySignature(properties, objectType, true) !;
         }
     }
 }

@@ -12,7 +12,8 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void Configure_NullSettings_Throws()
         {
             // arrange
-            Action configure = (() => (null as JsonSerializerSettings).ConfigureForOperations());
+            JsonSerializerSettings? settings = null;
+            Action configure = () => settings!.ConfigureForOperations();
 
             // assert
             configure.Throws<ArgumentNullException>();

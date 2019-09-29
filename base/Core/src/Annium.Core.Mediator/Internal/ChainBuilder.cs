@@ -36,7 +36,7 @@ namespace Annium.Core.Mediator.Internal
             {
                 logger.Trace($"Find chain element for {input} -> {output}");
 
-                Type service = null;
+                Type? service = null;
 
                 foreach (var handler in handlers.ToArray())
                 {
@@ -82,7 +82,7 @@ namespace Annium.Core.Mediator.Internal
 
             return chain;
 
-            Type resolveHandler(Handler handler)
+            Type? resolveHandler(Handler handler)
             {
                 var requestIn = input.GetTargetImplementation(handler.RequestIn);
                 // var responseOut = handler.ResponseOut.ResolveByImplentations(output);

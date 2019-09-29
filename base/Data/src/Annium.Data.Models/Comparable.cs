@@ -7,11 +7,11 @@ namespace Annium.Data.Models
     {
         public int CompareTo(T other)
         {
-            if (other == null) return 1;
+            if (other is null) return 1;
 
             foreach (var accessor in GetComparables())
             {
-                var value = Compare(accessor(this as T), accessor(other));
+                var value = Compare(accessor((T) this), accessor(other));
                 if (value != 0)
                     return value;
             }
@@ -19,7 +19,7 @@ namespace Annium.Data.Models
             return 0;
         }
 
-        public int CompareTo(object obj)
+        public int CompareTo(object? obj)
         {
             if (obj is T other)
                 return CompareTo(other);
@@ -40,8 +40,8 @@ namespace Annium.Data.Models
         private static int Compare(IComparable a, IComparable b)
         {
             if (ReferenceEquals(a, b)) return 0;
-            if (ReferenceEquals(a, null)) return -1;
-            if (ReferenceEquals(b, null)) return 1;
+            if (a is null) return -1;
+            if (b is null) return 1;
 
             return a.CompareTo(b);
         }

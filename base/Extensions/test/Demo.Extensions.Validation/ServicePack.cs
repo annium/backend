@@ -15,8 +15,8 @@ namespace Demo.Extensions.Validation
 
     internal class User : IEmail, ILogin
     {
-        public string Email { get; set; }
-        public string Login { get; set; }
+        public string Email { get; set; } = string.Empty;
+        public string Login { get; set; } = string.Empty;
     }
 
     internal interface IEmail
@@ -47,7 +47,7 @@ namespace Demo.Extensions.Validation
 
     internal class A
     {
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
     }
 
     internal class AValidator : Validator<A>

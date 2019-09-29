@@ -166,8 +166,8 @@ namespace Annium.Core.Mediator.Tests
             {
                 logger.Trace($"Start {typeof(TRequest).Name} validation");
                 var result = validate(request) ?
-                    Result.Success(default(TResponse)) :
-                    Result.Failure(default(TResponse)).Error("Validation failed");
+                    Result.Success(default(TResponse) !) :
+                    Result.Failure(default(TResponse) !).Error("Validation failed");
                 logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
@@ -196,10 +196,10 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken cancellationToken
             )
             {
-                logger.Info(this.GetType().FullName);
+                logger.Info(GetType().FullName!);
                 logger.Info(request.GetHashCode().ToString());
 
-                var response = new TResponse() { Value = request.Value.Replace(' ', '_') };
+                var response = new TResponse() { Value = request.Value!.Replace(' ', '_') };
 
                 return Task.FromResult(response);
             }
@@ -221,26 +221,26 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken cancellationToken
             )
             {
-                logger.Info(this.GetType().FullName);
+                logger.Info(GetType().FullName!);
                 logger.Info(request.GetHashCode().ToString());
 
-                return Task.FromResult(new One() { First = request.Value.Length, Value = request.Value });
+                return Task.FromResult(new One() { First = request.Value!.Length, Value = request.Value });
             }
         }
 
         private class Authored<T>
         {
             public int AuthorId { get; set; }
-            public T Entity { get; set; }
+            public T Entity { get; set; } = default !;
 
-            public override int GetHashCode() => 13 * AuthorId.GetHashCode() + Entity.GetHashCode();
+            public override int GetHashCode() => 13 * AuthorId.GetHashCode() + Entity!.GetHashCode();
         }
 
         private class Base
         {
-            public string Value { get; set; }
+            public string? Value { get; set; }
 
-            public override int GetHashCode() => Value.GetHashCode();
+            public override int GetHashCode() => Value!.GetHashCode();
         }
 
         private class One : Base

@@ -13,10 +13,10 @@ namespace Annium.Extensions.Composition
 {
     internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : class
     {
-        private static Type[] composerSets = typeof(TValue).GetInheritanceChain(self: true, root: false)
-        .Concat(typeof(TValue).GetInterfaces())
-        .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(ICompositionContainer<>).MakeGenericType(t)))
-        .ToArray();
+        private static readonly Type[] composerSets = typeof(TValue).GetInheritanceChain(self: true, root: false)
+            .Concat(typeof(TValue).GetInterfaces())
+            .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(ICompositionContainer<>).MakeGenericType(t)))
+            .ToArray();
 
         private readonly ICompositionContainer<TValue>[] composers;
 
@@ -38,7 +38,7 @@ namespace Annium.Extensions.Composition
             localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
         }
 
-        public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = null)
+        public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "")
         {
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 

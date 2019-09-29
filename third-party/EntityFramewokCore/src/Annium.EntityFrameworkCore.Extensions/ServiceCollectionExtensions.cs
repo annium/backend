@@ -24,11 +24,12 @@ namespace Annium.Core.DependencyInjection
                 .AddEntityFrameworkSqlite()
                 .AddDbContext<TContext>(builder =>
                 {
-                    if (logQueries)
+                    if (logQueries && loggerFactory != null)
                         builder.UseLoggerFactory(loggerFactory);
 
                     var opts = builder.UseSqlite(cn).Options;
-                    using(var ctx = Activator.CreateInstance(typeof(TContext), opts) as DbContext) ctx.Database.EnsureCreated();
+                    using var ctx = (Activator.CreateInstance(typeof(TContext), opts) as DbContext) !;
+                    ctx.Database.EnsureCreated();
                 });
         }
 

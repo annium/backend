@@ -9,14 +9,14 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void TryMakeGenericType_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).TryMakeGenericType(out var result))).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.TryMakeGenericType(out var result))).Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void ITryMakeGenericType_Works()
         {
             //assert
-            typeof(Demo<>).TryMakeGenericType(out Type result).IsFalse();
+            typeof(Demo<>).TryMakeGenericType(out Type? result).IsFalse();
             result.IsDefault();
 
             typeof(Demo<>).TryMakeGenericType(out result, typeof(bool)).IsFalse();

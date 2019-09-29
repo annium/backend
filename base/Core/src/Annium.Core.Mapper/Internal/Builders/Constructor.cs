@@ -21,9 +21,9 @@ namespace Annium.Core.Mapper.Internal
 
             // map parameters to their value evaluation expressions
             var values = parameters
-                .Select<ParameterInfo, Expression>(param =>
+                .Select(param =>
                 {
-                    var paramName = param.Name.ToLowerInvariant();
+                    var paramName = param.Name!.ToLowerInvariant();
 
                     // if respective property is ignored - use default value for parameter
                     if (cfg?.Ignores.Any(i => i.Name.ToLowerInvariant() == paramName) ?? false)
@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Internal
 
                     // if target field is explicitly configured in mapping - use that mapping
                     if (cfg?.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName) ?? false)
-                        return repacker.Repack(cfg.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body) (source);
+                        return repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body) (source);
 
                     // otherwise - parameter must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??

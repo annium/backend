@@ -14,29 +14,29 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_OfNull_Throws()
         {
             //assert
-            ((Action) (() => (null as Type).ResolveGenericArgumentsByImplentation(typeof(bool)))).Throws<ArgumentNullException>();
-            ((Action) (() => typeof(bool).ResolveGenericArgumentsByImplentation(null))).Throws<ArgumentNullException>();
+            ((Action) (() => (null as Type) !.ResolveGenericArgumentsByImplentation(typeof(bool)))).Throws<ArgumentNullException>();
+            ((Action) (() => typeof(bool).ResolveGenericArgumentsByImplentation(null!))).Throws<ArgumentNullException>();
         }
 
         [Fact]
         public void ResolveGenericArgumentsByImplentation_TypeNotGeneric_ReturnEmptyTypes()
         {
             //assert
-            typeof(Array).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)).IsEqual(Type.EmptyTypes);
+            typeof(Array).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)) !.IsEqual(Type.EmptyTypes);
         }
 
         [Fact]
         public void ResolveGenericArgumentsByImplentation_TypeDefined_ReturnsTypeArguments()
         {
             //assert
-            typeof(List<int>).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)).IsEqual(new [] { typeof(int) });
+            typeof(List<int>).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)) !.IsEqual(new [] { typeof(int) });
         }
 
         [Fact]
         public void ResolveGenericArgumentsByImplentation_TargetNotGeneric_ReturnsTypeArguments()
         {
             //assert
-            typeof(List<>).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)).IsEqual(new [] { typeof(List<>).GetGenericArguments() [0] });
+            typeof(List<>).ResolveGenericArgumentsByImplentation(typeof(IEnumerable)) !.IsEqual(new [] { typeof(List<>).GetGenericArguments() [0] });
         }
 
         [Fact]
@@ -80,7 +80,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IBase<, , ,>).GetGenericArguments() [3]
-                .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0])
+                .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0]) !
                 .IsEqual(new [] { typeof(IBase<, , ,>).GetGenericArguments() [3] });
         }
 
@@ -116,7 +116,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterClassConstraint<>).GetGenericArguments() [0]
-                .ResolveGenericArgumentsByImplentation(typeof(Expression))
+                .ResolveGenericArgumentsByImplentation(typeof(Expression)) !
                 .IsEqual(new [] { typeof(IParameterClassConstraint<>).GetGenericArguments() [0] });
         }
 
@@ -161,7 +161,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterStructConstraint<>).GetGenericArguments() [0]
-                .ResolveGenericArgumentsByImplentation(typeof(ValueTuple))
+                .ResolveGenericArgumentsByImplentation(typeof(ValueTuple)) !
                 .IsEqual(new [] { typeof(IParameterStructConstraint<>).GetGenericArguments() [0] });
         }
 
@@ -206,7 +206,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0]
-                .ResolveGenericArgumentsByImplentation(typeof(IEnumerable))
+                .ResolveGenericArgumentsByImplentation(typeof(IEnumerable)) !
                 .IsEqual(new [] { typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0] });
         }
 
@@ -242,7 +242,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             TypeManager.Instance.GetImplementations(typeof(MemberExpression)) [0]
-                .ResolveGenericArgumentsByImplentation(typeof(IParameterClassConstraint<>).GetGenericArguments() [0])
+                .ResolveGenericArgumentsByImplentation(typeof(IParameterClassConstraint<>).GetGenericArguments() [0]) !
                 .IsEqual(Type.EmptyTypes);
         }
 
@@ -250,7 +250,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_ClassOfClass_SameGenericDefinition_BuildArgs()
         {
             //assert
-            typeof(List<>).ResolveGenericArgumentsByImplentation(typeof(List<int>))
+            typeof(List<>).ResolveGenericArgumentsByImplentation(typeof(List<int>)) !
                 .IsEqual(new [] { typeof(int) });
         }
 
@@ -274,7 +274,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_ClassOfClass_BaseTypeSameGenericDefinition_BuildArgs()
         {
             //assert
-            typeof(CustomDicitonary<,>).ResolveGenericArgumentsByImplentation(typeof(Dictionary<int, bool>))
+            typeof(CustomDicitonary<,>).ResolveGenericArgumentsByImplentation(typeof(Dictionary<int, bool>)) !
                 .IsEqual(new [] { typeof(int), typeof(bool) });
         }
 
@@ -282,7 +282,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_ClassOfClass_DifferentGenericDefinition_ResolvesBase()
         {
             //assert
-            typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplentation(typeof(Dictionary<int, bool>))
+            typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplentation(typeof(Dictionary<int, bool>)) !
                 .IsEqual(new [] { typeof(bool), typeof(int) });
         }
 
@@ -290,7 +290,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_ClassOfInterface_WithImplementation_BuildsArgs()
         {
             //assert
-            typeof(Dictionary<,>).ResolveGenericArgumentsByImplentation(typeof(IReadOnlyDictionary<int, bool>))
+            typeof(Dictionary<,>).ResolveGenericArgumentsByImplentation(typeof(IReadOnlyDictionary<int, bool>)) !
                 .IsEqual(new [] { typeof(int), typeof(bool) });
         }
 
@@ -306,7 +306,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_ClassOfInterface_NoImplementation_WithBaseType_ResolvesBase()
         {
             //assert
-            typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplentation(typeof(IReadOnlyDictionary<int, bool>))
+            typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplentation(typeof(IReadOnlyDictionary<int, bool>)) !
                 .IsEqual(new [] { typeof(bool), typeof(int) });
         }
 
@@ -342,7 +342,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(StructEnumerable)
-            .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0])
+            .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0]) !
                 .IsEqual(Type.EmptyTypes);
         }
 
@@ -350,7 +350,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_StructOfStruct_SameGenericDefinition_BuildArgs()
         {
             //assert
-            typeof(ValueTuple<,>).ResolveGenericArgumentsByImplentation(typeof(ValueTuple<int, bool>))
+            typeof(ValueTuple<,>).ResolveGenericArgumentsByImplentation(typeof(ValueTuple<int, bool>)) !
                 .IsEqual(new [] { typeof(int), typeof(bool) });
         }
 
@@ -374,7 +374,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_StructOfInterface_WithImplementation_BuildArgs()
         {
             //assert
-            typeof(BaseStruct<, , ,>).ResolveGenericArgumentsByImplentation(typeof(IBase<string, int, bool, IEnumerable<string>>))
+            typeof(BaseStruct<, , ,>).ResolveGenericArgumentsByImplentation(typeof(IBase<string, int, bool, IEnumerable<string>>)) !
                 .IsEqual(new [] { typeof(string), typeof(int), typeof(bool), typeof(IEnumerable<string>) });
         }
 
@@ -419,7 +419,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IEnumerable<>)
-            .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0])
+            .ResolveGenericArgumentsByImplentation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments() [0]) !
                 .IsEqual(new [] { typeof(IEnumerable<>).GetGenericArguments() [0] });
         }
 
@@ -427,7 +427,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_InterfaceOfInterface_SameGenericDefinition_BuildsArgs()
         {
             //assert
-            typeof(IEquatable<>).ResolveGenericArgumentsByImplentation(typeof(IEquatable<bool>))
+            typeof(IEquatable<>).ResolveGenericArgumentsByImplentation(typeof(IEquatable<bool>)) !
                 .IsEqual(new [] { typeof(bool) });
         }
 
@@ -443,7 +443,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_InterfaceOfInterface_WithImplementation_BuildArgs()
         {
             //assert
-            typeof(IParentOther<,>).ResolveGenericArgumentsByImplentation(typeof(IBase<string[], int, bool, IEnumerable<string[]>>))
+            typeof(IParentOther<,>).ResolveGenericArgumentsByImplentation(typeof(IBase<string[], int, bool, IEnumerable<string[]>>)) !
                 .IsEqual(new [] { typeof(string), typeof(int) });
         }
 
@@ -451,7 +451,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplentation_BuildArgs_InferByDefinitions()
         {
             //assert
-            typeof(ConstrainedComplex<, , ,>).ResolveGenericArgumentsByImplentation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>))
+            typeof(ConstrainedComplex<, , ,>).ResolveGenericArgumentsByImplentation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>)) !
                 .IsEqual(new [] { typeof(IGeneric<bool, IGeneric<bool, int>>), typeof(bool), typeof(IGeneric<bool, int>), typeof(int) });
         }
     }

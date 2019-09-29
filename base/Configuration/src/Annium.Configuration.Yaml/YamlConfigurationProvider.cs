@@ -69,7 +69,7 @@ namespace Annium.Configuration.Abstractions
 
         private void Process(YamlScalarNode token)
         {
-            data[path] = token.Value;
+            data[Path] = token.Value;
         }
     }
 
