@@ -27,25 +27,25 @@ namespace Annium.Core.Mapper.Internal
                 .MakeGenericMethod(srcEl, tgtEl);
             var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)) !.MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
-            var map = ResolveMap(srcEl, tgtEl) (param);
-            var lambda = Expression.Lambda(map, param);
-            var selection = Expression.Condition(
+            var map = ResolveMap(srcEl, tgtEl);
+            var selection = map is null ?
+                source :
+                Expression.Call(select, source, Expression.Lambda(map(param), param));
+            var result = Expression.Condition(
                 Expression.Equal(source, Expression.Default(src)),
                 Expression.NewArrayInit(tgtEl),
-                Expression.Call(toArray, Expression.Call(select, source, lambda))
+                Expression.Call(toArray, selection)
             );
 
-            return tgt.IsArray? selection : BuildConstructorMap();
+            if (tgt.IsArray)
+                return result;
 
-            Expression BuildConstructorMap()
-            {
-                var parameter = typeof(IEnumerable<>).MakeGenericType(tgtEl);
-                var constructor = tgt.GetConstructor(new [] { parameter });
-                if (constructor == null)
-                    throw new MappingException(src, tgt, $"No constructor with single {parameter} parameter found.");
+            var parameter = typeof(IEnumerable<>).MakeGenericType(tgtEl);
+            var constructor = tgt.GetConstructor(new [] { parameter });
+            if (constructor == null)
+                throw new MappingException(src, tgt, $"No constructor with single {parameter} parameter found.");
 
-                return Expression.New(constructor, selection);
-            }
+            return Expression.New(constructor, selection);
         };
 
         private Type GetEnumerableElementType(Type type)

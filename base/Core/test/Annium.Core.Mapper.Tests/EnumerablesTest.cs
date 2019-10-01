@@ -85,6 +85,21 @@ namespace Annium.Core.Mapper.Tests
             result.At("one").Name.IsEqual(value["one"].Name);
         }
 
+        [Fact]
+        public void ToIDictionary_Same_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new Dictionary<string, A> { { "one", new A() { Name = "name" } } };
+
+            // act
+            var result = mapper.Map<IReadOnlyDictionary<string, A>>(value);
+
+            // assert
+            result.Has(1);
+            result.At("one").Name.IsEqual(value["one"].Name);
+        }
+
         private IMapper GetMapper() =>
             new ServiceCollection().AddMapper().BuildServiceProvider().GetRequiredService<IMapper>();
 

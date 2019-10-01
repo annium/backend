@@ -34,7 +34,7 @@ namespace Annium.Core.Mapper.Internal
 
                     // resolve map for conversion and use it, if necessary
                     var map = ResolveMap(prop.PropertyType, target.PropertyType);
-                    if (map == null)
+                    if (map is null)
                         return Expression.Assign(Expression.Property(instance, target), Expression.Property(source, prop));
 
                     return Expression.Assign(Expression.Property(instance, target), map(Expression.Property(source, prop)));

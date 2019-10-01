@@ -26,12 +26,12 @@ namespace Annium.Core.Mapper.Internal
             Repacker repacker
         )
         {
-            this.cfg = MapperConfiguration.Merge(configs.ToArray());
+            cfg = MapperConfiguration.Merge(configs.ToArray());
             this.typeManager = typeManager;
             this.repacker = repacker;
 
             // save complete type maps directly to raw resolutions
-            foreach (var(key, map) in cfg.Maps)
+            foreach (((Type, Type) key, Map map) in cfg.Maps)
                 if (map.Type != null)
                     raw[key] = repacker.Repack(map.Type.Body);
         }
@@ -45,11 +45,11 @@ namespace Annium.Core.Mapper.Internal
                 return map;
 
             var param = Expression.Parameter(src);
-            var body = ResolveMap(src, tgt) (param);
-            if (body == null)
+            var rawMap = ResolveMap(src, tgt);
+            if (rawMap is null)
                 throw new MappingException(src, tgt, $"No map found.");
 
-            var result = Expression.Lambda(body, param);
+            var result = Expression.Lambda(rawMap(param), param);
 
             return maps[key] = result.Compile();
         }
