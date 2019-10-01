@@ -10,6 +10,7 @@ namespace Annium.Extensions.Shell
 {
     internal class ShellInstance : IShellInstance
     {
+        private readonly object consoleLock = new object();
         private readonly string cmd;
         private readonly ILogger<Shell> logger;
         private ProcessStartInfo startInfo;
@@ -49,18 +50,19 @@ namespace Annium.Extensions.Shell
             return await RunAsync(cts.Token);
         }
 
-        public Task<ShellResult> RunAsync(CancellationToken token = default)
+        public async Task<ShellResult> RunAsync(CancellationToken token = default)
         {
             using var process = GetProcess();
 
-            return StartProcess(process, token).Task;
+            return await StartProcess(process, token).Task;
         }
 
         public ShellAsyncResult Start(CancellationToken token = default)
         {
-            using var process = GetProcess();
+            var process = GetProcess();
 
             var result = StartProcess(process, token).Task;
+            result.ContinueWith(_ => process.Dispose());
 
             return new ShellAsyncResult(
                 process.StandardInput,
@@ -127,7 +129,8 @@ namespace Annium.Extensions.Shell
 
             if (pipe)
             {
-                Task.Run(() => pipeOut(process.StandardOutput));
+                Task.Run(() => { lock(consoleLock) pipeOut(process.StandardOutput); });
+                Task.Run(() => { lock(consoleLock) pipeOut(process.StandardError); });
                 Task.Run(() => pipeOut(process.StandardError));
             }
 
@@ -153,7 +156,7 @@ namespace Annium.Extensions.Shell
                 }
             }
 
-            void pipeOut(StreamReader src)
+            static void pipeOut(StreamReader src)
             {
                 while (!src.EndOfStream)
                     Console.Write((char) src.Read());
