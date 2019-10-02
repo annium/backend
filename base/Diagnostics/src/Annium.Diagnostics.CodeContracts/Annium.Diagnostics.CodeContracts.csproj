@@ -10,7 +10,5 @@
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     </PropertyGroup>
 </Project>

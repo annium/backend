@@ -10,8 +10,6 @@
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Localization.Abstractions/Annium.Localization.Abstractions.csproj" />

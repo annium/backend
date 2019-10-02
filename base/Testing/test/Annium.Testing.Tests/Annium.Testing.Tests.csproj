@@ -11,8 +11,6 @@
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
         <Nullable>enable</Nullable>
-        <PublishReadyToRun>true</PublishReadyToRun>
-        <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
