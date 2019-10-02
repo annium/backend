@@ -32,6 +32,8 @@ namespace Annium.Configuration.Abstractions
 
         private object Process(Type type)
         {
+            if (Mapper.HasMap(string.Empty, type))
+                return ProcessValue(type);
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
                 return ProcessDictionary(type);
@@ -40,8 +42,6 @@ namespace Annium.Configuration.Abstractions
                 return ProcessList(type);
             if (type.IsArray)
                 return ProcessArray(type);
-            if (Mapper.HasMap(string.Empty, type))
-                return ProcessValue(type);
             return ProcessObject(type);
         }
 
@@ -142,34 +142,33 @@ namespace Annium.Configuration.Abstractions
 
         private string[] GetDescendants()
         {
-            var path = normalize(this.Path);
+            var path = Normalize(Path);
             if (path.Length == 0)
                 return config.Keys.Select(k => k.First()).Distinct().ToArray();
 
             return config.Keys
                 .Where(k => k.Length > path.Length)
-                .Where(k => normalize(k.Take(path.Length)).SequenceEqual(path))
+                .Where(k => Normalize(k.Take(path.Length)).SequenceEqual(path))
                 .Select(k => k.Skip(path.Length).First())
                 .Distinct()
                 .ToArray();
-
-            string[] normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
         }
 
         private bool KeyExists()
         {
-            var path = normalize(this.Path);
+            var path = Normalize(Path);
             if (path.Length == 0)
                 return config.Keys.Count() > 0;
 
             return config.Keys
                 .Where(k => k.Length >= path.Length)
                 .Select(k => k.Take(path.Length))
-                .Where(k => normalize(k).SequenceEqual(path))
+                .Where(k => Normalize(k).SequenceEqual(path))
                 .Count() > 0;
 
-            string[] normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
         }
+
+        private string[] Normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
 
         private class KeyComparer : IEqualityComparer<string[]>
         {
