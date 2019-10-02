@@ -21,10 +21,11 @@ namespace Annium.AspNetCore.IntegrationTesting
 
             configureHost(hostBuilder);
 
-            return hostBuilder.ConfigureWebHostDefaults(builder => builder
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<TStartup>()
-            );
+            return hostBuilder
+                .ConfigureWebHostDefaults(builder => builder
+                    .UseContentRoot(Directory.GetCurrentDirectory())
+                    .UseStartup<TStartup>()
+                );
         }
     }
 }
