@@ -76,9 +76,7 @@ namespace Annium.Extensions.Shell
         {
             var process = new Process { EnableRaisingEvents = true };
 
-            if (startInfo != null)
-                process.StartInfo = startInfo;
-
+            process.StartInfo = startInfo;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;
