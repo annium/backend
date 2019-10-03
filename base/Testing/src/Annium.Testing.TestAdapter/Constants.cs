@@ -3,9 +3,7 @@
     internal class Constants
     {
         public const string FileExtensionDll = ".dll";
-
         public const string FileExtensionExe = ".exe";
-
-        public const string ExecutorUri = "executor://annium/normal/";
+        public const string ExecutorUri = "executor://annium/";
     }
 }

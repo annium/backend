@@ -1,5 +1,5 @@
 using System.Xml.Linq;
-using Annium.Testing.Logging;
+using Annium.Logging.Abstractions;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 
 namespace Annium.Testing.TestAdapter
@@ -11,23 +11,16 @@ namespace Annium.Testing.TestAdapter
             var logLevel = GetLogLevel(XElement.Parse(context.RunSettings.SettingsXml).Element("logLevel"));
             var filter = XElement.Parse(context.RunSettings.SettingsXml).Element("filter")?.Value ?? string.Empty;
 
-            var loggerConfiguration = new LoggerConfiguration(logLevel);
-            var configuration = new TestingConfiguration(loggerConfiguration, filter);
+            var configuration = new TestingConfiguration(logLevel, filter);
 
             return configuration;
         }
 
-        private static LogLevel GetLogLevel(XElement node)
+        private static LogLevel GetLogLevel(XElement node) => (node?.Value) switch
         {
-            switch (node?.Value)
-            {
-                case "debug":
-                    return LogLevel.Debug;
-                case "trace":
-                    return LogLevel.Trace;
-                default:
-                    return LogLevel.Info;
-            }
-        }
+            "debug" => LogLevel.Debug,
+            "trace" => LogLevel.Trace,
+            _ => LogLevel.Info,
+        };
     }
 }

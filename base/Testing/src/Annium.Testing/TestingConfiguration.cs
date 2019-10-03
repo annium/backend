@@ -1,19 +1,18 @@
-using Annium.Testing.Logging;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Testing
 {
     public class TestingConfiguration
     {
-        public LoggerConfiguration Logger { get; }
-
+        public LogLevel LogLevel { get; }
         public string Filter { get; }
 
         public TestingConfiguration(
-            LoggerConfiguration logger,
+            LogLevel logLevel,
             string filter
         )
         {
-            Logger = logger;
+            LogLevel = logLevel;
             Filter = filter;
         }
     }

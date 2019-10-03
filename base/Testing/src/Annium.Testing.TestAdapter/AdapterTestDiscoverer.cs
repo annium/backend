@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Testing.Logging;
+using Annium.Logging.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
@@ -19,7 +19,7 @@ namespace Annium.Testing.TestAdapter
 
         private TestDiscoverer? testDiscoverer;
 
-        private ILogger? logger;
+        private ILogger<AdapterTestDiscoverer> ? logger;
 
         public AdapterTestDiscoverer()
         {
@@ -38,9 +38,9 @@ namespace Annium.Testing.TestAdapter
         {
             var provider = AdapterServiceProviderBuilder.Build(discoveryContext);
             testDiscoverer = provider.GetRequiredService<TestDiscoverer>();
-            this.logger = provider.GetRequiredService<ILogger>();
+            this.logger = provider.GetRequiredService<ILogger<AdapterTestDiscoverer>>();
 
-            this.logger.LogDebug("Start discovery.");
+            this.logger.Debug("Start discovery.");
 
             DiscoverSourcesAsync(sources, discoverySink).Wait();
         }
@@ -52,7 +52,7 @@ namespace Annium.Testing.TestAdapter
         {
             var assembly = Source.Resolve(source);
 
-            logger!.LogDebug($"Start discovery of {assembly.FullName}.");
+            logger!.Debug($"Start discovery of {assembly.FullName}.");
 
             return testDiscoverer!.FindTestsAsync(
                 assembly,

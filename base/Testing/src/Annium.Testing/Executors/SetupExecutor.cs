@@ -1,16 +1,16 @@
 ﻿using System.Threading.Tasks;
-using Annium.Testing.Logging;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors
 {
     public class SetupExecutor : ITestExecutor
     {
-        private readonly ILogger logger;
+        private readonly ILogger<SetupExecutor> logger;
 
         public uint Order { get; } = 2;
 
         public SetupExecutor(
-            ILogger logger
+            ILogger<SetupExecutor> logger
         )
         {
             this.logger = logger;
@@ -18,7 +18,7 @@ namespace Annium.Testing.Executors
 
         public Task ExecuteAsync(Target target)
         {
-            logger.LogTrace($"Setup {target.Test.DisplayName}.");
+            logger.Trace($"Setup {target.Test.DisplayName}.");
 
             target.Init();
 

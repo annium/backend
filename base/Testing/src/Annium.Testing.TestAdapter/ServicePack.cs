@@ -8,7 +8,7 @@ namespace Annium.Testing.TestAdapter
     {
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
-            services.AddSingleton<TestConverter>(new TestConverter(Constants.ExecutorUri));
+            services.AddSingleton(new TestConverter(Constants.ExecutorUri));
             services.AddSingleton<TestResultConverter>();
         }
     }

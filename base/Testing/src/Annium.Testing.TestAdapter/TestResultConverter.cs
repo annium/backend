@@ -16,14 +16,16 @@ namespace Annium.Testing.TestAdapter
 
         public MsTestResult Convert(Assembly assembly, Test test, TestResult testResult)
         {
-            var result = new MsTestResult(testConverter.Convert(assembly, test));
-            result.Outcome = (MsTestOutcome) testResult.Outcome;
-            result.ErrorMessage = testResult.Failure?.Message;
-            result.ErrorStackTrace = testResult.Failure?.StackTrace;
-            result.DisplayName = test.DisplayName;
-            result.Duration = testResult.ExecutionDuration;
-            result.StartTime = testResult.ExecutionStart;
-            result.EndTime = testResult.ExecutionEnd;
+            var result = new MsTestResult(testConverter.Convert(assembly, test))
+            {
+                Outcome = (MsTestOutcome) testResult.Outcome,
+                ErrorMessage = testResult.Failure?.Message,
+                ErrorStackTrace = testResult.Failure?.StackTrace,
+                DisplayName = test.DisplayName,
+                Duration = testResult.ExecutionDuration,
+                StartTime = testResult.ExecutionStart,
+                EndTime = testResult.ExecutionEnd
+            };
 
             return result;
         }

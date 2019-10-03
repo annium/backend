@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
-using Annium.Testing.Logging;
 
 namespace Annium.Testing.Executors
 {
@@ -11,11 +11,11 @@ namespace Annium.Testing.Executors
     {
         private readonly ITestExecutor[] executors;
 
-        private readonly ILogger logger;
+        private readonly ILogger<PipelineExecutor> logger;
 
         public PipelineExecutor(
             IEnumerable<ITestExecutor> executors,
-            ILogger logger
+            ILogger<PipelineExecutor> logger
         )
         {
             this.executors = executors.OrderBy(e => e.Order).ToArray();
@@ -24,12 +24,12 @@ namespace Annium.Testing.Executors
 
         public async Task ExecuteAsync(Target target)
         {
-            logger.LogTrace($"Start pipeline of {target.Test.DisplayName}.");
+            logger.Trace($"Start pipeline of {target.Test.DisplayName}.");
 
             var result = target.Result;
             result.ExecutionStart = DateTime.Now;
 
-            foreach (var executor in this.executors)
+            foreach (var executor in executors)
             {
                 await executor.ExecuteAsync(target);
                 if (result.Outcome != TestOutcome.None)
@@ -41,7 +41,7 @@ namespace Annium.Testing.Executors
 
             result.ExecutionEnd = DateTime.Now;
 
-            logger.LogTrace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
+            logger.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
         }
     }
 }

@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
-using Annium.Testing.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
@@ -22,7 +22,7 @@ namespace Annium.Testing.TestAdapter
 
         private IServiceProvider? provider;
 
-        private ILogger? logger;
+        private ILogger<AdapterTestExecutor> ? logger;
 
         public AdapterTestExecutor()
         {
@@ -38,9 +38,9 @@ namespace Annium.Testing.TestAdapter
                 Debugger.Launch();
 
             provider = AdapterServiceProviderBuilder.Build(runContext);
-            logger = provider.GetRequiredService<ILogger>();
+            logger = provider.GetRequiredService<ILogger<AdapterTestExecutor>>();
 
-            logger.LogDebug("Start execution.");
+            logger.Debug("Start execution.");
 
             Task.WhenAll(sources.Select(source => RunAssemblyTestsAsync(Source.Resolve(source), frameworkHandle))).Wait();
         }
@@ -51,9 +51,9 @@ namespace Annium.Testing.TestAdapter
                 Debugger.Launch();
 
             provider = AdapterServiceProviderBuilder.Build(runContext);
-            logger = provider.GetRequiredService<ILogger>();
+            logger = provider.GetRequiredService<ILogger<AdapterTestExecutor>>();
 
-            logger.LogDebug("Start execution.");
+            logger.Debug("Start execution.");
 
             Task.WhenAll(tests.Select(test => test.Source).Distinct().Select(
                 source => RunAssemblyTestsAsync(Source.Resolve(source), tests.Where(test => test.Source == source), frameworkHandle)
@@ -64,7 +64,7 @@ namespace Annium.Testing.TestAdapter
 
         private async Task RunAssemblyTestsAsync(Assembly assembly, IFrameworkHandle frameworkHandle)
         {
-            logger!.LogDebug($"Start execution of all tests in {assembly.FullName}.");
+            logger!.Debug($"Start execution of all tests in {assembly.FullName}.");
 
             var tests = new List<Test>();
             await provider.GetRequiredService<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
@@ -74,7 +74,7 @@ namespace Annium.Testing.TestAdapter
 
         private Task RunAssemblyTestsAsync(Assembly assembly, IEnumerable<TestCase> testCases, IFrameworkHandle frameworkHandle)
         {
-            logger!.LogDebug($"Start execution of specific {testCases.Count()} tests in {assembly.FullName}.");
+            logger!.Debug($"Start execution of specific {testCases.Count()} tests in {assembly.FullName}.");
 
             var tests = testCases.Select(testCase => testConverter.Convert(assembly, testCase)).ToArray();
 
@@ -95,7 +95,7 @@ namespace Annium.Testing.TestAdapter
 
         private TestExecutor GetExecutor(Assembly assembly, IEnumerable<Test> tests)
         {
-            logger!.LogTrace($"Build test executor for assembly {assembly.FullName} and given {tests.Count()} tests.");
+            logger!.Trace($"Build test executor for assembly {assembly.FullName} and given {tests.Count()} tests.");
 
             var services = AssemblyServicesCollector.Collect(assembly, tests);
             services.AddSingleton(this.provider.GetRequiredService<TestingConfiguration>());

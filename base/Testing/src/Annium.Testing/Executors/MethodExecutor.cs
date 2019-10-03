@@ -2,17 +2,17 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
+using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
-using Annium.Testing.Logging;
 
 namespace Annium.Testing.Executors
 {
     public class MethodExecutor
     {
-        private readonly ILogger logger;
+        private readonly ILogger<MethodExecutor> logger;
 
         public MethodExecutor(
-            ILogger logger
+            ILogger<MethodExecutor> logger
         )
         {
             this.logger = logger;
@@ -20,7 +20,7 @@ namespace Annium.Testing.Executors
 
         public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
         {
-            logger.LogTrace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+            logger.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
             var watch = new Stopwatch();
             watch.Start();
@@ -43,7 +43,7 @@ namespace Annium.Testing.Executors
                 watch.Stop();
                 result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
 
-                logger.LogTrace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+                logger.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Testing.Executors
             result.Outcome = TestOutcome.Failed;
             result.Failure = exception;
 
-            logger.LogTrace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+            logger.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
         }
     }
 }

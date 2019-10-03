@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Annium.Testing.Logging;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors
 {
@@ -9,11 +9,11 @@ namespace Annium.Testing.Executors
 
         private readonly MethodExecutor executor;
 
-        private readonly ILogger logger;
+        private readonly ILogger<BeforeExecutor> logger;
 
         public BeforeExecutor(
             MethodExecutor executor,
-            ILogger logger
+            ILogger<BeforeExecutor> logger
         )
         {
             this.executor = executor;
@@ -26,7 +26,7 @@ namespace Annium.Testing.Executors
             if (test.Before == null)
                 return Task.CompletedTask;
 
-            logger.LogTrace($"Execute Before of {target.Test.DisplayName}.");
+            logger.Trace($"Execute Before of {target.Test.DisplayName}.");
 
             return executor.ExecuteAsync(instance, test.Before, result);
         }

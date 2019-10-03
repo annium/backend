@@ -1,17 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
-using Annium.Testing.Logging;
 
 namespace Annium.Testing.Executors
 {
     public class SkippedExecutor : ITestExecutor
     {
-        private readonly ILogger logger;
+        private readonly ILogger<SkippedExecutor> logger;
 
         public uint Order { get; } = 1;
 
         public SkippedExecutor(
-            ILogger logger
+            ILogger<SkippedExecutor> logger
         )
         {
             this.logger = logger;
@@ -23,7 +23,7 @@ namespace Annium.Testing.Executors
             {
                 target.Result.Outcome = TestOutcome.Skipped;
 
-                logger.LogTrace($"Skip {target.Test.DisplayName}.");
+                logger.Trace($"Skip {target.Test.DisplayName}.");
             }
 
             return Task.CompletedTask;

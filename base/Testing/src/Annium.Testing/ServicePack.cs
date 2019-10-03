@@ -1,8 +1,8 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Testing.Executors;
-using Annium.Testing.Logging;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 
 namespace Annium.Testing
 {
@@ -10,6 +10,8 @@ namespace Annium.Testing
     {
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
+            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
+
             // components
             services.AddSingleton<TestDiscoverer>();
             services.AddSingleton<TestExecutor>();
@@ -24,7 +26,14 @@ namespace Annium.Testing
             services.AddSingleton<MethodExecutor>();
 
             // tools
-            services.AddSingleton<ILogger, Logger>();
+            services.AddLogging(route =>
+            {
+                var cfg = provider.GetService<TestingConfiguration>();
+                if (cfg is null)
+                    route.UseConsole();
+                else
+                    route.For(m => m.Level >= cfg.LogLevel).UseConsole();
+            });
         }
     }
 }

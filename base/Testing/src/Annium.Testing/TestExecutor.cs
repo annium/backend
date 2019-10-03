@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
 using Annium.Testing.Executors;
-using Annium.Testing.Logging;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Testing
@@ -18,13 +18,13 @@ namespace Annium.Testing
 
         private readonly PipelineExecutor executor;
 
-        private readonly ILogger logger;
+        private readonly ILogger<TestExecutor> logger;
 
         public TestExecutor(
             TestingConfiguration cfg,
             IServiceProvider provider,
             PipelineExecutor executor,
-            ILogger logger
+            ILogger<TestExecutor> logger
         )
         {
             this.cfg = cfg;
@@ -35,7 +35,7 @@ namespace Annium.Testing
 
         public async Task RunTestsAsync(IEnumerable<Test> tests, Action<Test, TestResult> handleResult)
         {
-            logger.LogDebug("Start tests execution");
+            logger.Debug("Start tests execution");
 
             var concurrency = Environment.ProcessorCount;
 
@@ -46,18 +46,15 @@ namespace Annium.Testing
                     try
                     {
                         semaphore.WaitOne();
-                        logger.LogDebug($"Run test {test.DisplayName}");
+                        logger.Debug($"Run test {test.DisplayName}");
 
-                        using(var scope = provider.CreateScope())
-                        {
-                            var target = new Target(scope.ServiceProvider, test, new TestResult());
+                        using var scope = provider.CreateScope();
+                        var target = new Target(scope.ServiceProvider, test, new TestResult());
 
-                            await executor.ExecuteAsync(target);
+                        await executor.ExecuteAsync(target);
 
-                            logger.LogDebug($"Complete test {test.DisplayName}");
-
-                            handleResult(target.Test, target.Result);
-                        }
+                        logger.Debug($"Complete test {test.DisplayName}");
+                        handleResult(target.Test, target.Result);
                     }
                     finally
                     {
@@ -66,7 +63,7 @@ namespace Annium.Testing
                 }));
             }
 
-            logger.LogDebug("Complete tests execution");
+            logger.Debug("Complete tests execution");
         }
     }
 }
