@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace Annium.Logging.Abstractions
 {
-    internal class LogRouter
+    internal class LogRouter : ILogRouter
     {
         private readonly IEnumerable<LogRoute> routes;
         private readonly IServiceProvider provider;

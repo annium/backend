@@ -4,10 +4,10 @@ namespace Annium.Logging.Abstractions
 {
     internal class Logger<T> : ILogger<T>
     {
-        private readonly LogRouter router;
+        private readonly ILogRouter router;
 
         public Logger(
-            LogRouter router
+            ILogRouter router
         )
         {
             this.router = router;

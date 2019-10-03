@@ -23,7 +23,7 @@ namespace Annium.Core.DependencyInjection
                 services.Add(route.Service);
 
             services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
-            services.AddScoped<LogRouter>();
+            services.AddScoped<ILogRouter, LogRouter>();
 
             return services;
         }
