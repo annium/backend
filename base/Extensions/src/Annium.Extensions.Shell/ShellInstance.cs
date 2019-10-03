@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
@@ -62,7 +63,6 @@ namespace Annium.Extensions.Shell
             var process = GetProcess();
 
             var result = StartProcess(process, token).Task;
-            result.ContinueWith(_ => process.Dispose());
 
             return new ShellAsyncResult(
                 process.StandardInput,
@@ -163,10 +163,20 @@ namespace Annium.Extensions.Shell
 
         private ShellResult GetResult(Process process)
         {
-            var output = process.StandardOutput.ReadToEnd();
-            var error = process.StandardError.ReadToEnd();
+
+            var output = read(process.StandardOutput);
+            var error = read(process.StandardError);
 
             return new ShellResult(process.ExitCode, output, error);
+
+            static string read(StreamReader src)
+            {
+                var sb = new StringBuilder();
+                while (!src.EndOfStream)
+                    sb.AppendLine(src.ReadLine());
+
+                return sb.ToString();
+            }
         }
 
         private string GetCommand(Process process) =>
