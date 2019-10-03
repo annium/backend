@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Microsoft.Extensions.DependencyModel;
 
 namespace Annium.Core.Reflection
 {
@@ -111,7 +112,7 @@ namespace Annium.Core.Reflection
 
             var lookup = typeDescendants
                 .Where(type => signatures.Value.ContainsKey(type))
-                .Select(type => (type: type, match: signatures.Value[type].Intersect(signature).Count()))
+                .Select(type => (type, match : signatures.Value[type].Intersect(signature).Count()))
                 .OrderByDescending(p => p.match)
                 .ToList();
 
@@ -135,7 +136,18 @@ namespace Annium.Core.Reflection
         // collect types from all loaded assemblies
         private Type[] CollectTypes()
         {
-            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            var assemblies = DependencyContext.Default.RuntimeLibraries.Select(l =>
+            {
+                var name = new AssemblyName(l.Name);
+                try
+                {
+                    return Assembly.Load(name);
+                }
+                catch
+                {
+                    return null;
+                }
+            }).OfType<Assembly>();
 
             return assemblies
                 .SelectMany(domainAssembly => domainAssembly.GetTypes())
