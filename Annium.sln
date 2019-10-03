@@ -271,6 +271,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MongoDb.NodaTime.Tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extensions.Shell", "base\Extensions\test\Demo.Extensions.Shell\Demo.Extensions.Shell.csproj", "{A0BDCDF3-B8D1-4225-9569-FB353FE316EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Logging.Microsoft", "base\Logging\src\Annium.Logging.Microsoft\Annium.Logging.Microsoft.csproj", "{7BFA792B-7B0F-43BF-BFFA-BC4549743252}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -416,6 +418,7 @@ Global
 		{D9205A59-1554-447B-BB6E-0B42AE3FA358} = {F00B6530-4849-496E-987B-D95A76726547}
 		{39400E67-9863-4444-8B0C-F8687536BD78} = {D9205A59-1554-447B-BB6E-0B42AE3FA358}
 		{A0BDCDF3-B8D1-4225-9569-FB353FE316EA} = {1DD95375-E751-4434-952B-904F3CB1C4C9}
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252} = {0CCC374C-C4ED-4E15-A12F-01540291DF7D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1498,5 +1501,17 @@ Global
 		{A0BDCDF3-B8D1-4225-9569-FB353FE316EA}.Release|x64.Build.0 = Release|Any CPU
 		{A0BDCDF3-B8D1-4225-9569-FB353FE316EA}.Release|x86.ActiveCfg = Release|Any CPU
 		{A0BDCDF3-B8D1-4225-9569-FB353FE316EA}.Release|x86.Build.0 = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|x64.Build.0 = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Debug|x86.Build.0 = Debug|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|x64.ActiveCfg = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|x64.Build.0 = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|x86.ActiveCfg = Release|Any CPU
+		{7BFA792B-7B0F-43BF-BFFA-BC4549743252}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
