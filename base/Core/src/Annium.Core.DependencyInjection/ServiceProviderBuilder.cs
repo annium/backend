@@ -48,7 +48,7 @@ namespace Annium.Core.DependencyInjection
                 services.Add(descriptor);
 
             // create provider from configurationServices
-            var provider = configurationServices.BuildServiceProvider();
+            var provider = services.BuildServiceProvider();
 
             // register all services from packs
             foreach (var pack in packs)
