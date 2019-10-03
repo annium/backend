@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyModel;
 
 namespace Annium.Core.Reflection
 {
-    public class TypeManager
+    public class TypeManager : ITypeManager
     {
         public static readonly TypeManager Instance = new TypeManager();
         private readonly Lazy<Type[]> types;
@@ -19,6 +19,8 @@ namespace Annium.Core.Reflection
             descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
             signatures = new Lazy<IDictionary<Type, string[]>>(() => CollectSignatures(descendants.Value), true);
         }
+
+        public Type? GetByName(string name) => types.Value.FirstOrDefault(t => t.FullName == name);
 
         // returns whether given type is registered with some of subtypes
         public bool CanResolve(Type baseType) => descendants.Value.ContainsKey(baseType);

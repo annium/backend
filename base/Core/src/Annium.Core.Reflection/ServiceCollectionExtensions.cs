@@ -7,7 +7,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static void AddReflectionTools(this IServiceCollection services)
         {
-            services.AddSingleton(TypeManager.Instance);
+            services.AddSingleton<ITypeManager>(TypeManager.Instance);
         }
     }
 }

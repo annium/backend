@@ -16,13 +16,13 @@ namespace Annium.Core.Mapper.Internal
 
         private readonly MapperConfiguration cfg;
 
-        private readonly TypeManager typeManager;
+        private readonly ITypeManager typeManager;
 
         private readonly Repacker repacker;
 
         public MapBuilder(
             IEnumerable<MapperConfiguration> configs,
-            TypeManager typeManager,
+            ITypeManager typeManager,
             Repacker repacker
         )
         {
