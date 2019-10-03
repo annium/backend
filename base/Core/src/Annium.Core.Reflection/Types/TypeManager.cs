@@ -136,22 +136,18 @@ namespace Annium.Core.Reflection
         // collect types from all loaded assemblies
         private Type[] CollectTypes()
         {
-            var assemblies = DependencyContext.Default.RuntimeLibraries.Select(l =>
+            return DependencyContext.Default.RuntimeLibraries.SelectMany(l =>
             {
                 var name = new AssemblyName(l.Name);
                 try
                 {
-                    return Assembly.Load(name);
+                    return Assembly.Load(name).GetTypes();
                 }
                 catch
                 {
-                    return null;
+                    return Type.EmptyTypes;
                 }
-            }).OfType<Assembly>();
-
-            return assemblies
-                .SelectMany(domainAssembly => domainAssembly.GetTypes())
-                .ToArray();
+            }).ToArray();
         }
 
         // collect types with derived types from all loaded assemblies
