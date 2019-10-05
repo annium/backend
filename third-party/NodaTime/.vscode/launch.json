@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "Demo.NodaTime",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.NodaTime.Serialization/bin/Debug/netcoreapp3.0/Demo.NodaTime.Serialization.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.NodaTime.Serialization",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}
