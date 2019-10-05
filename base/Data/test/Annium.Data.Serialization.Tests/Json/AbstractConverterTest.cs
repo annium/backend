@@ -1,6 +1,6 @@
+using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Newtonsoft.Json;
 
 namespace Annium.Data.Serialization.Tests.Json
 {
@@ -16,7 +16,7 @@ namespace Annium.Data.Serialization.Tests.Json
             var arr = new [] { a, b };
 
             // act
-            var result = JsonConvert.SerializeObject(arr, settings);
+            var result = JsonSerializer.Serialize(arr, settings);
 
             // assert
             result.IsEqual(@"[{""A"":1},{""B"":2}]");
@@ -30,10 +30,10 @@ namespace Annium.Data.Serialization.Tests.Json
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
             var arr = new [] { a, b };
-            var str = JsonConvert.SerializeObject(arr, settings);
+            var str = JsonSerializer.Serialize(arr, settings);
 
             // act
-            var result = JsonConvert.DeserializeObject<Base[]>(str, settings);
+            var result = JsonSerializer.Deserialize<Base[]>(str, settings);
 
             // assert
             result.Has(2);
@@ -41,19 +41,19 @@ namespace Annium.Data.Serialization.Tests.Json
             result.At(1).As<ChildB>().B.IsEqual(2);
         }
 
-        private JsonSerializerSettings GetSettings() => new JsonSerializerSettings()
+        private JsonSerializerOptions GetSettings() => new JsonSerializerOptions()
             .ConfigureAbstractConverter();
+    }
 
-        public abstract class Base { }
+    public abstract class Base { }
 
-        public class ChildA : Base
-        {
-            public int A { get; set; }
-        }
+    public class ChildA : Base
+    {
+        public int A { get; set; }
+    }
 
-        public class ChildB : Base
-        {
-            public int B { get; set; }
-        }
+    public class ChildB : Base
+    {
+        public int B { get; set; }
     }
 }
