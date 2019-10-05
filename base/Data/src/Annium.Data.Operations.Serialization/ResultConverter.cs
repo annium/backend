@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using T = Annium.Data.Operations.IResult;
+using System.Text.Json.Serialization;
+using X = Annium.Data.Operations.IResult;
 
 namespace Annium.Data.Operations.Serialization
 {
-    public class ResultConverter : ResultConverterBase
+    internal class ResultConverter : ResultConverterBase<X>
     {
-        protected override bool IsConvertibleInterface(Type type) => type == typeof(IResult);
-
-        public override IResultBase Read(
+        public override X Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
@@ -19,9 +18,9 @@ namespace Annium.Data.Operations.Serialization
 
             while (reader.Read())
             {
-                if (reader.HasProperty(nameof(T.PlainErrors)))
+                if (reader.HasProperty(nameof(X.PlainErrors)))
                     value.Errors(JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options));
-                if (reader.HasProperty(nameof(T.LabeledErrors)))
+                if (reader.HasProperty(nameof(X.LabeledErrors)))
                     value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options));
             }
 
@@ -30,7 +29,7 @@ namespace Annium.Data.Operations.Serialization
 
         public override void Write(
             Utf8JsonWriter writer,
-            IResultBase value,
+            X value,
             JsonSerializerOptions options
         )
         {
@@ -40,5 +39,15 @@ namespace Annium.Data.Operations.Serialization
 
             writer.WriteEndObject();
         }
+    }
+
+    internal class ResultConverterFactory : ResultConverterBaseFactory
+    {
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new ResultConverter();
+        }
+
+        protected override bool IsConvertibleInterface(Type type) => type == typeof(X);
     }
 }

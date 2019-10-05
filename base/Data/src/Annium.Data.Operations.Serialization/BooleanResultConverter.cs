@@ -1,17 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Annium.Extensions.Primitives;
-using T = Annium.Data.Operations.IBooleanResult;
+using X = Annium.Data.Operations.IBooleanResult;
 
 namespace Annium.Data.Operations.Serialization
 {
-    public class BooleanResultConverter : ResultConverterBase
+    internal class BooleanResultConverter : ResultConverterBase<X>
     {
-        protected override bool IsConvertibleInterface(Type type) =>
-            type == typeof(T);
-
-        public override IResultBase Read(
+        public override X Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
@@ -23,13 +21,13 @@ namespace Annium.Data.Operations.Serialization
 
             while (reader.Read())
             {
-                if (reader.HasProperty(nameof(T.IsSuccess)))
+                if (reader.HasProperty(nameof(X.IsSuccess)))
                     isSuccess = JsonSerializer.Deserialize<bool>(ref reader, options);
-                if (reader.HasProperty(nameof(T.IsFailure)))
+                if (reader.HasProperty(nameof(X.IsFailure)))
                     isSuccess = !JsonSerializer.Deserialize<bool>(ref reader, options);
-                if (reader.HasProperty(nameof(T.PlainErrors)))
+                if (reader.HasProperty(nameof(X.PlainErrors)))
                     plainErrors = JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options);
-                if (reader.HasProperty(nameof(T.LabeledErrors)))
+                if (reader.HasProperty(nameof(X.LabeledErrors)))
                     labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options);
             }
 
@@ -42,21 +40,31 @@ namespace Annium.Data.Operations.Serialization
 
         public override void Write(
             Utf8JsonWriter writer,
-            IResultBase value,
+            X value,
             JsonSerializerOptions options
         )
         {
             writer.WriteStartObject();
 
-            writer.WritePropertyName(nameof(T.IsSuccess).CamelCase());
-            JsonSerializer.Serialize(writer, value.Get(nameof(T.IsSuccess)), options);
+            writer.WritePropertyName(nameof(X.IsSuccess).CamelCase());
+            JsonSerializer.Serialize(writer, value.IsSuccess, options);
 
-            writer.WritePropertyName(nameof(T.IsFailure).CamelCase());
-            JsonSerializer.Serialize(writer, value.Get(nameof(T.IsFailure)), options);
+            writer.WritePropertyName(nameof(X.IsFailure).CamelCase());
+            JsonSerializer.Serialize(writer, value.IsFailure, options);
 
             WriteErrors(writer, value, options);
 
             writer.WriteEndObject();
         }
+    }
+
+    internal class BooleanResultConverterFactory : ResultConverterBaseFactory
+    {
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            return new BooleanResultConverter();
+        }
+
+        protected override bool IsConvertibleInterface(Type type) => type == typeof(X);
     }
 }
