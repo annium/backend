@@ -1,8 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using Annium.Extensions.Primitives;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using T = Annium.Data.Operations.IStatusResult<object>;
 
 namespace Annium.Data.Operations.Serialization
 {
@@ -11,43 +12,52 @@ namespace Annium.Data.Operations.Serialization
         protected override bool IsConvertibleInterface(Type type) =>
             type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IStatusResult<>);
 
-        public override object ReadJson(
-            JsonReader reader,
-            Type objectType,
-            object existingValue,
-            JsonSerializer serializer
+        public override IResultBase Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
         )
         {
-            var statusType = GetImplementation(objectType).GetGenericArguments() [0];
+            var typeArgs = GetImplementation(typeToConvert).GetGenericArguments();
+            var statusType = typeArgs[0];
 
-            var obj = JObject.Load(reader);
+            var status = statusType.IsValueType ? Activator.CreateInstance(statusType) : null;
+            IEnumerable<string> plainErrors = Array.Empty<string>();
+            IReadOnlyDictionary<string, IEnumerable<string>> labeledErrors = new Dictionary<string, IEnumerable<string>>();
 
-            var status = obj.Get(nameof(IStatusResult<object>.Status)) == null ?
-                (statusType.IsValueType ? Activator.CreateInstance(statusType) : null) :
-                obj.Get(nameof(IStatusResult<object>.Status)).ToObject(statusType, serializer);
+            while (reader.Read())
+            {
+                if (reader.HasProperty(nameof(T.Status)))
+                    status = JsonSerializer.Deserialize(ref reader, statusType, options);
+                if (reader.HasProperty(nameof(T.PlainErrors)))
+                    plainErrors = JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options);
+                if (reader.HasProperty(nameof(T.LabeledErrors)))
+                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options);
+            }
 
-            var result = typeof(Result).GetMethods()
+            var value = (IResultBase) typeof(Result).GetMethods()
                 .First(m => m.Name == nameof(Result.Status) && m.IsGenericMethod && m.GetGenericArguments().Length == 1)
                 .MakeGenericMethod(statusType)
                 .Invoke(null, new [] { status }) !;
 
-            ReadErrors(obj, result);
+            value.Errors(plainErrors);
+            value.Errors(labeledErrors);
 
-            return result;
+            return value;
         }
 
-        public override void WriteJson(
-            JsonWriter writer,
-            object value,
-            JsonSerializer serializer
+        public override void Write(
+            Utf8JsonWriter writer,
+            IResultBase value,
+            JsonSerializerOptions options
         )
         {
             writer.WriteStartObject();
 
-            writer.WritePropertyName(nameof(IStatusResult<object>.Status).CamelCase());
-            serializer.Serialize(writer, value.GetPropertyValue(nameof(IStatusResult<object>.Status)));
+            writer.WritePropertyName(nameof(T.Status).CamelCase());
+            JsonSerializer.Serialize(writer, value.Get(nameof(T.Status)), options);
 
-            WriteErrors(value, writer, serializer);
+            WriteErrors(writer, value, options);
 
             writer.WriteEndObject();
         }

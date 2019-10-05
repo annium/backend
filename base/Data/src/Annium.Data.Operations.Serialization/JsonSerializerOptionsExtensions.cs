@@ -1,19 +1,19 @@
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Annium.Data.Operations.Serialization;
-using Newtonsoft.Json;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class Extensions
+    public static class JsonSerializerOptionsExtensions
     {
-        public static JsonSerializerSettings ConfigureForOperations(this JsonSerializerSettings settings)
+        public static JsonSerializerOptions ConfigureForOperations(
+            this JsonSerializerOptions options
+        )
         {
-            if (settings == null)
-                throw new System.ArgumentNullException(nameof(settings));
+            AddDefaultConverters(options.Converters);
 
-            AddDefaultConverters(settings.Converters);
-
-            return settings;
+            return options;
         }
 
         private static void AddDefaultConverters(IList<JsonConverter> converters)

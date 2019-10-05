@@ -1,10 +1,10 @@
 {
     "version": "0.2.0",
     "configurations": [{
-        "name": ".NET Core Launch (console)",
+        "name": "Operations.Serialization",
         "type": "coreclr",
         "request": "launch",
-        "program": "${workspaceFolder}/test/Demo.Data.Operations.Serialization/bin/Debug/netcoreapp3.0/Demo.Data.Operations.Serialization",
+        "program": "${workspaceFolder}/test/Demo.Data.Operations.Serialization/bin/Debug/netcoreapp3.0/Demo.Data.Operations.Serialization.dll",
         "args": [],
         "cwd": "${workspaceFolder}",
         "stopAtEntry": false,

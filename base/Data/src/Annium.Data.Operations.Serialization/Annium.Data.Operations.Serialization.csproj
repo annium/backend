@@ -15,7 +15,4 @@
         <ProjectReference Include="../Annium.Data.Operations/Annium.Data.Operations.csproj" />
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    </ItemGroup>
 </Project>

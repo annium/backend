@@ -1,6 +1,6 @@
+using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Newtonsoft.Json;
 
 namespace Annium.Data.Operations.Serialization.Tests
 {
@@ -10,7 +10,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseWrite_Base_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(), GetSettings());
+            var str = JsonSerializer.Serialize(Result.New(), GetSettings());
 
             // assert
             str.IsEqual(@"{""plainErrors"":[],""labeledErrors"":{}}");
@@ -20,7 +20,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseWrite_WithErrors_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New().Error("plain").Error("label", "another"), GetSettings());
+            var str = JsonSerializer.Serialize(Result.New().Error("plain").Error("label", "another"), GetSettings());
 
             // assert
             str.IsEqual(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
@@ -30,7 +30,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataWrite_Base_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5), GetSettings());
+            var str = JsonSerializer.Serialize(Result.New(5), GetSettings());
 
             // assert
             str.IsEqual(@"{""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
@@ -40,7 +40,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataWrite_WithErrors_WritesCorrectly()
         {
             // act
-            var str = JsonConvert.SerializeObject(Result.New(5).Error("plain").Error("label", "another"), GetSettings());
+            var str = JsonSerializer.Serialize(Result.New(5).Error("plain").Error("label", "another"), GetSettings());
 
             // assert
             str.IsEqual(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
@@ -50,7 +50,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<IResult>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult>("{}", GetSettings());
 
             // assert
             result.HasErrors.IsFalse();
@@ -60,7 +60,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<IResult>(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult>(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.HasErrors.IsTrue();
@@ -74,7 +74,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<IResult<int>>(@"{""data"":5}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5}", GetSettings());
 
             // assert
             result.HasErrors.IsFalse();
@@ -85,7 +85,7 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonConvert.DeserializeObject<IResult<int>>(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.HasErrors.IsTrue();
@@ -96,6 +96,6 @@ namespace Annium.Data.Operations.Serialization.Tests
             result.LabeledErrors.At("label").At(0).IsEqual("another");
         }
 
-        private JsonSerializerSettings GetSettings() => new JsonSerializerSettings().ConfigureForOperations();
+        private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();
     }
 }

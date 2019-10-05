@@ -15,5 +15,6 @@
         <ProjectReference Include="../../../Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
+        <ProjectReference Include="../../src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
     </ItemGroup>
 </Project>
