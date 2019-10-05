@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Threading;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.Entrypoint;
-using Newtonsoft.Json;
 using YamlDotNet.Serialization;
 
 namespace Demo.Extensions.Configuration
@@ -73,7 +73,7 @@ namespace Demo.Extensions.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, JsonConvert.SerializeObject(cfg));
+                File.WriteAllText(jsonFile, JsonSerializer.Serialize(cfg));
 
                 var builder = new ConfigurationBuilder();
                 builder.AddJsonFile(jsonFile);

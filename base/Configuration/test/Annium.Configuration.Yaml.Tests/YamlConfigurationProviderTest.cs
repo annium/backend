@@ -49,7 +49,7 @@ namespace Annium.Configuration.Yaml.Tests
                 result.Matrix.At(1).SequenceEqual(new [] { 5, 4 }).IsTrue();
                 result.List.Has(2);
                 result.List[0].Plain.IsEqual(8);
-                result.List[0].Array.IsDefault();
+                result.List[0].Array.IsEmpty();
                 result.List[1].Plain.IsEqual(0);
                 result.List[1].Array.SequenceEqual(new [] { 2m, 6m }).IsTrue();
                 IDictionary<string, Val> dict = result.Dictionary;

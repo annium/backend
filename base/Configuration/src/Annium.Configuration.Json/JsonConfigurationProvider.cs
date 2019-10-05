@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
 
 namespace Annium.Configuration.Abstractions
 {
@@ -17,52 +17,54 @@ namespace Annium.Configuration.Abstractions
         {
             Init();
 
-            var token = JObject.Parse(File.ReadAllText(filePath));
+            var element = JsonDocument.Parse(File.ReadAllBytes(filePath)).RootElement;
 
-            Process(token);
+            Process(element);
 
             return data;
         }
 
-        private void Process(JObject token)
+        private void ProcessObject(JsonElement token)
         {
-            foreach (var property in token.Properties())
+            foreach (var property in token.EnumerateObject())
             {
                 context.Push(property.Name);
-
-                if (property.Value is JObject obj)
-                    Process(obj);
-                else if (property.Value is JArray arr)
-                    Process(arr);
-                else
-                    Process(property.Value);
-
+                Process(property.Value);
                 context.Pop();
             }
         }
 
-        private void Process(JArray token)
+        private void ProcessArray(JsonElement token)
         {
             var index = 0;
-            foreach (var item in token)
+            foreach (var item in token.EnumerateArray())
             {
                 context.Push(index.ToString());
-
-                if (item is JObject obj)
-                    Process(obj);
-                else if (item is JArray arr)
-                    Process(arr);
-                else
-                    Process(item);
-
+                Process(item);
                 context.Pop();
                 index++;
             }
         }
 
-        private void Process(JToken token)
+        private void ProcessLeaf(JsonElement token)
         {
             data[Path] = token.ToString();
+        }
+
+        private void Process(JsonElement element)
+        {
+            switch (element.ValueKind)
+            {
+                case JsonValueKind.Object:
+                    ProcessObject(element);
+                    break;
+                case JsonValueKind.Array:
+                    ProcessArray(element);
+                    break;
+                default:
+                    ProcessLeaf(element);
+                    break;
+            }
         }
     }
 

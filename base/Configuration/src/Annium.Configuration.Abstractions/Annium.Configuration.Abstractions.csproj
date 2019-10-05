@@ -14,8 +14,4 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-        <PackageReference Include="YamlDotNet" Version="6.1.2" />
-    </ItemGroup>
 </Project>
