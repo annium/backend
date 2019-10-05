@@ -16,11 +16,12 @@ namespace Annium.Data.Operations.Serialization
         {
             var value = Result.New();
 
-            while (reader.Read())
+            var depth = reader.CurrentDepth;
+            while (reader.Read() && reader.CurrentDepth > depth)
             {
                 if (reader.HasProperty(nameof(X.PlainErrors)))
                     value.Errors(JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options));
-                if (reader.HasProperty(nameof(X.LabeledErrors)))
+                else if (reader.HasProperty(nameof(X.LabeledErrors)))
                     value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options));
             }
 

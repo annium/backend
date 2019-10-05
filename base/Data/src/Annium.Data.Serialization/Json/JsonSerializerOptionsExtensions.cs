@@ -1,3 +1,4 @@
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using Annium.Data.Serialization.Json;
 
@@ -9,6 +10,10 @@ namespace Annium.Core.DependencyInjection
             this JsonSerializerOptions options
         )
         {
+            options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
             options.Converters.Add(new AbstractJsonConverterFactory());
 
             return options;

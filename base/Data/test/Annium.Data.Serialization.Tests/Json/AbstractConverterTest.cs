@@ -19,7 +19,7 @@ namespace Annium.Data.Serialization.Tests.Json
             var result = JsonSerializer.Serialize(arr, settings);
 
             // assert
-            result.IsEqual(@"[{""A"":1},{""B"":2}]");
+            result.IsEqual(@"[{""a"":1},{""b"":2}]");
         }
 
         [Fact]

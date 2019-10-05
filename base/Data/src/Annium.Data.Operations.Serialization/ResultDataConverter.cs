@@ -19,13 +19,14 @@ namespace Annium.Data.Operations.Serialization
             IEnumerable<string> plainErrors = Array.Empty<string>();
             IReadOnlyDictionary<string, IEnumerable<string>> labeledErrors = new Dictionary<string, IEnumerable<string>>();
 
-            while (reader.Read())
+            var depth = reader.CurrentDepth;
+            while (reader.Read() && reader.CurrentDepth > depth)
             {
                 if (reader.HasProperty(nameof(X.Data)))
                     data = JsonSerializer.Deserialize<D>(ref reader, options);
-                if (reader.HasProperty(nameof(X.PlainErrors)))
+                else if (reader.HasProperty(nameof(X.PlainErrors)))
                     plainErrors = JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options);
-                if (reader.HasProperty(nameof(X.LabeledErrors)))
+                else if (reader.HasProperty(nameof(X.LabeledErrors)))
                     labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options);
             }
 
