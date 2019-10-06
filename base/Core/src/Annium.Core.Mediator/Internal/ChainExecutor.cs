@@ -17,15 +17,15 @@ namespace Annium.Core.Mediator.Internal
             int index = 0
         )
         {
-            var isFinal = index < chain.Count() - 1;
+            var hasNext = index < chain.Count() - 1;
             var element = chain[index];
 
             var parameters = new List<object> { request, cancellationToken };
-            if (isFinal)
+            if (hasNext)
                 parameters.Add(element.Next!.DynamicInvoke(provider, chain, cancellationToken, index + 1)!);
 
             var handler = element.Handler;
-            var handleMethodName = isFinal ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
+            var handleMethodName = hasNext ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
             var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray())!;
             var result = handleMethod.Invoke(provider.GetRequiredService(handler), parameters.ToArray())!;
             await (Task) result;
