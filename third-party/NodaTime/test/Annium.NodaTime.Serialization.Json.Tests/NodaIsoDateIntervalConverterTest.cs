@@ -52,7 +52,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 
         public class TestObject
         {
-            public DateInterval Interval { get; set; }
+            public DateInterval Interval { get; set; } = null!;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using YamlDotNet.Serialization;
 
@@ -66,14 +67,15 @@ namespace Demo.Extensions.Configuration
                 Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
                 List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
                 Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
-                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } }
+                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } },
+                Abstract = new ConfigTwo { Value = 10 },
             };
 
             string jsonFile = string.Empty;
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, JsonSerializer.Serialize(cfg));
+                File.WriteAllText(jsonFile, JsonSerializer.Serialize(cfg, new JsonSerializerOptions().ConfigureAbstractConverter()));
 
                 var builder = new ConfigurationBuilder();
                 builder.AddJsonFile(jsonFile);

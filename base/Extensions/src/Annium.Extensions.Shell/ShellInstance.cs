@@ -112,7 +112,7 @@ namespace Annium.Extensions.Shell
                 }
                 catch (Exception e)
                 {
-                    logger.Warn($"Process.Kill() failed: {e}");
+                    logger.Warn($"Kill process {GetCommand(process)} failed: {e}");
                 }
                 handleExit();
             });

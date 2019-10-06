@@ -1,22 +1,16 @@
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
-using NodaTime.Serialization.JsonNet;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ConfigurationExtensions
     {
-        public static IMvcBuilder WithDataAnnotationsLocalization<TAnnotationsResource>(this IMvcBuilder builder) =>
-            builder.AddDataAnnotationsLocalization(opts =>
-                opts.DataAnnotationLocalizerProvider = (_, factory) => factory.Create(typeof(TAnnotationsResource)));
-
-        public static IMvcBuilder WithJsonOptions(
+        public static IMvcBuilder AddDefaultJsonOptions(
             this IMvcBuilder builder
-        ) => builder.AddJsonOptions(opts =>
-        {
-            opts.SerializerSettings.ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
-
-            opts.SerializerSettings.ConfigureAbstractConverter();
-        });
+        ) => builder.AddJsonOptions(opts => opts.JsonSerializerOptions
+            .ConfigureAbstractConverter()
+            .ConfigureForOperations()
+            .ConfigureForNodaTime(DateTimeZoneProviders.Serialization)
+        );
     }
 }

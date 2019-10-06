@@ -22,7 +22,7 @@ namespace Annium.AspNetCore.IntegrationTesting
             configureHost(hostBuilder);
 
             return hostBuilder
-                .ConfigureForAnniumLogging()
+                .ConfigureLoggingBridge()
                 .ConfigureWebHostDefaults(builder => builder
                     .UseContentRoot(Directory.GetCurrentDirectory())
                     .UseStartup<TStartup>()

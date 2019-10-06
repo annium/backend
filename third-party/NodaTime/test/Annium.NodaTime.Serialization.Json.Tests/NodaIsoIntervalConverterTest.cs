@@ -55,13 +55,13 @@ namespace Annium.NodaTime.Serialization.Json.Tests
             var testObject = new TestObject { Interval = interval };
 
             var json = JsonSerializer.Serialize(testObject, With(converters));
-            json.IsEqual("{\"Interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}");
+            json.IsEqual("{\"interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}");
         }
 
         [Fact]
         public void Deserialize_InObject()
         {
-            string json = "{\"Interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}";
+            string json = "{\"interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}";
 
             var testObject = JsonSerializer.Deserialize<TestObject>(json, With(converters));
 

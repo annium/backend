@@ -1,16 +1,15 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Requests;
 using Demo.Core.Mediator.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Demo.Core.Mediator
 {
@@ -25,7 +24,7 @@ namespace Demo.Core.Mediator
             var mediator = provider.GetRequiredService<IMediator>();
             _ = provider.GetRequiredService<TodoRepository>();
 
-            var settings = new JsonSerializerSettings().ConfigureForOperations();
+            var options = new JsonSerializerOptions().ConfigureForOperations();
 
             var request = new CreateTodoRequest("wake up");
             var payload = encode(request);
@@ -43,9 +42,9 @@ namespace Demo.Core.Mediator
             - response handler (mutates response)
              */
 
-            Request<TRequest> encode<TRequest>(TRequest e) => new Request<TRequest>(JsonConvert.SerializeObject(e, settings));
+            Request<TRequest> encode<TRequest>(TRequest e) => new Request<TRequest>(JsonSerializer.Serialize(e, options));
 
-            TResponse decode<TResponse>(Response<TResponse> e) => JsonConvert.DeserializeObject<TResponse>(e.Value, settings);
+            TResponse decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options);
         }
 
         public static int Main(string[] args) => new Entrypoint()

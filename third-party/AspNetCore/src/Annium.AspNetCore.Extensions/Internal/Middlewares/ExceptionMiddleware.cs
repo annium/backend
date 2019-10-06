@@ -1,20 +1,25 @@
 using System;
 using System.Net;
 using System.Net.Mime;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
+using NodaTime;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
     public class ExceptionMiddleware
     {
         private readonly RequestDelegate next;
-
         private readonly ILogger<ExceptionMiddleware> logger;
+        private readonly JsonSerializerOptions jsonSerializerOptions = new JsonSerializerOptions()
+            .ConfigureAbstractConverter()
+            .ConfigureForOperations()
+            .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
 
         public ExceptionMiddleware(
             RequestDelegate next,
@@ -39,7 +44,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 
                 var result = Result.Status(OperationStatus.UncaughtException).Error(exception.ToString());
 
-                await context.Response.WriteAsync(JsonConvert.SerializeObject(result));
+                await context.Response.WriteAsync(JsonSerializer.Serialize(result, jsonSerializerOptions));
             }
         }
     }

@@ -16,6 +16,7 @@ namespace Demo.AspNetCore
         {
             return Host.CreateDefaultBuilder(args)
                 .UseServiceProviderFactory(new ServiceProviderFactory(b => b.UseServicePack<ServicePack>()))
+                .ConfigureLoggingBridge()
                 .ConfigureWebHostDefaults(builder =>
                 {
                     builder

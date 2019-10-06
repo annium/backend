@@ -35,7 +35,7 @@ namespace Annium.Configuration.Abstractions
         {
             foreach (var(key, value) in node.Children)
             {
-                context.Push(((YamlScalarNode) key).Value);
+                context.Push(((YamlScalarNode) key).Value!);
 
                 if (value is YamlMappingNode map)
                     Process(map);
@@ -69,7 +69,7 @@ namespace Annium.Configuration.Abstractions
 
         private void Process(YamlScalarNode token)
         {
-            data[Path] = token.Value;
+            data[Path] = token.Value!;
         }
     }
 

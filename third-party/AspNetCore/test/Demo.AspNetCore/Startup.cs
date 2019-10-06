@@ -11,7 +11,7 @@ namespace Demo.AspNetCore
             services.AddControllers();
             services.AddCors();
             services.AddMvc()
-                .AddNewtonsoftJson(opts => opts.SerializerSettings.ConfigureForOperations());
+                .AddDefaultJsonOptions();
         }
 
         public void Configure(IApplicationBuilder app)

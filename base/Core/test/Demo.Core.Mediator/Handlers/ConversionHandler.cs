@@ -1,10 +1,10 @@
 using System;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Logging.Abstractions;
 using Demo.Core.Mediator.ViewModels;
-using Newtonsoft.Json;
 
 namespace Demo.Core.Mediator.Handlers
 {
@@ -26,12 +26,12 @@ namespace Demo.Core.Mediator.Handlers
         )
         {
             logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
-            var payload = JsonConvert.DeserializeObject<TRequest>(request.Value);
+            var payload = JsonSerializer.Deserialize<TRequest>(request.Value);
 
             var result = await next(payload);
 
             logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
-            return new Response<TResponse>(JsonConvert.SerializeObject(result));
+            return new Response<TResponse>(JsonSerializer.Serialize(result));
         }
     }
 }

@@ -17,16 +17,19 @@ namespace Demo.NodaTime.Serialization
             CancellationToken token
         )
         {
-            var opts = With(Converters.DateIntervalConverter, Converters.LocalDateConverter);
+            var converters = new [] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };
+            var startLocalDate = new LocalDate(2012, 1, 2);
+            var endLocalDate = new LocalDate(2013, 6, 7);
+            var dateInterval = new DateInterval(startLocalDate, endLocalDate);
 
-            string json = "{\"interval\":{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}}";
+            var testObject = new TestObject { Interval = dateInterval };
 
-            var testObject = JsonSerializer.Deserialize<TestObject>(json, opts);
+            var json = JsonSerializer.Serialize(testObject, With(converters));
         }
 
         public class TestObject
         {
-            public DateInterval Interval { get; set; }
+            public DateInterval Interval { get; set; } = null!;
         }
 
         public static int Main(string[] args) => new Entrypoint()

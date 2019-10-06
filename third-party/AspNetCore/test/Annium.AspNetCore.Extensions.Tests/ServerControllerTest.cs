@@ -1,14 +1,12 @@
 using System.Net;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization;
 using Annium.Net.Http;
 using Annium.Testing;
 using Demo.AspNetCore;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Annium.AspNetCore.Extensions.Tests
 {
@@ -103,13 +101,9 @@ namespace Annium.AspNetCore.Extensions.Tests
             (await response.Content.ReadAsStringAsync()).IsEqual(expected);
         }
 
-        private string Serialize(object obj) => JsonConvert.SerializeObject(
+        private string Serialize(object obj) => JsonSerializer.Serialize(
             obj,
-            new JsonSerializerSettings()
-            {
-                ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() }
-            }
-            .ConfigureForOperations()
+            new JsonSerializerOptions().ConfigureForOperations()
         );
     }
 }

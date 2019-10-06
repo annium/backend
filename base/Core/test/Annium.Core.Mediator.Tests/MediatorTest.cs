@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 using NodaTime;
 
 namespace Annium.Core.Mediator.Tests
@@ -59,7 +58,7 @@ namespace Annium.Core.Mediator.Tests
             var payload = new Request<Two>(request);
 
             // act
-            var response = (await mediator.SendAsync<Request<Two>, Response<IBooleanResult<Base>>>(new Request<Two>(request))).Value;
+            var response = (await mediator.SendAsync<Request<Two>, Response<IBooleanResult<Base>>>(payload)).Value;
 
             // assert
             response.IsSuccess.IsTrue();
@@ -95,6 +94,8 @@ namespace Annium.Core.Mediator.Tests
 
         internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
         {
+            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
+
             private readonly ILogger<MediatorTest> logger;
 
             public ConversionHandler(
@@ -111,36 +112,36 @@ namespace Annium.Core.Mediator.Tests
             )
             {
                 logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
-                var payload = JsonConvert.DeserializeObject<TRequest>(request.Value);
+                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, options);
 
                 var result = await next(payload);
 
                 logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
-                return new Response<TResponse>(JsonConvert.SerializeObject(result));
+                return new Response<TResponse>(JsonSerializer.Serialize(result, options));
             }
         }
 
         internal class Request<T>
         {
-            private static JsonSerializerSettings settings = new JsonSerializerSettings().ConfigureForOperations();
+            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
 
             public string Value { get; }
 
             public Request(T value)
             {
-                Value = JsonConvert.SerializeObject(value, settings);
+                Value = JsonSerializer.Serialize(value, options);
             }
         }
 
         internal class Response<T>
         {
-            private static JsonSerializerSettings settings = new JsonSerializerSettings().ConfigureForOperations();
+            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
 
             public T Value { get; }
 
             public Response(string value)
             {
-                Value = JsonConvert.DeserializeObject<T>(value, settings);
+                Value = JsonSerializer.Deserialize<T>(value, options);
             }
         }
 

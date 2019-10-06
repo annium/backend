@@ -14,8 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
+        <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
     </ItemGroup>
 </Project>
