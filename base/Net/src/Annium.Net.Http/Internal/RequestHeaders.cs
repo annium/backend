@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http
+namespace Annium.Net.Http.Internal
 {
     internal partial class Request
     {

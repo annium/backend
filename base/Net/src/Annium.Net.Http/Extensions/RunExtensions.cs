@@ -1,22 +1,15 @@
 using System;
 using System.IO;
 using System.Net.Mime;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Newtonsoft.Json;
-using NodaTime;
-using NodaTime.Serialization.JsonNet;
+using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http
 {
     public static class RunExtensions
     {
-        private static readonly JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings()
-            .ConfigureAbstractConverter()
-            .ConfigureForOperations()
-            .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
-
         public static async Task<string> AsStringAsync(this IRequest request)
         {
             var response = await request.RunAsync();
@@ -44,7 +37,7 @@ namespace Annium.Net.Http
         {
             var response = await request.RunAsync();
             if (!response.IsSuccessStatusCode)
-                return default!;
+                return default !;
 
             return parse(await response.Content.ReadAsStringAsync());
 
@@ -52,13 +45,13 @@ namespace Annium.Net.Http
             {
                 var mediaType = response.Content.Headers.ContentType.MediaType;
 
-                switch (mediaType)
+                return mediaType
+                switch
                 {
-                    case MediaTypeNames.Application.Json:
-                        return JsonConvert.DeserializeObject<T>(raw, jsonSerializerSettings);
-                    default:
-                        throw new NotSupportedException($"Media type '{mediaType}' is not supported");
-                }
+                    MediaTypeNames.Application.Json => JsonSerializer.Deserialize<T>(raw, Options.Json),
+                        _ =>
+                        throw new NotSupportedException($"Media type '{mediaType}' is not supported"),
+                };
             }
         }
     }

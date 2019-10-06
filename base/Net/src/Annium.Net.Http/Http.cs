@@ -1,4 +1,5 @@
 using System;
+using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http
 {

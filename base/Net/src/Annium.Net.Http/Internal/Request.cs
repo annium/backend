@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace Annium.Net.Http
+namespace Annium.Net.Http.Internal
 {
     internal partial class Request : IRequest
     {

@@ -2,7 +2,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http
+namespace Annium.Net.Http.Internal
 {
     internal class Response : IResponse
     {
