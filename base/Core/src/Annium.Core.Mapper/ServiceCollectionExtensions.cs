@@ -8,20 +8,20 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMapperConfiguration(
+        public static IServiceCollection AddProfile(
             this IServiceCollection services,
-            Action<MapperConfiguration> configure
+            Action<Profile> configure
         )
         {
-            var cfg = new EmptyMapperConfiguration();
-            configure(cfg);
+            var profile = new EmptyProfile();
+            configure(profile);
 
-            services.AddSingleton<MapperConfiguration>(cfg);
+            services.AddSingleton<Profile>(profile);
 
             return services;
         }
 
-        public static IServiceCollection AddMapper(this IServiceCollection services, bool autoload = false)
+        public static IServiceCollection AddMapper(this IServiceCollection services, bool autoload = true)
         {
             services.AddReflectionTools();
 
@@ -29,14 +29,14 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
 
-            services.AddSingleton<MapperConfiguration>(new DefaultConfiguration());
+            services.AddSingleton<Profile>(new DefaultProfile());
 
             if (autoload)
             {
-                var cfgType = typeof(MapperConfiguration);
-                var implementations = TypeManager.Instance.GetImplementations(cfgType);
-                foreach (var type in implementations)
-                    services.AddSingleton(cfgType, type);
+                var profileBase = typeof(Profile);
+                var profiles = TypeManager.Instance.GetImplementations(profileBase);
+                foreach (var profile in profiles)
+                    services.AddSingleton(profileBase, profile);
             }
 
             return services;

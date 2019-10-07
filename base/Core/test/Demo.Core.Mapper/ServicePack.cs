@@ -9,7 +9,7 @@ namespace Demo.Extensions.Mapping
     {
         public override void Configure(IServiceCollection services)
         {
-            services.AddMapperConfiguration(ConfigureMapping);
+            services.AddProfile(ConfigureProfile);
         }
 
         public override void Register(IServiceCollection services, IServiceProvider provider)
@@ -17,13 +17,13 @@ namespace Demo.Extensions.Mapping
             services.AddMapper();
         }
 
-        private void ConfigureMapping(MapperConfiguration cfg)
+        private void ConfigureProfile(Profile p)
         {
-            cfg.Map<Plain, Complex>()
+            p.Map<Plain, Complex>()
                 .Field(e => new Client { Name = e.ClientName! }, e => e.Client!);
-            cfg.Map<Complex, Plain>()
+            p.Map<Complex, Plain>()
                 .Field(e => e.Client!.Name!, e => e.ClientName!);
-            cfg.Map<A, B>()
+            p.Map<A, B>()
                 .Field(a => a.Text!.ToLower(), b => b.LowerText)
                 .Ignore(b => b.Ignored);
         }

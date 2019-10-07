@@ -3,9 +3,9 @@ using NodaTime;
 
 namespace Annium.Core.Mapper.Internal
 {
-    internal class DefaultConfiguration : MapperConfiguration
+    internal class DefaultProfile : Profile
     {
-        public DefaultConfiguration()
+        public DefaultProfile()
         {
             Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
             Map<Instant, DateTime>(i => i.ToDateTimeUtc());

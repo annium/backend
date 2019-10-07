@@ -31,14 +31,14 @@ namespace Annium.Core.Mapper.Tests
 
         private IMapper GetMapper() => new ServiceCollection()
             .AddMapper(autoload: false)
-            .AddMapperConfiguration(ConfigureMapping)
+            .AddProfile(ConfigureProfile)
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();
 
-        private void ConfigureMapping(MapperConfiguration cfg)
+        private void ConfigureProfile(Profile p)
         {
-            cfg.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
-            cfg.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
+            p.Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
+            p.Map<Instant, DateTime>(i => i.ToDateTimeUtc());
         }
 
         private abstract class Payload { }

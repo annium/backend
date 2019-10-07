@@ -6,9 +6,9 @@ using Annium.Core.Reflection;
 
 namespace Annium.Core.Mapper
 {
-    public class MapConfiguration<S, T> : Map
+    public class Map<S, T> : Map
     {
-        public new MapConfiguration<S, T> Type(
+        public new Map<S, T> Type(
             Expression<Func<S, T>> map
         )
         {
@@ -17,7 +17,7 @@ namespace Annium.Core.Mapper
             return this;
         }
 
-        public MapConfiguration<S, T> Field(
+        public Map<S, T> Field(
             Expression<Func<S, object>> map,
             Expression<Func<T, object>> field
         )
@@ -27,7 +27,7 @@ namespace Annium.Core.Mapper
             return this;
         }
 
-        public MapConfiguration<S, T> Ignore(
+        public Map<S, T> Ignore(
             Expression<Func<T, object>> field
         )
         {

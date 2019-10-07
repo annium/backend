@@ -11,32 +11,32 @@ namespace Annium.Core.Mapper.Internal
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> maps =
             new Dictionary<ValueTuple<Type, Type>, Delegate>();
 
-        private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> raw =
+        private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> mappings =
             new Dictionary<ValueTuple<Type, Type>, Func<Expression, Expression>>();
 
-        private readonly MapperConfiguration cfg;
+        private readonly Profile profile;
 
         private readonly ITypeManager typeManager;
 
         private readonly Repacker repacker;
 
         public MapBuilder(
-            IEnumerable<MapperConfiguration> configs,
+            IEnumerable<Profile> configs,
             ITypeManager typeManager,
             Repacker repacker
         )
         {
-            cfg = MapperConfiguration.Merge(configs.ToArray());
+            profile = Profile.Merge(configs.ToArray());
             this.typeManager = typeManager;
             this.repacker = repacker;
 
             // save complete type maps directly to raw resolutions
-            foreach (((Type, Type) key, Map map) in cfg.Maps)
+            foreach (((Type, Type) key, Map map) in profile.Maps)
                 if (map.Type != null)
-                    raw[key] = repacker.Repack(map.Type.Body);
+                    mappings[key] = repacker.Repack(map.Type.Body);
         }
 
-        public bool HasMap(Type src, Type tgt) => src == tgt || raw.ContainsKey((src, tgt));
+        public bool HasMap(Type src, Type tgt) => src == tgt || mappings.ContainsKey((src, tgt));
 
         public Delegate GetMap(Type src, Type tgt)
         {
@@ -45,11 +45,11 @@ namespace Annium.Core.Mapper.Internal
                 return map;
 
             var param = Expression.Parameter(src);
-            var rawMap = ResolveMap(src, tgt);
-            if (rawMap is null)
+            var mapping = ResolveMap(src, tgt);
+            if (mapping is null)
                 throw new MappingException(src, tgt, $"No map found.");
 
-            var result = Expression.Lambda(rawMap(param), param);
+            var result = Expression.Lambda(mapping(param), param);
 
             return maps[key] = result.Compile();
         }
@@ -60,12 +60,12 @@ namespace Annium.Core.Mapper.Internal
                 return null!;
 
             var key = (src, tgt);
-            if (raw.TryGetValue(key, out var map))
-                return map;
+            if (mappings.TryGetValue(key, out var mapping))
+                return mapping;
 
-            this.cfg.Maps.TryGetValue(key, out var cfg);
+            profile.Maps.TryGetValue(key, out var cfg);
 
-            return raw[key] = BuildMap(src, tgt, cfg!);
+            return mappings[key] = BuildMap(src, tgt, cfg!);
         }
     }
 }

@@ -38,16 +38,16 @@ namespace Annium.Core.Mapper.Tests
 
         private IMapper GetMapper() => new ServiceCollection()
             .AddMapper(autoload: false)
-            .AddMapperConfiguration(ConfigureMapping)
+            .AddProfile(ConfigureProfile)
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();
 
-        private void ConfigureMapping(MapperConfiguration cfg)
+        private void ConfigureProfile(Profile p)
         {
-            cfg.Map<A, B>()
+            p.Map<A, B>()
                 .Field(e => e.Text!.ToLower(), e => e.LowerText!)
                 .Ignore(e => e.Ignored);
-            cfg.Map<A, C>()
+            p.Map<A, C>()
                 .Field(e => e.Text!.ToLower(), c => c.LowerText!)
                 .Ignore(e => e.Ignored);
         }
