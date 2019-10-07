@@ -1,6 +1,7 @@
 using System;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
+using Annium.Core.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -12,7 +13,7 @@ namespace Annium.Core.DependencyInjection
             Action<MapperConfiguration> configure
         )
         {
-            var cfg = new MapperConfiguration();
+            var cfg = new EmptyMapperConfiguration();
             configure(cfg);
 
             services.AddSingleton<MapperConfiguration>(cfg);
@@ -20,15 +21,23 @@ namespace Annium.Core.DependencyInjection
             return services;
         }
 
-        public static IServiceCollection AddMapper(this IServiceCollection services)
+        public static IServiceCollection AddMapper(this IServiceCollection services, bool autoload = false)
         {
             services.AddReflectionTools();
-
-            services.AddMapperConfiguration(DefaultConfiguration.Apply);
 
             services.AddSingleton<Repacker>();
             services.AddSingleton<MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
+
+            services.AddSingleton<MapperConfiguration>(new DefaultConfiguration());
+
+            if (autoload)
+            {
+                var cfgType = typeof(MapperConfiguration);
+                var implementations = TypeManager.Instance.GetImplementations(cfgType);
+                foreach (var type in implementations)
+                    services.AddSingleton(cfgType, type);
+            }
 
             return services;
         }

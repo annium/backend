@@ -16,7 +16,7 @@ namespace Annium.Core.Mapper
 
         public static void AddConfiguration(Action<MapperConfiguration> configure)
         {
-            var cfg = new MapperConfiguration();
+            var cfg = new EmptyMapperConfiguration();
             configure(cfg);
             mapper = AddConfiguration(cfg);
         }
@@ -31,9 +31,7 @@ namespace Annium.Core.Mapper
 
         private static IMapper InitMapper()
         {
-            var cfg = new MapperConfiguration();
-            DefaultConfiguration.Apply(cfg);
-            return AddConfiguration(cfg);
+            return AddConfiguration(new DefaultConfiguration());
         }
 
         private static IMapper AddConfiguration(MapperConfiguration configuration)

@@ -5,11 +5,11 @@ using System.Linq.Expressions;
 
 namespace Annium.Core.Mapper
 {
-    public class MapperConfiguration
+    public abstract class MapperConfiguration
     {
         internal static MapperConfiguration Merge(params MapperConfiguration[] configurations)
         {
-            var result = new MapperConfiguration();
+            var result = new EmptyMapperConfiguration();
             foreach (var(key, map) in configurations.SelectMany(c => c.maps))
                 result.maps[key] = map;
 
@@ -20,8 +20,6 @@ namespace Annium.Core.Mapper
 
         private readonly Dictionary<ValueTuple<Type, Type>, Map> maps =
             new Dictionary<ValueTuple<Type, Type>, Map>();
-
-        internal MapperConfiguration() { }
 
         public MapperConfiguration Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> map)
         {

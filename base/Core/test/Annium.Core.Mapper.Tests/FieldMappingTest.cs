@@ -37,8 +37,8 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper() => new ServiceCollection()
+            .AddMapper(autoload: false)
             .AddMapperConfiguration(ConfigureMapping)
-            .AddMapper()
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();
 

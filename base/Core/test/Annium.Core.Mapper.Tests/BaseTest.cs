@@ -97,8 +97,10 @@ namespace Annium.Core.Mapper.Tests
             result.Value.IsEqual(value.Value);
         }
 
-        private IMapper GetMapper() =>
-            new ServiceCollection().AddMapper().BuildServiceProvider().GetRequiredService<IMapper>();
+        private IMapper GetMapper() => new ServiceCollection()
+            .AddMapper(autoload: false)
+            .BuildServiceProvider()
+            .GetRequiredService<IMapper>();
 
         private class A
         {

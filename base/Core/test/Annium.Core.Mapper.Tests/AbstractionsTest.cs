@@ -23,8 +23,10 @@ namespace Annium.Core.Mapper.Tests
             result.At(1).As<LinkModel>().Link.IsEqual("lnk");
         }
 
-        private IMapper GetMapper() =>
-            new ServiceCollection().AddMapper().BuildServiceProvider().GetRequiredService<IMapper>();
+        private IMapper GetMapper() => new ServiceCollection()
+            .AddMapper(autoload: false)
+            .BuildServiceProvider()
+            .GetRequiredService<IMapper>();
 
         private abstract class Payload { }
 
