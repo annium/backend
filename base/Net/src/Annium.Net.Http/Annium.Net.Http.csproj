@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.OldMapper/Annium.Core.OldMapper.csproj" />
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
         <ProjectReference Include="../../../Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
         <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
