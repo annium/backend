@@ -289,6 +289,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.NodaTime.Serializati
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.NodaTime.Serialization", "third-party\NodaTime\test\Demo.NodaTime.Serialization\Demo.NodaTime.Serialization.csproj", "{E8884420-591B-433D-A492-18A8C1C4E3F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.OldMapper", "base\Core\src\Annium.Core.OldMapper\Annium.Core.OldMapper.csproj", "{21E2D75E-1997-4D67-BAD8-DFBEA739163C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -443,6 +445,7 @@ Global
 		{34E7DEC7-20AC-40E6-A310-D0266BAD2767} = {93519348-9610-48F1-A6CD-FD32B99F5F3F}
 		{5ED68310-AFF9-4D9E-936E-FCD30B8EB5DE} = {34E7DEC7-20AC-40E6-A310-D0266BAD2767}
 		{E8884420-591B-433D-A492-18A8C1C4E3F9} = {34E7DEC7-20AC-40E6-A310-D0266BAD2767}
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C} = {0095A08F-E5C3-49DC-9145-CAD70F785E29}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1597,5 +1600,17 @@ Global
 		{E8884420-591B-433D-A492-18A8C1C4E3F9}.Release|x64.Build.0 = Release|Any CPU
 		{E8884420-591B-433D-A492-18A8C1C4E3F9}.Release|x86.ActiveCfg = Release|Any CPU
 		{E8884420-591B-433D-A492-18A8C1C4E3F9}.Release|x86.Build.0 = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|x64.Build.0 = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Debug|x86.Build.0 = Debug|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|x64.ActiveCfg = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|x64.Build.0 = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|x86.ActiveCfg = Release|Any CPU
+		{21E2D75E-1997-4D67-BAD8-DFBEA739163C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
