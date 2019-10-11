@@ -19,13 +19,13 @@ namespace Demo.Extensions.Mapping
 
         private void ConfigureProfile(Profile p)
         {
-            p.Map<Plain, Complex>()
-                .Field(e => new Client { Name = e.ClientName! }, e => e.Client!);
-            p.Map<Complex, Plain>()
-                .Field(e => e.Client!.Name!, e => e.ClientName!);
-            p.Map<A, B>()
-                .Field(a => a.Text!.ToLower(), b => b.LowerText)
-                .Ignore(b => b.Ignored);
+            // p.Map<Plain, Complex>()
+            //     .Field(e => new Client { Name = e.ClientName! }, e => e.Client!);
+            // p.Map<Complex, Plain>()
+            //     .Field(e => e.Client!.Name!, e => e.ClientName!);
+            // p.Map<A, B>()
+            //     .Field(a => a.Text!.ToLower(), b => b.LowerText)
+            //     .Ignore(b => b.Ignored);
         }
     }
 

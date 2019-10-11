@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using Annium.Core.Entrypoint;
-using Annium.Core.Mapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Mapping
@@ -14,10 +13,10 @@ namespace Demo.Extensions.Mapping
             CancellationToken token
         )
         {
-            var mapper = provider.GetRequiredService<IMapper>();
+            // var mapper = provider.GetRequiredService<IMapper>();
 
-            var value = new Plain { ClientName = "Den" };
-            _ = mapper.Map<Complex>(value);
+            // var value = new Plain { ClientName = "Den" };
+            // _ = mapper.Map<Complex>(value);
         }
 
         public static int Main(string[] args) => new Entrypoint()

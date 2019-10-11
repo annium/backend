@@ -11,4 +11,11 @@
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Annium.Core.Reflection/Annium.Core.Reflection.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="NodaTime" Version="2.4.7" />
+    </ItemGroup>
 </Project>
