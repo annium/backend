@@ -24,6 +24,9 @@ namespace Annium.Core.DependencyInjection
         {
             services.AddReflectionTools();
 
+            services.AddSingleton<Mapper.Internal.MapBuilder>();
+            services.AddSingleton<IMapper, Mapper.Internal.Mapper>();
+
             if (autoload)
             {
                 var profileBase = typeof(Profile);
