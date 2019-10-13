@@ -36,11 +36,11 @@ namespace Annium.Net.Http.Internal
 
         private readonly HttpRequestHeaders headers;
 
-        private readonly IDictionary<string, string> parameters = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
 
         private HttpContent? content;
 
-        private Func<IResponse, Task<string>> ? getFailureMessage;
+        private Func<IResponse, Task<string>>? getFailureMessage;
 
         internal Request(Uri baseUri) : this()
         {
@@ -61,9 +61,9 @@ namespace Annium.Net.Http.Internal
             Uri? baseUri,
             string? uri,
             HttpRequestHeaders headers,
-            IDictionary<string, string> parameters,
+            IReadOnlyDictionary<string, string> parameters,
             HttpContent? content,
-            Func<IResponse, Task<string>> ? getFailureMessage
+            Func<IResponse, Task<string>>? getFailureMessage
         )
         {
             this.client = client;
@@ -71,8 +71,8 @@ namespace Annium.Net.Http.Internal
             this.method = method;
             this.baseUri = baseUri;
             this.uri = uri;
-            using(var message = new HttpRequestMessage()) this.headers = message.Headers;
-            foreach (var(name, values) in headers)
+            using (var message = new HttpRequestMessage()) this.headers = message.Headers;
+            foreach (var (name, values) in headers)
                 this.headers.Add(name, values);
             this.parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
             this.content = content;
@@ -149,42 +149,9 @@ namespace Annium.Net.Http.Internal
         {
             var client = createClient();
 
-            var message = new HttpRequestMessage { Method = method };
+            var message = new HttpRequestMessage { Method = method, RequestUri = BuildUri() };
 
-            // evaluate URI
-            var uri = buildUri();
-            Uri buildUri()
-            {
-                var baseUri = this.baseUri ?? client.BaseAddress;
-
-                // if null or relative base
-                if (baseUri is null || !baseUri.IsAbsoluteUri)
-                {
-                    if (string.IsNullOrWhiteSpace(this.uri))
-                        throw new ArgumentException($"Request URI is empty");
-
-                    return new Uri(this.uri);
-                }
-
-                if (string.IsNullOrWhiteSpace(this.uri))
-                    return baseUri;
-
-                return new Uri($"{baseUri.ToString().TrimEnd('/')}/{this.uri?.TrimStart('/')}");
-            }
-
-            // build query
-            var queryBuilder = new QueryBuilder();
-            // if any query in source uri - add it to queryBuilder
-            if (!string.IsNullOrWhiteSpace(uri.Query))
-                foreach (var(name, value) in QueryHelpers.ParseQuery(uri.Query))
-                    queryBuilder.Add(name, (IEnumerable<string>) value);
-            // add manually defined params to queryBuilder
-            foreach (var(name, value) in parameters)
-                queryBuilder.Add(name, value);
-
-            message.RequestUri = new UriBuilder(uri) { Query = queryBuilder.ToString() }.Uri;
-
-            foreach (var(name, values) in headers)
+            foreach (var (name, values) in headers)
                 message.Headers.Add(name, values);
 
             message.Content = content;
@@ -195,6 +162,51 @@ namespace Annium.Net.Http.Internal
                 throw new HttpRequestException(await getFailureMessage(response));
 
             return response;
+        }
+
+        private Uri BuildUri()
+        {
+            var uri = BuildUriBase();
+            var qb = new QueryBuilder();
+
+            // if any query in source uri - add it to queryBuilder
+            if (!string.IsNullOrWhiteSpace(uri.Query))
+                foreach (var (name, value) in QueryHelpers.ParseQuery(uri.Query))
+                    qb.Add(name, (IEnumerable<string>)value);
+
+            // add manually defined params to queryBuilder
+            foreach (var (name, value) in parameters)
+                qb.Add(name, value);
+
+            return new UriBuilder(uri) { Query = qb.ToString() }.Uri;
+        }
+
+        private Uri BuildUriBase()
+        {
+            var baseUri = this.baseUri ?? client.BaseAddress;
+
+            // if null or relative base
+            if (baseUri is null || !baseUri.IsAbsoluteUri)
+            {
+                if (string.IsNullOrWhiteSpace(uri))
+                    throw new ArgumentException($"Request URI is empty");
+
+                return new Uri(uri);
+            }
+
+            if (string.IsNullOrWhiteSpace(uri))
+                return baseUri;
+
+            return new Uri($"{baseUri.ToString().TrimEnd('/')}/{uri?.TrimStart('/')}");
+        }
+
+        public IRequest Configure(
+            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
+        )
+        {
+            configure(this, method, BuildUri(), parameters, headers, content);
+
+            return this;
         }
     }
 }
