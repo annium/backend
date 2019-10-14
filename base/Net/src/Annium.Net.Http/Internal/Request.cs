@@ -5,8 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.WebUtilities;
+using Annium.Net.Base;
 
 namespace Annium.Net.Http.Internal
 {
@@ -126,6 +125,15 @@ namespace Annium.Net.Http.Internal
             return this;
         }
 
+        public IRequest Configure(
+            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
+        )
+        {
+            configure(this, method, BuildUri(baseUri ?? createClient().BaseAddress), parameters, headers, content);
+
+            return this;
+        }
+
         public IRequest EnsureSuccessStatusCode() =>
             EnsureSuccessStatusCode(response => response.Content.ReadAsStringAsync());
 
@@ -149,7 +157,7 @@ namespace Annium.Net.Http.Internal
         {
             var client = createClient();
 
-            var message = new HttpRequestMessage { Method = method, RequestUri = BuildUri() };
+            var message = new HttpRequestMessage { Method = method, RequestUri = BuildUri(baseUri ?? client.BaseAddress) };
 
             foreach (var (name, values) in headers)
                 message.Headers.Add(name, values);
@@ -164,49 +172,31 @@ namespace Annium.Net.Http.Internal
             return response;
         }
 
-        private Uri BuildUri()
+        private Uri BuildUri(Uri baseUri)
         {
-            var uri = BuildUriBase();
-            var qb = new QueryBuilder();
-
-            // if any query in source uri - add it to queryBuilder
-            if (!string.IsNullOrWhiteSpace(uri.Query))
-                foreach (var (name, value) in QueryHelpers.ParseQuery(uri.Query))
-                    qb.Add(name, (IEnumerable<string>)value);
+            var factory = GetUriFactory(baseUri);
 
             // add manually defined params to queryBuilder
             foreach (var (name, value) in parameters)
-                qb.Add(name, value);
+                factory.Param(name, value);
 
-            return new UriBuilder(uri) { Query = qb.ToString() }.Uri;
+            return factory.Build();
         }
 
-        private Uri BuildUriBase()
+        private UriFactory GetUriFactory(Uri baseUri)
         {
-            var baseUri = this.baseUri ?? client.BaseAddress;
-
-            // if null or relative base
-            if (baseUri is null || !baseUri.IsAbsoluteUri)
+            if (baseUri is null)
             {
                 if (string.IsNullOrWhiteSpace(uri))
                     throw new ArgumentException($"Request URI is empty");
 
-                return new Uri(uri);
+                return UriFactory.Base(uri);
             }
 
             if (string.IsNullOrWhiteSpace(uri))
-                return baseUri;
+                return UriFactory.Base(baseUri);
 
-            return new Uri($"{baseUri.ToString().TrimEnd('/')}/{uri?.TrimStart('/')}");
-        }
-
-        public IRequest Configure(
-            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
-        )
-        {
-            configure(this, method, BuildUri(), parameters, headers, content);
-
-            return this;
+            return UriFactory.Base(baseUri).Path(uri);
         }
     }
 }

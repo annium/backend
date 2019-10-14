@@ -24,6 +24,10 @@ namespace Annium.Net.Http
 
         IRequest Content(HttpContent content);
 
+        IRequest Configure(
+            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
+        );
+
         IRequest EnsureSuccessStatusCode();
 
         IRequest EnsureSuccessStatusCode(string message);
@@ -31,10 +35,6 @@ namespace Annium.Net.Http
         IRequest EnsureSuccessStatusCode(Func<IResponse, string> getFailureMessage);
 
         IRequest EnsureSuccessStatusCode(Func<IResponse, Task<string>> getFailureMessage);
-
-        IRequest Configure(
-            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
-        );
 
         IRequest Clone();
 
