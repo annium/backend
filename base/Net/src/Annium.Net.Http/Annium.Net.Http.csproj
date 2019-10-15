@@ -18,7 +18,4 @@
         <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
         <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
     </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Http.Extensions" Version="2.2.0" />
-    </ItemGroup>
 </Project>
