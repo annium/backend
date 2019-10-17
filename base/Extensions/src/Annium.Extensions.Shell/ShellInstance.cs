@@ -127,8 +127,8 @@ namespace Annium.Extensions.Shell
 
             if (pipe)
             {
-                Task.Run(() => { lock(consoleLock) pipeOut(process.StandardOutput); });
-                Task.Run(() => { lock(consoleLock) pipeOut(process.StandardError); });
+                Task.Run(() => { lock (consoleLock) pipeOut(process.StandardOutput); });
+                Task.Run(() => { lock (consoleLock) pipeOut(process.StandardError); });
                 Task.Run(() => pipeOut(process.StandardError));
             }
 
@@ -157,7 +157,7 @@ namespace Annium.Extensions.Shell
             static void pipeOut(StreamReader src)
             {
                 while (!src.EndOfStream)
-                    Console.Write((char) src.Read());
+                    Console.Write((char)src.Read());
             }
         }
 
@@ -172,14 +172,15 @@ namespace Annium.Extensions.Shell
             static string read(StreamReader src)
             {
                 var sb = new StringBuilder();
-                while (!src.EndOfStream)
-                    sb.AppendLine(src.ReadLine());
+                string? line;
+                while ((line = src.ReadLine()) != null)
+                    sb.AppendLine(line);
 
                 return sb.ToString();
             }
         }
 
         private string GetCommand(Process process) =>
-            $"{process.StartInfo.FileName} {string.Join(' ',process.StartInfo.Arguments)}";
+            $"{process.StartInfo.FileName} {string.Join(' ', process.StartInfo.Arguments)}";
     }
 }
