@@ -18,17 +18,41 @@ namespace Annium.Core.Entrypoint
         public int Run(Action<IServiceProvider> main) =>
             InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
 
-        public int RunAsync(Func<IServiceProvider, string[], CancellationToken, Task> main, string[] args) =>
-            InternalRunAsync(main, args).GetAwaiter().GetResult();
+        public int Run(Action<string[], CancellationToken> main, string[] args) =>
+            InternalRun((provider, arguments, token) => main(arguments, token), args);
 
-        public int RunAsync(Func<IServiceProvider, string[], Task> main, string[] args) =>
-            InternalRunAsync((provider, arguments, token) => main(provider, arguments), args).GetAwaiter().GetResult();
+        public int Run(Action<string[]> main, string[] args) =>
+            InternalRun((provider, arguments, token) => main(arguments), args);
 
-        public int RunAsync(Func<IServiceProvider, CancellationToken, Task> main) =>
-            InternalRunAsync((provider, arguments, token) => main(provider, token), Array.Empty<string>()).GetAwaiter().GetResult();
+        public int Run(Action<CancellationToken> main) =>
+            InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
 
-        public int RunAsync(Func<IServiceProvider, Task> main) =>
-            InternalRunAsync((provider, arguments, token) => main(provider), Array.Empty<string>()).GetAwaiter().GetResult();
+        public int Run(Action main) =>
+            InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
+
+        public Task<int> Run(Func<IServiceProvider, string[], CancellationToken, Task> main, string[] args) =>
+            InternalRun(main, args);
+
+        public Task<int> Run(Func<IServiceProvider, string[], Task> main, string[] args) =>
+            InternalRun((provider, arguments, token) => main(provider, arguments), args);
+
+        public Task<int> Run(Func<IServiceProvider, CancellationToken, Task> main) =>
+            InternalRun((provider, arguments, token) => main(provider, token), Array.Empty<string>());
+
+        public Task<int> Run(Func<IServiceProvider, Task> main) =>
+            InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
+
+        public Task<int> Run(Func<string[], CancellationToken, Task> main, string[] args) =>
+            InternalRun((provider, arguments, token) => main(arguments, token), args);
+
+        public Task<int> Run(Func<string[], Task> main, string[] args) =>
+            InternalRun((provider, arguments, token) => main(arguments), args);
+
+        public Task<int> Run(Func<CancellationToken, Task> main) =>
+            InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
+
+        public Task<int> Run(Func<Task> main) =>
+            InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
 
         private int InternalRun(
             Action<IServiceProvider, string[], CancellationToken> main,
@@ -61,7 +85,7 @@ namespace Annium.Core.Entrypoint
             }
         }
 
-        private async Task<int> InternalRunAsync(
+        private async Task<int> InternalRun(
             Func<IServiceProvider, string[], CancellationToken, Task> main,
             string[] args
         )

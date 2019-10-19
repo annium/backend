@@ -1,6 +1,7 @@
 using System;
 using System.Runtime.Loader;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Core.Entrypoint
 {
@@ -19,7 +20,7 @@ namespace Annium.Core.Entrypoint
             return new RunPack(
                 gate,
                 GetCancellationToken(gate),
-                serviceProviderFactory.CreateServiceProvider(serviceProviderBuilder)
+                new ServiceProviderFactory().CreateServiceProvider(serviceProviderBuilder)
             );
         }
 

@@ -5,10 +5,8 @@ namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {
-        private readonly IServiceProviderFactory<IServiceProviderBuilder> serviceProviderFactory =
-            new ServiceProviderFactory();
         private readonly IServiceProviderBuilder serviceProviderBuilder =
-            new ServiceProviderFactory().CreateBuilder(new ServiceCollection());
+             new ServiceProviderFactory().CreateBuilder(new ServiceCollection());
 
         public Entrypoint UseServicePack<TServicePack>()
         where TServicePack : ServicePackBase, new()
