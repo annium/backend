@@ -3,7 +3,6 @@ using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets.Internal;
@@ -11,13 +10,13 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
 {
-    public abstract class WebSocket<TNativeSocket> : IDisposable
+    public abstract class WebSocket<TNativeSocket> : ISendingWebSocket, IReceivingWebSocket, IDisposable
     where TNativeSocket : NativeWebSocket
     {
         private const int bufferSize = 65536;
 
+        public MessageFormat Format { get; }
         protected readonly TNativeSocket socket;
-        private readonly MessageFormat format;
         private readonly UTF8Encoding encoding = new UTF8Encoding();
 
         public WebSocket(
@@ -26,12 +25,12 @@ namespace Annium.Net.WebSockets
         )
         {
             this.socket = socket;
-            this.format = format;
+            Format = format;
         }
 
         public Task SendAsync<T>(T data, CancellationToken token)
         {
-            return SendAsync(Serialize(data), token);
+            return SendAsync(data.Serialize(Format), token);
         }
 
         public Task SendAsync(string data, CancellationToken token)
@@ -54,7 +53,7 @@ namespace Annium.Net.WebSockets
                     return (true, default);
 
                 if (type == WebSocketMessageType.Text)
-                    return (false, Deserialize<T>(data));
+                    return (false, data.Deserialize<T>(Format));
             }
         }
 
@@ -83,6 +82,25 @@ namespace Annium.Net.WebSockets
 
                 if (type == WebSocketMessageType.Binary)
                     return (false, data);
+            }
+        }
+
+        private async Task SendAsync(ReadOnlyMemory<byte> data, WebSocketMessageType messageType, CancellationToken token)
+        {
+            try
+            {
+                // TODO: implement chunking, if needed
+                await socket.SendAsync(
+                    buffer: data,
+                    messageType: messageType,
+                    endOfMessage: true,
+                    cancellationToken: token
+                );
+            }
+            // is thrown, if remote party closed connection w/o handshake
+            catch (WebSocketException)
+            {
+
             }
         }
 
@@ -124,37 +142,6 @@ namespace Annium.Net.WebSockets
                 pool.Return(buffer);
             }
         }
-
-        public async Task SendAsync(ReadOnlyMemory<byte> data, WebSocketMessageType messageType, CancellationToken token)
-        {
-            try
-            {
-                // TODO: implement chunking, if needed
-                await socket.SendAsync(
-                    buffer: data,
-                    messageType: messageType,
-                    endOfMessage: true,
-                    cancellationToken: token
-                );
-            }
-            // is thrown, if remote party closed connection w/o handshake
-            catch (WebSocketException)
-            {
-
-            }
-        }
-
-        private string Serialize<T>(T data) => format switch
-        {
-            MessageFormat.Json => JsonSerializer.Serialize(data, Options.Json),
-            _ => throw new InvalidOperationException($"Unsupported text format {format}"),
-        };
-
-        private T Deserialize<T>(byte[] rawText) => format switch
-        {
-            MessageFormat.Json => JsonSerializer.Deserialize<T>(new Span<byte>(rawText), Options.Json),
-            _ => throw new InvalidOperationException($"Unsupported text format {format}"),
-        };
 
         #region IDisposable Support
         private bool disposedValue = false;

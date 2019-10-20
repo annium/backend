@@ -6,7 +6,7 @@ using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets
 {
-    public class ClientWebSocket : WebSocket<NativeClientWebSocket>
+    public class ClientWebSocket : WebSocket<NativeClientWebSocket>, IClientWebSocket
     {
         public ClientWebSocket(
             MessageFormat format
