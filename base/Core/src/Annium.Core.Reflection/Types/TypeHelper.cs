@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -6,18 +7,26 @@ namespace Annium.Core.Reflection
 {
     public static class TypeHelper
     {
-        public static PropertyInfo ResolveProperty<TObject>(Expression<Func<TObject, object>> map) =>
-            ResolveProperty<TObject, object>(map);
-
-        public static PropertyInfo ResolveProperty<TObject, TField>(Expression<Func<TObject, TField>> map)
+        public static PropertyInfo[] ResolveProperties<T>(Expression<Func<T, object>> map)
         {
-            if (map.Body is MemberExpression member)
+            if (map.Body is NewExpression create)
+                return create.Arguments.Select(ResolveProperty).ToArray();
+
+            return new[] { ResolveProperty(map.Body) };
+        }
+
+        public static PropertyInfo ResolveProperty<T>(Expression<Func<T, object>> map)
+            => ResolveProperty(map.Body);
+
+        private static PropertyInfo ResolveProperty(Expression ex)
+        {
+            if (ex is MemberExpression member)
                 return ResolveProperty(member);
 
-            if (map.Body is UnaryExpression unary)
+            if (ex is UnaryExpression unary)
                 return ResolveProperty(unary);
 
-            throw new ArgumentException($"Can't resolve property from {map}");
+            throw new ArgumentException($"Can't resolve property from {ex}");
         }
 
         private static PropertyInfo ResolveProperty(MemberExpression ex)
