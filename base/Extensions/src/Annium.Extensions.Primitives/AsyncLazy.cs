@@ -11,6 +11,11 @@ namespace Annium.Extensions.Primitives
     public sealed class AsyncLazy<T>
     {
         /// <summary>
+        /// The underlying lazy task's value state.
+        /// </summary>
+        public bool IsValueCreated => instance.IsValueCreated;
+
+        /// <summary>
         /// The underlying lazy task.
         /// </summary>
         private readonly Lazy<Task<T>> instance;
