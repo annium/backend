@@ -15,7 +15,7 @@ namespace Demo.Core.Mediator
 {
     public class Program
     {
-        private static async Task RunAsync(
+        private static async Task Run(
             IServiceProvider provider,
             string[] args,
             CancellationToken token
@@ -47,8 +47,8 @@ namespace Demo.Core.Mediator
             TResponse decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options);
         }
 
-        public static int Main(string[] args) => new Entrypoint()
+        public static Task<int> Main(string[] args) => new Entrypoint()
             .UseServicePack<ServicePack>()
-            .RunAsync(RunAsync, args);
+            .Run(Run, args);
     }
 }

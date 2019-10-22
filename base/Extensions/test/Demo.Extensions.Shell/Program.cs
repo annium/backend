@@ -28,8 +28,8 @@ namespace Demo.Extensions.Shell
             Console.WriteLine(ls.Error);
         }
 
-        public static int Main(string[] args) => new Entrypoint()
+        public static Task<int> Main(string[] args) => new Entrypoint()
             .UseServicePack<ServicePack>()
-            .RunAsync(Run, args);
+            .Run(Run, args);
     }
 }

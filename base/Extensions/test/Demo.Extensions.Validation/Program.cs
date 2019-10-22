@@ -21,8 +21,8 @@ namespace Demo.Extensions.Validation
             var result = await validator.ValidateAsync(value);
         }
 
-        public static int Main(string[] args) => new Entrypoint()
+        public static Task<int> Main(string[] args) => new Entrypoint()
             .UseServicePack<ServicePack>()
-            .RunAsync(RunAsync, args);
+            .Run(RunAsync, args);
     }
 }
