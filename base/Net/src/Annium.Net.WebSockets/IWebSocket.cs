@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 
 namespace Annium.Net.WebSockets
 {
-    public interface ISendingWebSocket
+    public interface ISendingWebSocket : IDisposable
     {
         Task SendAsync<T>(T data, CancellationToken token);
         Task SendAsync(string data, CancellationToken token);
         Task SendAsync(ReadOnlyMemory<byte> data, CancellationToken token);
     }
 
-    public interface IReceivingWebSocket
+    public interface IReceivingWebSocket : IDisposable
     {
         MessageFormat Format { get; }
         Task<(bool isClosed, T data)> ReceiveAsync<T>(CancellationToken token);
