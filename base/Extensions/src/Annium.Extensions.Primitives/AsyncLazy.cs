@@ -16,6 +16,11 @@ namespace Annium.Extensions.Primitives
         public bool IsValueCreated => instance.IsValueCreated;
 
         /// <summary>
+        /// The underlying lazy task's value state.
+        /// </summary>
+        public T Value => instance.Value.GetAwaiter().GetResult();
+
+        /// <summary>
         /// The underlying lazy task.
         /// </summary>
         private readonly Lazy<Task<T>> instance;
