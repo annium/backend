@@ -3,6 +3,8 @@ using System.Threading;
 using Annium.Core.Reflection;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
 using Annium.Core.Entrypoint;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Demo.Core.Reflection
 {
@@ -14,6 +16,9 @@ namespace Demo.Core.Reflection
             CancellationToken token
         )
         {
+            var canResolveEnumerable = TypeManager.Instance.CanResolve(typeof(IList<>));
+            var enumerable = TypeManager.Instance.Types.Where(x => x == typeof(IEnumerable<>)).ToArray();
+
             var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.InnerTwo });
 
             var impl = TypeManager.Instance.GetImplementations(typeof(System.Linq.Expressions.MemberExpression));

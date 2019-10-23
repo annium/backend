@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Annium.Core.Reflection;
 using Annium.Testing;
 
@@ -16,6 +17,7 @@ namespace Annium.Core.Reflection.Tests.Types
             manager.CanResolve(typeof(A)).IsTrue();
             manager.CanResolve(typeof(B)).IsFalse();
             manager.CanResolve(typeof(C)).IsFalse();
+            manager.CanResolve(typeof(IEnumerable<>)).IsTrue();
         }
 
         [Fact]

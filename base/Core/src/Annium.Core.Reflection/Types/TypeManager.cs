@@ -9,6 +9,7 @@ namespace Annium.Core.Reflection
     public class TypeManager : ITypeManager
     {
         public static readonly TypeManager Instance = new TypeManager();
+        public IReadOnlyCollection<Type> Types => types.Value;
         private readonly Lazy<Type[]> types;
         private readonly Lazy<IDictionary<Type, Type[]>> descendants;
         private readonly Lazy<IDictionary<Type, string[]>> signatures;
@@ -17,7 +18,7 @@ namespace Annium.Core.Reflection
         {
             types = new Lazy<Type[]>(CollectTypes, true);
             descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
-            signatures = new Lazy<IDictionary<Type, string[]>>(() => CollectSignatures(descendants.Value), true);
+            signatures = new Lazy<IDictionary<Type, string[]>>(CollectSignatures, true);
         }
 
         public Type? GetByName(string name) => types.Value.FirstOrDefault(t => t.FullName == name);
@@ -114,7 +115,7 @@ namespace Annium.Core.Reflection
 
             var lookup = typeDescendants
                 .Where(type => signatures.Value.ContainsKey(type))
-                .Select(type => (type, match : signatures.Value[type].Intersect(signature).Count()))
+                .Select(type => (type, match: signatures.Value[type].Intersect(signature).Count()))
                 .OrderByDescending(p => p.match)
                 .ToList();
 
@@ -138,9 +139,14 @@ namespace Annium.Core.Reflection
         // collect types from all loaded assemblies
         private Type[] CollectTypes()
         {
-            return DependencyContext.Default.RuntimeLibraries.SelectMany(l =>
+            var core = typeof(object).Assembly.GetName();
+            var assemblyNames = DependencyContext.Default.RuntimeLibraries
+                .Select(x => new AssemblyName(x.Name))
+                .Prepend(core)
+                .ToArray();
+
+            return assemblyNames.SelectMany(name =>
             {
-                var name = new AssemblyName(l.Name);
                 try
                 {
                     return Assembly.Load(name).GetTypes();
@@ -157,18 +163,63 @@ namespace Annium.Core.Reflection
         {
             var types = this.types.Value;
 
-            return types
-                .ToDictionary(
-                    t => t,
-                    t => types.Where(s => s != t && t.IsAssignableFrom(s) && s.IsClass && !s.IsAbstract).ToArray()
-                )
-                .Where(p => p.Value.Length > 0)
-                .ToDictionary(p => p.Key, p => p.Value);
+            var result = new Dictionary<Type, Type[]>();
+            foreach (var type in types)
+            {
+                // can be descendant if type is interface or class
+                if (!type.IsInterface && !type.IsClass)
+                    continue;
+
+                Type[] descendants = Type.EmptyTypes;
+                if (type.IsGenericTypeDefinition)
+                {
+                    if (type.IsInterface)
+                        descendants = types
+                            .Where(x => x != type && x.IsClass && !x.IsAbstract && x.GetInterfaces()
+                                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type)
+                            )
+                            .ToArray();
+
+                    if (type.IsClass)
+                    {
+                        descendants = types.Where(x =>
+                        {
+                            if (x == type || !x.IsClass || x.IsAbstract)
+                                return false;
+
+                            if (x.BaseType == null || x.BaseType == typeof(object))
+                                return false;
+
+                            while (x != null && x.BaseType != typeof(object))
+                            {
+                                if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
+                                    return true;
+
+                                x = x.BaseType!;
+                            }
+
+                            return false;
+                        })
+                        .ToArray();
+                    }
+                }
+                else
+                {
+                    descendants = types
+                       .Where(x => x != type && x.IsClass && !x.IsAbstract && type.IsAssignableFrom(x))
+                       .ToArray();
+                }
+
+                if (descendants.Length > 0)
+                    result[type] = descendants;
+            }
+
+            return result;
         }
 
         // collect signatures from given types
         // each signature is array of lowercased property names
-        private IDictionary<Type, string[]> CollectSignatures(IDictionary<Type, Type[]> types) => types.Values
+        private IDictionary<Type, string[]> CollectSignatures() => descendants.Value.Values
             .SelectMany(v => v)
             .Distinct()
             .ToDictionary(
