@@ -17,6 +17,15 @@ namespace Annium.Net.WebSockets
             this.socket = socket;
         }
 
+        public Action Subscribe(Action<string> handler) => Subscribe(handler, _ => true);
+
+        public Action Subscribe(Action<string> handler, Func<string, bool> filter)
+        {
+            handlers[handler] = filter;
+
+            return () => handlers.Remove(handler);
+        }
+
         public Action Subscribe<T>(Action<T> handler) => Subscribe(handler, _ => true);
 
         public Action Subscribe<T>(Action<T> handler, Func<string, bool> filter)
