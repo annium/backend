@@ -110,8 +110,9 @@ namespace Annium.Core.Reflection
         // find type, derived
         private Type? ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
         {
-            if (!descendants.Value.TryGetValue(baseType, out var typeDescendants))
-                throw new TypeResolutionException(src, baseType, "No descendants found");
+            var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
+            if (!descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
+                throw new TypeResolutionException(src, baseTypeDefinition, "No descendants found");
 
             var lookup = typeDescendants
                 .Where(type => signatures.Value.ContainsKey(type))
@@ -126,7 +127,7 @@ namespace Annium.Core.Reflection
             {
                 var rivals = lookup.Where(p => p.match == lookup[0].match).Select(p => p.type.FullName).ToArray();
                 if (rivals.Length > 1)
-                    throw new TypeResolutionException(src, baseType, $"Ambiguous resolution between {string.Join(", ", rivals)}");
+                    throw new TypeResolutionException(src, baseTypeDefinition, $"Ambiguous resolution between {string.Join(", ", rivals)}");
             }
 
             var resolution = lookup[0];
@@ -166,7 +167,7 @@ namespace Annium.Core.Reflection
             var result = new Dictionary<Type, Type[]>();
             foreach (var type in types)
             {
-                // can be descendant if type is interface or class
+                // can have descendants if type is interface or class
                 if (!type.IsInterface && !type.IsClass)
                     continue;
 
@@ -190,7 +191,7 @@ namespace Annium.Core.Reflection
                             if (x.BaseType == null || x.BaseType == typeof(object))
                                 return false;
 
-                            while (x != null && x.BaseType != typeof(object))
+                            while (x != null)
                             {
                                 if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
                                     return true;

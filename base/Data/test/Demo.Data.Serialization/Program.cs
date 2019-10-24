@@ -1,8 +1,10 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Core.Reflection;
 using Annium.Data.Serialization.Tests.Json;
 
 namespace Demo.Data.Serialization
@@ -20,11 +22,12 @@ namespace Demo.Data.Serialization
 
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
-            var arr = new [] { a, b };
-            var str = JsonSerializer.Serialize(arr, options);
+            BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
+            var types = TypeManager.Instance.Types.ToList();
+            var str = JsonSerializer.Serialize(container, options);
 
             // act
-            var source = JsonSerializer.Deserialize<Base[]>(str, options);
+            var source = JsonSerializer.Deserialize<BaseContainer<Base>>(str, options);
         }
 
         public static int Main(string[] args) => new Entrypoint()

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
@@ -21,9 +22,16 @@ namespace Annium.Data.Serialization.Json
                 .OrderBy(p => p)
                 .ToArray();
 
-            var type = TypeManager.Instance.ResolveBySignature(properties, typeToConvert, exact : true);
+            // get
+            var concreteTypeDefinition = TypeManager.Instance.ResolveBySignature(properties, typeToConvert, exact: false);
+            if (concreteTypeDefinition is null)
+                throw new SerializationException($"Can't resolve concrete type definition for {typeToConvert}");
 
-            return (T) JsonSerializer.Deserialize(doc.RootElement.GetRawText(), type, options);
+            var concreteType = concreteTypeDefinition.ResolveByImplementation(typeToConvert);
+            if (concreteType is null)
+                throw new SerializationException($"Can't resolve concrete type for {concreteTypeDefinition} by {typeToConvert}");
+
+            return (T)JsonSerializer.Deserialize(doc.RootElement.GetRawText(), concreteType, options);
         }
 
         public override void Write(

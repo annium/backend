@@ -19,7 +19,7 @@ namespace Demo.Extensions.Configuration
             CancellationToken token
         )
         {
-            TestBuilder();
+            // TestBuilder();
             // TestCli();
             TestJson();
             // TestYaml();
