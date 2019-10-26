@@ -21,7 +21,8 @@ namespace Annium.Net.WebSockets
 
         public Action Subscribe(Action<string> handler, Func<string, bool> filter)
         {
-            handlers[handler] = filter;
+            lock (handlers)
+                handlers[handler] = filter;
 
             return () => handlers.Remove(handler);
         }
@@ -30,8 +31,9 @@ namespace Annium.Net.WebSockets
 
         public Action Subscribe<T>(Action<T> handler, Func<string, bool> filter)
         {
-            void innerHandler(string data) => handler(data.Deserialize<T>(socket.Format));
-            handlers[innerHandler] = filter;
+            Action<string> innerHandler = (string data) => handler(data.Deserialize<T>(socket.Format));
+            lock (handlers)
+                handlers[innerHandler] = filter;
 
             return () => handlers.Remove(innerHandler);
         }
