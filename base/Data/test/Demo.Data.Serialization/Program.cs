@@ -17,17 +17,16 @@ namespace Demo.Data.Serialization
             CancellationToken token
         )
         {
-            var options = new JsonSerializerOptions()
+            var settings = new JsonSerializerOptions()
                 .ConfigureAbstractConverter();
 
-            Base a = new ChildA { A = 1 };
-            Base b = new ChildB { B = 2 };
-            BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
-            var types = TypeManager.Instance.Types.ToList();
-            var str = JsonSerializer.Serialize(container, options);
+            KeyBase a = new KeyChildA { Value = 1 };
+            KeyBase b = new KeyChildB { Value = 2 };
+            KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new[] { a, b } };
+            var str = JsonSerializer.Serialize(container, settings);
 
             // act
-            var source = JsonSerializer.Deserialize<BaseContainer<Base>>(str, options);
+            var result = JsonSerializer.Deserialize<KeyBaseContainer<KeyBase>>(str, settings);
         }
 
         public static int Main(string[] args) => new Entrypoint()

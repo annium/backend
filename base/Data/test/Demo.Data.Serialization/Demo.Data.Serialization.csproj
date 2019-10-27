@@ -14,5 +14,8 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../Annium.Data.Serialization.Tests/Annium.Data.Serialization.Tests.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
+        <ProjectReference Include="../../../Extensions/test/Annium.Extensions.Primitives.Tests/Annium.Extensions.Primitives.Tests.csproj" />
+        <ProjectReference Include="../../../Extensions/test/Demo.Extensions.Primitives/Demo.Extensions.Primitives.csproj" />
     </ItemGroup>
 </Project>
