@@ -110,7 +110,7 @@ namespace Annium.Core.Reflection.Tests.Types
             var key = "key";
 
             // assert
-            ((Func<Type>) (() => manager.ResolveByKey(key, typeof(F)))).Throws<TypeResolutionException>();
+            ((Func<Type?>) (() => manager.ResolveByKey(key, typeof(F)))).Throws<TypeResolutionException>();
         }
 
         [Fact]
@@ -121,7 +121,7 @@ namespace Annium.Core.Reflection.Tests.Types
             var key = "F";
 
             // assert
-            ((Func<Type>) (() => manager.ResolveByKey(key, typeof(D)))).Throws<TypeResolutionException>();
+            ((Func<Type?>) (() => manager.ResolveByKey(key, typeof(D)))).Throws<TypeResolutionException>();
         }
 
         [Fact]

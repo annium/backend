@@ -92,17 +92,18 @@ namespace Annium.Core.Reflection
             );
 
         // reolve type by key (for labeled types)
-        public Type ResolveByKey(string key, Type baseType)
+        public Type? ResolveByKey(string key, Type baseType)
         {
-            if (!descendants.Value.TryGetValue(baseType, out var typeDescendants))
-                throw new TypeResolutionException(typeof(object), baseType, "No descendants found");
+            var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
+            if (!descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
+                throw new TypeResolutionException(typeof(object), baseTypeDefinition, "No descendants found");
 
             var resolutions = typeDescendants
                 .Where(type => type.GetTypeInfo().GetCustomAttribute<ResolveKeyAttribute>()?.Key == key)
                 .ToList();
 
             if (resolutions.Count > 1)
-                throw new TypeResolutionException(typeof(object), baseType, $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
+                throw new TypeResolutionException(typeof(object), baseTypeDefinition, $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
 
             return resolutions.FirstOrDefault();
         }

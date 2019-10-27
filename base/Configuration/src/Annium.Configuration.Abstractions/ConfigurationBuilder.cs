@@ -19,7 +19,7 @@ namespace Annium.Configuration.Abstractions
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
-            foreach (var(key, value) in config)
+            foreach (var (key, value) in config)
                 this.config[key] = value;
 
             return this;
@@ -27,7 +27,7 @@ namespace Annium.Configuration.Abstractions
 
         public T Build<T>() where T : class, new()
         {
-            return (T) Process(typeof(T));
+            return (T)Process(typeof(T));
         }
 
         private object Process(Type type)
@@ -47,12 +47,12 @@ namespace Annium.Configuration.Abstractions
 
         private object ProcessDictionary(Type type)
         {
-            var keyType = type.GetGenericArguments() [0];
-            var valueType = type.GetGenericArguments() [1];
+            var keyType = type.GetGenericArguments()[0];
+            var valueType = type.GetGenericArguments()[1];
 
             // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
             var items = GetDescendants();
-            var result = (IDictionary) Activator.CreateInstance(type) !;
+            var result = (IDictionary)Activator.CreateInstance(type)!;
 
             foreach (var name in items)
             {
@@ -66,8 +66,8 @@ namespace Annium.Configuration.Abstractions
         }
         private object ProcessList(Type type)
         {
-            var elementType = type.GetGenericArguments() [0];
-            var result = (IList) Activator.CreateInstance(type) !;
+            var elementType = type.GetGenericArguments()[0];
+            var result = (IList)Activator.CreateInstance(type)!;
 
             var items = GetDescendants();
 
@@ -83,10 +83,10 @@ namespace Annium.Configuration.Abstractions
 
         private object ProcessArray(Type type)
         {
-            var elementType = type.GetElementType() !;
-            var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
+            var elementType = type.GetElementType()!;
+            var raw = (IList)ProcessList(typeof(List<>).MakeGenericType(elementType));
 
-            var result = (IList) Array.CreateInstance(elementType, raw.Count);
+            var result = (IList)Array.CreateInstance(elementType, raw.Count);
 
             for (var index = 0; index < raw.Count; index++)
                 result[index] = raw[index];
@@ -114,12 +114,13 @@ namespace Annium.Configuration.Abstractions
                 if (!hasKey)
                     return null!;
 
-                type = TypeManager.Instance.ResolveByKey(key!, type);
-                if (type == null)
+                var resolution = TypeManager.Instance.ResolveByKey(key!, type);
+                if (resolution is null)
                     throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
+                type = resolution;
             }
 
-            var result = Activator.CreateInstance(type) !;
+            var result = Activator.CreateInstance(type)!;
             var properties = type.GetProperties().Where(e => e.CanWrite).ToArray();
             foreach (var property in properties)
             {
