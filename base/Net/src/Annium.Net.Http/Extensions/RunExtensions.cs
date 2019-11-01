@@ -37,7 +37,7 @@ namespace Annium.Net.Http
         {
             var response = await request.RunAsync();
             if (!response.IsSuccessStatusCode)
-                return default !;
+                return default!;
 
             return parse(await response.Content.ReadAsStringAsync());
 
@@ -49,8 +49,7 @@ namespace Annium.Net.Http
                 switch
                 {
                     MediaTypeNames.Application.Json => JsonSerializer.Deserialize<T>(raw, Options.Json),
-                        _ =>
-                        throw new NotSupportedException($"Media type '{mediaType}' is not supported"),
+                    _ => throw new NotSupportedException($"Media type '{mediaType}' is not supported"),
                 };
             }
         }

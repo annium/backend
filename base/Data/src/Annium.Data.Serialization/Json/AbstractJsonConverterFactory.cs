@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+using System.Linq;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
+using System.Collections;
 
 namespace Annium.Data.Serialization.Json
 {
@@ -9,8 +12,14 @@ namespace Annium.Data.Serialization.Json
     {
         public override bool CanConvert(Type objectType)
         {
-            // if object type is interface, or object type is abstract class
+            // if object type is not interface and object type is not abstract class
             if (!objectType.IsInterface && !(objectType.IsClass && objectType.IsAbstract))
+                return false;
+
+            // if implements IEnumerable - likely will be serialized as Json Array, so not suitable for type resolution
+            if (objectType.GetInterfaces().Any(
+                x => x == typeof(IEnumerable) || (x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+            ))
                 return false;
 
             return TypeManager.Instance.CanResolve(
