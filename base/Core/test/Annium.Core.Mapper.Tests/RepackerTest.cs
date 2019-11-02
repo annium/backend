@@ -7,13 +7,14 @@ namespace Annium.Core.Mapper.Tests
     public class RepackerTest
     {
         [Fact]
-        public void Lambda_Works()
+        public void Binary_Works()
         {
             // act
-            var result = Repack<int, int>(v => v);
+            var result = Repack<int?, int>(v => v ?? default);
 
             // assert
             result(1).IsEqual(1);
+            result(null).IsEqual(0);
         }
 
         [Fact]
@@ -27,6 +28,16 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
+        public void Lambda_Works()
+        {
+            // act
+            var result = Repack<int, int>(v => v);
+
+            // assert
+            result(1).IsEqual(1);
+        }
+
+        [Fact]
         public void Member_Works()
         {
             // act
@@ -37,13 +48,35 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
+        public void MemberInit_Works()
+        {
+            // act
+            var result = Repack<int, string>(v => new string(' ', v));
+
+            // assert
+            result(3).IsEqual("   ");
+        }
+
+        [Fact]
         public void New_Works()
         {
             // act
-            var result = Repack<char, string>(v => new string(v, 5));
+            var result = Repack<string, Exception>(v => new Exception(v) { Source = v });
 
             // assert
-            result('a').IsEqual("aaaaa");
+            var ex = result("a");
+            ex.Message.IsEqual("a");
+            ex.Source.IsEqual("a");
+        }
+
+        [Fact]
+        public void Unary_Works()
+        {
+            // act
+            var result = Repack<bool, bool>(v => !v);
+
+            // assert
+            result(false).IsTrue();
         }
 
         private Func<S, R> Repack<S, R>(Expression<Func<S, R>> ex)
@@ -51,7 +84,7 @@ namespace Annium.Core.Mapper.Tests
             var repacker = new Repacker();
             var param = Expression.Parameter(typeof(S));
 
-            return ((Expression<Func<S, R>>) repacker.Repack(ex) (param)).Compile();
+            return ((Expression<Func<S, R>>)repacker.Repack(ex)(param)).Compile();
         }
     }
 }

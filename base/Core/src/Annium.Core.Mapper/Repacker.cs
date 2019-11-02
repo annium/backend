@@ -15,17 +15,31 @@ namespace Annium.Core.Mapper
 
             return ex switch
             {
+                BinaryExpression binary => Binary(binary)(source),
                 ConstantExpression constant => constant,
+                MethodCallExpression call => Call(call)(source),
                 LambdaExpression lambda => Lambda(lambda)(source),
                 MemberExpression member => Member(member)(source),
                 MemberInitExpression memberInit => MemberInit(memberInit)(source),
-                MethodCallExpression call => Call(call)(source),
                 NewExpression construction => New(construction)(source),
                 ParameterExpression param => source,
                 UnaryExpression unary => Unary(unary)(source),
                 _ => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
             };
         };
+
+        private Func<Expression, Expression> Binary(BinaryExpression ex) => (Expression source) =>
+            Expression.MakeBinary(
+                ex.NodeType,
+                Repack(ex.Left)(source),
+                Repack(ex.Right)(source),
+                ex.IsLiftedToNull,
+                ex.Method,
+                ex.Conversion
+            );
+
+        private Func<Expression, Expression> Call(MethodCallExpression ex) => (Expression source) =>
+            Expression.Call(Repack(ex.Object)(source), ex.Method, ex.Arguments.Select(a => Repack(a)(source)).ToArray());
 
         private Func<Expression, Expression> Lambda(LambdaExpression ex) => (Expression source) =>
             Expression.Lambda(Repack(ex.Body)(source), new[] { source as ParameterExpression });
@@ -44,9 +58,6 @@ namespace Annium.Core.Mapper
                     return b;
                 })
             );
-
-        private Func<Expression, Expression> Call(MethodCallExpression ex) => (Expression source) =>
-            Expression.Call(Repack(ex.Object)(source), ex.Method, ex.Arguments.Select(a => Repack(a)(source)).ToArray());
 
         private Func<Expression, Expression> New(NewExpression ex) => (Expression source) =>
             Expression.New(ex.Constructor, ex.Arguments.Select(a => Repack(a)(source)));
