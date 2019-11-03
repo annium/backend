@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Threading;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Primitives;
@@ -13,6 +14,8 @@ namespace Demo.Extensions.Primitives
             CancellationToken token
         )
         {
+            var v = "a,b".ParseFlags<TestEnum>(',');
+
             var str = "07DC22";
             var result = str.TryFromHexStringToByteArray(out var byteArray);
         }
@@ -20,5 +23,17 @@ namespace Demo.Extensions.Primitives
         public static int Main(string[] args) => new Entrypoint()
             .UseServicePack<ServicePack>()
             .Run(Run, args);
+
+
+        [Flags]
+        private enum TestEnum
+        {
+            [Description("empty")]
+            None,
+            [Description("a")]
+            One,
+            [Description("b")]
+            Two
+        }
     }
 }

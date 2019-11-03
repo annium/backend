@@ -191,6 +191,19 @@ namespace Annium.Extensions.Primitives.Tests
         }
 
         [Fact]
+        public void ParseFlags_NoDefault_Works()
+        {
+            // arrange
+            var valid = "one | b";
+            var invalid = "5, two";
+
+            // assert
+            valid.ParseFlags<TestEnum>('|').IsEqual(TestEnum.One | TestEnum.Two);
+            string.Empty.ParseFlags<TestEnum>('|').IsEqual(TestEnum.None);
+            ((Func<TestEnum>)(() => invalid.ParseFlags<TestEnum>(','))).Throws<ArgumentException>();
+        }
+
+        [Fact]
         public void ParseEnum_Default_Works()
         {
             // arrange
@@ -206,6 +219,19 @@ namespace Annium.Extensions.Primitives.Tests
             invalid.ParseEnum(TestEnum.None).IsEqual(TestEnum.None);
         }
 
+        [Fact]
+        public void ParseFlags_Default_Works()
+        {
+            // arrange
+            var valid = "one | b";
+            var invalid = "5, two";
+
+            // assert
+            valid.ParseFlags('|', TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
+            invalid.ParseFlags(',', TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
+        }
+
+        [Flags]
         private enum TestEnum
         {
             [Description("empty")]
