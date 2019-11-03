@@ -58,6 +58,22 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
+        public void Switch_Works()
+        {
+            // act
+            var result = Repack<string, string>(v =>
+                v == "1" ? "one" :
+                v == "2" ? "two" :
+                "other"
+            );
+
+            // assert
+            result("1").IsEqual("one");
+            result("2").IsEqual("two");
+            result("3").IsEqual("other");
+        }
+
+        [Fact]
         public void New_Works()
         {
             // act

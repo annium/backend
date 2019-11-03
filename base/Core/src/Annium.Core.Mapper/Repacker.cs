@@ -16,8 +16,9 @@ namespace Annium.Core.Mapper
             return ex switch
             {
                 BinaryExpression binary => Binary(binary)(source),
-                ConstantExpression constant => constant,
                 MethodCallExpression call => Call(call)(source),
+                ConditionalExpression conditional => Conditional(conditional)(source),
+                ConstantExpression constant => constant,
                 LambdaExpression lambda => Lambda(lambda)(source),
                 MemberExpression member => Member(member)(source),
                 MemberInitExpression memberInit => MemberInit(memberInit)(source),
@@ -40,6 +41,14 @@ namespace Annium.Core.Mapper
 
         private Func<Expression, Expression> Call(MethodCallExpression ex) => (Expression source) =>
             Expression.Call(Repack(ex.Object)(source), ex.Method, ex.Arguments.Select(a => Repack(a)(source)).ToArray());
+
+        private Func<Expression, Expression> Conditional(ConditionalExpression ex) => (Expression source) =>
+            Expression.Condition(
+                Repack(ex.Test)(source),
+                Repack(ex.IfTrue)(source),
+                Repack(ex.IfFalse)(source),
+                ex.Type
+            );
 
         private Func<Expression, Expression> Lambda(LambdaExpression ex) => (Expression source) =>
             Expression.Lambda(Repack(ex.Body)(source), new[] { source as ParameterExpression });
