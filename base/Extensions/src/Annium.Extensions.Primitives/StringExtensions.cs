@@ -1,3 +1,5 @@
+using System.ComponentModel;
+using System.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -147,7 +149,7 @@ namespace Annium.Extensions.Primitives
                 if (!lookup.TryGetValue(c2, out var b2))
                     throw new OverflowException($"{c2} is not a valid hex character");
 
-                byteArray[i / 2] = (byte) ((b1 << 4) + b2);
+                byteArray[i / 2] = (byte)((b1 << 4) + b2);
             }
 
             return byteArray;
@@ -168,7 +170,7 @@ namespace Annium.Extensions.Primitives
                 var c2 = str[i + 1];
 
                 if (lookup.TryGetValue(c1, out var b1) && lookup.TryGetValue(c2, out var b2))
-                    array[i / 2] = (byte) ((b1 << 4) + b2);
+                    array[i / 2] = (byte)((b1 << 4) + b2);
                 else
                     return false;
             }
@@ -176,6 +178,42 @@ namespace Annium.Extensions.Primitives
             byteArray = array;
 
             return true;
+        }
+
+        public static T ParseEnum<T>(this string str)
+        where T : struct, Enum
+        {
+            var (succeed, value) = str.TryParseEnum<T>();
+            if (!succeed)
+                throw new ArgumentException($"'{str}' is not a {typeof(T).Name} value");
+
+            return value;
+        }
+
+        public static T ParseEnum<T>(this string str, T defaultValue = default)
+        where T : struct, Enum
+        {
+            var (succeed, value) = str.TryParseEnum<T>();
+
+            return succeed ? value : defaultValue;
+        }
+
+        private static (bool succeed, T value) TryParseEnum<T>(this string str)
+        where T : struct, Enum
+        {
+            // TODO: optimize
+            foreach (var item in typeof(T).GetFields().Where(x => x.IsStatic))
+            {
+                if (item.Name.Equals(str, StringComparison.OrdinalIgnoreCase) ||
+                    (item.GetCustomAttribute<DescriptionAttribute>()?.Description.Equals(str, StringComparison.OrdinalIgnoreCase) ?? false))
+                    return (true, (T)item.GetValue(null)!);
+
+                var value = (T)item.GetValue(null)!;
+                if (Convert.ChangeType(value, Enum.GetUnderlyingType(typeof(T))).ToString() == str)
+                    return (true, value);
+            }
+
+            return (false, default);
         }
 
         private static string Compound(string value, Func<string, string, string> callback)

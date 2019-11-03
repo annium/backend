@@ -11,6 +11,16 @@
             "stopAtEntry": false
         },
         {
+            "name": "Primitives",
+            "type": "coreclr",
+            "request": "launch",
+            "program": "${workspaceFolder}/test/Demo.Extensions.Primitives/bin/Debug/netcoreapp3.0/Demo.Extensions.Primitives.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/test/Demo.Extensions.Primitives",
+            "console": "internalConsole",
+            "stopAtEntry": false
+        },
+        {
             "name": "Shell",
             "type": "coreclr",
             "request": "launch",

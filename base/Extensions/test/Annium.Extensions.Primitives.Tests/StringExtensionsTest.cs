@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System;
 using Annium.Testing;
 
@@ -132,7 +133,7 @@ namespace Annium.Extensions.Primitives.Tests
             var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
 
             // assert
-            ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<FormatException>();
+            ((Func<byte[]>)(() => str.FromHexStringToByteArray())).Throws<FormatException>();
             tryResult.IsFalse();
             byteArray.IsEmpty();
         }
@@ -149,8 +150,8 @@ namespace Annium.Extensions.Primitives.Tests
             var tryResult2 = str2.TryFromHexStringToByteArray(out var byteArray2);
 
             // assert
-            ((Func<byte[]>) (() => str1.FromHexStringToByteArray())).Throws<OverflowException>();
-            ((Func<byte[]>) (() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
+            ((Func<byte[]>)(() => str1.FromHexStringToByteArray())).Throws<OverflowException>();
+            ((Func<byte[]>)(() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
             tryResult1.IsFalse();
             tryResult2.IsFalse();
             byteArray1.IsEmpty();
@@ -171,6 +172,48 @@ namespace Annium.Extensions.Primitives.Tests
             result.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
             tryResult.IsTrue();
             byteArray.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
+        }
+
+        [Fact]
+        public void ParseEnum_NoDefault_Works()
+        {
+            // arrange
+            var name = "one";
+            var desc = "A";
+            var value = "1";
+            var invalid = "5";
+
+            // assert
+            name.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
+            desc.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
+            value.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
+            ((Func<TestEnum>)(() => invalid.ParseEnum<TestEnum>())).Throws<ArgumentException>();
+        }
+
+        [Fact]
+        public void ParseEnum_Default_Works()
+        {
+            // arrange
+            var name = "one";
+            var desc = "A";
+            var value = "1";
+            var invalid = "5";
+
+            // assert
+            name.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
+            desc.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
+            value.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
+            invalid.ParseEnum(TestEnum.None).IsEqual(TestEnum.None);
+        }
+
+        private enum TestEnum
+        {
+            [Description("empty")]
+            None,
+            [Description("a")]
+            One,
+            [Description("b")]
+            Two
         }
     }
 }
