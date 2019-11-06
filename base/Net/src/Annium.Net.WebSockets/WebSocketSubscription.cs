@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets.Internal;
@@ -47,7 +48,7 @@ namespace Annium.Net.WebSockets
             {
                 (isClosed, raw) = await socket.ReceiveTextAsync(token);
 
-                foreach (var (handler, filter) in handlers)
+                foreach (var (handler, filter) in handlers.ToList())
                     if (filter(raw)) handler(raw);
             }
         }
