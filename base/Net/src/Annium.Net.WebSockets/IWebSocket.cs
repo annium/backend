@@ -1,21 +1,22 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Data.Operations;
 
 namespace Annium.Net.WebSockets
 {
     public interface ISendingWebSocket : IDisposable
     {
-        Task SendAsync<T>(T data, CancellationToken token);
-        Task SendAsync(string data, CancellationToken token);
-        Task SendAsync(ReadOnlyMemory<byte> data, CancellationToken token);
+        Task<IBooleanResult> SendAsync<T>(T data, CancellationToken token);
+        Task<IBooleanResult> SendAsync(string data, CancellationToken token);
+        Task<IBooleanResult> SendAsync(ReadOnlyMemory<byte> data, CancellationToken token);
     }
 
     public interface IReceivingWebSocket : IDisposable
     {
         MessageFormat Format { get; }
-        Task<(bool isClosed, T data)> ReceiveAsync<T>(CancellationToken token);
-        Task<(bool isClosed, string data)> ReceiveTextAsync(CancellationToken token);
-        Task<(bool isClosed, byte[] data)> ReceiveBinaryAsync(CancellationToken token);
+        Task<IBooleanResult<SocketResponse<T>>> ReceiveAsync<T>(CancellationToken token);
+        Task<IBooleanResult<SocketResponse<string>>> ReceiveTextAsync(CancellationToken token);
+        Task<IBooleanResult<SocketResponse<byte[]>>> ReceiveBinaryAsync(CancellationToken token);
     }
 }

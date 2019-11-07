@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Data.Operations;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
@@ -28,64 +29,26 @@ namespace Annium.Net.WebSockets
             Format = format;
         }
 
-        public Task SendAsync<T>(T data, CancellationToken token)
-        {
-            return SendAsync(data.Serialize(Format), token);
-        }
+        public Task<IBooleanResult> SendAsync<T>(T data, CancellationToken token) =>
+            SendAsync(data.Serialize(Format), token);
 
-        public Task SendAsync(string data, CancellationToken token)
-        {
-            return SendAsync(encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
-        }
+        public Task<IBooleanResult> SendAsync(string data, CancellationToken token) =>
+            SendAsync(encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
 
-        public Task SendAsync(ReadOnlyMemory<byte> data, CancellationToken token)
-        {
-            return SendAsync(data, WebSocketMessageType.Binary, token);
-        }
+        public Task<IBooleanResult> SendAsync(ReadOnlyMemory<byte> data, CancellationToken token) =>
+             SendAsync(data, WebSocketMessageType.Binary, token);
 
-        public async Task<(bool isClosed, T data)> ReceiveAsync<T>(CancellationToken token)
-        {
-            while (true)
-            {
-                var (type, data) = await ReceiveAsync(token);
 
-                if (type == WebSocketMessageType.Close)
-                    return (true, default);
+        public Task<IBooleanResult<SocketResponse<T>>> ReceiveAsync<T>(CancellationToken token) =>
+            ReceiveAsync(WebSocketMessageType.Binary, x => x.Deserialize<T>(Format), token);
 
-                if (type == WebSocketMessageType.Text)
-                    return (false, data.Deserialize<T>(Format));
-            }
-        }
+        public Task<IBooleanResult<SocketResponse<string>>> ReceiveTextAsync(CancellationToken token) =>
+            ReceiveAsync(WebSocketMessageType.Binary, encoding.GetString, token);
 
-        public async Task<(bool isClosed, string data)> ReceiveTextAsync(CancellationToken token)
-        {
-            while (true)
-            {
-                var (type, data) = await ReceiveAsync(token);
+        public Task<IBooleanResult<SocketResponse<byte[]>>> ReceiveBinaryAsync(CancellationToken token) =>
+            ReceiveAsync(WebSocketMessageType.Binary, x => x, token);
 
-                if (type == WebSocketMessageType.Close)
-                    return (true, string.Empty);
-
-                if (type == WebSocketMessageType.Text)
-                    return (false, encoding.GetString(data));
-            }
-        }
-
-        public async Task<(bool isClosed, byte[] data)> ReceiveBinaryAsync(CancellationToken token)
-        {
-            while (true)
-            {
-                var (type, data) = await ReceiveAsync(token);
-
-                if (type == WebSocketMessageType.Close)
-                    return (true, Array.Empty<byte>());
-
-                if (type == WebSocketMessageType.Binary)
-                    return (false, data);
-            }
-        }
-
-        private async Task SendAsync(ReadOnlyMemory<byte> data, WebSocketMessageType messageType, CancellationToken token)
+        private async Task<IBooleanResult> SendAsync(ReadOnlyMemory<byte> data, WebSocketMessageType messageType, CancellationToken token)
         {
             try
             {
@@ -96,15 +59,21 @@ namespace Annium.Net.WebSockets
                     endOfMessage: true,
                     cancellationToken: token
                 );
+
+                return Result.Success();
             }
             // is thrown, if remote party closed connection w/o handshake
-            catch (WebSocketException)
+            catch (Exception e)
             {
-
+                return Result.Failure().Error(e.Message);
             }
         }
 
-        private async Task<(WebSocketMessageType type, byte[] data)> ReceiveAsync(CancellationToken token)
+        private async Task<IBooleanResult<SocketResponse<T>>> ReceiveAsync<T>(
+            WebSocketMessageType? type,
+            Func<byte[], T> convert,
+            CancellationToken token
+        )
         {
             var pool = ArrayPool<byte>.Shared;
             var buffer = pool.Rent(bufferSize);
@@ -123,19 +92,28 @@ namespace Annium.Net.WebSockets
                     {
                         _ = socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
 
-                        return (result.MessageType, Array.Empty<byte>());
+                        return Result.Success(new SocketResponse<T>(false, convert(Array.Empty<byte>())));
                     }
+
+                    // skip unexpected message type
+                    if (result.MessageType == type)
+                        continue;
+
 
                     stream.Write(mem.Slice(0, result.Count).Span);
                 }
                 while (!result.EndOfMessage);
 
-                return (result.MessageType, stream.ToArray());
+                return Result.Success(new SocketResponse<T>(true, convert(stream.ToArray())));
             }
             // is thrown, if remote party closed connection w/o handshake
             catch (WebSocketException)
             {
-                return (WebSocketMessageType.Close, Array.Empty<byte>());
+                return Result.Success(new SocketResponse<T>(false, convert(Array.Empty<byte>())));
+            }
+            catch (Exception e)
+            {
+                return Result.Failure(new SocketResponse<T>(false, convert(Array.Empty<byte>()))).Error(e.Message);
             }
             finally
             {
