@@ -8,7 +8,6 @@ namespace Annium.Net.WebSockets.Internal
     {
         public static readonly JsonSerializerOptions Json = new JsonSerializerOptions()
             .ConfigureAbstractConverter()
-            .ConfigureForOperations()
             .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
     }
 }
