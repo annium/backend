@@ -14,10 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
-        <ProjectReference Include="../../../Extensions/test/Annium.Extensions.Primitives.Tests/Annium.Extensions.Primitives.Tests.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
-        <ProjectReference Include="../../../Extensions/test/Demo.Extensions.Primitives/Demo.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.msbuild" Version="2.7.0" />
