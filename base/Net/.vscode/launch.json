@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [{
+        "name": "WebSockets",
+        "type": "coreclr",
+        "request": "launch",
+        "program": "${workspaceFolder}/test/Demo.Net.WebSockets/bin/Debug/netcoreapp3.0/Demo.Net.WebSockets.dll",
+        "args": [],
+        "cwd": "${workspaceFolder}/test/Demo.Net.WebSockets",
+        "console": "internalConsole",
+        "stopAtEntry": false
+    }]
+}

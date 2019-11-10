@@ -19,7 +19,7 @@ namespace Annium.Net.WebSockets
         public MessageFormat Format { get; }
         protected readonly TNativeSocket socket;
         private readonly UTF8Encoding encoding = new UTF8Encoding();
-        private readonly Lazy<IObservable<SocketData>> socketObservable;
+        private readonly IObservable<SocketData> socketObservable;
 
         public WebSocket(
             TNativeSocket socket,
@@ -28,7 +28,7 @@ namespace Annium.Net.WebSockets
         {
             this.socket = socket;
             Format = format;
-            socketObservable = new Lazy<IObservable<SocketData>>(CreateSocketObservable, isThreadSafe: true);
+            socketObservable = CreateSocketObservable();
         }
 
         public IObservable<int> Send<T>(T data, CancellationToken token) =>
@@ -40,15 +40,15 @@ namespace Annium.Net.WebSockets
         public IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
              Send(data, WebSocketMessageType.Binary, token);
 
-        public IObservable<T> Listen<T>() where T : notnull => socketObservable.Value
+        public IObservable<T> Listen<T>() where T : notnull => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
             .Select(x => x.Data.Deserialize<T>(Format));
 
-        public IObservable<string> ListenText() => socketObservable.Value
+        public IObservable<string> ListenText() => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
             .Select(x => encoding.GetString(x.Data.Span));
 
-        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => socketObservable.Value
+        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Binary)
             .Select(x => x.Data);
 
@@ -56,21 +56,18 @@ namespace Annium.Net.WebSockets
             ReadOnlyMemory<byte> data,
             WebSocketMessageType messageType,
             CancellationToken token
-        )
+        ) => Observable.FromAsync(async () =>
         {
-            return Observable.FromAsync(async () =>
-            {
-                // TODO: implement chunking, if needed
-                await socket.SendAsync(
-                    buffer: data,
-                    messageType: messageType,
-                    endOfMessage: true,
-                    cancellationToken: token
-                );
+            // TODO: implement chunking, if needed
+            await socket.SendAsync(
+                buffer: data,
+                messageType: messageType,
+                endOfMessage: true,
+                cancellationToken: token
+            );
 
-                return data.Length;
-            });
-        }
+            return data.Length;
+        });
 
         private IObservable<SocketData> CreateSocketObservable() =>
         Observable.Create<SocketData>(async (observer, token) =>
@@ -83,7 +80,7 @@ namespace Annium.Net.WebSockets
             pool.Return(buffer);
 
             return () => socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-        });
+        }).Publish().RefCount();
 
         private async ValueTask<bool> ReceiveAsync(
             IObserver<SocketData> observer,
