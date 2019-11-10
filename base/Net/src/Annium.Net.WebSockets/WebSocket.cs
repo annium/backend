@@ -19,6 +19,7 @@ namespace Annium.Net.WebSockets
         public MessageFormat Format { get; }
         protected readonly TNativeSocket socket;
         private readonly UTF8Encoding encoding = new UTF8Encoding();
+        private readonly Lazy<IObservable<SocketData>> socketObservable;
 
         public WebSocket(
             TNativeSocket socket,
@@ -27,6 +28,7 @@ namespace Annium.Net.WebSockets
         {
             this.socket = socket;
             Format = format;
+            socketObservable = new Lazy<IObservable<SocketData>>(CreateSocketObservable, isThreadSafe: true);
         }
 
         public IObservable<int> Send<T>(T data, CancellationToken token) =>
@@ -38,14 +40,17 @@ namespace Annium.Net.WebSockets
         public IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
              Send(data, WebSocketMessageType.Binary, token);
 
-        public IObservable<T> Listen<T>() where T : notnull =>
-            Listen(WebSocketMessageType.Binary, x => x.Deserialize<T>(Format));
+        public IObservable<T> Listen<T>() where T : notnull => socketObservable.Value
+            .Where(x => x.Type == WebSocketMessageType.Text)
+            .Select(x => x.Data.Deserialize<T>(Format));
 
-        public IObservable<string> ListenText() =>
-            Listen(WebSocketMessageType.Binary, x => encoding.GetString(x.Span));
+        public IObservable<string> ListenText() => socketObservable.Value
+            .Where(x => x.Type == WebSocketMessageType.Text)
+            .Select(x => encoding.GetString(x.Data.Span));
 
-        public IObservable<ReadOnlyMemory<byte>> ListenBinary() =>
-            Listen(WebSocketMessageType.Binary, x => x);
+        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => socketObservable.Value
+            .Where(x => x.Type == WebSocketMessageType.Binary)
+            .Select(x => x.Data);
 
         private IObservable<int> Send(
             ReadOnlyMemory<byte> data,
@@ -67,26 +72,22 @@ namespace Annium.Net.WebSockets
             });
         }
 
-        private IObservable<T> Listen<T>(
-            WebSocketMessageType? type,
-            Func<ReadOnlyMemory<byte>, T> convert
-        ) => Observable.Create<T>(async (observer, token) =>
+        private IObservable<SocketData> CreateSocketObservable() =>
+        Observable.Create<SocketData>(async (observer, token) =>
         {
             var pool = ArrayPool<byte>.Shared;
             var buffer = pool.Rent(bufferSize);
 
-            while (await ReceiveAsync(observer, buffer, type, convert, token)) { }
+            while (await ReceiveAsync(observer, buffer, token)) { }
 
             pool.Return(buffer);
 
             return () => socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         });
 
-        private async ValueTask<bool> ReceiveAsync<T>(
-            IObserver<T> observer,
+        private async ValueTask<bool> ReceiveAsync(
+            IObserver<SocketData> observer,
             Memory<byte> buffer,
-            WebSocketMessageType? type,
-            Func<ReadOnlyMemory<byte>, T> convert,
             CancellationToken token
         )
         {
@@ -108,15 +109,11 @@ namespace Annium.Net.WebSockets
                         return false;
                     }
 
-                    // skip unexpected message type
-                    if (result.MessageType == type)
-                        continue;
-
                     stream.Write(buffer.Slice(0, result.Count).Span);
                 }
                 while (!result.EndOfMessage);
 
-                observer.OnNext(convert(stream.ToArray()));
+                observer.OnNext(new SocketData(result.MessageType, stream.ToArray()));
 
                 return true;
             }
@@ -161,5 +158,20 @@ namespace Annium.Net.WebSockets
             Dispose(true);
         }
         #endregion
+
+        private struct SocketData
+        {
+            public WebSocketMessageType Type { get; }
+            public ReadOnlyMemory<byte> Data { get; }
+
+            public SocketData(
+                WebSocketMessageType type,
+                ReadOnlyMemory<byte> data
+            )
+            {
+                Type = type;
+                Data = data;
+            }
+        }
     }
 }
