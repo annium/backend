@@ -18,4 +18,7 @@
         <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
         <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Reactive" Version="4.2.0" />
+    </ItemGroup>
 </Project>

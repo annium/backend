@@ -39,19 +39,7 @@ namespace Annium.Net.Http
             if (!response.IsSuccessStatusCode)
                 return default!;
 
-            return parse(await response.Content.ReadAsStringAsync());
-
-            T parse(string raw)
-            {
-                var mediaType = response.Content.Headers.ContentType.MediaType;
-
-                return mediaType
-                switch
-                {
-                    MediaTypeNames.Application.Json => JsonSerializer.Deserialize<T>(raw, Options.Json),
-                    _ => throw new NotSupportedException($"Media type '{mediaType}' is not supported"),
-                };
-            }
+            return await response.Content.ParseAsync<T>();
         }
     }
 }

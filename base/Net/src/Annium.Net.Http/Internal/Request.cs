@@ -11,8 +11,8 @@ namespace Annium.Net.Http.Internal
 {
     internal partial class Request : IRequest
     {
+        public bool IsEnsuringSuccess => getFailureMessage != null;
         private static readonly HttpClient defaultClient;
-
         static Request()
         {
             var handler = new HttpClientHandler
@@ -22,23 +22,14 @@ namespace Annium.Net.Http.Internal
 
             defaultClient = new HttpClient(handler);
         }
-
         private HttpClient client = defaultClient;
-
         private Func<HttpClient> createClient;
-
         private HttpMethod method = HttpMethod.Get;
-
         private Uri? baseUri;
-
         private string? uri;
-
         private readonly HttpRequestHeaders headers;
-
         private readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
-
         private HttpContent? content;
-
         private Func<IResponse, Task<string>>? getFailureMessage;
 
         internal Request(Uri baseUri) : this()
