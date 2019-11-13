@@ -45,5 +45,13 @@ namespace Annium.Net.Http
 
             return await response.Content.ParseAsync<T>();
         });
+
+        public static IObservable<IResponse> AsObservable(this IRequest request) => Observable.FromAsync(() =>
+        {
+            if (!request.IsEnsuringSuccess)
+                request.EnsureSuccessStatusCode();
+
+            return request.RunAsync();
+        });
     }
 }
