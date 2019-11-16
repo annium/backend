@@ -303,6 +303,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Extensions.Pooling",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Extensions.Pooling.Tests", "base\Extensions\test\Annium.Extensions.Pooling.Tests\Annium.Extensions.Pooling.Tests.csproj", "{63F5FD28-23B2-4DFD-A1B2-17008603B963}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extensions.Pooling", "base\Extensions\test\Demo.Extensions.Pooling\Demo.Extensions.Pooling.csproj", "{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -464,6 +466,7 @@ Global
 		{4958D453-577A-4FEF-BA41-8E66F24DEA85} = {1FA39104-3BAD-41F2-ABFD-5288FE7ECE5B}
 		{DC5BA2F5-5BD7-4861-B50F-4DA621DADB28} = {787AD0D1-E705-4844-92B9-4BA293F3EF72}
 		{63F5FD28-23B2-4DFD-A1B2-17008603B963} = {1DD95375-E751-4434-952B-904F3CB1C4C9}
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E} = {1DD95375-E751-4434-952B-904F3CB1C4C9}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1690,5 +1693,17 @@ Global
 		{63F5FD28-23B2-4DFD-A1B2-17008603B963}.Release|x64.Build.0 = Release|Any CPU
 		{63F5FD28-23B2-4DFD-A1B2-17008603B963}.Release|x86.ActiveCfg = Release|Any CPU
 		{63F5FD28-23B2-4DFD-A1B2-17008603B963}.Release|x86.Build.0 = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|x64.Build.0 = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Debug|x86.Build.0 = Debug|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x64.ActiveCfg = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x64.Build.0 = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x86.ActiveCfg = Release|Any CPU
+		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
