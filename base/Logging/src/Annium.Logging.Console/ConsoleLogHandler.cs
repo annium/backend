@@ -14,18 +14,20 @@ namespace Annium.Logging.Console
 
         static ConsoleLogHandler()
         {
-            var colors = new Dictionary<LogLevel, ConsoleColor>();
-            colors[LogLevel.Trace] = ConsoleColor.DarkGray;
-            colors[LogLevel.Debug] = ConsoleColor.Gray;
-            colors[LogLevel.Info] = ConsoleColor.White;
-            colors[LogLevel.Warn] = ConsoleColor.Yellow;
-            colors[LogLevel.Error] = ConsoleColor.Red;
+            var colors = new Dictionary<LogLevel, ConsoleColor>
+            {
+                [LogLevel.Trace] = ConsoleColor.DarkGray,
+                [LogLevel.Debug] = ConsoleColor.Gray,
+                [LogLevel.Info] = ConsoleColor.White,
+                [LogLevel.Warn] = ConsoleColor.Yellow,
+                [LogLevel.Error] = ConsoleColor.Red
+            };
             levelColors = colors;
         }
 
         public void Handle(LogMessage msg)
         {
-            lock(consoleLock)
+            lock (consoleLock)
             {
                 var currentColor = System.Console.ForegroundColor;
                 try

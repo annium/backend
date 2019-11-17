@@ -11,8 +11,8 @@ namespace Annium.Extensions.Validation
 {
     public abstract class Validator<TValue> : IValidationContainer<TValue>
     {
-        private IDictionary<PropertyInfo, IRuleContainer<TValue>> rules { get; } =
-        new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
+        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> rules =
+            new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
         protected IRuleBuilder<TValue, TField> Field<TField>(
             Expression<Func<TValue, TField>> accessor
@@ -40,7 +40,7 @@ namespace Annium.Extensions.Validation
             var ranStage = false;
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            foreach (var(property, rule) in rules)
+            foreach (var (property, rule) in rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var ruleResult = Result.New();
