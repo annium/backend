@@ -15,14 +15,10 @@ namespace Annium.Data.Models.Tests
             Minor = minor;
         }
 
-        public override int GetHashCode()
+        public override IEnumerable<int> GetComponentHashCodes()
         {
-            var hash = 7;
-
-            hash = hash * 31 + Major.GetHashCode();
-            hash = hash * 31 + Minor.GetHashCode();
-
-            return hash;
+            yield return Major.GetHashCode();
+            yield return Minor.GetHashCode();
         }
 
         protected override IEnumerable<Func<Money, IComparable>> GetComparables()

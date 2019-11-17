@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Annium.Data.Models
 {
     public abstract class Equatable<T> : IEquatable<T> where T : Equatable<T>
     {
-        public override abstract int GetHashCode();
+        public abstract IEnumerable<int> GetComponentHashCodes();
 
         public bool Equals(T obj) => GetHashCode() == obj?.GetHashCode();
 
-        public override bool Equals(object? obj) => Equals((T) obj!);
+        public override bool Equals(object? obj) => Equals((T)obj!);
 
         public static bool operator ==(Equatable<T> a, Equatable<T> b)
         {
@@ -25,5 +26,18 @@ namespace Annium.Data.Models
         }
 
         public static bool operator !=(Equatable<T> a, Equatable<T> b) => !(a == b);
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 7;
+
+                foreach (var code in GetComponentHashCodes())
+                    hash = hash * 31 + code;
+
+                return hash;
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace Annium.Architecture.Base
 {
     public class OperationStatus : Equatable<OperationStatus>
     {
-        private static List<OperationStatus> statuses = new List<OperationStatus>();
+        private static readonly List<OperationStatus> statuses = new List<OperationStatus>();
 
         public static OperationStatus BadRequest { get; } = Register(nameof(BadRequest));
         public static OperationStatus Conflict { get; } = Register(nameof(Conflict));
@@ -37,6 +37,9 @@ namespace Annium.Architecture.Base
 
         public override string ToString() => name;
 
-        public override int GetHashCode() => name.GetHashCode();
+        public override IEnumerable<int> GetComponentHashCodes()
+        {
+            yield return name.GetHashCode();
+        }
     }
 }

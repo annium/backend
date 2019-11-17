@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Annium.Data.Models.Tests
 {
     public class Point : Equatable<Point>
@@ -12,14 +14,10 @@ namespace Annium.Data.Models.Tests
             Y = y;
         }
 
-        public override int GetHashCode()
+        public override IEnumerable<int> GetComponentHashCodes()
         {
-            var hash = 7;
-
-            hash = hash * 31 + X.GetHashCode();
-            hash = hash * 31 + Y.GetHashCode();
-
-            return hash;
+            yield return X.GetHashCode();
+            yield return Y.GetHashCode();
         }
     }
 }
