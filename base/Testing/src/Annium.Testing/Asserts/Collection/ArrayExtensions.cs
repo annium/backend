@@ -35,7 +35,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Length;
-            (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total-1}]");
+            (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total - 1}]");
 
             return value[key];
         }

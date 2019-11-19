@@ -22,7 +22,7 @@ namespace Annium.Testing.TestAdapter
 
         private IServiceProvider? provider;
 
-        private ILogger<AdapterTestExecutor> ? logger;
+        private ILogger<AdapterTestExecutor>? logger;
 
         public AdapterTestExecutor()
         {

@@ -19,7 +19,7 @@ namespace Annium.Testing.TestAdapter
 
         private TestDiscoverer? testDiscoverer;
 
-        private ILogger<AdapterTestDiscoverer> ? logger;
+        private ILogger<AdapterTestDiscoverer>? logger;
 
         public AdapterTestDiscoverer()
         {

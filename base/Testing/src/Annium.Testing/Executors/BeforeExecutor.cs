@@ -22,7 +22,7 @@ namespace Annium.Testing.Executors
 
         public Task ExecuteAsync(Target target)
         {
-            var(instance, test, result) = target;
+            var (instance, test, result) = target;
             if (test.Before == null)
                 return Task.CompletedTask;
 

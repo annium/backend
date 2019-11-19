@@ -34,7 +34,7 @@ namespace Annium.Testing
         public static T At<T>(this IEnumerable<T> value, int key)
         {
             var total = value.Count();
-            (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total-1}]");
+            (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total - 1}]");
 
             return value.ElementAt(key);
         }

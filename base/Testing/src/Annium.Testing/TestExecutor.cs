@@ -39,7 +39,7 @@ namespace Annium.Testing
 
             var concurrency = Environment.ProcessorCount;
 
-            using(var semaphore = new Semaphore(concurrency, concurrency))
+            using (var semaphore = new Semaphore(concurrency, concurrency))
             {
                 await Task.WhenAll(tests.FilterMask(cfg.Filter).Select(async test =>
                 {

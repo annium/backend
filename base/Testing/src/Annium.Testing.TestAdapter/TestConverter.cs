@@ -34,7 +34,7 @@ namespace Annium.Testing.TestAdapter
         {
             var fqn = test.FullyQualifiedName.Split('.');
             var type = string.Join('.', fqn.SkipLast(1));
-            var name = fqn[ ^ 1];
+            var name = fqn[^1];
 
             var method = assembly.GetType(type)?.GetMethod(name) ??
                 throw new InvalidOperationException($"Failed to resolve {type}.{name} method");

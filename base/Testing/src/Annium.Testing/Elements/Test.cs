@@ -31,7 +31,7 @@ namespace Annium.Testing.Elements
             SetupLocation();
         }
 
-        public override string ToString() => Method.ToString() !;
+        public override string ToString() => Method.ToString()!;
 
         private void SetupSkipped()
         {
@@ -48,7 +48,7 @@ namespace Annium.Testing.Elements
             var attribute = Method.GetCustomAttribute<BeforeAttribute>();
             if (attribute != null)
             {
-                Before = Method.DeclaringType!.GetMethod(attribute.SetUpName) !;
+                Before = Method.DeclaringType!.GetMethod(attribute.SetUpName)!;
                 UpdateLine(attribute.Line);
             }
         }
@@ -58,7 +58,7 @@ namespace Annium.Testing.Elements
             var attribute = Method.GetCustomAttribute<AfterAttribute>();
             if (attribute != null)
             {
-                After = Method.DeclaringType!.GetMethod(attribute.TearDownName) !;
+                After = Method.DeclaringType!.GetMethod(attribute.TearDownName)!;
                 UpdateLine(attribute.Line);
             }
         }

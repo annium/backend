@@ -21,7 +21,7 @@ namespace Annium.Testing.Tests
         public void Test_Failing()
         {
             Console.WriteLine(nameof(Test_Failing));
-            ((Action) (() => { throw new ArgumentException(); })).Throws<ArgumentException>();
+            ((Action)(() => { throw new ArgumentException(); })).Throws<ArgumentException>();
         }
 
         [Fact]
