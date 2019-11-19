@@ -22,7 +22,7 @@ namespace Annium.Testing
 
         public static object Is<TValue>(this object value, string message = "")
         {
-            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is not {typeof(TValue)}" : message);
+            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
 
             return value;
         }
@@ -36,7 +36,7 @@ namespace Annium.Testing
 
         public static TValue As<TValue>(this object value, string message = "") where TValue : class
         {
-            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is not {typeof(TValue)}" : message);
+            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
 
             return (TValue)value;
         }
