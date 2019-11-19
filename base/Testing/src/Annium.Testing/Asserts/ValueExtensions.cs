@@ -22,35 +22,35 @@ namespace Annium.Testing
 
         public static object Is<TValue>(this object value, string message = "")
         {
-            (value is TValue).IsTrue(message);
+            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is not {typeof(TValue)}" : message);
 
             return value;
         }
 
         public static object IsNot<TValue>(this object value, string message = "")
         {
-            (value is TValue).IsFalse(message);
+            (value is TValue).IsFalse(string.IsNullOrEmpty(message) ? $"{value} is {typeof(TValue)}" : message);
 
             return value;
         }
 
         public static TValue As<TValue>(this object value, string message = "") where TValue : class
         {
-            (value is TValue).IsTrue(message);
+            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is not {typeof(TValue)}" : message);
 
-            return (TValue) value;
+            return (TValue)value;
         }
 
         public static T IsDefault<T>(this T value, string message = "")
         {
-            value.IsEqual(default !, message);
+            value.IsEqual(default!, message);
 
             return value;
         }
 
         public static T IsNotDefault<T>(this T value, string message = "")
         {
-            value.IsNotEqual(default !, message);
+            value.IsNotEqual(default!, message);
 
             return value;
         }
