@@ -109,7 +109,7 @@ namespace Annium.Net.Http.Internal
             return this;
         }
 
-        public IRequest Content(HttpContent content)
+        public IRequest Attach(HttpContent content)
         {
             this.content = content;
 

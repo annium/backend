@@ -12,7 +12,7 @@ namespace Annium.Net.Http
         {
             var content = JsonSerializer.Serialize(data, Options.Json);
 
-            return request.Content(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
+            return request.Attach(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
         }
     }
 }

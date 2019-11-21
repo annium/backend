@@ -16,7 +16,7 @@ namespace Annium.Net.Http
         IRequest With(HttpMethod method, Uri uri);
         IRequest With(HttpMethod method, string uri);
         IRequest Param<T>(string key, T value);
-        IRequest Content(HttpContent content);
+        IRequest Attach(HttpContent content);
         IRequest Configure(
             Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
         );
