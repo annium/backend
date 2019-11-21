@@ -11,6 +11,10 @@ namespace Annium.Net.Http.Internal
 {
     internal partial class Request : IRequest
     {
+        public HttpMethod Method { get; private set; } = HttpMethod.Get;
+        public Uri Uri => GetUriFactory(baseUri ?? createClient().BaseAddress).Build();
+        public IReadOnlyDictionary<string, string> Params => parameters;
+        public HttpContent? Content { get; private set; }
         public bool IsEnsuringSuccess => getFailureMessage != null;
         private static readonly HttpClient defaultClient;
         static Request()
@@ -24,12 +28,10 @@ namespace Annium.Net.Http.Internal
         }
         private HttpClient client = defaultClient;
         private Func<HttpClient> createClient;
-        private HttpMethod method = HttpMethod.Get;
         private Uri? baseUri;
         private string? uri;
         private readonly HttpRequestHeaders headers;
         private readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
-        private HttpContent? content;
         private Func<IResponse, Task<string>>? getFailureMessage;
 
         internal Request(Uri baseUri) : this()
@@ -58,14 +60,14 @@ namespace Annium.Net.Http.Internal
         {
             this.client = client;
             this.createClient = createClient;
-            this.method = method;
+            Method = method;
             this.baseUri = baseUri;
             this.uri = uri;
             using (var message = new HttpRequestMessage()) this.headers = message.Headers;
             foreach (var (name, values) in headers)
                 this.headers.Add(name, values);
             this.parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
-            this.content = content;
+            Content = content;
             this.getFailureMessage = getFailureMessage;
         }
 
@@ -96,7 +98,7 @@ namespace Annium.Net.Http.Internal
 
         public IRequest With(HttpMethod method, string uri)
         {
-            this.method = method;
+            Method = method;
             this.uri = uri;
 
             return this;
@@ -111,7 +113,7 @@ namespace Annium.Net.Http.Internal
 
         public IRequest Attach(HttpContent content)
         {
-            this.content = content;
+            Content = content;
 
             return this;
         }
@@ -120,7 +122,7 @@ namespace Annium.Net.Http.Internal
             Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
         )
         {
-            configure(this, method, BuildUri(baseUri ?? createClient().BaseAddress), parameters, headers, content);
+            configure(this, Method, BuildUri(baseUri ?? createClient().BaseAddress), parameters, headers, Content);
 
             return this;
         }
@@ -142,18 +144,18 @@ namespace Annium.Net.Http.Internal
         }
 
         public IRequest Clone() =>
-            new Request(client, createClient, method, baseUri, uri, headers, parameters, content, getFailureMessage);
+            new Request(client, createClient, Method, baseUri, uri, headers, parameters, Content, getFailureMessage);
 
         public async Task<IResponse> RunAsync()
         {
             var client = createClient();
 
-            var message = new HttpRequestMessage { Method = method, RequestUri = BuildUri(baseUri ?? client.BaseAddress) };
+            var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri(baseUri ?? client.BaseAddress) };
 
             foreach (var (name, values) in headers)
                 message.Headers.Add(name, values);
 
-            message.Content = content;
+            message.Content = Content;
 
             var response = new Response(await client.SendAsync(message));
 

@@ -8,6 +8,10 @@ namespace Annium.Net.Http
 {
     public partial interface IRequest
     {
+        HttpMethod Method { get; }
+        Uri Uri { get; }
+        IReadOnlyDictionary<string, string> Params { get; }
+        HttpContent? Content { get; }
         bool IsEnsuringSuccess { get; }
         IRequest Base(Uri baseUri);
         IRequest Base(string baseUri);
