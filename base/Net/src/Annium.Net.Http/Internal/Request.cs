@@ -92,9 +92,9 @@ namespace Annium.Net.Http.Internal
             return this;
         }
 
-        public IRequest Method(HttpMethod method, Uri uri) => Method(method, uri.ToString());
+        public IRequest With(HttpMethod method, Uri uri) => With(method, uri.ToString());
 
-        public IRequest Method(HttpMethod method, string uri)
+        public IRequest With(HttpMethod method, string uri)
         {
             this.method = method;
             this.uri = uri;

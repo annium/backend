@@ -13,8 +13,8 @@ namespace Annium.Net.Http
         IRequest Base(string baseUri);
         IRequest UseClient(HttpClient client);
         IRequest UseClientFactory(Func<HttpClient> createClient);
-        IRequest Method(HttpMethod method, Uri uri);
-        IRequest Method(HttpMethod method, string uri);
+        IRequest With(HttpMethod method, Uri uri);
+        IRequest With(HttpMethod method, string uri);
         IRequest Param<T>(string key, T value);
         IRequest Content(HttpContent content);
         IRequest Configure(
