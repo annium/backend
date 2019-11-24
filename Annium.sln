@@ -305,6 +305,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Extensions.Pooling.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Extensions.Pooling", "base\Extensions\test\Demo.Extensions.Pooling\Demo.Extensions.Pooling.csproj", "{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Net.Mail", "base\Net\src\Annium.Net.Mail\Annium.Net.Mail.csproj", "{BC5D1067-A626-4186-9283-FC1D629D84DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -467,6 +469,7 @@ Global
 		{DC5BA2F5-5BD7-4861-B50F-4DA621DADB28} = {787AD0D1-E705-4844-92B9-4BA293F3EF72}
 		{63F5FD28-23B2-4DFD-A1B2-17008603B963} = {1DD95375-E751-4434-952B-904F3CB1C4C9}
 		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E} = {1DD95375-E751-4434-952B-904F3CB1C4C9}
+		{BC5D1067-A626-4186-9283-FC1D629D84DA} = {16FC5B7E-EF40-4FA1-85F3-8B7DAA151E5D}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1705,5 +1708,17 @@ Global
 		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x64.Build.0 = Release|Any CPU
 		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x86.ActiveCfg = Release|Any CPU
 		{53CA3FAD-2330-4F96-BA97-5695B6A6A59E}.Release|x86.Build.0 = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|x64.Build.0 = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Debug|x86.Build.0 = Debug|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|x64.ActiveCfg = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|x64.Build.0 = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|x86.ActiveCfg = Release|Any CPU
+		{BC5D1067-A626-4186-9283-FC1D629D84DA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
