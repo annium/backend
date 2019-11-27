@@ -24,6 +24,7 @@ namespace Annium.Net.Mail
         {
             using var client = GetClient();
             message.Body = LoadBody(template, data);
+            message.IsBodyHtml = true;
 
             try
             {
