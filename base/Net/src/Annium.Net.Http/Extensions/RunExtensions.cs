@@ -36,8 +36,6 @@ namespace Annium.Net.Http
         public static async Task<T> AsAsync<T>(this IRequest request)
         {
             var response = await request.RunAsync();
-            if (!response.IsSuccessStatusCode)
-                return default!;
 
             return await response.Content.ParseAsync<T>();
         }
