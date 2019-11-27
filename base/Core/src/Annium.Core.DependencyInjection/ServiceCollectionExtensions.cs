@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Reflection;
 using Annium.Core.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +20,7 @@ namespace Annium.Core.DependencyInjection
 
             return new RegistrationBuilder(
                services,
-               TypeManager.Instance.Types
-                   .Where(x => x.Assembly == assembly)
+               assembly.GetTypes()
            );
         }
     }
