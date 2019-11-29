@@ -4,6 +4,17 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http.Internal
 {
+    internal class Response<T> : Response, IResponse<T>
+    {
+        public T Data { get; }
+
+        public Response(HttpResponseMessage message, T data)
+        : base(message)
+        {
+            Data = data;
+        }
+    }
+
     internal class Response : IResponse
     {
         public HttpStatusCode StatusCode { get; }

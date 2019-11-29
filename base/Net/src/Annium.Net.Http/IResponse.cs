@@ -4,6 +4,11 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http
 {
+    public interface IResponse<T> : IResponse
+    {
+        T Data { get; }
+    }
+
     public interface IResponse
     {
         HttpStatusCode StatusCode { get; }
