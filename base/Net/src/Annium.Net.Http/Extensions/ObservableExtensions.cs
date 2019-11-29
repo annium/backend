@@ -18,7 +18,7 @@ namespace Annium.Net.Http
             return await response.Content.ReadAsStringAsync();
         });
 
-        public static IObservable<ReadOnlyMemory<byte>> AsByteArrayObservable(this IRequest request) => Observable.FromAsync(async () =>
+        public static IObservable<ReadOnlyMemory<byte>> AsMemoryObservable(this IRequest request) => Observable.FromAsync(async () =>
         {
             var response = await request.RunAsync();
 
