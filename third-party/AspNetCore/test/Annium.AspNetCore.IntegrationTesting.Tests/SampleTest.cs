@@ -8,7 +8,9 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class SampleTest : IntegrationTest
     {
-        private IRequest http => GetRequest<Startup, Demo.AspNetCore.ServicePack>();
+        private IRequest http => GetRequest<Startup>(
+            builder => builder.UseServicePack<Demo.AspNetCore.ServicePack>()
+        );
 
         [Fact]
         public async Task True_IsTrue()
