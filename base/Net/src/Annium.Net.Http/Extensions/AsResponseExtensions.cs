@@ -9,19 +9,19 @@ namespace Annium.Net.Http
 {
     public static class AsResponseExtensions
     {
-        public static Task<IResponse<string>> AsStringAsync(this IRequest request) =>
+        public static Task<IResponse<string>> AsResponseStringAsync(this IRequest request) =>
             request.ToResponseAsync(Parse.String);
 
-        public static Task<IResponse<ReadOnlyMemory<byte>>> AsMemoryAsync(this IRequest request) =>
+        public static Task<IResponse<ReadOnlyMemory<byte>>> AsResponseMemoryAsync(this IRequest request) =>
             request.ToResponseAsync(Parse.Memory);
 
-        public static Task<IResponse<Stream>> AsStreamAsync(this IRequest request) =>
+        public static Task<IResponse<Stream>> AsResponseStreamAsync(this IRequest request) =>
             request.ToResponseAsync(Parse.Stream);
 
-        public static Task<IResponse<IResult<T>>> AsResultAsync<T>(this IRequest request) =>
+        public static Task<IResponse<IResult<T>>> AsResponseResultAsync<T>(this IRequest request) =>
             request.ToResponseAsync(Parse.ResultT<T>);
 
-        public static Task<IResponse<T>> AsAsync<T>(this IRequest request) =>
+        public static Task<IResponse<T>> AsResponseAsync<T>(this IRequest request) =>
             request.ToResponseAsync(Parse.T<T>);
 
         private static async Task<IResponse<T>> ToResponseAsync<T>(this IRequest request, Func<HttpContent, Task<T>> parseAsync)
