@@ -24,7 +24,7 @@ namespace Annium.Testing
         {
             (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
 
-            return value;
+            return value!;
         }
 
         public static object IsNot<TValue>(this object value, string message = "")
@@ -38,7 +38,7 @@ namespace Annium.Testing
         {
             (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
 
-            return (TValue)value;
+            return (TValue)value!;
         }
 
         public static T IsDefault<T>(this T value, string message = "")
