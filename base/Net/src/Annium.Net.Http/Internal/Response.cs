@@ -8,7 +8,7 @@ namespace Annium.Net.Http.Internal
     {
         public T Data { get; }
 
-        public Response(HttpResponseMessage message, T data)
+        public Response(IResponse message, T data)
         : base(message)
         {
             Data = data;
@@ -30,6 +30,15 @@ namespace Annium.Net.Http.Internal
             IsSuccessStatusCode = message.IsSuccessStatusCode;
             Headers = message.Headers;
             Content = message.Content;
+        }
+
+        internal Response(IResponse response)
+        {
+            StatusCode = response.StatusCode;
+            ReasonPhrase = response.ReasonPhrase;
+            IsSuccessStatusCode = response.IsSuccessStatusCode;
+            Headers = response.Headers;
+            Content = response.Content;
         }
     }
 }
