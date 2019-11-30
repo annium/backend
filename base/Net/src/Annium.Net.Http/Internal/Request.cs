@@ -159,7 +159,7 @@ namespace Annium.Net.Http.Internal
 
             var response = new Response(await client.SendAsync(message));
 
-            if (!response.IsSuccessStatusCode && getFailureMessage != null)
+            if (response.IsFailure && getFailureMessage != null)
                 throw new HttpRequestException(await getFailureMessage(response));
 
             return response;

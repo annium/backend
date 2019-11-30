@@ -11,9 +11,10 @@ namespace Annium.Net.Http
 
     public interface IResponse
     {
+        bool IsSuccess { get; }
+        bool IsFailure { get; }
         HttpStatusCode StatusCode { get; }
-        string ReasonPhrase { get; }
-        bool IsSuccessStatusCode { get; }
+        string StatusText { get; }
         HttpResponseHeaders Headers { get; }
         HttpContent Content { get; }
     }
