@@ -18,7 +18,13 @@ namespace Annium.Data.Operations.Serialization
             JsonSerializer.Serialize(writer, value.PlainErrors, options);
 
             writer.WritePropertyName(nameof(IResultBase.LabeledErrors).CamelCase());
-            JsonSerializer.Serialize(writer, value.LabeledErrors, options);
+            JsonSerializer.Serialize(
+                writer,
+                options.DictionaryKeyPolicy == JsonNamingPolicy.CamelCase
+                    ? value.LabeledErrors.ToDictionary(x => x.Key.CamelCase(), x => x.Value)
+                    : value.LabeledErrors,
+                options
+            );
         }
     }
 
