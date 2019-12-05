@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Annium.Testing;
 
@@ -268,18 +269,93 @@ namespace Annium.Extensions.Validation.Tests.Rules
         }
 
         [Fact]
-        public async Task Regex_Works()
+        public async Task RegexString_Works()
         {
             // arrange
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.ValidateAsync(new Person() { Regex = "yes" });
-            var resultBad = await validator.ValidateAsync(new Person() { Regex = "yoda" });
+            var resultGood = await validator.ValidateAsync(new Person() { RegexString = "yes" });
+            var resultBad = await validator.ValidateAsync(new Person() { RegexString = "yoda" });
 
             // assert
-            resultGood.LabeledErrors.ContainsKey(nameof(Person.Regex)).IsFalse();
-            resultBad.LabeledErrors.At(nameof(Person.Regex)).At(0).IsEqual("Value doesn't match specified regex");
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.RegexString)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.RegexString)).At(0).IsEqual("Value doesn't match specified regex");
+        }
+
+        [Fact]
+        public async Task RegexInstance_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { RegexInstance = "yes" });
+            var resultBad = await validator.ValidateAsync(new Person() { RegexInstance = "yoda" });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.RegexInstance)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.RegexInstance)).At(0).IsEqual("Value doesn't match specified regex");
+        }
+
+        [Fact]
+        public async Task MustField_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { MustField = "x" });
+            var resultBad = await validator.ValidateAsync(new Person() { MustField = "y" });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.MustField)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.MustField)).At(0).IsEqual("Value doesn't match condition");
+        }
+
+        [Fact]
+        public async Task MustValueField_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { MustField = "a", MustValueField = "a" });
+            var resultBad = await validator.ValidateAsync(new Person() { MustField = "a", MustValueField = "b" });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.MustValueField)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.MustValueField)).At(0).IsEqual("Value doesn't match condition");
+        }
+
+        [Fact]
+        public async Task MustFieldAsync_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { MustFieldAsync = "x" });
+            var resultBad = await validator.ValidateAsync(new Person() { MustFieldAsync = "y" });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.MustFieldAsync)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.MustFieldAsync)).At(0).IsEqual("Value doesn't match condition");
+        }
+
+        [Fact]
+        public async Task MustValueFieldAsync_Works()
+        {
+            // arrange
+            var validator = GetValidator<Person>();
+
+            // act
+            var resultGood = await validator.ValidateAsync(new Person() { MustFieldAsync = "a", MustValueFieldAsync = "a" });
+            var resultBad = await validator.ValidateAsync(new Person() { MustFieldAsync = "a", MustValueFieldAsync = "b" });
+
+            // assert
+            resultGood.LabeledErrors.ContainsKey(nameof(Person.MustValueFieldAsync)).IsFalse();
+            resultBad.LabeledErrors.At(nameof(Person.MustValueFieldAsync)).At(0).IsEqual("Value doesn't match condition");
         }
 
         [Fact]
@@ -301,7 +377,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
         public void Enum_NotEnumType_ThrowsArgumentException()
         {
             // act
-            ((Func<IValidator<BadEnum>>) (() => GetValidator<BadEnum>())).Throws<ArgumentException>();
+            ((Func<IValidator<BadEnum>>)(() => GetValidator<BadEnum>())).Throws<ArgumentException>();
         }
 
         [Fact]
@@ -338,7 +414,12 @@ namespace Annium.Extensions.Validation.Tests.Rules
             public long LessThanOrEqual { get; set; }
             public long GreaterThan { get; set; }
             public long GreaterThanOrEqual { get; set; }
-            public string Regex { get; set; } = string.Empty;
+            public string RegexString { get; set; } = string.Empty;
+            public string RegexInstance { get; set; } = string.Empty;
+            public string MustField { get; set; } = string.Empty;
+            public string MustValueField { get; set; } = string.Empty;
+            public string MustFieldAsync { get; set; } = string.Empty;
+            public string MustValueFieldAsync { get; set; } = string.Empty;
             public string Email { get; set; } = string.Empty;
             public LogLevel Enum { get; set; }
         }
@@ -358,10 +439,10 @@ namespace Annium.Extensions.Validation.Tests.Rules
                 Field(p => p.Age).Required();
                 Field(p => p.Nullable).Required();
                 Field(p => p.Fixed).Equal("fixed value");
-                Field(p => p.OneOf).In(new [] { "one", "two" });
+                Field(p => p.OneOf).In(new[] { "one", "two" });
                 Field(p => p.SameAsName).Equal(p => p.Name);
                 Field(p => p.NotFixed).NotEqual("fixed value");
-                Field(p => p.NotOneOf).NotIn(new [] { "one", "two" });
+                Field(p => p.NotOneOf).NotIn(new[] { "one", "two" });
                 Field(p => p.NotSameAsName).NotEqual(p => p.Name);
                 Field(p => p.MinMaxLength).Length(2, 5);
                 Field(p => p.MinLength).MinLength(2);
@@ -371,7 +452,12 @@ namespace Annium.Extensions.Validation.Tests.Rules
                 Field(p => p.LessThanOrEqual).LessThanOrEqual(3);
                 Field(p => p.GreaterThan).GreaterThan(3);
                 Field(p => p.GreaterThanOrEqual).GreaterThanOrEqual(3);
-                Field(p => p.Regex).Matches("^\\w{2,3}$");
+                Field(p => p.RegexString).Matches("^\\w{2,3}$");
+                Field(p => p.RegexInstance).Matches(new Regex("^\\w{2,3}$"));
+                Field(p => p.MustField).Must(x => x == "x");
+                Field(p => p.MustValueField).Must((ctx, x) => x == ctx.MustField);
+                Field(p => p.MustFieldAsync).Must(x => Task.FromResult(x == "x"));
+                Field(p => p.MustValueFieldAsync).Must((ctx, x) => Task.FromResult(x == ctx.MustFieldAsync));
                 Field(p => p.Email).Email();
                 Field(p => p.Enum).Enum();
             }

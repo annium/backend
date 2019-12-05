@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Annium.Extensions.Validation
 {
@@ -30,7 +31,7 @@ namespace Annium.Extensions.Validation
             string message = ""
         ) => rule.Add((context, value) =>
         {
-            if (Equals(value, default !))
+            if (Equals(value, default!))
                 context.Error(string.IsNullOrEmpty(message) ? "Value is required" : message);
         });
 
@@ -184,6 +185,16 @@ namespace Annium.Extensions.Validation
 
         public static IRuleBuilder<TValue, string> Matches<TValue>(
             this IRuleBuilder<TValue, string> rule,
+            Regex regex,
+            string message = ""
+        ) => rule.Add((context, value) =>
+        {
+            if (value != null && !regex.IsMatch(value))
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
+        });
+
+        public static IRuleBuilder<TValue, string> Matches<TValue>(
+            this IRuleBuilder<TValue, string> rule,
             string regex,
             string message = ""
         ) => rule.Add((context, value) =>
@@ -191,6 +202,46 @@ namespace Annium.Extensions.Validation
             var re = new Regex(regex, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
             if (value != null && !re.IsMatch(value))
                 context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
+        });
+
+        public static IRuleBuilder<TValue, TField> Must<TValue, TField>(
+            this IRuleBuilder<TValue, TField> rule,
+            Func<TField, bool> predicate,
+            string message = ""
+        ) => rule.Add((context, value) =>
+        {
+            if (!predicate(value))
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match condition" : message);
+        });
+
+        public static IRuleBuilder<TValue, TField> Must<TValue, TField>(
+            this IRuleBuilder<TValue, TField> rule,
+            Func<TValue, TField, bool> predicate,
+            string message = ""
+        ) => rule.Add((context, value) =>
+        {
+            if (!predicate(context.Root, value))
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match condition" : message);
+        });
+
+        public static IRuleBuilder<TValue, TField> Must<TValue, TField>(
+            this IRuleBuilder<TValue, TField> rule,
+            Func<TField, Task<bool>> predicate,
+            string message = ""
+        ) => rule.Add(async (context, value) =>
+        {
+            if (!await predicate(value))
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match condition" : message);
+        });
+
+        public static IRuleBuilder<TValue, TField> Must<TValue, TField>(
+            this IRuleBuilder<TValue, TField> rule,
+            Func<TValue, TField, Task<bool>> predicate,
+            string message = ""
+        ) => rule.Add(async (context, value) =>
+        {
+            if (!await predicate(context.Root, value))
+                context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match condition" : message);
         });
 
         public static IRuleBuilder<TValue, string> Email<TValue>(
