@@ -26,7 +26,7 @@ namespace Annium.Core.Mapper.Internal
                 {
                     // if target field is explicitly configured in mapping - use that mapping
                     if (cfg?.Fields.ContainsKey(target) ?? false)
-                        return Expression.Assign(Expression.Property(instance, target), repacker.Repack(cfg!.Fields[target].Body) (source));
+                        return Expression.Assign(Expression.Property(instance, target), repacker.Repack(cfg!.Fields[target].Body)(source));
 
                     // otherwise - target field must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == target.Name.ToLowerInvariant()) ??
@@ -44,7 +44,7 @@ namespace Annium.Core.Mapper.Internal
             // if src is struct - things are simpler, no null-checking
             if (src.IsValueType)
                 return Expression.Block(
-                    new [] { instance },
+                    new[] { instance },
                     new Expression[] { init }
                     .Concat(assignments)
                     .Concat(new Expression[] { instance })
@@ -64,7 +64,7 @@ namespace Annium.Core.Mapper.Internal
             var result = Expression.Return(returnTarget, instance, tgt);
 
             return Expression.Block(
-                new [] { instance },
+                new[] { instance },
                 new Expression[] { nullCheck, init }
                 .Concat(assignments)
                 .Concat(new Expression[] { result, returnLabel })

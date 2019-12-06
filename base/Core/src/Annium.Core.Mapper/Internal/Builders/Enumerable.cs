@@ -16,8 +16,10 @@ namespace Annium.Core.Mapper.Internal
             if (tgt.IsInterface)
             {
                 var def = tgt.GetGenericTypeDefinition();
-                if (def == typeof(IEnumerable<>))
+                if (def == typeof(ICollection<>) || def == typeof(IReadOnlyCollection<>) || def == typeof(IEnumerable<>))
                     tgt = tgtEl.MakeArrayType();
+                if (def == typeof(IList<>) || def == typeof(IReadOnlyList<>))
+                    tgt = typeof(List<>).MakeGenericType(tgt.GenericTypeArguments);
                 if (def == typeof(IDictionary<,>) || def == typeof(IReadOnlyDictionary<,>))
                     tgt = typeof(Dictionary<,>).MakeGenericType(tgt.GenericTypeArguments);
             }
@@ -25,7 +27,7 @@ namespace Annium.Core.Mapper.Internal
             var select = typeof(Enumerable).GetMethods()
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
-            var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray)) !.MakeGenericMethod(tgtEl);
+            var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))!.MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
             var map = ResolveMap(srcEl, tgtEl);
             var selection = map is null ?
@@ -41,7 +43,7 @@ namespace Annium.Core.Mapper.Internal
                 return result;
 
             var parameter = typeof(IEnumerable<>).MakeGenericType(tgtEl);
-            var constructor = tgt.GetConstructor(new [] { parameter });
+            var constructor = tgt.GetConstructor(new[] { parameter });
             if (constructor == null)
                 throw new MappingException(src, tgt, $"No constructor with single {parameter} parameter found.");
 
@@ -51,7 +53,7 @@ namespace Annium.Core.Mapper.Internal
         private Type GetEnumerableElementType(Type type)
         {
             if (type.IsArray)
-                return type.GetElementType() !;
+                return type.GetElementType()!;
 
             if (type.GenericTypeArguments.Length == 0)
                 return null!;
@@ -62,7 +64,7 @@ namespace Annium.Core.Mapper.Internal
             var iface = type.GetTypeInfo().ImplementedInterfaces
                 .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
-            return iface?.GenericTypeArguments[0] !;
+            return iface?.GenericTypeArguments[0]!;
         }
     }
 }

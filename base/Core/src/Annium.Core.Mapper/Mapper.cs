@@ -39,7 +39,7 @@ namespace Annium.Core.Mapper
             if (profile == null)
                 throw new ArgumentNullException(nameof(profile));
 
-            lock(locker)
+            lock (locker)
             {
                 profiles.Add(profile);
                 return CreateMapper();

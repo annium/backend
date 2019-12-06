@@ -19,7 +19,7 @@ namespace Annium.Core.Mapper.Internal
             );
 
             var type = Expression.Variable(typeof(Type));
-            var resolveFn = typeof(TypeManager).GetMethod(nameof(TypeManager.ResolveBySignature), new [] { typeof(object), typeof(Type), typeof(bool) });
+            var resolveFn = typeof(TypeManager).GetMethod(nameof(TypeManager.ResolveBySignature), new[] { typeof(object), typeof(Type), typeof(bool) });
             var resolution = Expression.Assign(type, Expression.Call(Expression.Constant(typeManager), resolveFn, source, Expression.Constant(tgt), Expression.Constant(true)));
 
             var map = Expression.Variable(typeof(Delegate));
@@ -35,7 +35,7 @@ namespace Annium.Core.Mapper.Internal
             var returnedResult = Expression.Return(returnTarget, instance, tgt);
 
             return Expression.Block(
-                new [] { type, map, instance },
+                new[] { type, map, instance },
                 nullCheck,
                 resolution,
                 mapping,

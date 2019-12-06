@@ -10,7 +10,7 @@ namespace Annium.Core.Mapper
         internal static Profile Merge(params Profile[] configurations)
         {
             var result = new EmptyProfile();
-            foreach (var(key, map) in configurations.SelectMany(c => c.maps))
+            foreach (var (key, map) in configurations.SelectMany(c => c.maps))
                 result.maps[key] = map;
 
             return result;

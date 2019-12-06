@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Internal
 
                     // if target field is explicitly configured in mapping - use that mapping
                     if (cfg?.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName) ?? false)
-                        return repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body) (source);
+                        return repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body)(source);
 
                     // otherwise - parameter must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??
