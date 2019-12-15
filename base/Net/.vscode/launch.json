@@ -4,7 +4,7 @@
         "name": "WebSockets",
         "type": "coreclr",
         "request": "launch",
-        "program": "${workspaceFolder}/test/Demo.Net.WebSockets/bin/Debug/netcoreapp3.0/Demo.Net.WebSockets.dll",
+        "program": "${workspaceFolder}/test/Demo.Net.WebSockets/bin/Debug/netcoreapp3.1/Demo.Net.WebSockets.dll",
         "args": [],
         "cwd": "${workspaceFolder}/test/Demo.Net.WebSockets",
         "console": "internalConsole",

@@ -4,7 +4,7 @@
         "name": "Demo.Logging",
         "type": "coreclr",
         "request": "launch",
-        "program": "${workspaceFolder}/test/Demo.Logging/bin/Debug/netcoreapp3.0/Demo.Logging.dll",
+        "program": "${workspaceFolder}/test/Demo.Logging/bin/Debug/netcoreapp3.1/Demo.Logging.dll",
         "args": [],
         "cwd": "${workspaceFolder}/test/Demo.Logging",
         "console": "internalConsole",

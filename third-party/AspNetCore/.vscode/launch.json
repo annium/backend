@@ -4,7 +4,7 @@
         "name": "Demo.AspNetCore",
         "type": "coreclr",
         "request": "launch",
-        "program": "${workspaceFolder}/test/Demo.AspNetCore/bin/Debug/netcoreapp3.0/Demo.AspNetCore.dll",
+        "program": "${workspaceFolder}/test/Demo.AspNetCore/bin/Debug/netcoreapp3.1/Demo.AspNetCore.dll",
         "args": [],
         "cwd": "${workspaceFolder}/test/Demo.AspNetCore",
         "console": "internalConsole",

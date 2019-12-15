@@ -4,7 +4,7 @@
         "name": "Configuration",
         "type": "coreclr",
         "request": "launch",
-        "program": "${workspaceFolder}/test/Demo.Configuration/bin/Debug/netcoreapp3.0/Demo.Configuration.dll",
+        "program": "${workspaceFolder}/test/Demo.Configuration/bin/Debug/netcoreapp3.1/Demo.Configuration.dll",
         "args": [],
         "cwd": "${workspaceFolder}/test/Demo.Configuration",
         "console": "internalConsole",

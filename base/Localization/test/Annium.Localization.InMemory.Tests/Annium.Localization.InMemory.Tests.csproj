@@ -3,7 +3,7 @@
         <PackageId>Annium.Localization.InMemory.Tests</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Localization.InMemory.Tests</Description>
-        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>
