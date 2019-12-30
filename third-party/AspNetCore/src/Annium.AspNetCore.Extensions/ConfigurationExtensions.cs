@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -18,7 +17,6 @@ namespace Annium.Core.DependencyInjection
                 .ConfigureAbstractConverter()
                 .ConfigureForOperations()
                 .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
-            opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             opts.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
             opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
