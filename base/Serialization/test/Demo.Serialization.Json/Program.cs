@@ -5,9 +5,9 @@ using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Reflection;
-using Annium.Data.Serialization.Tests.Json;
+using Annium.Serialization.Json.Tests;
 
-namespace Demo.Data.Serialization
+namespace Demo.Serialization.Json
 {
     public class Program
     {

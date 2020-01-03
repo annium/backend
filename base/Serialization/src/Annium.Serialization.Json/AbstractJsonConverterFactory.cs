@@ -1,12 +1,12 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
-using System.Collections;
 
-namespace Annium.Data.Serialization.Json
+namespace Annium.Serialization.Json
 {
     public class AbstractJsonConverterFactory : JsonConverterFactory
     {

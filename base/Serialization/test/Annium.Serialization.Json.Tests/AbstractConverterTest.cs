@@ -4,7 +4,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Reflection;
 using Annium.Testing;
 
-namespace Annium.Data.Serialization.Tests.Json
+namespace Annium.Serialization.Json.Tests
 {
     public class AbstractConverterTest
     {

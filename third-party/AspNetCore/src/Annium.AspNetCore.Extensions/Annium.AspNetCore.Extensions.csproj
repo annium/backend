@@ -14,8 +14,8 @@
     <ItemGroup>
         <ProjectReference Include="../../../../base/Architecture/src/Annium.Architecture.Http/Annium.Architecture.Http.csproj" />
         <ProjectReference Include="../../../../base/Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
-        <ProjectReference Include="../../../../base/Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
         <ProjectReference Include="../../../../base/Localization/src/Annium.Localization.Abstractions/Annium.Localization.Abstractions.csproj" />
         <ProjectReference Include="../../../NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
+        <ProjectReference Include="../../../../base/Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
     </ItemGroup>
 </Project>

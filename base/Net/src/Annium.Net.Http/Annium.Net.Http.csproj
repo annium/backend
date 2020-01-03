@@ -14,9 +14,9 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
-        <ProjectReference Include="../../../Data/src/Annium.Data.Serialization/Annium.Data.Serialization.csproj" />
         <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
         <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
+        <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Reactive" Version="4.2.0" />

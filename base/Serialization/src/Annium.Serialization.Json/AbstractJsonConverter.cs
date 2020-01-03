@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Data.Serialization.Json
+namespace Annium.Serialization.Json
 {
     public class AbstractJsonConverter<T> : JsonConverter<T>
     {
