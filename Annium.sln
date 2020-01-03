@@ -307,6 +307,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Data.Operations.Seri
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Demo.Data.Operations.Serialization.Json", "base\Data\test\Demo.Data.Operations.Serialization.Json\Demo.Data.Operations.Serialization.Json.csproj", "{DF047DDE-74BB-40F1-9486-2A68B7B7407B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serialization", "{094EF40B-1D34-4DCC-86DE-FDCAD84F7426}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{679B7828-4D69-4EFB-BEDF-6518034981A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.Abstractions", "base\Serialization\src\Annium.Serialization.Abstractions\Annium.Serialization.Abstractions.csproj", "{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -470,6 +476,9 @@ Global
 		{433CE47B-2D44-41B1-A469-B1A2DE035ADB} = {3A6805EE-F914-4D67-8587-A7C7B7107FA5}
 		{77831318-BBA9-4AC2-9391-2BA95FCE9A05} = {EB05221F-8315-4DE3-A15E-13BF5C6A9AF4}
 		{DF047DDE-74BB-40F1-9486-2A68B7B7407B} = {EB05221F-8315-4DE3-A15E-13BF5C6A9AF4}
+		{094EF40B-1D34-4DCC-86DE-FDCAD84F7426} = {43123A2B-D6D2-4CF6-98DC-CD9C76D0B4FB}
+		{679B7828-4D69-4EFB-BEDF-6518034981A7} = {094EF40B-1D34-4DCC-86DE-FDCAD84F7426}
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD} = {679B7828-4D69-4EFB-BEDF-6518034981A7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1720,5 +1729,17 @@ Global
 		{DF047DDE-74BB-40F1-9486-2A68B7B7407B}.Release|x64.Build.0 = Release|Any CPU
 		{DF047DDE-74BB-40F1-9486-2A68B7B7407B}.Release|x86.ActiveCfg = Release|Any CPU
 		{DF047DDE-74BB-40F1-9486-2A68B7B7407B}.Release|x86.Build.0 = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|x64.Build.0 = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Debug|x86.Build.0 = Debug|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|x64.ActiveCfg = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|x64.Build.0 = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|x86.ActiveCfg = Release|Any CPU
+		{8CA68C3C-13AC-4C84-AE6A-353D7FCA34DD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
