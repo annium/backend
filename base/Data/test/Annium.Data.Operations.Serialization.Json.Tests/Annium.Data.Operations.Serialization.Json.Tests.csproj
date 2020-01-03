@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Data.Operations.Serialization.Tests</PackageId>
+        <PackageId>Annium.Data.Operations.Serialization.Json.Tests</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Data.Operations.Serialization.Tests</Description>
         <TargetFramework>netcoreapp3.1</TargetFramework>
@@ -13,7 +13,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
+        <ProjectReference Include="../../src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>

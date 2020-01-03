@@ -14,7 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Core.Mediator/Annium.Core.Mediator.csproj" />
-        <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization/Annium.Data.Operations.Serialization.csproj" />
+        <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
