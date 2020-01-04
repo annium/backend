@@ -5,7 +5,6 @@ namespace Annium.Serialization.Abstractions
     public interface ISerializer<TSource, TDestination>
     {
         TSource Deserialize(TDestination value);
-
         TDestination Serialize(TSource value);
     }
 

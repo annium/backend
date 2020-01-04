@@ -323,6 +323,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.Binary
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.MessagePack.Tests", "base\Serialization\test\Annium.Serialization.MessagePack.Tests\Annium.Serialization.MessagePack.Tests.csproj", "{502FF89F-2817-4EDF-94E3-0DA81CEB7C34}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.Abstractions.Tests", "base\Serialization\test\Annium.Serialization.Abstractions.Tests\Annium.Serialization.Abstractions.Tests.csproj", "{4B102A00-D4AB-4FC9-B130-F0104D0A3418}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -494,6 +496,7 @@ Global
 		{3BBA1FCD-9C00-4164-8972-42AAE5362622} = {679B7828-4D69-4EFB-BEDF-6518034981A7}
 		{67B15353-656A-46DF-8130-BD5E7A263862} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
 		{502FF89F-2817-4EDF-94E3-0DA81CEB7C34} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1804,5 +1807,17 @@ Global
 		{502FF89F-2817-4EDF-94E3-0DA81CEB7C34}.Release|x64.Build.0 = Release|Any CPU
 		{502FF89F-2817-4EDF-94E3-0DA81CEB7C34}.Release|x86.ActiveCfg = Release|Any CPU
 		{502FF89F-2817-4EDF-94E3-0DA81CEB7C34}.Release|x86.Build.0 = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|x64.Build.0 = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Debug|x86.Build.0 = Debug|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x64.ActiveCfg = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x64.Build.0 = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x86.ActiveCfg = Release|Any CPU
+		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
