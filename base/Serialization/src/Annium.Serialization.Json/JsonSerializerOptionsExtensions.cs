@@ -6,15 +6,16 @@ namespace Annium.Core.DependencyInjection
 {
     public static class JsonSerializerOptionsExtensions
     {
-        public static JsonSerializerOptions ConfigureAbstractConverter(
+        public static JsonSerializerOptions ConfigureDefault(
             this JsonSerializerOptions options
         )
         {
-            options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-            options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-
             options.Converters.Add(new AbstractJsonConverterFactory());
+
+            options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+            options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+            options.PropertyNameCaseInsensitive = true;
+            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             return options;
         }
