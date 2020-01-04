@@ -17,13 +17,13 @@ namespace Annium.Net.WebSockets
         private const int BufferSize = 65536;
 
         protected readonly TNativeSocket Socket;
-        private readonly ISerializer<ReadOnlyMemory<byte>> serializer;
+        private readonly ISerializer<byte[]> serializer;
         private readonly UTF8Encoding encoding = new UTF8Encoding();
         private readonly IObservable<SocketData> socketObservable;
 
         public WebSocket(
             TNativeSocket socket,
-            ISerializer<ReadOnlyMemory<byte>> serializer
+            ISerializer<byte[]> serializer
         )
         {
             Socket = socket;
@@ -42,7 +42,7 @@ namespace Annium.Net.WebSockets
 
         public IObservable<T> Listen<T>() where T : notnull => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
-            .Select(x => serializer.Deserialize<T>(x.Data));
+            .Select(x => serializer.Deserialize<T>(x.Data.ToArray()));
 
         public IObservable<string> ListenText() => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)

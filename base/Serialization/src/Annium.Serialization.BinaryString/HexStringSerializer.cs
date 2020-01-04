@@ -3,22 +3,11 @@ using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.BinaryString
 {
-    public class HexStringSerializer : ISerializer<byte[], string>
+    public static class HexStringSerializer
     {
-        public static ISerializer<byte[], string> Instance { get; } = new HexStringSerializer();
-
-        private HexStringSerializer()
-        {
-        }
-
-        public byte[] Deserialize(string value)
-        {
-            return value.FromHexStringToByteArray();
-        }
-
-        public string Serialize(byte[] value)
-        {
-            return value.ToHexString();
-        }
+        public static ISerializer<byte[], string> Instance { get; } = Serializer.Create<byte[], string>(
+            value => value.ToHexString(),
+            value => value.FromHexStringToByteArray()
+        );
     }
 }
