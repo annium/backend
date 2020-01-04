@@ -20,6 +20,6 @@
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.Reactive" Version="4.2.0" />
+        <PackageReference Include="System.Reactive" Version="4.3.2" />
     </ItemGroup>
 </Project>
