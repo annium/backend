@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
+using Annium.Configuration.Abstractions;
 using YamlDotNet.RepresentationModel;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Yaml
 {
     internal class YamlConfigurationProvider : ConfigurationProviderBase
     {

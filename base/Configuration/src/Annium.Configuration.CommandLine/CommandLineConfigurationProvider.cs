@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Annium.Configuration.Abstractions;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.CommandLine
 {
     internal class CommandLineConfigurationProvider : ConfigurationProviderBase
     {
-        private const string separator = "|";
+        private const string Separator = "|";
 
         private readonly string[] args;
 
@@ -59,14 +60,14 @@ namespace Annium.Configuration.Abstractions
             }
 
             foreach (var name in flags)
-                data[name.Split(separator)] = true.ToString();
+                data[name.Split(Separator)] = true.ToString();
 
             foreach (var(name, value) in options)
-                data[name.Split(separator)] = value;
+                data[name.Split(Separator)] = value;
 
             foreach (var(name, values) in multiOptions)
             {
-                var path = name.Split(separator);
+                var path = name.Split(Separator);
                 for (var i = 0; i < values.Count; i++)
                     data[path.Append(i.ToString()).ToArray()] = values[i];
             }
@@ -86,7 +87,7 @@ namespace Annium.Configuration.Abstractions
         private bool IsOptionLike(string value) =>
             value.StartsWith('-');
 
-        private string ParseName(string value) => string.Join(separator,
+        private string ParseName(string value) => string.Join(Separator,
             Regex.Replace(value.Trim(), @"^-+", string.Empty)
             .Split('.')
             .Where(e => !string.IsNullOrWhiteSpace(e))

@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using Annium.Configuration.Abstractions;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Json
 {
     internal class JsonConfigurationProvider : ConfigurationProviderBase
     {
