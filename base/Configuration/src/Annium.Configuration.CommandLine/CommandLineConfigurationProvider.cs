@@ -46,6 +46,7 @@ namespace Annium.Configuration.CommandLine
                     }
                     else
                         options[name] = next;
+
                     i++;
                 }
 
@@ -62,10 +63,10 @@ namespace Annium.Configuration.CommandLine
             foreach (var name in flags)
                 data[name.Split(Separator)] = true.ToString();
 
-            foreach (var(name, value) in options)
+            foreach (var (name, value) in options)
                 data[name.Split(Separator)] = value;
 
-            foreach (var(name, values) in multiOptions)
+            foreach (var (name, values) in multiOptions)
             {
                 var path = name.Split(Separator);
                 for (var i = 0; i < values.Count; i++)
@@ -89,24 +90,9 @@ namespace Annium.Configuration.CommandLine
 
         private string ParseName(string value) => string.Join(Separator,
             Regex.Replace(value.Trim(), @"^-+", string.Empty)
-            .Split('.')
-            .Where(e => !string.IsNullOrWhiteSpace(e))
-            .Select(e => e.PascalCase())
+                .Split('.')
+                .Where(e => !string.IsNullOrWhiteSpace(e))
+                .Select(e => e.PascalCase())
         );
-    }
-
-    public static class CommandLineConfigurationProviderExtensions
-    {
-        public static IConfigurationBuilder AddCommandLineArgs(this IConfigurationBuilder builder)
-        {
-            return AddCommandLineArgs(builder, Environment.GetCommandLineArgs().Skip(1).ToArray());
-        }
-
-        public static IConfigurationBuilder AddCommandLineArgs(this IConfigurationBuilder builder, string[] args)
-        {
-            var configuration = new CommandLineConfigurationProvider(args).Read();
-
-            return builder.Add(configuration);
-        }
     }
 }
