@@ -12,7 +12,6 @@ namespace Annium.Net.WebSockets
 
     public interface IReceivingWebSocket : IDisposable
     {
-        MessageFormat Format { get; }
         IObservable<T> Listen<T>() where T : notnull;
         IObservable<string> ListenText();
         IObservable<ReadOnlyMemory<byte>> ListenBinary();

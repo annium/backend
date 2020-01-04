@@ -5,11 +5,11 @@ using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json
 {
-    public class Serializer : ISerializer<string>
+    public class StringSerializer : ISerializer<string>
     {
-        static Serializer()
+        static StringSerializer()
         {
-            Default = new Serializer(new JsonSerializerOptions().ConfigureDefault());
+            Default = new StringSerializer(new JsonSerializerOptions().ConfigureDefault());
         }
 
         public static ISerializer<string> Default { get; }
@@ -19,12 +19,12 @@ namespace Annium.Serialization.Json
             var options = new JsonSerializerOptions();
             configure(options);
 
-            return new Serializer(options);
+            return new StringSerializer(options);
         }
 
         private readonly JsonSerializerOptions options;
 
-        public Serializer(JsonSerializerOptions options)
+        public StringSerializer(JsonSerializerOptions options)
         {
             this.options = options;
         }
@@ -44,7 +44,7 @@ namespace Annium.Serialization.Json
             return JsonSerializer.Serialize(value, options);
         }
 
-        public string Serializ(object value)
+        public string Serialize(object value)
         {
             return JsonSerializer.Serialize(value, options);
         }

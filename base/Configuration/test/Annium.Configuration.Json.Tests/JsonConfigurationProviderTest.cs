@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
-using Annium.Core.DependencyInjection;
+using Annium.Serialization.Json;
 using Annium.Testing;
 
 namespace Annium.Configuration.Json.Tests
@@ -31,7 +30,7 @@ namespace Annium.Configuration.Json.Tests
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, JsonSerializer.Serialize(cfg, new JsonSerializerOptions().ConfigureAbstractConverter()));
+                File.WriteAllText(jsonFile, StringSerializer.Default.Serialize(cfg));
 
                 var builder = new ConfigurationBuilder();
                 builder.AddJsonFile(jsonFile);

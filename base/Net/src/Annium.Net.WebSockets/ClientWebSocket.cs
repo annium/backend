@@ -2,6 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Serialization.Abstractions;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets
@@ -9,10 +10,10 @@ namespace Annium.Net.WebSockets
     public class ClientWebSocket : WebSocket<NativeClientWebSocket>, IClientWebSocket
     {
         public ClientWebSocket(
-            MessageFormat format
+            ISerializer<ReadOnlyMemory<byte>> serializer
         ) : base(
             new NativeClientWebSocket(),
-            format
+            serializer
         )
         {
 
@@ -20,12 +21,12 @@ namespace Annium.Net.WebSockets
 
         public async Task ConnectAsync(Uri uri, CancellationToken token)
         {
-            await socket.ConnectAsync(uri, token);
+            await Socket.ConnectAsync(uri, token);
         }
 
         public async Task DisconnectAsync(CancellationToken token)
         {
-            await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
         }
     }
 }

@@ -1,7 +1,6 @@
 using System;
 using System.Net.Http;
 using System.Net.Mime;
-using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Annium.Net.Http.Internal
@@ -16,7 +15,7 @@ namespace Annium.Net.Http.Internal
 
             return mediaType switch
             {
-                MediaTypeNames.Application.Json => JsonSerializer.Deserialize<T>(raw, Options.Json),
+                MediaTypeNames.Application.Json => Serializers.Json.Deserialize<T>(raw),
                 _ => throw new NotSupportedException($"Media type '{mediaType}' is not supported"),
             };
         }

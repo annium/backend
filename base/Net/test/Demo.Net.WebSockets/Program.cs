@@ -15,18 +15,12 @@ namespace Demo.Net.WebSockets
             CancellationToken token
         )
         {
-            var socket = new ClientWebSocket(MessageFormat.Json);
+            var socket = new ClientWebSocket(Serializers.Json);
 
             await socket.ConnectAsync(new Uri("wss://echo.websocket.org"), CancellationToken.None);
 
-            var s1 = socket.ListenText().Subscribe(x =>
-            {
-                Console.WriteLine($"S1:{x}");
-            });
-            var s2 = socket.ListenText().Subscribe(x =>
-            {
-                Console.WriteLine($"S2:{x}");
-            });
+            var s1 = socket.ListenText().Subscribe(x => { Console.WriteLine($"S1:{x}"); });
+            var s2 = socket.ListenText().Subscribe(x => { Console.WriteLine($"S2:{x}"); });
 
 
             await socket.Send("Hello", CancellationToken.None);

@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Reflection;
+using Annium.Serialization.Abstractions;
 using Annium.Testing;
 
 namespace Annium.Serialization.Json.Tests
@@ -12,13 +12,13 @@ namespace Annium.Serialization.Json.Tests
         public void Serialization_SignaturePlain_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
             var arr = new[] { a, b };
 
             // act
-            var result = JsonSerializer.Serialize(arr, settings);
+            var result = serializer.Serialize(arr);
 
             // assert
             result.IsEqual(@"[{""a"":1},{""b"":2}]");
@@ -28,13 +28,13 @@ namespace Annium.Serialization.Json.Tests
         public void Serialization_KeyPlain_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             KeyBase a = new KeyChildA { Value = 1 };
             KeyBase b = new KeyChildB { Value = 2 };
             var arr = new[] { a, b };
 
             // act
-            var result = JsonSerializer.Serialize(arr, settings);
+            var result = serializer.Serialize(arr);
 
             // assert
             result.IsEqual(@"[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}]");
@@ -44,13 +44,13 @@ namespace Annium.Serialization.Json.Tests
         public void Serialization_SignatureGeneric_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
             BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
 
             // act
-            var result = JsonSerializer.Serialize(container, settings);
+            var result = serializer.Serialize(container);
 
             // assert
             result.IsEqual(@"{""data"":[{""a"":1},{""b"":2}]}");
@@ -60,13 +60,13 @@ namespace Annium.Serialization.Json.Tests
         public void Serialization_KeyGeneric_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             KeyBase a = new KeyChildA { Value = 1 };
             KeyBase b = new KeyChildB { Value = 2 };
             KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new[] { a, b } };
 
             // act
-            var result = JsonSerializer.Serialize(container, settings);
+            var result = serializer.Serialize(container);
 
             // assert
             result.IsEqual(@"{""items"":[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}],""type"":""a""}");
@@ -76,14 +76,14 @@ namespace Annium.Serialization.Json.Tests
         public void Deserialization_SignaturePlain_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
             var arr = new[] { a, b };
-            var str = JsonSerializer.Serialize(arr, settings);
+            var str = serializer.Serialize(arr);
 
             // act
-            var result = JsonSerializer.Deserialize<Base[]>(str, settings);
+            var result = serializer.Deserialize<Base[]>(str);
 
             // assert
             result.Has(2);
@@ -95,14 +95,14 @@ namespace Annium.Serialization.Json.Tests
         public void Deserialization_KeyPlain_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             KeyBase a = new KeyChildA { Value = 1 };
             KeyBase b = new KeyChildB { Value = 2 };
             var arr = new[] { a, b };
-            var str = JsonSerializer.Serialize(arr, settings);
+            var str = serializer.Serialize(arr);
 
             // act
-            var result = JsonSerializer.Deserialize<KeyBase[]>(str, settings);
+            var result = serializer.Deserialize<KeyBase[]>(str);
 
             // assert
             result.Has(2);
@@ -114,14 +114,14 @@ namespace Annium.Serialization.Json.Tests
         public void Deserialization_SignatureGeneric_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
             BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
-            var str = JsonSerializer.Serialize(container, settings);
+            var str = serializer.Serialize(container);
 
             // act
-            var result = JsonSerializer.Deserialize<BaseContainer<Base>>(str, settings);
+            var result = serializer.Deserialize<BaseContainer<Base>>(str);
 
             // assert
             var data = result.As<DataContainer<Base>>().Data;
@@ -134,14 +134,14 @@ namespace Annium.Serialization.Json.Tests
         public void Deserialization_KeyGeneric_Works()
         {
             // arrange
-            var settings = GetSettings();
+            var serializer = GetSerializer();
             KeyBase a = new KeyChildA { Value = 1 };
             KeyBase b = new KeyChildB { Value = 2 };
             KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new[] { a, b } };
-            var str = JsonSerializer.Serialize(container, settings);
+            var str = serializer.Serialize(container);
 
             // act
-            var result = JsonSerializer.Deserialize<KeyBaseContainer<KeyBase>>(str, settings);
+            var result = serializer.Deserialize<KeyBaseContainer<KeyBase>>(str);
 
             // assert
             var data = result.As<KeyDataContainer<KeyBase>>().Items;
@@ -150,11 +150,12 @@ namespace Annium.Serialization.Json.Tests
             data.At(1).As<KeyChildB>().Value.IsEqual(2);
         }
 
-        private JsonSerializerOptions GetSettings() => new JsonSerializerOptions()
-            .ConfigureAbstractConverter();
+        private ISerializer<string> GetSerializer() => StringSerializer.Default;
     }
 
-    public abstract class Base { }
+    public abstract class Base
+    {
+    }
 
     public class ChildA : Base
     {
@@ -168,8 +169,7 @@ namespace Annium.Serialization.Json.Tests
 
     public abstract class KeyBase
     {
-        [ResolveField]
-        public char Type { get; set; }
+        [ResolveField] public char Type { get; set; }
     }
 
     [ResolveKey("a")]
@@ -194,7 +194,9 @@ namespace Annium.Serialization.Json.Tests
         }
     }
 
-    public abstract class BaseContainer<T> { }
+    public abstract class BaseContainer<T>
+    {
+    }
 
     public class DataContainer<T> : BaseContainer<T>
     {
@@ -208,8 +210,7 @@ namespace Annium.Serialization.Json.Tests
 
     public abstract class KeyBaseContainer<T>
     {
-        [ResolveField]
-        public char Type { get; set; }
+        [ResolveField] public char Type { get; set; }
     }
 
     [ResolveKey("a")]

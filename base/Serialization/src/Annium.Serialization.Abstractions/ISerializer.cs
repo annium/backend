@@ -14,6 +14,6 @@ namespace Annium.Serialization.Abstractions
         T Deserialize<T>(TValue value);
         object Deserialize(Type type, TValue value);
         TValue Serialize<T>(T value);
-        TValue Serializ(object value);
+        TValue Serialize(object value);
     }
 }

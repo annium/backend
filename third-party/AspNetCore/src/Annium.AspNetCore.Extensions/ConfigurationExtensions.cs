@@ -1,5 +1,4 @@
 using System;
-using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
@@ -13,13 +12,9 @@ namespace Annium.Core.DependencyInjection
             Action<JsonOptions> configure
         ) => builder.AddJsonOptions(opts =>
         {
-            opts.JsonSerializerOptions
-                .ConfigureAbstractConverter()
+            opts.JsonSerializerOptions.ConfigureDefault()
                 .ConfigureForOperations()
                 .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
-            opts.JsonSerializerOptions.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-            opts.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
-            opts.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 
             configure(opts);
         });

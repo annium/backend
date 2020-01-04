@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
 using System.Threading;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.CommandLine;
 using Annium.Configuration.Json;
 using Annium.Configuration.Tests;
 using Annium.Configuration.Yaml;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Serialization.Json;
+using Demo.Extensions.Configuration;
 using YamlDotNet.Serialization;
 
-namespace Demo.Extensions.Configuration
+namespace Demo.Configuration
 {
     public class Program
     {
@@ -32,11 +32,11 @@ namespace Demo.Extensions.Configuration
         {
             // arrange
             var cfg = new Dictionary<string[], string>
-                {
-                    [new [] { "plain" }] = "10",
-                    [new [] { "abstract_config", "type" }] = "ConfigOne",
-                    [new [] { "abstract_config", "value" }] = "14"
-                };
+            {
+                [new[] { "plain" }] = "10",
+                [new[] { "abstract_config", "type" }] = "ConfigOne",
+                [new[] { "abstract_config", "value" }] = "14"
+            };
             var builder = new ConfigurationBuilder();
             builder.Add(cfg);
 
@@ -66,11 +66,11 @@ namespace Demo.Extensions.Configuration
             {
                 Flag = true,
                 Plain = 7,
-                Array = new [] { 4, 7 },
-                Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
-                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
-                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } },
+                Array = new[] { 4, 7 },
+                Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
+                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
             };
 
@@ -78,7 +78,7 @@ namespace Demo.Extensions.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, JsonSerializer.Serialize(cfg, new JsonSerializerOptions().ConfigureAbstractConverter()));
+                File.WriteAllText(jsonFile, StringSerializer.Default.Serialize(cfg));
 
                 var builder = new ConfigurationBuilder();
                 builder.AddJsonFile(jsonFile);
@@ -99,11 +99,11 @@ namespace Demo.Extensions.Configuration
             {
                 Flag = true,
                 Plain = 7,
-                Array = new [] { 4, 7 },
-                Matrix = new List<int[]>() { new [] { 3, 2 }, new [] { 5, 4 } },
-                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new [] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new [] { 3m, 15m } } } },
-                Nested = new Val { Plain = 4, Array = new [] { 4m, 13m } }
+                Array = new[] { 4, 7 },
+                Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
+                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } }
             };
 
             string yamlFile = string.Empty;

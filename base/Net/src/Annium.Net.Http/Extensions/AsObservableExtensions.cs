@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Annium.Data.Operations;
+using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http
 {
