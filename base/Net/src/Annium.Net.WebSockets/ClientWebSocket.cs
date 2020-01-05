@@ -10,7 +10,7 @@ namespace Annium.Net.WebSockets
     public class ClientWebSocket : WebSocket<NativeClientWebSocket>, IClientWebSocket
     {
         public ClientWebSocket(
-            ISerializer<ReadOnlyMemory<byte>> serializer
+            ISerializer<byte[]> serializer
         ) : base(
             new NativeClientWebSocket(),
             serializer

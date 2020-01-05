@@ -1,15 +1,15 @@
-using System.ComponentModel;
-using System.Reflection;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace Annium.Extensions.Primitives
 {
     public static class StringExtensions
     {
-        private static readonly IReadOnlyDictionary<char, byte> hexLookup = CreateHexLookup();
+        private static readonly IReadOnlyDictionary<char, byte> HexLookup = CreateHexLookup();
 
         public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
 
@@ -33,33 +33,33 @@ namespace Annium.Extensions.Primitives
 
         public static string PascalCase(this string value)
         {
-            return Compound(value, pascalCase);
+            return Compound(value, PascalCase);
 
-            static string pascalCase(string result, string word) =>
+            static string PascalCase(string result, string word) =>
                 result + word.ToLowerInvariant().UpperFirst();
         }
 
         public static string CamelCase(this string value)
         {
-            return Compound(value, camelCase);
+            return Compound(value, CamelCase);
 
-            static string camelCase(string result, string word) =>
+            static string CamelCase(string result, string word) =>
                 result + (result == string.Empty ? word.ToLowerInvariant().LowerFirst() : word.ToLowerInvariant().UpperFirst());
         }
 
         public static string KebabCase(this string value)
         {
-            return Compound(value, kebabCase);
+            return Compound(value, KebabCase);
 
-            static string kebabCase(string result, string word) =>
+            static string KebabCase(string result, string word) =>
                 result + (result == string.Empty ? string.Empty : "-") + word.ToLowerInvariant();
         }
 
         public static string SnakeCase(this string value)
         {
-            return Compound(value, snakeCase);
+            return Compound(value, SnakeCase);
 
-            static string snakeCase(string result, string word) =>
+            static string SnakeCase(string result, string word) =>
                 result + (result == string.Empty ? string.Empty : "_") + word.ToLowerInvariant();
         }
 
@@ -90,22 +90,22 @@ namespace Annium.Extensions.Primitives
                         if (s == Symbol.Upper)
                         {
                             if ((value.Length - i) > 1 && GetSymbol(value[i + 1]) == Symbol.Lower)
-                                yield return end(i, s);
+                                yield return End(i, s);
                         }
                         else if (s == Symbol.Lower || s == Symbol.Digit)
                             pos = s;
                         else
-                            yield return end(i, s);
+                            yield return End(i, s);
                         break;
                     case Symbol.Lower:
                         if (s == Symbol.Upper || s == Symbol.Other)
-                            yield return end(i, s);
+                            yield return End(i, s);
                         else if (s == Symbol.Digit)
                             pos = Symbol.Digit;
                         break;
                     case Symbol.Digit:
                         if (s != Symbol.Digit)
-                            yield return end(i, s);
+                            yield return End(i, s);
                         break;
                     default:
                         // check if we can enter word
@@ -119,9 +119,9 @@ namespace Annium.Extensions.Primitives
             }
 
             if (pos != Symbol.Other)
-                yield return end(value.Length, Symbol.Other);
+                yield return End(value.Length, Symbol.Other);
 
-            string end(int i, Symbol s)
+            string End(int i, Symbol s)
             {
                 pos = s;
                 var result = value[from..i];
@@ -136,7 +136,7 @@ namespace Annium.Extensions.Primitives
             if (str.Length % 2 != 0)
                 throw new FormatException("Hex string must contain even chars count");
 
-            var lookup = hexLookup;
+            var lookup = HexLookup;
             var byteArray = new byte[str.Length / 2];
             for (var i = 0; i < str.Length; i += 2)
             {
@@ -162,7 +162,7 @@ namespace Annium.Extensions.Primitives
             if (string.IsNullOrEmpty(str) || str.Length % 2 != 0)
                 return false;
 
-            var lookup = hexLookup;
+            var lookup = HexLookup;
             var array = new byte[str.Length / 2];
             for (var i = 0; i < str.Length; i += 2)
             {
@@ -231,7 +231,7 @@ namespace Annium.Extensions.Primitives
             var values = str.Split(separator)
                 .Select(x => x.Trim())
                 .Where(x => !x.IsNullOrWhiteSpace())
-                .Select(x => x.ParseEnum<T>(defaultValue))
+                .Select(x => x.ParseEnum(defaultValue))
                 .ToList();
 
             if (values.Count == 0)
