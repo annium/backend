@@ -32,7 +32,7 @@ namespace Annium.Net.WebSockets
         }
 
         public IObservable<int> Send<T>(T data, CancellationToken token) =>
-            Send((ReadOnlyMemory<byte>)serializer.Serialize(data), token);
+            Send(encoding.GetString(serializer.Serialize(data)), token);
 
         public IObservable<int> Send(string data, CancellationToken token) =>
             Send(encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
