@@ -1,42 +1,27 @@
 using System;
+using System.Threading.Tasks;
+
 namespace Annium.Extensions.Pooling
 {
-    public class CacheReference<TValue> : IDisposable
-    where TValue : notnull
+    public class CacheReference<TValue> : IAsyncDisposable
+        where TValue : notnull
     {
         public TValue Value { get; private set; }
-        private readonly Action dispose;
+        private readonly Func<Task> dispose;
 
         public CacheReference(
             TValue value,
-            Action dispose
+            Func<Task> dispose
         )
         {
             Value = value;
             this.dispose = dispose;
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
+        public async ValueTask DisposeAsync()
         {
-            if (disposedValue)
-                return;
-
-            if (disposing)
-            {
-                Value = default!;
-                dispose();
-            }
-
-            disposedValue = true;
+            Value = default!;
+            await dispose();
         }
-
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-        #endregion
     }
 }

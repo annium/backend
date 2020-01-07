@@ -16,7 +16,7 @@ namespace Annium.Extensions.Pooling
             Func<T> factory,
             int capacity,
             PoolLoadMode loadMode = PoolLoadMode.Lazy,
-            PoolStorageMode storageMode = PoolStorageMode.FIFO
+            PoolStorageMode storageMode = PoolStorageMode.Fifo
         )
         {
             if (factory is null)
@@ -45,6 +45,7 @@ namespace Annium.Extensions.Pooling
         }
 
         #region IDisposable support
+
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -58,6 +59,7 @@ namespace Annium.Extensions.Pooling
                     storage.Dispose();
                 semaphore.Close();
             }
+
             disposedValue = true;
         }
 
@@ -65,6 +67,7 @@ namespace Annium.Extensions.Pooling
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

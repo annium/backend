@@ -1,4 +1,5 @@
 using System;
+
 namespace Annium.Extensions.Pooling
 {
     public interface IObjectPool<T> : IDisposable

@@ -48,26 +48,9 @@ namespace Annium.Extensions.Pooling.Storages
         protected abstract bool Release(T item);
         protected abstract void DisposeInternal();
 
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposedValue)
-                return;
-
-            if (disposing)
-            {
-                DisposeInternal();
-            }
-
-            disposedValue = true;
-        }
-
         public void Dispose()
         {
-            Dispose(true);
+            DisposeInternal();
         }
-        #endregion
     }
 }

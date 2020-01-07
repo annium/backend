@@ -14,5 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Extensions.Pooling/Annium.Extensions.Pooling.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
     </ItemGroup>
 </Project>

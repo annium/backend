@@ -9,45 +9,45 @@ namespace Annium.Extensions.Pooling.Tests
 {
     public class ObjectPoolTests
     {
-        private const int capacity = 5;
-        private const int jobs = 20;
-        private const string created = "created";
-        private const string action = "action";
-        private const string disposed = "disposed";
+        private const int Capacity = 5;
+        private const int Jobs = 20;
+        private const string Created = "Created";
+        private const string Action = "ExecuteAction";
+        private const string Disposed = "Disposed";
 
         [Fact]
         public void ObjectPool_Eager_FIFO_Works()
         {
             // arrange
-            var (pool, logs) = CreatePool(PoolLoadMode.Eager, PoolStorageMode.FIFO);
+            var (pool, logs) = CreatePool(PoolLoadMode.Eager, PoolStorageMode.Fifo);
 
             // act
             Run(pool);
 
             // assert
-            // as eager - all workers created
-            logs.Where(x => x.Contains(created)).Has(capacity);
+            // as eager - all workers Created
+            logs.Where(x => x.Contains(Created)).Has(Capacity);
             // all job is done
-            logs.Where(x => x.Contains(action)).Has(jobs);
-            Enumerable.Range(0, jobs).All(i => logs.Any(e => e.Contains($"{action} {i}"))).IsTrue();
-            // all workers are disposed
-            logs.Where(x => x.Contains(disposed)).Has(capacity);
+            logs.Where(x => x.Contains(Action)).Has(Jobs);
+            Enumerable.Range(0, Jobs).All(i => logs.Any(e => e.Contains($"{Action} {i}"))).IsTrue();
+            // all workers are Disposed
+            logs.Where(x => x.Contains(Disposed)).Has(Capacity);
         }
 
         [Fact]
         public void ObjectPool_Lazy_LIFO_Works()
         {
             // arrange
-            var (pool, logs) = CreatePool(PoolLoadMode.Lazy, PoolStorageMode.LIFO);
+            var (pool, logs) = CreatePool(PoolLoadMode.Lazy, PoolStorageMode.Lifo);
 
             // act
             Run(pool);
 
             // assert
             // all job is done
-            Enumerable.Range(0, jobs).All(i => logs.Any(e => e.Contains($"{action} {i}"))).IsTrue();
-            // all workers are disposed
-            (logs.Where(x => x.Contains(disposed)).Count() == logs.Where(x => x.Contains(created)).Count()).IsTrue();
+            Enumerable.Range(0, Jobs).All(i => logs.Any(e => e.Contains($"{Action} {i}"))).IsTrue();
+            // all workers are Disposed
+            (logs.Where(x => x.Contains(Disposed)).Count() == logs.Where(x => x.Contains(Created)).Count()).IsTrue();
         }
 
         private (IObjectPool<Item>, IReadOnlyCollection<string>) CreatePool(
@@ -57,11 +57,11 @@ namespace Annium.Extensions.Pooling.Tests
         {
             var nextId = 1u;
             var logs = new List<string>();
-            void log(string message)
+            void Log(string message)
             {
                 lock (logs) logs.Add(message);
             }
-            var pool = new ObjectPool<Item>(() => new Item(nextId++, log), 5, loadMode, storageMode);
+            var pool = new ObjectPool<Item>(() => new Item(nextId++, Log), 5, loadMode, storageMode);
 
             return (pool, logs);
         }
@@ -70,10 +70,10 @@ namespace Annium.Extensions.Pooling.Tests
             IObjectPool<Item> pool
         )
         {
-            var tasks = Enumerable.Range(0, jobs).Select(i => Task.Run(() =>
+            var tasks = Enumerable.Range(0, Jobs).Select(i => Task.Run(() =>
             {
                 var item = pool.Get();
-                item.Action(i);
+                item.ExecuteAction(i);
                 pool.Return(item);
             })).ToArray();
             Task.WaitAll(tasks);
@@ -92,18 +92,18 @@ namespace Annium.Extensions.Pooling.Tests
             {
                 this.id = id;
                 this.log = log;
-                log($"{id} {created}");
+                log($"{id} {Created}");
             }
 
-            public void Action(int i)
+            public void ExecuteAction(int i)
             {
                 Thread.Sleep(10);
-                log($"{id} {action} {i}");
+                log($"{id} {ObjectPoolTests.Action} {i}");
             }
 
             public void Dispose()
             {
-                log($"{id} {disposed}");
+                log($"{id} {Disposed}");
             }
         }
     }
