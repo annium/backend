@@ -15,16 +15,12 @@ namespace Annium.Data.Models.Tests
             Minor = minor;
         }
 
-        public override IEnumerable<int> GetComponentHashCodes()
-        {
-            yield return Major.GetHashCode();
-            yield return Minor.GetHashCode();
-        }
-
         protected override IEnumerable<Func<Money, IComparable>> GetComparables()
         {
             yield return x => x.Major;
             yield return x => x.Minor;
         }
+
+        public override int GetHashCode() => HashCode.Combine(Major, Minor);
     }
 }

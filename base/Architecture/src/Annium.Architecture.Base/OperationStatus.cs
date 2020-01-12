@@ -6,7 +6,7 @@ namespace Annium.Architecture.Base
 {
     public class OperationStatus : Equatable<OperationStatus>
     {
-        private static readonly List<OperationStatus> statuses = new List<OperationStatus>();
+        private static readonly List<OperationStatus> Statuses = new List<OperationStatus>();
 
         public static OperationStatus BadRequest { get; } = Register(nameof(BadRequest));
         public static OperationStatus Conflict { get; } = Register(nameof(Conflict));
@@ -19,14 +19,14 @@ namespace Annium.Architecture.Base
         {
             var status = new OperationStatus(name);
 
-            if (statuses.FindIndex(e => e.name == name) < 0)
-                statuses.Add(status);
+            if (Statuses.FindIndex(e => e.name == name) < 0)
+                Statuses.Add(status);
 
             return status;
         }
 
-        public static OperationStatus Get(string name) => statuses.Find(e => e.name == name) ??
-        throw new Exception($"Operation status {name} is not registered.");
+        public static OperationStatus Get(string name) => Statuses.Find(e => e.name == name) ??
+            throw new Exception($"Operation status {name} is not registered.");
 
         private readonly string name;
 
@@ -35,11 +35,8 @@ namespace Annium.Architecture.Base
             this.name = name;
         }
 
-        public override string ToString() => name;
+        public override int GetHashCode() => name.GetHashCode();
 
-        public override IEnumerable<int> GetComponentHashCodes()
-        {
-            yield return name.GetHashCode();
-        }
+        public override string ToString() => name;
     }
 }

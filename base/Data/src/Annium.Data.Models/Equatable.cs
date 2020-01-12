@@ -5,7 +5,7 @@ namespace Annium.Data.Models
 {
     public abstract class Equatable<T> : IEquatable<T> where T : Equatable<T>
     {
-        public abstract IEnumerable<int> GetComponentHashCodes();
+        public abstract override int GetHashCode();
 
         public bool Equals(T obj) => GetHashCode() == obj?.GetHashCode();
 
@@ -26,18 +26,5 @@ namespace Annium.Data.Models
         }
 
         public static bool operator !=(Equatable<T> a, Equatable<T> b) => !(a == b);
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                int hash = 7;
-
-                foreach (var code in GetComponentHashCodes())
-                    hash = hash * 31 + code;
-
-                return hash;
-            }
-        }
     }
 }

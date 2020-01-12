@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System;
 
 namespace Annium.Data.Models.Tests
 {
@@ -14,10 +14,6 @@ namespace Annium.Data.Models.Tests
             Y = y;
         }
 
-        public override IEnumerable<int> GetComponentHashCodes()
-        {
-            yield return X.GetHashCode();
-            yield return Y.GetHashCode();
-        }
+        public override int GetHashCode() => HashCode.Combine(X, Y);
     }
 }
