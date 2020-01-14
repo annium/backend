@@ -12,7 +12,6 @@ using Xunit;
 
 namespace Annium.Storage.S3.Tests
 {
-    [Skip]
     public class StorageTest : IDisposable
     {
         private readonly Random random = new Random();
@@ -24,7 +23,7 @@ namespace Annium.Storage.S3.Tests
             directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task Setup_Works()
         {
             // arrange
@@ -34,7 +33,7 @@ namespace Annium.Storage.S3.Tests
             await storage.SetupAsync();
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task List_Works()
         {
             // arrange
@@ -50,7 +49,7 @@ namespace Annium.Storage.S3.Tests
             keys.At(0).IsEqual("demo");
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task Upload_Works()
         {
             // arrange
@@ -66,7 +65,7 @@ namespace Annium.Storage.S3.Tests
             keys.At(0).IsEqual("demo");
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task Download_Missing_ThrowsKeyNotFoundException()
         {
             // arrange
@@ -85,7 +84,7 @@ namespace Annium.Storage.S3.Tests
             e.Is<KeyNotFoundException>();
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task Download_Works()
         {
             // arrange
@@ -105,7 +104,7 @@ namespace Annium.Storage.S3.Tests
             ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task NameVerification_Works()
         {
             // arrange
@@ -124,7 +123,7 @@ namespace Annium.Storage.S3.Tests
             e.Is<ArgumentException>();
         }
 
-        [Fact]
+        [Fact(Skip = "Needs durable test basis")]
         public async Task Delete_Works()
         {
             // arrange
