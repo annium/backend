@@ -325,6 +325,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.Messag
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Serialization.Abstractions.Tests", "base\Serialization\test\Annium.Serialization.Abstractions.Tests\Annium.Serialization.Abstractions.Tests.csproj", "{4B102A00-D4AB-4FC9-B130-F0104D0A3418}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Testing.Assertions", "base\Testing\src\Annium.Testing.Assertions\Annium.Testing.Assertions.csproj", "{41107BA9-5D39-4917-AF97-B2F89FD06B5F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -497,6 +499,7 @@ Global
 		{67B15353-656A-46DF-8130-BD5E7A263862} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
 		{502FF89F-2817-4EDF-94E3-0DA81CEB7C34} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
 		{4B102A00-D4AB-4FC9-B130-F0104D0A3418} = {7B183F6B-0196-4B41-AE58-4C64DC6E8D51}
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F} = {8FFE0067-6736-40D2-98DD-DF2A72B00AC7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1819,5 +1822,17 @@ Global
 		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x64.Build.0 = Release|Any CPU
 		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x86.ActiveCfg = Release|Any CPU
 		{4B102A00-D4AB-4FC9-B130-F0104D0A3418}.Release|x86.Build.0 = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|x64.Build.0 = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Debug|x86.Build.0 = Debug|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|x64.ActiveCfg = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|x64.Build.0 = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|x86.ActiveCfg = Release|Any CPU
+		{41107BA9-5D39-4917-AF97-B2F89FD06B5F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
