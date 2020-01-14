@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Annium.Core.Reflection.Tests.Types.Extensions.GetTargetImplementation;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Core.Reflection.Tests.Types.Extensions
 {

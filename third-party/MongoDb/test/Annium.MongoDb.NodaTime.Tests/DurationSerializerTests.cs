@@ -3,6 +3,7 @@ using Annium.Testing;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using NodaTime;
+using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests
 {

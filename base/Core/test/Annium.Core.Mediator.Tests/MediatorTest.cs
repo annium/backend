@@ -10,6 +10,7 @@ using Annium.Logging.InMemory;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using Xunit;
 
 namespace Annium.Core.Mediator.Tests
 {

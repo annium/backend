@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Core.Mapper.Tests
 {

@@ -3,6 +3,7 @@ using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Configuration.CommandLine.Tests
 {

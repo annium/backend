@@ -5,6 +5,7 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Serialization.Json;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Configuration.Json.Tests
 {

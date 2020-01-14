@@ -4,6 +4,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using Xunit;
 
 namespace Annium.Logging.Abstractions.Tests
 {

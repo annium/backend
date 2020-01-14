@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq.Expressions;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Core.Reflection.Tests.Types.Extensions
 {

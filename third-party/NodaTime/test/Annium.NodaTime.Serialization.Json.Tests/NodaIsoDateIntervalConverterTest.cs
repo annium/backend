@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Testing;
 using NodaTime;
+using Xunit;
 using static Annium.NodaTime.Serialization.Json.Tests.TestHelper;
 
 namespace Annium.NodaTime.Serialization.Json.Tests

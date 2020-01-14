@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.Reflection;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Core.Reflection.Tests.Types
 {

@@ -1,6 +1,7 @@
 // using System;
 // using Annium.Core.Reflection;
 // using Annium.Testing;
+// using Xunit;
 
 // namespace Annium.Core.Reflection.Tests.Types.TypeExtensions
 // {

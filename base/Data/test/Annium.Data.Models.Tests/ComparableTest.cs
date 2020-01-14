@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Data.Models.Tests
 {

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Annium.Configuration.Tests;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Configuration.Abstractions.Tests
 {

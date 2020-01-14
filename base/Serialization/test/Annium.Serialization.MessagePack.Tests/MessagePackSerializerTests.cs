@@ -1,5 +1,6 @@
 using Annium.Testing;
 using MessagePack;
+using Xunit;
 
 namespace Annium.Serialization.MessagePack.Tests
 {

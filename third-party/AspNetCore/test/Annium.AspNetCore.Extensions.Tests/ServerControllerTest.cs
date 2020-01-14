@@ -7,13 +7,14 @@ using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Demo.AspNetCore;
+using Xunit;
 
 namespace Annium.AspNetCore.Extensions.Tests
 {
     public class ServerControllerTest : IntegrationTest
     {
         private IRequest http => GetRequest<Startup>(
-            builder => builder.UseServicePack<Demo.AspNetCore.ServicePack>()
+            builder => builder.UseServicePack<ServicePack>()
         );
 
         [Fact]

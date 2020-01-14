@@ -3,6 +3,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Localization.Abstractions;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Annium.Localization.Yaml.Tests
 {

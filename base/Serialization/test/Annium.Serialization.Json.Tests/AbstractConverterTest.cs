@@ -3,6 +3,7 @@ using System.Text.Json;
 using Annium.Core.Reflection;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Serialization.Json.Tests
 {

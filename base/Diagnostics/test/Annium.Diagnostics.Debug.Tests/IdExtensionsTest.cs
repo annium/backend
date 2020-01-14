@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Diagnostics.Debug.Tests
 {

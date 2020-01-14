@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using Annium.Net.Http;
 using Annium.Testing;
 using Demo.AspNetCore;
+using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class SampleTest : IntegrationTest
     {
         private IRequest http => GetRequest<Startup>(
-            builder => builder.UseServicePack<Demo.AspNetCore.ServicePack>()
+            builder => builder.UseServicePack<ServicePack>()
         );
 
         [Fact]

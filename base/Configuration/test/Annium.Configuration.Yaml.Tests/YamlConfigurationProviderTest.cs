@@ -4,6 +4,7 @@ using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Testing;
+using Xunit;
 using YamlDotNet.Serialization;
 
 namespace Annium.Configuration.Yaml.Tests

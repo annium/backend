@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Serialization.Abstractions.Tests
 {

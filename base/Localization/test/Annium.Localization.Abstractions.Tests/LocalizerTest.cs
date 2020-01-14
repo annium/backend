@@ -4,6 +4,7 @@ using System.Globalization;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using Xunit;
 
 namespace Annium.Localization.Abstractions.Tests
 {

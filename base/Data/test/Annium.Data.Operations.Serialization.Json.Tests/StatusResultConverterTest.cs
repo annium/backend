@@ -1,6 +1,7 @@
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Xunit;
 
 namespace Annium.Data.Operations.Serialization.Tests
 {
