@@ -13,6 +13,7 @@ namespace Annium.Extensions.Pooling
     {
         private readonly IDictionary<TKey, CacheEntry> entries = new Dictionary<TKey, CacheEntry>();
         private readonly Func<TKey, Task<TValue>> factory;
+        private readonly Func<TKey, Task<ICacheReference<TValue>>> externalFactory;
         private readonly Func<TValue, Task> suspend;
         private readonly Func<TValue, Task> resume;
         private readonly ILogger<ObjectCache<TKey, TValue>> logger;
@@ -42,6 +43,31 @@ namespace Annium.Extensions.Pooling
             this.logger = logger;
         }
 
+        public ObjectCache(
+            Func<TKey, Task<ICacheReference<TValue>>> externalFactory,
+            ILogger<ObjectCache<TKey, TValue>> logger
+        ) : this(
+            externalFactory,
+            _ => Task.CompletedTask,
+            _ => Task.CompletedTask,
+            logger
+        )
+        {
+        }
+
+        public ObjectCache(
+            Func<TKey, Task<ICacheReference<TValue>>> externalFactory,
+            Func<TValue, Task> suspend,
+            Func<TValue, Task> resume,
+            ILogger<ObjectCache<TKey, TValue>> logger
+        )
+        {
+            this.externalFactory = externalFactory;
+            this.suspend = suspend;
+            this.resume = resume;
+            this.logger = logger;
+        }
+
         public async Task<ICacheReference<TValue>> GetAsync(TKey key)
         {
             // get or create CacheEntry
@@ -60,10 +86,17 @@ namespace Annium.Extensions.Pooling
             }
 
             // creator - immediately creates value, others - wait for access
+            ICacheReference<TValue> reference = null;
             if (isInitializing)
             {
                 Trace($"Get by {key}: initialize entry");
-                entry.SetValue(await factory(key));
+                if (externalFactory is null)
+                    entry.SetValue(await factory(key));
+                else
+                {
+                    reference = await externalFactory(key);
+                    entry.SetValue(reference.Value);
+                }
             }
             else
             {
@@ -81,7 +114,8 @@ namespace Annium.Extensions.Pooling
             // create reference, incrementing reference counter
             Trace($"Get by {key}: add entry reference");
             entry.AddReference();
-            var reference = new CacheReference<TValue>(entry.Value, () => Release(key, entry));
+            if (reference is null)
+                reference = new CacheReference<TValue>(entry.Value, () => Release(key, entry));
 
             entry.Unlock();
 
