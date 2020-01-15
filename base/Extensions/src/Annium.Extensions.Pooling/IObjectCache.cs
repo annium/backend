@@ -7,6 +7,6 @@ namespace Annium.Extensions.Pooling
         where TKey : notnull
         where TValue : notnull
     {
-        Task<CacheReference<TValue>> GetAsync(TKey key);
+        Task<ICacheReference<TValue>> GetAsync(TKey key);
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Annium.Extensions.Pooling
 {
-    public class CacheReference<TValue> : IAsyncDisposable
+    internal class CacheReference<TValue> : ICacheReference<TValue>
         where TValue : notnull
     {
         public TValue Value { get; private set; }

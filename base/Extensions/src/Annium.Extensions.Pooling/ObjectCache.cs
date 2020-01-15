@@ -42,7 +42,7 @@ namespace Annium.Extensions.Pooling
             this.logger = logger;
         }
 
-        public async Task<CacheReference<TValue>> GetAsync(TKey key)
+        public async Task<ICacheReference<TValue>> GetAsync(TKey key)
         {
             // get or create CacheEntry
             CacheEntry entry;
