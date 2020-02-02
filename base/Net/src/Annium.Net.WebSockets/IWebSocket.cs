@@ -3,6 +3,10 @@ using System.Threading;
 
 namespace Annium.Net.WebSockets
 {
+    public interface ISendingReceivingWebSocket : ISendingWebSocket, IReceivingWebSocket
+    {
+    }
+
     public interface ISendingWebSocket : IDisposable
     {
         IObservable<int> Send<T>(T data, CancellationToken token);

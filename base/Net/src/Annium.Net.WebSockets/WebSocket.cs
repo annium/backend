@@ -11,7 +11,7 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
 {
-    public abstract class WebSocket<TNativeSocket> : ISendingWebSocket, IReceivingWebSocket, IDisposable
+    public abstract class WebSocket<TNativeSocket> : ISendingReceivingWebSocket
         where TNativeSocket : NativeWebSocket
     {
         private const int BufferSize = 65536;
@@ -101,7 +101,7 @@ namespace Annium.Net.WebSockets
                     // if closing - send close and return
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        _ = Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+                        Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token).ConfigureAwait(false).GetAwaiter();
 
                         observer.OnCompleted();
 
@@ -137,27 +137,10 @@ namespace Annium.Net.WebSockets
             }
         }
 
-        #region IDisposable Support
-
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposedValue)
-                return;
-
-            if (disposing)
-                Socket.Dispose();
-
-            disposedValue = true;
-        }
-
         public void Dispose()
         {
-            Dispose(true);
+            Socket.Dispose();
         }
-
-        #endregion
 
         private struct SocketData
         {
