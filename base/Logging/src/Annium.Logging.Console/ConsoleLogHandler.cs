@@ -8,9 +8,9 @@ namespace Annium.Logging.Console
 {
     internal class ConsoleLogHandler : ILogHandler
     {
-        private static readonly DateTimeZone tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-        private static readonly object consoleLock = new object();
-        private static readonly IReadOnlyDictionary<LogLevel, ConsoleColor> levelColors;
+        private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+        private static readonly object ConsoleLock = new object();
+        private static readonly IReadOnlyDictionary<LogLevel, ConsoleColor> LevelColors;
 
         static ConsoleLogHandler()
         {
@@ -22,43 +22,64 @@ namespace Annium.Logging.Console
                 [LogLevel.Warn] = ConsoleColor.Yellow,
                 [LogLevel.Error] = ConsoleColor.Red
             };
-            levelColors = colors;
+            LevelColors = colors;
+        }
+
+        private readonly bool time;
+        private readonly bool level;
+        private readonly bool color;
+
+        public ConsoleLogHandler(
+            bool time,
+            bool level,
+            bool color
+        )
+        {
+            this.time = time;
+            this.level = level;
+            this.color = color;
         }
 
         public void Handle(LogMessage msg)
         {
-            lock (consoleLock)
+            lock (ConsoleLock)
             {
                 var currentColor = System.Console.ForegroundColor;
                 try
                 {
-                    System.Console.ForegroundColor = levelColors[msg.Level];
+                    if (color)
+                        System.Console.ForegroundColor = LevelColors[msg.Level];
 
                     if (msg.Exception is AggregateException aggregateException)
                     {
                         var errors = aggregateException.Flatten().InnerExceptions;
-                        WriteLine(msg.Instant, $"Errors ({errors.Count}):");
+                        WriteLine(msg, $"Errors ({errors.Count}):");
 
                         foreach (var error in errors)
-                            WriteLine(msg.Instant, GetExceptionMessage(error));
+                            WriteLine(msg, GetExceptionMessage(error));
                     }
-                    else if (msg.Exception is Exception)
-                        WriteLine(msg.Instant, GetExceptionMessage(msg.Exception));
+                    else if (msg.Exception != null)
+                        WriteLine(msg, GetExceptionMessage(msg.Exception));
                     else
-                        WriteLine(msg.Instant, msg.Message);
+                        WriteLine(msg, msg.Message);
                 }
                 finally
                 {
-                    System.Console.ForegroundColor = currentColor;
+                    if (color)
+                        System.Console.ForegroundColor = currentColor;
                 }
             }
         }
 
-        private void WriteLine(Instant instant, string message)
+        private void WriteLine(LogMessage msg, string message)
         {
             var builder = new StringBuilder();
 
-            builder.Append($"[{instant.InZone(tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] ");
+            if (time)
+                builder.Append($"[{msg.Instant.InZone(Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] ");
+
+            if (level)
+                builder.Append($"{msg.Level,5}: ");
 
             builder.Append(message);
 

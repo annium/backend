@@ -6,9 +6,14 @@ namespace Annium.Core.DependencyInjection
 {
     public static class LogRouteExtensions
     {
-        public static LogRoute UseConsole(this LogRoute route)
+        public static LogRoute UseConsole(
+            this LogRoute route,
+            bool time = false,
+            bool level = false,
+            bool color = false
+        )
         {
-            route.Use(ServiceDescriptor.Singleton<ConsoleLogHandler, ConsoleLogHandler>());
+            route.Use(ServiceDescriptor.Singleton(new ConsoleLogHandler(time, level, color)));
 
             return route;
         }
