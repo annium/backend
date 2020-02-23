@@ -3,6 +3,7 @@ using System.Threading;
 using Annium.Core.Entrypoint;
 using Annium.Serialization.Json;
 using Annium.Serialization.Json.Tests;
+using Annium.Serialization.Json.Tests.Converters;
 
 namespace Demo.Serialization.Json
 {

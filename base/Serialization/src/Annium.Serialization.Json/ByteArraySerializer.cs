@@ -24,7 +24,7 @@ namespace Annium.Serialization.Json
 
         private readonly JsonSerializerOptions options;
 
-        public ByteArraySerializer(JsonSerializerOptions options)
+        private ByteArraySerializer(JsonSerializerOptions options)
         {
             this.options = options;
         }

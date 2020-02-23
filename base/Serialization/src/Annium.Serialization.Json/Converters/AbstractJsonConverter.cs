@@ -7,9 +7,9 @@ using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Serialization.Json
+namespace Annium.Serialization.Json.Converters
 {
-    public class AbstractJsonConverter<T> : JsonConverter<T>
+    internal class AbstractJsonConverter<T> : JsonConverter<T>
     {
         public override T Read(
             ref Utf8JsonReader reader,

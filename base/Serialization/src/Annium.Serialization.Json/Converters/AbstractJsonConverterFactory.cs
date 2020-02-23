@@ -6,9 +6,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
 
-namespace Annium.Serialization.Json
+namespace Annium.Serialization.Json.Converters
 {
-    public class AbstractJsonConverterFactory : JsonConverterFactory
+    internal class AbstractJsonConverterFactory : JsonConverterFactory
     {
         public override bool CanConvert(Type objectType)
         {
@@ -29,7 +29,7 @@ namespace Annium.Serialization.Json
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            return (JsonConverter)Activator.CreateInstance(typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert))!;
+            return (JsonConverter) Activator.CreateInstance(typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert))!;
         }
     }
 }

@@ -1,6 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
-using Annium.Serialization.Json;
+using Annium.Serialization.Json.Converters;
 
 namespace Annium.Core.DependencyInjection
 {
