@@ -11,6 +11,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             options.Converters.Add(new AbstractJsonConverterFactory());
+            options.Converters.Add(new GenericDictionaryJsonConverterFactory());
 
             options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
