@@ -5,7 +5,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Demo.AspNetCore
 {
-    internal class Program
+    internal static class Program
     {
         public static void Main(string[] args)
         {
