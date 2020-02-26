@@ -12,8 +12,8 @@ namespace Annium.Extensions.Pooling
         where TValue : notnull
     {
         private readonly IDictionary<TKey, CacheEntry> entries = new Dictionary<TKey, CacheEntry>();
-        private readonly Func<TKey, Task<TValue>> factory;
-        private readonly Func<TKey, Task<ICacheReference<TValue>>> externalFactory;
+        private readonly Func<TKey, Task<TValue>>? factory;
+        private readonly Func<TKey, Task<ICacheReference<TValue>>>? externalFactory;
         private readonly Func<TValue, Task> suspend;
         private readonly Func<TValue, Task> resume;
         private readonly ILogger<ObjectCache<TKey, TValue>> logger;
@@ -86,13 +86,13 @@ namespace Annium.Extensions.Pooling
             }
 
             // creator - immediately creates value, others - wait for access
-            ICacheReference<TValue> reference = null;
+            ICacheReference<TValue>? reference = null;
             if (isInitializing)
             {
                 Trace($"Get by {key}: initialize entry");
-                if (externalFactory is null)
+                if (factory != null)
                     entry.SetValue(await factory(key));
-                else
+                else if (externalFactory != null)
                 {
                     reference = await externalFactory(key);
                     entry.SetValue(reference.Value);
