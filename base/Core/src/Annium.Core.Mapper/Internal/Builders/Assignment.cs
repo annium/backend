@@ -14,7 +14,13 @@ namespace Annium.Core.Mapper.Internal
             var targets = tgt.GetProperties();
             // if any target properties are configured to be ignored - simply omit them from mapping
             if (cfg?.Ignores.Count() > 0)
-                targets = targets.Where(target => !cfg.Ignores.Contains(target)).ToArray();
+                targets = targets
+                    .Where(target => !cfg.Ignores.Any(ignored =>
+                        ignored.DeclaringType == target.DeclaringType &&
+                        ignored.PropertyType == target.PropertyType &&
+                        ignored.Name == target.Name
+                    ))
+                    .ToArray();
 
             // defined instance and create initial assignemnt expression
             var instance = Expression.Variable(tgt);
@@ -46,8 +52,8 @@ namespace Annium.Core.Mapper.Internal
                 return Expression.Block(
                     new[] { instance },
                     new Expression[] { init }
-                    .Concat(assignments)
-                    .Concat(new Expression[] { instance })
+                        .Concat(assignments)
+                        .Concat(new Expression[] { instance })
                 );
 
             // defined labeled return expression, that will express early return null-checking statement
@@ -66,8 +72,8 @@ namespace Annium.Core.Mapper.Internal
             return Expression.Block(
                 new[] { instance },
                 new Expression[] { nullCheck, init }
-                .Concat(assignments)
-                .Concat(new Expression[] { result, returnLabel })
+                    .Concat(assignments)
+                    .Concat(new Expression[] { result, returnLabel })
             );
         };
     }
