@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
-    internal class ServiceProviderBuilder : IServiceProviderBuilder
+    public class ServiceProviderBuilder : IServiceProviderBuilder
     {
         private bool isAlreadyBuilt = false;
 
