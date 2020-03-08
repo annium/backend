@@ -22,7 +22,7 @@ namespace Annium.Core.DependencyInjection
                 .AddDbContext<TContext>(builder =>
                 {
                     var opts = builder.UseSqlite(cn).Options;
-                    using var ctx = Activator.CreateInstance(typeof(TContext), opts) as DbContext;
+                    using var ctx = (DbContext) Activator.CreateInstance(typeof(TContext), opts)!;
                     ctx.Database.EnsureCreated();
                 });
         }
