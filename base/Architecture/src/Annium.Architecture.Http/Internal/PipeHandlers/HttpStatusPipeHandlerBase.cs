@@ -3,6 +3,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Architecture.Http.Exceptions;
+using Annium.Data.Operations;
 
 namespace Annium.Architecture.Http.Internal.PipeHandlers
 {
@@ -21,28 +23,26 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
 
         protected abstract TResponseOut GetResponse(TResponseIn response);
 
-        protected HttpStatusCode MapToStatusCode(OperationStatus status)
+        protected void HandleStatus(OperationStatus status, IResultBase result)
         {
             if (status == OperationStatus.BadRequest)
-                return HttpStatusCode.BadRequest;
-
-            if (status == OperationStatus.Conflict)
-                return HttpStatusCode.Conflict;
+                throw new ValidationException(result);
 
             if (status == OperationStatus.Forbidden)
-                return HttpStatusCode.Forbidden;
-
-            if (status == OperationStatus.OK)
-                return HttpStatusCode.OK;
+                throw new ForbiddenException(result);
 
             if (status == OperationStatus.NotFound)
-                return HttpStatusCode.NotFound;
+                throw new NotFoundException(result);
+
+            if (status == OperationStatus.Conflict)
+                throw new ConflictException(result);
 
             if (status == OperationStatus.UncaughtException)
-                return HttpStatusCode.InternalServerError;
+                throw new ServerException(result);
 
             // if mapping fails - it's critical error
-            return HttpStatusCode.InternalServerError;
+            if (status != OperationStatus.OK)
+                throw new ServerException(result);
         }
     }
 }
