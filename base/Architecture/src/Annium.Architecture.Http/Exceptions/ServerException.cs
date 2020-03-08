@@ -1,15 +1,11 @@
-using System;
 using Annium.Data.Operations;
 
 namespace Annium.Architecture.Http.Exceptions
 {
-    public class ServerException : Exception, IHttpException
+    public class ServerException : HttpException
     {
-        public IResultBase Result { get; }
-
-        public ServerException(IResultBase result)
+        public ServerException(IResultBase result) : base(result)
         {
-            Result = result;
         }
     }
 }

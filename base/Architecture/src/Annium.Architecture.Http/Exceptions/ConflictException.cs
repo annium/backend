@@ -1,15 +1,11 @@
-using System;
 using Annium.Data.Operations;
 
 namespace Annium.Architecture.Http.Exceptions
 {
-    public class ConflictException : Exception, IHttpException
+    public class ConflictException : HttpException
     {
-        public IResultBase Result { get; }
-
-        public ConflictException(IResultBase result)
+        public ConflictException(IResultBase result) : base(result)
         {
-            Result = result;
         }
     }
 }

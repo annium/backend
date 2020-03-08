@@ -1,15 +1,11 @@
-using System;
 using Annium.Data.Operations;
 
 namespace Annium.Architecture.Http.Exceptions
 {
-    public class NotFoundException : Exception, IHttpException
+    public class NotFoundException : HttpException
     {
-        public IResultBase Result { get; }
-
-        public NotFoundException(IResultBase result)
+        public NotFoundException(IResultBase result) : base(result)
         {
-            Result = result;
         }
     }
 }

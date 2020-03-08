@@ -1,15 +1,11 @@
-using System;
 using Annium.Data.Operations;
 
 namespace Annium.Architecture.Http.Exceptions
 {
-    public class ValidationException : Exception, IHttpException
+    public class ValidationException : HttpException
     {
-        public IResultBase Result { get; }
-
-        public ValidationException(IResultBase result)
+        public ValidationException(IResultBase result) : base(result)
         {
-            Result = result;
         }
     }
 }
