@@ -4,6 +4,6 @@ namespace Annium.Architecture.Http.Exceptions
 {
     public interface IHttpException
     {
-        public IResult Result { get; }
+        public IResultBase Result { get; }
     }
 }

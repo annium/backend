@@ -5,9 +5,9 @@ namespace Annium.Architecture.Http.Exceptions
 {
     public class ConflictException : Exception, IHttpException
     {
-        public IResult Result { get; }
+        public IResultBase Result { get; }
 
-        public ConflictException(IResult result)
+        public ConflictException(IResultBase result)
         {
             Result = result;
         }

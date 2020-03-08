@@ -5,9 +5,9 @@ namespace Annium.Architecture.Http.Exceptions
 {
     public class ValidationException : Exception, IHttpException
     {
-        public IResult Result { get; }
+        public IResultBase Result { get; }
 
-        public ValidationException(IResult result)
+        public ValidationException(IResultBase result)
         {
             Result = result;
         }

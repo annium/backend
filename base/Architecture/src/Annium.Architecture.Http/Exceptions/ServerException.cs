@@ -5,9 +5,9 @@ namespace Annium.Architecture.Http.Exceptions
 {
     public class ServerException : Exception, IHttpException
     {
-        public IResult Result { get; }
+        public IResultBase Result { get; }
 
-        public ServerException(IResult result)
+        public ServerException(IResultBase result)
         {
             Result = result;
         }

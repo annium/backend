@@ -5,9 +5,9 @@ namespace Annium.Architecture.Http.Exceptions
 {
     public class ForbiddenException : Exception, IHttpException
     {
-        public IResult Result { get; }
+        public IResultBase Result { get; }
 
-        public ForbiddenException(IResult result)
+        public ForbiddenException(IResultBase result)
         {
             Result = result;
         }
