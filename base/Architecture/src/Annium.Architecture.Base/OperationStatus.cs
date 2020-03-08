@@ -6,7 +6,7 @@ namespace Annium.Architecture.Base
 {
     public class OperationStatus : Equatable<OperationStatus>
     {
-        private static readonly List<OperationStatus> Statuses = new List<OperationStatus>();
+        private static readonly IDictionary<string, OperationStatus> Statuses = new Dictionary<string, OperationStatus>();
 
         public static OperationStatus BadRequest { get; } = Register(nameof(BadRequest));
         public static OperationStatus Conflict { get; } = Register(nameof(Conflict));
@@ -17,16 +17,19 @@ namespace Annium.Architecture.Base
 
         public static OperationStatus Register(string name)
         {
-            var status = new OperationStatus(name);
+            if (Statuses.TryGetValue(name, out var status))
+                return status;
 
-            if (Statuses.FindIndex(e => e.name == name) < 0)
-                Statuses.Add(status);
+            return Statuses[name] = new OperationStatus(name);
+        }
+
+        public static OperationStatus Get(string name)
+        {
+            if (!Statuses.TryGetValue(name, out var status))
+                throw new Exception($"Operation status {name} is not registered.");
 
             return status;
         }
-
-        public static OperationStatus Get(string name) => Statuses.Find(e => e.name == name) ??
-            throw new Exception($"Operation status {name} is not registered.");
 
         private readonly string name;
 
