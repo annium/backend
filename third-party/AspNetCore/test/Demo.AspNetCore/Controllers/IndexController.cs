@@ -20,27 +20,6 @@ namespace Demo.AspNetCore.Controllers
             return Ok("Hello World from Demo.AspNetCore");
         }
 
-        [HttpGet("created")]
-        public IActionResult Created()
-        {
-            return Created("created");
-        }
-
-        [HttpPost("bad-request")]
-        public IActionResult BadRequest([FromBody] Payload payload)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            return NoContent();
-        }
-
-        [HttpGet("forbidden")]
-        public IActionResult Forbidden()
-        {
-            return Forbidden(Result.Failure());
-        }
-
         [HttpGet("conflict")]
         public new IActionResult Conflict()
         {
@@ -51,12 +30,6 @@ namespace Demo.AspNetCore.Controllers
         public new IActionResult NotFound()
         {
             return NotFound(Result.Failure());
-        }
-
-        [HttpGet("server-error")]
-        public IActionResult ServerError()
-        {
-            return ServerError(Result.Failure());
         }
 
         public class Payload
