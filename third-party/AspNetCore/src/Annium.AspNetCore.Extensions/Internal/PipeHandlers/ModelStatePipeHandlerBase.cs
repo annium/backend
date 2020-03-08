@@ -26,7 +26,7 @@ namespace Annium.AspNetCore.Extensions.Internal.PipeHandlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            var(modelState, request) = payload;
+            var (modelState, request) = payload;
             if (!modelState.IsValid)
             {
                 logger.Trace($"Model of {typeof(TRequest).Name} is not valid");
@@ -42,7 +42,7 @@ namespace Annium.AspNetCore.Extensions.Internal.PipeHandlers
         {
             var result = Result.Status(OperationStatus.BadRequest);
 
-            foreach (var(field, entry) in modelState)
+            foreach (var (field, entry) in modelState)
             {
                 var label = field.CamelCase();
                 foreach (var error in entry.Errors)
