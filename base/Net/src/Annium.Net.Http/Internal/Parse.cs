@@ -16,6 +16,8 @@ namespace Annium.Net.Http.Internal
             x.ReadAsStreamAsync();
         public static Task<T> T<T>(HttpContent x) =>
             x.ParseAsync<T>();
+        public static Task<IResult> Result(HttpContent x) =>
+            x.ParseAsync<IResult>();
         public static Task<IResult<T>> ResultT<T>(HttpContent x) =>
             x.ParseAsync<IResult<T>>();
     }

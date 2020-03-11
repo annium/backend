@@ -18,6 +18,9 @@ namespace Annium.Net.Http
         public static Task<Stream> AsStreamAsync(this IRequest request) =>
             request.ToAsync(Parse.Stream);
 
+        public static Task<IResult> AsResultAsync(this IRequest request) =>
+            request.ToAsync(Parse.Result);
+
         public static Task<IResult<T>> AsResultAsync<T>(this IRequest request) =>
             request.ToAsync(Parse.ResultT<T>);
 

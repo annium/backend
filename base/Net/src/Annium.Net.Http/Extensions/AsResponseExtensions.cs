@@ -27,8 +27,6 @@ namespace Annium.Net.Http
         private static async Task<IResponse<T>> ToResponseAsync<T>(this IRequest request, Func<HttpContent, Task<T>> parseAsync)
         {
             var response = await request.RunAsync();
-            if (response.IsFailure)
-                return new Response<T>(response, default!);
 
             var data = await parseAsync(response.Content);
 
