@@ -35,10 +35,10 @@ namespace Annium.Core.Mapper.Internal
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            if (source == null)
+            if (source is null)
                 return Activator.CreateInstance(type)!;
 
-            if (source.GetType() == type)
+            if (type.IsAssignableFrom(source.GetType()))
                 return source;
 
             if (type.IsEnum)
