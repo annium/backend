@@ -4,13 +4,24 @@ namespace Annium.Testing
 {
     public static class ValueExtensions
     {
-        public static void IsEqual<T>(this T value, T data, string message = "")
+        public static void IsEqual<T, D>(this T value, D data, string message = "")
         {
-            var comparer = EqualityComparer<T>.Default;
-
-            if (!comparer.Equals(value, data))
+            if (!AreEqual(value!, data!))
                 throw new AssertionFailedException(string.IsNullOrEmpty(message) ? $"{value} != {data}" : message);
+
+            static bool AreEqual(object value, object other)
+            {
+                return false;
+            }
         }
+
+        // public static void IsEqual<T>(this T value, T data, string message = "")
+        // {
+        //     var comparer = EqualityComparer<T>.Default;
+
+        //     if (!comparer.Equals(value, data))
+        //         throw new AssertionFailedException(string.IsNullOrEmpty(message) ? $"{value} != {data}" : message);
+        // }
 
         public static void IsNotEqual<T>(this T value, T data, string message = "")
         {
@@ -43,7 +54,7 @@ namespace Annium.Testing
 
         public static T IsDefault<T>(this T value, string message = "")
         {
-            value.IsEqual(default!, message);
+            value.IsEqual(default(T)!, message);
 
             return value;
         }

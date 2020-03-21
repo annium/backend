@@ -1,5 +1,7 @@
+using System;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
+using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 
@@ -64,6 +66,10 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonSerializer.Deserialize<IResult>(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
+            var other = Result.New().Error("plain").Error("label", "another");
+            // var equals = Compare(new[] { 1, 2 }, new[] { 1, 2 });
+            var equals = new[] { 1, 2 }.IsEqual(new[] { 1, 2 });
+            result.IsEqual(Result.New().Error("plain").Error("label", "another"));
             result.HasErrors.IsTrue();
             result.PlainErrors.Has(1);
             result.PlainErrors.At(0).IsEqual("plain");

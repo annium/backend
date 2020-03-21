@@ -16,6 +16,7 @@ namespace Demo.AspNetCore
 
         public void Configure(IApplicationBuilder app)
         {
+            app.UseExceptionMiddleware();
             app.UseRouting();
             app.UseCors(builder => builder
                 .SetIsOriginAllowed(o => true)
