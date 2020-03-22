@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Annium.Data.Models.Tests
 {
-    public class SampleTestClass
+    public class EquatableTest
     {
         [Fact]
         public void EqualHashCode_ProvidesCorrectEqualityComparisons()
