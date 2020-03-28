@@ -18,6 +18,12 @@ namespace Demo.AspNetCore.Controllers
 
         }
 
+        [HttpGet]
+        public IResult Base()
+        {
+            return Result.New();
+        }
+
         [HttpPost("command")]
         public Task<IResult> RequestOnly([FromBody] DemoCommand request)
         {
