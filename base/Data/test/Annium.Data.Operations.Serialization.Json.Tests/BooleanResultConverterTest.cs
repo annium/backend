@@ -103,7 +103,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonSerializer.Deserialize<IBooleanResult<string>>("{}", GetSettings());
 
             // assert
-            result.Data.IsEqual(null!);
+            result.Data.IsDefault();
             result.IsSuccess.IsFalse();
             result.IsFailure.IsTrue();
         }
