@@ -13,8 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
-        <ProjectReference Include="../../../Core/src/Annium.Core.Reflection/Annium.Core.Reflection.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AgileObjects.ReadableExpressions" Version="2.3.2" />
