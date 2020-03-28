@@ -47,9 +47,10 @@ namespace Annium.Core.Mapper.Internal
             var param = Expression.Parameter(src);
             var mapping = ResolveMap(src, tgt);
             if (mapping is null)
-                throw new MappingException(src, tgt, $"No map found.");
+                throw new MappingException(src, tgt, "No map found.");
 
             var result = Expression.Lambda(mapping(param), param);
+            // var str = result.ToReadableString();
 
             return maps[key] = result.Compile();
         }

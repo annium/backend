@@ -16,6 +16,7 @@
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="AgileObjects.ReadableExpressions" Version="2.3.2" />
         <PackageReference Include="NodaTime" Version="2.4.7" />
     </ItemGroup>
 </Project>

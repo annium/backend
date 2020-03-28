@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using Annium.Core.Reflection;
 
@@ -8,41 +9,61 @@ namespace Annium.Core.Mapper.Internal
     {
         private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt, Map cfg) => (Expression source) =>
         {
+            var vars = new List<ParameterExpression>();
+            var expressions = new List<Expression>();
+
             var returnTarget = Expression.Label(tgt);
-            var defaultValue = Expression.Default(tgt);
-            var returnExpression = Expression.Return(returnTarget, defaultValue, tgt);
-            var returnLabel = Expression.Label(returnTarget, defaultValue);
 
-            var nullCheck = Expression.IfThen(
+            // if source is default - return default target
+            expressions.Add(Expression.IfThen(
                 Expression.Equal(source, Expression.Default(src)),
-                returnExpression
-            );
+                Expression.Return(returnTarget, Expression.Default(tgt))
+            ));
 
-            var type = Expression.Variable(typeof(Type));
-            var resolveFn = typeof(TypeManager).GetMethod(nameof(TypeManager.ResolveBySignature), new[] { typeof(object), typeof(Type), typeof(bool) });
-            var resolution = Expression.Assign(type, Expression.Call(Expression.Constant(typeManager), resolveFn, source, Expression.Constant(tgt), Expression.Constant(true)));
+            // add type resolution
+            var typeVar = Expression.Variable(typeof(Type));
+            vars.Add(typeVar);
 
-            var map = Expression.Variable(typeof(Delegate));
-            var mapFn = typeof(MapBuilder).GetMethod(nameof(MapBuilder.GetMap));
-            var srcEx = Expression.Call(source, typeof(object).GetMethod(nameof(object.GetType)));
-            var mapping = Expression.Assign(map, Expression.Call(Expression.Constant(this), mapFn, srcEx, type));
+            var resolveBySignature = typeof(TypeManager)
+                .GetMethod(nameof(TypeManager.ResolveBySignature), new[] { typeof(object), typeof(Type), typeof(bool) });
 
-            var invokeFn = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
-            var result = Expression.Call(map, invokeFn, Expression.NewArrayInit(typeof(object), source));
-            var instance = Expression.Variable(tgt);
-            var assignment = Expression.Assign(instance, Expression.Convert(result, tgt));
+            expressions.Add(Expression.Assign(
+                typeVar,
+                Expression.Call(
+                    Expression.Constant(typeManager),
+                    resolveBySignature,
+                    source, Expression.Constant(tgt), Expression.Constant(true)
+                )
+            ));
 
-            var returnedResult = Expression.Return(returnTarget, instance, tgt);
+            // if type resolution failed - throw
+            expressions.Add(Expression.IfThen(
+                Expression.Equal(typeVar, Expression.Constant(null)),
+                Expression.Throw(Expression.New(
+                    typeof(InvalidOperationException).GetConstructor(new[] { typeof(string) })!,
+                    Expression.Constant($"Can't resolve '{tgt}' implementation by signature of '{src}'")
+                ))
+            ));
 
-            return Expression.Block(
-                new[] { type, map, instance },
-                nullCheck,
-                resolution,
-                mapping,
-                assignment,
-                returnedResult,
-                returnLabel
-            );
+            // get map
+            var mapVar = Expression.Variable(typeof(Delegate));
+            vars.Add(mapVar);
+
+            var getMap = typeof(MapBuilder).GetMethod(nameof(GetMap));
+            var getTypeEx = Expression.Call(source, typeof(object).GetMethod(nameof(GetType))!);
+            expressions.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(this), getMap, getTypeEx, typeVar)));
+
+            // invoke map and return result
+            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
+            expressions.Add(Expression.Label(
+                returnTarget,
+                Expression.Convert(
+                    Expression.Call(mapVar, invokeMap, Expression.NewArrayInit(typeof(object), source)),
+                    tgt
+                )
+            ));
+
+            return Expression.Block(vars, expressions);
         };
     }
 }

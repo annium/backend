@@ -27,7 +27,7 @@ namespace Annium.Core.Mapper.Internal
             if (source == null)
                 return default!;
 
-            return (T)Map(source, typeof(T));
+            return (T) Map(source, typeof(T));
         }
 
         public object Map(object source, Type type)
