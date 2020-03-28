@@ -25,7 +25,7 @@ namespace Annium.AspNetCore.Extensions
         }
 
         [NonAction]
-        protected Task HandleAsync<TRequest>(TRequest request)
+        protected Task<IResult> HandleAsync<TRequest>(TRequest request)
         {
             return mediator.SendAsync<ValueTuple<ModelStateDictionary, TRequest>, IResult>((ModelState, request));
         }

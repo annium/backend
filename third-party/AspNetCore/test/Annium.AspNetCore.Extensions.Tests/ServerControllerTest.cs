@@ -7,6 +7,7 @@ using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Demo.AspNetCore;
+using Demo.AspNetCore.Controllers;
 using Xunit;
 
 namespace Annium.AspNetCore.Extensions.Tests
@@ -18,90 +19,47 @@ namespace Annium.AspNetCore.Extensions.Tests
         );
 
         [Fact]
-        public async Task Conlfict_Works()
-        {
-            // arrange
-            var expected = Serialize(Result.Failure());
-
-            // act
-            var response = await http.Get("/conflict").RunAsync();
-
-            // assert
-            response.StatusCode.IsEqual(HttpStatusCode.Conflict);
-            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
-        }
-
-        [Fact]
-        public async Task Created_Works()
+        public async Task Command_BadRequest_Works()
         {
             // act
-            var response = await http.Get("/created").RunAsync();
-
-            // assert
-            response.StatusCode.IsEqual(HttpStatusCode.Created);
-            (await response.Content.ReadAsStringAsync()).IsEqual("created");
-        }
-
-        [Fact]
-        public async Task BadRequest_Works()
-        {
-            // arrange
-            var expected = Serialize(
-                Result.New()
-                .Error("name", "The Name field is required.")
-                .Error("email", "The Email field is required.")
-            );
-
-            // act
-            var response = await http.Post("/bad-request")
-                .JsonContent(new { name = "", email = "" })
-                .RunAsync();
+            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseAsync<IResult>();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.BadRequest);
-            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
+            response.Data.IsEqual(Result.New().Error("Not ok"));
         }
 
         [Fact]
-        public async Task Forbidden_Works()
+        public async Task Command_Ok_Works()
         {
-            // arrange
-            var expected = Serialize(Result.Failure());
-
             // act
-            var response = await http.Get("/forbidden").RunAsync();
+            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = true }).AsResponseAsync<IResult>();
 
             // assert
-            response.StatusCode.IsEqual(HttpStatusCode.Forbidden);
-            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
+            response.StatusCode.IsEqual(HttpStatusCode.OK);
+            response.Data.IsEqual(Result.New());
         }
 
         [Fact]
-        public async Task NotFound_Works()
+        public async Task Query_NotFound_Works()
         {
-            // arrange
-            var expected = Serialize(Result.Failure());
-
             // act
-            var response = await http.Get("/not-found").RunAsync();
+            var response = await http.Get("/query").Param(nameof(DemoQuery.Q), 0).AsResponseAsync<IResult<DemoResponse>>();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.NotFound);
-            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
+            response.Data.IsEqual(Result.New(default(DemoResponse)).Error("Not found"));
         }
 
         [Fact]
-        public async Task ServerError_Works()
+        public async Task Query_Ok_Works()
         {
-            // arrange
-            var expected = Serialize(Result.Failure());
-
             // act
-            var response = await http.Get("/server-error").RunAsync();
+            var response = await http.Get("/query").Param(nameof(DemoQuery.Q), 1).AsResponseAsync<IResult<DemoResponse>>();
 
             // assert
-            response.StatusCode.IsEqual(HttpStatusCode.InternalServerError);
-            (await response.Content.ReadAsStringAsync()).IsEqual(expected);
+            response.StatusCode.IsEqual(HttpStatusCode.OK);
+            response.Data.IsEqual(Result.New(new DemoResponse { X = 1 }));
         }
 
         private string Serialize(object obj) => JsonSerializer.Serialize(
