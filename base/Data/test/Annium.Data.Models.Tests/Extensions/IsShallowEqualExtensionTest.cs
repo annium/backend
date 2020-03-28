@@ -126,6 +126,17 @@ namespace Annium.Data.Models.Tests.Extensions
             a.IsShallowEqual(d).IsFalse();
             a.IsShallowEqual(e).IsTrue();
         }
+
+        [Fact]
+        public void IsShallowEqual_Recursive_Works()
+        {
+            // arrange
+            var a = new Exception("x", new Exception("y"));
+            var b = new Exception("x", new Exception("y"));
+
+            // assert
+            a.IsShallowEqual(b).IsTrue();
+        }
     }
 
     namespace Internal
@@ -134,12 +145,12 @@ namespace Annium.Data.Models.Tests.Extensions
         {
             public bool? Nullable { get; set; }
 
-            public IEnumerable<Uri> Uris { get; set; }
-            public List<Sample> Samples { get; set; }
+            public IEnumerable<Uri> Uris { get; set; } = Array.Empty<Uri>();
+            public List<Sample> Samples { get; set; } = new List<Sample>();
 
-            public HashSet<Point> Points { get; set; }
-            public IDictionary<Point, Sample> Dictionary { get; set; }
-            public IReadOnlyDictionary<Point, Sample> ReadOnlyDictionary { get; set; }
+            public HashSet<Point> Points { get; set; } = new HashSet<Point>();
+            public IDictionary<Point, Sample> Dictionary { get; set; } = new Dictionary<Point, Sample>();
+            public IReadOnlyDictionary<Point, Sample> ReadOnlyDictionary { get; set; } = new Dictionary<Point, Sample>();
         }
 
         internal struct Sample
