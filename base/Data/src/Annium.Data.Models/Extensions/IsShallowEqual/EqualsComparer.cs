@@ -37,8 +37,8 @@ namespace Annium.Data.Models.Extensions
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();
 
-            // if (type.IsClass)
-            //     expressions.AddRange(AddReferenceEqualityChecks(a, b, returnTarget));
+            if (type.IsClass)
+                expressions.AddRange(AddReferenceEqualityChecks(a, b, returnTarget));
 
             var equalsExpression = equalsMethod.GetParameters()[0].ParameterType == type
                 ? Expression.Call(a, equalsMethod, b)

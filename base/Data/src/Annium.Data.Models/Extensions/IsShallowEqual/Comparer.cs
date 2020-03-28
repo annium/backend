@@ -30,5 +30,25 @@ namespace Annium.Data.Models.Extensions
 
             return BuildPropertyFieldComparer(type);
         }
+
+        private static IEnumerable<Expression> AddReferenceEqualityChecks(
+            ParameterExpression a,
+            ParameterExpression b,
+            LabelTarget returnTarget
+        )
+        {
+            yield return Expression.IfThen(
+                Expression.NotEqual(
+                    Expression.ReferenceEqual(a, Expression.Constant(null)),
+                    Expression.ReferenceEqual(b, Expression.Constant(null))
+                ),
+                Expression.Return(returnTarget, Expression.Constant(false))
+            );
+
+            yield return Expression.IfThen(
+                Expression.ReferenceEqual(a, b),
+                Expression.Return(returnTarget, Expression.Constant(true))
+            );
+        }
     }
 }

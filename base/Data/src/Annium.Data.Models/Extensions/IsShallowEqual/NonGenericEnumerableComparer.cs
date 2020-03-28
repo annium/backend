@@ -18,6 +18,9 @@ namespace Annium.Data.Models.Extensions
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();
 
+            if (type.IsClass)
+                expressions.AddRange(AddReferenceEqualityChecks(a, b, returnTarget));
+
             var enumerableType = typeof(IEnumerable);
             var enumeratorType = typeof(IEnumerator);
 

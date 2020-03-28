@@ -20,6 +20,9 @@ namespace Annium.Data.Models.Extensions
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();
 
+            if (type.IsClass)
+                expressions.AddRange(AddReferenceEqualityChecks(a, b, returnTarget));
+
             var propertyExpressions = type
                 .GetAllProperties(BindingFlags.Public | BindingFlags.Instance)
                 .Where(x => x.CanRead && x.GetIndexParameters().Length == 0)
