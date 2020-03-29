@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
@@ -20,22 +21,26 @@ namespace Annium.Net.WebSockets.DemoServer
 
         public async Task Invoke(HttpContext context)
         {
-            if (context.Request.Path == "/ws")
-            {
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), Serializers.Json);
-                    await Echo(ws);
-                }
-                else
-                {
-                    context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-                }
-            }
-            else
+            var path = context.Request.Path;
+            if (!path.StartsWithSegments("/ws"))
             {
                 await next(context);
+                return;
             }
+
+            if (!context.WebSockets.IsWebSocketRequest)
+            {
+                context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+                return;
+            }
+
+            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), Serializers.Json);
+
+            if (path == "/ws/echo")
+                await Echo(ws);
+
+            if (path == "/ws/data")
+                await Data(ws);
         }
 
         private Task Echo(IWebSocket ws)
@@ -59,6 +64,26 @@ namespace Annium.Net.WebSockets.DemoServer
             );
 
             return tcs.Task;
+        }
+
+        private async Task Data(IWebSocket ws)
+        {
+            var isClosed = false;
+            ws.ListenText().Subscribe(x => { }, () => isClosed = true);
+
+            for (var i = 0; i < 1000; i++)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(1));
+
+                if (isClosed)
+                {
+                    Console.WriteLine("Closed");
+                    break;
+                }
+
+                Console.WriteLine($"Out: '{i}'");
+                await ws.Send(i, CancellationToken.None);
+            }
         }
     }
 }
