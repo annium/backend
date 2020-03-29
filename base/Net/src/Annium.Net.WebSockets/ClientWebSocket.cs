@@ -16,7 +16,6 @@ namespace Annium.Net.WebSockets
             serializer
         )
         {
-
         }
 
         public async Task ConnectAsync(Uri uri, CancellationToken token)
@@ -26,7 +25,12 @@ namespace Annium.Net.WebSockets
 
         public async Task DisconnectAsync(CancellationToken token)
         {
-            await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            if (
+                Socket.State == WebSocketState.Open ||
+                Socket.State == WebSocketState.CloseReceived ||
+                Socket.State == WebSocketState.CloseSent
+            )
+                await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
         }
     }
 }
