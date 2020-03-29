@@ -11,7 +11,7 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
 {
-    public abstract class WebSocket<TNativeSocket> : ISendingReceivingWebSocket
+    public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket
         where TNativeSocket : NativeWebSocket
     {
         private const int BufferSize = 65536;
@@ -21,7 +21,7 @@ namespace Annium.Net.WebSockets
         private readonly UTF8Encoding encoding = new UTF8Encoding();
         private readonly IObservable<SocketData> socketObservable;
 
-        public WebSocket(
+        public WebSocketBase(
             TNativeSocket socket,
             ISerializer<byte[]> serializer
         )

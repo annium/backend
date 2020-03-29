@@ -7,7 +7,7 @@ using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets
 {
-    public class ClientWebSocket : WebSocket<NativeClientWebSocket>, IClientWebSocket
+    public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket
     {
         public ClientWebSocket(
             ISerializer<byte[]> serializer
