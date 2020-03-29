@@ -16,12 +16,15 @@ namespace Annium.Net.WebSockets
     {
         private const int BufferSize = 65536;
 
-        protected readonly TNativeSocket Socket;
+        public bool IsConnected => State == WebSocketState.Open || State == WebSocketState.CloseReceived || State == WebSocketState.CloseSent;
+        public WebSocketState State => Socket.State;
+
+        protected TNativeSocket Socket { get; set; }
         private readonly ISerializer<byte[]> serializer;
         private readonly UTF8Encoding encoding = new UTF8Encoding();
         private readonly IObservable<SocketData> socketObservable;
 
-        public WebSocketBase(
+        internal WebSocketBase(
             TNativeSocket socket,
             ISerializer<byte[]> serializer
         )
@@ -51,6 +54,8 @@ namespace Annium.Net.WebSockets
         public IObservable<ReadOnlyMemory<byte>> ListenBinary() => socketObservable
             .Where(x => x.Type == WebSocketMessageType.Binary)
             .Select(x => x.Data);
+
+        protected abstract Task OnDisconnectAsync();
 
         private IObservable<int> Send(
             ReadOnlyMemory<byte> data,
@@ -98,14 +103,18 @@ namespace Annium.Net.WebSockets
                 {
                     result = await Socket.ReceiveAsync(buffer, token);
 
-                    // if closing - send close and return
+                    // if closing - handle disconnect
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token).ConfigureAwait(false).GetAwaiter();
+                        OnDisconnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
-                        observer.OnCompleted();
+                        // if after disconnect handling not connected - set completed and break
+                        if (!IsConnected)
+                        {
+                            observer.OnCompleted();
 
-                        return false;
+                            return false;
+                        }
                     }
 
                     stream.Write(buffer.Slice(0, result.Count).Span);

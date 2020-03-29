@@ -1,4 +1,5 @@
 using System;
+using System.Net.WebSockets;
 using System.Threading;
 
 namespace Annium.Net.WebSockets
@@ -19,5 +20,11 @@ namespace Annium.Net.WebSockets
         IObservable<T> Listen<T>() where T : notnull;
         IObservable<string> ListenText();
         IObservable<ReadOnlyMemory<byte>> ListenBinary();
+    }
+
+    public interface IWebSocketBase
+    {
+        bool IsConnected { get; }
+        WebSocketState State { get; }
     }
 }
