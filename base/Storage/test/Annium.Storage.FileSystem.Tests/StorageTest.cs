@@ -81,7 +81,7 @@ namespace Annium.Storage.FileSystem.Tests
             {
                 e = ex;
             }
-            e.Is<KeyNotFoundException>();
+            e.As<KeyNotFoundException>();
         }
 
         [Fact]
@@ -120,7 +120,7 @@ namespace Annium.Storage.FileSystem.Tests
             {
                 e = ex;
             }
-            e.Is<ArgumentException>();
+            e.As<ArgumentException>();
         }
 
         [Fact]

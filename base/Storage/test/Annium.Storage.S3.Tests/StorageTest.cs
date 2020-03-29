@@ -81,7 +81,7 @@ namespace Annium.Storage.S3.Tests
             {
                 e = ex;
             }
-            e.Is<KeyNotFoundException>();
+            e.As<KeyNotFoundException>();
         }
 
         [Fact(Skip = "Needs durable test basis")]
@@ -120,7 +120,7 @@ namespace Annium.Storage.S3.Tests
             {
                 e = ex;
             }
-            e.Is<ArgumentException>();
+            e.As<ArgumentException>();
         }
 
         [Fact(Skip = "Needs durable test basis")]

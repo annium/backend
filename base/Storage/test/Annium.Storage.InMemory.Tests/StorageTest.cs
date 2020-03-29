@@ -74,7 +74,7 @@ namespace Annium.Storage.InMemory.Tests
             {
                 e = ex;
             }
-            e.Is<KeyNotFoundException>();
+            e.As<KeyNotFoundException>();
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace Annium.Storage.InMemory.Tests
             {
                 e = ex;
             }
-            e.Is<ArgumentException>();
+            e.As<ArgumentException>();
         }
 
         [Fact]
