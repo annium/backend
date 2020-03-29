@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using Annium.Data.Models.Extensions;
@@ -6,12 +7,32 @@ namespace Annium.Testing
 {
     public static class ValueExtensions
     {
+        public static void Is<T>(this T value, T data, string message = "")
+        {
+            if (!EqualityComparer<T>.Default.Equals(value, data))
+                throw new AssertionFailedException(
+                    string.IsNullOrEmpty(message)
+                        ? $"{JsonSerializer.Serialize(value)} != {JsonSerializer.Serialize(data)}"
+                        : message
+                );
+        }
+
+        public static void IsNot<T>(this T value, T data, string message = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(value, data))
+                throw new AssertionFailedException(
+                    string.IsNullOrEmpty(message)
+                        ? $"{JsonSerializer.Serialize(value)} == {JsonSerializer.Serialize(data)}"
+                        : message
+                );
+        }
+
         public static void IsEqual<T, D>(this T value, D data, string message = "")
         {
             if (!AreEqual(value, data))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
-                        ? $"{JsonSerializer.Serialize(value)} != {JsonSerializer.Serialize(data)}"
+                        ? $"{JsonSerializer.Serialize(value)} is not equal to {JsonSerializer.Serialize(data)}"
                         : message
                 );
         }
@@ -21,29 +42,16 @@ namespace Annium.Testing
             if (AreEqual(value, data))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
-                        ? $"{JsonSerializer.Serialize(value)} == {JsonSerializer.Serialize(data)}"
+                        ? $"{JsonSerializer.Serialize(value)} is equal to {JsonSerializer.Serialize(data)}"
                         : message
                 );
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool AreEqual<T, D>(T value, D data)
+        public static T As<T>(this object value, string message = "") where T : class
         {
-            return value.IsShallowEqual(data);
-        }
+            (value is T).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(T)}" : message);
 
-        public static object Is<TValue>(this object value, string message = "")
-        {
-            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
-
-            return value!;
-        }
-
-        public static TValue As<TValue>(this object value, string message = "") where TValue : class
-        {
-            (value is TValue).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(TValue)}" : message);
-
-            return (TValue) value!;
+            return (T) value!;
         }
 
         public static T IsDefault<T>(this T value, string message = "")
@@ -58,6 +66,12 @@ namespace Annium.Testing
             value.IsNotEqual(default(T)!, message);
 
             return value;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool AreEqual<T, D>(T value, D data)
+        {
+            return value.IsShallowEqual(data);
         }
     }
 }
