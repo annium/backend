@@ -3,9 +3,8 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Entrypoint;
-using Annium.Net.WebSockets;
 
-namespace Demo.Net.WebSockets
+namespace Annium.Net.WebSockets.DemoClient
 {
     public class Program
     {
