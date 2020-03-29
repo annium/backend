@@ -1,5 +1,8 @@
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Entrypoint;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
@@ -7,9 +10,9 @@ namespace Annium.Net.WebSockets.DemoServer
 {
     internal static class Program
     {
-        internal static void Main(string[] args)
+        internal static Task Run(string[] args, CancellationToken ct)
         {
-            CreateHostBuilder(args).Build().Run();
+            return CreateHostBuilder(args).Build().RunAsync(ct);
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
@@ -28,5 +31,9 @@ namespace Annium.Net.WebSockets.DemoServer
                         .UseStartup<Startup>();
                 });
         }
+
+        public static Task<int> Main(string[] args) => new Entrypoint()
+            .UseServicePack<ServicePack>()
+            .Run(Run, args);
     }
 }

@@ -14,6 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../../third-party/AspNetCore/src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
         <ProjectReference Include="../../../Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
     </ItemGroup>
     <ItemGroup>
