@@ -1,5 +1,4 @@
 using System;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Entrypoint;
@@ -16,18 +15,28 @@ namespace Annium.Net.WebSockets.DemoClient
         {
             var socket = new ClientWebSocket(Serializers.Json);
 
-            await socket.ConnectAsync(new Uri("wss://echo.websocket.org"), CancellationToken.None);
+            await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), token);
 
-            var s1 = socket.ListenText().Subscribe(x => { Console.WriteLine($"S1:{x}"); });
-            var s2 = socket.ListenText().Subscribe(x => { Console.WriteLine($"S2:{x}"); });
+            if (token.IsCancellationRequested)
+            {
+                Console.WriteLine("Connection terminated");
+                return;
+            }
 
+            Console.WriteLine("Connection established");
 
-            await socket.Send("Hello", CancellationToken.None);
-            await socket.Send("World", CancellationToken.None);
-            await Task.Delay(TimeSpan.FromSeconds(3));
+            var tcs = new TaskCompletionSource<object>();
+
+            token.Register(() =>
+            {
+                Console.WriteLine("Process terminated");
+                tcs.SetResult(new object());
+            });
+
+            var s1 = socket.ListenText().Subscribe(x => Console.WriteLine($"In: '{x}'"));
+
+            await tcs.Task;
             s1.Dispose();
-            s2.Dispose();
-            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public static Task<int> Main(string[] args) => new Entrypoint()
