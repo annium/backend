@@ -17,6 +17,7 @@ namespace Annium.Net.Http.Internal
         public HttpContent? Content { get; private set; }
         public bool IsEnsuringSuccess => getFailureMessage != null;
         private static readonly HttpClient defaultClient;
+
         static Request()
         {
             var handler = new HttpClientHandler
@@ -26,6 +27,7 @@ namespace Annium.Net.Http.Internal
 
             defaultClient = new HttpClient(handler);
         }
+
         private HttpClient client = defaultClient;
         private Func<HttpClient> createClient;
         private Uri? baseUri;

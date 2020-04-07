@@ -8,8 +8,10 @@ namespace Annium.Net.Http.Internal
     {
         public T Data { get; }
 
-        public Response(IResponse message, T data)
-        : base(message)
+        public Response(
+            IResponse message,
+            T data
+        ) : base(message)
         {
             Data = data;
         }
