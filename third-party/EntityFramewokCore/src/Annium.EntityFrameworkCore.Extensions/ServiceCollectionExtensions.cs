@@ -18,7 +18,6 @@ namespace Annium.Core.DependencyInjection
 
             // register context itself
             services
-                .AddEntityFrameworkSqlite()
                 .AddDbContext<TContext>(builder =>
                 {
                     var opts = builder.UseSqlite(cn).Options;
