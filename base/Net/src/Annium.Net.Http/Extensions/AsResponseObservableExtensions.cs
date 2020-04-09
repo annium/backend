@@ -80,7 +80,7 @@ namespace Annium.Net.Http
             }
         });
 
-        public static IObservable<IResponse> ToResponseObservable(this IRequest request) => Observable.FromAsync(() =>
+        public static IObservable<IResponse> AsResponseObservable(this IRequest request) => Observable.FromAsync(() =>
         {
             if (!request.IsEnsuringSuccess)
                 request.EnsureSuccessStatusCode();
