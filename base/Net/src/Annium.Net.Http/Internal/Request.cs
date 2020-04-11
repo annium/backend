@@ -11,46 +11,44 @@ namespace Annium.Net.Http.Internal
 {
     internal partial class Request : IRequest
     {
-        public HttpMethod Method { get; private set; } = HttpMethod.Get;
-        public Uri Uri => GetUriFactory(baseUri ?? createClient().BaseAddress).Build();
-        public IReadOnlyDictionary<string, string> Params => parameters;
-        public HttpContent? Content { get; private set; }
-        public bool IsEnsuringSuccess => getFailureMessage != null;
-        private static readonly HttpClient defaultClient;
+        private static readonly HttpClient DefaultClient;
 
         static Request()
         {
             var handler = new HttpClientHandler
             {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+                MaxConnectionsPerServer = 16
             };
 
-            defaultClient = new HttpClient(handler);
+            DefaultClient = new HttpClient(handler);
         }
 
-        private HttpClient client = defaultClient;
-        private Func<HttpClient> createClient;
-        private Uri? baseUri;
-        private string? uri;
-        private readonly HttpRequestHeaders headers;
-        private readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
-        private Func<IResponse, Task<string>>? getFailureMessage;
+        public HttpMethod Method { get; private set; } = HttpMethod.Get;
+        public Uri Uri => GetUriFactory().Build();
+        public IReadOnlyDictionary<string, string> Params => _parameters;
+        public HttpContent? Content { get; private set; }
+        public bool IsEnsuringSuccess => _getFailureMessage != null;
+        private HttpClient _client = DefaultClient;
+        private Uri? _baseUri;
+        private string? _uri;
+        private readonly HttpRequestHeaders _headers;
+        private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
+        private Func<IResponse, Task<string>>? _getFailureMessage;
 
         internal Request(Uri baseUri) : this()
         {
-            this.baseUri = baseUri;
+            _baseUri = baseUri;
         }
 
         internal Request()
         {
-            createClient = () => client;
             using var message = new HttpRequestMessage();
-            headers = message.Headers;
+            _headers = message.Headers;
         }
 
         private Request(
             HttpClient client,
-            Func<HttpClient> createClient,
             HttpMethod method,
             Uri? baseUri,
             string? uri,
@@ -60,22 +58,21 @@ namespace Annium.Net.Http.Internal
             Func<IResponse, Task<string>>? getFailureMessage
         )
         {
-            this.client = client;
-            this.createClient = createClient;
+            _client = client;
             Method = method;
-            this.baseUri = baseUri;
-            this.uri = uri;
-            using (var message = new HttpRequestMessage()) this.headers = message.Headers;
+            _baseUri = baseUri;
+            _uri = uri;
+            using (var message = new HttpRequestMessage()) _headers = message.Headers;
             foreach (var (name, values) in headers)
-                this.headers.Add(name, values);
-            this.parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
+                _headers.Add(name, values);
+            _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
             Content = content;
-            this.getFailureMessage = getFailureMessage;
+            _getFailureMessage = getFailureMessage;
         }
 
         public IRequest Base(Uri baseUri)
         {
-            this.baseUri = baseUri;
+            _baseUri = baseUri;
 
             return this;
         }
@@ -84,14 +81,7 @@ namespace Annium.Net.Http.Internal
 
         public IRequest UseClient(HttpClient client)
         {
-            this.client = client;
-
-            return this;
-        }
-
-        public IRequest UseClientFactory(Func<HttpClient> createClient)
-        {
-            this.createClient = createClient;
+            _client = client;
 
             return this;
         }
@@ -101,14 +91,14 @@ namespace Annium.Net.Http.Internal
         public IRequest With(HttpMethod method, string uri)
         {
             Method = method;
-            this.uri = uri;
+            _uri = uri;
 
             return this;
         }
 
         public IRequest Param<T>(string key, T value)
         {
-            parameters[key] = value?.ToString() ?? string.Empty;
+            _parameters[key] = value?.ToString() ?? string.Empty;
 
             return this;
         }
@@ -116,15 +106,6 @@ namespace Annium.Net.Http.Internal
         public IRequest Attach(HttpContent content)
         {
             Content = content;
-
-            return this;
-        }
-
-        public IRequest Configure(
-            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
-        )
-        {
-            configure(this, Method, BuildUri(baseUri ?? createClient().BaseAddress), parameters, headers, Content);
 
             return this;
         }
@@ -140,58 +121,57 @@ namespace Annium.Net.Http.Internal
 
         public IRequest EnsureSuccessStatusCode(Func<IResponse, Task<string>> getFailureMessage)
         {
-            this.getFailureMessage = getFailureMessage;
+            _getFailureMessage = getFailureMessage;
 
             return this;
         }
 
         public IRequest Clone() =>
-            new Request(client, createClient, Method, baseUri, uri, headers, parameters, Content, getFailureMessage);
+            new Request(_client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
         public async Task<IResponse> RunAsync()
         {
-            var client = createClient();
+            var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
 
-            var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri(baseUri ?? client.BaseAddress) };
-
-            foreach (var (name, values) in headers)
+            foreach (var (name, values) in _headers)
                 message.Headers.Add(name, values);
 
             message.Content = Content;
 
-            var response = new Response(await client.SendAsync(message));
+            var response = new Response(await _client.SendAsync(message));
 
-            if (response.IsFailure && getFailureMessage != null)
-                throw new HttpRequestException(await getFailureMessage(response));
+            if (response.IsFailure && _getFailureMessage != null)
+                throw new HttpRequestException(await _getFailureMessage(response));
 
             return response;
         }
 
-        private Uri BuildUri(Uri baseUri)
+        private Uri BuildUri()
         {
-            var factory = GetUriFactory(baseUri);
+            var factory = GetUriFactory();
 
             // add manually defined params to queryBuilder
-            foreach (var (name, value) in parameters)
+            foreach (var (name, value) in _parameters)
                 factory.Param(name, value);
 
             return factory.Build();
         }
 
-        private UriFactory GetUriFactory(Uri baseUri)
+        private UriFactory GetUriFactory()
         {
+            var baseUri = _baseUri ?? _client.BaseAddress;
             if (baseUri is null)
             {
-                if (string.IsNullOrWhiteSpace(uri))
-                    throw new ArgumentException($"Request URI is empty");
+                if (string.IsNullOrWhiteSpace(_uri))
+                    throw new ArgumentException("Request URI is empty");
 
-                return UriFactory.Base(uri);
+                return UriFactory.Base(_uri);
             }
 
-            if (string.IsNullOrWhiteSpace(uri))
+            if (string.IsNullOrWhiteSpace(_uri))
                 return UriFactory.Base(baseUri);
 
-            return UriFactory.Base(baseUri).Path(uri);
+            return UriFactory.Base(baseUri).Path(_uri);
         }
     }
 }

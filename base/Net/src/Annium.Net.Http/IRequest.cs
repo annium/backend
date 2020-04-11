@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace Annium.Net.Http
@@ -16,14 +15,10 @@ namespace Annium.Net.Http
         IRequest Base(Uri baseUri);
         IRequest Base(string baseUri);
         IRequest UseClient(HttpClient client);
-        IRequest UseClientFactory(Func<HttpClient> createClient);
         IRequest With(HttpMethod method, Uri uri);
         IRequest With(HttpMethod method, string uri);
         IRequest Param<T>(string key, T value);
         IRequest Attach(HttpContent content);
-        IRequest Configure(
-            Action<IRequest, HttpMethod, Uri, IReadOnlyDictionary<string, string>, HttpRequestHeaders, HttpContent?> configure
-        );
         IRequest EnsureSuccessStatusCode();
         IRequest EnsureSuccessStatusCode(string message);
         IRequest EnsureSuccessStatusCode(Func<IResponse, string> getFailureMessage);
