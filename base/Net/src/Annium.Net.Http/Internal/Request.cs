@@ -4,13 +4,17 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Annium.Extensions.Primitives;
 using Annium.Net.Base;
 
 namespace Annium.Net.Http.Internal
 {
     internal partial class Request : IRequest
     {
+        private delegate Task<IResponse> Middleware(Func<Task<IResponse>> next, IRequest request, RequestOptions options);
+
         private static readonly HttpClient DefaultClient;
 
         static Request()
@@ -35,6 +39,7 @@ namespace Annium.Net.Http.Internal
         private readonly HttpRequestHeaders _headers;
         private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private Func<IResponse, Task<string>>? _getFailureMessage;
+        private readonly IList<Middleware> _middlewares = new List<Middleware>();
 
         internal Request(Uri baseUri) : this()
         {
@@ -129,7 +134,23 @@ namespace Annium.Net.Http.Internal
         public IRequest Clone() =>
             new Request(_client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
-        public async Task<IResponse> RunAsync()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Task<IResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray());
+
+        private async Task<IResponse> InternalRunAsync(Middleware[] middlewares)
+        {
+            if (middlewares.Length == 0)
+                return await InternalRunAsync().ConfigureAwait(false);
+
+            var (middleware, rest) = middlewares;
+
+            Func<Task<IResponse>> next = () => InternalRunAsync(rest);
+            var options = new RequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
+
+            return await middleware(next, this, options).ConfigureAwait(false);
+        }
+
+        private async Task<IResponse> InternalRunAsync()
         {
             var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
 
@@ -138,10 +159,10 @@ namespace Annium.Net.Http.Internal
 
             message.Content = Content;
 
-            var response = new Response(await _client.SendAsync(message));
+            var response = new Response(await _client.SendAsync(message).ConfigureAwait(false));
 
             if (response.IsFailure && _getFailureMessage != null)
-                throw new HttpRequestException(await _getFailureMessage(response));
+                throw new HttpRequestException(await _getFailureMessage(response).ConfigureAwait(false));
 
             return response;
         }

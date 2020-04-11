@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Annium.Net.Http.Internal
@@ -22,17 +23,24 @@ namespace Annium.Net.Http.Internal
 
         public IRequest Intercept(Func<Func<Task<IResponse>>, Task<IResponse>> middleware)
         {
-            throw new NotImplementedException();
+            _middlewares.Add((next, request, options) => middleware(next));
+
+            return this;
         }
 
         public IRequest Intercept(Func<Func<Task<IResponse>>, IRequest, Task<IResponse>> middleware)
         {
-            throw new NotImplementedException();
+            _middlewares.Add((next, request, options) => middleware(next, request));
+
+            return this;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IRequest Intercept(Func<Func<Task<IResponse>>, IRequest, RequestOptions, Task<IResponse>> middleware)
         {
-            throw new NotImplementedException();
+            _middlewares.Add(new Middleware(middleware));
+
+            return this;
         }
     }
 }
