@@ -9,7 +9,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class SampleTest : IntegrationTest
     {
-        private IRequest http => GetRequest<Startup>(
+        private IHttpRequest http => GetRequest<Startup>(
             builder => builder.UseServicePack<ServicePack>()
         );
 

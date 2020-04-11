@@ -4,31 +4,31 @@ using System.Threading.Tasks;
 
 namespace Annium.Net.Http.Internal
 {
-    internal partial class Request
+    internal partial class HttpRequest
     {
-        public IRequest Configure(Action<IRequest> configure)
+        public IHttpRequest Configure(Action<IHttpRequest> configure)
         {
             configure(this);
 
             return this;
         }
 
-        public IRequest Configure(Action<IRequest, RequestOptions> configure)
+        public IHttpRequest Configure(Action<IHttpRequest, HttpRequestOptions> configure)
         {
-            var options = new RequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
+            var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
             configure(this, options);
 
             return this;
         }
 
-        public IRequest Intercept(Func<Func<Task<IResponse>>, Task<IResponse>> middleware)
+        public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, Task<IHttpResponse>> middleware)
         {
             _middlewares.Add((next, request, options) => middleware(next));
 
             return this;
         }
 
-        public IRequest Intercept(Func<Func<Task<IResponse>>, IRequest, Task<IResponse>> middleware)
+        public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, Task<IHttpResponse>> middleware)
         {
             _middlewares.Add((next, request, options) => middleware(next, request));
 
@@ -36,7 +36,7 @@ namespace Annium.Net.Http.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public IRequest Intercept(Func<Func<Task<IResponse>>, IRequest, RequestOptions, Task<IResponse>> middleware)
+        public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, HttpRequestOptions, Task<IHttpResponse>> middleware)
         {
             _middlewares.Add(new Middleware(middleware));
 

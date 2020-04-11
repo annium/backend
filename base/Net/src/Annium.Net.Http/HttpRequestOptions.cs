@@ -5,7 +5,7 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http
 {
-    public class RequestOptions
+    public class HttpRequestOptions
     {
         public HttpMethod Method { get; }
         public Uri Uri { get; }
@@ -13,7 +13,7 @@ namespace Annium.Net.Http
         public HttpRequestHeaders Headers { get; }
         public HttpContent? Content { get; }
 
-        public RequestOptions(
+        public HttpRequestOptions(
             HttpMethod method,
             Uri uri,
             IReadOnlyDictionary<string, string> parameters,

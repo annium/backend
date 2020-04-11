@@ -11,13 +11,13 @@ using Annium.Net.Base;
 
 namespace Annium.Net.Http.Internal
 {
-    internal partial class Request : IRequest
+    internal partial class HttpRequest : IHttpRequest
     {
-        private delegate Task<IResponse> Middleware(Func<Task<IResponse>> next, IRequest request, RequestOptions options);
+        private delegate Task<IHttpResponse> Middleware(Func<Task<IHttpResponse>> next, IHttpRequest request, HttpRequestOptions options);
 
         private static readonly HttpClient DefaultClient;
 
-        static Request()
+        static HttpRequest()
         {
             var handler = new HttpClientHandler
             {
@@ -38,21 +38,21 @@ namespace Annium.Net.Http.Internal
         private string? _uri;
         private readonly HttpRequestHeaders _headers;
         private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
-        private Func<IResponse, Task<string>>? _getFailureMessage;
+        private Func<IHttpResponse, Task<string>>? _getFailureMessage;
         private readonly IList<Middleware> _middlewares = new List<Middleware>();
 
-        internal Request(Uri baseUri) : this()
+        internal HttpRequest(Uri baseUri) : this()
         {
             _baseUri = baseUri;
         }
 
-        internal Request()
+        internal HttpRequest()
         {
             using var message = new HttpRequestMessage();
             _headers = message.Headers;
         }
 
-        private Request(
+        private HttpRequest(
             HttpClient client,
             HttpMethod method,
             Uri? baseUri,
@@ -60,7 +60,7 @@ namespace Annium.Net.Http.Internal
             HttpRequestHeaders headers,
             IReadOnlyDictionary<string, string> parameters,
             HttpContent? content,
-            Func<IResponse, Task<string>>? getFailureMessage
+            Func<IHttpResponse, Task<string>>? getFailureMessage
         )
         {
             _client = client;
@@ -75,25 +75,25 @@ namespace Annium.Net.Http.Internal
             _getFailureMessage = getFailureMessage;
         }
 
-        public IRequest Base(Uri baseUri)
+        public IHttpRequest Base(Uri baseUri)
         {
             _baseUri = baseUri;
 
             return this;
         }
 
-        public IRequest Base(string baseUri) => Base(new Uri(baseUri));
+        public IHttpRequest Base(string baseUri) => Base(new Uri(baseUri));
 
-        public IRequest UseClient(HttpClient client)
+        public IHttpRequest UseClient(HttpClient client)
         {
             _client = client;
 
             return this;
         }
 
-        public IRequest With(HttpMethod method, Uri uri) => With(method, uri.ToString());
+        public IHttpRequest With(HttpMethod method, Uri uri) => With(method, uri.ToString());
 
-        public IRequest With(HttpMethod method, string uri)
+        public IHttpRequest With(HttpMethod method, string uri)
         {
             Method = method;
             _uri = uri;
@@ -101,56 +101,56 @@ namespace Annium.Net.Http.Internal
             return this;
         }
 
-        public IRequest Param<T>(string key, T value)
+        public IHttpRequest Param<T>(string key, T value)
         {
             _parameters[key] = value?.ToString() ?? string.Empty;
 
             return this;
         }
 
-        public IRequest Attach(HttpContent content)
+        public IHttpRequest Attach(HttpContent content)
         {
             Content = content;
 
             return this;
         }
 
-        public IRequest EnsureSuccessStatusCode() =>
+        public IHttpRequest EnsureSuccessStatusCode() =>
             EnsureSuccessStatusCode(response => response.Content.ReadAsStringAsync());
 
-        public IRequest EnsureSuccessStatusCode(string message) =>
+        public IHttpRequest EnsureSuccessStatusCode(string message) =>
             EnsureSuccessStatusCode(response => Task.FromResult(message));
 
-        public IRequest EnsureSuccessStatusCode(Func<IResponse, string> getFailureMessage) =>
+        public IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, string> getFailureMessage) =>
             EnsureSuccessStatusCode(response => Task.FromResult(getFailureMessage(response)));
 
-        public IRequest EnsureSuccessStatusCode(Func<IResponse, Task<string>> getFailureMessage)
+        public IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, Task<string>> getFailureMessage)
         {
             _getFailureMessage = getFailureMessage;
 
             return this;
         }
 
-        public IRequest Clone() =>
-            new Request(_client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
+        public IHttpRequest Clone() =>
+            new HttpRequest(_client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Task<IResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray());
+        public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray());
 
-        private async Task<IResponse> InternalRunAsync(Middleware[] middlewares)
+        private async Task<IHttpResponse> InternalRunAsync(Middleware[] middlewares)
         {
             if (middlewares.Length == 0)
                 return await InternalRunAsync().ConfigureAwait(false);
 
             var (middleware, rest) = middlewares;
 
-            Func<Task<IResponse>> next = () => InternalRunAsync(rest);
-            var options = new RequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
+            Func<Task<IHttpResponse>> next = () => InternalRunAsync(rest);
+            var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
 
             return await middleware(next, this, options).ConfigureAwait(false);
         }
 
-        private async Task<IResponse> InternalRunAsync()
+        private async Task<IHttpResponse> InternalRunAsync()
         {
             var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
 
@@ -159,7 +159,7 @@ namespace Annium.Net.Http.Internal
 
             message.Content = Content;
 
-            var response = new Response(await _client.SendAsync(message).ConfigureAwait(false));
+            var response = new HttpResponse(await _client.SendAsync(message).ConfigureAwait(false));
 
             if (response.IsFailure && _getFailureMessage != null)
                 throw new HttpRequestException(await _getFailureMessage(response).ConfigureAwait(false));

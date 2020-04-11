@@ -9,9 +9,9 @@ namespace Annium.AspNetCore.IntegrationTesting
 {
     public class IntegrationTest
     {
-        private readonly ConcurrentDictionary<Type, IRequest> requestSamples = new ConcurrentDictionary<Type, IRequest>();
+        private readonly ConcurrentDictionary<Type, IHttpRequest> requestSamples = new ConcurrentDictionary<Type, IHttpRequest>();
 
-        protected IRequest GetRequest<TStartup>(
+        protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder
         )
         where TStartup : class
@@ -23,7 +23,7 @@ namespace Annium.AspNetCore.IntegrationTesting
             });
         }
 
-        protected IRequest GetRequest<TStartup>(
+        protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder,
             Action<IServiceCollection> configureServices
         )
@@ -37,26 +37,26 @@ namespace Annium.AspNetCore.IntegrationTesting
             });
         }
 
-        protected IRequest GetRequest<TStartup>(
+        protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder,
-            Func<IRequest, IRequest> configureRequest
+            Func<IHttpRequest, IHttpRequest> configureRequest
         )
         where TStartup : class
         {
             return configureRequest(GetRequest<TStartup>(configureBuilder));
         }
 
-        protected IRequest GetRequest<TStartup>(
+        protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder,
             Action<IServiceCollection> configureServices,
-            Func<IRequest, IRequest> configureRequest
+            Func<IHttpRequest, IHttpRequest> configureRequest
         )
         where TStartup : class
         {
             return configureRequest(GetRequest<TStartup>(configureBuilder, configureServices));
         }
 
-        private IRequest GetRequestBase<TStartup>(Action<IHostBuilder> configureHost) where TStartup : class =>
+        private IHttpRequest GetRequestBase<TStartup>(Action<IHostBuilder> configureHost) where TStartup : class =>
             requestSamples.GetOrAdd(typeof(TStartup), _ =>
             {
                 var client = new TestWebApplicationFactory<TStartup>(configureHost).CreateClient();

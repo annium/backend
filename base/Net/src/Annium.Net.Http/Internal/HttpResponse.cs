@@ -4,12 +4,12 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http.Internal
 {
-    internal class Response<T> : Response, IResponse<T>
+    internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
     {
         public T Data { get; }
 
-        public Response(
-            IResponse message,
+        public HttpResponse(
+            IHttpResponse message,
             T data
         ) : base(message)
         {
@@ -17,7 +17,7 @@ namespace Annium.Net.Http.Internal
         }
     }
 
-    internal class Response : IResponse
+    internal class HttpResponse : IHttpResponse
     {
         public bool IsSuccess { get; }
         public bool IsFailure { get; }
@@ -26,7 +26,7 @@ namespace Annium.Net.Http.Internal
         public HttpResponseHeaders Headers { get; }
         public HttpContent Content { get; }
 
-        public Response(HttpResponseMessage message)
+        public HttpResponse(HttpResponseMessage message)
         {
             IsSuccess = message.IsSuccessStatusCode;
             IsFailure = !message.IsSuccessStatusCode;
@@ -36,7 +36,7 @@ namespace Annium.Net.Http.Internal
             Content = message.Content;
         }
 
-        internal Response(IResponse response)
+        internal HttpResponse(IHttpResponse response)
         {
             IsSuccess = response.IsSuccess;
             IsFailure = response.IsFailure;

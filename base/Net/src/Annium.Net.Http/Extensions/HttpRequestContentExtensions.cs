@@ -5,9 +5,9 @@ using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http
 {
-    public static class ContentExtensions
+    public static class HttpRequestContentExtensions
     {
-        public static IRequest JsonContent<T>(this IRequest request, T data)
+        public static IHttpRequest JsonContent<T>(this IHttpRequest request, T data)
         {
             var content = Serializers.Json.Serialize(data);
 

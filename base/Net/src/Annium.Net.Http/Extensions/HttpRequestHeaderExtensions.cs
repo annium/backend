@@ -4,12 +4,12 @@ using System.Text;
 
 namespace Annium.Net.Http
 {
-    public static class HeaderExtensions
+    public static class HttpRequestHeaderExtensions
     {
-        public static IRequest BasicAuthorization(this IRequest request, string user, string pass) =>
+        public static IHttpRequest BasicAuthorization(this IHttpRequest request, string user, string pass) =>
             request.Authorization(new AuthenticationHeaderValue("Basic", $"{Convert.ToBase64String(Encoding.UTF8.GetBytes($"{user}:{pass}"))}"));
 
-        public static IRequest BearerAuthorization(this IRequest request, string token) =>
+        public static IHttpRequest BearerAuthorization(this IHttpRequest request, string token) =>
             request.Authorization(new AuthenticationHeaderValue("Bearer", token));
     }
 }

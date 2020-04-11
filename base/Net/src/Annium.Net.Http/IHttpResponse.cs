@@ -4,12 +4,12 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http
 {
-    public interface IResponse<T> : IResponse
+    public interface IHttpResponse<T> : IHttpResponse
     {
         T Data { get; }
     }
 
-    public interface IResponse
+    public interface IHttpResponse
     {
         bool IsSuccess { get; }
         bool IsFailure { get; }

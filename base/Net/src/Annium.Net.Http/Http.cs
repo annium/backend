@@ -5,10 +5,10 @@ namespace Annium.Net.Http
 {
     public static class Http
     {
-        public static IRequest Open() => new Request();
+        public static IHttpRequest Open() => new HttpRequest();
 
-        public static IRequest Open(string baseUri) => new Request(new Uri(baseUri.Trim()));
+        public static IHttpRequest Open(string baseUri) => new HttpRequest(new Uri(baseUri.Trim()));
 
-        public static IRequest Open(Uri baseUri) => new Request(baseUri);
+        public static IHttpRequest Open(Uri baseUri) => new HttpRequest(baseUri);
     }
 }

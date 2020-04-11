@@ -3,23 +3,23 @@ using System.Net.Http.Headers;
 
 namespace Annium.Net.Http.Internal
 {
-    internal partial class Request
+    internal partial class HttpRequest
     {
-        public IRequest Header(string name, string value)
+        public IHttpRequest Header(string name, string value)
         {
             _headers.Add(name, value);
 
             return this;
         }
 
-        public IRequest Header(string name, IEnumerable<string> values)
+        public IHttpRequest Header(string name, IEnumerable<string> values)
         {
             _headers.Add(name, values);
 
             return this;
         }
 
-        public IRequest Authorization(AuthenticationHeaderValue value)
+        public IHttpRequest Authorization(AuthenticationHeaderValue value)
         {
             _headers.Authorization = value;
 

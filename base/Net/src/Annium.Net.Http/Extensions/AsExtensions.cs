@@ -9,43 +9,43 @@ namespace Annium.Net.Http
 {
     public static class AsExtensions
     {
-        public static Task<string> AsStringAsync(this IRequest request) =>
+        public static Task<string> AsStringAsync(this IHttpRequest request) =>
             request.ToAsync(Parse.String);
 
-        public static Task<string> AsStringAsync(this IRequest request, string defaultValue) =>
+        public static Task<string> AsStringAsync(this IHttpRequest request, string defaultValue) =>
             request.ToAsync(Parse.String, defaultValue);
 
-        public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IRequest request) =>
+        public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IHttpRequest request) =>
             request.ToAsync(Parse.Memory);
 
-        public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IRequest request, ReadOnlyMemory<byte> defaultValue) =>
+        public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IHttpRequest request, ReadOnlyMemory<byte> defaultValue) =>
             request.ToAsync(Parse.Memory, defaultValue);
 
-        public static Task<Stream> AsStreamAsync(this IRequest request) =>
+        public static Task<Stream> AsStreamAsync(this IHttpRequest request) =>
             request.ToAsync(Parse.Stream);
 
-        public static Task<Stream> AsStreamAsync(this IRequest request, Stream defaultValue) =>
+        public static Task<Stream> AsStreamAsync(this IHttpRequest request, Stream defaultValue) =>
             request.ToAsync(Parse.Stream, defaultValue);
 
-        public static Task<IResult> AsResultAsync(this IRequest request) =>
+        public static Task<IResult> AsResultAsync(this IHttpRequest request) =>
             request.ToAsync(Parse.Result);
 
-        public static Task<IResult> AsResultAsync(this IRequest request, IResult defaultValue) =>
+        public static Task<IResult> AsResultAsync(this IHttpRequest request, IResult defaultValue) =>
             request.ToAsync(Parse.Result, defaultValue);
 
-        public static Task<IResult<T>> AsResultAsync<T>(this IRequest request) =>
+        public static Task<IResult<T>> AsResultAsync<T>(this IHttpRequest request) =>
             request.ToAsync(Parse.ResultT<T>);
 
-        public static Task<IResult<T>> AsResultAsync<T>(this IRequest request, IResult<T> defaultValue) =>
+        public static Task<IResult<T>> AsResultAsync<T>(this IHttpRequest request, IResult<T> defaultValue) =>
             request.ToAsync(Parse.ResultT<T>, defaultValue);
 
-        public static Task<T> AsAsync<T>(this IRequest request) =>
+        public static Task<T> AsAsync<T>(this IHttpRequest request) =>
             request.ToAsync(Parse.T<T>);
 
-        public static Task<T> AsAsync<T>(this IRequest request, T defaultValue) =>
+        public static Task<T> AsAsync<T>(this IHttpRequest request, T defaultValue) =>
             request.ToAsync(Parse.T<T>, defaultValue);
 
-        private static async Task<T> ToAsync<T>(this IRequest request, Func<HttpContent, Task<T>> parseAsync)
+        private static async Task<T> ToAsync<T>(this IHttpRequest request, Func<HttpContent, Task<T>> parseAsync)
         {
             if (!request.IsEnsuringSuccess)
                 request.EnsureSuccessStatusCode();
@@ -55,7 +55,7 @@ namespace Annium.Net.Http
             return await parseAsync(response.Content);
         }
 
-        private static async Task<T> ToAsync<T>(this IRequest request, Func<HttpContent, T, Task<T>> parseAsync, T defaultValue)
+        private static async Task<T> ToAsync<T>(this IHttpRequest request, Func<HttpContent, T, Task<T>> parseAsync, T defaultValue)
         {
             try
             {
