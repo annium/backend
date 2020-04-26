@@ -8,18 +8,18 @@ namespace Annium.AspNetCore.IntegrationTesting
 {
     internal class TestWebApplicationFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
     {
-        private readonly Action<IHostBuilder> configureHost;
+        private readonly Action<IHostBuilder> _configureHost;
 
         public TestWebApplicationFactory(Action<IHostBuilder> configureHost)
         {
-            this.configureHost = configureHost;
+            _configureHost = configureHost;
         }
 
         protected override IHostBuilder CreateHostBuilder()
         {
             var hostBuilder = Host.CreateDefaultBuilder();
 
-            configureHost(hostBuilder);
+            _configureHost(hostBuilder);
 
             return hostBuilder
                 .ConfigureLoggingBridge()

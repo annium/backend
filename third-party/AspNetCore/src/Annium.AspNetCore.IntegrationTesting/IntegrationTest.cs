@@ -7,14 +7,15 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public class IntegrationTest
+    public class IntegrationTest : IDisposable
     {
-        private readonly ConcurrentDictionary<Type, IHttpRequest> requestSamples = new ConcurrentDictionary<Type, IHttpRequest>();
+        private readonly ConcurrentBag<IDisposable> _disposables = new ConcurrentBag<IDisposable>();
+        private readonly ConcurrentDictionary<Type, IHttpRequest> _requestSamples = new ConcurrentDictionary<Type, IHttpRequest>();
 
         protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder
         )
-        where TStartup : class
+            where TStartup : class
         {
             return GetRequestBase<TStartup>(hostBuilder =>
             {
@@ -27,7 +28,7 @@ namespace Annium.AspNetCore.IntegrationTesting
             Action<IServiceProviderBuilder> configureBuilder,
             Action<IServiceCollection> configureServices
         )
-        where TStartup : class
+            where TStartup : class
         {
             return GetRequestBase<TStartup>(hostBuilder =>
             {
@@ -41,7 +42,7 @@ namespace Annium.AspNetCore.IntegrationTesting
             Action<IServiceProviderBuilder> configureBuilder,
             Func<IHttpRequest, IHttpRequest> configureRequest
         )
-        where TStartup : class
+            where TStartup : class
         {
             return configureRequest(GetRequest<TStartup>(configureBuilder));
         }
@@ -51,17 +52,25 @@ namespace Annium.AspNetCore.IntegrationTesting
             Action<IServiceCollection> configureServices,
             Func<IHttpRequest, IHttpRequest> configureRequest
         )
-        where TStartup : class
+            where TStartup : class
         {
             return configureRequest(GetRequest<TStartup>(configureBuilder, configureServices));
         }
 
         private IHttpRequest GetRequestBase<TStartup>(Action<IHostBuilder> configureHost) where TStartup : class =>
-            requestSamples.GetOrAdd(typeof(TStartup), _ =>
+            _requestSamples.GetOrAdd(typeof(TStartup), _ =>
             {
-                var client = new TestWebApplicationFactory<TStartup>(configureHost).CreateClient();
+                var appFactory = new TestWebApplicationFactory<TStartup>(configureHost);
+                _disposables.Add(appFactory);
+                var client = appFactory.CreateClient();
 
                 return Http.Open().UseClient(client);
             }).Clone();
+
+        public void Dispose()
+        {
+            foreach (var disposable in _disposables)
+                disposable.Dispose();
+        }
     }
 }
