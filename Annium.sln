@@ -339,6 +339,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.linq2db.Testing.Sqli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.linq2db.PostgreSql", "third-party\linq2db\src\Annium.linq2db.PostgreSql\Annium.linq2db.PostgreSql.csproj", "{9BF75422-5B68-41CD-BF29-3F4F4A4874C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.Runtime", "base\Core\src\Annium.Core.Runtime\Annium.Core.Runtime.csproj", "{36837B4A-463A-4544-A20D-A7B32BCE5A19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -518,6 +520,7 @@ Global
 		{DF5331DA-DE97-4E6F-853D-DB4C0F7E6F75} = {59D90087-535E-4701-92F8-920A9CD1487C}
 		{F09DBA81-26E5-4CCB-8485-FA11D80521F8} = {59D90087-535E-4701-92F8-920A9CD1487C}
 		{9BF75422-5B68-41CD-BF29-3F4F4A4874C3} = {59D90087-535E-4701-92F8-920A9CD1487C}
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19} = {0095A08F-E5C3-49DC-9145-CAD70F785E29}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1900,5 +1903,17 @@ Global
 		{9BF75422-5B68-41CD-BF29-3F4F4A4874C3}.Release|x64.Build.0 = Release|Any CPU
 		{9BF75422-5B68-41CD-BF29-3F4F4A4874C3}.Release|x86.ActiveCfg = Release|Any CPU
 		{9BF75422-5B68-41CD-BF29-3F4F4A4874C3}.Release|x86.Build.0 = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|x64.Build.0 = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Debug|x86.Build.0 = Debug|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|x64.ActiveCfg = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|x64.Build.0 = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|x86.ActiveCfg = Release|Any CPU
+		{36837B4A-463A-4544-A20D-A7B32BCE5A19}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
