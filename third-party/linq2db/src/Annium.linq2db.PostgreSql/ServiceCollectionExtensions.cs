@@ -1,6 +1,6 @@
 using System;
 using Annium.linq2db.Extensions;
-using Annium.linq2db.PostgreSQL;
+using Annium.linq2db.PostgreSql;
 using LinqToDB;
 using LinqToDB.Common;
 using LinqToDB.Mapping;
@@ -10,19 +10,19 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddPostgreSQL<TConnection>(
+        public static IServiceCollection AddPostgreSql<TConnection>(
             this IServiceCollection services,
-            IPostgreSQLConfiguration cfg
+            IPostgreSqlConfiguration cfg
         )
             where TConnection : DataConnectionBase
         {
             return services
-                .AddPostgreSQL<TConnection>(cfg, mappingSchema => { });
+                .AddPostgreSql<TConnection>(cfg, mappingSchema => { });
         }
 
-        public static IServiceCollection AddPostgreSQL<TConnection>(
+        public static IServiceCollection AddPostgreSql<TConnection>(
             this IServiceCollection services,
-            IPostgreSQLConfiguration cfg,
+            IPostgreSqlConfiguration cfg,
             Action<MappingSchema> configure
         )
             where TConnection : DataConnectionBase

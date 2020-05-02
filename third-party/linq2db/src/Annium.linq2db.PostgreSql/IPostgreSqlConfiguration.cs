@@ -1,6 +1,6 @@
-namespace Annium.linq2db.PostgreSQL
+namespace Annium.linq2db.PostgreSql
 {
-    public interface IPostgreSQLConfiguration
+    public interface IPostgreSqlConfiguration
     {
         public string Host { get; set; }
         public int Port { get; set; }
