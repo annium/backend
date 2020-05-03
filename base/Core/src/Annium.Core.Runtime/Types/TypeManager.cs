@@ -12,12 +12,11 @@ namespace Annium.Core.Runtime.Types
         public static readonly ITypeManager Instance = new TypeManager(Assembly.GetEntryAssembly()!);
         public static ITypeManager GetInstance(Assembly assembly) => Instances.GetOrAdd(assembly, a => new TypeManager(a));
         public IReadOnlyCollection<Type> Types => _types.Value;
-        private readonly Assembly _assembly;
         private readonly Lazy<Type[]> _types;
         private readonly Lazy<IDictionary<Type, Type[]>> _descendants;
         private readonly Lazy<IDictionary<Type, string[]>> _signatures;
 
-        internal TypeManager(
+        private TypeManager(
             Assembly assembly
         )
         {
@@ -144,64 +143,7 @@ namespace Annium.Core.Runtime.Types
             return resolution.type;
         }
 
-        // collect types with derived types from all loaded assemblies
-        private IDictionary<Type, Type[]> CollectDescendants()
-        {
-            var types = this._types.Value;
-
-            var result = new Dictionary<Type, Type[]>();
-            foreach (var type in types)
-            {
-                // can have descendants if type is interface or class
-                if (!type.IsInterface && !type.IsClass)
-                    continue;
-
-                Type[] descendants = Type.EmptyTypes;
-                if (type.IsGenericTypeDefinition)
-                {
-                    if (type.IsInterface)
-                        descendants = types
-                            .Where(x => x != type && x.IsClass && !x.IsAbstract && x.GetInterfaces()
-                                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type)
-                            )
-                            .ToArray();
-
-                    if (type.IsClass)
-                    {
-                        descendants = types.Where(x =>
-                            {
-                                if (x == type || !x.IsClass || x.IsAbstract)
-                                    return false;
-
-                                if (x.BaseType == null || x.BaseType == typeof(object))
-                                    return false;
-
-                                while (x != null)
-                                {
-                                    if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
-                                        return true;
-
-                                    x = x.BaseType!;
-                                }
-
-                                return false;
-                            })
-                            .ToArray();
-                    }
-                }
-                else
-                {
-                    descendants = types
-                        .Where(x => x != type && x.IsClass && !x.IsAbstract && type.IsAssignableFrom(x))
-                        .ToArray();
-                }
-
-                if (descendants.Length > 0)
-                    result[type] = descendants;
-            }
-
-            return result;
-        }
+        private IDictionary<Type, Type[]> CollectDescendants() => new DescendantsCollector().CollectDescendants(_types.Value);
 
         // collect signatures from given types
         // each signature is array of lowercased property names
