@@ -1,5 +1,6 @@
 using System.Reflection;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection

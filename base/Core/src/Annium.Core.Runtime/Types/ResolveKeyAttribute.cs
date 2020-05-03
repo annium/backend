@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Runtime.Types
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 

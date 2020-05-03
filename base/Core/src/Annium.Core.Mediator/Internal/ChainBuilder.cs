@@ -8,9 +8,9 @@ namespace Annium.Core.Mediator.Internal
 {
     internal class ChainBuilder
     {
-        private readonly MediatorConfiguration configuration;
-        private readonly NextBuilder nextBuilder;
-        private readonly ILogger<ChainBuilder> logger;
+        private readonly MediatorConfiguration _configuration;
+        private readonly NextBuilder _nextBuilder;
+        private readonly ILogger<ChainBuilder> _logger;
 
         public ChainBuilder(
             IEnumerable<MediatorConfiguration> configurations,
@@ -18,23 +18,23 @@ namespace Annium.Core.Mediator.Internal
             ILogger<ChainBuilder> logger
         )
         {
-            configuration = MediatorConfiguration.Merge(configurations.ToArray());
-            this.nextBuilder = nextBuilder;
-            this.logger = logger;
+            _configuration = MediatorConfiguration.Merge(configurations.ToArray());
+            _nextBuilder = nextBuilder;
+            _logger = logger;
         }
 
         public IReadOnlyList<ChainElement> BuildExecutionChain(Type input, Type output)
         {
-            var handlers = configuration.Handlers.ToList();
+            var handlers = _configuration.Handlers.ToList();
 
-            logger.Trace($"Build execution chain for {input} -> {output} from {handlers.Count} handler(s) available");
+            _logger.Trace($"Build execution chain for {input} -> {output} from {handlers.Count} handler(s) available");
 
             var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
             {
-                logger.Trace($"Find chain element for {input} -> {output}");
+                _logger.Trace($"Find chain element for {input} -> {output}");
 
                 Type? service = null;
 
@@ -42,7 +42,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     service = resolveHandler(handler);
 
-                    logger.Trace($"Resolved {handler.RequestIn} -> {handler.ResponseOut} handler into {service}");
+                    _logger.Trace($"Resolved {handler.RequestIn} -> {handler.ResponseOut} handler into {service}");
 
                     if (service is null)
                         continue;
@@ -53,11 +53,11 @@ namespace Annium.Core.Mediator.Internal
 
                 if (service is null)
                 {
-                    logger.Trace($"No handler resolved for {input} -> {output}");
+                    _logger.Trace($"No handler resolved for {input} -> {output}");
                     break;
                 }
 
-                logger.Trace($"Add {service} to chain");
+                _logger.Trace($"Add {service} to chain");
 
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
@@ -65,14 +65,14 @@ namespace Annium.Core.Mediator.Internal
                 {
                     chain.Add(new ChainElement(service));
                     isFinalized = true;
-                    logger.Trace("Resolved handler is final");
+                    _logger.Trace("Resolved handler is final");
                     break;
                 }
 
                 var outputArgs = serviceOutput.GetGenericArguments();
                 input = outputArgs[0];
                 output = outputArgs[1];
-                chain.Add(new ChainElement(service, nextBuilder.BuildNext(input, output)));
+                chain.Add(new ChainElement(service, _nextBuilder.BuildNext(input, output)));
             }
 
             traceChain();
@@ -95,7 +95,7 @@ namespace Annium.Core.Mediator.Internal
                 var service = handler.Implementation.ResolveByImplementation(handlerInput);
                 if (service is null)
                 {
-                    logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
+                    _logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
                     return null;
                 }
 
@@ -104,9 +104,9 @@ namespace Annium.Core.Mediator.Internal
 
             void traceChain()
             {
-                logger.Trace($"Composed chain with {chain.Count} handler(s):");
+                _logger.Trace($"Composed chain with {chain.Count} handler(s):");
                 foreach (var element in chain)
-                    logger.Trace($"- {element.Handler}");
+                    _logger.Trace($"- {element.Handler}");
             }
         }
     }

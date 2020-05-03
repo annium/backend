@@ -1,7 +1,8 @@
 using System;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -23,7 +24,7 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddMapper(this IServiceCollection services, bool autoload = true)
         {
-            services.AddReflectionTools();
+            services.AddRuntimeTools();
 
             services.AddSingleton<Repacker>();
             services.AddSingleton<MapBuilder>();

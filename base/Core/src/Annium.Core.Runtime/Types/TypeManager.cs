@@ -4,17 +4,18 @@ using System.Linq;
 using System.Reflection;
 using Microsoft.Extensions.DependencyModel;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Runtime.Types
 {
     public class TypeManager : ITypeManager
     {
         public static readonly TypeManager Instance = new TypeManager();
+        public static TypeManager GetInstance(Assembly assembly) => new TypeManager();
         public IReadOnlyCollection<Type> Types => types.Value;
         private readonly Lazy<Type[]> types;
         private readonly Lazy<IDictionary<Type, Type[]>> descendants;
         private readonly Lazy<IDictionary<Type, string[]>> signatures;
 
-        internal TypeManager()
+        internal TypeManager() // TODO: use Assembly here
         {
             types = new Lazy<Type[]>(CollectTypes, true);
             descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);

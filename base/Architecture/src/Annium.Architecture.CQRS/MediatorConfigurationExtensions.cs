@@ -1,7 +1,7 @@
 using System;
 using Annium.Architecture.CQRS.Commands;
 using Annium.Architecture.CQRS.Queries;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Mediator
 {

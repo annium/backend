@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Mapper.Internal
 {

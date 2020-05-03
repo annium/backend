@@ -1,9 +1,10 @@
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
+using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.S3
 {
     [ResolveKey("s3")]
-    public class Configuration : Abstractions.ConfigurationBase
+    public class Configuration : ConfigurationBase
     {
         public string Server { get; set; } = string.Empty;
 

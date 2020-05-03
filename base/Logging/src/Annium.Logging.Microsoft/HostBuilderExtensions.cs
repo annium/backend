@@ -12,7 +12,7 @@ namespace Microsoft.Extensions.Hosting
         )
         {
             return builder
-                .ConfigureServices(services => services.AddReflectionTools())
+                .ConfigureServices(services => services.AddRuntimeTools())
                 .ConfigureLogging((ctx, logging) =>
                 {
                     logging.ClearProviders();

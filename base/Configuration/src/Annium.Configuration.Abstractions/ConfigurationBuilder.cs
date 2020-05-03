@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Mapper;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
 
 namespace Annium.Configuration.Abstractions
@@ -176,7 +176,7 @@ namespace Annium.Configuration.Abstractions
             public bool Equals(string[] x, string[] y)
             {
                 // if same reference or both null, then equality is true
-                if (object.ReferenceEquals(x, y))
+                if (ReferenceEquals(x, y))
                     return true;
 
                 // if any is null, or length doesn't match - false

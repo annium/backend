@@ -1,5 +1,5 @@
 using System.Linq;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 using Annium.Extensions.Composition;
 using Microsoft.Extensions.DependencyInjection;
 

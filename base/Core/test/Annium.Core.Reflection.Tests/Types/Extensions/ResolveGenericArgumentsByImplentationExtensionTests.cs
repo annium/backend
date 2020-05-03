@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq.Expressions;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
+using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
 

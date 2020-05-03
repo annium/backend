@@ -2,7 +2,8 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
 using LinqToDB.Mapping;
 

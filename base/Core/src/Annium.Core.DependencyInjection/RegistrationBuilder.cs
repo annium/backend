@@ -1,38 +1,36 @@
-using System.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Annium.Core.Reflection;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public class RegistrationBuilder : IRegistrationBuilder
     {
-        private readonly IServiceCollection services;
-        private IEnumerable<Type> types;
-        private RegistrationType registrationType;
-        private bool hasRegistered = false;
+        private readonly IServiceCollection _services;
+        private IEnumerable<Type> _types;
+        private RegistrationType _registrationType;
+        private bool _hasRegistered;
 
         public RegistrationBuilder(
             IServiceCollection services,
             IEnumerable<Type> types
         )
         {
-            this.services = services;
-            this.types = types;
+            _services = services;
+            _types = types;
         }
 
         public IRegistrationBuilder Where(Func<Type, bool> predicate)
         {
-            types = types.Where(predicate);
+            _types = _types.Where(predicate);
 
             return this;
         }
 
         public IRegistrationBuilder AsImplementedInterfaces()
         {
-            registrationType = RegistrationType.ImplementedInterfaces;
+            _registrationType = RegistrationType.ImplementedInterfaces;
 
             return this;
         }
@@ -45,20 +43,20 @@ namespace Annium.Core.DependencyInjection
 
         private void Register(ServiceLifetime lifetime)
         {
-            if (hasRegistered)
+            if (_hasRegistered)
                 throw new InvalidOperationException($"Can't run same registration more than once");
-            hasRegistered = true;
+            _hasRegistered = true;
 
-            foreach (var implementationType in types)
+            foreach (var implementationType in _types)
                 foreach (var serviceType in GetServiceTypes(implementationType))
-                    services.Add(new ServiceDescriptor(serviceType, implementationType, lifetime));
+                    _services.Add(new ServiceDescriptor(serviceType, implementationType, lifetime));
         }
 
         private IEnumerable<Type> GetServiceTypes(Type implementationType)
         {
-            if (registrationType == RegistrationType.Self)
+            if (_registrationType == RegistrationType.Self)
                 yield return implementationType;
-            else if (registrationType == RegistrationType.ImplementedInterfaces)
+            else if (_registrationType == RegistrationType.ImplementedInterfaces)
                 foreach (var serviceType in implementationType.GetInterfaces())
                     yield return serviceType;
         }

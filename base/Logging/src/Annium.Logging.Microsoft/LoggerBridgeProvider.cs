@@ -1,4 +1,5 @@
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 using Annium.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
 
@@ -25,6 +26,8 @@ namespace Annium.Logging.Microsoft
             return new LoggerBridge(router, type);
         }
 
-        public void Dispose() { }
+        public void Dispose()
+        {
+        }
     }
 }

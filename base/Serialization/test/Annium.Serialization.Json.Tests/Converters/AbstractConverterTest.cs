@@ -1,5 +1,5 @@
 using System;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;

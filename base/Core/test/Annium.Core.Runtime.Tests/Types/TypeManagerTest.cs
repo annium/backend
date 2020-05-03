@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Reflection.Tests.Types
+namespace Annium.Core.Runtime.Tests.Types
 {
     public class TypeManagerTest
     {

@@ -2,32 +2,33 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Reflection;
+using Annium.Core.Runtime;
+using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Mapper
 {
     public static class Mapper
     {
-        private static readonly object locker = new object();
+        private static readonly object Locker = new object();
 
-        private static readonly IList<Profile> profiles = new List<Profile>();
+        private static readonly IList<Profile> Profiles = new List<Profile>();
 
-        private static IMapper mapper = InitMapper();
+        private static IMapper _mapper = InitMapper();
 
         public static void AddConfiguration(Action<Profile> configure)
         {
             var cfg = new EmptyProfile();
             configure(cfg);
-            mapper = AddProfile(cfg);
+            _mapper = AddProfile(cfg);
         }
 
         public static bool HasMap<T>(object source) => HasMap(source, typeof(T));
 
-        public static bool HasMap(object source, Type type) => mapper.HasMap(source, type);
+        public static bool HasMap(object source, Type type) => _mapper.HasMap(source, type);
 
-        public static T Map<T>(object source) => mapper.Map<T>(source);
+        public static T Map<T>(object source) => _mapper.Map<T>(source);
 
-        public static object Map(object source, Type type) => mapper.Map(source, type);
+        public static object Map(object source, Type type) => _mapper.Map(source, type);
 
         private static IMapper InitMapper()
         {
@@ -39,9 +40,9 @@ namespace Annium.Core.Mapper
             if (profile == null)
                 throw new ArgumentNullException(nameof(profile));
 
-            lock (locker)
+            lock (Locker)
             {
-                profiles.Add(profile);
+                Profiles.Add(profile);
                 return CreateMapper();
             }
         }
@@ -49,7 +50,7 @@ namespace Annium.Core.Mapper
         private static IMapper CreateMapper()
         {
             var builder = new MapBuilder(
-                profiles.ToArray(),
+                Profiles.ToArray(),
                 TypeManager.Instance,
                 new Repacker()
             );
