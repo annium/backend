@@ -8,28 +8,32 @@ namespace Annium.Core.Runtime.Types
 {
     public class TypeManager : ITypeManager
     {
-        public static readonly TypeManager Instance = new TypeManager();
-        public static TypeManager GetInstance(Assembly assembly) => new TypeManager();
-        public IReadOnlyCollection<Type> Types => types.Value;
-        private readonly Lazy<Type[]> types;
-        private readonly Lazy<IDictionary<Type, Type[]>> descendants;
-        private readonly Lazy<IDictionary<Type, string[]>> signatures;
+        public static readonly TypeManager Instance = new TypeManager(Assembly.GetEntryAssembly()!);
+        public static TypeManager GetInstance(Assembly assembly) => new TypeManager(assembly);
+        public IReadOnlyCollection<Type> Types => _types.Value;
+        private readonly Assembly _assembly;
+        private readonly Lazy<Type[]> _types;
+        private readonly Lazy<IDictionary<Type, Type[]>> _descendants;
+        private readonly Lazy<IDictionary<Type, string[]>> _signatures;
 
-        internal TypeManager() // TODO: use Assembly here
+        internal TypeManager(
+            Assembly assembly
+        )
         {
-            types = new Lazy<Type[]>(CollectTypes, true);
-            descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
-            signatures = new Lazy<IDictionary<Type, string[]>>(CollectSignatures, true);
+            _assembly = assembly;
+            _types = new Lazy<Type[]>(CollectTypes, true);
+            _descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
+            _signatures = new Lazy<IDictionary<Type, string[]>>(CollectSignatures, true);
         }
 
-        public Type? GetByName(string name) => types.Value.FirstOrDefault(t => t.FullName == name);
+        public Type? GetByName(string name) => _types.Value.FirstOrDefault(t => t.FullName == name);
 
         // returns whether given type is registered with some of subtypes
-        public bool CanResolve(Type baseType) => descendants.Value.ContainsKey(baseType);
+        public bool CanResolve(Type baseType) => _descendants.Value.ContainsKey(baseType);
 
         public Type[] GetImplementations(Type baseType)
         {
-            var types = this.types.Value;
+            var types = this._types.Value;
 
             // handle generic type definition
             if (baseType.IsGenericTypeDefinition)
@@ -96,7 +100,7 @@ namespace Annium.Core.Runtime.Types
         public Type? ResolveByKey(string key, Type baseType)
         {
             var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
-            if (!descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
+            if (!_descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
                 throw new TypeResolutionException(typeof(object), baseTypeDefinition, "No descendants found");
 
             var resolutions = typeDescendants
@@ -104,7 +108,8 @@ namespace Annium.Core.Runtime.Types
                 .ToList();
 
             if (resolutions.Count > 1)
-                throw new TypeResolutionException(typeof(object), baseTypeDefinition, $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
+                throw new TypeResolutionException(typeof(object), baseTypeDefinition,
+                    $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
 
             return resolutions.FirstOrDefault();
         }
@@ -113,12 +118,12 @@ namespace Annium.Core.Runtime.Types
         private Type? ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
         {
             var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
-            if (!descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
+            if (!_descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
                 throw new TypeResolutionException(src, baseTypeDefinition, "No descendants found");
 
             var lookup = typeDescendants
-                .Where(type => signatures.Value.ContainsKey(type))
-                .Select(type => (type, match: signatures.Value[type].Intersect(signature).Count()))
+                .Where(type => _signatures.Value.ContainsKey(type))
+                .Select(type => (type, match: _signatures.Value[type].Intersect(signature).Count()))
                 .OrderByDescending(p => p.match)
                 .ToList();
 
@@ -143,7 +148,7 @@ namespace Annium.Core.Runtime.Types
         private Type[] CollectTypes()
         {
             var core = typeof(object).Assembly.GetName();
-            var assemblyNames = DependencyContext.Default.RuntimeLibraries
+            var assemblyNames = DependencyContext.Load(_assembly).CompileLibraries
                 .Select(x => new AssemblyName(x.Name))
                 .Prepend(core)
                 .ToArray();
@@ -164,7 +169,7 @@ namespace Annium.Core.Runtime.Types
         // collect types with derived types from all loaded assemblies
         private IDictionary<Type, Type[]> CollectDescendants()
         {
-            var types = this.types.Value;
+            var types = this._types.Value;
 
             var result = new Dictionary<Type, Type[]>();
             foreach (var type in types)
@@ -186,31 +191,31 @@ namespace Annium.Core.Runtime.Types
                     if (type.IsClass)
                     {
                         descendants = types.Where(x =>
-                        {
-                            if (x == type || !x.IsClass || x.IsAbstract)
-                                return false;
-
-                            if (x.BaseType == null || x.BaseType == typeof(object))
-                                return false;
-
-                            while (x != null)
                             {
-                                if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
-                                    return true;
+                                if (x == type || !x.IsClass || x.IsAbstract)
+                                    return false;
 
-                                x = x.BaseType!;
-                            }
+                                if (x.BaseType == null || x.BaseType == typeof(object))
+                                    return false;
 
-                            return false;
-                        })
-                        .ToArray();
+                                while (x != null)
+                                {
+                                    if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
+                                        return true;
+
+                                    x = x.BaseType!;
+                                }
+
+                                return false;
+                            })
+                            .ToArray();
                     }
                 }
                 else
                 {
                     descendants = types
-                       .Where(x => x != type && x.IsClass && !x.IsAbstract && type.IsAssignableFrom(x))
-                       .ToArray();
+                        .Where(x => x != type && x.IsClass && !x.IsAbstract && type.IsAssignableFrom(x))
+                        .ToArray();
                 }
 
                 if (descendants.Length > 0)
@@ -222,7 +227,7 @@ namespace Annium.Core.Runtime.Types
 
         // collect signatures from given types
         // each signature is array of lowercased property names
-        private IDictionary<Type, string[]> CollectSignatures() => descendants.Value.Values
+        private IDictionary<Type, string[]> CollectSignatures() => _descendants.Value.Values
             .SelectMany(v => v)
             .Distinct()
             .ToDictionary(

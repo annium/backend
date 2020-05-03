@@ -7,9 +7,9 @@ namespace Annium.Core.Runtime.Loader
     {
         private readonly AssemblyDependencyResolver _resolver;
 
-        public DirectoryLoadContext(string pluginPath)
+        public DirectoryLoadContext(string directory)
         {
-            _resolver = new AssemblyDependencyResolver(pluginPath);
+            _resolver = new AssemblyDependencyResolver(directory);
         }
 
         protected override Assembly? Load(AssemblyName assemblyName)
