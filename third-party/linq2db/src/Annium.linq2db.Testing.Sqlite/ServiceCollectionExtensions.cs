@@ -19,7 +19,11 @@ namespace Annium.Core.DependencyInjection
             where TConnection : DataConnectionBase
         {
             return services
-                .AddTestingSqlite<TConnection>(migrationsAssembly, mappingSchema => { });
+                .AddTestingSqlite<TConnection>(
+                    Assembly.GetCallingAssembly(),
+                    migrationsAssembly,
+                    mappingSchema => { }
+                );
         }
 
         public static IServiceCollection AddTestingSqlite<TConnection>(
@@ -29,8 +33,39 @@ namespace Annium.Core.DependencyInjection
         )
             where TConnection : DataConnectionBase
         {
+            return services
+                .AddTestingSqlite<TConnection>(
+                    Assembly.GetCallingAssembly(),
+                    migrationsAssembly,
+                    configure
+                );
+        }
+
+        public static IServiceCollection AddTestingSqlite<TConnection>(
+            this IServiceCollection services,
+            Assembly configurationsAssembly,
+            Assembly migrationsAssembly
+        )
+            where TConnection : DataConnectionBase
+        {
+            return services
+                .AddTestingSqlite<TConnection>(
+                    configurationsAssembly,
+                    migrationsAssembly,
+                    mappingSchema => { }
+                );
+        }
+
+        public static IServiceCollection AddTestingSqlite<TConnection>(
+            this IServiceCollection services,
+            Assembly configurationsAssembly,
+            Assembly migrationsAssembly,
+            Action<MappingSchema> configure
+        )
+            where TConnection : DataConnectionBase
+        {
             var mappingSchema = new MappingSchema();
-            mappingSchema.GetMappingBuilder()
+            mappingSchema.GetMappingBuilder(configurationsAssembly)
                 .ApplyConfigurations()
                 .CamelCaseColumns();
             configure?.Invoke(mappingSchema);

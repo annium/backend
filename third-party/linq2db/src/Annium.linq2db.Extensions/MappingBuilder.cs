@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
 using LinqToDB.Mapping;
@@ -11,14 +10,17 @@ namespace Annium.linq2db.Extensions
 {
     public class MappingBuilder
     {
+        private readonly Assembly _configurationsAssembly;
         private readonly FluentMappingBuilder _mappingBuilder;
         private readonly Lazy<(Type configurationType, Type entityType)[]> _configurations;
 
         public MappingBuilder(
+            Assembly configurationsAssembly,
             FluentMappingBuilder mappingBuilder
         )
         {
             _mappingBuilder = mappingBuilder;
+            _configurationsAssembly = configurationsAssembly;
             _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
         }
 
@@ -75,7 +77,7 @@ namespace Annium.linq2db.Extensions
             return this;
         }
 
-        private (Type configurationType, Type entityType)[] CollectConfigurations() => TypeManager.Instance.Types
+        private (Type configurationType, Type entityType)[] CollectConfigurations() => TypeManager.GetInstance(_configurationsAssembly).Types
             .Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType)
             .Select(x => (x, i: x.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEntityConfiguration<>))))
             .Where(p => p.i != null)

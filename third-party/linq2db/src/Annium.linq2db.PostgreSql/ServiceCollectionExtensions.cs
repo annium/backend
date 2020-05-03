@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.PostgreSql;
 using LinqToDB;
@@ -17,7 +18,11 @@ namespace Annium.Core.DependencyInjection
             where TConnection : DataConnectionBase
         {
             return services
-                .AddPostgreSql<TConnection>(cfg, mappingSchema => { });
+                .AddPostgreSql<TConnection>(
+                    Assembly.GetCallingAssembly(),
+                    cfg,
+                    mappingSchema => { }
+                );
         }
 
         public static IServiceCollection AddPostgreSql<TConnection>(
@@ -27,8 +32,39 @@ namespace Annium.Core.DependencyInjection
         )
             where TConnection : DataConnectionBase
         {
+            return services
+                .AddPostgreSql<TConnection>(
+                    Assembly.GetCallingAssembly(),
+                    cfg,
+                    configure
+                );
+        }
+
+        public static IServiceCollection AddPostgreSql<TConnection>(
+            this IServiceCollection services,
+            Assembly configurationsAssembly,
+            IPostgreSqlConfiguration cfg
+        )
+            where TConnection : DataConnectionBase
+        {
+            return services
+                .AddPostgreSql<TConnection>(
+                    configurationsAssembly,
+                    cfg,
+                    mappingSchema => { }
+                );
+        }
+
+        public static IServiceCollection AddPostgreSql<TConnection>(
+            this IServiceCollection services,
+            Assembly configurationsAssembly,
+            IPostgreSqlConfiguration cfg,
+            Action<MappingSchema> configure
+        )
+            where TConnection : DataConnectionBase
+        {
             var mappingSchema = new MappingSchema();
-            mappingSchema.GetMappingBuilder()
+            mappingSchema.GetMappingBuilder(configurationsAssembly)
                 .ApplyConfigurations()
                 .CamelCaseColumns();
             configure(mappingSchema);
