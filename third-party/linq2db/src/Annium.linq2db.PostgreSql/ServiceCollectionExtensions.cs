@@ -66,7 +66,7 @@ namespace Annium.Core.DependencyInjection
             var mappingSchema = new MappingSchema();
             mappingSchema.GetMappingBuilder(configurationsAssembly)
                 .ApplyConfigurations()
-                .CamelCaseColumns();
+                .SnakeCaseColumns();
             configure(mappingSchema);
 
             services.AddScoped(sp => (TConnection) Activator.CreateInstance(

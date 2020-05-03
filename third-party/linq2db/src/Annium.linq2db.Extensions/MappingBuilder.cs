@@ -41,7 +41,7 @@ namespace Annium.linq2db.Extensions
             return this;
         }
 
-        public MappingBuilder CamelCaseColumns()
+        public MappingBuilder SnakeCaseColumns()
         {
             var entityTypes = _configurations.Value.Select(x => x.entityType).ToArray();
 
