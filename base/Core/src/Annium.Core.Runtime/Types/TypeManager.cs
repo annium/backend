@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyModel;
 
 namespace Annium.Core.Runtime.Types
 {
@@ -22,8 +21,7 @@ namespace Annium.Core.Runtime.Types
             Assembly assembly
         )
         {
-            _assembly = assembly;
-            _types = new Lazy<Type[]>(CollectTypes, true);
+            _types = new Lazy<Type[]>(new TypesCollector(assembly).CollectTypes, true);
             _descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
             _signatures = new Lazy<IDictionary<Type, string[]>>(CollectSignatures, true);
         }
@@ -144,28 +142,6 @@ namespace Annium.Core.Runtime.Types
                 return resolution.match == signature.Length ? resolution.type : null;
 
             return resolution.type;
-        }
-
-        // collect types from all loaded assemblies
-        private Type[] CollectTypes()
-        {
-            var core = typeof(object).Assembly.GetName();
-            var assemblyNames = DependencyContext.Load(_assembly).CompileLibraries
-                .Select(x => new AssemblyName(x.Name))
-                .Prepend(core)
-                .ToArray();
-
-            return assemblyNames.SelectMany(name =>
-            {
-                try
-                {
-                    return Assembly.Load(name).GetTypes();
-                }
-                catch
-                {
-                    return Type.EmptyTypes;
-                }
-            }).ToArray();
         }
 
         // collect types with derived types from all loaded assemblies
