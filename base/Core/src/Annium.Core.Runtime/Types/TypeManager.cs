@@ -32,46 +32,45 @@ namespace Annium.Core.Runtime.Types
 
         public Type[] GetImplementations(Type baseType)
         {
-            var types = this._types.Value;
+            var types = _types.Value;
+
+            // handle non-generic type definition
+            if (!baseType.IsGenericTypeDefinition)
+                return types
+                    .Where(t => t != baseType && baseType.IsAssignableFrom(t))
+                    .ToArray();
 
             // handle generic type definition
-            if (baseType.IsGenericTypeDefinition)
-            {
-                // generic interface
-                if (baseType.IsInterface)
-                    return types
-                        .Where(t =>
-                        {
-                            if (t == baseType)
-                                return false;
-
-                            return t.GetInterfaces()
-                                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
-                        })
-                        .ToArray();
-
+            // generic interface
+            if (baseType.IsInterface)
                 return types
                     .Where(t =>
                     {
                         if (t == baseType)
                             return false;
 
-                        while (t != null && t != typeof(object))
-                        {
-                            var checkedType = t.IsGenericType ? t.GetGenericTypeDefinition() : t;
-                            if (checkedType == baseType)
-                                return true;
-
-                            t = t.BaseType!;
-                        }
-
-                        return false;
+                        return t.GetInterfaces()
+                            .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
                     })
                     .ToArray();
-            }
 
             return types
-                .Where(t => t != baseType && baseType.IsAssignableFrom(t))
+                .Where(t =>
+                {
+                    if (t == baseType)
+                        return false;
+
+                    while (t != null && t != typeof(object))
+                    {
+                        var checkedType = t.IsGenericType ? t.GetGenericTypeDefinition() : t;
+                        if (checkedType == baseType)
+                            return true;
+
+                        t = t.BaseType!;
+                    }
+
+                    return false;
+                })
                 .ToArray();
         }
 
