@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 
 namespace Annium.Core.Runtime.Types
 {
     public interface ITypeManager
     {
+        IReadOnlyCollection<Type> Types { get; }
         Type? GetByName(string name);
         bool CanResolve(Type baseType);
         Type[] GetImplementations(Type baseType);

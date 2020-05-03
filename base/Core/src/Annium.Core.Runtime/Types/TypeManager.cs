@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -8,8 +9,9 @@ namespace Annium.Core.Runtime.Types
 {
     public class TypeManager : ITypeManager
     {
-        public static readonly TypeManager Instance = new TypeManager(Assembly.GetEntryAssembly()!);
-        public static TypeManager GetInstance(Assembly assembly) => new TypeManager(assembly);
+        private static readonly ConcurrentDictionary<Assembly, ITypeManager> Instances = new ConcurrentDictionary<Assembly, ITypeManager>();
+        public static readonly ITypeManager Instance = new TypeManager(Assembly.GetEntryAssembly()!);
+        public static ITypeManager GetInstance(Assembly assembly) => Instances.GetOrAdd(assembly, a => new TypeManager(a));
         public IReadOnlyCollection<Type> Types => _types.Value;
         private readonly Assembly _assembly;
         private readonly Lazy<Type[]> _types;
