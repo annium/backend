@@ -1,15 +1,16 @@
 using System;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
+using Annium.linq2db.Extensions.Models;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions
 {
     public class MappingBuilder
     {
+        private readonly MetadataBuilder _metadataBuilder;
         private readonly Assembly _configurationsAssembly;
         private readonly FluentMappingBuilder _mappingBuilder;
         private readonly Lazy<(Type configurationType, Type entityType)[]> _configurations;
@@ -19,6 +20,7 @@ namespace Annium.linq2db.Extensions
             FluentMappingBuilder mappingBuilder
         )
         {
+            _metadataBuilder = new MetadataBuilder();
             _mappingBuilder = mappingBuilder;
             _configurationsAssembly = configurationsAssembly;
             _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
@@ -41,38 +43,18 @@ namespace Annium.linq2db.Extensions
             return this;
         }
 
-        public MappingBuilder SnakeCaseColumns()
+        public Database GetMetadata() => _metadataBuilder.Build(_mappingBuilder.MappingSchema);
+
+        public MappingBuilder SnakeCaseColumns() => Configure(db =>
         {
-            var entityTypes = _configurations.Value.Select(x => x.entityType).ToArray();
+            foreach (var table in db.Tables)
+            foreach (var column in table.Columns)
+                column.Column.Name = column.Member.Name.SnakeCase();
+        });
 
-            var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
-
-            foreach (var entityType in entityTypes)
-            {
-                var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                    .Invoke(_mappingBuilder, new object?[] { null })!;
-                var getPropertyBuilder = typeof(EntityMappingBuilder<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
-                var hasColumnName = typeof(PropertyMappingBuilder<>).MakeGenericType(entityType)
-                    .GetMethod(nameof(PropertyMappingBuilder<object>.HasColumnName))!;
-                var entityParameter = Expression.Parameter(entityType);
-
-                foreach (var property in entityType.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
-                {
-                    var propertyBuilder = getPropertyBuilder
-                        .Invoke(
-                            entityMappingBuilder,
-                            new[]
-                            {
-                                Expression.Lambda(
-                                    Expression.Convert(Expression.Property(entityParameter, property), typeof(object)),
-                                    entityParameter
-                                )
-                            }
-                        )!;
-                    hasColumnName.Invoke(propertyBuilder, new[] { property.Name.SnakeCase() });
-                }
-            }
+        public MappingBuilder Configure(Action<Database> configure)
+        {
+            configure(GetMetadata());
 
             return this;
         }
