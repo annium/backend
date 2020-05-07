@@ -3,7 +3,7 @@ using System;
 namespace Annium.Core.DependencyInjection
 {
     /// <summary>
-    /// This is emulation class for compatibility with extensions, expection HostBuilder pattern implementation
+    /// This is emulation class for compatibility with extensions, expecting HostBuilder pattern implementation
     /// </summary>
     /// <typeparam name="TServicePack"></typeparam>
     public class HostServicesBuilder<TServicePack>

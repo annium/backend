@@ -1,11 +1,10 @@
 using System.Reflection;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtenions
+    public static class ServiceCollectionExtensions
     {
         public static IRegistrationBuilder SelectTypes(this IServiceCollection services)
         {
