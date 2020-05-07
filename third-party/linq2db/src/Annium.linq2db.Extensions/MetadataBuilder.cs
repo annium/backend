@@ -37,9 +37,10 @@ namespace Annium.linq2db.Extensions
 
             var dataType = schema.GetAttribute<DataTypeAttribute>(type, member);
             var nullable = schema.GetAttribute<NullableAttribute>(type, member);
+            var primaryKey = schema.GetAttribute<PrimaryKeyAttribute>(type, member);
             var association = schema.GetAttribute<AssociationAttribute>(type, member);
 
-            return new TableColumn(member, column, dataType, nullable, association);
+            return new TableColumn(member, column, dataType, nullable, primaryKey, association);
         }
     }
 }

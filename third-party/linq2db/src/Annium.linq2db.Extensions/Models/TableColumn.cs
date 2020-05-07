@@ -11,6 +11,7 @@ namespace Annium.linq2db.Extensions.Models
         public ColumnAttribute Attribute { get; }
         public DataTypeAttribute? DataType { get; }
         public NullableAttribute? Nullable { get; }
+        public PrimaryKeyAttribute? PrimaryKey { get; }
         public AssociationAttribute? Association { get; }
 
         public TableColumn(
@@ -18,6 +19,7 @@ namespace Annium.linq2db.Extensions.Models
             ColumnAttribute attribute,
             DataTypeAttribute? dataType,
             NullableAttribute? nullable,
+            PrimaryKeyAttribute? primaryKey,
             AssociationAttribute? association
         )
         {
@@ -25,6 +27,7 @@ namespace Annium.linq2db.Extensions.Models
             Attribute = attribute;
             DataType = dataType;
             Nullable = nullable;
+            PrimaryKey = primaryKey;
             Association = association;
         }
 
