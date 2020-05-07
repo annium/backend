@@ -1,25 +1,25 @@
 using System;
 using System.Collections.Generic;
+using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Models
 {
     public class Table
     {
+        public string? Schema => Attribute.Schema;
+        public string Name => Attribute.Name ?? Type.Name;
         public Type Type { get; }
-        public string? Schema { get; }
-        public string Name { get; }
+        public TableAttribute Attribute { get; }
         public IReadOnlyCollection<TableColumn> Columns { get; }
 
         public Table(
             Type type,
-            string? schema,
-            string name,
+            TableAttribute attribute,
             IReadOnlyCollection<TableColumn> columns
         )
         {
             Type = type;
-            Schema = schema;
-            Name = name;
+            Attribute = attribute;
             Columns = columns;
         }
 

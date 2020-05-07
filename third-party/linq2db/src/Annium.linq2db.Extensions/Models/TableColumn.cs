@@ -6,22 +6,23 @@ namespace Annium.linq2db.Extensions.Models
 {
     public class TableColumn
     {
+        public string Name => Attribute.Name ?? Member.Name;
         public MemberInfo Member { get; }
-        public ColumnAttribute Column { get; }
+        public ColumnAttribute Attribute { get; }
         public DataTypeAttribute? DataType { get; }
         public NullableAttribute? Nullable { get; }
         public AssociationAttribute? Association { get; }
 
         public TableColumn(
             MemberInfo member,
-            ColumnAttribute column,
+            ColumnAttribute attribute,
             DataTypeAttribute? dataType,
             NullableAttribute? nullable,
             AssociationAttribute? association
         )
         {
             Member = member;
-            Column = column;
+            Attribute = attribute;
             DataType = dataType;
             Nullable = nullable;
             Association = association;

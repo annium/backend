@@ -49,7 +49,7 @@ namespace Annium.linq2db.Extensions
         {
             foreach (var table in db.Tables)
             foreach (var column in table.Columns)
-                column.Column.Name = column.Member.Name.SnakeCase();
+                column.Attribute.Name = column.Member.Name.SnakeCase();
         });
 
         public MappingBuilder Configure(Action<Database> configure)

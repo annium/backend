@@ -26,12 +26,7 @@ namespace Annium.linq2db.Extensions
                 .Where(x => x != null)
                 .ToArray();
 
-            return new Table(
-                type,
-                table.Schema,
-                table.Name ?? type.Name,
-                columns
-            );
+            return new Table(type, table, columns);
         }
 
         public TableColumn? Build(MappingSchema schema, Type type, MemberInfo member)
