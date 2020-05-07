@@ -8,31 +8,42 @@ namespace Annium.linq2db.Extensions
 {
     internal class MetadataBuilder
     {
-        public Database Build(MappingSchema schema)
+        public Database Build(MappingSchema schema, MetadataBuilderFlags flags)
         {
             var types = schema.GetDefinedTypes();
 
-            var tables = types.Select(x => Build(schema, x)).ToArray();
+            var tables = types.OrderBy(x => x.Name).Select(x => Build(schema, x, flags)).ToArray();
 
             return new Database(tables);
         }
 
-        public Table Build(MappingSchema schema, Type type)
+        private Table Build(MappingSchema schema, Type type, MetadataBuilderFlags flags)
         {
             var table = schema.GetAttribute<TableAttribute>(type)!;
 
             var columns = type.GetProperties().Concat<MemberInfo>(type.GetFields())
-                .Select(x => Build(schema, type, x)!)
+                .Select(x => Build(schema, type, x, flags)!)
                 .Where(x => x != null)
                 .ToArray();
 
             return new Table(type, table, columns);
         }
 
-        public TableColumn? Build(MappingSchema schema, Type type, MemberInfo member)
+        private TableColumn? Build(MappingSchema schema, Type type, MemberInfo member, MetadataBuilderFlags flags)
         {
             var column = schema.GetAttribute<ColumnAttribute>(type, member);
-            if (column is null || !column.IsColumn)
+
+            // if not marked as column
+            if (column is null)
+            {
+                // if requested to be included in metadata - add ColumnAttribute; otherwise - skip
+                if (flags.HasFlag(MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns))
+                    column = new ColumnAttribute(member.Name) { IsColumn = false };
+                else
+                    return null;
+            }
+            // if explicitly not column (from schema, note code above) - skip
+            else if (!column.IsColumn)
                 return null;
 
             var dataType = schema.GetAttribute<DataTypeAttribute>(type, member);

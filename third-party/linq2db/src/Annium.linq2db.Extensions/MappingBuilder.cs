@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
-using Annium.Extensions.Primitives;
 using Annium.linq2db.Extensions.Models;
 using LinqToDB.Mapping;
 
@@ -10,18 +9,18 @@ namespace Annium.linq2db.Extensions
 {
     public class MappingBuilder
     {
+        public FluentMappingBuilder Map { get; }
         private readonly MetadataBuilder _metadataBuilder;
         private readonly Assembly _configurationsAssembly;
-        private readonly FluentMappingBuilder _mappingBuilder;
         private readonly Lazy<(Type configurationType, Type entityType)[]> _configurations;
 
         public MappingBuilder(
             Assembly configurationsAssembly,
-            FluentMappingBuilder mappingBuilder
+            MappingSchema schema
         )
         {
+            Map = schema.GetFluentMappingBuilder();
             _metadataBuilder = new MetadataBuilder();
-            _mappingBuilder = mappingBuilder;
             _configurationsAssembly = configurationsAssembly;
             _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
         }
@@ -33,28 +32,24 @@ namespace Annium.linq2db.Extensions
             foreach (var (configurationType, entityType) in _configurations.Value)
             {
                 var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                    .Invoke(_mappingBuilder, new object?[] { null })!;
+                    .Invoke(Map, new object?[] { null })!;
                 var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
                     .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
                 var configuration = Activator.CreateInstance(configurationType)!;
                 configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
             }
 
+            this.IncludeAssociationKeysAsColumns();
+
             return this;
         }
 
-        public Database GetMetadata() => _metadataBuilder.Build(_mappingBuilder.MappingSchema);
+        public Database GetMetadata(MetadataBuilderFlags flags = MetadataBuilderFlags.None) =>
+            _metadataBuilder.Build(Map.MappingSchema, flags);
 
-        public MappingBuilder SnakeCaseColumns() => Configure(db =>
+        public MappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None)
         {
-            foreach (var table in db.Tables)
-            foreach (var column in table.Columns)
-                column.Attribute.Name = column.Member.Name.SnakeCase();
-        });
-
-        public MappingBuilder Configure(Action<Database> configure)
-        {
-            configure(GetMetadata());
+            configure(GetMetadata(flags));
 
             return this;
         }

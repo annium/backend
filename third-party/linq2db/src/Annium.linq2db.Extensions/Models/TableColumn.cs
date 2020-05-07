@@ -31,6 +31,6 @@ namespace Annium.linq2db.Extensions.Models
             Association = association;
         }
 
-        public override string ToString() => $"{Member.GetMemberType().Name} {Member.Name}";
+        public override string ToString() => $"{Member.GetMemberType().Name} {Name}";
     }
 }
