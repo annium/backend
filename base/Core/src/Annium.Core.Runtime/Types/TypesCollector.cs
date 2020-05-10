@@ -2,45 +2,41 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Microsoft.Extensions.DependencyModel;
 
 namespace Annium.Core.Runtime.Types
 {
     internal class TypesCollector
     {
-        private const string LibraryFileExtension = ".dll";
-
-        private readonly Assembly _assembly;
+        private readonly DependencyContext _dependencyContext;
+        private readonly AssemblyLoadContext _loadContext;
 
         public TypesCollector(
             Assembly assembly
         )
         {
-            _assembly = assembly;
+            _dependencyContext = DependencyContext.Load(assembly);
+            _loadContext = AssemblyLoadContext.GetLoadContext(assembly)!;
         }
 
         public Type[] CollectTypes()
         {
             var core = typeof(object).Assembly.GetName();
-            var assemblyNames = DependencyContext.Load(_assembly).CompileLibraries
+            var assemblyNames = _dependencyContext.CompileLibraries
                 .Select(x => new AssemblyName(x.Name))
                 .Prepend(core)
                 .ToArray();
 
-            var path = _assembly.Location;
-            if (!File.Exists(path))
-                return assemblyNames.SelectMany(GeneralAssemblyLoadTypes).ToArray();
-
-            var directory = Path.GetDirectoryName(path)!;
-
-            return assemblyNames.SelectMany(LocatedAssemblyLoadTypes(directory)).ToArray();
+            return assemblyNames.SelectMany(CollectAssemblyTypes).ToArray();
         }
 
-        private Type[] GeneralAssemblyLoadTypes(AssemblyName name)
+        private Type[] CollectAssemblyTypes(AssemblyName name)
         {
             try
             {
-                return Assembly.Load(name).GetTypes();
+                var assembly = _loadContext.LoadFromAssemblyName(name);
+                return assembly.GetTypes();
             }
             catch (Exception e) when (
                 e is FileNotFoundException ||
@@ -54,28 +50,5 @@ namespace Annium.Core.Runtime.Types
                 return Type.EmptyTypes;
             }
         }
-
-        private Func<AssemblyName, Type[]> LocatedAssemblyLoadTypes(string directory) => name =>
-        {
-            var assemblyPath = Path.Combine(directory, $"{name.Name}{LibraryFileExtension}");
-            try
-            {
-                if (File.Exists(assemblyPath))
-                    return Assembly.LoadFrom(assemblyPath).GetTypes();
-
-                return Assembly.Load(name).GetTypes();
-            }
-            catch (Exception e) when (
-                e is FileNotFoundException ||
-                e is FileLoadException
-            )
-            {
-                return Type.EmptyTypes;
-            }
-            catch
-            {
-                return Type.EmptyTypes;
-            }
-        };
     }
-}
+ }

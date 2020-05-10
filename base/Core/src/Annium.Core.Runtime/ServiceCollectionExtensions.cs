@@ -1,4 +1,3 @@
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Loader;
 using Annium.Core.Runtime.Resources;
 using Annium.Core.Runtime.Types;
@@ -15,7 +14,7 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddLoadContextFactories(this IServiceCollection services)
         {
-            services.AddSingleton<DirectoryLoadContextFactory>();
+            services.AddSingleton<PluginLoadContextFactory>();
 
             return services;
         }

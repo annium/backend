@@ -3,13 +3,13 @@ using System.Runtime.Loader;
 
 namespace Annium.Core.Runtime.Loader
 {
-    public class DirectoryLoadContext : AssemblyLoadContext
+    public class PluginLoadContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
 
-        public DirectoryLoadContext(string directory)
+        public PluginLoadContext(string assemblyPath)
         {
-            _resolver = new AssemblyDependencyResolver(directory);
+            _resolver = new AssemblyDependencyResolver(assemblyPath);
         }
 
         protected override Assembly? Load(AssemblyName assemblyName)

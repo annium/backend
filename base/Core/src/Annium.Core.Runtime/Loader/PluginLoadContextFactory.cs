@@ -2,11 +2,11 @@ using System.Runtime.Loader;
 
 namespace Annium.Core.Runtime.Loader
 {
-    public class DirectoryLoadContextFactory
+    public class PluginLoadContextFactory
     {
         public AssemblyLoadContext Create(string assemblyPath)
         {
-            return new DirectoryLoadContext(assemblyPath);
+            return new PluginLoadContext(assemblyPath);
         }
     }
 }
