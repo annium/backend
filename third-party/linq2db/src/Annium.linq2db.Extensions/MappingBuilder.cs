@@ -54,11 +54,25 @@ namespace Annium.linq2db.Extensions
             return this;
         }
 
-        private (Type configurationType, Type entityType)[] CollectConfigurations() => TypeManager.GetInstance(_configurationsAssembly).Types
-            .Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType)
-            .Select(x => (x, i: x.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEntityConfiguration<>))))
-            .Where(p => p.i != null)
-            .Select(p => (p.x, p.i.GenericTypeArguments.Single()))
-            .ToArray();
+        private (Type configurationType, Type entityType)[] CollectConfigurations()
+        {
+            var configurationType = typeof(IEntityConfiguration<>);
+
+            var allTypes = TypeManager.GetInstance(_configurationsAssembly).Types;
+            var concreteClasses = allTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType).ToArray();
+
+            var configurationTypes = concreteClasses
+                .Select(x => (
+                    x,
+                    i: x.GetInterfaces().SingleOrDefault(x =>
+                        x.IsGenericType && x.GetGenericTypeDefinition() == configurationType
+                    )
+                ))
+                .Where(p => p.i != null)
+                .Select(p => (p.x, p.i.GenericTypeArguments.Single()))
+                .ToArray();
+
+            return configurationTypes;
+        }
     }
 }
