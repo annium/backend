@@ -11,7 +11,7 @@ namespace Annium.Extensions.Validation
 {
     public abstract class Validator<TValue> : IValidationContainer<TValue>
     {
-        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> rules =
+        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> _rules =
             new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
         protected IRuleBuilder<TValue, TField> Field<TField>(
@@ -21,7 +21,7 @@ namespace Annium.Extensions.Validation
             var property = TypeHelper.ResolveProperty(accessor);
             var rule = new RuleContainer<TValue, TField>(accessor.Compile());
 
-            rules[property] = rule;
+            _rules[property] = rule;
 
             return rule;
         }
@@ -33,14 +33,14 @@ namespace Annium.Extensions.Validation
             ILocalizer localizer
         )
         {
-            if (rules.Count == 0)
+            if (_rules.Count == 0)
                 return (Result.New(), false);
 
             var result = Result.New();
             var ranStage = false;
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            foreach (var (property, rule) in rules)
+            foreach (var (property, rule) in _rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var ruleResult = Result.New();

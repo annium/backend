@@ -249,8 +249,8 @@ namespace Annium.Extensions.Validation
             string message = ""
         ) => rule.Add((context, value) =>
         {
-            var index = value?.IndexOf('@') ?? -1;
-            if (index < 1 || index >= value!.Length - 1)
+            var index = value?.IndexOf('@');
+            if (!index.HasValue || index.Value < 1 || index >= value!.Length - 1)
                 context.Error(string.IsNullOrEmpty(message) ? "Value is not an email" : message);
         });
 

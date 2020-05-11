@@ -11,26 +11,26 @@ namespace Annium.Extensions.Validation
 {
     internal class ValidationExecutor<TValue> : IValidator<TValue>
     {
-        private readonly static Type[] validatorSets = typeof(TValue)
-        .GetInheritanceChain(self: true, root: false)
-        .Concat(typeof(TValue).GetInterfaces())
-        .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(IValidationContainer<>).MakeGenericType(t)))
-        .ToArray();
+        private static readonly Type[] ValidatorSets = typeof(TValue)
+            .GetInheritanceChain(self: true)
+            .Concat(typeof(TValue).GetInterfaces())
+            .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(IValidationContainer<>).MakeGenericType(t)))
+            .ToArray();
 
-        private readonly IValidationContainer<TValue>[] validators;
+        private readonly IValidationContainer<TValue>[] _validators;
 
-        private readonly ILocalizer<TValue> localizer;
+        private readonly ILocalizer<TValue> _localizer;
 
         public ValidationExecutor(
             IServiceProvider serviceProvider
         )
         {
-            validators = validatorSets
+            _validators = ValidatorSets
                 .Select(s => (IEnumerable<IValidationContainer<TValue>>) serviceProvider.GetRequiredService(s))
                 .SelectMany(v => v)
                 .ToArray();
 
-            localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
+            _localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
         }
 
         public async Task<IResult> ValidateAsync(TValue value, string? label = null)
@@ -38,11 +38,9 @@ namespace Annium.Extensions.Validation
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
             if (value == null)
-                return hasLabel ?
-                    Result.New().Error(label!, "Value is null") :
-                    Result.New().Error("Value is null");
+                return hasLabel ? Result.New().Error(label!, "Value is null") : Result.New().Error("Value is null");
 
-            if (validators.Length == 0)
+            if (_validators.Length == 0)
                 return Result.New();
 
             var result = Result.New();
@@ -52,9 +50,9 @@ namespace Annium.Extensions.Validation
             {
                 ranStage = false;
 
-                foreach (var validator in validators)
+                foreach (var validator in _validators)
                 {
-                    var(validatorResult, hasRun) = await validator.ValidateAsync(value, label ?? string.Empty, stage, localizer);
+                    var (validatorResult, hasRun) = await validator.ValidateAsync(value, label ?? string.Empty, stage, _localizer);
 
                     result.Join(validatorResult);
                     ranStage = hasRun || ranStage;
