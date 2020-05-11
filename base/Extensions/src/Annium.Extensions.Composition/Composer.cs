@@ -12,8 +12,8 @@ namespace Annium.Extensions.Composition
 {
     public abstract class Composer<TValue> : ICompositionContainer<TValue> where TValue : class
     {
-        public IEnumerable<PropertyInfo> Fields => rules.Keys;
-        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> rules =
+        public IEnumerable<PropertyInfo> Fields => _rules.Keys;
+        private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> _rules =
             new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
         protected IRuleBuilder<TValue, TField> Field<TField>(
@@ -21,12 +21,12 @@ namespace Annium.Extensions.Composition
         )
         {
             var target = TypeHelper.ResolveProperty(targetAccessor);
-            var targetSetter = target.GetSetMethod(nonPublic: true) ??
+            var targetSetter = target.GetSetMethod(true) ??
                 throw new ArgumentException("Target property has no setter", nameof(targetAccessor));
 
             var rule = new RuleContainer<TValue, TField>(targetSetter);
 
-            rules[target] = rule;
+            _rules[target] = rule;
 
             return rule;
         }
@@ -36,7 +36,7 @@ namespace Annium.Extensions.Composition
             var result = Result.New();
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            foreach (var(property, rule) in rules)
+            foreach (var(property, rule) in _rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var ruleResult = Result.New();
@@ -45,7 +45,7 @@ namespace Annium.Extensions.Composition
                 await rule.ComposeAsync(context, value);
 
                 result.Join(ruleResult);
-            };
+            }
 
             return Result.Status(result.HasErrors ? OperationStatus.NotFound : OperationStatus.OK).Join(result);
         }

@@ -22,8 +22,8 @@ namespace Annium.Extensions.Validation
             Root = root;
             Label = label;
             Field = field;
-            this._result = result;
-            this._localizer = localizer;
+            _result = result;
+            _localizer = localizer;
         }
 
         public void Error(string error, params object[] arguments)

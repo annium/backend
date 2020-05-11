@@ -8,8 +8,8 @@ namespace Annium.Extensions.Composition
         public TValue Root { get; }
         public string Label { get; }
         public string Field { get; }
-        private readonly IResult result;
-        private readonly ILocalizer localizer;
+        private readonly IResult _result;
+        private readonly ILocalizer _localizer;
 
         internal CompositionContext(
             TValue root,
@@ -22,13 +22,13 @@ namespace Annium.Extensions.Composition
             Root = root;
             Label = label;
             Field = field;
-            this.result = result;
-            this.localizer = localizer;
+            _result = result;
+            _localizer = localizer;
         }
 
         public void Error(string error, params object[] arguments)
         {
-            result.Error(Label, localizer[error, arguments]);
+            _result.Error(Label, _localizer[error, arguments]);
         }
     }
 }

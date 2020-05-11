@@ -1,4 +1,6 @@
+using System;
 using System.Threading.Tasks;
+using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 
@@ -67,6 +69,37 @@ namespace Annium.Extensions.Composition.Tests
             data.Login.IsEqual(nameof(User.Login));
         }
 
+        [Fact]
+        public async Task Composition_When_ImplementsConditional()
+        {
+            // arrange
+            var personWithoutUser = new Person();
+            var personWithUser = new Person() { UserId = Guid.NewGuid() };
+            var composer = GetComposer<Person>();
+
+            // act
+            var resultWithoutUser = await composer.ComposeAsync(personWithoutUser);
+            var resultWithUser = await composer.ComposeAsync(personWithUser);
+
+            // assert
+            resultWithoutUser.HasErrors.IsFalse();
+            personWithoutUser.IsShallowEqual(new Person
+            {
+                Name = nameof(Person.Name),
+            });
+            resultWithUser.HasErrors.IsFalse();
+            personWithUser.IsShallowEqual(new Person
+            {
+                Name = nameof(Person.Name),
+                UserId = personWithUser.UserId,
+                User = new User
+                {
+                    Email = nameof(User.Email),
+                    Login = nameof(User.Login),
+                }
+            });
+        }
+
         private class User : IEmail, ILogin
         {
             public string Email { get; set; } = string.Empty;
@@ -102,6 +135,8 @@ namespace Annium.Extensions.Composition.Tests
         private class Person
         {
             public string Name { get; set; } = string.Empty;
+            public Guid? UserId { get; set; }
+            public User? User { get; set; }
         }
 
         private class PersonComposer : Composer<Person>
@@ -109,6 +144,7 @@ namespace Annium.Extensions.Composition.Tests
             public PersonComposer()
             {
                 Field(p => p.Name).LoadWith(ctx => ctx.Label);
+                Field(p => p.User).When(p => p.Root.UserId.HasValue).LoadWith(ctx => new User { Email = nameof(User.Email), Login = nameof(User.Login) });
             }
         }
 
