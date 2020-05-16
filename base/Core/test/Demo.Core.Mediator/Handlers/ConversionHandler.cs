@@ -21,7 +21,7 @@ namespace Demo.Core.Mediator.Handlers
 
         public async Task<Response<TResponse>> HandleAsync(
             Request<TRequest> request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<TRequest, Task<TResponse>> next
         )
         {

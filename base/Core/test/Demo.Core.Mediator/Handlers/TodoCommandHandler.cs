@@ -22,7 +22,7 @@ namespace Demo.Core.Mediator.Handlers
 
             public Task<int> HandleAsync(
                 Authored<CreateTodoRequest> request,
-                CancellationToken cancellationToken
+                CancellationToken ct
             )
             {
                 return Task.FromResult(todoRepository.Add(new Todo(request.Entity.Value)));
@@ -30,7 +30,7 @@ namespace Demo.Core.Mediator.Handlers
 
             public Task<bool> HandleAsync(
                 DeleteTodoRequest request,
-                CancellationToken cancellationToken
+                CancellationToken ct
             )
             {
                 return Task.FromResult(todoRepository.Delete(request.Id));

@@ -11,7 +11,7 @@ namespace Annium.Architecture.Mediator.Tests
     {
         public Task<IStatusResult<OperationStatus, TRequest>> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken
+            CancellationToken ct
         )
         {
             if (request.Throw)

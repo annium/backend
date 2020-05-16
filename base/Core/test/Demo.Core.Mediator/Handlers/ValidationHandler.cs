@@ -26,7 +26,7 @@ namespace Demo.Core.Mediator.Handlers
 
         public async Task<IBooleanResult<TResponse>> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<TRequest, Task<TResponse>> next
         )
         {

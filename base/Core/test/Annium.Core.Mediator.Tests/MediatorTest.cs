@@ -108,7 +108,7 @@ namespace Annium.Core.Mediator.Tests
 
             public async Task<Response<TResponse>> HandleAsync(
                 Request<TRequest> request,
-                CancellationToken cancellationToken,
+                CancellationToken ct,
                 Func<TRequest, Task<TResponse>> next
             )
             {
@@ -162,7 +162,7 @@ namespace Annium.Core.Mediator.Tests
 
             public async Task<IBooleanResult<TResponse>> HandleAsync(
                 TRequest request,
-                CancellationToken cancellationToken,
+                CancellationToken ct,
                 Func<TRequest, Task<TResponse>> next
             )
             {
@@ -195,7 +195,7 @@ namespace Annium.Core.Mediator.Tests
 
             public Task<TResponse> HandleAsync(
                 TRequest request,
-                CancellationToken cancellationToken
+                CancellationToken ct
             )
             {
                 logger.Info(GetType().FullName!);
@@ -220,7 +220,7 @@ namespace Annium.Core.Mediator.Tests
 
             public Task<One> HandleAsync(
                 Base request,
-                CancellationToken cancellationToken
+                CancellationToken ct
             )
             {
                 logger.Info(GetType().FullName!);

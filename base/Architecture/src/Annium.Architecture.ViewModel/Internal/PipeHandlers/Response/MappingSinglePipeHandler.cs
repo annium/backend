@@ -25,7 +25,7 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
 
         public async Task<IStatusResult<OperationStatus, TResponseOut>> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<TRequest, Task<IStatusResult<OperationStatus, TResponseIn>>> next
         )
         {

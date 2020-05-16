@@ -39,7 +39,7 @@ namespace Demo.AspNetCore.Controllers
 
     public class DemoCommandHandler : ICommandHandler<DemoCommand>
     {
-        public Task<IStatusResult<OperationStatus>> HandleAsync(DemoCommand request, CancellationToken cancellationToken)
+        public Task<IStatusResult<OperationStatus>> HandleAsync(DemoCommand request, CancellationToken ct)
         {
             if (!request.IsOk)
                 return Task.FromResult(Result.Status(OperationStatus.BadRequest).Error("Not ok"));
@@ -55,7 +55,7 @@ namespace Demo.AspNetCore.Controllers
 
     public class DemoQueryHandler : IQueryHandler<DemoQuery, DemoResponse>
     {
-        public Task<IStatusResult<OperationStatus, DemoResponse>> HandleAsync(DemoQuery request, CancellationToken cancellationToken)
+        public Task<IStatusResult<OperationStatus, DemoResponse>> HandleAsync(DemoQuery request, CancellationToken ct)
         {
             if (request.Q == 0)
                 return Task.FromResult(Result.Status<OperationStatus, DemoResponse>(OperationStatus.NotFound, default!).Error("Not found"));

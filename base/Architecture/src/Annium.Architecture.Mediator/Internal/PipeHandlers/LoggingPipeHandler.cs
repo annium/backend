@@ -19,7 +19,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         public async Task<TResponse> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<TRequest, Task<TResponse>> next
         )
         {

@@ -24,7 +24,7 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
 
         public Task<TResponse> HandleAsync(
             IEnumerable<TRequestIn> request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<IEnumerable<TRequestOut>, Task<TResponse>> next
         )
         {

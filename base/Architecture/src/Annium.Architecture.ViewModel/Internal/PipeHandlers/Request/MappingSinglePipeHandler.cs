@@ -23,7 +23,7 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
 
         public Task<TResponse> HandleAsync(
             TRequestIn request,
-            CancellationToken cancellationToken,
+            CancellationToken ct,
             Func<TRequestOut, Task<TResponse>> next
         )
         {
