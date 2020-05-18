@@ -7,17 +7,33 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddEntityFrameworkSqliteInMemory<TContext>(
+        public static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
             this IServiceCollection services,
-            bool logQueries = false
+            IServiceProvider provider
         )
             where TContext : DbContext
         {
-            var cn = new SqliteConnection("Data Source=:memory:");
+            return services.AddEntityFrameworkSqliteInMemory<TContext>(provider.GetRequiredService<SqliteConnection>());
+        }
+
+        public static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
+            this IServiceCollection services
+        )
+            where TContext : DbContext
+        {
+            return services.AddEntityFrameworkSqliteInMemory<TContext>(new SqliteConnection("Data Source=:memory:"));
+        }
+
+        private static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
+            this IServiceCollection services,
+            SqliteConnection cn
+        )
+            where TContext : DbContext
+        {
             cn.Open();
 
             // register context itself
-            services
+            return services
                 .AddDbContext<TContext>(builder =>
                 {
                     var opts = builder.UseSqlite(cn).Options;

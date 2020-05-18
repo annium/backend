@@ -62,10 +62,10 @@ namespace Annium.Extensions.Composition
 
             var target = await LoadAsync(context);
 
-            if ((target is null || target.Equals(default(TField))) && !_allowDefault)
+            if ((target is null || target.Equals(default(TField)!)) && !_allowDefault)
                 context.Error(string.IsNullOrEmpty(_message) ? "{0} not found" : _message, context.Field);
             else
-                _setTarget.Invoke(value, new object[] { target });
+                _setTarget.Invoke(value, new object[] { target! });
         }
 
         private async Task<bool> CheckAsync(CompositionContext<TValue> context) => _check switch
