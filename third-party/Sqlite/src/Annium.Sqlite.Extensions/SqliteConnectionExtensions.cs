@@ -1,6 +1,6 @@
 using Microsoft.Data.Sqlite;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Sqlite.Extensions
 {
     public static class SqliteConnectionExtensions
     {
