@@ -101,8 +101,8 @@ namespace Annium.Configuration.Abstractions
                 if (!TypeManager.Instance.CanResolve(type))
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
-                var resolveFields = type.GetProperties().Where(p => p.GetCustomAttribute<ResolveFieldAttribute>() != null);
-                if (resolveFields.Count() > 1)
+                var resolveFields = type.GetProperties().Where(p => p.GetCustomAttribute<ResolveFieldAttribute>() != null).ToArray();
+                if (resolveFields.Length > 1)
                     throw new ArgumentException($"Type {type} has multiple resolution fields defined: {string.Join(", ", resolveFields.Select(f => f.Name))}.");
 
                 var resolveField = resolveFields.FirstOrDefault() ??
