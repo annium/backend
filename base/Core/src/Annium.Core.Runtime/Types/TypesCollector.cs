@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -20,7 +21,7 @@ namespace Annium.Core.Runtime.Types
             _loadContext = AssemblyLoadContext.GetLoadContext(assembly)!;
         }
 
-        public Type[] CollectTypes()
+        public HashSet<Type> CollectTypes()
         {
             var core = typeof(object).Assembly.GetName();
             var assemblyNames = _dependencyContext.CompileLibraries
@@ -28,7 +29,7 @@ namespace Annium.Core.Runtime.Types
                 .Prepend(core)
                 .ToArray();
 
-            return assemblyNames.SelectMany(CollectAssemblyTypes).ToArray();
+            return assemblyNames.SelectMany(CollectAssemblyTypes).ToHashSet();
         }
 
         private Type[] CollectAssemblyTypes(AssemblyName name)

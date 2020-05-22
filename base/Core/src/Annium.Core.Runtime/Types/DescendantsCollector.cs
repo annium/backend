@@ -1,79 +1,57 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Annium.Core.Runtime.Types
 {
     internal class DescendantsCollector
     {
-        public IDictionary<Type, Type[]> CollectDescendants(Type[] types)
+        private delegate void RegisterAncestor(Type type, Type ancestor);
+
+        public IReadOnlyDictionary<Type, HashSet<Type>> CollectDescendants(HashSet<Type> types)
         {
-            var result = new Dictionary<Type, Type[]>();
-            foreach (var type in types)
-            {
-                var descendants = CollectDescendants(types, type);
-                if (descendants.Length > 0)
-                    result[type] = descendants;
-            }
+            var result = new Dictionary<Type, HashSet<Type>>();
+
+            // only classes and interfaces can have/be descendants
+            var classes = types.Where(x => x.IsClass).ToArray();
+            foreach (var type in classes)
+                CollectClassAncestors(type, Register);
+
+            var interfaces = types.Where(x => x.IsInterface).ToArray();
+            foreach (var type in interfaces)
+                CollectInterfaceAncestors(type, Register);
 
             return result;
-        }
 
-        private Type[] CollectDescendants(Type[] types, Type type)
-        {
-            // can have descendants if type is interface or class
-            if (!type.IsInterface && !type.IsClass)
-                return Type.EmptyTypes;
-
-            if (!type.IsGenericTypeDefinition)
-                return types
-                    .Where(IsAssignableFrom(type))
-                    .ToArray();
-
-            if (type.IsInterface)
-                return types.Where(IsGenericInterfaceImplementation(type)).ToArray();
-
-            return types
-                .Where(IsGenericClassExtension(type))
-                .ToArray();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Func<Type, bool> IsAssignableFrom(Type type) => x =>
-            IsOtherNonAbstractClass(type, x) &&
-            type.IsAssignableFrom(x);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Func<Type, bool> IsGenericInterfaceImplementation(Type type) => x =>
-            IsOtherNonAbstractClass(type, x) &&
-            x.GetInterfaces()
-                .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == type);
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Func<Type, bool> IsGenericClassExtension(Type type) => x =>
-        {
-            if (!IsOtherNonAbstractClass(type, x))
-                return false;
-
-            if (x.BaseType == null || x.BaseType == typeof(object))
-                return false;
-
-            while (x != null)
+            void Register(Type type, Type ancestor)
             {
-                if (x.IsGenericType && x.GetGenericTypeDefinition() == type)
-                    return true;
+                if (ancestor.IsGenericType)
+                    ancestor = ancestor.GetGenericTypeDefinition();
 
-                x = x.BaseType!;
+                if (result.TryGetValue(ancestor, out var descendants))
+                    descendants.Add(type);
+                else
+                    result[ancestor] = new HashSet<Type> { type };
             }
+        }
 
-            return false;
-        };
+        private void CollectClassAncestors(Type type, RegisterAncestor register)
+        {
+            foreach (var ancestor in type.GetInterfaces())
+                register(type, ancestor);
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private bool IsOtherNonAbstractClass(Type type, Type x) =>
-            x != type &&
-            x.IsClass &&
-            !x.IsAbstract;
+            var baseType = type.BaseType;
+            while (baseType != null && baseType != typeof(object))
+            {
+                register(type, baseType);
+                baseType = baseType.BaseType;
+            }
+        }
+
+        private void CollectInterfaceAncestors(Type type, RegisterAncestor register)
+        {
+            foreach (var ancestor in type.GetInterfaces())
+                register(type, ancestor);
+        }
     }
 }

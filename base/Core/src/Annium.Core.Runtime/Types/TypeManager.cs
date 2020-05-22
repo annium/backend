@@ -12,17 +12,17 @@ namespace Annium.Core.Runtime.Types
         public static readonly ITypeManager Instance = new TypeManager(Assembly.GetEntryAssembly()!);
         public static ITypeManager GetInstance(Assembly assembly) => Instances.GetOrAdd(assembly, a => new TypeManager(a));
         public IReadOnlyCollection<Type> Types => _types.Value;
-        private readonly Lazy<Type[]> _types;
-        private readonly Lazy<IDictionary<Type, Type[]>> _descendants;
-        private readonly Lazy<IDictionary<Type, string[]>> _signatures;
+        private readonly Lazy<HashSet<Type>> _types;
+        private readonly Lazy<IReadOnlyDictionary<Type, HashSet<Type>>> _descendants;
+        private readonly Lazy<IReadOnlyDictionary<Type, HashSet<string>>> _signatures;
 
         private TypeManager(
             Assembly assembly
         )
         {
-            _types = new Lazy<Type[]>(new TypesCollector(assembly).CollectTypes, true);
-            _descendants = new Lazy<IDictionary<Type, Type[]>>(CollectDescendants, true);
-            _signatures = new Lazy<IDictionary<Type, string[]>>(CollectSignatures, true);
+            _types = new Lazy<HashSet<Type>>(new TypesCollector(assembly).CollectTypes, true);
+            _descendants = new Lazy<IReadOnlyDictionary<Type, HashSet<Type>>>(CollectDescendants, true);
+            _signatures = new Lazy<IReadOnlyDictionary<Type, HashSet<string>>>(CollectSignatures, true);
         }
 
         public Type? GetByName(string name) => _types.Value.FirstOrDefault(t => t.FullName == name);
@@ -32,6 +32,7 @@ namespace Annium.Core.Runtime.Types
 
         public Type[] GetImplementations(Type baseType)
         {
+            // TODO: perhaps, descendants will solve this
             var types = _types.Value;
 
             // handle non-generic type definition
@@ -142,18 +143,18 @@ namespace Annium.Core.Runtime.Types
             return resolution.type;
         }
 
-        private IDictionary<Type, Type[]> CollectDescendants() => new DescendantsCollector().CollectDescendants(_types.Value);
+        private IReadOnlyDictionary<Type, HashSet<Type>> CollectDescendants() => new DescendantsCollector().CollectDescendants(_types.Value);
 
         // collect signatures from given types
         // each signature is array of lowercased property names
-        private IDictionary<Type, string[]> CollectSignatures() => _descendants.Value.Values
+        private IReadOnlyDictionary<Type, HashSet<string>> CollectSignatures() => _descendants.Value.Values
             .SelectMany(v => v)
             .Distinct()
             .ToDictionary(
                 t => t,
-                t => t.GetProperties().Select(p => p.Name.ToLowerInvariant()).Distinct().OrderBy(p => p).ToArray()
+                t => t.GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToHashSet()
             )
-            .Where(p => p.Value.Length > 0)
+            .Where(p => p.Value.Count > 0)
             .ToDictionary(p => p.Key, p => p.Value);
     }
 }
