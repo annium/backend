@@ -32,47 +32,19 @@ namespace Annium.Core.Runtime.Types
 
         public Type[] GetImplementations(Type baseType)
         {
-            // TODO: perhaps, descendants will solve this
-            var types = _types.Value;
+            // if baseType is not generic or baseType is generic type definition - it will be registered explicitly an all of it's dependants match
+            if (!baseType.IsGenericType || baseType.IsGenericTypeDefinition)
+                return GetDescendants(baseType);
 
-            // handle non-generic type definition
-            if (!baseType.IsGenericTypeDefinition)
-                return types
-                    .Where(t => t != baseType && baseType.IsAssignableFrom(t))
-                    .ToArray();
-
-            // handle generic type definition
-            // generic interface
-            if (baseType.IsInterface)
-                return types
-                    .Where(t =>
-                    {
-                        if (t == baseType)
-                            return false;
-
-                        return t.GetInterfaces()
-                            .Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == baseType);
-                    })
-                    .ToArray();
-
-            return types
-                .Where(t =>
-                {
-                    if (t == baseType)
-                        return false;
-
-                    while (t != null && t != typeof(object))
-                    {
-                        var checkedType = t.IsGenericType ? t.GetGenericTypeDefinition() : t;
-                        if (checkedType == baseType)
-                            return true;
-
-                        t = t.BaseType!;
-                    }
-
-                    return false;
-                })
+            // if baseType is generic type - select descendants, assignable from it
+            return GetDescendants(baseType)
+                .Where(t => baseType.IsAssignableFrom(t))
                 .ToArray();
+
+            Type[] GetDescendants(Type type) =>
+                _descendants.Value.TryGetValue(type, out var implementations)
+                    ? implementations.ToArray()
+                    : Type.EmptyTypes;
         }
 
         // resolve target type by base type and source instance
