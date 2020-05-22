@@ -1,4 +1,5 @@
 .idea/
+*.DotSettings.user
 
 # xs ignore patterns
 .xs.ignore
