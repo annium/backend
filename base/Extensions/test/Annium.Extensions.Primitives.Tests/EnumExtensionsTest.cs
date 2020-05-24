@@ -8,7 +8,7 @@ namespace Annium.Extensions.Primitives.Tests
     public class EnumExtensionsTest
     {
         [Fact]
-        public void ParseEnum_NoDefault_Works()
+        public void ParseEnum_StringNoDefault_Works()
         {
             // arrange
             var name = "one";
@@ -20,7 +20,25 @@ namespace Annium.Extensions.Primitives.Tests
             name.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
             desc.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
             value.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
-            ((Func<TestEnum>)(() => invalid.ParseEnum<TestEnum>())).Throws<ArgumentException>();
+            ((Func<TestEnum>) (() => invalid.ParseEnum<TestEnum>())).Throws<ArgumentException>();
+        }
+
+        [Fact]
+        public void ParseEnum_ValueNoDefault_Works()
+        {
+            // arrange
+            var a = 1;
+            var b = 3;
+            var c = 1m;
+            var d = 5m;
+            var e = 8;
+
+            // assert
+            a.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
+            b.ParseEnum<TestEnum>().IsEqual(TestEnum.One | TestEnum.Two);
+            c.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
+            d.ParseEnum<TestEnum>().IsEqual(TestEnum.One | TestEnum.Three);
+            ((Func<TestEnum>) (() => e.ParseEnum<TestEnum>())).Throws<ArgumentException>();
         }
 
         [Fact]
@@ -33,11 +51,11 @@ namespace Annium.Extensions.Primitives.Tests
             // assert
             valid.ParseFlags<TestEnum>('|').IsEqual(TestEnum.One | TestEnum.Two);
             string.Empty.ParseFlags<TestEnum>('|').IsEqual(TestEnum.None);
-            ((Func<TestEnum>)(() => invalid.ParseFlags<TestEnum>(','))).Throws<ArgumentException>();
+            ((Func<TestEnum>) (() => invalid.ParseFlags<TestEnum>(','))).Throws<ArgumentException>();
         }
 
         [Fact]
-        public void ParseEnum_Default_Works()
+        public void ParseEnum_StringDefault_Works()
         {
             // arrange
             var name = "one";
@@ -50,6 +68,24 @@ namespace Annium.Extensions.Primitives.Tests
             desc.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
             value.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
             invalid.ParseEnum(TestEnum.None).IsEqual(TestEnum.None);
+        }
+
+        [Fact]
+        public void ParseEnum_ValueDefault_Works()
+        {
+            // arrange
+            var a = 1;
+            var b = 3;
+            var c = 1m;
+            var d = 5m;
+            var e = 8;
+
+            // assert
+            a.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
+            b.ParseEnum(TestEnum.None).IsEqual(TestEnum.One | TestEnum.Two);
+            c.ParseEnum(TestEnum.None).IsEqual(TestEnum.One);
+            d.ParseEnum(TestEnum.None).IsEqual(TestEnum.One | TestEnum.Three);
+            e.ParseEnum(TestEnum.None).IsEqual(TestEnum.None);
         }
 
         [Fact]
@@ -68,11 +104,16 @@ namespace Annium.Extensions.Primitives.Tests
         private enum TestEnum
         {
             [Description("empty")]
-            None,
+            None = 0,
+
             [Description("a")]
-            One,
+            One = 1,
+
             [Description("b")]
-            Two
+            Two = 2,
+
+            [Description("Other")]
+            Three = 4,
         }
     }
 }
