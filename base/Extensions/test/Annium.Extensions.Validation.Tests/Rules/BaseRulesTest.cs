@@ -375,21 +375,14 @@ namespace Annium.Extensions.Validation.Tests.Rules
         }
 
         [Fact]
-        public void Enum_NotEnumType_ThrowsArgumentException()
-        {
-            // act
-            ((Func<IValidator<BadEnum>>) (() => GetValidator<BadEnum>())).Throws<ArgumentException>();
-        }
-
-        [Fact]
         public async Task Enum_Works()
         {
             // arrange
             var validator = GetValidator<Person>();
 
             // act
-            var resultGood = await validator.ValidateAsync(new Person { Enum = LogLevel.None });
-            var resultBad = await validator.ValidateAsync(new Person { Enum = (LogLevel) 4 });
+            var resultGood = await validator.ValidateAsync(new Person { Enum = LogLevel.Debug | LogLevel.Info });
+            var resultBad = await validator.ValidateAsync(new Person { Enum = (LogLevel) 8 });
 
             // assert
             resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();
@@ -425,12 +418,13 @@ namespace Annium.Extensions.Validation.Tests.Rules
             public LogLevel Enum { get; set; }
         }
 
+        [Flags]
         private enum LogLevel
         {
             None = 0,
             Trace = 1,
             Debug = 2,
-            Info = 3,
+            Info = 4,
         }
 
         private class PersonValidator : Validator<Person>
@@ -462,19 +456,6 @@ namespace Annium.Extensions.Validation.Tests.Rules
                 Field(p => p.MustValueFieldAsync).Must((ctx, x) => Task.FromResult(x == ctx.MustFieldAsync));
                 Field(p => p.Email).Email();
                 Field(p => p.Enum).Enum();
-            }
-        }
-
-        private class BadEnum
-        {
-            public string Name { get; set; } = string.Empty;
-        }
-
-        private class BadEnumValidator : Validator<BadEnum>
-        {
-            public BadEnumValidator()
-            {
-                Field(e => e.Name).Enum();
             }
         }
     }

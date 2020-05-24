@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Annium.Extensions.Primitives;
 
 namespace Annium.Extensions.Validation
 {
@@ -258,14 +259,11 @@ namespace Annium.Extensions.Validation
             this IRuleBuilder<TValue, TField> rule,
             string message = ""
         )
+            where TField : struct, Enum
         {
-            var type = typeof(TField);
-            if (!type.IsEnum)
-                throw new ArgumentException($"{type.FullName} is not Enum type");
-
             return rule.Add((context, value) =>
             {
-                if (!System.Enum.IsDefined(type, value!))
+                if (!value.TryParseEnum<TField>().succeed)
                     context.Error(string.IsNullOrEmpty(message) ? "Value is not in expected range" : message);
             });
         }
