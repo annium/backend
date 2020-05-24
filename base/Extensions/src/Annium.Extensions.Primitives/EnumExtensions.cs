@@ -163,12 +163,14 @@ namespace Annium.Extensions.Primitives
 
         private static HashSet<ValueType> ParseValues(Type type)
         {
+            var valueType = Enum.GetUnderlyingType(type);
+
             var result = new HashSet<ValueType>();
 
             // if not flags - simply add all values
             if (type.GetCustomAttribute<FlagsAttribute>() is null)
                 foreach (var item in type.GetFields().Where(x => x.IsStatic))
-                    result.Add((ValueType) item.GetValue(null)!);
+                    result.Add((ValueType) Convert.ChangeType(item.GetValue(null)!, valueType));
             else
             {
                 var values = type.GetFields()
@@ -177,7 +179,6 @@ namespace Annium.Extensions.Primitives
                     .OrderBy(x => x)
                     .ToArray();
                 var max = values.Aggregate(0L, (result, value) => result | value);
-                var valueType = Enum.GetUnderlyingType(type);
 
                 for (var i = values[0]; i <= max; i++)
                     result.Add((ValueType) Convert.ChangeType(i, valueType));
