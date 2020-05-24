@@ -146,41 +146,41 @@ namespace Annium.Extensions.Validation
 
         public static IRuleBuilder<TValue, TField> LessThan<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            TField min,
+            TField max,
             string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
-            if (value?.CompareTo(min) >= 0)
+            if (value?.CompareTo(max) >= 0)
                 context.Error(string.IsNullOrEmpty(message) ? "Value is greater, than given maximum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> LessThanOrEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            TField min,
+            TField max,
             string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
-            if (value?.CompareTo(min) > 0)
+            if (value?.CompareTo(max) > 0)
                 context.Error(string.IsNullOrEmpty(message) ? "Value is greater, than given maximum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> GreaterThan<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            TField max,
+            TField min,
             string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
-            if (value?.CompareTo(max) <= 0)
+            if (value?.CompareTo(min) <= 0)
                 context.Error(string.IsNullOrEmpty(message) ? "Value is less, than given minimum" : message);
         });
 
         public static IRuleBuilder<TValue, TField> GreaterThanOrEqual<TValue, TField>(
             this IRuleBuilder<TValue, TField> rule,
-            TField max,
+            TField min,
             string message = ""
         ) where TField : IComparable<TField> => rule.Add((context, value) =>
         {
-            if (value?.CompareTo(max) < 0)
+            if (value?.CompareTo(min) < 0)
                 context.Error(string.IsNullOrEmpty(message) ? "Value is less, than given minimum" : message);
         });
 
