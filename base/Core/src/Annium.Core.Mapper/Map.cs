@@ -8,13 +8,9 @@ namespace Annium.Core.Mapper
 {
     public class Map<S, T> : Map
     {
-        public new Map<S, T> Type(
-            Expression<Func<S, T>> map
-        )
+        public void Type(Expression<Func<S, T>> map)
         {
             base.Type = map;
-
-            return this;
         }
 
         public Map<S, T> Field(
@@ -45,8 +41,8 @@ namespace Annium.Core.Mapper
 
         internal IEnumerable<PropertyInfo> Ignores => ignores;
 
-        protected Dictionary<PropertyInfo, LambdaExpression> fields = new Dictionary<PropertyInfo, LambdaExpression>();
+        protected readonly Dictionary<PropertyInfo, LambdaExpression> fields = new Dictionary<PropertyInfo, LambdaExpression>();
 
-        protected HashSet<PropertyInfo> ignores = new HashSet<PropertyInfo>();
+        protected readonly HashSet<PropertyInfo> ignores = new HashSet<PropertyInfo>();
     }
 }

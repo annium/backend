@@ -46,8 +46,8 @@ namespace Annium.Core.Mapper.Tests
         private void ConfigureProfile(Profile p)
         {
             p.Map<A, B>()
-                .Field(e => e.Text!.ToLower(), e => e.LowerText!)
-                .Ignore(e => e.Ignored);
+                .Ignore(e => e.Ignored)
+                .Field(e => e.Text!.ToLower(), e => e.LowerText!);
             p.Map<A, C>()
                 .Field(e => e.Text!.ToLower(), c => c.LowerText!)
                 .Ignore(e => e.Ignored);
