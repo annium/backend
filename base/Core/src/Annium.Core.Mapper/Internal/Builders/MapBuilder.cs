@@ -55,18 +55,20 @@ namespace Annium.Core.Mapper.Internal.Builders
             return _maps[key] = result.Compile();
         }
 
-        private Func<Expression, Expression> ResolveMap(Type src, Type tgt)
+        private Func<Expression, Expression>? ResolveMap(Type src, Type tgt)
         {
             if (src == tgt)
-                return null!;
+                return null;
 
             var key = (src, tgt);
             if (_mappings.TryGetValue(key, out var mapping))
                 return mapping;
 
-            _profile.Maps.TryGetValue(key, out var cfg);
+            var map = _profile.Maps.TryGetValue(key, out var cfg)
+                ? BuildMap(src, tgt, cfg)
+                : BuildMap(src, tgt);
 
-            return _mappings[key] = BuildMap(src, tgt, cfg!);
+            return _mappings[key] = map;
         }
     }
 }

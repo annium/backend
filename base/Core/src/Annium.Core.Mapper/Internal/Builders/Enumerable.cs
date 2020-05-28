@@ -30,9 +30,9 @@ namespace Annium.Core.Mapper.Internal.Builders
             var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))!.MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
             var map = ResolveMap(srcEl, tgtEl);
-            var selection = map is null ?
-                source :
-                Expression.Call(select, source, Expression.Lambda(map(param), param));
+            var selection = map is null
+                ? source
+                : Expression.Call(select, source, Expression.Lambda(map(param), param));
             var result = Expression.Condition(
                 Expression.Equal(source, Expression.Default(src)),
                 Expression.NewArrayInit(tgtEl),
