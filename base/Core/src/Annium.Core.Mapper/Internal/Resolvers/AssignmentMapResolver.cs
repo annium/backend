@@ -7,6 +7,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 {
     internal class AssignmentMapResolver : IMapResolver
     {
+        public int Order => 2000;
+
         public bool CanResolveMap(Type src, Type tgt) => true;
 
         public Mapping ResolveMap(Type src, Type tgt, IMappingContext ctx) => source =>

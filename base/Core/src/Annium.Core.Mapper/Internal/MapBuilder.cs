@@ -68,7 +68,7 @@ namespace Annium.Core.Mapper.Internal
 
         private Mapping BuildMapping(Type src, Type tgt, Map cfg)
         {
-            var configurableMapResolver = _configurableMapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
+            var configurableMapResolver = _configurableMapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (configurableMapResolver != null)
                 return configurableMapResolver.ResolveMap(src, tgt, cfg, _context);
 
@@ -77,7 +77,7 @@ namespace Annium.Core.Mapper.Internal
 
         private Mapping BuildMapping(Type src, Type tgt)
         {
-            var mapResolver = _mapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
+            var mapResolver = _mapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (mapResolver != null)
                 return mapResolver.ResolveMap(src, tgt, _context);
 

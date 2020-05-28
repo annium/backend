@@ -7,6 +7,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 {
     internal class ConstructorMapResolver : IMapResolver
     {
+        public int Order => 1500;
+
         public bool CanResolveMap(Type src, Type tgt)
         {
             return tgt.GetConstructor(Type.EmptyTypes) is null;
