@@ -1,11 +1,10 @@
 using System;
-using System.Linq.Expressions;
 
 namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildMap(Type src, Type tgt, Map cfg) => source =>
+        private Mapping BuildMap(Type src, Type tgt, Map cfg) => source =>
         {
             if (GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null)
                 return BuildEnumerableMap(src, tgt)(source);
@@ -19,7 +18,7 @@ namespace Annium.Core.Mapper.Internal.Builders
             return BuildAssignmentMap(src, tgt, cfg)(source);
         };
 
-        private Func<Expression, Expression> BuildMap(Type src, Type tgt) => source =>
+        private Mapping BuildMap(Type src, Type tgt) => source =>
         {
             if (GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null)
                 return BuildEnumerableMap(src, tgt)(source);

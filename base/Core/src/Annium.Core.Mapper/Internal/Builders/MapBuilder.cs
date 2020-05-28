@@ -11,19 +11,19 @@ namespace Annium.Core.Mapper.Internal.Builders
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> _maps =
             new Dictionary<ValueTuple<Type, Type>, Delegate>();
 
-        private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> _mappings =
-            new Dictionary<ValueTuple<Type, Type>, Func<Expression, Expression>>();
+        private readonly IDictionary<ValueTuple<Type, Type>, Mapping> _mappings =
+            new Dictionary<ValueTuple<Type, Type>, Mapping>();
 
         private readonly Profile _profile;
 
         private readonly ITypeManager _typeManager;
 
-        private readonly Repacker _repacker;
+        private readonly IRepacker _repacker;
 
         public MapBuilder(
             IEnumerable<Profile> configs,
             ITypeManager typeManager,
-            Repacker repacker
+            IRepacker repacker
         )
         {
             _profile = Profile.Merge(configs.ToArray());
@@ -55,7 +55,7 @@ namespace Annium.Core.Mapper.Internal.Builders
             return _maps[key] = result.Compile();
         }
 
-        private Func<Expression, Expression>? ResolveMap(Type src, Type tgt)
+        private Mapping? ResolveMap(Type src, Type tgt)
         {
             if (src == tgt)
                 return null;
