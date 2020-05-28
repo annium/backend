@@ -8,7 +8,7 @@ namespace Annium.Core.Mapper
 {
     public class Map<S, T> : Map
     {
-        public void Type(Expression<Func<S, T>> map)
+        public new void Type(Expression<Func<S, T>> map)
         {
             base.Type = map;
         }

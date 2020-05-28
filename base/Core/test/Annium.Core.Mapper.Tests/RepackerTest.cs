@@ -1,6 +1,8 @@
 using System;
 using System.Linq.Expressions;
+using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Core.Mapper.Tests
@@ -98,10 +100,14 @@ namespace Annium.Core.Mapper.Tests
 
         private Func<S, R> Repack<S, R>(Expression<Func<S, R>> ex)
         {
-            var repacker = new Repacker();
+            var repacker = new ServiceCollection()
+                .AddMapper(false)
+                .BuildServiceProvider()
+                .GetRequiredService<IRepacker>();
+
             var param = Expression.Parameter(typeof(S));
 
-            return ((Expression<Func<S, R>>)repacker.Repack(ex)(param)).Compile();
+            return ((Expression<Func<S, R>>) repacker.Repack(ex)(param)).Compile();
         }
     }
 }
