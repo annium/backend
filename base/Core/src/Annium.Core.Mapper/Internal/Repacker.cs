@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper.Internal
 {
     // Summary:
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression
-    public class Repacker
+    internal class Repacker : IRepacker
     {
         public Func<Expression, Expression> Repack(Expression ex) => source =>
         {
@@ -15,17 +15,17 @@ namespace Annium.Core.Mapper
 
             return ex switch
             {
-                BinaryExpression binary => Binary(binary)(source),
-                MethodCallExpression call => Call(call)(source),
+                BinaryExpression binary           => Binary(binary)(source),
+                MethodCallExpression call         => Call(call)(source),
                 ConditionalExpression conditional => Conditional(conditional)(source),
-                ConstantExpression constant => constant,
-                LambdaExpression lambda => Lambda(lambda)(source),
-                MemberExpression member => Member(member)(source),
-                MemberInitExpression memberInit => MemberInit(memberInit)(source),
-                NewExpression construction => New(construction)(source),
-                ParameterExpression _ => source,
-                UnaryExpression unary => Unary(unary)(source),
-                _ => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
+                ConstantExpression constant       => constant,
+                LambdaExpression lambda           => Lambda(lambda)(source),
+                MemberExpression member           => Member(member)(source),
+                MemberInitExpression memberInit   => MemberInit(memberInit)(source),
+                NewExpression construction        => New(construction)(source),
+                ParameterExpression _             => source,
+                UnaryExpression unary             => Unary(unary)(source),
+                _                                 => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
             };
         };
 

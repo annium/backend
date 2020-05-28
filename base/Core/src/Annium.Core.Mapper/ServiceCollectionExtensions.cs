@@ -25,8 +25,8 @@ namespace Annium.Core.DependencyInjection
         {
             services.AddRuntimeTools();
 
-            services.AddSingleton<Repacker>();
-            services.AddSingleton<Mapper.Internal.Builders.MapBuilder>();
+            services.AddSingleton<IRepacker, Repacker>();
+            services.AddSingleton<IMapBuilder, MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
 
             services.AddSingleton<Profile>(new DefaultProfile());
