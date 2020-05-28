@@ -6,6 +6,6 @@ namespace Annium.Core.Mapper
     {
         bool CanResolveMap(Type src, Type tgt);
 
-        Mapping ResolveMap(Type src, Type tgt, Map cfg, ResolveMapping resolveMapping);
+        Mapping ResolveMap(Type src, Type tgt, Map cfg, IMappingContext ctx);
     }
 }

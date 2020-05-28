@@ -12,6 +12,7 @@ namespace Annium.Core.Mapper.Internal
         private readonly Profile _profile;
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> _maps = new Dictionary<ValueTuple<Type, Type>, Delegate>();
         private readonly IDictionary<ValueTuple<Type, Type>, Mapping> _mappings = new Dictionary<ValueTuple<Type, Type>, Mapping>();
+        private readonly IMappingContext _context;
 
         public MapBuilder(
             IEnumerable<Profile> configs,
@@ -28,6 +29,8 @@ namespace Annium.Core.Mapper.Internal
             foreach (((Type, Type) key, Map map) in _profile.Maps)
                 if (map.Type != null)
                     _mappings[key] = repacker.Repack(map.Type.Body);
+
+            _context = new MappingContext(GetMap, ResolveMapping);
         }
 
         public bool HasMap(Type src, Type tgt) => src == tgt || _mappings.ContainsKey((src, tgt));
@@ -67,7 +70,7 @@ namespace Annium.Core.Mapper.Internal
         {
             var configurableMapResolver = _configurableMapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (configurableMapResolver != null)
-                return configurableMapResolver.ResolveMap(src, tgt, cfg, ResolveMapping);
+                return configurableMapResolver.ResolveMap(src, tgt, cfg, _context);
 
             return BuildMapping(src, tgt);
         }
@@ -76,7 +79,7 @@ namespace Annium.Core.Mapper.Internal
         {
             var mapResolver = _mapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (mapResolver != null)
-                return mapResolver.ResolveMap(src, tgt, ResolveMapping);
+                return mapResolver.ResolveMap(src, tgt, _context);
 
             throw new MappingException(src, tgt, "No map found.");
         }

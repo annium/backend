@@ -13,7 +13,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, ResolveMapping resolveMapping) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMappingContext ctx) => source =>
         {
             var srcEl = GetEnumerableElementType(src)!;
             var tgtEl = GetEnumerableElementType(tgt)!;
@@ -34,7 +34,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                 .MakeGenericMethod(srcEl, tgtEl);
             var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))!.MakeGenericMethod(tgtEl);
             var param = Expression.Parameter(srcEl);
-            var map = resolveMapping(srcEl, tgtEl);
+            var map = ctx.ResolveMapping(srcEl, tgtEl);
             var selection = map is null
                 ? source
                 : Expression.Call(select, source, Expression.Lambda(map(param), param));
