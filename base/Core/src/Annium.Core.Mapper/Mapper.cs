@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Runtime.Types;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.Mapper
 {
@@ -48,9 +49,11 @@ namespace Annium.Core.Mapper
 
         private static IMapper CreateMapper()
         {
-            var builder = new Internal.Builders.MapBuilder(
+            var provider = new ServiceCollection().AddMapper(false).BuildServiceProvider();
+            var builder = new MapBuilder(
                 Profiles.ToArray(),
-                TypeManager.Instance,
+                provider.GetRequiredService<IEnumerable<IConfigurableMapResolver>>(),
+                provider.GetRequiredService<IEnumerable<IMapResolver>>(),
                 new Repacker()
             );
 

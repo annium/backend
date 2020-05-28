@@ -15,7 +15,7 @@ namespace Annium.Core.Mapper.Internal
         private readonly IMappingContext _context;
 
         public MapBuilder(
-            IEnumerable<Profile> configs,
+            IEnumerable<Profile> profiles,
             IEnumerable<IConfigurableMapResolver> configurableMapResolvers,
             IEnumerable<IMapResolver> mapResolvers,
             IRepacker repacker
@@ -23,7 +23,7 @@ namespace Annium.Core.Mapper.Internal
         {
             _configurableMapResolvers = configurableMapResolvers;
             _mapResolvers = mapResolvers;
-            _profile = Profile.Merge(configs.ToArray());
+            _profile = Profile.Merge(profiles.ToArray());
 
             // save complete type maps directly to raw resolutions
             foreach (((Type, Type) key, Map map) in _profile.Maps)

@@ -5,11 +5,11 @@ namespace Annium.Core.Mapper.Internal
 {
     internal class MapperInstance : IMapper
     {
-        private readonly Builders.MapBuilder _mapBuilder;
+        private readonly IMapBuilder _mapBuilder;
 
-        public MapperInstance(Builders.MapBuilder mapBuilder)
+        public MapperInstance(IMapBuilder mapBuilder)
         {
-            this._mapBuilder = mapBuilder;
+            _mapBuilder = mapBuilder;
         }
 
         public bool HasMap<T>(object source) => HasMap(source, typeof(T));

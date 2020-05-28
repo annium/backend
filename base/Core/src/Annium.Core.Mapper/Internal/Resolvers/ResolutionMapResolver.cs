@@ -66,8 +66,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var getTypeEx = Expression.Call(source, typeof(object).GetMethod(nameof(GetType))!);
             expressions.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, typeVar)));
 
-            expressions.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(this), getMap, getTypeEx, typeVar)));
-
             // invoke map and return result
             var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
             expressions.Add(Expression.Label(
