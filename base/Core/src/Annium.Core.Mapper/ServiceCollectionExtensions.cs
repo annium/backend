@@ -28,6 +28,10 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IRepacker, Repacker>();
             services.AddSingleton<IMapBuilder, MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
+            services.SelectAssemblyTypes()
+                .Where(x => typeof(IMapResolver).IsAssignableFrom(x) || typeof(IConfigurableMapResolver).IsAssignableFrom(x))
+                .AsImplementedInterfaces()
+                .RegisterSingleton();
 
             services.AddSingleton<Profile>(new DefaultProfile());
 
