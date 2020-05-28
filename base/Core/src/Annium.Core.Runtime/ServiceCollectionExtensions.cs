@@ -9,7 +9,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static void AddRuntimeTools(this IServiceCollection services)
         {
-            services.AddSingleton<ITypeManager>(TypeManager.Instance);
+            services.AddSingleton(TypeManager.Instance);
         }
 
         public static IServiceCollection AddLoadContextFactories(this IServiceCollection services)

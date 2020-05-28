@@ -25,16 +25,21 @@ namespace Annium.Core.DependencyInjection
         {
             services.AddRuntimeTools();
 
+            // register base services
             services.AddSingleton<IRepacker, Repacker>();
             services.AddSingleton<IMapBuilder, MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
+
+            // register resolvers
             services.SelectAssemblyTypes()
                 .Where(x => typeof(IMapResolver).IsAssignableFrom(x) || typeof(IConfigurableMapResolver).IsAssignableFrom(x))
                 .AsImplementedInterfaces()
                 .RegisterSingleton();
 
+            // add default profile
             services.AddSingleton<Profile>(new DefaultProfile());
 
+            // if autoload requested - discover and register profiles
             if (autoload)
             {
                 var profileBase = typeof(Profile);
