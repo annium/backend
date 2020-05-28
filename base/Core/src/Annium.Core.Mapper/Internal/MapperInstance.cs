@@ -16,7 +16,7 @@ namespace Annium.Core.Mapper.Internal
 
         public bool HasMap(object source, Type type)
         {
-            if (source == null || type == null)
+            if (source is null || type is null)
                 return false;
 
             return _mapBuilder.HasMap(source.GetType(), type);
@@ -24,7 +24,7 @@ namespace Annium.Core.Mapper.Internal
 
         public T Map<T>(object source)
         {
-            if (source == null)
+            if (source is null)
                 return default!;
 
             return (T) Map(source, typeof(T));
@@ -32,7 +32,7 @@ namespace Annium.Core.Mapper.Internal
 
         public object Map(object source, Type type)
         {
-            if (type == null)
+            if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
             if (source is null)

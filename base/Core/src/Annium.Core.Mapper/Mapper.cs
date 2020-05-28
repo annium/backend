@@ -36,7 +36,7 @@ namespace Annium.Core.Mapper
 
         private static IMapper AddProfile(Profile profile)
         {
-            if (profile == null)
+            if (profile is null)
                 throw new ArgumentNullException(nameof(profile));
 
             lock (Locker)

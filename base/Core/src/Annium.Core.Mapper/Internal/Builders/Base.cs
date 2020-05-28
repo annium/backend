@@ -13,7 +13,7 @@ namespace Annium.Core.Mapper.Internal.Builders
             if (tgt.IsAbstract || tgt.IsInterface)
                 return BuildResolutionMap(src, tgt)(source);
 
-            if (tgt.GetConstructor(Type.EmptyTypes) == null)
+            if (tgt.GetConstructor(Type.EmptyTypes) is null)
                 return BuildConstructorMap(src, tgt, cfg)(source);
 
             return BuildAssignmentMap(src, tgt, cfg)(source);
@@ -27,7 +27,7 @@ namespace Annium.Core.Mapper.Internal.Builders
             if (tgt.IsAbstract || tgt.IsInterface)
                 return BuildResolutionMap(src, tgt)(source);
 
-            if (tgt.GetConstructor(Type.EmptyTypes) == null)
+            if (tgt.GetConstructor(Type.EmptyTypes) is null)
                 return BuildConstructorMap(src, tgt)(source);
 
             return BuildAssignmentMap(src, tgt)(source);

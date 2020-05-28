@@ -10,7 +10,7 @@ namespace Annium.Core.Mapper
     {
         public Func<Expression, Expression> Repack(Expression ex) => source =>
         {
-            if (ex == null)
+            if (ex is null)
                 return null!;
 
             return ex switch

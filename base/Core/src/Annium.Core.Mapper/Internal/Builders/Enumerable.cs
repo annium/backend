@@ -44,7 +44,7 @@ namespace Annium.Core.Mapper.Internal.Builders
 
             var parameter = typeof(IEnumerable<>).MakeGenericType(tgtEl);
             var constructor = tgt.GetConstructor(new[] { parameter });
-            if (constructor == null)
+            if (constructor is null)
                 throw new MappingException(src, tgt, $"No constructor with single {parameter} parameter found.");
 
             return Expression.New(constructor, selection);
