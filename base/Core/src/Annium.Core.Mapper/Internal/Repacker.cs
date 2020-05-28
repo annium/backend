@@ -8,7 +8,7 @@ namespace Annium.Core.Mapper.Internal
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression
     internal class Repacker : IRepacker
     {
-        public Func<Expression, Expression> Repack(Expression ex) => source =>
+        public Mapping Repack(Expression ex) => source =>
         {
             if (ex is null)
                 return null!;
@@ -29,7 +29,7 @@ namespace Annium.Core.Mapper.Internal
             };
         };
 
-        private Func<Expression, Expression> Binary(BinaryExpression ex) => source =>
+        private Mapping Binary(BinaryExpression ex) => source =>
             Expression.MakeBinary(
                 ex.NodeType,
                 Repack(ex.Left)(source),
@@ -39,10 +39,10 @@ namespace Annium.Core.Mapper.Internal
                 ex.Conversion
             );
 
-        private Func<Expression, Expression> Call(MethodCallExpression ex) => source =>
+        private Mapping Call(MethodCallExpression ex) => source =>
             Expression.Call(Repack(ex.Object)(source), ex.Method, ex.Arguments.Select(a => Repack(a)(source)).ToArray());
 
-        private Func<Expression, Expression> Conditional(ConditionalExpression ex) => source =>
+        private Mapping Conditional(ConditionalExpression ex) => source =>
             Expression.Condition(
                 Repack(ex.Test)(source),
                 Repack(ex.IfTrue)(source),
@@ -50,13 +50,13 @@ namespace Annium.Core.Mapper.Internal
                 ex.Type
             );
 
-        private Func<Expression, Expression> Lambda(LambdaExpression ex) => source =>
+        private Mapping Lambda(LambdaExpression ex) => source =>
             Expression.Lambda(Repack(ex.Body)(source), source as ParameterExpression);
 
-        private Func<Expression, Expression> Member(MemberExpression ex) => source =>
+        private Mapping Member(MemberExpression ex) => source =>
             Expression.MakeMemberAccess(Repack(ex.Expression)(source), ex.Member);
 
-        private Func<Expression, Expression> MemberInit(MemberInitExpression ex) => source =>
+        private Mapping MemberInit(MemberInitExpression ex) => source =>
             Expression.MemberInit(
                 Repack(ex.NewExpression)(source) as NewExpression,
                 ex.Bindings.Select(b =>
@@ -68,10 +68,10 @@ namespace Annium.Core.Mapper.Internal
                 })
             );
 
-        private Func<Expression, Expression> New(NewExpression ex) => source =>
+        private Mapping New(NewExpression ex) => source =>
             Expression.New(ex.Constructor, ex.Arguments.Select(a => Repack(a)(source)));
 
-        private Func<Expression, Expression> Unary(UnaryExpression ex) => source =>
+        private Mapping Unary(UnaryExpression ex) => source =>
             Expression.MakeUnary(ex.NodeType, Repack(ex.Operand)(source), ex.Type, ex.Method);
     }
 }
