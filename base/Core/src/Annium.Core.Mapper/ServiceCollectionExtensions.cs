@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,7 +26,7 @@ namespace Annium.Core.DependencyInjection
             services.AddRuntimeTools();
 
             services.AddSingleton<Repacker>();
-            services.AddSingleton<MapBuilder>();
+            services.AddSingleton<Mapper.Internal.Builders.MapBuilder>();
             services.AddSingleton<IMapper, MapperInstance>();
 
             services.AddSingleton<Profile>(new DefaultProfile());

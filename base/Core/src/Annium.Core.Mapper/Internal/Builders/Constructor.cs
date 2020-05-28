@@ -3,11 +3,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildConstructorMap(Type src, Type tgt, Map cfg) => (Expression source) =>
+        private Func<Expression, Expression> BuildConstructorMap(Type src, Type tgt, Map cfg) => source =>
         {
             // find constructor with biggest number of parameters (pretty simple logic for now)
             var constructor = tgt
@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Internal
 
                     // if target field is explicitly configured in mapping - use that mapping
                     if (cfg?.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName) ?? false)
-                        return repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body)(source);
+                        return _repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body)(source);
 
                     // otherwise - parameter must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??

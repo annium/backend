@@ -10,31 +10,29 @@ namespace Annium.Core.Mapper
         internal static Profile Merge(params Profile[] configurations)
         {
             var result = new EmptyProfile();
-            foreach (var (key, map) in configurations.SelectMany(c => c.maps))
-                result.maps[key] = map;
+            foreach (var (key, map) in configurations.SelectMany(c => c._maps))
+                result._maps[key] = map;
 
             return result;
         }
 
-        internal IReadOnlyDictionary<ValueTuple<Type, Type>, Map> Maps => maps;
+        internal IReadOnlyDictionary<ValueTuple<Type, Type>, Map> Maps => _maps;
 
-        private readonly Dictionary<ValueTuple<Type, Type>, Map> maps =
+        private readonly Dictionary<ValueTuple<Type, Type>, Map> _maps =
             new Dictionary<ValueTuple<Type, Type>, Map>();
 
-        public Profile Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> mapping)
+        public void Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> mapping)
         {
             var map = Map<TSource, TTarget>();
 
             map.Type(mapping);
-
-            return this;
         }
 
         public Map<TSource, TTarget> Map<TSource, TTarget>()
         {
             var map = new Map<TSource, TTarget>();
 
-            maps[(typeof(TSource), typeof(TTarget))] = map;
+            _maps[(typeof(TSource), typeof(TTarget))] = map;
 
             return map;
         }

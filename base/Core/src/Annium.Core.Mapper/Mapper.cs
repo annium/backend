@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Mapper
@@ -49,7 +48,7 @@ namespace Annium.Core.Mapper
 
         private static IMapper CreateMapper()
         {
-            var builder = new MapBuilder(
+            var builder = new Internal.Builders.MapBuilder(
                 Profiles.ToArray(),
                 TypeManager.Instance,
                 new Repacker()

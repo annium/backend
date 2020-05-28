@@ -8,7 +8,7 @@ namespace Annium.Core.Mapper
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression
     public class Repacker
     {
-        public Func<Expression, Expression> Repack(Expression ex) => (Expression source) =>
+        public Func<Expression, Expression> Repack(Expression ex) => source =>
         {
             if (ex == null)
                 return null!;
@@ -23,13 +23,13 @@ namespace Annium.Core.Mapper
                 MemberExpression member => Member(member)(source),
                 MemberInitExpression memberInit => MemberInit(memberInit)(source),
                 NewExpression construction => New(construction)(source),
-                ParameterExpression param => source,
+                ParameterExpression _ => source,
                 UnaryExpression unary => Unary(unary)(source),
                 _ => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
             };
         };
 
-        private Func<Expression, Expression> Binary(BinaryExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> Binary(BinaryExpression ex) => source =>
             Expression.MakeBinary(
                 ex.NodeType,
                 Repack(ex.Left)(source),
@@ -39,10 +39,10 @@ namespace Annium.Core.Mapper
                 ex.Conversion
             );
 
-        private Func<Expression, Expression> Call(MethodCallExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> Call(MethodCallExpression ex) => source =>
             Expression.Call(Repack(ex.Object)(source), ex.Method, ex.Arguments.Select(a => Repack(a)(source)).ToArray());
 
-        private Func<Expression, Expression> Conditional(ConditionalExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> Conditional(ConditionalExpression ex) => source =>
             Expression.Condition(
                 Repack(ex.Test)(source),
                 Repack(ex.IfTrue)(source),
@@ -50,13 +50,13 @@ namespace Annium.Core.Mapper
                 ex.Type
             );
 
-        private Func<Expression, Expression> Lambda(LambdaExpression ex) => (Expression source) =>
-            Expression.Lambda(Repack(ex.Body)(source), new[] { source as ParameterExpression });
+        private Func<Expression, Expression> Lambda(LambdaExpression ex) => source =>
+            Expression.Lambda(Repack(ex.Body)(source), source as ParameterExpression);
 
-        private Func<Expression, Expression> Member(MemberExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> Member(MemberExpression ex) => source =>
             Expression.MakeMemberAccess(Repack(ex.Expression)(source), ex.Member);
 
-        private Func<Expression, Expression> MemberInit(MemberInitExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> MemberInit(MemberInitExpression ex) => source =>
             Expression.MemberInit(
                 Repack(ex.NewExpression)(source) as NewExpression,
                 ex.Bindings.Select(b =>
@@ -68,10 +68,10 @@ namespace Annium.Core.Mapper
                 })
             );
 
-        private Func<Expression, Expression> New(NewExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> New(NewExpression ex) => source =>
             Expression.New(ex.Constructor, ex.Arguments.Select(a => Repack(a)(source)));
 
-        private Func<Expression, Expression> Unary(UnaryExpression ex) => (Expression source) =>
+        private Func<Expression, Expression> Unary(UnaryExpression ex) => source =>
             Expression.MakeUnary(ex.NodeType, Repack(ex.Operand)(source), ex.Type, ex.Method);
     }
 }

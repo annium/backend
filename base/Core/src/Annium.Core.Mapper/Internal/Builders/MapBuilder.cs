@@ -2,24 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private readonly IDictionary<ValueTuple<Type, Type>, Delegate> maps =
+        private readonly IDictionary<ValueTuple<Type, Type>, Delegate> _maps =
             new Dictionary<ValueTuple<Type, Type>, Delegate>();
 
-        private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> mappings =
+        private readonly IDictionary<ValueTuple<Type, Type>, Func<Expression, Expression>> _mappings =
             new Dictionary<ValueTuple<Type, Type>, Func<Expression, Expression>>();
 
-        private readonly Profile profile;
+        private readonly Profile _profile;
 
-        private readonly ITypeManager typeManager;
+        private readonly ITypeManager _typeManager;
 
-        private readonly Repacker repacker;
+        private readonly Repacker _repacker;
 
         public MapBuilder(
             IEnumerable<Profile> configs,
@@ -27,22 +26,22 @@ namespace Annium.Core.Mapper.Internal
             Repacker repacker
         )
         {
-            profile = Profile.Merge(configs.ToArray());
-            this.typeManager = typeManager;
-            this.repacker = repacker;
+            _profile = Profile.Merge(configs.ToArray());
+            _typeManager = typeManager;
+            _repacker = repacker;
 
             // save complete type maps directly to raw resolutions
-            foreach (((Type, Type) key, Map map) in profile.Maps)
+            foreach (((Type, Type) key, Map map) in _profile.Maps)
                 if (map.Type != null)
-                    mappings[key] = repacker.Repack(map.Type.Body);
+                    _mappings[key] = repacker.Repack(map.Type.Body);
         }
 
-        public bool HasMap(Type src, Type tgt) => src == tgt || mappings.ContainsKey((src, tgt));
+        public bool HasMap(Type src, Type tgt) => src == tgt || _mappings.ContainsKey((src, tgt));
 
         public Delegate GetMap(Type src, Type tgt)
         {
             var key = (src, tgt);
-            if (maps.TryGetValue(key, out var map))
+            if (_maps.TryGetValue(key, out var map))
                 return map;
 
             var param = Expression.Parameter(src);
@@ -53,7 +52,7 @@ namespace Annium.Core.Mapper.Internal
             var result = Expression.Lambda(mapping(param), param);
             // var str = result.ToReadableString();
 
-            return maps[key] = result.Compile();
+            return _maps[key] = result.Compile();
         }
 
         private Func<Expression, Expression> ResolveMap(Type src, Type tgt)
@@ -62,12 +61,12 @@ namespace Annium.Core.Mapper.Internal
                 return null!;
 
             var key = (src, tgt);
-            if (mappings.TryGetValue(key, out var mapping))
+            if (_mappings.TryGetValue(key, out var mapping))
                 return mapping;
 
-            profile.Maps.TryGetValue(key, out var cfg);
+            _profile.Maps.TryGetValue(key, out var cfg);
 
-            return mappings[key] = BuildMap(src, tgt, cfg!);
+            return _mappings[key] = BuildMap(src, tgt, cfg!);
         }
     }
 }

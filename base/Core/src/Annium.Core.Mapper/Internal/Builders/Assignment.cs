@@ -3,11 +3,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt, Map cfg) => (Expression source) =>
+        private Func<Expression, Expression> BuildAssignmentMap(Type src, Type tgt, Map cfg) => source =>
         {
             // get source and target type properties
             var sources = src.GetProperties();
@@ -32,7 +32,7 @@ namespace Annium.Core.Mapper.Internal
                 {
                     // if target field is explicitly configured in mapping - use that mapping
                     if (cfg?.Fields.ContainsKey(target) ?? false)
-                        return Expression.Assign(Expression.Property(instance, target), repacker.Repack(cfg!.Fields[target].Body)(source));
+                        return Expression.Assign(Expression.Property(instance, target), _repacker.Repack(cfg!.Fields[target].Body)(source));
 
                     // otherwise - target field must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == target.Name.ToLowerInvariant()) ??

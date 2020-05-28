@@ -5,11 +5,11 @@ namespace Annium.Core.Mapper.Internal
 {
     internal class MapperInstance : IMapper
     {
-        private readonly MapBuilder mapBuilder;
+        private readonly Builders.MapBuilder _mapBuilder;
 
-        public MapperInstance(MapBuilder mapBuilder)
+        public MapperInstance(Builders.MapBuilder mapBuilder)
         {
-            this.mapBuilder = mapBuilder;
+            this._mapBuilder = mapBuilder;
         }
 
         public bool HasMap<T>(object source) => HasMap(source, typeof(T));
@@ -19,7 +19,7 @@ namespace Annium.Core.Mapper.Internal
             if (source == null || type == null)
                 return false;
 
-            return mapBuilder.HasMap(source.GetType(), type);
+            return _mapBuilder.HasMap(source.GetType(), type);
         }
 
         public T Map<T>(object source)
@@ -44,7 +44,7 @@ namespace Annium.Core.Mapper.Internal
             if (type.IsEnum)
                 return Enum.Parse(type, source.ToString()!, ignoreCase: true);
 
-            var map = mapBuilder.GetMap(source.GetType(), type);
+            var map = _mapBuilder.GetMap(source.GetType(), type);
 
             try
             {

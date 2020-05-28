@@ -4,11 +4,11 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildEnumerableMap(Type src, Type tgt, Map cfg) => (Expression source) =>
+        private Func<Expression, Expression> BuildEnumerableMap(Type src, Type tgt) => source =>
         {
             var srcEl = GetEnumerableElementType(src);
             var tgtEl = GetEnumerableElementType(tgt);

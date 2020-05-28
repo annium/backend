@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using NodaTime;
 
 namespace Annium.Core.Mapper.Internal
@@ -19,6 +20,7 @@ namespace Annium.Core.Mapper.Internal
             RegisterLong();
             RegisterUlong();
             RegisterShort();
+            RegisterUshort();
             RegisterNodaTime();
         }
 
@@ -44,10 +46,10 @@ namespace Annium.Core.Mapper.Internal
             Map<uint, string>(x => x.ToString());
             Map<long, string>(x => x.ToString());
             Map<ulong, string>(x => x.ToString());
-            Map<float, string>(x => x.ToString());
-            Map<double, string>(x => x.ToString());
-            Map<decimal, string>(x => x.ToString());
-            Map<DateTime, string>(x => x.ToString());
+            Map<float, string>(x => x.ToString(CultureInfo.CurrentUICulture));
+            Map<double, string>(x => x.ToString(CultureInfo.CurrentUICulture));
+            Map<decimal, string>(x => x.ToString(CultureInfo.CurrentUICulture));
+            Map<DateTime, string>(x => x.ToString(CultureInfo.CurrentUICulture));
             Map<DateTimeOffset, string>(x => x.ToString());
             Map<Guid, string>(x => x.ToString());
             Map<Uri, string>(x => x.ToString());

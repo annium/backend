@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Annium.Core.Runtime;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Builders
 {
     internal partial class MapBuilder
     {
-        private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt, Map cfg) => (Expression source) =>
+        private Func<Expression, Expression> BuildResolutionMap(Type src, Type tgt) => source =>
         {
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();
@@ -31,7 +30,7 @@ namespace Annium.Core.Mapper.Internal
             expressions.Add(Expression.Assign(
                 typeVar,
                 Expression.Call(
-                    Expression.Constant(typeManager),
+                    Expression.Constant(_typeManager),
                     resolveBySignature,
                     source, Expression.Constant(tgt), Expression.Constant(true)
                 )
