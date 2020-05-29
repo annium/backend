@@ -7,16 +7,16 @@ namespace Annium.Logging.Microsoft
 {
     internal class LoggerBridge : global::Microsoft.Extensions.Logging.ILogger
     {
-        private readonly ILogRouter router;
-        private readonly Type source;
+        private readonly ILogRouter _router;
+        private readonly Type _source;
 
         public LoggerBridge(
             ILogRouter router,
             Type source
         )
         {
-            this.router = router;
-            this.source = source;
+            _router = router;
+            _source = source;
         }
 
         public IDisposable BeginScope<TState>(TState state) => null!;
@@ -31,7 +31,7 @@ namespace Annium.Logging.Microsoft
             Func<TState, Exception, string> formatter
         )
         {
-            router.Send(Map(logLevel), source, formatter(state, exception), exception);
+            _router.Send(Map(logLevel), _source, formatter(state, exception), exception);
         }
 
         private LogLevel Map(MicrosoftLogLevel level)

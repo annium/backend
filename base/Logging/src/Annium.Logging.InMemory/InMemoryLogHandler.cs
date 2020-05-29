@@ -5,10 +5,10 @@ namespace Annium.Logging.InMemory
 {
     public class InMemoryLogHandler : ILogHandler
     {
-        public IReadOnlyList<LogMessage> Logs => logs;
+        public IReadOnlyList<LogMessage> Logs => _logs;
 
-        private readonly List<LogMessage> logs = new List<LogMessage>();
+        private readonly List<LogMessage> _logs = new List<LogMessage>();
 
-        public void Handle(LogMessage message) => logs.Add(message);
+        public void Handle(LogMessage message) => _logs.Add(message);
     }
 }

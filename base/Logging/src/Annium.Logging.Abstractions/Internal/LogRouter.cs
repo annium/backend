@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Abstractions.Internal
 {
     internal class LogRouter : ILogRouter
     {
-        private readonly IEnumerable<LogRoute> routes;
-        private readonly IServiceProvider provider;
-        private readonly Func<Instant> getInstant;
-        private readonly IDictionary<LogRoute, ILogHandler> handlers = new Dictionary<LogRoute, ILogHandler>();
+        private readonly IEnumerable<LogRoute> _routes;
+        private readonly IServiceProvider _provider;
+        private readonly Func<Instant> _getInstant;
+        private readonly IDictionary<LogRoute, ILogHandler> _handlers = new Dictionary<LogRoute, ILogHandler>();
 
         public LogRouter(
             Func<Instant> getInstant,
@@ -18,29 +18,29 @@ namespace Annium.Logging.Abstractions
             IServiceProvider provider
         )
         {
-            this.routes = routes;
-            this.provider = provider;
-            this.getInstant = getInstant;
+            _routes = routes;
+            _provider = provider;
+            _getInstant = getInstant;
         }
 
         public void Send(LogLevel level, Type source, string message, Exception? exception)
         {
-            var instant = getInstant();
+            var instant = _getInstant();
             var msg = new LogMessage(instant, level, source, message, exception);
 
-            foreach (var route in routes)
+            foreach (var route in _routes)
                 if (route.Filter(msg))
                     GetHandler(route).Handle(msg);
         }
 
         private ILogHandler GetHandler(LogRoute route)
         {
-            lock(handlers)
+            lock(_handlers)
             {
-                if (handlers.TryGetValue(route, out var handler))
+                if (_handlers.TryGetValue(route, out var handler))
                     return handler;
 
-                return handlers[route] = (ILogHandler) provider.GetRequiredService(route.Service!.ServiceType);
+                return _handlers[route] = (ILogHandler) _provider.GetRequiredService(route.Service!.ServiceType);
             }
         }
     }

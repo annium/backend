@@ -25,9 +25,9 @@ namespace Annium.Logging.Console
             LevelColors = colors;
         }
 
-        private readonly bool time;
-        private readonly bool level;
-        private readonly bool color;
+        private readonly bool _time;
+        private readonly bool _level;
+        private readonly bool _color;
 
         public ConsoleLogHandler(
             bool time,
@@ -35,9 +35,9 @@ namespace Annium.Logging.Console
             bool color
         )
         {
-            this.time = time;
-            this.level = level;
-            this.color = color;
+            _time = time;
+            _level = level;
+            _color = color;
         }
 
         public void Handle(LogMessage msg)
@@ -47,7 +47,7 @@ namespace Annium.Logging.Console
                 var currentColor = System.Console.ForegroundColor;
                 try
                 {
-                    if (color)
+                    if (_color)
                         System.Console.ForegroundColor = LevelColors[msg.Level];
 
                     if (msg.Exception is AggregateException aggregateException)
@@ -65,7 +65,7 @@ namespace Annium.Logging.Console
                 }
                 finally
                 {
-                    if (color)
+                    if (_color)
                         System.Console.ForegroundColor = currentColor;
                 }
             }
@@ -75,10 +75,10 @@ namespace Annium.Logging.Console
         {
             var builder = new StringBuilder();
 
-            if (time)
+            if (_time)
                 builder.Append($"[{msg.Instant.InZone(Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] ");
 
-            if (level)
+            if (_level)
                 builder.Append($"{msg.Level,5}: ");
 
             builder.Append(message);

@@ -8,16 +8,16 @@ namespace Annium.Logging.Abstractions
     {
         internal Func<LogMessage, bool> Filter { get; private set; } = m => true;
         internal ServiceDescriptor? Service { get; private set; }
-        private readonly Action<LogRoute> registerRoute;
+        private readonly Action<LogRoute> _registerRoute;
 
         internal LogRoute(Action<LogRoute> registerRoute)
         {
-            this.registerRoute = registerRoute;
+            this._registerRoute = registerRoute;
 
             registerRoute(this);
         }
 
-        public LogRoute For(Func<LogMessage, bool> filter) => new LogRoute(registerRoute) { Filter = filter };
+        public LogRoute For(Func<LogMessage, bool> filter) => new LogRoute(_registerRoute) { Filter = filter };
 
         public LogRoute Use(ServiceDescriptor descriptor)
         {
