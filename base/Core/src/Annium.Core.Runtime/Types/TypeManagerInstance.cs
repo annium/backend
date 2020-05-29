@@ -36,7 +36,7 @@ namespace Annium.Core.Runtime.Types
         /// Returns whether given type is registered with one or more of subtypes.
         /// </summary>
         /// <param name="baseType"></param>
-        public bool CanResolve(Type baseType) => _descendants.Value.ContainsKey(baseType);
+        public bool HasImplementations(Type baseType) => _descendants.Value.ContainsKey(baseType);
 
         /// <summary>
         /// Returns all direct implementations of <see cref="baseType"/>.

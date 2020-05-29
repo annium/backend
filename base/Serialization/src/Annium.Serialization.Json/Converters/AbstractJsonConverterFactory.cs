@@ -23,7 +23,7 @@ namespace Annium.Serialization.Json.Converters
             ))
                 return false;
 
-            return TypeManager.Instance.CanResolve(
+            return TypeManager.Instance.HasImplementations(
                 objectType.IsGenericType ? objectType.GetGenericTypeDefinition() : objectType
             );
         }

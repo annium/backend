@@ -17,7 +17,7 @@ namespace Demo.Core.Reflection
             CancellationToken token
         )
         {
-            var canResolveEnumerable = TypeManager.Instance.CanResolve(typeof(IList<>));
+            var canResolveEnumerable = TypeManager.Instance.HasImplementations(typeof(IList<>));
             var enumerable = TypeManager.Instance.Types.Where(x => x == typeof(IEnumerable<>)).ToArray();
 
             var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.InnerTwo });

@@ -15,10 +15,10 @@ namespace Annium.Core.Runtime.Tests.Types
             var manager = TypeManager.Instance;
 
             // assert
-            manager.CanResolve(typeof(A)).IsTrue();
-            manager.CanResolve(typeof(B)).IsFalse();
-            manager.CanResolve(typeof(C)).IsFalse();
-            manager.CanResolve(typeof(IEnumerable<>)).IsTrue();
+            manager.HasImplementations(typeof(A)).IsTrue();
+            manager.HasImplementations(typeof(B)).IsFalse();
+            manager.HasImplementations(typeof(C)).IsFalse();
+            manager.HasImplementations(typeof(IEnumerable<>)).IsTrue();
         }
 
         [Fact]

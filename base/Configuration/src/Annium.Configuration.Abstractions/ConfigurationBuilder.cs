@@ -98,7 +98,7 @@ namespace Annium.Configuration.Abstractions
         {
             if (type.IsAbstract || type.IsInterface)
             {
-                if (!TypeManager.Instance.CanResolve(type))
+                if (!TypeManager.Instance.HasImplementations(type))
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
                 var resolveFields = type.GetProperties().Where(p => p.GetCustomAttribute<ResolveFieldAttribute>() != null).ToArray();

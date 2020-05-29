@@ -31,7 +31,7 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IMapper, MapperInstance>();
 
             // register resolvers
-            services.SelectAssemblyTypes()
+            services.SelectTypes()
                 .Where(x => typeof(IMapResolver).IsAssignableFrom(x))
                 .AsImplementedInterfaces()
                 .RegisterSingleton();
