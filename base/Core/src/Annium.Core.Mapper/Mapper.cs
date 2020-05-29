@@ -52,7 +52,6 @@ namespace Annium.Core.Mapper
             var provider = new ServiceCollection().AddMapper(false).BuildServiceProvider();
             var builder = new MapBuilder(
                 Profiles.ToArray(),
-                provider.GetRequiredService<IEnumerable<IConfigurableMapResolver>>(),
                 provider.GetRequiredService<IEnumerable<IMapResolver>>(),
                 new Repacker()
             );

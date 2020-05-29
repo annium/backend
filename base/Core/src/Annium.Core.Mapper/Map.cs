@@ -35,14 +35,11 @@ namespace Annium.Core.Mapper
 
     public class Map
     {
+        public static Map Empty { get; } = new Map();
         internal LambdaExpression? Type { get; set; }
-
         internal IReadOnlyDictionary<PropertyInfo, LambdaExpression> Fields => fields;
-
-        internal IEnumerable<PropertyInfo> Ignores => ignores;
-
+        internal IReadOnlyCollection<PropertyInfo> Ignores => ignores;
         protected readonly Dictionary<PropertyInfo, LambdaExpression> fields = new Dictionary<PropertyInfo, LambdaExpression>();
-
         protected readonly HashSet<PropertyInfo> ignores = new HashSet<PropertyInfo>();
     }
 }

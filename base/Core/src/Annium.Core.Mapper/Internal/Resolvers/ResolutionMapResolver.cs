@@ -20,7 +20,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return tgt.IsAbstract || tgt.IsInterface;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, Map cfg, IMappingContext ctx) => source =>
         {
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();

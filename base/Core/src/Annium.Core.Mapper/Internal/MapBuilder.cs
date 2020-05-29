@@ -7,7 +7,6 @@ namespace Annium.Core.Mapper.Internal
 {
     internal class MapBuilder : IMapBuilder
     {
-        private readonly IEnumerable<IConfigurableMapResolver> _configurableMapResolvers;
         private readonly IEnumerable<IMapResolver> _mapResolvers;
         private readonly Profile _profile;
         private readonly IDictionary<ValueTuple<Type, Type>, Delegate> _maps = new Dictionary<ValueTuple<Type, Type>, Delegate>();
@@ -16,12 +15,10 @@ namespace Annium.Core.Mapper.Internal
 
         public MapBuilder(
             IEnumerable<Profile> profiles,
-            IEnumerable<IConfigurableMapResolver> configurableMapResolvers,
             IEnumerable<IMapResolver> mapResolvers,
             IRepacker repacker
         )
         {
-            _configurableMapResolvers = configurableMapResolvers;
             _mapResolvers = mapResolvers;
             _profile = Profile.Merge(profiles.ToArray());
 
@@ -61,25 +58,16 @@ namespace Annium.Core.Mapper.Internal
 
             var map = _profile.Maps.TryGetValue(key, out var cfg)
                 ? BuildMapping(src, tgt, cfg)
-                : BuildMapping(src, tgt);
+                : BuildMapping(src, tgt, Map.Empty);
 
             return _mappings[key] = map;
         }
 
         private Mapping BuildMapping(Type src, Type tgt, Map cfg)
         {
-            var configurableMapResolver = _configurableMapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
-            if (configurableMapResolver != null)
-                return configurableMapResolver.ResolveMap(src, tgt, cfg, _context);
-
-            return BuildMapping(src, tgt);
-        }
-
-        private Mapping BuildMapping(Type src, Type tgt)
-        {
             var mapResolver = _mapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (mapResolver != null)
-                return mapResolver.ResolveMap(src, tgt, _context);
+                return mapResolver.ResolveMap(src, tgt, cfg, _context);
 
             throw new MappingException(src, tgt, "No map found.");
         }

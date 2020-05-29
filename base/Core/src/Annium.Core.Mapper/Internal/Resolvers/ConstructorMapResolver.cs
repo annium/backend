@@ -5,12 +5,12 @@ using System.Reflection;
 
 namespace Annium.Core.Mapper.Internal.Resolvers
 {
-    internal class ConstructorConfigurableMapResolver : IConfigurableMapResolver
+    internal class ConstructorMapResolver : IMapResolver
     {
         public int Order => 1500;
         private readonly IRepacker _repacker;
 
-        public ConstructorConfigurableMapResolver(IRepacker repacker)
+        public ConstructorMapResolver(IRepacker repacker)
         {
             _repacker = repacker;
         }
@@ -43,8 +43,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                         return Expression.Default(param.ParameterType);
 
                     // if target field is explicitly configured in mapping - use that mapping
-                    if (cfg?.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName) ?? false)
-                        return _repacker.Repack(cfg!.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body)(source);
+                    if (cfg.Fields.Any(p => p.Key.Name.ToLowerInvariant() == paramName))
+                        return _repacker.Repack(cfg.Fields.First(p => p.Key.Name.ToLowerInvariant() == paramName).Value.Body)(source);
 
                     // otherwise - parameter must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??

@@ -32,7 +32,7 @@ namespace Annium.Core.DependencyInjection
 
             // register resolvers
             services.SelectAssemblyTypes()
-                .Where(x => typeof(IMapResolver).IsAssignableFrom(x) || typeof(IConfigurableMapResolver).IsAssignableFrom(x))
+                .Where(x => typeof(IMapResolver).IsAssignableFrom(x))
                 .AsImplementedInterfaces()
                 .RegisterSingleton();
 
