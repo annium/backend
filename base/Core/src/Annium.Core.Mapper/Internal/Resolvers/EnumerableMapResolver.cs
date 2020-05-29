@@ -20,6 +20,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var srcEl = GetEnumerableElementType(src)!;
             var tgtEl = GetEnumerableElementType(tgt)!;
 
+            // if tgt is interface - resolve container type
             if (tgt.IsInterface)
             {
                 var def = tgt.GetGenericTypeDefinition();
@@ -34,10 +35,9 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var select = typeof(Enumerable).GetMethods()
                 .First(m => m.Name == nameof(Enumerable.Select))
                 .MakeGenericMethod(srcEl, tgtEl);
+            var selectLambda = BuildSelectLambda(srcEl, tgtEl, ctx);
+            var selection = Expression.Call(select, source, selectLambda);
             var toArray = typeof(Enumerable).GetMethod(nameof(Enumerable.ToArray))!.MakeGenericMethod(tgtEl);
-            var param = Expression.Parameter(srcEl);
-            var map = ctx.ResolveMapping(srcEl, tgtEl);
-            var selection = Expression.Call(select, source, Expression.Lambda(map(param), param));
             var result = Expression.Condition(
                 Expression.Equal(source, Expression.Default(src)),
                 Expression.NewArrayInit(tgtEl),
@@ -54,6 +54,40 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 
             return Expression.New(constructor, selection);
         };
+
+        private LambdaExpression BuildSelectLambda(Type srcEl, Type tgtEl, IMappingContext ctx)
+        {
+            var param = Expression.Parameter(srcEl);
+            var vars = new List<ParameterExpression>();
+            var body = new List<Expression>();
+            var returnTarget = Expression.Label(tgtEl);
+
+            // if param is default - return default target element
+            if (!srcEl.IsValueType)
+                body.Add(Expression.IfThen(
+                    Expression.Equal(param, Expression.Default(srcEl)),
+                    Expression.Return(returnTarget, Expression.Default(tgtEl))
+                ));
+
+            // get map for element type
+            var mapVar = Expression.Variable(typeof(Delegate));
+            vars.Add(mapVar);
+            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap));
+            var getTypeEx = Expression.Call(param, typeof(object).GetMethod(nameof(GetType))!);
+            body.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, Expression.Constant(tgtEl))));
+
+            // invoke map and return result
+            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
+            body.Add(Expression.Label(
+                returnTarget,
+                Expression.Convert(
+                    Expression.Call(mapVar, invokeMap, Expression.NewArrayInit(typeof(object), Expression.Convert(param, typeof(object)))),
+                    tgtEl
+                )
+            ));
+
+            return Expression.Lambda(Expression.Block(vars, body), param);
+        }
 
 
         private Type? GetEnumerableElementType(Type type)

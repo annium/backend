@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Mapper.Internal
 {
-    public class MappingContext : IMappingContext
+    internal class MappingContext : IMappingContext
     {
         private readonly Func<Type, Type, Delegate> _getMap;
         private readonly Func<Type, Type, Mapping> _resolveMapping;

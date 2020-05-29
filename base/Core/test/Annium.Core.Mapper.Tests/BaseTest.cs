@@ -12,7 +12,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new A() { Name = "name" };
+            var value = new A { Name = "name" };
 
             // act
             var result = mapper.Map<A>(value);
@@ -26,8 +26,8 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var first = new A() { Name = "first" };
-            var second = new A() { Name = "second" };
+            var first = new A { Name = "first" };
+            var second = new A { Name = "second" };
 
             // act
             var one = mapper.Map<B>(first);
@@ -45,7 +45,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new A() { Name = "name" };
+            var value = new A { Name = "name" };
 
             // act
             var result = mapper.Map<C>(value);
@@ -59,7 +59,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new A() { Name = "name" };
+            var value = new A { Name = "name" };
 
             // act
             var result = mapper.Map<F>(value);
@@ -73,7 +73,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new D(new A() { Name = "name" }, "nice");
+            var value = new D(new A { Name = "name" }, "nice");
 
             // act
             var result = mapper.Map<E>(value);
