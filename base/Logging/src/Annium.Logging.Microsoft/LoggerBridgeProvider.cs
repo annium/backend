@@ -1,3 +1,4 @@
+using System.Linq;
 using Annium.Core.Runtime.Types;
 using Annium.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
@@ -20,7 +21,7 @@ namespace Annium.Logging.Microsoft
 
         public global::Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
         {
-            var type = _typeManager.GetByName(categoryName) ?? typeof(LoggerBridgeProvider);
+            var type = _typeManager.Types.FirstOrDefault(x => x.FullName == categoryName) ?? typeof(LoggerBridgeProvider);
 
             return new LoggerBridge(_router, type);
         }

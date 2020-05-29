@@ -26,13 +26,6 @@ namespace Annium.Core.Runtime.Types
         }
 
         /// <summary>
-        /// Returns single type among discovered, that matches given fullName
-        /// </summary>
-        /// <param name="fullName"></param>
-        /// <returns></returns>
-        public Type? GetByName(string fullName) => _types.Value.SingleOrDefault(t => t.FullName == fullName);
-
-        /// <summary>
         /// Returns whether given type is registered with one or more of subtypes.
         /// </summary>
         /// <param name="baseType"></param>
