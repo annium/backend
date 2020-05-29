@@ -83,7 +83,7 @@ namespace Annium.Core.Mapper.Tests
         {
             public int IgnoredA { get; set; }
             public long IgnoredB { get; set; }
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
             public int Age { get; set; }
         }
 
@@ -105,7 +105,7 @@ namespace Annium.Core.Mapper.Tests
 
         private class Serialized
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
             public int Age { get; set; }
         }
     }
