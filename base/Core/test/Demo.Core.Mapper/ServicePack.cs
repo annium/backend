@@ -20,12 +20,12 @@ namespace Demo.Extensions.Mapping
         private void ConfigureProfile(Profile p)
         {
             p.Map<Plain, Complex>()
-                .Field(e => new Client { Name = e.ClientName! }, e => e.Client!);
+                .For(x => x.Client!, x => new Client { Name = x.ClientName! });
             p.Map<Complex, Plain>()
-                .Field(e => e.Client!.Name!, e => e.ClientName!);
+                .For(x => x.ClientName!, x => x.Client!.Name!);
             p.Map<A, B>()
-                .Field(a => a.Text!.ToLower(), b => b.LowerText)
-                .Ignore(b => b.Ignored);
+                .For(x => x.LowerText, x => x.Text!.ToLower())
+                .Ignore(x => x.Ignored);
         }
     }
 

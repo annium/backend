@@ -23,9 +23,9 @@ namespace Annium.Core.Mapper.Internal
             _profile = Profile.Merge(profiles.ToArray());
 
             // save complete type maps directly to raw resolutions
-            foreach (((Type, Type) key, Map map) in _profile.Maps)
-                if (map.Type != null)
-                    _mappings[key] = repacker.Repack(map.Type.Body);
+            foreach (((Type, Type) key, IMapConfiguration cfg) in _profile.MapConfigurations)
+                if (cfg.MapWith != null)
+                    _mappings[key] = repacker.Repack(cfg.MapWith.Body);
 
             _context = new MappingContext(GetMap, ResolveMapping);
         }
@@ -56,14 +56,14 @@ namespace Annium.Core.Mapper.Internal
             if (_mappings.TryGetValue(key, out var mapping))
                 return mapping;
 
-            var map = _profile.Maps.TryGetValue(key, out var cfg)
+            var map = _profile.MapConfigurations.TryGetValue(key, out var cfg)
                 ? BuildMapping(src, tgt, cfg)
-                : BuildMapping(src, tgt, Map.Empty);
+                : BuildMapping(src, tgt, MapConfiguration.Empty);
 
             return _mappings[key] = map;
         }
 
-        private Mapping BuildMapping(Type src, Type tgt, Map cfg)
+        private Mapping BuildMapping(Type src, Type tgt, IMapConfiguration cfg)
         {
             var mapResolver = _mapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
             if (mapResolver != null)

@@ -17,7 +17,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 
         public bool CanResolveMap(Type src, Type tgt) => true;
 
-        public Mapping ResolveMap(Type src, Type tgt, Map cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
             // get source and target type properties
             var sources = src.GetProperties();

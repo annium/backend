@@ -1,19 +1,13 @@
-using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Annium.Core.Mapper
 {
-    public interface IMapConfiguration<S, T>
+    public interface IMapConfiguration
     {
-        void With(Expression<Func<S, T>> map);
-
-        IMapConfiguration<S, T> For(
-            Expression<Func<T, object>> members,
-            Expression<Func<S, object>> map
-        );
-
-        IMapConfiguration<S, T> Ignore(
-            Expression<Func<T, object>> members
-        );
+        LambdaExpression? MapWith { get; }
+        IReadOnlyDictionary<PropertyInfo, LambdaExpression> MemberMaps { get; }
+        IReadOnlyCollection<PropertyInfo> IgnoredMembers { get; }
     }
 }

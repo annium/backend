@@ -20,7 +20,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return tgt.GetConstructor(Type.EmptyTypes) is null;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, Map cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
             // find constructor with biggest number of parameters (pretty simple logic for now)
             var constructor = tgt

@@ -15,7 +15,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, Map cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
             var srcEl = GetEnumerableElementType(src)!;
             var tgtEl = GetEnumerableElementType(tgt)!;

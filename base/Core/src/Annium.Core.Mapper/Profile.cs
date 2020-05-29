@@ -8,32 +8,32 @@ namespace Annium.Core.Mapper
 {
     public abstract class Profile
     {
-        internal static Profile Merge(params Profile[] configurations)
+        internal static Profile Merge(params Profile[] profiles)
         {
             var result = new EmptyProfile();
-            foreach (var (key, map) in configurations.SelectMany(c => c._maps))
-                result._maps[key] = map;
+            foreach (var (key, map) in profiles.SelectMany(c => c._mapConfigurations))
+                result._mapConfigurations[key] = map;
 
             return result;
         }
 
-        internal IReadOnlyDictionary<ValueTuple<Type, Type>, Map> Maps => _maps;
+        internal IReadOnlyDictionary<ValueTuple<Type, Type>, IMapConfiguration> MapConfigurations => _mapConfigurations;
 
-        private readonly Dictionary<ValueTuple<Type, Type>, Map> _maps =
-            new Dictionary<ValueTuple<Type, Type>, Map>();
+        private readonly Dictionary<ValueTuple<Type, Type>, IMapConfiguration> _mapConfigurations =
+            new Dictionary<ValueTuple<Type, Type>, IMapConfiguration>();
 
         public void Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> mapping)
         {
             var map = Map<TSource, TTarget>();
 
-            map.Type(mapping);
+            map.With(mapping);
         }
 
-        public Map<TSource, TTarget> Map<TSource, TTarget>()
+        public IMapConfigurationBuilder<TSource, TTarget> Map<TSource, TTarget>()
         {
-            var map = new Map<TSource, TTarget>();
+            var map = new MapConfigurationBuilder<TSource, TTarget>();
 
-            _maps[(typeof(TSource), typeof(TTarget))] = map;
+            _mapConfigurations[(typeof(TSource), typeof(TTarget))] = map.Result;
 
             return map;
         }
