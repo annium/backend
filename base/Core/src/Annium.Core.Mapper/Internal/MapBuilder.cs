@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using AgileObjects.ReadableExpressions;
 
 namespace Annium.Core.Mapper.Internal
 {
@@ -42,7 +43,7 @@ namespace Annium.Core.Mapper.Internal
             var mapping = ResolveMapping(src, tgt);
 
             var result = Expression.Lambda(mapping(param), param);
-            // var str = result.ToReadableString();
+            var str = result.ToReadableString();
 
             return _maps[key] = result.Compile();
         }

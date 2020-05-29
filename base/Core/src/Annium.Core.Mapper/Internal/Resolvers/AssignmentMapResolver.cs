@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -19,50 +20,68 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 
         public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
-            // get source and target type properties
-            var sources = src.GetProperties();
-            var targets = tgt.GetProperties();
-            // if any target properties are configured to be ignored - simply omit them from mapping
-            if (cfg.Ignores.Any())
-                targets = targets
-                    .Where(target => !cfg.Ignores.Any(ignored =>
-                        ignored.DeclaringType == target.DeclaringType &&
-                        ignored.PropertyType == target.PropertyType &&
-                        ignored.Name == target.Name
-                    ))
-                    .ToArray();
-
             // defined instance and create initial assignment expression
             var instance = Expression.Variable(tgt);
             var init = Expression.Assign(instance, Expression.New(tgt.GetConstructor(Type.EmptyTypes)));
 
+            // get source and target type properties
+            var sources = src.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.CanRead).ToArray();
+            var targets = tgt.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.CanWrite).ToArray();
+
+            // exclude target properties, that are configured to be ignored or have configured mapping, from basic assignment mapping
+            var excludedMembers = cfg.MemberMaps.Keys.Concat(cfg.IgnoredMembers).ToArray();
+            targets = targets
+                .Where(target => !excludedMembers.Any(x =>
+                    x.DeclaringType == target.DeclaringType &&
+                    x.PropertyType == target.PropertyType &&
+                    x.Name == target.Name
+                ))
+                .ToArray();
+
+            var body = new List<Expression>();
+            foreach (var group in cfg.MemberMaps.GroupBy(x => x.Value))
+            {
+                var map = group.Key;
+                var members = group.Select(x => x.Key).ToArray();
+
+                if (members.Length == 1)
+                    body.Add(Expression.Assign(Expression.Property(instance, members.Single()), _repacker.Repack(map.Body)(source)));
+                else
+                {
+                    var variable = Expression.Variable(map.ReturnType);
+                    body.Add(variable);
+                    body.Add(Expression.Assign(variable, _repacker.Repack(map.Body)(source)));
+
+                    foreach (var member in members)
+                        body.Add(Expression.Assign(
+                            Expression.Property(instance, member),
+                            Expression.Property(variable, map.ReturnType, member.Name)
+                        ));
+                }
+            }
+
             // for each target property - resolve assignment expression
-            var assignments = targets
+            body.AddRange(targets
                 .Select<PropertyInfo, Expression>(target =>
                 {
-                    // if target field is explicitly configured in mapping - use that mapping
-                    if (cfg.Fields.ContainsKey(target))
-                        return Expression.Assign(Expression.Property(instance, target), _repacker.Repack(cfg.Fields[target].Body)(source));
-
                     // otherwise - target field must match respective source field
                     var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == target.Name.ToLowerInvariant()) ??
                         throw new MappingException(src, tgt, $"No property found for target property {target}");
 
                     // resolve map for conversion and use it, if necessary
                     var map = ctx.ResolveMapping(prop.PropertyType, target.PropertyType);
-                    if (map is null)
-                        return Expression.Assign(Expression.Property(instance, target), Expression.Property(source, prop));
 
                     return Expression.Assign(Expression.Property(instance, target), map(Expression.Property(source, prop)));
                 })
-                .ToArray();
+                .ToArray()
+            );
 
             // if src is struct - things are simpler, no null-checking
             if (src.IsValueType)
                 return Expression.Block(
                     new[] { instance },
                     new Expression[] { init }
-                        .Concat(assignments)
+                        .Concat(body)
                         .Concat(new Expression[] { instance })
                 );
 
@@ -82,7 +101,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return Expression.Block(
                 new[] { instance },
                 new Expression[] { nullCheck, init }
-                    .Concat(assignments)
+                    .Concat(body)
                     .Concat(new Expression[] { result, returnLabel })
             );
         };
