@@ -52,7 +52,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                 }
                 else
                 {
-                    var resultVar = Expression.Variable(map.ReturnType);
+                    var resultVar = Expression.Variable(map.Body.Type);
                     variables.Add(resultVar);
                     body.Add(Expression.Assign(resultVar, _repacker.Repack(map.Body)(source)));
 
@@ -60,7 +60,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                     {
                         var memberVar = Expression.Variable(member.PropertyType);
                         variables.Add(memberVar);
-                        body.Add(Expression.Assign(memberVar, Expression.Property(resultVar, map.ReturnType, member.Name)));
+                        body.Add(Expression.Assign(memberVar, Expression.Property(resultVar, map.Body.Type, member.Name)));
                         mappedMemberVars[member.Name.ToLowerInvariant()] = memberVar;
                     }
                 }

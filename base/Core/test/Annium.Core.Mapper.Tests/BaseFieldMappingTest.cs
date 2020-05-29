@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Annium.Core.Mapper.Tests
 {
-    public class FieldMappingTest
+    public class BaseFieldMappingTest
     {
         [Fact]
         public void AssignmentMapping_Works()

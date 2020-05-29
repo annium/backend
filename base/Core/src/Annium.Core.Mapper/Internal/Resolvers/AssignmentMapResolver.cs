@@ -21,7 +21,9 @@ namespace Annium.Core.Mapper.Internal.Resolvers
         public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
             // defined instance and create initial assignment expression
+            var variables = new List<ParameterExpression>();
             var instance = Expression.Variable(tgt);
+            variables.Add(instance);
             var init = Expression.Assign(instance, Expression.New(tgt.GetConstructor(Type.EmptyTypes)));
 
             // get source and target type properties
@@ -48,14 +50,14 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                     body.Add(Expression.Assign(Expression.Property(instance, members.Single()), _repacker.Repack(map.Body)(source)));
                 else
                 {
-                    var variable = Expression.Variable(map.ReturnType);
-                    body.Add(variable);
+                    var variable = Expression.Variable(map.Body.Type);
+                    variables.Add(variable);
                     body.Add(Expression.Assign(variable, _repacker.Repack(map.Body)(source)));
 
                     foreach (var member in members)
                         body.Add(Expression.Assign(
                             Expression.Property(instance, member),
-                            Expression.Property(variable, map.ReturnType, member.Name)
+                            Expression.Property(variable, map.Body.Type, member.Name)
                         ));
                 }
             }
@@ -79,7 +81,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             // if src is struct - things are simpler, no null-checking
             if (src.IsValueType)
                 return Expression.Block(
-                    new[] { instance },
+                    variables,
                     new Expression[] { init }
                         .Concat(body)
                         .Concat(new Expression[] { instance })
@@ -99,7 +101,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var result = Expression.Return(returnTarget, instance, tgt);
 
             return Expression.Block(
-                new[] { instance },
+                variables,
                 new Expression[] { nullCheck, init }
                     .Concat(body)
                     .Concat(new Expression[] { result, returnLabel })
