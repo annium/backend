@@ -6,7 +6,7 @@ namespace Annium.Core.Runtime.Types
     public interface ITypeManager
     {
         IReadOnlyCollection<Type> Types { get; }
-        Type? GetByName(string name);
+        Type? GetByName(string fullName);
         bool CanResolve(Type baseType);
         Type[] GetImplementations(Type baseType);
         Type? ResolveBySignature(object instance, Type baseType, bool exact);

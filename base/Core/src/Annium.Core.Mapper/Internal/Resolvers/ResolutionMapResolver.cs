@@ -37,8 +37,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var typeVar = Expression.Variable(typeof(Type));
             vars.Add(typeVar);
 
-            var resolveBySignature = typeof(TypeManager)
-                .GetMethod(nameof(TypeManager.ResolveBySignature), new[] { typeof(object), typeof(Type), typeof(bool) });
+            var resolveBySignature = typeof(ITypeManager)
+                .GetMethod(nameof(ITypeManager.ResolveBySignature), new[] { typeof(object), typeof(Type), typeof(bool) });
 
             expressions.Add(Expression.Assign(
                 typeVar,
