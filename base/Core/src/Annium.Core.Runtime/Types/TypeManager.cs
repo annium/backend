@@ -25,20 +25,20 @@ namespace Annium.Core.Runtime.Types
             _signatures = new Lazy<IReadOnlyDictionary<Type, HashSet<string>>>(CollectSignatures, true);
         }
 
-        public Type? GetByName(string name) => _types.Value.FirstOrDefault(t => t.FullName == name);
+        public Type? GetByName(string name) => _types.Value.SingleOrDefault(t => t.FullName == name);
 
         // returns whether given type is registered with some of subtypes
         public bool CanResolve(Type baseType) => _descendants.Value.ContainsKey(baseType);
 
         public Type[] GetImplementations(Type baseType)
         {
-            // if baseType is not generic or baseType is generic type definition - it will be registered explicitly an all of it's dependants match
+            // if baseType is not generic or baseType is generic type definition - it will be registered explicitly and all of it's dependants match
             if (!baseType.IsGenericType || baseType.IsGenericTypeDefinition)
                 return GetDescendants(baseType);
 
             // if baseType is generic type - select descendants, assignable from it
             return GetDescendants(baseType)
-                .Where(t => baseType.IsAssignableFrom(t))
+                .Where(baseType.IsAssignableFrom)
                 .ToArray();
 
             Type[] GetDescendants(Type type) =>
@@ -67,7 +67,7 @@ namespace Annium.Core.Runtime.Types
                 exact
             );
 
-        // reolve type by key (for labeled types)
+        // resolve type by key (for labeled types)
         public Type? ResolveByKey(string key, Type baseType)
         {
             var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
