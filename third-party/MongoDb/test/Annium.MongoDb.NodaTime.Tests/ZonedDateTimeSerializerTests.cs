@@ -9,7 +9,7 @@ namespace Annium.MongoDb.NodaTime.Tests
 {
     public class ZonedDateTimeSerializerTests
     {
-        private readonly static DateTimeZone easternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York");
+        private readonly static DateTimeZone easternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
 
         static ZonedDateTimeSerializerTests()
         {

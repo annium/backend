@@ -10,7 +10,7 @@ using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Http;
-using NodaTime;
+using NodaTime.Xml;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
@@ -22,7 +22,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
         private readonly ISerializer<string> serializer = StringSerializer.Configure(opts =>
             opts.ConfigureDefault()
                 .ConfigureForOperations()
-                .ConfigureForNodaTime(DateTimeZoneProviders.Serialization));
+                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider));
 
         public ExceptionMiddleware(
             RequestDelegate next,

@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
+using NodaTime.Xml;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -14,7 +14,7 @@ namespace Annium.Core.DependencyInjection
         {
             opts.JsonSerializerOptions.ConfigureDefault()
                 .ConfigureForOperations()
-                .ConfigureForNodaTime(DateTimeZoneProviders.Serialization);
+                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider);
 
             configure(opts);
         });
