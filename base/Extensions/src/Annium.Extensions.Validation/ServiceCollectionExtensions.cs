@@ -10,7 +10,7 @@ namespace Annium.Core.DependencyInjection
             services.AddAllTypes()
                 .AssignableTo(typeof(Validator<>))
                 .Where(x => !x.IsGenericType)
-                .AsImplementedInterfaces()
+                .As(typeof(IValidationContainer<>))
                 .InstancePerScope();
 
             services.AddScoped(typeof(IValidator<>), typeof(ValidationExecutor<>));

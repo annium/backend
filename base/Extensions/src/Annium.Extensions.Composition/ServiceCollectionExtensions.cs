@@ -1,5 +1,3 @@
-using System.Linq;
-using Annium.Core.Runtime.Types;
 using Annium.Extensions.Composition;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,18 +7,11 @@ namespace Annium.Core.DependencyInjection
     {
         public static IServiceCollection AddComposition(this IServiceCollection services)
         {
-            var typeManager = TypeManager.Instance;
-
-            var composerBase = typeof(ICompositionContainer<>);
-            var composerTypes = typeManager.GetImplementations(composerBase);
-            foreach (var type in composerTypes)
-            {
-                var baseType = type.GetInterfaces()
-                    .First(i => i.IsGenericType && i.GetGenericTypeDefinition() == composerBase);
-
-                if (!baseType.ContainsGenericParameters)
-                    services.AddScoped(baseType, type);
-            }
+            services.AddAllTypes()
+                .AssignableTo(typeof(Composer<>))
+                .Where(x => !x.IsGenericType)
+                .As(typeof(ICompositionContainer<>))
+                .InstancePerScope();
 
             services.AddScoped(typeof(IComposer<>), typeof(CompositionExecutor<>));
 

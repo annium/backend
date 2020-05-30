@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
-using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -31,22 +30,20 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IMapper, MapperInstance>();
 
             // register resolvers
-            services.SelectTypes()
-                .Where(x => typeof(IMapResolver).IsAssignableFrom(x))
-                .AsImplementedInterfaces()
-                .RegisterSingleton();
+            services.AddAllTypes()
+                .AssignableTo<IMapResolver>()
+                .As<IMapResolver>()
+                .SingleInstance();
 
             // add default profile
             services.AddSingleton<Profile>(new DefaultProfile());
 
             // if autoload requested - discover and register profiles
             if (autoload)
-            {
-                var profileBase = typeof(Profile);
-                var profiles = TypeManager.Instance.GetImplementations(profileBase);
-                foreach (var profile in profiles)
-                    services.AddSingleton(profileBase, profile);
-            }
+                services.AddAllTypes()
+                    .AssignableTo<Profile>()
+                    .As<Profile>()
+                    .SingleInstance();
 
             return services;
         }
