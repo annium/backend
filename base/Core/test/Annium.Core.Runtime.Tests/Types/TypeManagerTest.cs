@@ -97,7 +97,7 @@ namespace Annium.Core.Runtime.Tests.Types
             var manager = TypeManager.Instance;
 
             // act
-            var result = manager.ResolveBySignature(new [] { nameof(B.ForB) }, typeof(A), true);
+            var result = manager.ResolveBySignature(new[] { nameof(B.ForB) }, typeof(A), true);
 
             // assert
             result.IsEqual(typeof(B));
@@ -139,11 +139,15 @@ namespace Annium.Core.Runtime.Tests.Types
             result.IsEqual(typeof(E));
         }
 
-        private class A { }
+        private class A
+        {
+        }
+
         private class B : A
         {
             public int ForB { get; set; }
         }
+
         private class C : A
         {
             public int ForC { get; set; }
@@ -161,22 +165,59 @@ namespace Annium.Core.Runtime.Tests.Types
         }
 
         [ResolveKey(nameof(E))]
-        private class E : D { public E() : base(nameof(E)) { } }
+        private class E : D
+        {
+            public E() : base(nameof(E))
+            {
+            }
+        }
 
         [ResolveKey(nameof(F))]
-        private class F : D { public F() : base(nameof(F)) { } }
+        private class F : D
+        {
+            public F() : base(nameof(F))
+            {
+            }
+        }
 
         [ResolveKey(nameof(F))]
-        private class X : D { public X() : base(nameof(F)) { } }
+        private class X : D
+        {
+            public X() : base(nameof(F))
+            {
+            }
+        }
 
-        private interface IGenericInterface<T1, T2> { }
-        private class GenericInterfaceDemoA<T> : IGenericInterface<T, int> { }
-        private class GenericInterfaceDemoB<T> : IGenericInterface<T, long> { }
-        private class GenericInterfaceDemoC : IGenericInterface<string, bool> { }
+        private interface IGenericInterface<T1, T2>
+        {
+        }
 
-        private class GenericClass<T1, T2> { }
-        private class GenericClassDemoA<T> : GenericClass<T, int> { }
-        private class GenericClassDemoB<T> : GenericClass<T, long> { }
-        private class GenericClassDemoC : GenericClass<string, bool> { }
+        private class GenericInterfaceDemoA<T> : IGenericInterface<T, int>
+        {
+        }
+
+        private class GenericInterfaceDemoB<T> : IGenericInterface<T, long>
+        {
+        }
+
+        private class GenericInterfaceDemoC : IGenericInterface<string, bool>
+        {
+        }
+
+        private class GenericClass<T1, T2>
+        {
+        }
+
+        private class GenericClassDemoA<T> : GenericClass<T, int>
+        {
+        }
+
+        private class GenericClassDemoB<T> : GenericClass<T, long>
+        {
+        }
+
+        private class GenericClassDemoC : GenericClass<string, bool>
+        {
+        }
     }
 }

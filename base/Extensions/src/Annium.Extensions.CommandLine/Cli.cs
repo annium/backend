@@ -53,6 +53,7 @@ namespace Annium.Extensions.CommandLine
                             Console.Write(' ');
                             Console.CursorLeft = pos;
                         }
+
                         break;
                     case ConsoleKey.Enter:
                         break;

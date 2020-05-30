@@ -5,6 +5,8 @@ namespace Annium.MongoDb.NodaTime
 {
     public class PeriodSerializer : PatternSerializer<Period>
     {
-        public PeriodSerializer() : base(PeriodPattern.NormalizingIso) { }
+        public PeriodSerializer() : base(PeriodPattern.NormalizingIso)
+        {
+        }
     }
 }

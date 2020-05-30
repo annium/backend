@@ -8,7 +8,7 @@ namespace Annium.Extensions.Pooling.Storages
         {
             PoolStorageMode.Fifo => new QueueStorage<T>(capacity),
             PoolStorageMode.Lifo => new StackStorage<T>(capacity),
-            _ => throw new NotImplementedException($"Unsupported storage mode {mode}"),
+            _                    => throw new NotImplementedException($"Unsupported storage mode {mode}"),
         };
     }
 }

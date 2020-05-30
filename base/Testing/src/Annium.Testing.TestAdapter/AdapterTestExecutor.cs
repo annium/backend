@@ -60,7 +60,9 @@ namespace Annium.Testing.TestAdapter
             ));
         }
 
-        public void Cancel() { }
+        public void Cancel()
+        {
+        }
 
         private async Task RunAssemblyTestsAsync(Assembly assembly, IFrameworkHandle frameworkHandle)
         {

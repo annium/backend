@@ -81,6 +81,7 @@ namespace Annium.Storage.S3.Tests
             {
                 e = ex;
             }
+
             e.As<KeyNotFoundException>();
         }
 
@@ -94,7 +95,7 @@ namespace Annium.Storage.S3.Tests
 
             // act
             byte[] result;
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
                 result = ms.ToArray();
@@ -120,6 +121,7 @@ namespace Annium.Storage.S3.Tests
             {
                 e = ex;
             }
+
             e.As<ArgumentException>();
         }
 

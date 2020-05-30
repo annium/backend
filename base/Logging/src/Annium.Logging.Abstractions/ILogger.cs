@@ -19,5 +19,7 @@ namespace Annium.Logging.Abstractions
         void Error(string message);
     }
 
-    public interface ILogger<out T> : ILogger { }
+    public interface ILogger<out T> : ILogger
+    {
+    }
 }

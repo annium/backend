@@ -40,6 +40,7 @@ namespace Annium.Configuration.Tests
     public class ConfigOne : SomeConfig
     {
         public uint Value { get; set; }
+
         public ConfigOne()
         {
             Type = nameof(ConfigOne);
@@ -50,6 +51,7 @@ namespace Annium.Configuration.Tests
     public class ConfigTwo : SomeConfig
     {
         public long Value { get; set; }
+
         public ConfigTwo()
         {
             Type = nameof(ConfigTwo);

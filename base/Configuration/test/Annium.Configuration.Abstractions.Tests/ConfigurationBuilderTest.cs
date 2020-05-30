@@ -12,9 +12,9 @@ namespace Annium.Configuration.Abstractions.Tests
         {
             // arrange
             var cfg = new Dictionary<string[], string>();
-            cfg[new [] { "plain" }] = "10";
-            cfg[new [] { "abstract", "type" }] = "ConfigOne";
-            cfg[new [] { "abstract", "value" }] = "14";
+            cfg[new[] { "plain" }] = "10";
+            cfg[new[] { "abstract", "type" }] = "ConfigOne";
+            cfg[new[] { "abstract", "value" }] = "14";
             var builder = new ConfigurationBuilder();
             builder.Add(cfg);
 

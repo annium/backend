@@ -94,6 +94,7 @@ namespace Annium.Extensions.Primitives
                             pos = s;
                         else
                             yield return End(i, s);
+
                         break;
                     case Symbol.Lower:
                         if (s == Symbol.Upper || s == Symbol.Other)
@@ -112,6 +113,7 @@ namespace Annium.Extensions.Primitives
                             from = i;
                             pos = s;
                         }
+
                         break;
                 }
             }
@@ -147,7 +149,7 @@ namespace Annium.Extensions.Primitives
                 if (!lookup.TryGetValue(c2, out var b2))
                     throw new OverflowException($"{c2} is not a valid hex character");
 
-                byteArray[i / 2] = (byte)((b1 << 4) + b2);
+                byteArray[i / 2] = (byte) ((b1 << 4) + b2);
             }
 
             return byteArray;
@@ -168,7 +170,7 @@ namespace Annium.Extensions.Primitives
                 var c2 = str[i + 1];
 
                 if (lookup.TryGetValue(c1, out var b1) && lookup.TryGetValue(c2, out var b2))
-                    array[i / 2] = (byte)((b1 << 4) + b2);
+                    array[i / 2] = (byte) ((b1 << 4) + b2);
                 else
                     return false;
             }

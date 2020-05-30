@@ -43,7 +43,7 @@ namespace Annium.Data.Operations.Tests
         {
             // arrange
             var result = Result.Success(5);
-            var(succeed, data) = result;
+            var (succeed, data) = result;
 
             // assert
             result.Data.IsEqual(data);
@@ -58,7 +58,7 @@ namespace Annium.Data.Operations.Tests
         {
             // arrange
             var result = Result.Success(5).Error("plain");
-            var(succeed, data) = result;
+            var (succeed, data) = result;
 
             // assert
             result.Data.IsEqual(data);
@@ -73,7 +73,7 @@ namespace Annium.Data.Operations.Tests
         {
             // arrange
             var result = Result.Failure(5);
-            var(succeed, data) = result;
+            var (succeed, data) = result;
 
             // assert
             result.Data.IsEqual(data);

@@ -7,13 +7,17 @@ namespace Annium.Data.Operations.Implementations
     internal abstract class ResultBase<T> : IResultBase<T> where T : class, IResultBase<T>
     {
         public IEnumerable<string> PlainErrors => plainErrors;
+
         public IReadOnlyDictionary<string, IEnumerable<string>> LabeledErrors =>
-        labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IEnumerable<string>);
+            labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IEnumerable<string>);
+
         public bool HasErrors => plainErrors.Count > 0 || labeledErrors.Count > 0;
         private readonly HashSet<string> plainErrors = new HashSet<string>();
         private readonly Dictionary<string, HashSet<string>> labeledErrors = new Dictionary<string, HashSet<string>>();
 
-        protected ResultBase() { }
+        protected ResultBase()
+        {
+        }
 
         public abstract T Clone();
 
@@ -34,7 +38,7 @@ namespace Annium.Data.Operations.Implementations
 
         public T Error(string label, string error)
         {
-            lock(labeledErrors)
+            lock (labeledErrors)
             {
                 if (!labeledErrors.ContainsKey(label))
                     labeledErrors[label] = new HashSet<string>();
@@ -46,27 +50,27 @@ namespace Annium.Data.Operations.Implementations
 
         public T Errors(params string[] errors)
         {
-            lock(plainErrors)
-            foreach (var error in errors)
-                plainErrors.Add(error);
+            lock (plainErrors)
+                foreach (var error in errors)
+                    plainErrors.Add(error);
 
             return (this as T) !;
         }
 
         public T Errors(IEnumerable<string> errors)
         {
-            lock(plainErrors)
-            foreach (var error in errors)
-                plainErrors.Add(error);
+            lock (plainErrors)
+                foreach (var error in errors)
+                    plainErrors.Add(error);
 
             return (this as T) !;
         }
 
         public T Errors(params ValueTuple<string, IEnumerable<string>>[] errors)
         {
-            lock(labeledErrors)
+            lock (labeledErrors)
             {
-                foreach (var(label, labelErrors) in errors)
+                foreach (var (label, labelErrors) in errors)
                 {
                     if (!labeledErrors.ContainsKey(label))
                         labeledErrors[label] = new HashSet<string>();
@@ -80,9 +84,9 @@ namespace Annium.Data.Operations.Implementations
 
         public T Errors(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>> errors)
         {
-            lock(labeledErrors)
+            lock (labeledErrors)
             {
-                foreach (var(label, labelErrors) in errors)
+                foreach (var (label, labelErrors) in errors)
                 {
                     if (!labeledErrors.ContainsKey(label))
                         labeledErrors[label] = new HashSet<string>();

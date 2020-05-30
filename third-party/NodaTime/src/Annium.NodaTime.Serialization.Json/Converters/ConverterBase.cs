@@ -13,14 +13,17 @@ namespace Annium.NodaTime.Serialization.Json
     internal abstract class ConverterBase<T> : JsonConverter<T>
     {
         // For value types and sealed classes, we can optimize and not call IsAssignableFrom.
-        private static readonly bool CheckAssignableFrom = !(typeof(T).GetTypeInfo().IsValueType || (typeof(T).GetTypeInfo().IsClass && typeof(T).GetTypeInfo().IsSealed));
+        private static readonly bool CheckAssignableFrom = !(
+            typeof(T).GetTypeInfo().IsValueType ||
+            typeof(T).GetTypeInfo().IsClass &&
+            typeof(T).GetTypeInfo().IsSealed
+        );
 
-        private static readonly Type NullableT = typeof(T).GetTypeInfo().IsValueType ?
-        typeof(Nullable<>).MakeGenericType(typeof(T)) : typeof(T);
+        private static readonly Type NullableT = typeof(T).GetTypeInfo().IsValueType ? typeof(Nullable<>).MakeGenericType(typeof(T)) : typeof(T);
 
         public override bool CanConvert(Type objectType) =>
-        objectType == typeof(T) || objectType == NullableT ||
-        (CheckAssignableFrom && typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()));
+            objectType == typeof(T) || objectType == NullableT ||
+            (CheckAssignableFrom && typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()));
 
         public override T Read(
             ref Utf8JsonReader reader,

@@ -14,7 +14,7 @@ namespace Annium.Extensions.Arguments
         }
 
         public void Run<TGroup>(string[] args, CancellationToken token = default)
-        where TGroup : Group
+            where TGroup : Group
         {
             var group = provider.GetRequiredService<TGroup>();
             group.SetRoot(provider.GetRequiredService<Root>());

@@ -30,7 +30,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             typeof(Sample).GetInheritanceChain().IsEmpty();
             typeof(Sample).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(Sample));
             typeof(Sample).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(object));
-            typeof(Sample).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new [] { typeof(Sample), typeof(object) });
+            typeof(Sample).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new[] { typeof(Sample), typeof(object) });
         }
 
         [Fact]
@@ -38,9 +38,9 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(Derived).GetInheritanceChain().Has(1).At(0).IsEqual(typeof(Sample));
-            typeof(Derived).GetInheritanceChain(self: true).Has(2).IsEqual(new [] { typeof(Derived), typeof(Sample) });
-            typeof(Derived).GetInheritanceChain(root: true).Has(2).IsEqual(new [] { typeof(Sample), typeof(object) });
-            typeof(Derived).GetInheritanceChain(self: true, root: true).Has(3).IsEqual(new [] { typeof(Derived), typeof(Sample), typeof(object) });
+            typeof(Derived).GetInheritanceChain(self: true).Has(2).IsEqual(new[] { typeof(Derived), typeof(Sample) });
+            typeof(Derived).GetInheritanceChain(root: true).Has(2).IsEqual(new[] { typeof(Sample), typeof(object) });
+            typeof(Derived).GetInheritanceChain(self: true, root: true).Has(3).IsEqual(new[] { typeof(Derived), typeof(Sample), typeof(object) });
         }
 
         [Fact]
@@ -60,7 +60,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             typeof(Point).GetInheritanceChain().IsEmpty();
             typeof(Point).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(Point));
             typeof(Point).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(ValueType));
-            typeof(Point).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new [] { typeof(Point), typeof(ValueType) });
+            typeof(Point).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new[] { typeof(Point), typeof(ValueType) });
         }
 
         [Fact]
@@ -70,12 +70,20 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             typeof(IFace).GetInheritanceChain().IsEmpty();
         }
 
-        private class Derived : Sample { }
+        private class Derived : Sample
+        {
+        }
 
-        private class Sample { }
+        private class Sample
+        {
+        }
 
-        private struct Point { }
+        private struct Point
+        {
+        }
 
-        private interface IFace { }
+        private interface IFace
+        {
+        }
     }
 }

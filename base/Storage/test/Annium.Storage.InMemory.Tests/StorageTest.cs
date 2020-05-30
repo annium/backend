@@ -74,6 +74,7 @@ namespace Annium.Storage.InMemory.Tests
             {
                 e = ex;
             }
+
             e.As<KeyNotFoundException>();
         }
 
@@ -87,7 +88,7 @@ namespace Annium.Storage.InMemory.Tests
 
             // act
             byte[] result;
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
                 result = ms.ToArray();
@@ -113,6 +114,7 @@ namespace Annium.Storage.InMemory.Tests
             {
                 e = ex;
             }
+
             e.As<ArgumentException>();
         }
 

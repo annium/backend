@@ -20,7 +20,7 @@ namespace Annium.Data.Operations.Tests
         {
             // arrange
             var result = Result.Status(Access.Allowed, 5);
-            var(status, data) = result;
+            var (status, data) = result;
 
             // assert
             result.Status.IsEqual(Access.Allowed);

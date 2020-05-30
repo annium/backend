@@ -4,28 +4,31 @@ using System.Threading.Tasks;
 
 namespace Annium.Core.Mediator
 {
-
-    public interface IPipeRequestHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut>:
+    public interface IPipeRequestHandler<TRequestIn, TRequestOut, TResponseIn, TResponseOut> :
         IRequestHandlerInput<TRequestIn, TResponseOut>,
         IRequestHandlerOutput<TRequestOut, TResponseIn>
-        {
-            Task<TResponseOut> HandleAsync(
-                TRequestIn request,
-                CancellationToken ct,
-                Func<TRequestOut, Task<TResponseIn>> next
-            );
-        }
+    {
+        Task<TResponseOut> HandleAsync(
+            TRequestIn request,
+            CancellationToken ct,
+            Func<TRequestOut, Task<TResponseIn>> next
+        );
+    }
 
-    public interface IFinalRequestHandler<TRequest, TResponse>:
+    public interface IFinalRequestHandler<TRequest, TResponse> :
         IRequestHandlerInput<TRequest, TResponse>
-        {
-            Task<TResponse> HandleAsync(
-                TRequest request,
-                CancellationToken ct
-            );
-        }
+    {
+        Task<TResponse> HandleAsync(
+            TRequest request,
+            CancellationToken ct
+        );
+    }
 
-    public interface IRequestHandlerInput<TRequestIn, TResponseOut> { }
+    public interface IRequestHandlerInput<TRequestIn, TResponseOut>
+    {
+    }
 
-    public interface IRequestHandlerOutput<TRequestOut, TResponseIn> { }
+    public interface IRequestHandlerOutput<TRequestOut, TResponseIn>
+    {
+    }
 }

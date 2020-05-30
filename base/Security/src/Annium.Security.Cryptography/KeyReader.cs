@@ -8,7 +8,7 @@ namespace Annium.Security.Cryptography
     {
         public RSAParameters ReadRsaKey(Stream stream)
         {
-            using(var reader = new PemReader(stream))
+            using (var reader = new PemReader(stream))
             {
                 return reader.ReadRsaKey();
             }

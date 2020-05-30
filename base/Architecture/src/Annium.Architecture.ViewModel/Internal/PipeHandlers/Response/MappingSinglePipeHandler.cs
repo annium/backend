@@ -9,7 +9,14 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
 {
-    internal class MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut> : IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponseIn>, IStatusResult<OperationStatus, TResponseOut>> where TResponseOut : IResponse<TResponseIn>
+    internal class MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut> :
+        IPipeRequestHandler<
+            TRequest,
+            TRequest,
+            IStatusResult<OperationStatus, TResponseIn>,
+            IStatusResult<OperationStatus, TResponseOut>
+        >
+        where TResponseOut : IResponse<TResponseIn>
     {
         private readonly IMapper mapper;
         private readonly ILogger<MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut>> logger;

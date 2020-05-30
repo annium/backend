@@ -86,7 +86,8 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}",
+                GetSettings());
 
             // assert
             result.HasErrors.IsTrue();

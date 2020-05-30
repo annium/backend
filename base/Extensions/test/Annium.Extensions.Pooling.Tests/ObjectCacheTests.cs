@@ -60,6 +60,7 @@ namespace Annium.Extensions.Pooling.Tests
                 logs.Contains($"{i} {Suspended}").IsTrue();
                 logs.Contains($"{i} {Resumed}").IsTrue();
             }
+
             Enumerable.Range(0, 2).Select(x => $"{x} {Disposed}").All(logs.Contains).IsTrue();
         }
 

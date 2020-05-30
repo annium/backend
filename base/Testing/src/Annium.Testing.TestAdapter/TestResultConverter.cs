@@ -18,7 +18,7 @@ namespace Annium.Testing.TestAdapter
         {
             var result = new MsTestResult(testConverter.Convert(assembly, test))
             {
-                Outcome = (MsTestOutcome)testResult.Outcome,
+                Outcome = (MsTestOutcome) testResult.Outcome,
                 ErrorMessage = testResult.Failure?.Message,
                 ErrorStackTrace = testResult.Failure?.StackTrace,
                 DisplayName = test.DisplayName,

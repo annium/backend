@@ -9,16 +9,22 @@ namespace Annium.Core.DependencyInjection
         private readonly IList<ServicePackBase> packs = new List<ServicePackBase>();
 
         public void Add<TServicePack>()
-        where TServicePack : ServicePackBase, new()
+            where TServicePack : ServicePackBase, new()
         {
             packs.Add(new TServicePack());
         }
 
-        public virtual void Configure(IServiceCollection services) { }
+        public virtual void Configure(IServiceCollection services)
+        {
+        }
 
-        public virtual void Register(IServiceCollection services, IServiceProvider provider) { }
+        public virtual void Register(IServiceCollection services, IServiceProvider provider)
+        {
+        }
 
-        public virtual void Setup(IServiceProvider provider) { }
+        public virtual void Setup(IServiceProvider provider)
+        {
+        }
 
         internal void InternalConfigure(IServiceCollection services)
         {

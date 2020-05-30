@@ -4,7 +4,6 @@ namespace Annium.Core.Entrypoint
     {
         public Entrypoint()
         {
-
         }
     }
 }

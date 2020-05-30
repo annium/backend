@@ -9,7 +9,9 @@ namespace Annium.Localization.Abstractions
         internal IServiceCollection LocaleStorageServices { get; private set; } = new ServiceCollection();
         internal Func<CultureInfo> CultureAccessor { get; private set; } = () => CultureInfo.CurrentCulture;
 
-        internal LocalizationOptions() { }
+        internal LocalizationOptions()
+        {
+        }
 
         public LocalizationOptions SetLocaleStorage(Action<IServiceCollection> configure)
         {

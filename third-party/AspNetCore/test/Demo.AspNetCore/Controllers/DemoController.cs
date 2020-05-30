@@ -15,7 +15,6 @@ namespace Demo.AspNetCore.Controllers
     {
         public IndexController(IMediator mediator) : base(mediator)
         {
-
         }
 
         [HttpGet]

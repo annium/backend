@@ -44,6 +44,7 @@ namespace Annium.Extensions.Arguments
                     }
                     else
                         options[name] = next;
+
                     i++;
                 }
 

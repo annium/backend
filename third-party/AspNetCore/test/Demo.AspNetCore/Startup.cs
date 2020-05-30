@@ -23,10 +23,7 @@ namespace Demo.AspNetCore
                 .AllowAnyMethod()
                 .AllowAnyHeader()
                 .AllowCredentials());
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

@@ -13,6 +13,7 @@ namespace Annium.Extensions.Composition
     public abstract class Composer<TValue> : ICompositionContainer<TValue> where TValue : class
     {
         public IEnumerable<PropertyInfo> Fields => _rules.Keys;
+
         private readonly IDictionary<PropertyInfo, IRuleContainer<TValue>> _rules =
             new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
@@ -36,7 +37,7 @@ namespace Annium.Extensions.Composition
             var result = Result.New();
             var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            foreach (var(property, rule) in _rules)
+            foreach (var (property, rule) in _rules)
             {
                 var propertyLabel = hasLabel ? $"{label}.{property.Name}" : property.Name;
                 var ruleResult = Result.New();

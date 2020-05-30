@@ -11,7 +11,7 @@ namespace Annium.Net.Mail
         private readonly List<TestEmail> emails = new List<TestEmail>();
 
         public Task<IBooleanResult> SendAsync<T>(MailMessage message, string template, T data)
-        where T : notnull
+            where T : notnull
         {
             emails.Add(new TestEmail(message, template, data));
 

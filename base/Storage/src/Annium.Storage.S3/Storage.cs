@@ -26,14 +26,12 @@ namespace Annium.Storage.S3
 
             VerifyPath(configuration.Directory);
 
-            directory = configuration.Directory == "/" ?
-                string.Empty :
-                configuration.Directory.TrimStart('/');
+            directory = configuration.Directory == "/" ? string.Empty : configuration.Directory.TrimStart('/');
         }
 
         protected override async Task DoSetupAsync()
         {
-            using(var s3 = GetClient())
+            using (var s3 = GetClient())
             {
                 var buckets = (await s3.ListBucketsAsync()).Buckets.Select(b => b.BucketName).ToArray();
                 if (buckets.Contains(configuration.Bucket))
@@ -47,7 +45,7 @@ namespace Annium.Storage.S3
         {
             var listRequest = new ListObjectsRequest() { BucketName = configuration.Bucket, MaxKeys = 100, Prefix = directory };
 
-            using(var s3 = GetClient())
+            using (var s3 = GetClient())
             {
                 var objects = (await s3.ListObjectsAsync(listRequest)).S3Objects;
 
@@ -64,7 +62,7 @@ namespace Annium.Storage.S3
             source.Position = 0;
             var putRequest = new PutObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name), InputStream = source, };
 
-            using(var s3 = GetClient())
+            using (var s3 = GetClient())
             {
                 await s3.PutObjectAsync(putRequest);
             }
@@ -74,12 +72,12 @@ namespace Annium.Storage.S3
         {
             VerifyName(name);
 
-            using(var s3 = GetClient())
+            using (var s3 = GetClient())
             {
                 try
                 {
                     var getRequest = new GetObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name) };
-                    using(var getResponse = await s3.GetObjectAsync(getRequest))
+                    using (var getResponse = await s3.GetObjectAsync(getRequest))
                     {
                         var ms = new MemoryStream();
                         await getResponse.ResponseStream.CopyToAsync(ms);
@@ -100,7 +98,7 @@ namespace Annium.Storage.S3
         {
             VerifyName(name);
 
-            using(var s3 = GetClient())
+            using (var s3 = GetClient())
             {
                 var getRequest = new GetObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name) };
                 try

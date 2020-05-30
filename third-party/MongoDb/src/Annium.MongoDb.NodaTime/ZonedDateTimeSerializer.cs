@@ -7,6 +7,8 @@ namespace Annium.MongoDb.NodaTime
     {
         private static readonly IPattern<ZonedDateTime> Pattern = ZonedDateTimePattern.CreateWithInvariantCulture("G", DateTimeZoneProviders.Tzdb);
 
-        public ZonedDateTimeSerializer() : base(Pattern) { }
+        public ZonedDateTimeSerializer() : base(Pattern)
+        {
+        }
     }
 }

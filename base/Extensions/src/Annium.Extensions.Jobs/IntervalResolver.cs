@@ -31,22 +31,17 @@ namespace Annium.Extensions.Jobs
             var type = typeof(ZonedDateTime);
             var parts = new Expression?[]
             {
-                GetPartExpression("second", "0", 0, 59,
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Second)))),
-                    GetPartExpression("minute", intervals[0], 0, 59,
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Minute)))),
-                    GetPartExpression("hour", intervals[1], 0, 23,
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Hour)))),
-                    GetPartExpression("day", intervals[2], 0, 30,
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Day)))),
-                    GetPartExpression("month", intervals[3], 0, 11,
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.Month)))),
-                    GetPartExpression("day of week", intervals[4], 1, 7,
-                        Expression.Convert(
-                            Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.DayOfWeek))),
-                            typeof(int)
-                        )
+                GetPartExpression("second", "0", 0, 59, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Second))),
+                GetPartExpression("minute", intervals[0], 0, 59, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Minute))),
+                GetPartExpression("hour", intervals[1], 0, 23, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Hour))),
+                GetPartExpression("day", intervals[2], 0, 30, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Day))),
+                GetPartExpression("month", intervals[3], 0, 11, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Month))),
+                GetPartExpression("day of week", intervals[4], 1, 7,
+                    Expression.Convert(
+                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.DayOfWeek))),
+                        typeof(int)
                     )
+                )
             }.OfType<Expression>().ToArray();
 
             var match = parts.Length == 0 ? Expression.Constant(true) : parts[0];
@@ -56,45 +51,48 @@ namespace Annium.Extensions.Jobs
             expressions.Add(match);
 
             var expression = Expression.Lambda(
-                Expression.Block(new [] { zonedTime }, expressions),
+                Expression.Block(new[] { zonedTime }, expressions),
                 false,
-                new ParameterExpression[] { instant }
+                instant
             );
 
             return (Func<Instant, bool>) expression.Compile();
-
-            Expression? GetPartExpression(string name, string part, uint min, uint max, Expression getPart)
-            {
-                // if any - return null
-                if (part == "*")
-                    return null;
-
-                // if const - test equality
-                if (uint.TryParse(part, out var value))
-                    if (value >= min && value <= max)
-                        return Expression.Equal(getPart, Expression.Constant((int) value));
-                    else
-                        throw new ArgumentOutOfRangeException("value", value, $"'{name}' must be in [{min};{max}] range");
-
-                // if list - handle with "or" equality
-                if (Regex.IsMatch(part, "([0-9]{1,2})(?:,[0-9]{1,2})+"))
-                {
-                    var values = part.Split(',').Select(uint.Parse).ToArray();
-                    if (values.Any(v => v < min || v > max))
-                        throw new ArgumentOutOfRangeException("value", $"'{name}' must be in [{min};{max}] range");
-
-                    var result = Expression.Equal(getPart, Expression.Constant((int) values[0]));
-                    foreach (var orValue in values.Skip(1))
-                        result = Expression.Or(
-                            result,
-                            Expression.Equal(getPart, Expression.Constant((int) orValue))
-                        );
-
-                    return result;
-                }
-
-                throw new InvalidOperationException($"Can't handle scheduler interval part '{part}'");
-            }
         }
+
+        private Expression? GetPartExpression(string name, string part, uint min, uint max, Expression getPart)
+        {
+            // if any - return null
+            if (part == "*")
+                return null;
+
+            // if const - test equality
+            if (uint.TryParse(part, out var value))
+                if (value >= min && value <= max)
+                    return Expression.Equal(getPart, Expression.Constant((int) value));
+                else
+                    throw new ArgumentOutOfRangeException("value", value, $"'{name}' must be in [{min};{max}] range");
+
+            // if list - handle with "or" equality
+            if (Regex.IsMatch(part, "([0-9]{1,2})(?:,[0-9]{1,2})+"))
+            {
+                var values = part.Split(',').Select(uint.Parse).ToArray();
+                if (values.Any(v => v < min || v > max))
+                    throw new ArgumentOutOfRangeException("value", $"'{name}' must be in [{min};{max}] range");
+
+                var result = Expression.Equal(getPart, Expression.Constant((int) values[0]));
+                foreach (var orValue in values.Skip(1))
+                    result = Expression.Or(
+                        result,
+                        Expression.Equal(getPart, Expression.Constant((int) orValue))
+                    );
+
+                return result;
+            }
+
+            throw new InvalidOperationException($"Can't handle scheduler interval part '{part}'");
+        }
+
+        private MemberExpression ZonedDateTimeProperty(ParameterExpression ex, string name) =>
+            Expression.Property(ex, typeof(ZonedDateTime).GetProperty(name));
     }
 }

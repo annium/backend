@@ -38,7 +38,7 @@ namespace Annium.Data.Models.Tests
             var c = new Money(2, 1);
 
             // assert
-            new [] { a, b, c, null }.Max().IsEqual(c);
+            new[] { a, b, c, null }.Max().IsEqual(c);
             // reference comparison
             (a > d).IsFalse();
             ((null as Money) ! <= (null as Money) !).IsTrue();

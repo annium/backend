@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Tests
 
             // act
             var one = mapper.Map<B>(first);
-            var arr = mapper.Map<B[]>(new [] { first, second });
+            var arr = mapper.Map<B[]>(new[] { first, second });
 
             // assert
             one.Name.IsEqual(first.Name);
@@ -145,7 +145,6 @@ namespace Annium.Core.Mapper.Tests
 
         private class F
         {
-
         }
     }
 }

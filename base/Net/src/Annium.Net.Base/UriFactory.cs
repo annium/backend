@@ -42,7 +42,9 @@ namespace Annium.Net.Base
             this.baseUri = baseUri;
         }
 
-        private UriFactory() { }
+        private UriFactory()
+        {
+        }
 
         public UriFactory Path(string uri)
         {
@@ -69,7 +71,7 @@ namespace Annium.Net.Base
             // if any query in source uri - add it to queryBuilder
             if (!string.IsNullOrWhiteSpace(uri.Query))
                 foreach (var (name, value) in QueryHelpers.ParseQuery(uri.Query))
-                    qb.Add(name, (IEnumerable<string>)value);
+                    qb.Add(name, (IEnumerable<string>) value);
 
             // add manually defined params to queryBuilder
             foreach (var (name, value) in parameters)

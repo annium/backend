@@ -41,6 +41,8 @@ namespace Annium.Diagnostics.Debug.Tests
             output.Contains("sample").IsTrue();
         }
 
-        private class Demo { }
+        private class Demo
+        {
+        }
     }
 }

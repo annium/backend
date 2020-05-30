@@ -19,10 +19,12 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(bool).IsCuriouslyRecurringGenericParameter().IsFalse();
-            typeof(IEnumerable<>).GetGenericArguments() [0].IsCuriouslyRecurringGenericParameter().IsFalse();
-            typeof(Demo<>).GetGenericArguments() [0].IsCuriouslyRecurringGenericParameter().IsTrue();
+            typeof(IEnumerable<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsFalse();
+            typeof(Demo<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsTrue();
         }
 
-        private class Demo<T> where T : Demo<T> { }
+        private class Demo<T> where T : Demo<T>
+        {
+        }
     }
 }

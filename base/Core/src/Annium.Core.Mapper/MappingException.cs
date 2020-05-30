@@ -12,7 +12,6 @@ namespace Annium.Core.Mapper
             $"Can't convert {src.FullName} -> {tgt.FullName}. {string.Join(Environment.NewLine, messages)}"
         )
         {
-
         }
     }
 }

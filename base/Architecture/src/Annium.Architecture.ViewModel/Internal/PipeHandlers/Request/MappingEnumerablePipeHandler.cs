@@ -8,7 +8,14 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
 {
-    internal class MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse> : IPipeRequestHandler<IEnumerable<TRequestIn>, IEnumerable<TRequestOut>, TResponse, TResponse> where TRequestIn : IRequest<TRequestOut>
+    internal class MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse> :
+        IPipeRequestHandler<
+            IEnumerable<TRequestIn>,
+            IEnumerable<TRequestOut>,
+            TResponse,
+            TResponse
+        >
+        where TRequestIn : IRequest<TRequestOut>
     {
         private readonly IMapper mapper;
         private readonly ILogger<MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse>> logger;

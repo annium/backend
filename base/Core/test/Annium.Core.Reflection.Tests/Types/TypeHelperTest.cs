@@ -36,7 +36,7 @@ namespace Annium.Core.Reflection.Tests.Types
         public void ResolveProperty_NotProperty_Fails()
         {
             // assert
-            ((Action)(() => TypeHelper.ResolveProperty<B>(x => x.InnerTwo.ToString()!))).Throws<ArgumentException>();
+            ((Action) (() => TypeHelper.ResolveProperty<B>(x => x.InnerTwo.ToString()!))).Throws<ArgumentException>();
         }
 
         private class B

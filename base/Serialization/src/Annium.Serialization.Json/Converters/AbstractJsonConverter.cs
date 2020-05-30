@@ -59,7 +59,7 @@ namespace Annium.Serialization.Json.Converters
             if (concreteType is null)
                 throw new SerializationException($"Can't resolve concrete type for {concreteTypeDefinition} by {typeToConvert}");
 
-            return (T)JsonSerializer.Deserialize(doc.RootElement.GetRawText(), concreteType, options);
+            return (T) JsonSerializer.Deserialize(doc.RootElement.GetRawText(), concreteType, options);
 
             string error(string message) => $"Can't resolve concrete type definition for {typeToConvert}: {message}";
         }

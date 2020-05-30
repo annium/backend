@@ -5,5 +5,7 @@ namespace Annium.Data.Operations
         D Data { get; }
     }
 
-    public interface IResult : IResultBase<IResult> { }
+    public interface IResult : IResultBase<IResult>
+    {
+    }
 }

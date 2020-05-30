@@ -6,6 +6,5 @@ namespace Annium.Storage.InMemory
     [ResolveKey("memory")]
     public class Configuration : ConfigurationBase
     {
-
     }
 }

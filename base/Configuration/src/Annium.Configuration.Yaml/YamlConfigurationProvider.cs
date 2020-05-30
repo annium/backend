@@ -19,7 +19,7 @@ namespace Annium.Configuration.Yaml
             Init();
 
             var stream = new YamlStream();
-            using(var fs = File.OpenText(filePath))
+            using (var fs = File.OpenText(filePath))
             {
                 stream.Load(fs);
             }
@@ -34,7 +34,7 @@ namespace Annium.Configuration.Yaml
 
         private void Process(YamlMappingNode node)
         {
-            foreach (var(key, value) in node.Children)
+            foreach (var (key, value) in node.Children)
             {
                 context.Push(((YamlScalarNode) key).Value!);
 

@@ -34,7 +34,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
         {
             string json = "\"America/DOES_NOT_EXIST\"";
             ((Action) (() => JsonSerializer.Deserialize<DateTimeZone>(json, With(converter))))
-            .Throws<JsonException>();
+                .Throws<JsonException>();
         }
     }
 }

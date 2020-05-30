@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 namespace Annium.Extensions.Arguments
 {
     public abstract class AsyncCommand<T> : CommandBase
-    where T : new()
+        where T : new()
     {
         public abstract Task HandleAsync(T cfg, CancellationToken token);
 

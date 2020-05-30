@@ -18,7 +18,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var logger = GetLogger();
 
-            using(var capture = ConsoleCapture.Start())
+            using (var capture = ConsoleCapture.Start())
             {
                 // act
                 logger.Info("sample");
@@ -34,7 +34,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var logger = GetLogger();
 
-            using(var capture = ConsoleCapture.Start())
+            using (var capture = ConsoleCapture.Start())
             {
                 // arrange
                 var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
@@ -55,7 +55,7 @@ namespace Annium.Logging.Console.Tests
             // arrange
             var logger = GetLogger();
 
-            using(var capture = ConsoleCapture.Start())
+            using (var capture = ConsoleCapture.Start())
             {
                 // arrange
                 var ex = new Exception("xxx");

@@ -6,14 +6,15 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse
 {
-    internal class CompositionPipeHandler<TRequest, TResponse> : CompositionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>, IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>> where TRequest : class
+    internal class CompositionPipeHandler<TRequest, TResponse> :
+        CompositionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>,
+        IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>> where TRequest : class
     {
         public CompositionPipeHandler(
             IComposer<TRequest> composer,
             ILogger<CompositionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>> logger
         ) : base(composer, logger)
         {
-
         }
 
         protected override IStatusResult<OperationStatus, TResponse> GetResponse(IStatusResult<OperationStatus> compositionResult)

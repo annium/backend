@@ -32,9 +32,9 @@ namespace Annium.Data.Operations.Serialization
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsInterface ?
-                IsConvertibleInterface(objectType) :
-                objectType.GetInterfaces().Any(IsConvertibleInterface);
+            return objectType.IsInterface
+                ? IsConvertibleInterface(objectType)
+                : objectType.GetInterfaces().Any(IsConvertibleInterface);
         }
 
         protected abstract bool IsConvertibleInterface(Type type);

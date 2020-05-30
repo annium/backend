@@ -13,7 +13,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new [] { new A { Name = "name" } };
+            var value = new[] { new A { Name = "name" } };
 
             // act
             var one = mapper.Map<B[]>(value);
@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new [] { new A { Name = "name" } };
+            var value = new[] { new A { Name = "name" } };
 
             // act
             var result = mapper.Map<List<B>>(value);
@@ -61,7 +61,7 @@ namespace Annium.Core.Mapper.Tests
         {
             // arrange
             var mapper = GetMapper();
-            var value = new [] { new A { Name = "name" } };
+            var value = new[] { new A { Name = "name" } };
 
             // act
             var result = mapper.Map<IEnumerable<B>>(value);

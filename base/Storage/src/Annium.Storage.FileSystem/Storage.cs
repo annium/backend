@@ -44,7 +44,7 @@ namespace Annium.Storage.FileSystem
             VerifyName(name);
 
             var path = Path.Combine(directory, name);
-            using(var target = File.Open(Path.Combine(directory, name), FileMode.Create))
+            using (var target = File.Open(Path.Combine(directory, name), FileMode.Create))
             {
                 source.Position = 0;
                 await source.CopyToAsync(target);
@@ -59,7 +59,7 @@ namespace Annium.Storage.FileSystem
             if (!File.Exists(path))
                 throw new KeyNotFoundException($"{name} not found in storage");
 
-            using(var source = File.Open(path, FileMode.Open))
+            using (var source = File.Open(path, FileMode.Open))
             {
                 var ms = new MemoryStream();
 

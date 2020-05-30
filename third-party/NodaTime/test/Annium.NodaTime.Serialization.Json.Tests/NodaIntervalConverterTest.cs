@@ -9,7 +9,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 {
     public class NodaIntervalConverterTest
     {
-        private readonly JsonConverter[] converters = new [] { Converters.IntervalConverter, Converters.InstantConverter };
+        private readonly JsonConverter[] converters = new[] { Converters.IntervalConverter, Converters.InstantConverter };
 
         [Fact]
         public void RoundTrip()

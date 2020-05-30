@@ -7,7 +7,8 @@ namespace Annium.Localization.Abstractions
     internal class Localizer<T> : ILocalizer<T>
     {
         private readonly IDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales =
-        new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
+            new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
+
         private readonly ILocaleStorage storage;
         private readonly Func<CultureInfo> getCulture;
 
@@ -36,7 +37,7 @@ namespace Annium.Localization.Abstractions
 
         private IReadOnlyDictionary<string, string> ResolveLocale(CultureInfo culture)
         {
-            lock(locales)
+            lock (locales)
             {
                 if (locales.TryGetValue(culture, out var locale))
                     return locale;

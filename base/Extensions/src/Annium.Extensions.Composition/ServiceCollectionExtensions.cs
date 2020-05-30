@@ -10,7 +10,7 @@ namespace Annium.Core.DependencyInjection
             services.AddAllTypes()
                 .AssignableTo(typeof(Composer<>))
                 .Where(x => !x.IsGenericType)
-                .As(typeof(ICompositionContainer<>))
+                .AsImplementedInterfaces()
                 .InstancePerScope();
 
             services.AddScoped(typeof(IComposer<>), typeof(CompositionExecutor<>));

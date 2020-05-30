@@ -17,7 +17,7 @@ namespace Demo.NodaTime.Serialization
             CancellationToken token
         )
         {
-            var converters = new [] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };
+            var converters = new[] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };
             var startLocalDate = new LocalDate(2012, 1, 2);
             var endLocalDate = new LocalDate(2013, 6, 7);
             var dateInterval = new DateInterval(startLocalDate, endLocalDate);

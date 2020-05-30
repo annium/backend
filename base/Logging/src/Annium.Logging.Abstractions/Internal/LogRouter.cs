@@ -35,7 +35,7 @@ namespace Annium.Logging.Abstractions.Internal
 
         private ILogHandler GetHandler(LogRoute route)
         {
-            lock(_handlers)
+            lock (_handlers)
             {
                 if (_handlers.TryGetValue(route, out var handler))
                     return handler;

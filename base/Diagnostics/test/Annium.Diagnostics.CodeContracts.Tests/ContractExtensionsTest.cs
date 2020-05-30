@@ -26,6 +26,8 @@ namespace Annium.Diagnostics.CodeContracts.Tests
             value.NotNull().Equals(value);
         }
 
-        private class Demo { }
+        private class Demo
+        {
+        }
     }
 }

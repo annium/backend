@@ -30,9 +30,9 @@ namespace Annium.Configuration.CommandLine.Tests
             result.IsNotDefault();
             result.Flag.IsTrue();
             result.Plain.IsEqual(7);
-            result.Array.SequenceEqual(new [] { 4, 7 }).IsTrue();
+            result.Array.SequenceEqual(new[] { 4, 7 }).IsTrue();
             result.Nested.Plain.IsEqual(4);
-            result.Nested.Array.SequenceEqual(new [] { 4m, 13m }).IsTrue();
+            result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
         }
     }
 

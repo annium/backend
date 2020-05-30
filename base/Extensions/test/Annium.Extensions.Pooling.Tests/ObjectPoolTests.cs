@@ -58,10 +58,12 @@ namespace Annium.Extensions.Pooling.Tests
         {
             var nextId = 1u;
             var logs = new List<string>();
+
             void Log(string message)
             {
                 lock (logs) logs.Add(message);
             }
+
             var pool = new ObjectPool<Item>(() => new Item(nextId++, Log), 5, loadMode, storageMode);
 
             return (pool, logs);

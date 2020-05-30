@@ -20,7 +20,7 @@ namespace Annium.Testing.TestAdapter
         {
             "debug" => LogLevel.Debug,
             "trace" => LogLevel.Trace,
-            _ => LogLevel.Info,
+            _       => LogLevel.Info,
         };
     }
 }

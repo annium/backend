@@ -114,6 +114,7 @@ namespace Annium.Extensions.Shell
                 {
                     logger.Warn($"Kill process {GetCommand(process)} failed: {e}");
                 }
+
                 handleExit();
             });
 
@@ -127,8 +128,14 @@ namespace Annium.Extensions.Shell
 
             if (pipe)
             {
-                Task.Run(() => { lock (consoleLock) pipeOut(process.StandardOutput); });
-                Task.Run(() => { lock (consoleLock) pipeOut(process.StandardError); });
+                Task.Run(() =>
+                {
+                    lock (consoleLock) pipeOut(process.StandardOutput);
+                });
+                Task.Run(() =>
+                {
+                    lock (consoleLock) pipeOut(process.StandardError);
+                });
                 Task.Run(() => pipeOut(process.StandardError));
             }
 
@@ -157,13 +164,12 @@ namespace Annium.Extensions.Shell
             static void pipeOut(StreamReader src)
             {
                 while (!src.EndOfStream)
-                    Console.Write((char)src.Read());
+                    Console.Write((char) src.Read());
             }
         }
 
         private ShellResult GetResult(Process process)
         {
-
             var output = read(process.StandardOutput);
             var error = read(process.StandardError);
 

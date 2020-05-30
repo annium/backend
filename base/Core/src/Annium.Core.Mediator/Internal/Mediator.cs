@@ -10,6 +10,7 @@ namespace Annium.Core.Mediator.Internal
     {
         private readonly ChainBuilder chainBuilder;
         private readonly IServiceProvider provider;
+
         private readonly IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> chainCache =
             new Dictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>>();
 
@@ -51,7 +52,7 @@ namespace Annium.Core.Mediator.Internal
 
         private IReadOnlyList<ChainElement> GetChain(Type input, Type output)
         {
-            lock(chainCache)
+            lock (chainCache)
             {
                 var key = (input, output);
                 if (chainCache.TryGetValue(key, out var chain))

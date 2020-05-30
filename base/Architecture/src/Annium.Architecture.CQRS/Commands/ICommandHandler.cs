@@ -8,13 +8,11 @@ namespace Annium.Architecture.CQRS.Commands
         IFinalRequestHandler<TRequest, IStatusResult<OperationStatus, TResponse>>
         where TRequest : ICommand
     {
-
     }
 
     public interface ICommandHandler<TRequest> :
         IFinalRequestHandler<TRequest, IStatusResult<OperationStatus>>
         where TRequest : ICommand
     {
-
     }
 }

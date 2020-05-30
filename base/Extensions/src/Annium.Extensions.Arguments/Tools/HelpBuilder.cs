@@ -52,10 +52,10 @@ namespace Annium.Extensions.Arguments
             sb.AppendLine();
             sb.Append($"Usage: {command}".Trim());
             if (positions.Count > 0)
-                foreach (var(position, isRequired) in positions)
+                foreach (var (position, isRequired) in positions)
                     sb.Append($" {Usage(position, isRequired)}");
             if (options.Count > 0)
-                foreach (var(option, (optionAlias, isRequired, type)) in options)
+                foreach (var (option, (optionAlias, isRequired, type)) in options)
                 {
                     var optionView = optionAlias is null ? Option(option) : $"{Option(optionAlias)}|{Option(option)}";
                     var optionUsage = Usage(option, true);
@@ -73,6 +73,7 @@ namespace Annium.Extensions.Arguments
                             break;
                     }
                 }
+
             if (raw != null)
                 sb.Append($" [...{raw}]");
             sb.AppendLine();
@@ -108,7 +109,7 @@ namespace Annium.Extensions.Arguments
                 var maxAliasLength = aliases.Values.Max(e => e.Length);
                 var descriptions = options.ToDictionary(
                     o => o.Key,
-                    o => Description(Option(o.Key) + (o.Value.Item3 == OptionType.Multi? "[]": string.Empty), o.Value.Item2)
+                    o => Description(Option(o.Key) + (o.Value.Item3 == OptionType.Multi ? "[]" : string.Empty), o.Value.Item2)
                 );
                 var maxDescriptionLength = descriptions.Values.Max(e => e.Length);
                 foreach (var option in options.Keys)
@@ -140,9 +141,11 @@ namespace Annium.Extensions.Arguments
                 e => (
                     e.attribute.Alias?.KebabCase(),
                     e.attribute.IsRequired,
-                    e.property.PropertyType.IsArray ? OptionType.Multi : (
-                        e.property.PropertyType == typeof(bool) ? OptionType.Flag : OptionType.Normal
-                    )
+                    e.property.PropertyType.IsArray
+                        ? OptionType.Multi
+                        : (
+                            e.property.PropertyType == typeof(bool) ? OptionType.Flag : OptionType.Normal
+                        )
                 )
             );
 

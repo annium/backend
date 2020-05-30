@@ -29,7 +29,9 @@ namespace Annium.Core.Mapper.Tests
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();
 
-        private abstract class Payload { }
+        private abstract class Payload
+        {
+        }
 
         private class ImagePayload : Payload
         {
@@ -46,7 +48,9 @@ namespace Annium.Core.Mapper.Tests
             public string Link { get; set; } = string.Empty;
         }
 
-        private abstract class Model { }
+        private abstract class Model
+        {
+        }
 
         private class ImageModel : Model
         {

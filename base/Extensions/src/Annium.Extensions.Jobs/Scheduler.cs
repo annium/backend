@@ -55,6 +55,7 @@ namespace Annium.Extensions.Jobs
         }
 
         #region IDisposable Support
+
         private bool disposedValue = false; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
@@ -76,6 +77,7 @@ namespace Annium.Extensions.Jobs
         {
             Dispose(true);
         }
+
         #endregion
     }
 }

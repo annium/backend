@@ -27,7 +27,7 @@ namespace Annium.Configuration.Abstractions
 
         public T Build<T>() where T : class, new()
         {
-            return (T)Process(typeof(T));
+            return (T) Process(typeof(T));
         }
 
         private object Process(Type type)
@@ -52,7 +52,7 @@ namespace Annium.Configuration.Abstractions
 
             // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
             var items = GetDescendants();
-            var result = (IDictionary)Activator.CreateInstance(type)!;
+            var result = (IDictionary) Activator.CreateInstance(type)!;
 
             foreach (var name in items)
             {
@@ -64,10 +64,11 @@ namespace Annium.Configuration.Abstractions
 
             return result;
         }
+
         private object ProcessList(Type type)
         {
             var elementType = type.GetGenericArguments()[0];
-            var result = (IList)Activator.CreateInstance(type)!;
+            var result = (IList) Activator.CreateInstance(type)!;
 
             var items = GetDescendants();
 
@@ -84,9 +85,9 @@ namespace Annium.Configuration.Abstractions
         private object ProcessArray(Type type)
         {
             var elementType = type.GetElementType()!;
-            var raw = (IList)ProcessList(typeof(List<>).MakeGenericType(elementType));
+            var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
 
-            var result = (IList)Array.CreateInstance(elementType, raw.Count);
+            var result = (IList) Array.CreateInstance(elementType, raw.Count);
 
             for (var index = 0; index < raw.Count; index++)
                 result[index] = raw[index];
@@ -166,7 +167,6 @@ namespace Annium.Configuration.Abstractions
                 .Select(k => k.Take(path.Length))
                 .Where(k => Normalize(k).SequenceEqual(path))
                 .Count() > 0;
-
         }
 
         private string[] Normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();

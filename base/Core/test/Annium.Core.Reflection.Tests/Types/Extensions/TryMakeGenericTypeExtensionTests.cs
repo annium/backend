@@ -27,6 +27,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             result.IsEqual(typeof(Demo<object>));
         }
 
-        private class Demo<T> where T : class { }
+        private class Demo<T> where T : class
+        {
+        }
     }
 }

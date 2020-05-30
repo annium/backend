@@ -169,7 +169,8 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBase
     {
-        [ResolveField] public char Type { get; set; }
+        [ResolveField]
+        public char Type { get; set; }
     }
 
     [ResolveKey("a")]
@@ -210,7 +211,8 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBaseContainer<T>
     {
-        [ResolveField] public char Type { get; set; }
+        [ResolveField]
+        public char Type { get; set; }
     }
 
     [ResolveKey("a")]

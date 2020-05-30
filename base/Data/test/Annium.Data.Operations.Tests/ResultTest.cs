@@ -107,7 +107,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(("label", new [] { "plain" }), ("other", new [] { "prev" }), ("other", new [] { "another" }));
+            result.Errors(("label", new[] { "plain" }), ("other", new[] { "prev" }), ("other", new[] { "another" }));
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);
@@ -123,7 +123,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(new Dictionary<string, IEnumerable<string>>() { { "label", new [] { "plain" } }, { "other", new [] { "another" } } });
+            result.Errors(new Dictionary<string, IEnumerable<string>>() { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);
@@ -137,7 +137,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+            var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
             result.Join(plain, labeled);
@@ -160,7 +160,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+            var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
             result.Join(new List<IResult>() { plain, labeled });
@@ -222,7 +222,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+            var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
             var output = Result.Join(result, plain, labeled);
@@ -245,7 +245,7 @@ namespace Annium.Data.Operations.Tests
             // arrange
             var result = Result.New().Error("own").Error("label", "mine");
             var plain = Result.New().Errors("plain", "another");
-            var labeled = Result.New().Errors(("a", new [] { "va" }), ("b", new [] { "vb" }));
+            var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
             var output = Result.Join(new List<IResult>() { result, plain, labeled });

@@ -8,7 +8,9 @@ namespace Annium.Extensions.Execution
     {
         private IList<Delegate> handlers = new List<Delegate>();
 
-        internal BatchExecutor() { }
+        internal BatchExecutor()
+        {
+        }
 
         public BatchExecutor With(Action handler) => WithInternal(handler);
 
@@ -23,7 +25,7 @@ namespace Annium.Extensions.Execution
 
         public async Task RunAsync()
         {
-            var exceptions = new List<Exception>();;
+            var exceptions = new List<Exception>();
 
             // run each stage
             foreach (var handler in handlers)

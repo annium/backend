@@ -2,5 +2,7 @@
 
 namespace Annium.Extensions.Arguments
 {
-    public abstract class BaseAttribute : Attribute { }
+    public abstract class BaseAttribute : Attribute
+    {
+    }
 }

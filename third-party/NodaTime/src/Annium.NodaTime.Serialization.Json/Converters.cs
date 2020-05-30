@@ -63,22 +63,25 @@ namespace Annium.NodaTime.Serialization.Json
         /// <summary>
         /// Converter for offset date/times.
         /// </summary>
-        public static JsonConverter OffsetDateTimeConverter { get; } =
-        new NodaPatternConverter<OffsetDateTime>(
-            OffsetDateTimePattern.Rfc3339, CreateIsoValidator<OffsetDateTime>(x => x.Calendar));
+        public static JsonConverter OffsetDateTimeConverter { get; } = new NodaPatternConverter<OffsetDateTime>(
+            OffsetDateTimePattern.Rfc3339,
+            CreateIsoValidator<OffsetDateTime>(x => x.Calendar)
+        );
 
         /// <summary>
         /// Converter for offset dates.
         /// </summary>
-        public static JsonConverter OffsetDateConverter { get; } =
-        new NodaPatternConverter<OffsetDate>(
-            OffsetDatePattern.GeneralIso, CreateIsoValidator<OffsetDate>(x => x.Calendar));
+        public static JsonConverter OffsetDateConverter { get; } = new NodaPatternConverter<OffsetDate>(
+            OffsetDatePattern.GeneralIso,
+            CreateIsoValidator<OffsetDate>(x => x.Calendar)
+        );
 
         /// <summary>
         /// Converter for offset times.
         /// </summary>
-        public static JsonConverter OffsetTimeConverter { get; } =
-        new NodaPatternConverter<OffsetTime>(OffsetTimePattern.ExtendedIso);
+        public static JsonConverter OffsetTimeConverter { get; } = new NodaPatternConverter<OffsetTime>(
+            OffsetTimePattern.ExtendedIso
+        );
 
         /// <summary>
         /// Creates a converter for zoned date/times, using the given time zone provider.
@@ -101,7 +104,9 @@ namespace Annium.NodaTime.Serialization.Json
         /// <summary>
         /// Converter for durations.
         /// </summary>
-        public static JsonConverter DurationConverter { get; } = new NodaPatternConverter<Duration>(DurationPattern.CreateWithInvariantCulture("-H:mm:ss.FFFFFFFFF"));
+        public static JsonConverter DurationConverter { get; } = new NodaPatternConverter<Duration>(
+            DurationPattern.CreateWithInvariantCulture("-H:mm:ss.FFFFFFFFF")
+        );
 
         /// <summary>
         /// Round-tripping converter for periods. Use this when you really want to preserve information,

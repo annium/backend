@@ -6,7 +6,7 @@ namespace Annium.Core.Reflection
 {
     public static class ResolveGenericArgumentsByImplentationExtension
     {
-        public static Type[] ? ResolveGenericArgumentsByImplentation(this Type type, Type target)
+        public static Type[]? ResolveGenericArgumentsByImplentation(this Type type, Type target)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -46,7 +46,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type[] ? ResolveGenericParameterArgumentsByTarget(this Type type, Type target)
+        private static Type[]? ResolveGenericParameterArgumentsByTarget(this Type type, Type target)
         {
             if (target.IsGenericParameter)
                 return type.ResolveGenericParameterArgumentsByGenericParameter(target);
@@ -60,7 +60,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type[] ? ResolveClassArgumentsByTarget(this Type type, Type target)
+        private static Type[]? ResolveClassArgumentsByTarget(this Type type, Type target)
         {
             if (target.IsGenericParameter)
                 return type.ResolveClassArgumentsByGenericParameter(target);
@@ -74,7 +74,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type[] ? ResolveStructArgumentsByByTarget(this Type type, Type target)
+        private static Type[]? ResolveStructArgumentsByByTarget(this Type type, Type target)
         {
             if (target.IsGenericParameter)
                 return type.ResolveStructArgumentsByGenericParameter(target);
@@ -88,7 +88,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type[] ? ResolveInterfaceArgumentsByTarget(this Type type, Type target)
+        private static Type[]? ResolveInterfaceArgumentsByTarget(this Type type, Type target)
         {
             if (target.IsGenericParameter)
                 return type.ResolveInterfaceArgumentsByGenericParameter(target);
@@ -102,7 +102,7 @@ namespace Annium.Core.Reflection
             throw GetException(type, target);
         }
 
-        private static Type[] ? ResolveGenericParameterArgumentsByGenericParameter(this Type type, Type target)
+        private static Type[]? ResolveGenericParameterArgumentsByGenericParameter(this Type type, Type target)
         {
             var typeAttrs = type.GenericParameterAttributes;
             var targetAttrs = target.GenericParameterAttributes;
@@ -128,10 +128,10 @@ namespace Annium.Core.Reflection
                     .Any(typeConstraint => typeConstraint.ResolveGenericArgumentsByImplentation(targetConstraint) != null)
                 );
 
-            return meetsConstraints ? new [] { type } : null;
+            return meetsConstraints ? new[] { type } : null;
         }
 
-        private static Type[] ? ResolveGenericParameterArgumentsByClass(this Type type, Type target)
+        private static Type[]? ResolveGenericParameterArgumentsByClass(this Type type, Type target)
         {
             var attrs = type.GenericParameterAttributes;
 
@@ -147,10 +147,10 @@ namespace Annium.Core.Reflection
             var meetsConstraints = type.GetGenericParameterConstraints()
                 .All(constraint => constraint.ResolveGenericArgumentsByImplentation(target) != null);
 
-            return meetsConstraints ? new [] { type } : null;
+            return meetsConstraints ? new[] { type } : null;
         }
 
-        private static Type[] ? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
+        private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
         {
             var attrs = type.GenericParameterAttributes;
 
@@ -170,10 +170,10 @@ namespace Annium.Core.Reflection
             var meetsConstraints = type.GetGenericParameterConstraints()
                 .All(constraint => target.ResolveGenericArgumentsByImplentation(constraint) != null);
 
-            return meetsConstraints ? new [] { type } : null;
+            return meetsConstraints ? new[] { type } : null;
         }
 
-        private static Type[] ? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
+        private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
         {
             var attrs = type.GenericParameterAttributes;
 
@@ -193,10 +193,10 @@ namespace Annium.Core.Reflection
             var meetsConstraints = type.GetGenericParameterConstraints()
                 .All(constraint => target.ResolveGenericArgumentsByImplentation(constraint) != null);
 
-            return meetsConstraints ? new [] { type } : null;
+            return meetsConstraints ? new[] { type } : null;
         }
 
-        private static Type[] ? ResolveClassArgumentsByGenericParameter(this Type type, Type target)
+        private static Type[]? ResolveClassArgumentsByGenericParameter(this Type type, Type target)
         {
             var attrs = target.GenericParameterAttributes;
 
@@ -215,7 +215,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
 
-        private static Type[] ? ResolveClassArgumentsByClass(this Type type, Type target)
+        private static Type[]? ResolveClassArgumentsByClass(this Type type, Type target)
         {
             if (type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
                 return BuildArgs(type, type, target);
@@ -234,7 +234,7 @@ namespace Annium.Core.Reflection
             return ResolveBase(type, target);
         }
 
-        private static Type[] ? ResolveClassArgumentsByInterface(this Type type, Type target)
+        private static Type[]? ResolveClassArgumentsByInterface(this Type type, Type target)
         {
             // find interface, that is implementation of target's generic definition
             var targetBase = target.GetGenericTypeDefinition();
@@ -252,7 +252,7 @@ namespace Annium.Core.Reflection
             return ResolveBase(type, target);
         }
 
-        private static Type[] ? ResolveStructArgumentsByGenericParameter(this Type type, Type target)
+        private static Type[]? ResolveStructArgumentsByGenericParameter(this Type type, Type target)
         {
             var attrs = target.GenericParameterAttributes;
 
@@ -275,7 +275,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
 
-        private static Type[] ? ResolveStructArgumentsByStruct(this Type type, Type target)
+        private static Type[]? ResolveStructArgumentsByStruct(this Type type, Type target)
         {
             if (type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
                 return BuildArgs(type, type, target);
@@ -283,7 +283,7 @@ namespace Annium.Core.Reflection
             return null;
         }
 
-        private static Type[] ? ResolveStructArgumentsByInterface(this Type type, Type target)
+        private static Type[]? ResolveStructArgumentsByInterface(this Type type, Type target)
         {
             // find interface, that is implementation of target's generic definition
             var targetBase = target.GetGenericTypeDefinition();
@@ -297,7 +297,7 @@ namespace Annium.Core.Reflection
             return BuildArgs(type, implementation, target);
         }
 
-        private static Type[] ? ResolveInterfaceArgumentsByGenericParameter(this Type type, Type target)
+        private static Type[]? ResolveInterfaceArgumentsByGenericParameter(this Type type, Type target)
         {
             var attrs = target.GenericParameterAttributes;
 
@@ -320,7 +320,7 @@ namespace Annium.Core.Reflection
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
 
-        private static Type[] ? ResolveInterfaceArgumentsByInterface(this Type type, Type target)
+        private static Type[]? ResolveInterfaceArgumentsByInterface(this Type type, Type target)
         {
             if (type.GetGenericTypeDefinition() == target.GetGenericTypeDefinition())
                 return BuildArgs(type, type, target);
@@ -337,7 +337,7 @@ namespace Annium.Core.Reflection
             return BuildArgs(type, implementation, target);
         }
 
-        private static Type[] ? ResolveBase(Type type, Type target)
+        private static Type[]? ResolveBase(Type type, Type target)
         {
             var unboundBaseType = type.GetUnboundBaseType();
             var baseArgs = unboundBaseType!.ResolveGenericArgumentsByImplentation(target);
@@ -350,7 +350,7 @@ namespace Annium.Core.Reflection
             return type.ResolveGenericArgumentsByImplentation(baseImplementation!);
         }
 
-        private static Type[] ? BuildArgs(Type type, Type source, Type target)
+        private static Type[]? BuildArgs(Type type, Type source, Type target)
         {
             var args = type.GetGenericArguments();
 
@@ -398,8 +398,8 @@ namespace Annium.Core.Reflection
             Type[] targetArgs;
             if (target.IsArray)
             {
-                sourceArgs = new [] { source.GetElementType() ! };
-                targetArgs = new [] { target.GetElementType() ! };
+                sourceArgs = new[] { source.GetElementType() ! };
+                targetArgs = new[] { target.GetElementType() ! };
             }
             else if (target.IsGenericType)
             {

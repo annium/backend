@@ -20,7 +20,9 @@ namespace Annium.Data.Operations.Implementations
 
     internal sealed class Result : ResultBase<IResult>, IResult
     {
-        internal Result() { }
+        internal Result()
+        {
+        }
 
         public override IResult Clone()
         {

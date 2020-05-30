@@ -20,8 +20,10 @@ namespace Annium.Net.Http
         public static IObservable<IHttpResponse<ReadOnlyMemory<byte>>> AsResponseMemoryObservable(this IHttpRequest request) =>
             request.ToResponseObservable(Parse.Memory);
 
-        public static IObservable<IHttpResponse<ReadOnlyMemory<byte>>> AsResponseMemoryObservable(this IHttpRequest request, ReadOnlyMemory<byte> defaultValue) =>
-            request.ToResponseObservable(Parse.Memory, defaultValue);
+        public static IObservable<IHttpResponse<ReadOnlyMemory<byte>>> AsResponseMemoryObservable(
+            this IHttpRequest request,
+            ReadOnlyMemory<byte> defaultValue
+        ) => request.ToResponseObservable(Parse.Memory, defaultValue);
 
         public static IObservable<IHttpResponse<Stream>> AsResponseStreamObservable(this IHttpRequest request) =>
             request.ToResponseObservable(Parse.Stream);

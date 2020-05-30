@@ -8,6 +8,5 @@ namespace Annium.Architecture.CQRS.Queries
         IFinalRequestHandler<TRequest, IStatusResult<OperationStatus, TResponse>>
         where TRequest : IQuery
     {
-
     }
 }

@@ -53,7 +53,10 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void BaseRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>(@"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult>(
+                @"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}"
+                , GetSettings()
+            );
 
             // assert
             result.IsSuccess.IsTrue();
@@ -124,7 +127,8 @@ namespace Annium.Data.Operations.Serialization.Tests
         public void DataRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(
+                @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
 
             // assert
             result.Data.IsEqual(5);

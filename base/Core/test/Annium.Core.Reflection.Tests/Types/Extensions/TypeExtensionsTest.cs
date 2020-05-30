@@ -159,3 +159,4 @@
 //         private interface IGenericConstrained<T1, T2> where T2 : class, T1, new() where T1 : IPlain { }
 //     }
 // }
+

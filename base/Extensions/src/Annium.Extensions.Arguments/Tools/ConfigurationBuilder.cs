@@ -24,7 +24,7 @@ namespace Annium.Extensions.Arguments
         }
 
         public T Build<T>(string[] args)
-        where T : new()
+            where T : new()
         {
             var raw = argumentProcessor.Compose(args);
 
@@ -44,7 +44,7 @@ namespace Annium.Extensions.Arguments
                 .OrderBy(e => e.attribute.Position);
 
             var i = 1;
-            foreach (var(property, attribute) in properties)
+            foreach (var (property, attribute) in properties)
             {
                 if (attribute.Position != i)
                     throw new Exception($"Position argument expected to have position '{i}', but got position '{attribute.Position}");
@@ -66,7 +66,7 @@ namespace Annium.Extensions.Arguments
                 .Where(e => e.property.PropertyType == typeof(bool))
                 .ToArray();
 
-            foreach (var(property, attribute) in properties)
+            foreach (var (property, attribute) in properties)
             {
                 var key = FindOptionName(flags, property.Name, attribute.Alias);
                 property.SetValue(value, key != null);
@@ -85,7 +85,7 @@ namespace Annium.Extensions.Arguments
                 .ToArray();
 
             // for base properties - set values from options
-            foreach (var(property, attribute) in plainProperties)
+            foreach (var (property, attribute) in plainProperties)
             {
                 var key = FindOptionName(plainOptions.Keys, property.Name, attribute.Alias);
                 if (key == null)
@@ -102,14 +102,14 @@ namespace Annium.Extensions.Arguments
                 .ToArray();
 
             // for array properties - set values from multioptions with fallback to options
-            foreach (var(property, attribute) in arrayProperties)
+            foreach (var (property, attribute) in arrayProperties)
             {
                 string? key = null;
                 string[] raw = Array.Empty<string>();
                 if ((key = FindOptionName(multiOptions.Keys, property.Name, attribute.Alias)) != null)
                     raw = multiOptions[key].ToArray();
                 else if ((key = FindOptionName(plainOptions.Keys, property.Name, attribute.Alias)) != null)
-                    raw = new [] { plainOptions[key] };
+                    raw = new[] { plainOptions[key] };
                 else if (attribute.IsRequired)
                     throw new Exception($"Required multi option argument '{property.Name}' has no value");
                 else
@@ -126,7 +126,7 @@ namespace Annium.Extensions.Arguments
 
         private void SetRaw<T>(T value, string raw)
         {
-            var(property, _) = configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(typeof(T))
+            var (property, _) = configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(typeof(T))
                 .FirstOrDefault();
 
             if (property != null)
@@ -153,7 +153,7 @@ namespace Annium.Extensions.Arguments
         {
             var values = property.GetCustomAttribute<ValuesAttribute>()?.Values;
             if (values != null && !values.Contains(value))
-                throw new Exception($"Given value '{value}' isn't in allowed values: {string.Join(", ",values)}");
+                throw new Exception($"Given value '{value}' isn't in allowed values: {string.Join(", ", values)}");
 
             return Mapper.Map(value, type);
         }

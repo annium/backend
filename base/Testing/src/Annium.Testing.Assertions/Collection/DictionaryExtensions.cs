@@ -6,7 +6,7 @@ namespace Annium.Testing
     public static class DictionaryExtensions
     {
         public static TValue At<TKey, TValue>(this IDictionary<TKey, TValue> value, TKey key)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -17,7 +17,7 @@ namespace Annium.Testing
         }
 
         public static TValue At<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, TKey key)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -28,7 +28,7 @@ namespace Annium.Testing
         }
 
         public static IDictionary<TKey, TValue> Has<TKey, TValue>(this IDictionary<TKey, TValue> value, int count)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -40,7 +40,7 @@ namespace Annium.Testing
         }
 
         public static IReadOnlyDictionary<TKey, TValue> Has<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value, int count)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -52,7 +52,7 @@ namespace Annium.Testing
         }
 
         public static IDictionary<TKey, TValue> IsEmpty<TKey, TValue>(this IDictionary<TKey, TValue> value)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));
@@ -64,7 +64,7 @@ namespace Annium.Testing
         }
 
         public static IReadOnlyDictionary<TKey, TValue> IsEmpty<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> value)
-        where TKey : notnull
+            where TKey : notnull
         {
             if (value is null)
                 throw new ArgumentNullException(nameof(value));

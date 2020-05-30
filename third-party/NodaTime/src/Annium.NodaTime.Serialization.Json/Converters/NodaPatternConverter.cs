@@ -21,7 +21,9 @@ namespace Annium.NodaTime.Serialization.Json
         /// </summary>
         /// <param name="pattern">The pattern to use for parsing and formatting.</param>
         /// <exception cref="ArgumentNullException"><paramref name="pattern"/> is null.</exception>
-        public NodaPatternConverter(IPattern<T> pattern) : this(pattern, x => { }) { }
+        public NodaPatternConverter(IPattern<T> pattern) : this(pattern, x => { })
+        {
+        }
 
         /// <summary>
         /// Creates a new instance with a pattern and an optional validator. The validator will be called before each

@@ -9,7 +9,7 @@ namespace Annium.Data.Models
 
         public bool Equals(T obj) => GetHashCode() == obj?.GetHashCode();
 
-        public override bool Equals(object? obj) => Equals((T)obj!);
+        public override bool Equals(object? obj) => Equals((T) obj!);
 
         public static bool operator ==(Equatable<T> a, Equatable<T> b)
         {

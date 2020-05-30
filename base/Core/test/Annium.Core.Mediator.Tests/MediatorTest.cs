@@ -20,7 +20,7 @@ namespace Annium.Core.Mediator.Tests
         public async Task SingleClosedHandler_Works()
         {
             // arrange
-            var(mediator, logs) = GetMediator(typeof(ClosedFinalHandler));
+            var (mediator, logs) = GetMediator(typeof(ClosedFinalHandler));
             var request = new Base { Value = "base" };
 
             // act
@@ -37,7 +37,7 @@ namespace Annium.Core.Mediator.Tests
         public async Task SingleOpenHandler_WithExpectedParameters_Works()
         {
             // arrange
-            var(mediator, logs) = GetMediator(typeof(OpenFinalHandler<,>));
+            var (mediator, logs) = GetMediator(typeof(OpenFinalHandler<,>));
             var request = new Two { Second = 2, Value = "one two three" };
 
             // act
@@ -54,7 +54,7 @@ namespace Annium.Core.Mediator.Tests
         public async Task ChainOfHandlers_WithExpectedParameters_Works()
         {
             // arrange
-            var(mediator, logs) = GetMediator(typeof(ConversionHandler<,>), typeof(ValidationHandler<,>), typeof(OpenFinalHandler<,>));
+            var (mediator, logs) = GetMediator(typeof(ConversionHandler<,>), typeof(ValidationHandler<,>), typeof(OpenFinalHandler<,>));
             var request = new Two { Second = 2, Value = "one two three" };
             var payload = new Request<Two>(request);
 
@@ -167,9 +167,7 @@ namespace Annium.Core.Mediator.Tests
             )
             {
                 logger.Trace($"Start {typeof(TRequest).Name} validation");
-                var result = validate(request) ?
-                    Result.Success(default(TResponse) !) :
-                    Result.Failure(default(TResponse) !).Error("Validation failed");
+                var result = validate(request) ? Result.Success(default(TResponse) !) : Result.Failure(default(TResponse) !).Error("Validation failed");
                 logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
@@ -182,7 +180,7 @@ namespace Annium.Core.Mediator.Tests
 
         private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>
             where TRequest : TResponse
-        where TResponse : Base, new()
+            where TResponse : Base, new()
         {
             private readonly ILogger<MediatorTest> logger;
 

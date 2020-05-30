@@ -5,13 +5,13 @@ namespace Annium.Core.Reflection
 {
     internal static class ResolveGenericArgumentsByImplentationsExtension
     {
-        public static Type[] ? ResolveGenericArgumentsByImplentations(this Type type, params Type[] targets)
+        public static Type[]? ResolveGenericArgumentsByImplentations(this Type type, params Type[] targets)
         {
             var argsMatrix = targets
                 .Select(t =>
-                    type.ResolveGenericArgumentsByImplentation(t) ?
-                    .Select(a => a.IsGenericParameter ? null : a)
-                    .ToArray()
+                    type.ResolveGenericArgumentsByImplentation(t)?
+                        .Select(a => a.IsGenericParameter ? null : a)
+                        .ToArray()
                 )
                 .OfType<Type[]>()
                 .ToList();

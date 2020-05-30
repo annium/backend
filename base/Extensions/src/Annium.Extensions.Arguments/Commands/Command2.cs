@@ -4,8 +4,8 @@ using System.Threading;
 namespace Annium.Extensions.Arguments
 {
     public abstract class Command<T1, T2> : CommandBase
-    where T1 : new()
-    where T2 : new()
+        where T1 : new()
+        where T2 : new()
     {
         public abstract void Handle(T1 cfg1, T2 cfg2, CancellationToken token);
 

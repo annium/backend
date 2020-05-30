@@ -45,11 +45,13 @@ namespace Annium.NodaTime.Serialization.Json
                 writer.WritePropertyName(nameof(Interval.Start).CamelCase());
                 JsonSerializer.Serialize(writer, value.Start, options);
             }
+
             if (value.HasEnd)
             {
                 writer.WritePropertyName(nameof(Interval.End).CamelCase());
                 JsonSerializer.Serialize(writer, value.End, options);
             }
+
             writer.WriteEndObject();
         }
     }

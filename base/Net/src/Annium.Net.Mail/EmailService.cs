@@ -20,7 +20,7 @@ namespace Annium.Net.Mail
         }
 
         public async Task<IBooleanResult> SendAsync<T>(MailMessage message, string template, T data)
-        where T : notnull
+            where T : notnull
         {
             using var client = GetClient();
             message.Body = LoadBody(template, data);

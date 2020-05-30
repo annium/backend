@@ -19,7 +19,6 @@ namespace Annium.Core.Mediator
                 cfg.Add(handler);
 
             return cfg;
-
         }
 
         private static Type[] GetImplementations(Type type) => TypeManager.Instance.GetImplementations(type);

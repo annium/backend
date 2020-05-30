@@ -28,7 +28,7 @@ namespace Annium.Storage.InMemory
         {
             VerifyName(name);
 
-            using(var ms = new MemoryStream())
+            using (var ms = new MemoryStream())
             {
                 ms.Position = 0;
                 await source.CopyToAsync(ms);

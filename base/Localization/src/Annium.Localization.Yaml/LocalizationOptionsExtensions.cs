@@ -10,10 +10,7 @@ namespace Annium.Core.DependencyInjection
             this LocalizationOptions options
         )
         {
-            options.SetLocaleStorage(services =>
-            {
-                services.AddSingleton<ILocaleStorage, Storage>();
-            });
+            options.SetLocaleStorage(services => { services.AddSingleton<ILocaleStorage, Storage>(); });
 
             return options;
         }

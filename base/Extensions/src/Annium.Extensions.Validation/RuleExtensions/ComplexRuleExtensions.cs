@@ -9,7 +9,7 @@ namespace Annium.Extensions.Validation
             this IRuleBuilder<TValue, TField> rule,
             Func<TValue, TField, Task<bool>> getEntityPresenceAsync,
             string message = ""
-        ) => rule.Add(async(context, value) =>
+        ) => rule.Add(async (context, value) =>
         {
             var exists = await getEntityPresenceAsync(context.Root, value);
             if (exists)

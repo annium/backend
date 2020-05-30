@@ -31,14 +31,14 @@ namespace Annium.Localization.Yaml
 
         private IReadOnlyDictionary<string, string> ResolveLocale(string file)
         {
-            lock(locales)
+            lock (locales)
             {
                 if (locales.TryGetValue(file, out var locale))
                     return locale;
 
-                locale = File.Exists(file) ?
-                    deserializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file)) :
-                    new Dictionary<string, string>();
+                locale = File.Exists(file)
+                    ? deserializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file))
+                    : new Dictionary<string, string>();
 
                 locales[file] = locale;
 

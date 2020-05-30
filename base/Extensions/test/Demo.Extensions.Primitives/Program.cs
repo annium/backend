@@ -30,8 +30,10 @@ namespace Demo.Extensions.Primitives
         {
             [Description("empty")]
             None,
+
             [Description("a")]
             One,
+
             [Description("b")]
             Two
         }

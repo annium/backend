@@ -12,7 +12,7 @@ namespace Annium.NodaTime.Serialization.Json
             T argument,
             string paramName
         )
-        where T : class
+            where T : class
         {
             return argument ??
                 throw new ArgumentNullException(paramName);

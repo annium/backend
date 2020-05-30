@@ -134,7 +134,7 @@ namespace Annium.Extensions.Primitives.Tests
             var tryResult = str.TryFromHexStringToByteArray(out var byteArray);
 
             // assert
-            ((Func<byte[]>)(() => str.FromHexStringToByteArray())).Throws<FormatException>();
+            ((Func<byte[]>) (() => str.FromHexStringToByteArray())).Throws<FormatException>();
             tryResult.IsFalse();
             byteArray.IsEmpty();
         }
@@ -151,8 +151,8 @@ namespace Annium.Extensions.Primitives.Tests
             var tryResult2 = str2.TryFromHexStringToByteArray(out var byteArray2);
 
             // assert
-            ((Func<byte[]>)(() => str1.FromHexStringToByteArray())).Throws<OverflowException>();
-            ((Func<byte[]>)(() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
+            ((Func<byte[]>) (() => str1.FromHexStringToByteArray())).Throws<OverflowException>();
+            ((Func<byte[]>) (() => str2.FromHexStringToByteArray())).Throws<OverflowException>();
             tryResult1.IsFalse();
             tryResult2.IsFalse();
             byteArray1.IsEmpty();
@@ -180,8 +180,10 @@ namespace Annium.Extensions.Primitives.Tests
         {
             [Description("empty")]
             None,
+
             [Description("a")]
             One,
+
             [Description("b")]
             Two
         }

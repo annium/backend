@@ -1,4 +1,6 @@
 namespace Annium.Extensions.Arguments
 {
-    public class RawAttribute : BaseAttribute { }
+    public class RawAttribute : BaseAttribute
+    {
+    }
 }

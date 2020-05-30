@@ -24,7 +24,7 @@ namespace Annium.Core.DependencyInjection
         }
 
         public IServiceProviderBuilder UseServicePack<TServicePack>()
-        where TServicePack : ServicePackBase, new()
+            where TServicePack : ServicePackBase, new()
         {
             if (!packs.Any(e => e.GetType() == typeof(TServicePack)))
                 packs.Add(new TServicePack());

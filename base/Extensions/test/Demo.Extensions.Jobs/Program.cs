@@ -28,6 +28,5 @@ namespace Demo.Extensions.Jobs
 
         private static Instant GetInstant(int year, int month, int day, int hour, int minute, int second) =>
             Instant.FromDateTimeUtc(new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc));
-
     }
 }

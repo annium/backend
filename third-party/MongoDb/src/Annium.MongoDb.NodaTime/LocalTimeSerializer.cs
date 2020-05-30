@@ -5,6 +5,8 @@ namespace Annium.MongoDb.NodaTime
 {
     public class LocalTimeSerializer : PatternSerializer<LocalTime>
     {
-        public LocalTimeSerializer() : base(LocalTimePattern.ExtendedIso) { }
+        public LocalTimeSerializer() : base(LocalTimePattern.ExtendedIso)
+        {
+        }
     }
 }

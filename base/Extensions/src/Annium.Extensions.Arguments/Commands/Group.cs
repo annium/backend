@@ -11,7 +11,7 @@ namespace Annium.Extensions.Arguments
         private readonly List<Type> commands = new List<Type>();
 
         public Group Add<T>()
-        where T : CommandBase
+            where T : CommandBase
         {
             commands.Add(typeof(T));
 
