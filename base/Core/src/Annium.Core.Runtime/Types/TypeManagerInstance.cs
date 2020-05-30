@@ -132,6 +132,9 @@ namespace Annium.Core.Runtime.Types
             if (resolutionKeyProperty is null)
                 return ResolveBySignature(TypeSignature.Create(instance), baseType, instance.GetType()).FirstOrDefault()?.Type;
 
+            // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
+            resolutionKeyProperty = ResolveResolutionKeyProperty(instance, resolutionKeyProperty);
+
             var key = (string) resolutionKeyProperty.GetValue(instance)!;
 
             return ResolveByKey(key, baseType);
@@ -179,6 +182,34 @@ namespace Annium.Core.Runtime.Types
             return node.Key is null ? Array.Empty<Descendant>() : node.Value.ToArray();
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        private PropertyInfo ResolveResolutionKeyProperty(object instance, PropertyInfo property)
+        {
+            var type = instance.GetType();
+
+            // if instance type is hierarchy - no need to worry
+            if (property.DeclaringType!.IsAssignableFrom(type))
+                return property;
+
+            var ancestor = new Ancestor(instance.GetType());
+            if (!ancestor.HasKeyProperty)
+                throw new TypeResolutionException(type, property.DeclaringType, $"Source type '{type}' has no '{nameof(ResolutionKeyAttribute)}'");
+
+            var realProperty = ancestor.KeyProperty!;
+            if (realProperty.Name != property.Name)
+                throw new TypeResolutionException(
+                    type, property.DeclaringType,
+                    $"Source type '{type}' '{nameof(ResolutionKeyAttribute)}' is assigned to property named '{realProperty.Name}'." +
+                    $"Expected property name is '{property.Name}'."
+                );
+
+            return realProperty;
+        }
 
         private IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> BuildHierarchy() => new HierarchyBuilder().BuildHierarchy(_types.Value);
     }
