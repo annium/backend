@@ -38,6 +38,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
                     x.PropertyType == target.PropertyType &&
                     x.Name == target.Name
                 ))
+                // ignore interface implementations
+                .Where(x => !x.Name.Contains('.'))
                 .ToArray();
 
             var body = new List<Expression>();
