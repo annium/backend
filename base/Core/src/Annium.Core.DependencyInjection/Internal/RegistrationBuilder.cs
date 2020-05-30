@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Internal
 {
     public class RegistrationBuilder : IRegistrationBuilder
     {
@@ -28,18 +28,25 @@ namespace Annium.Core.DependencyInjection
             return this;
         }
 
-        public IRegistrationBuilder AsImplementedInterfaces()
+        public IRegistrationBuilder AsSelf()
         {
-            _registrationType = RegistrationType.ImplementedInterfaces;
+            _registrationType |= RegistrationType.Self;
 
             return this;
         }
 
-        public void RegisterScoped() => Register(ServiceLifetime.Scoped);
+        public IRegistrationBuilder AsImplementedInterfaces()
+        {
+            _registrationType |= RegistrationType.ImplementedInterfaces;
 
-        public void RegisterSingleton() => Register(ServiceLifetime.Singleton);
+            return this;
+        }
 
-        public void RegisterTransient() => Register(ServiceLifetime.Transient);
+        public void InstancePerScope() => Register(ServiceLifetime.Scoped);
+
+        public void SingleInstance() => Register(ServiceLifetime.Singleton);
+
+        public void InstancePerDependency() => Register(ServiceLifetime.Transient);
 
         private void Register(ServiceLifetime lifetime)
         {
@@ -48,15 +55,16 @@ namespace Annium.Core.DependencyInjection
             _hasRegistered = true;
 
             foreach (var implementationType in _types)
-                foreach (var serviceType in GetServiceTypes(implementationType))
-                    _services.Add(new ServiceDescriptor(serviceType, implementationType, lifetime));
+            foreach (var serviceType in GetServiceTypes(implementationType))
+                _services.Add(new ServiceDescriptor(serviceType, implementationType, lifetime));
         }
 
         private IEnumerable<Type> GetServiceTypes(Type implementationType)
         {
-            if (_registrationType == RegistrationType.Self)
+            if (_registrationType.HasFlag(RegistrationType.Self))
                 yield return implementationType;
-            else if (_registrationType == RegistrationType.ImplementedInterfaces)
+
+            if (_registrationType.HasFlag(RegistrationType.ImplementedInterfaces))
                 foreach (var serviceType in implementationType.GetInterfaces())
                     yield return serviceType;
         }

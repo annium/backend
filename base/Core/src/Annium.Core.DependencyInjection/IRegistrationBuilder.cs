@@ -1,14 +1,14 @@
 using System;
-using System.Collections.Generic;
 
 namespace Annium.Core.DependencyInjection
 {
     public interface IRegistrationBuilder
     {
         IRegistrationBuilder Where(Func<Type, bool> predicate);
+        IRegistrationBuilder AsSelf();
         IRegistrationBuilder AsImplementedInterfaces();
-        void RegisterScoped();
-        void RegisterSingleton();
-        void RegisterTransient();
+        void InstancePerScope();
+        void SingleInstance();
+        void InstancePerDependency();
     }
 }
