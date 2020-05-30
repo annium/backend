@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Annium.Configuration.Abstractions;
+using Annium.Core.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -11,7 +13,7 @@ namespace Annium.Core.DependencyInjection
             this IServiceCollection services,
             Action<IConfigurationBuilder> configure
         )
-        where T : class, new()
+            where T : class, new()
         {
             var builder = new ConfigurationBuilder();
             configure(builder);
@@ -27,7 +29,13 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton(cfg);
 
             var props = cfg.GetType().GetProperties()
-                .Where(p => p.CanRead && !p.PropertyType.IsEnum && !p.PropertyType.IsValueType && !p.PropertyType.IsPrimitive)
+                .Where(x =>
+                    x.CanRead &&
+                    !x.PropertyType.IsEnum &&
+                    !x.PropertyType.IsValueType &&
+                    !x.PropertyType.IsPrimitive &&
+                    !x.PropertyType.IsDerivedFrom(typeof(IEnumerable<>))
+                )
                 .ToList();
 
             foreach (var prop in props)
