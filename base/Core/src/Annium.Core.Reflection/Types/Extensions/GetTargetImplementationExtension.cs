@@ -236,14 +236,14 @@ namespace Annium.Core.Reflection
         /// <summary>
         ///     Build implementation by target
         /// </summary>
-        /// <param name="type">
-        ///     source type of call
-        /// </param>
         /// <param name="implementation">
         ///     generic type, base for type, whose generic definition is constructed against target
         /// </param>
         /// <param name="target">
         ///     implementation target
+        /// </param>
+        /// <param name="genericParameters">
+        ///     known generic parameters, kept to detect cyclic recursion
         /// </param>
         /// <returns></returns>
         private static Type? BuildImplementation(Type implementation, Type target, HashSet<Type> genericParameters)
