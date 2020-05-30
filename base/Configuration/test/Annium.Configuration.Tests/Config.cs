@@ -32,11 +32,11 @@ namespace Annium.Configuration.Tests
 
     public abstract class SomeConfig
     {
-        [ResolveField]
+        [ResolutionKey]
         public string Type { get; protected set; } = string.Empty;
     }
 
-    [ResolveKey(nameof(ConfigOne))]
+    [ResolutionKeyValue(nameof(ConfigOne))]
     public class ConfigOne : SomeConfig
     {
         public uint Value { get; set; }
@@ -47,7 +47,7 @@ namespace Annium.Configuration.Tests
         }
     }
 
-    [ResolveKey(nameof(ConfigTwo))]
+    [ResolutionKeyValue(nameof(ConfigTwo))]
     public class ConfigTwo : SomeConfig
     {
         public long Value { get; set; }

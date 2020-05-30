@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Annium.Core.Runtime.Types
 {
@@ -8,8 +9,9 @@ namespace Annium.Core.Runtime.Types
         IReadOnlyCollection<Type> Types { get; }
         bool HasImplementations(Type baseType);
         Type[] GetImplementations(Type baseType);
-        Type? ResolveBySignature(object instance, Type baseType, bool exact);
-        Type? ResolveBySignature(string[] signature, Type baseType, bool exact);
+        PropertyInfo? GetResolutionKeyProperty(Type baseType);
         Type? ResolveByKey(string key, Type baseType);
+        Type? ResolveBySignature(IEnumerable<string> signature, Type baseType, bool exact = false);
+        Type? Resolve(object instance, Type baseType);
     }
 }

@@ -66,17 +66,6 @@ namespace Annium.Core.Runtime.Tests.Types
         }
 
         [Fact]
-        public void ResolveBySignature_NoDescendants_Throws()
-        {
-            // arrange
-            var manager = TypeManager.Instance;
-            var value = new { ForB = 5 };
-
-            // assert
-            ((Func<Type>) (() => manager.ResolveBySignature(value, typeof(B), false) !)).Throws<TypeResolutionException>();
-        }
-
-        [Fact]
         public void ResolveBySignature_FromInstance_Works()
         {
             // arrange
@@ -84,7 +73,7 @@ namespace Annium.Core.Runtime.Tests.Types
             var value = new { ForB = 5 };
 
             // act
-            var result = manager.ResolveBySignature(value, typeof(A), true);
+            var result = manager.Resolve(value, typeof(A));
 
             // assert
             result.IsEqual(typeof(B));
@@ -139,6 +128,34 @@ namespace Annium.Core.Runtime.Tests.Types
             result.IsEqual(typeof(E));
         }
 
+        [Fact]
+        public void Resolve_BySignature_Works()
+        {
+            // arrange
+            var manager = TypeManager.Instance;
+            object source = new B();
+
+            // act
+            var result = manager.Resolve(source, typeof(A));
+
+            // assert
+            result.IsEqual(typeof(B));
+        }
+
+        [Fact]
+        public void Resolve_ByKey_Works()
+        {
+            // arrange
+            var manager = TypeManager.Instance;
+            object source = new E();
+
+            // act
+            var result = manager.Resolve(source, typeof(D));
+
+            // assert
+            result.IsEqual(typeof(E));
+        }
+
         private class A
         {
         }
@@ -155,7 +172,7 @@ namespace Annium.Core.Runtime.Tests.Types
 
         private class D
         {
-            [ResolveField]
+            [ResolutionKey]
             public string Type { get; }
 
             protected D(string type)
@@ -164,7 +181,7 @@ namespace Annium.Core.Runtime.Tests.Types
             }
         }
 
-        [ResolveKey(nameof(E))]
+        [ResolutionKeyValue(nameof(E))]
         private class E : D
         {
             public E() : base(nameof(E))
@@ -172,7 +189,7 @@ namespace Annium.Core.Runtime.Tests.Types
             }
         }
 
-        [ResolveKey(nameof(F))]
+        [ResolutionKeyValue(nameof(F))]
         private class F : D
         {
             public F() : base(nameof(F))
@@ -180,7 +197,7 @@ namespace Annium.Core.Runtime.Tests.Types
             }
         }
 
-        [ResolveKey(nameof(F))]
+        [ResolutionKeyValue(nameof(F))]
         private class X : D
         {
             public X() : base(nameof(F))

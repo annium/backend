@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Annium.Core.Runtime.Types
 {
-    public sealed class TypeSignature : IEquatable<TypeSignature>
+    internal sealed class TypeSignature : IEquatable<TypeSignature>
     {
         public static TypeSignature Create(object instance) => Create(instance.GetType() ?? throw new ArgumentNullException(nameof(instance)));
         public static TypeSignature Create(Type type) => Create(type.GetProperties().Select(x => x.Name));
@@ -32,12 +32,20 @@ namespace Annium.Core.Runtime.Types
 
         public int GetMatchTo(TypeSignature target)
         {
-            // if target signature contains any different items - no match
-            if (target._signature.Any(x => !_signature.Contains(x)))
-                return 0;
+            // get number of target signature's item, this signature contains
+            var matches = target._signature.Count(_signature.Contains);
 
-            // return number of items of target signature, this signature contains
-            return target._signature.Count(_signature.Contains);
+            return matches * 100 - Size;
+
+            // // if target signature contains any different items - no match
+            // if (target._signature.Any(x => !_signature.Contains(x)))
+            //     return 0;
+            //
+            // // get number of target signature's item, this signature contains
+            // double matches = target._signature.Count(_signature.Contains);
+            //
+            // // return percentage relative to signature size - second layer of matching
+            // return (int) Math.Floor(matches / Size);
         }
 
         public bool Equals(TypeSignature obj) => GetHashCode() == obj?.GetHashCode();
@@ -45,6 +53,8 @@ namespace Annium.Core.Runtime.Types
         public override bool Equals(object? obj) => Equals((TypeSignature) obj!);
 
         public override int GetHashCode() => HashCode.Combine(_signature);
+
+        public override string ToString() => string.Join(", ", _signature);
 
         public static bool operator ==(TypeSignature a, TypeSignature b)
         {

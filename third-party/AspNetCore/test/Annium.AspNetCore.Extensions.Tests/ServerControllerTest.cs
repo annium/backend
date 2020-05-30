@@ -22,7 +22,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         public async Task Command_BadRequest_Works()
         {
             // act
-            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseAsync<IResult>();
+            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseResultAsync();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.BadRequest);

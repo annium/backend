@@ -169,11 +169,11 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBase
     {
-        [ResolveField]
+        [ResolutionKey]
         public char Type { get; set; }
     }
 
-    [ResolveKey("a")]
+    [ResolutionKeyValue("a")]
     public class KeyChildA : KeyBase
     {
         public int Value { get; set; }
@@ -184,7 +184,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
     }
 
-    [ResolveKey("b")]
+    [ResolutionKeyValue("b")]
     public class KeyChildB : KeyBase
     {
         public int Value { get; set; }
@@ -211,11 +211,11 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBaseContainer<T>
     {
-        [ResolveField]
+        [ResolutionKey]
         public char Type { get; set; }
     }
 
-    [ResolveKey("a")]
+    [ResolutionKeyValue("a")]
     public class KeyDataContainer<T> : KeyBaseContainer<T>
     {
         public T[] Items { get; set; } = Array.Empty<T>();
@@ -226,7 +226,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
     }
 
-    [ResolveKey("b")]
+    [ResolutionKeyValue("b")]
     public class KeyDemoContainer<T> : KeyBaseContainer<T>
     {
         public T[] Demo { get; set; } = Array.Empty<T>();

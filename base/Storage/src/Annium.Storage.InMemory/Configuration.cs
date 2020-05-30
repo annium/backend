@@ -3,7 +3,7 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.InMemory
 {
-    [ResolveKey("memory")]
+    [ResolutionKeyValue("memory")]
     public class Configuration : ConfigurationBase
     {
     }

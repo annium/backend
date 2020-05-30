@@ -28,6 +28,12 @@ namespace Annium.Net.Http
         public static Task<IHttpResponse<Stream>> AsResponseStreamAsync(this IHttpRequest request, Stream defaultValue) =>
             request.ToResponseAsync(Parse.Stream, defaultValue);
 
+        public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request) =>
+            request.ToResponseAsync(Parse.Result);
+
+        public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request, IResult defaultValue) =>
+            request.ToResponseAsync(Parse.Result, defaultValue);
+
         public static Task<IHttpResponse<IResult<T>>> AsResponseResultAsync<T>(this IHttpRequest request) =>
             request.ToResponseAsync(Parse.ResultT<T>);
 

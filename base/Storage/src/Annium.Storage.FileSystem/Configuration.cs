@@ -4,7 +4,7 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.FileSystem
 {
-    [ResolveKey("fs")]
+    [ResolutionKeyValue("fs")]
     public class Configuration : ConfigurationBase
     {
         public string Directory { get; set; } = string.Empty;

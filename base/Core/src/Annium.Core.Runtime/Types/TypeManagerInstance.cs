@@ -13,23 +13,27 @@ namespace Annium.Core.Runtime.Types
         public IReadOnlyCollection<Type> Types => _types.Value;
 
         private readonly Lazy<HashSet<Type>> _types;
-        private readonly Lazy<IReadOnlyDictionary<Type, HashSet<Type>>> _descendants;
-        private readonly Lazy<IReadOnlyDictionary<Type, HashSet<string>>> _signatures;
+        private readonly Lazy<IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>>> _hierarchy;
 
         public TypeManagerInstance(
             Assembly assembly
         )
         {
             _types = new Lazy<HashSet<Type>>(new TypesCollector(assembly).CollectTypes, true);
-            _descendants = new Lazy<IReadOnlyDictionary<Type, HashSet<Type>>>(CollectDescendants, true);
-            _signatures = new Lazy<IReadOnlyDictionary<Type, HashSet<string>>>(CollectSignatures, true);
+            _hierarchy = new Lazy<IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>>>(BuildHierarchy, true);
         }
 
         /// <summary>
         /// Returns whether given type is registered with one or more of subtypes.
         /// </summary>
         /// <param name="baseType"></param>
-        public bool HasImplementations(Type baseType) => _descendants.Value.ContainsKey(baseType);
+        public bool HasImplementations(Type baseType)
+        {
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
+
+            return GetImplementations(baseType).Length > 0;
+        }
 
         /// <summary>
         /// Returns all direct implementations of <see cref="baseType"/>.
@@ -38,127 +42,144 @@ namespace Annium.Core.Runtime.Types
         /// <returns></returns>
         public Type[] GetImplementations(Type baseType)
         {
-            // if baseType is not generic or baseType is generic type definition - it will be registered explicitly and all of it's dependants match
-            if (!baseType.IsGenericType || baseType.IsGenericTypeDefinition)
-                return GetDescendants(baseType);
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
 
-            // if baseType is generic type - select descendants, assignable from it
-            return GetDescendants(baseType)
-                .Where(baseType.IsAssignableFrom)
-                .ToArray();
-
-            Type[] GetDescendants(Type type) =>
-                _descendants.Value.TryGetValue(type, out var implementations)
-                    ? implementations.ToArray()
-                    : Type.EmptyTypes;
+            return GetImplementationDescendants(baseType).Select(x => x.Type).ToArray();
         }
 
         /// <summary>
-        /// Resolve target type by base type and source instance.
+        /// Returns resolution key property for given base type, if exists
         /// </summary>
-        /// <param name="instance"></param>
         /// <param name="baseType"></param>
-        /// <param name="exact">Requires exact properties matching, otherwise - best matching type is selected.</param>
         /// <returns></returns>
-        public Type? ResolveBySignature(object instance, Type baseType, bool exact) =>
-            ResolveBySignature(
-                instance.GetType(),
-                instance.GetType().GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToArray(),
-                baseType,
-                exact
-            );
+        /// <exception cref="ArgumentNullException"></exception>
+        public PropertyInfo? GetResolutionKeyProperty(Type baseType)
+        {
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
+
+            var lookupType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
+
+            return _hierarchy.Value.Keys.FirstOrDefault(x => x.Type == lookupType)?.KeyProperty;
+        }
 
         /// <summary>
-        /// Resolve target type by base type and source signature
-        /// </summary>
-        /// <param name="signature"></param>
-        /// <param name="baseType"></param>
-        /// <param name="exact">Requires exact properties matching, otherwise - best matching type is selected.</param>
-        /// <returns></returns>
-        public Type? ResolveBySignature(string[] signature, Type baseType, bool exact) =>
-            ResolveBySignature(
-                typeof(object),
-                signature.Select(p => p.ToLowerInvariant()).OrderBy(p => p).ToArray(),
-                baseType,
-                exact
-            );
-
-        /// <summary>
-        /// Resolve type by key (for labeled types).
+        /// Resolve type descendant by
         /// </summary>
         /// <param name="key"></param>
         /// <param name="baseType"></param>
         /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="TypeResolutionException"></exception>
         public Type? ResolveByKey(string key, Type baseType)
         {
-            var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
-            if (!_descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
-                throw new TypeResolutionException(typeof(object), baseTypeDefinition, "No descendants found");
+            if (string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
-            var resolutions = typeDescendants
-                .Where(type => type.GetTypeInfo().GetCustomAttribute<ResolveKeyAttribute>()?.Key == key)
-                .ToList();
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
 
-            if (resolutions.Count > 1)
-                throw new TypeResolutionException(typeof(object), baseTypeDefinition,
-                    $"Ambiguous resolution between {string.Join(", ", resolutions.Select(r => r.FullName))}");
+            if (GetResolutionKeyProperty(baseType) is null)
+                throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionKeyAttribute)}");
 
-            return resolutions.FirstOrDefault();
+            var descendants = GetImplementationDescendants(baseType).Where(x => x.HasKey && x.Key == key).ToArray();
+            if (descendants.Length > 1)
+                throw new TypeResolutionException(typeof(object), baseType,
+                    $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
+
+            return descendants.FirstOrDefault()?.Type;
         }
 
         /// <summary>
-        /// Resolve type by signature.
+        /// Resolves type by signature
         /// </summary>
-        /// <param name="src"></param>
         /// <param name="signature"></param>
         /// <param name="baseType"></param>
         /// <param name="exact"></param>
         /// <returns></returns>
-        /// <exception cref="TypeResolutionException"></exception>
-        private Type? ResolveBySignature(Type src, string[] signature, Type baseType, bool exact)
+        /// <exception cref="ArgumentNullException"></exception>
+        public Type? ResolveBySignature(IEnumerable<string> signature, Type baseType, bool exact = false)
         {
-            var baseTypeDefinition = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
-            if (!_descendants.Value.TryGetValue(baseTypeDefinition, out var typeDescendants))
-                throw new TypeResolutionException(src, baseTypeDefinition, "No descendants found");
+            if (signature is null)
+                throw new ArgumentNullException(nameof(signature));
 
-            var lookup = typeDescendants
-                .Where(type => _signatures.Value.ContainsKey(type))
-                .Select(type => (type, match: _signatures.Value[type].Intersect(signature).Count()))
-                .OrderByDescending(p => p.match)
-                .ToList();
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
 
-            if (lookup.Count == 0)
-                return null;
+            var descendants = ResolveBySignature(TypeSignature.Create(signature), baseType, typeof(object));
 
-            if (lookup.Count > 1)
-            {
-                var rivals = lookup.Where(p => p.match == lookup[0].match).Select(p => p.type.FullName).ToArray();
-                if (rivals.Length > 1)
-                    throw new TypeResolutionException(src, baseTypeDefinition, $"Ambiguous resolution between {string.Join(", ", rivals)}");
-            }
-
-            var resolution = lookup[0];
-            if (exact)
-                return resolution.match == signature.Length ? resolution.type : null;
-
-            return resolution.type;
+            return (exact ? descendants.SingleOrDefault() : descendants.FirstOrDefault())?.Type;
         }
 
-        private IReadOnlyDictionary<Type, HashSet<Type>> CollectDescendants() => new DescendantsCollector().CollectDescendants(_types.Value);
+        /// <summary>
+        /// Resolves descendant type of baseType by given source instance
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="baseType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public Type? Resolve(object instance, Type baseType)
+        {
+            if (instance is null)
+                throw new ArgumentNullException(nameof(instance));
+
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
+
+            var resolutionKeyProperty = GetResolutionKeyProperty(baseType);
+
+            if (resolutionKeyProperty is null)
+                return ResolveBySignature(TypeSignature.Create(instance), baseType, instance.GetType()).FirstOrDefault()?.Type;
+
+            var key = (string) resolutionKeyProperty.GetValue(instance)!;
+
+            return ResolveByKey(key, baseType);
+        }
 
         /// <summary>
-        /// Collect signatures from given types. Each signature is array of lowercased property names.
+        /// Internal resolve by TypeSignature implementation
         /// </summary>
+        /// <param name="signature"></param>
+        /// <param name="baseType"></param>
+        /// <param name="assumedSourceType"></param>
         /// <returns></returns>
-        private IReadOnlyDictionary<Type, HashSet<string>> CollectSignatures() => _descendants.Value.Values
-            .SelectMany(v => v)
-            .Distinct()
-            .ToDictionary(
-                t => t,
-                t => t.GetProperties().Select(p => p.Name.ToLowerInvariant()).OrderBy(p => p).ToHashSet()
-            )
-            .Where(p => p.Value.Count > 0)
-            .ToDictionary(p => p.Key, p => p.Value);
+        /// <exception cref="TypeResolutionException"></exception>
+        private Descendant[] ResolveBySignature(TypeSignature signature, Type baseType, Type assumedSourceType)
+        {
+            var descendants = GetImplementationDescendants(baseType);
+
+            var matches = descendants
+                .Select(x => (descendant: x, match: x.Signature.GetMatchTo(signature)))
+                .Where(x => x.match > 0)
+                .OrderByDescending(x => x.match)
+                .ToArray();
+
+            if (matches.Length > 1)
+            {
+                var rivals = matches.TakeWhile(x => x.match == matches[0].match).Select(x => x.descendant.Type.FullName).ToArray();
+                if (rivals.Length > 1)
+                    throw new TypeResolutionException(assumedSourceType, baseType, $"Ambiguous resolution between {string.Join(", ", rivals)}");
+            }
+
+            return matches.Select(x => x.descendant).ToArray();
+        }
+
+
+        /// <summary>
+        /// Returns all direct implementations of <see cref="baseType"/>.
+        /// </summary>
+        /// <param name="baseType"></param>
+        /// <returns></returns>
+        private Descendant[] GetImplementationDescendants(Type baseType)
+        {
+            baseType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
+            var node = _hierarchy.Value.FirstOrDefault(x => x.Key.Type == baseType);
+
+            return node.Key is null ? Array.Empty<Descendant>() : node.Value.ToArray();
+        }
+
+
+        private IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> BuildHierarchy() => new HierarchyBuilder().BuildHierarchy(_types.Value);
     }
 }

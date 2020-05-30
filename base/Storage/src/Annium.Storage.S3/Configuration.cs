@@ -3,7 +3,7 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.S3
 {
-    [ResolveKey("s3")]
+    [ResolutionKeyValue("s3")]
     public class Configuration : ConfigurationBase
     {
         public string Server { get; set; } = string.Empty;
