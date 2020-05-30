@@ -22,6 +22,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<>)).IsTrue();
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<int>)).IsTrue();
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<long>)).IsFalse();
+            typeof(int).IsDerivedFrom(typeof(int)).IsFalse();
         }
     }
 }

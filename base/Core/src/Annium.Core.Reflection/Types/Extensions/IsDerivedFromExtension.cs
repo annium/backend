@@ -14,7 +14,7 @@ namespace Annium.Core.Reflection
                 throw new ArgumentNullException(nameof(type));
 
             if (!target.IsGenericTypeDefinition)
-                return target.IsAssignableFrom(type);
+                return type != target && target.IsAssignableFrom(type);
 
             if (target.IsClass)
                 return type.GetInheritanceChain(false, true).Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == target);
