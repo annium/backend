@@ -22,6 +22,18 @@ namespace Annium.Core.Mapper
             _mapper = AddProfile(cfg);
         }
 
+        public static IMapper AddProfile(Profile profile)
+        {
+            if (profile is null)
+                throw new ArgumentNullException(nameof(profile));
+
+            lock (Locker)
+            {
+                Profiles.Add(profile);
+                return CreateMapper();
+            }
+        }
+
         public static bool HasMap<T>(object source) => HasMap(source, typeof(T));
 
         public static bool HasMap(object source, Type type) => _mapper.HasMap(source, type);
@@ -33,18 +45,6 @@ namespace Annium.Core.Mapper
         private static IMapper InitMapper()
         {
             return AddProfile(new DefaultProfile());
-        }
-
-        private static IMapper AddProfile(Profile profile)
-        {
-            if (profile is null)
-                throw new ArgumentNullException(nameof(profile));
-
-            lock (Locker)
-            {
-                Profiles.Add(profile);
-                return CreateMapper();
-            }
         }
 
         private static IMapper CreateMapper()
