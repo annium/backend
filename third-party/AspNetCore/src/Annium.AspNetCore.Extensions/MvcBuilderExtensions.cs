@@ -5,7 +5,7 @@ using NodaTime.Xml;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ConfigurationExtensions
+    public static class MvcBuilderExtensions
     {
         public static IMvcBuilder AddDefaultJsonOptions(
             this IMvcBuilder builder,
