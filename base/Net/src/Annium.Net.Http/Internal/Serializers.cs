@@ -1,7 +1,7 @@
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;
-using NodaTime;
+using NodaTime.Xml;
 
 namespace Annium.Net.Http.Internal
 {
@@ -10,7 +10,7 @@ namespace Annium.Net.Http.Internal
         public static readonly ISerializer<string> Json = StringSerializer.Configure(
             opts => opts.ConfigureDefault()
                 .ConfigureForOperations()
-                .ConfigureForNodaTime(DateTimeZoneProviders.Serialization)
+                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider)
         );
     }
 }
