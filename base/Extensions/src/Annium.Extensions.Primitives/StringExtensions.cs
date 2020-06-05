@@ -9,14 +9,15 @@ namespace Annium.Extensions.Primitives
     {
         private static readonly IReadOnlyDictionary<char, byte> HexLookup = CreateHexLookup();
 
-        public static bool IsNullOrEmpty(this string value) => string.IsNullOrEmpty(value);
+        public static bool IsNullOrEmpty(this string? value) => string.IsNullOrEmpty(value);
 
-        public static bool IsNullOrWhiteSpace(this string value) => string.IsNullOrWhiteSpace(value);
+        public static bool IsNullOrWhiteSpace(this string? value) => string.IsNullOrWhiteSpace(value);
 
         public static string UpperFirst(this string value)
         {
             value = Preprocess(value);
-            if (string.IsNullOrEmpty(value)) return value;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return value.Substring(0, 1).ToUpperInvariant() + value.Substring(1);
         }
@@ -24,7 +25,8 @@ namespace Annium.Extensions.Primitives
         public static string LowerFirst(this string value)
         {
             value = Preprocess(value);
-            if (string.IsNullOrEmpty(value)) return value;
+            if (string.IsNullOrEmpty(value))
+                return value;
 
             return value.Substring(0, 1).ToLowerInvariant() + value.Substring(1);
         }
