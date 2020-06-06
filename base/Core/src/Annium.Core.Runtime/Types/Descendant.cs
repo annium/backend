@@ -7,7 +7,7 @@ namespace Annium.Core.Runtime.Types
     {
         public Type Type { get; }
         public TypeSignature Signature { get; }
-        public string? Key { get; }
+        public object? Key { get; }
         public bool HasKey { get; }
 
         public Descendant(

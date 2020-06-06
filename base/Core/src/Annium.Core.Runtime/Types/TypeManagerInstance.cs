@@ -72,9 +72,9 @@ namespace Annium.Core.Runtime.Types
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="TypeResolutionException"></exception>
-        public Type? ResolveByKey(string key, Type baseType)
+        public Type? ResolveByKey(object key, Type baseType)
         {
-            if (string.IsNullOrWhiteSpace(key))
+            if (key is null)
                 throw new ArgumentNullException(nameof(key));
 
             if (baseType is null)
@@ -83,7 +83,7 @@ namespace Annium.Core.Runtime.Types
             if (GetResolutionKeyProperty(baseType) is null)
                 throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionKeyAttribute)}");
 
-            var descendants = GetImplementationDescendants(baseType).Where(x => x.HasKey && x.Key == key).ToArray();
+            var descendants = GetImplementationDescendants(baseType).Where(x => x.HasKey && x.Key!.Equals(key)).ToArray();
             if (descendants.Length > 1)
                 throw new TypeResolutionException(typeof(object), baseType,
                     $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");

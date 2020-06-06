@@ -10,7 +10,7 @@ namespace Annium.Core.Runtime.Types
         bool HasImplementations(Type baseType);
         Type[] GetImplementations(Type baseType);
         PropertyInfo? GetResolutionKeyProperty(Type baseType);
-        Type? ResolveByKey(string key, Type baseType);
+        Type? ResolveByKey(object key, Type baseType);
         Type? ResolveBySignature(IEnumerable<string> signature, Type baseType, bool exact = false);
         Type? Resolve(object instance, Type baseType);
     }
