@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Composition
+namespace Annium.Extensions.Composition.Internal
 {
     internal interface IRuleContainer<TValue>
     {

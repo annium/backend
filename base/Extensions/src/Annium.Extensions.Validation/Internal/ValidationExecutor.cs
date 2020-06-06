@@ -7,7 +7,7 @@ using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.Validation
+namespace Annium.Extensions.Validation.Internal
 {
     internal class ValidationExecutor<TValue> : IValidator<TValue>
     {

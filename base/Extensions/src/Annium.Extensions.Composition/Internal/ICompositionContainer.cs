@@ -5,7 +5,7 @@ using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Extensions.Composition
+namespace Annium.Extensions.Composition.Internal
 {
     internal interface ICompositionContainer<in TValue> where TValue : class
     {

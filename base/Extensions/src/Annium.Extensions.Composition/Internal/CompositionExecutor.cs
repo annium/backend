@@ -9,7 +9,7 @@ using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Extensions.Composition
+namespace Annium.Extensions.Composition.Internal
 {
     internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : class
     {

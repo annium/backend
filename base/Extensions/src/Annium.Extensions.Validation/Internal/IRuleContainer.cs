@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Validation
+namespace Annium.Extensions.Validation.Internal
 {
     internal interface IRuleContainer<TValue>
     {

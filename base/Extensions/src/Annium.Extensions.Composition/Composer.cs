@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Core.Reflection;
 using Annium.Data.Operations;
+using Annium.Extensions.Composition.Internal;
 using Annium.Localization.Abstractions;
 
 namespace Annium.Extensions.Composition

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Extensions.Validation
+namespace Annium.Extensions.Validation.Internal
 {
     internal interface IValidationContainer<in TValue>
     {
