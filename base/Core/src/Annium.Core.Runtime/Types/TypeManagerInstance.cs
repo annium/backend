@@ -135,7 +135,7 @@ namespace Annium.Core.Runtime.Types
             // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
             resolutionKeyProperty = ResolveResolutionKeyProperty(instance, resolutionKeyProperty);
 
-            var key = (string) resolutionKeyProperty.GetValue(instance)!;
+            var key = resolutionKeyProperty.GetValue(instance)!;
 
             return ResolveByKey(key, baseType);
         }
