@@ -20,7 +20,7 @@ namespace Annium.Serialization.Json.Converters
         {
             var doc = JsonDocument.ParseValue(ref reader);
 
-            var type = ResolveType(doc.RootElement, typeToConvert).ResolveByImplementation(typeToConvert);
+            var type = ResolveType(doc.RootElement, typeToConvert, options).ResolveByImplementation(typeToConvert);
             if (type is null)
                 throw new SerializationException($"Can't resolve concrete type for {type} by {typeToConvert}");
 
@@ -36,22 +36,31 @@ namespace Annium.Serialization.Json.Converters
             JsonSerializer.Serialize(writer, value, value?.GetType() ?? typeof(object), options);
         }
 
-        private Type ResolveType(JsonElement root, Type baseType)
+        private Type ResolveType(
+            JsonElement root,
+            Type baseType,
+            JsonSerializerOptions options
+        )
         {
             var resolutionKeyProperty = TypeManager.Instance.GetResolutionKeyProperty(baseType);
 
             return resolutionKeyProperty is null
                 ? ResolveTypeBySignature(root, baseType)
-                : ResolveTypeByKey(root, baseType, resolutionKeyProperty);
+                : ResolveTypeByKey(root, baseType, resolutionKeyProperty, options);
         }
 
-        private Type ResolveTypeByKey(JsonElement root, Type baseType, PropertyInfo resolutionKeyProperty)
+        private Type ResolveTypeByKey(
+            JsonElement root,
+            Type baseType,
+            PropertyInfo resolutionKeyProperty,
+            JsonSerializerOptions options
+        )
         {
             if (!root.TryGetProperty(resolutionKeyProperty.Name.PascalCase(), out var keyElement) &&
                 !root.TryGetProperty(resolutionKeyProperty.Name.CamelCase(), out keyElement))
                 throw new SerializationException(Error(baseType, "key property is missing"));
 
-            var key = keyElement.GetString();
+            var key = JsonSerializer.Deserialize(keyElement.GetRawText(), resolutionKeyProperty.PropertyType, options);
             var type = TypeManager.Instance.ResolveByKey(key, baseType);
             if (type is null)
                 throw new SerializationException(Error(baseType, $"no match for key {key}"));
@@ -59,7 +68,10 @@ namespace Annium.Serialization.Json.Converters
             return type;
         }
 
-        private Type ResolveTypeBySignature(JsonElement root, Type baseType)
+        private Type ResolveTypeBySignature(
+            JsonElement root,
+            Type baseType
+        )
         {
             var properties = root.EnumerateObject().Select(p => p.Name).ToArray();
 

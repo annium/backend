@@ -173,7 +173,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public char Type { get; set; }
     }
 
-    [ResolutionKeyValue("a")]
+    [ResolutionKeyValue('a')]
     public class KeyChildA : KeyBase
     {
         public int Value { get; set; }
@@ -184,7 +184,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
     }
 
-    [ResolutionKeyValue("b")]
+    [ResolutionKeyValue('b')]
     public class KeyChildB : KeyBase
     {
         public int Value { get; set; }
@@ -215,7 +215,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public char Type { get; set; }
     }
 
-    [ResolutionKeyValue("a")]
+    [ResolutionKeyValue('a')]
     public class KeyDataContainer<T> : KeyBaseContainer<T>
     {
         public T[] Items { get; set; } = Array.Empty<T>();
@@ -226,7 +226,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
     }
 
-    [ResolutionKeyValue("b")]
+    [ResolutionKeyValue('b')]
     public class KeyDemoContainer<T> : KeyBaseContainer<T>
     {
         public T[] Demo { get; set; } = Array.Empty<T>();
