@@ -45,7 +45,8 @@ namespace Annium.Core.Mapper.Internal
             var result = Expression.Lambda(mapping(param), param);
             var str = result.ToReadableString();
 
-            return _maps[key] = result.Compile();
+            lock (_maps)
+                return _maps[key] = result.Compile();
         }
 
         private Mapping ResolveMapping(Type src, Type tgt)
