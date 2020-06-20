@@ -1,7 +1,9 @@
+using System;
 using System.Linq;
 using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -35,6 +37,13 @@ namespace Annium.Core.DependencyInjection
                 foreach (var key in entity.GetIndexes())
                     key.SetName(key.GetName().SnakeCase());
             }
+        }
+
+        public static void UseDateTimeUtc(this ModelBuilder builder)
+        {
+            foreach (var entity in builder.Model.GetEntityTypes())
+            foreach (var property in entity.GetProperties().Where(x => x.ClrType == typeof(DateTime)))
+                property.SetValueConverter(new ValueConverter<DateTime, DateTime>(x => x, x => DateTime.SpecifyKind(x, DateTimeKind.Utc)));
         }
 
         public static void UseDeleteBehavior(this ModelBuilder builder, DeleteBehavior behavior)
