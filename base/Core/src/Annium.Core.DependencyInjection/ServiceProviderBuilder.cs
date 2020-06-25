@@ -7,7 +7,7 @@ namespace Annium.Core.DependencyInjection
 {
     public class ServiceProviderBuilder : IServiceProviderBuilder
     {
-        private bool isAlreadyBuilt = false;
+        private bool isAlreadyBuilt;
 
         private readonly IServiceCollection services;
 
@@ -26,7 +26,7 @@ namespace Annium.Core.DependencyInjection
         public IServiceProviderBuilder UseServicePack<TServicePack>()
             where TServicePack : ServicePackBase, new()
         {
-            if (!packs.Any(e => e.GetType() == typeof(TServicePack)))
+            if (packs.All(e => e.GetType() != typeof(TServicePack)))
                 packs.Add(new TServicePack());
 
             return this;

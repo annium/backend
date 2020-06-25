@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection.Internal;
 using Annium.Core.Runtime.Types;
@@ -17,5 +18,11 @@ namespace Annium.Core.DependencyInjection
 
         public static IRegistrationBuilder AddAssemblyTypes(this IServiceCollection services, Assembly assembly)
             => new RegistrationBuilder(services, assembly.GetTypes());
+
+        public static IRegistrationBuilder Add<T>(this IServiceCollection services)
+            => new RegistrationBuilder(services, new[] { typeof(T) });
+
+        public static IRegistrationBuilder Add(this IServiceCollection services, params Type[] types)
+            => new RegistrationBuilder(services, types);
     }
 }
