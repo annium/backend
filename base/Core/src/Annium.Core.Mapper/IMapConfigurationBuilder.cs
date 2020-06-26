@@ -7,9 +7,9 @@ namespace Annium.Core.Mapper
     {
         void With(Expression<Func<S, T>> map);
 
-        IMapConfigurationBuilder<S, T> For(
+        IMapConfigurationBuilder<S, T> For<F>(
             Expression<Func<T, object>> members,
-            Expression<Func<S, object>> map
+            Expression<Func<S, F>> map
         );
 
         IMapConfigurationBuilder<S, T> Ignore(

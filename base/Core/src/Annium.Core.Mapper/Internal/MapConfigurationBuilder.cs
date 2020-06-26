@@ -15,7 +15,7 @@ namespace Annium.Core.Mapper.Internal
             _result.SetMapWith(map);
         }
 
-        public IMapConfigurationBuilder<S, T> For(Expression<Func<T, object>> members, Expression<Func<S, object>> map)
+        public IMapConfigurationBuilder<S, T> For<F>(Expression<Func<T, object>> members, Expression<Func<S, F>> map)
         {
             var properties = TypeHelper.ResolveProperties(members);
 
