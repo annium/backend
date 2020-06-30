@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Annium.Logging.Abstractions;
 using NodaTime;
 
@@ -8,7 +7,7 @@ namespace Annium.Logging.Console
 {
     internal class ConsoleLogHandler : ILogHandler
     {
-        private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+        public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
         private static readonly object ConsoleLock = new object();
         private static readonly IReadOnlyDictionary<LogLevel, ConsoleColor> LevelColors;
 
@@ -25,18 +24,15 @@ namespace Annium.Logging.Console
             LevelColors = colors;
         }
 
-        private readonly bool _time;
-        private readonly bool _level;
+        private readonly Func<LogMessage, string, string> _format;
         private readonly bool _color;
 
         public ConsoleLogHandler(
-            bool time,
-            bool level,
+            Func<LogMessage, string, string> format,
             bool color
         )
         {
-            _time = time;
-            _level = level;
+            _format = format;
             _color = color;
         }
 
@@ -71,20 +67,7 @@ namespace Annium.Logging.Console
             }
         }
 
-        private void WriteLine(LogMessage msg, string message)
-        {
-            var builder = new StringBuilder();
-
-            if (_time)
-                builder.Append($"[{msg.Instant.InZone(Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] ");
-
-            if (_level)
-                builder.Append($"{msg.Level,5}: ");
-
-            builder.Append(message);
-
-            System.Console.WriteLine(builder.ToString());
-        }
+        private void WriteLine(LogMessage msg, string message) => System.Console.WriteLine(_format(msg, message));
 
         private string GetExceptionMessage(Exception e) => $"{e.Message}{Environment.NewLine}{e.StackTrace}";
     }
