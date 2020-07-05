@@ -10,7 +10,7 @@ namespace Annium.Logging.Abstractions.Internal
             ILogRouter router
         )
         {
-            this._router = router;
+            _router = router;
         }
 
         public void Log(LogLevel level, string message) => _router.Send(level, typeof(T), message, null);
