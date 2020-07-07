@@ -40,7 +40,7 @@ namespace Annium.Data.Models.Extensions
 
             // if compared as objects - need to resolve target real type
             if (type == typeof(object))
-                type = data!.GetType();
+                type = data?.GetType() ?? typeof(object);
 
             // as far as base object class has no properties, consider objects to be shallowly equal
             if (type == typeof(object))

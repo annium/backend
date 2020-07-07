@@ -137,6 +137,18 @@ namespace Annium.Data.Models.Tests.Extensions
             // assert
             a.IsShallowEqual(b).IsTrue();
         }
+
+        [Fact]
+        public void IsShallowEqual_ToNull_Works()
+        {
+            // arrange
+            Exception a = new Exception("x");
+            Exception b = default;
+
+            // assert
+            a.IsShallowEqual(b).IsFalse();
+            b.IsShallowEqual(a).IsFalse();
+        }
     }
 
     namespace Internal
