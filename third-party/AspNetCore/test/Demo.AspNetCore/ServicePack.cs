@@ -20,7 +20,6 @@ namespace Demo.AspNetCore
         private void ConfigureMediator(MediatorConfiguration cfg)
         {
             cfg.AddHttpStatusPipeHandler();
-            cfg.AddModelStatePipeHandler();
 
             cfg.AddCommandQueryHandlers();
         }

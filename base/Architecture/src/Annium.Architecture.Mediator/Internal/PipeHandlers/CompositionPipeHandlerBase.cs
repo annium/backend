@@ -10,16 +10,16 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
     internal abstract class CompositionPipeHandlerBase<TRequest, TResponse> where TRequest : class
     {
-        private readonly IComposer<TRequest> composer;
-        private readonly ILogger<CompositionPipeHandlerBase<TRequest, TResponse>> logger;
+        private readonly IComposer<TRequest> _composer;
+        private readonly ILogger<CompositionPipeHandlerBase<TRequest, TResponse>> _logger;
 
         public CompositionPipeHandlerBase(
             IComposer<TRequest> composer,
             ILogger<CompositionPipeHandlerBase<TRequest, TResponse>> logger
         )
         {
-            this.composer = composer;
-            this.logger = logger;
+            _composer = composer;
+            _logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -28,11 +28,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            logger.Trace($"Compose {typeof(TRequest)}");
-            var result = await composer.ComposeAsync(request);
+            _logger.Trace($"Compose {typeof(TRequest)}");
+            var result = await _composer.ComposeAsync(request);
             if (result.HasErrors)
             {
-                logger.Trace($"Composition of {typeof(TRequest)} failed");
+                _logger.Trace($"Composition of {typeof(TRequest)} failed");
 
                 return GetResponse(result);
             }

@@ -8,13 +8,13 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
     internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse>
     {
-        private readonly ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger;
+        private readonly ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> _logger;
 
         public ExceptionPipeHandlerBase(
             ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -41,7 +41,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         private TResponse Failure(Exception exception)
         {
-            logger.Trace($"Failure of {typeof(TRequest)}: {exception}");
+            _logger.Trace($"Failure of {typeof(TRequest)}: {exception}");
 
             return GetFailure(exception);
         }

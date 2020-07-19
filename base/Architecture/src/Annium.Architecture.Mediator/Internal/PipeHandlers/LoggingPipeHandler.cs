@@ -8,13 +8,13 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
     internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>
     {
-        private readonly ILogger<LoggingPipeHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<LoggingPipeHandler<TRequest, TResponse>> _logger;
 
         public LoggingPipeHandler(
             ILogger<LoggingPipeHandler<TRequest, TResponse>> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -23,11 +23,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            logger.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
+            _logger.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
 
             var result = await next(request);
 
-            logger.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
+            _logger.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
 
             return result;
         }
