@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Data.Operations.Implementations;
 
 namespace Annium.Data.Operations
 {
@@ -14,24 +15,24 @@ namespace Annium.Data.Operations
             new Implementations.Result();
 
         public static IResult<D> New<D>(D data) =>
-            new Implementations.Result<D>(data);
+            new Result<D>(data);
 
         public static IBooleanResult Success() =>
-            new Implementations.BooleanResult(true);
+            new BooleanResult(true);
 
         public static IBooleanResult Failure() =>
-            new Implementations.BooleanResult(false);
+            new BooleanResult(false);
 
         public static IBooleanResult<D> Success<D>(D data) =>
-            new Implementations.BooleanResult<D>(true, data);
+            new BooleanResult<D>(true, data);
 
         public static IBooleanResult<D> Failure<D>(D data) =>
-            new Implementations.BooleanResult<D>(false, data);
+            new BooleanResult<D>(false, data);
 
         public static IStatusResult<S> Status<S>(S status) =>
-            new Implementations.StatusResult<S>(status);
+            new StatusResult<S>(status);
 
         public static IStatusResult<S, D> Status<S, D>(S status, D data) =>
-            new Implementations.StatusResult<S, D>(status, data);
+            new StatusResult<S, D>(status, data);
     }
 }

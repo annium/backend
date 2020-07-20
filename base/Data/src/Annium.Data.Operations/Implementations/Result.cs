@@ -12,7 +12,7 @@ namespace Annium.Data.Operations.Implementations
         public override IResult<D> Clone()
         {
             var clone = new Result<D>(Data);
-            this.CloneTo(clone);
+            CloneTo(clone);
 
             return clone;
         }
@@ -20,14 +20,10 @@ namespace Annium.Data.Operations.Implementations
 
     internal sealed class Result : ResultBase<IResult>, IResult
     {
-        internal Result()
-        {
-        }
-
         public override IResult Clone()
         {
             var clone = new Result();
-            this.CloneTo(clone);
+            CloneTo(clone);
 
             return clone;
         }

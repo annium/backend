@@ -21,7 +21,7 @@ namespace Annium.Data.Operations.Implementations
         public override IStatusResult<S, D> Clone()
         {
             var clone = new StatusResult<S, D>(Status, Data);
-            this.CloneTo(clone);
+            CloneTo(clone);
 
             return clone;
         }
@@ -39,7 +39,7 @@ namespace Annium.Data.Operations.Implementations
         public override IStatusResult<S> Clone()
         {
             var clone = new StatusResult<S>(Status);
-            this.CloneTo(clone);
+            CloneTo(clone);
 
             return clone;
         }
