@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Demo.Data.Operations.Serialization
+namespace Demo.Data.Operations.Serialization.Json
 {
     internal class ServicePack : ServicePackBase
     {

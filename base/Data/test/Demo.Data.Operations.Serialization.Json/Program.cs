@@ -8,7 +8,7 @@ using Annium.Core.Entrypoint;
 using Annium.Data.Operations;
 using Annium.Extensions.Primitives;
 
-namespace Demo.Data.Operations.Serialization
+namespace Demo.Data.Operations.Serialization.Json
 {
     public class Program
     {
@@ -67,11 +67,13 @@ namespace Demo.Data.Operations.Serialization
         }
     }
 
-    public abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase<T>
+    public abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase<T>, IResultBase
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType.IsInterface ? IsConvertibleInterface(objectType) : objectType.GetInterfaces().Any(IsConvertibleInterface);
+            return objectType.IsInterface
+                ? IsConvertibleInterface(objectType)
+                : objectType.GetInterfaces().Any(IsConvertibleInterface);
         }
 
         protected abstract bool IsConvertibleInterface(Type type);
@@ -99,8 +101,11 @@ namespace Demo.Data.Operations.Serialization
 
                     if (name.Equals(nameof(IResultBase.PlainErrors), StringComparison.InvariantCultureIgnoreCase))
                         value.Errors(JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options));
-                    else if (name.Equals(nameof(IResultBase.LabeledErrors), StringComparison.InvariantCultureIgnoreCase))
-                        value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options));
+                    else if (name.Equals(nameof(IResultBase.LabeledErrors),
+                        StringComparison.InvariantCultureIgnoreCase))
+                        value.Errors(
+                            JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader,
+                                options));
                 }
             }
 

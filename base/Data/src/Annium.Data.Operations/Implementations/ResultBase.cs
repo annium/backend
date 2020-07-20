@@ -4,7 +4,8 @@ using System.Linq;
 
 namespace Annium.Data.Operations.Implementations
 {
-    internal abstract class ResultBase<T> : IResultBase<T> where T : class, IResultBase<T>
+    internal abstract class ResultBase<T> : IResultBase<T>, IResultBase
+        where T : class, IResultBase<T>
     {
         public IEnumerable<string> PlainErrors => _plainErrors;
 

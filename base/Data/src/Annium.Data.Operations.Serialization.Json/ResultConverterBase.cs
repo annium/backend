@@ -6,7 +6,7 @@ using Annium.Extensions.Primitives;
 
 namespace Annium.Data.Operations.Serialization
 {
-    internal abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase<T>
+    internal abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase
     {
         protected void WriteErrors(
             Utf8JsonWriter writer,

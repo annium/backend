@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Annium.Data.Operations
 {
-    public interface IResultBase<T> : IReadOnlyResultBase<T>
+    public interface IResultBase<T> : ICloneableResultBase<T>
     {
         T Clear();
 
@@ -24,9 +24,14 @@ namespace Annium.Data.Operations
         T Join(IEnumerable<IResultBase> results);
     }
 
-    public interface IReadOnlyResultBase<T> : IResultBase
+    public interface ICloneableResultBase<T>
     {
         T Clone();
+    }
+
+    public interface IDataResultBase<D> : IResultBase
+    {
+        D Data { get; }
     }
 
     public interface IResultBase

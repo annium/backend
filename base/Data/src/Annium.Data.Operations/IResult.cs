@@ -1,11 +1,10 @@
 namespace Annium.Data.Operations
 {
-    public interface IResult<D> : IResultBase<IResult<D>>
+    public interface IResult<D> : IResultBase<IResult<D>>, IDataResultBase<D>
     {
-        D Data { get; }
     }
 
-    public interface IResult : IResultBase<IResult>
+    public interface IResult : IResultBase<IResult>, IResultBase
     {
     }
 }
