@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
@@ -15,18 +14,7 @@ namespace Annium.Net.Http.Internal
     {
         private delegate Task<IHttpResponse> Middleware(Func<Task<IHttpResponse>> next, IHttpRequest request, HttpRequestOptions options);
 
-        private static readonly HttpClient DefaultClient;
-
-        static HttpRequest()
-        {
-            var handler = new HttpClientHandler
-            {
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
-                MaxConnectionsPerServer = 16
-            };
-
-            DefaultClient = new HttpClient(handler);
-        }
+        private static readonly HttpClient DefaultClient = new HttpClient();
 
         public HttpMethod Method { get; private set; } = HttpMethod.Get;
         public Uri Uri => GetUriFactory().Build();
