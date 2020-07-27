@@ -1,8 +1,8 @@
 using System.Runtime.Loader;
 
-namespace Annium.Core.Runtime.Loader
+namespace Annium.Core.Runtime.Loader.Internal
 {
-    public class PluginLoadContextFactory
+    internal class PluginLoadContextFactory : IPluginLoadContextFactory
     {
         public AssemblyLoadContext Create(string assemblyPath)
         {

@@ -1,9 +1,9 @@
 using System.Reflection;
 using System.Runtime.Loader;
 
-namespace Annium.Core.Runtime.Loader
+namespace Annium.Core.Runtime.Loader.Internal
 {
-    public class PluginLoadContext : AssemblyLoadContext
+    internal class PluginLoadContext : AssemblyLoadContext
     {
         private readonly AssemblyDependencyResolver _resolver;
 

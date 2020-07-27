@@ -351,6 +351,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Sqlite.Extensions", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Extensions.Reactive", "base\Extensions\src\Annium.Extensions.Reactive\Annium.Extensions.Reactive.csproj", "{647C43D9-518F-48C4-986E-5354CB3E4248}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.Runtime.Loader", "base\Core\src\Annium.Core.Runtime.Loader\Annium.Core.Runtime.Loader.csproj", "{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -536,6 +538,7 @@ Global
 		{993A4E18-C16D-42AC-934D-F63E5C60D0C3} = {A05FB8C0-E916-4637-BF93-C20D0EE8CB9C}
 		{3ABA4255-999D-46B9-8359-0D6F089AC326} = {993A4E18-C16D-42AC-934D-F63E5C60D0C3}
 		{647C43D9-518F-48C4-986E-5354CB3E4248} = {787AD0D1-E705-4844-92B9-4BA293F3EF72}
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD} = {0095A08F-E5C3-49DC-9145-CAD70F785E29}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3631E49-B896-4143-940F-9C377DDFD8C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1966,5 +1969,17 @@ Global
 		{647C43D9-518F-48C4-986E-5354CB3E4248}.Release|x64.Build.0 = Release|Any CPU
 		{647C43D9-518F-48C4-986E-5354CB3E4248}.Release|x86.ActiveCfg = Release|Any CPU
 		{647C43D9-518F-48C4-986E-5354CB3E4248}.Release|x86.Build.0 = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|x64.Build.0 = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Debug|x86.Build.0 = Debug|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|x64.ActiveCfg = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|x64.Build.0 = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|x86.ActiveCfg = Release|Any CPU
+		{2FBD00F5-0B1F-4501-9B59-FE80313A32AD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
