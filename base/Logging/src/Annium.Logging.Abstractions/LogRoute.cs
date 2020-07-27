@@ -12,7 +12,7 @@ namespace Annium.Logging.Abstractions
 
         internal LogRoute(Action<LogRoute> registerRoute)
         {
-            this._registerRoute = registerRoute;
+            _registerRoute = registerRoute;
 
             registerRoute(this);
         }

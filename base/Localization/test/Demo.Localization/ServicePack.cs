@@ -17,7 +17,7 @@ namespace Demo.Localization
             services.AddLocalization(opts => opts.UseYamlStorage().UseCulture(() => CultureInfo.CurrentCulture));
         }
 
-        public override void Setup(System.IServiceProvider provider)
+        public override void Setup(IServiceProvider provider)
         {
             // setup post-configured services
         }

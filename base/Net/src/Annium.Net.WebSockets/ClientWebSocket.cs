@@ -20,7 +20,7 @@ namespace Annium.Net.WebSockets
             serializer
         )
         {
-            this._options = options ?? new ClientWebSocketOptions
+            _options = options ?? new ClientWebSocketOptions
             {
                 ReconnectOnFailure = true,
             };
@@ -28,7 +28,7 @@ namespace Annium.Net.WebSockets
 
         public async Task ConnectAsync(Uri uri, CancellationToken token)
         {
-            this._uri = uri;
+            _uri = uri;
             do
             {
                 try

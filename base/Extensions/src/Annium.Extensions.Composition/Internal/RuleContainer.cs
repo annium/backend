@@ -16,7 +16,7 @@ namespace Annium.Extensions.Composition.Internal
             MethodInfo setTarget
         )
         {
-            this._setTarget = setTarget;
+            _setTarget = setTarget;
         }
 
         public IRuleBuilder<TValue, TField> When(Func<CompositionContext<TValue>, bool> check)

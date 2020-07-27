@@ -61,7 +61,7 @@ namespace Annium.Extensions.Pooling.Tests
 
             void Log(string message)
             {
-                lock (logs) logs.Add(message);
+                lock (logs!) logs.Add(message);
             }
 
             var pool = new ObjectPool<Item>(() => new Item(nextId++, Log), 5, loadMode, storageMode);
@@ -101,7 +101,7 @@ namespace Annium.Extensions.Pooling.Tests
             public void ExecuteAction(int i)
             {
                 Thread.Sleep(10);
-                log($"{id} {ObjectPoolTests.Action} {i}");
+                log($"{id} {Action} {i}");
             }
 
             public void Dispose()

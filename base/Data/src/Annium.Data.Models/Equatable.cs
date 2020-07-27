@@ -7,7 +7,7 @@ namespace Annium.Data.Models
     {
         public abstract override int GetHashCode();
 
-        public bool Equals(T obj) => GetHashCode() == obj?.GetHashCode();
+        public bool Equals(T? obj) => GetHashCode() == obj?.GetHashCode();
 
         public override bool Equals(object? obj) => Equals((T) obj!);
 

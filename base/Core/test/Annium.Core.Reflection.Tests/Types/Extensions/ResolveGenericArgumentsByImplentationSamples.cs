@@ -81,7 +81,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsB
     {
         public IEnumerator GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 

@@ -28,7 +28,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalConfigure(IServiceCollection services)
         {
-            foreach (var pack in this.packs)
+            foreach (var pack in packs)
                 pack.InternalConfigure(services);
 
             Configure(services);
@@ -36,7 +36,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalRegister(IServiceCollection services, IServiceProvider provider)
         {
-            foreach (var pack in this.packs)
+            foreach (var pack in packs)
                 pack.InternalRegister(services, provider);
 
             Register(services, provider);
@@ -44,7 +44,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalSetup(IServiceProvider provider)
         {
-            foreach (var pack in this.packs)
+            foreach (var pack in packs)
                 pack.InternalSetup(provider);
 
             Setup(provider);

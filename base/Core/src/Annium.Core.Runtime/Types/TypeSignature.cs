@@ -48,7 +48,7 @@ namespace Annium.Core.Runtime.Types
             // return (int) Math.Floor(matches / Size);
         }
 
-        public bool Equals(TypeSignature obj) => GetHashCode() == obj?.GetHashCode();
+        public bool Equals(TypeSignature? obj) => GetHashCode() == obj?.GetHashCode();
 
         public override bool Equals(object? obj) => Equals((TypeSignature) obj!);
 

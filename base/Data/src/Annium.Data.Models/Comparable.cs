@@ -5,7 +5,7 @@ namespace Annium.Data.Models
 {
     public abstract class Comparable<T> : Equatable<T>, IComparable<T>, IComparable where T : Comparable<T>
     {
-        public int CompareTo(T other)
+        public int CompareTo(T? other)
         {
             if (other is null) return 1;
 

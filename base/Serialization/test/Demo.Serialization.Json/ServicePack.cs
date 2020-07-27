@@ -16,7 +16,7 @@ namespace Demo.Serialization.Json
             // register and setup services
         }
 
-        public override void Setup(System.IServiceProvider provider)
+        public override void Setup(IServiceProvider provider)
         {
             // setup post-configured services
         }

@@ -35,7 +35,7 @@ namespace Annium.Core.Entrypoint
 
             void HandleEnd()
             {
-                cts.Cancel();
+                cts!.Cancel();
                 gate.Wait();
             }
         }

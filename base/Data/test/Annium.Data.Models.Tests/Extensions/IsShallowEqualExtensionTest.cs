@@ -143,7 +143,7 @@ namespace Annium.Data.Models.Tests.Extensions
         {
             // arrange
             Exception a = new Exception("x");
-            Exception b = default;
+            Exception b = default!;
 
             // assert
             a.IsShallowEqual(b).IsFalse();

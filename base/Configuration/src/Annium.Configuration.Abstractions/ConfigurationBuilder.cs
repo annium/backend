@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Annium.Core.Mapper;
 using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
@@ -11,16 +10,16 @@ namespace Annium.Configuration.Abstractions
 {
     public class ConfigurationBuilder : IConfigurationBuilder
     {
-        private readonly IDictionary<string[], string> config = new Dictionary<string[], string>(new KeyComparer());
+        private readonly IDictionary<string[], string> _config = new Dictionary<string[], string>(new KeyComparer());
 
-        private readonly Stack<string> context = new Stack<string>();
+        private readonly Stack<string> _context = new Stack<string>();
 
-        protected string[] Path => context.Reverse().ToArray();
+        protected string[] Path => _context.Reverse().ToArray();
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
             foreach (var (key, value) in config)
-                this.config[key] = value;
+                _config[key] = value;
 
             return this;
         }
@@ -57,9 +56,9 @@ namespace Annium.Configuration.Abstractions
             foreach (var name in items)
             {
                 // var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
-                context.Push(name);
+                _context.Push(name);
                 result[Mapper.Map(name, keyType)] = Process(valueType);
-                context.Pop();
+                _context.Pop();
             }
 
             return result;
@@ -74,9 +73,9 @@ namespace Annium.Configuration.Abstractions
 
             foreach (var index in items)
             {
-                context.Push(index);
+                _context.Push(index);
                 result.Add(Process(elementType));
-                context.Pop();
+                _context.Pop();
             }
 
             return result;
@@ -103,9 +102,9 @@ namespace Annium.Configuration.Abstractions
                 if (resolutionKeyProperty is null)
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
-                context.Push(resolutionKeyProperty.Name);
-                var hasKey = config.TryGetValue(Path, out var key);
-                context.Pop();
+                _context.Push(resolutionKeyProperty.Name);
+                var hasKey = _config.TryGetValue(Path, out var key);
+                _context.Pop();
                 if (!hasKey)
                     return null!;
 
@@ -119,10 +118,10 @@ namespace Annium.Configuration.Abstractions
             var properties = type.GetProperties().Where(e => e.CanWrite).ToArray();
             foreach (var property in properties)
             {
-                context.Push(property.Name);
+                _context.Push(property.Name);
                 if (KeyExists())
                     property.SetValue(result, Process(property.PropertyType));
-                context.Pop();
+                _context.Pop();
             }
 
             return result;
@@ -130,7 +129,7 @@ namespace Annium.Configuration.Abstractions
 
         private object ProcessValue(Type type)
         {
-            if (config.TryGetValue(Path, out var value))
+            if (_config.TryGetValue(Path, out var value))
                 return Mapper.Map(value, type);
 
             throw new ArgumentException($"Key {string.Join('.', Path)} not found in configuration.");
@@ -140,9 +139,9 @@ namespace Annium.Configuration.Abstractions
         {
             var path = Normalize(Path);
             if (path.Length == 0)
-                return config.Keys.Select(k => k.First()).Distinct().ToArray();
+                return _config.Keys.Select(k => k.First()).Distinct().ToArray();
 
-            return config.Keys
+            return _config.Keys
                 .Where(k => k.Length > path.Length)
                 .Where(k => Normalize(k.Take(path.Length)).SequenceEqual(path))
                 .Select(k => k.Skip(path.Length).First())
@@ -154,20 +153,19 @@ namespace Annium.Configuration.Abstractions
         {
             var path = Normalize(Path);
             if (path.Length == 0)
-                return config.Keys.Count() > 0;
+                return _config.Keys.Count > 0;
 
-            return config.Keys
+            return _config.Keys
                 .Where(k => k.Length >= path.Length)
                 .Select(k => k.Take(path.Length))
-                .Where(k => Normalize(k).SequenceEqual(path))
-                .Count() > 0;
+                .Any(k => Normalize(k).SequenceEqual(path));
         }
 
         private string[] Normalize(IEnumerable<string> seq) => seq.Select(e => e.CamelCase()).ToArray();
 
         private class KeyComparer : IEqualityComparer<string[]>
         {
-            public bool Equals(string[] x, string[] y)
+            public bool Equals(string[]? x, string[]? y)
             {
                 // if same reference or both null, then equality is true
                 if (ReferenceEquals(x, y))

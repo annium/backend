@@ -49,7 +49,7 @@ namespace Annium.MongoDb.NodaTime
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TValue value)
         {
-            context.Writer.WriteString(this.pattern.Format(this.valueConverter(value)));
+            context.Writer.WriteString(pattern.Format(valueConverter(value)));
         }
     }
 }

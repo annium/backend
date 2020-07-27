@@ -11,32 +11,32 @@ namespace Annium.Extensions.Shell
 {
     internal class ShellInstance : IShellInstance
     {
-        private readonly object consoleLock = new object();
-        private readonly string cmd;
-        private readonly ILogger<Shell> logger;
-        private ProcessStartInfo startInfo;
-        private bool pipe;
+        private readonly object _consoleLock = new object();
+        private readonly string _cmd;
+        private readonly ILogger<Shell> _logger;
+        private ProcessStartInfo _startInfo;
+        private bool _pipe;
 
         public ShellInstance(
             string cmd,
             ILogger<Shell> logger
         )
         {
-            this.cmd = cmd;
-            this.logger = logger;
-            startInfo = new ProcessStartInfo();
+            _cmd = cmd;
+            _logger = logger;
+            _startInfo = new ProcessStartInfo();
         }
 
         public IShellInstance Configure(ProcessStartInfo startInfo)
         {
-            this.startInfo = startInfo;
+            _startInfo = startInfo;
 
             return this;
         }
 
         public IShellInstance Pipe(bool pipe)
         {
-            this.pipe = pipe;
+            _pipe = pipe;
 
             return this;
         }
@@ -76,17 +76,17 @@ namespace Annium.Extensions.Shell
         {
             var process = new Process { EnableRaisingEvents = true };
 
-            process.StartInfo = startInfo;
+            process.StartInfo = _startInfo;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardInput = true;
             process.StartInfo.RedirectStandardOutput = true;
             process.StartInfo.RedirectStandardError = true;
 
-            var args = cmd.Split(' ');
+            var args = _cmd.Split(' ');
             process.StartInfo.FileName = args[0];
             process.StartInfo.Arguments = string.Join(" ", args.Skip(1));
 
-            logger.Trace($"shell: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+            _logger.Trace($"shell: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
 
             return process;
         }
@@ -105,63 +105,63 @@ namespace Annium.Extensions.Shell
             var registration = token.Register(() =>
             {
                 killed = true;
-                logger.Trace($"Kill process {GetCommand(process)} due token cancellation");
+                _logger.Trace($"Kill process {GetCommand(process)} due token cancellation");
                 try
                 {
                     process.Kill();
                 }
                 catch (Exception e)
                 {
-                    logger.Warn($"Kill process {GetCommand(process)} failed: {e}");
+                    _logger.Warn($"Kill process {GetCommand(process)} failed: {e}");
                 }
 
-                handleExit();
+                HandleExit();
             });
 
             process.Exited += (sender, e) =>
             {
                 registration.Dispose();
-                handleExit();
+                HandleExit();
             };
 
             process.Start();
 
-            if (pipe)
+            if (_pipe)
             {
                 Task.Run(() =>
                 {
-                    lock (consoleLock) pipeOut(process.StandardOutput);
+                    lock (_consoleLock) PipeOut(process.StandardOutput);
                 });
                 Task.Run(() =>
                 {
-                    lock (consoleLock) pipeOut(process.StandardError);
+                    lock (_consoleLock) PipeOut(process.StandardError);
                 });
-                Task.Run(() => pipeOut(process.StandardError));
+                Task.Run(() => PipeOut(process.StandardError));
             }
 
             return tcs;
 
-            void handleExit()
+            void HandleExit()
             {
                 if (exitHandled)
                     return;
                 exitHandled = true;
 
                 if (killed)
-                    tcs.SetCanceled();
+                    tcs!.SetCanceled();
                 else
-                    tcs.SetResult(GetResult(process));
+                    tcs!.SetResult(GetResult(process));
                 try
                 {
                     process.Dispose();
                 }
                 catch (Exception e)
                 {
-                    logger.Warn($"Process.Dispose() failed: {e}");
+                    _logger.Warn($"Process.Dispose() failed: {e}");
                 }
             }
 
-            static void pipeOut(StreamReader src)
+            static void PipeOut(StreamReader src)
             {
                 while (!src.EndOfStream)
                     Console.Write((char) src.Read());
@@ -170,12 +170,12 @@ namespace Annium.Extensions.Shell
 
         private ShellResult GetResult(Process process)
         {
-            var output = read(process.StandardOutput);
-            var error = read(process.StandardError);
+            var output = Read(process.StandardOutput);
+            var error = Read(process.StandardError);
 
             return new ShellResult(process.ExitCode, output, error);
 
-            static string read(StreamReader src)
+            static string Read(StreamReader src)
             {
                 var sb = new StringBuilder();
                 string? line;

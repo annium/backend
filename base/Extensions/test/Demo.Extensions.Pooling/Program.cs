@@ -47,7 +47,7 @@ namespace Demo.Extensions.Pooling
 
             void Log(string message)
             {
-                lock (logs) logs.Add(message);
+                lock (logs!) logs.Add(message);
             }
 
             var cache = new ObjectCache<uint, Item>(
