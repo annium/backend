@@ -15,6 +15,6 @@
         <ProjectReference Include="../Annium.Serialization.Abstractions/Annium.Serialization.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="MessagePack" Version="2.1.115" />
+        <PackageReference Include="MessagePack" Version="2.1.152" />
     </ItemGroup>
 </Project>
