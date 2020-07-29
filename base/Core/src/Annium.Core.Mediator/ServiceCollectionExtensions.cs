@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.Mediator;
+using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -8,11 +9,12 @@ namespace Annium.Core.DependencyInjection
     {
         public static IServiceCollection AddMediatorConfiguration(
             this IServiceCollection services,
-            Action<MediatorConfiguration> configure
+            Action<MediatorConfiguration, ITypeManager> configure
         )
         {
             var cfg = new MediatorConfiguration();
-            configure(cfg);
+            var typeManager = services.BuildServiceProvider().GetRequiredService<ITypeManager>();
+            configure(cfg, typeManager);
 
             services.AddSingleton(cfg);
             foreach (var handler in cfg.Handlers)
