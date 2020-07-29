@@ -17,7 +17,10 @@ namespace Annium.Core.Runtime.Types
             Assembly assembly
         )
         {
-            _dependencyContext = DependencyContext.Load(assembly);
+            _dependencyContext = DependencyContext.Load(assembly) ??
+                throw new InvalidOperationException(
+                    $"Assembly {assembly} seems to have no {nameof(DependencyContext)}"
+                );
             _loadContext = AssemblyLoadContext.GetLoadContext(assembly)!;
         }
 
