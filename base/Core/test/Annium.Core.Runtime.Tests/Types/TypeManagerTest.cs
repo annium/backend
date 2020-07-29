@@ -12,7 +12,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void CanResolve_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
 
             // assert
             manager.HasImplementations(typeof(A)).IsTrue();
@@ -25,7 +25,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void GetImplementations_ForAncestors_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
 
             var implementations = manager.GetImplementations(typeof(A));
 
@@ -39,7 +39,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void GetImplementations_ForGenericInterfaceDefinitions_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
 
             var implementations = manager.GetImplementations(typeof(IGenericInterface<,>));
 
@@ -54,7 +54,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void GetImplementations_ForGenericClassDefinitions_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
 
             var implementations = manager.GetImplementations(typeof(GenericClass<,>));
 
@@ -69,7 +69,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void ResolveBySignature_FromInstance_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             var value = new { ForB = 5 };
 
             // act
@@ -83,7 +83,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void ResolveBySignature_FromSignature_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
 
             // act
             var result = manager.ResolveBySignature(new[] { nameof(B.ForB) }, typeof(A), true);
@@ -96,7 +96,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void ResolveByKey_NoDescendants_Throws()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             var key = "key";
 
             // assert
@@ -107,7 +107,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void ResolveByKey_Ambiguity_Throws()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             var key = "F";
 
             // assert
@@ -118,7 +118,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void ResolveByKey_Normally_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             var key = "E";
 
             // act
@@ -132,7 +132,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void Resolve_BySignature_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             object source = new B();
 
             // act
@@ -146,7 +146,7 @@ namespace Annium.Core.Runtime.Tests.Types
         public void Resolve_ByKey_Works()
         {
             // arrange
-            var manager = TypeManager.Instance;
+            var manager = GetTypeManager();
             object source = new E();
 
             // act
@@ -155,6 +155,8 @@ namespace Annium.Core.Runtime.Tests.Types
             // assert
             result.IsEqual(typeof(E));
         }
+
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance();
 
         private class A
         {
