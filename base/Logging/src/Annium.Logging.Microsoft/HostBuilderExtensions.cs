@@ -1,4 +1,3 @@
-using Annium.Core.DependencyInjection;
 using Annium.Logging.Microsoft;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +11,6 @@ namespace Microsoft.Extensions.Hosting
         )
         {
             return builder
-                .ConfigureServices(services => services.AddRuntimeTools())
                 .ConfigureLogging((ctx, logging) =>
                 {
                     logging.ClearProviders();
