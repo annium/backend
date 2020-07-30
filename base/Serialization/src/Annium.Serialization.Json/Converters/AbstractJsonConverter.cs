@@ -12,6 +12,15 @@ namespace Annium.Serialization.Json.Converters
 {
     internal class AbstractJsonConverter<T> : JsonConverter<T>
     {
+        private readonly ITypeManager _typeManager;
+
+        public AbstractJsonConverter(
+            ITypeManager typeManager
+        )
+        {
+            _typeManager = typeManager;
+        }
+
         public override T Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
@@ -42,7 +51,7 @@ namespace Annium.Serialization.Json.Converters
             JsonSerializerOptions options
         )
         {
-            var resolutionKeyProperty = TypeManager.Instance.GetResolutionKeyProperty(baseType);
+            var resolutionKeyProperty = _typeManager.GetResolutionKeyProperty(baseType);
 
             return resolutionKeyProperty is null
                 ? ResolveTypeBySignature(root, baseType)
@@ -61,7 +70,7 @@ namespace Annium.Serialization.Json.Converters
                 throw new SerializationException(Error(baseType, "key property is missing"));
 
             var key = JsonSerializer.Deserialize(keyElement.GetRawText(), resolutionKeyProperty.PropertyType, options);
-            var type = TypeManager.Instance.ResolveByKey(key, baseType);
+            var type = _typeManager.ResolveByKey(key, baseType);
             if (type is null)
                 throw new SerializationException(Error(baseType, $"no match for key {key}"));
 
@@ -75,13 +84,14 @@ namespace Annium.Serialization.Json.Converters
         {
             var properties = root.EnumerateObject().Select(p => p.Name).ToArray();
 
-            var type = TypeManager.Instance.ResolveBySignature(properties, baseType);
+            var type = _typeManager.ResolveBySignature(properties, baseType);
             if (type is null)
                 throw new SerializationException(Error(baseType, "no matches by signature"));
 
             return type;
         }
 
-        private string Error(Type baseType, string message) => $"Can't resolve concrete type definition for '{baseType}': {message}";
+        private string Error(Type baseType, string message) =>
+            $"Can't resolve concrete type definition for '{baseType}': {message}";
     }
 }

@@ -10,6 +10,15 @@ namespace Annium.Serialization.Json.Converters
 {
     internal class AbstractJsonConverterFactory : JsonConverterFactory
     {
+        private readonly ITypeManager _typeManager;
+
+        public AbstractJsonConverterFactory(
+            ITypeManager typeManager
+        )
+        {
+            _typeManager = typeManager;
+        }
+
         public override bool CanConvert(Type objectType)
         {
             // if object type is not interface and object type is not abstract class
@@ -18,18 +27,22 @@ namespace Annium.Serialization.Json.Converters
 
             // if implements IEnumerable - likely will be serialized as Json Array, so not suitable for type resolution
             if (objectType.GetInterfaces().Any(
-                x => x == typeof(IEnumerable) || (x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                x => x == typeof(IEnumerable) ||
+                    (x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
             ))
                 return false;
 
-            return TypeManager.Instance.HasImplementations(
+            return _typeManager.HasImplementations(
                 objectType.IsGenericType ? objectType.GetGenericTypeDefinition() : objectType
             );
         }
 
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            return (JsonConverter) Activator.CreateInstance(typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert))!;
+            return (JsonConverter) Activator.CreateInstance(
+                typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert),
+                _typeManager
+            )!;
         }
     }
 }

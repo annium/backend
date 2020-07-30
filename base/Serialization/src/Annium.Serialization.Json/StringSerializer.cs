@@ -1,19 +1,11 @@
 using System;
 using System.Text.Json;
-using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json
 {
     public class StringSerializer : ISerializer<string>
     {
-        static StringSerializer()
-        {
-            Default = new StringSerializer(new JsonSerializerOptions().ConfigureDefault());
-        }
-
-        public static ISerializer<string> Default { get; }
-
         public static ISerializer<string> Configure(Action<JsonSerializerOptions> configure)
         {
             var options = new JsonSerializerOptions();
@@ -22,31 +14,31 @@ namespace Annium.Serialization.Json
             return new StringSerializer(options);
         }
 
-        private readonly JsonSerializerOptions options;
+        private readonly JsonSerializerOptions _options;
 
         private StringSerializer(JsonSerializerOptions options)
         {
-            this.options = options;
+            this._options = options;
         }
 
         public T Deserialize<T>(string value)
         {
-            return JsonSerializer.Deserialize<T>(value, options);
+            return JsonSerializer.Deserialize<T>(value, _options);
         }
 
         public object Deserialize(Type type, string value)
         {
-            return JsonSerializer.Deserialize(value, type, options);
+            return JsonSerializer.Deserialize(value, type, _options);
         }
 
         public string Serialize<T>(T value)
         {
-            return JsonSerializer.Serialize(value, options);
+            return JsonSerializer.Serialize(value, _options);
         }
 
         public string Serialize(object value)
         {
-            return JsonSerializer.Serialize(value, options);
+            return JsonSerializer.Serialize(value, _options);
         }
     }
 }

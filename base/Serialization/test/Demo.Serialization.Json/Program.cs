@@ -1,8 +1,9 @@
 using System;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
-using Annium.Serialization.Json.Tests;
 using Annium.Serialization.Json.Tests.Converters;
 
 namespace Demo.Serialization.Json
@@ -15,7 +16,9 @@ namespace Demo.Serialization.Json
             CancellationToken token
         )
         {
-            var serializer = StringSerializer.Default;
+            var serializer = StringSerializer.Configure(
+                opts => opts.ConfigureDefault(TypeManager.GetInstance(typeof(Program).Assembly))
+            );
 
             KeyBase a = new KeyChildA { Value = 1 };
             KeyBase b = new KeyChildB { Value = 2 };

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json.Tests.Converters.GenericDictionaryConverter;
 using Annium.Testing;
@@ -75,7 +77,9 @@ namespace Annium.Serialization.Json.Tests.Converters
             result.At(key).IsEqual(value);
         }
 
-        private ISerializer<string> GetSerializer() => StringSerializer.Default;
+        private ISerializer<string> GetSerializer() => StringSerializer.Configure(
+            opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly))
+        );
     }
 
     namespace GenericDictionaryConverter

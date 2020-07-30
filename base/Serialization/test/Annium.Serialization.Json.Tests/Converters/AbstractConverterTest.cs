@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
@@ -150,7 +151,9 @@ namespace Annium.Serialization.Json.Tests.Converters
             data.At(1).As<KeyChildB>().Value.IsEqual(2);
         }
 
-        private ISerializer<string> GetSerializer() => StringSerializer.Default;
+        private ISerializer<string> GetSerializer() => StringSerializer.Configure(
+            opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly))
+        );
     }
 
     public abstract class Base
@@ -169,8 +172,7 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBase
     {
-        [ResolutionKey]
-        public char Type { get; set; }
+        [ResolutionKey] public char Type { get; set; }
     }
 
     [ResolutionKeyValue('a')]
@@ -211,8 +213,7 @@ namespace Annium.Serialization.Json.Tests.Converters
 
     public abstract class KeyBaseContainer<T>
     {
-        [ResolutionKey]
-        public char Type { get; set; }
+        [ResolutionKey] public char Type { get; set; }
     }
 
     [ResolutionKeyValue('a')]
