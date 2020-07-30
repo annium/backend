@@ -7,12 +7,14 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddRuntimeTools(
+        public static IServiceCollection AddRuntimeTools(
             this IServiceCollection services,
             Assembly assembly
         )
         {
             services.AddSingleton(TypeManager.GetInstance(assembly));
+
+            return services;
         }
 
         public static IServiceCollection AddResourceLoader(this IServiceCollection services)

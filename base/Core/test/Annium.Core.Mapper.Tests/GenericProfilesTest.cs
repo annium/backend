@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper(Type profileType) => new ServiceCollection()
+            .AddRuntimeTools(Assembly.GetCallingAssembly())
             .AddMapper(autoload: false)
             .AddProfile(profileType)
             .BuildServiceProvider()

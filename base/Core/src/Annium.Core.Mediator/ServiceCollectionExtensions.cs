@@ -16,11 +16,18 @@ namespace Annium.Core.DependencyInjection
             var typeManager = services.BuildServiceProvider().GetRequiredService<ITypeManager>();
             configure(cfg, typeManager);
 
-            services.AddSingleton(cfg);
-            foreach (var handler in cfg.Handlers)
-                services.AddScoped(handler.Implementation);
+            return services.AddMediatorConfiguration(cfg);
+        }
 
-            return services;
+        public static IServiceCollection AddMediatorConfiguration(
+            this IServiceCollection services,
+            Action<MediatorConfiguration> configure
+        )
+        {
+            var cfg = new MediatorConfiguration();
+            configure(cfg);
+
+            return services.AddMediatorConfiguration(cfg);
         }
 
         public static IServiceCollection AddMediator(this IServiceCollection services)
@@ -28,6 +35,18 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<Mediator.Internal.ChainBuilder>();
             services.AddSingleton<Mediator.Internal.NextBuilder>();
             services.AddSingleton<IMediator, Mediator.Internal.Mediator>();
+
+            return services;
+        }
+
+        private static IServiceCollection AddMediatorConfiguration(
+            this IServiceCollection services,
+            MediatorConfiguration cfg
+        )
+        {
+            services.AddSingleton(cfg);
+            foreach (var handler in cfg.Handlers)
+                services.AddScoped(handler.Implementation);
 
             return services;
         }

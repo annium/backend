@@ -19,7 +19,7 @@ namespace Annium.Core.DependencyInjection
             // register base services
             services.AddSingleton<IRepacker, Repacker>();
             services.AddSingleton<IMapBuilder, MapBuilder>();
-            services.AddSingleton<IMapper, MapperInstance>();
+            services.AddSingleton<IMapper, Mapper.Internal.Mapper>();
 
             // register resolvers
             services.AddAllTypes()

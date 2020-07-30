@@ -3,11 +3,11 @@ using System.Reflection;
 
 namespace Annium.Core.Mapper.Internal
 {
-    internal class MapperInstance : IMapper
+    internal class Mapper : IMapper
     {
         private readonly IMapBuilder _mapBuilder;
 
-        public MapperInstance(IMapBuilder mapBuilder)
+        public Mapper(IMapBuilder mapBuilder)
         {
             _mapBuilder = mapBuilder;
         }

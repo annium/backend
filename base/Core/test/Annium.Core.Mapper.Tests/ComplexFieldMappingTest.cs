@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
@@ -55,6 +56,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper() => new ServiceCollection()
+            .AddRuntimeTools(Assembly.GetCallingAssembly())
             .AddMapper(autoload: false)
             .AddProfile(ConfigureProfile)
             .BuildServiceProvider()

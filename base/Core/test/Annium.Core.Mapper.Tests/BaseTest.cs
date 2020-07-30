@@ -1,3 +1,4 @@
+using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -99,6 +100,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper() => new ServiceCollection()
+            .AddRuntimeTools(Assembly.GetCallingAssembly())
             .AddMapper(autoload: false)
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();

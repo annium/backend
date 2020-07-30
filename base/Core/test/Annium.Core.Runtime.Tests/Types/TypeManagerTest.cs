@@ -156,7 +156,7 @@ namespace Annium.Core.Runtime.Tests.Types
             result.IsEqual(typeof(E));
         }
 
-        private ITypeManager GetTypeManager() => TypeManager.GetInstance();
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
 
         private class A
         {
@@ -174,8 +174,7 @@ namespace Annium.Core.Runtime.Tests.Types
 
         private class D
         {
-            [ResolutionKey]
-            public string Type { get; }
+            [ResolutionKey] public string Type { get; }
 
             protected D(string type)
             {

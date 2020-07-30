@@ -1,5 +1,6 @@
 using System;
 using System.Linq.Expressions;
+using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,6 +102,7 @@ namespace Annium.Core.Mapper.Tests
         private Func<S, R> Repack<S, R>(Expression<Func<S, R>> ex)
         {
             var repacker = new ServiceCollection()
+                .AddRuntimeTools(Assembly.GetCallingAssembly())
                 .AddMapper(false)
                 .BuildServiceProvider()
                 .GetRequiredService<IRepacker>();

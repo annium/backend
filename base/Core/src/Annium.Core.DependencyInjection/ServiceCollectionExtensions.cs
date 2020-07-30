@@ -3,6 +3,7 @@ using System.Reflection;
 using Annium.Core.DependencyInjection.Internal;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -26,5 +27,15 @@ namespace Annium.Core.DependencyInjection
 
         public static IRegistrationBuilder Add(this IServiceCollection services, params Type[] types)
             => new RegistrationBuilder(services, types);
+
+        public static IServiceCollection Clone(this IServiceCollection services)
+        {
+            var clone = new ServiceCollection();
+
+            foreach (var descriptor in services)
+                clone.Add(descriptor);
+
+            return clone;
+        }
     }
 }
