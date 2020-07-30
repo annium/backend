@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +13,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             var services = new ServiceCollection();
 
+            services.AddRuntimeTools(Assembly.GetCallingAssembly());
             services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
 
             services.AddLogging(route => route.UseInMemory());
