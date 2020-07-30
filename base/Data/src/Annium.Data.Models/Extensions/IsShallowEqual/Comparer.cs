@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Annium.Core.Mapper;
 
 namespace Annium.Data.Models.Extensions
 {
     public static partial class IsShallowEqualExtensions
     {
-        private static LambdaExpression BuildComparer(Type type)
+        private static LambdaExpression BuildComparer(Type type, IMapper mapper)
         {
             // if Equality operator is overriden - return it's call
             var equalityOperatorMethod = ResolveEqualityOperatorMethod(type);
@@ -22,13 +23,13 @@ namespace Annium.Data.Models.Extensions
 
             // generic collections
             if (type.GetInterfaces().Any(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)))
-                return BuildGenericEnumerableComparer(type);
+                return BuildGenericEnumerableComparer(type, mapper);
 
             // non-generic collections
             if (type.GetInterfaces().Any(x => x == typeof(IEnumerable)))
-                return BuildNonGenericEnumerableComparer(type);
+                return BuildNonGenericEnumerableComparer(type, mapper);
 
-            return BuildPropertyFieldComparer(type);
+            return BuildPropertyFieldComparer(type, mapper);
         }
 
         private static IEnumerable<Expression> AddReferenceEqualityChecks(

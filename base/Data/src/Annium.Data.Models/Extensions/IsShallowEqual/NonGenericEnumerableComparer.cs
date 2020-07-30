@@ -1,16 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using Annium.Core.Mapper;
 
 namespace Annium.Data.Models.Extensions
 {
     public static partial class IsShallowEqualExtensions
     {
-        private static LambdaExpression BuildNonGenericEnumerableComparer(Type type)
+        private static LambdaExpression BuildNonGenericEnumerableComparer(Type type, IMapper mapper)
         {
             var a = Expression.Parameter(type);
             var b = Expression.Parameter(type);
+            var m = Expression.Constant(mapper);
             var parameters = new[] { a, b };
 
             var returnTarget = Expression.Label(typeof(bool));
@@ -36,7 +39,9 @@ namespace Annium.Data.Models.Extensions
             expressions.Add(Expression.Assign(enumeratorAVar, Expression.Call(a, getEnumerator)));
             expressions.Add(Expression.Assign(enumeratorBVar, Expression.Call(b, getEnumerator)));
 
-            var comparerMethod = typeof(IsShallowEqualExtensions).GetMethod(nameof(IsShallowEqual))!.MakeGenericMethod(typeof(object), typeof(object));
+            var comparerMethod = typeof(IsShallowEqualExtensions).GetMethods()
+                .Single(x => x.GetParameters().Length == 3)
+                .MakeGenericMethod(typeof(object), typeof(object));
 
             var breakLabel = Expression.Label(typeof(void));
             expressions.Add(Expression.Loop(
@@ -56,7 +61,8 @@ namespace Annium.Data.Models.Extensions
                             null,
                             comparerMethod,
                             Expression.Property(enumeratorAVar, current),
-                            Expression.Property(enumeratorBVar, current)
+                            Expression.Property(enumeratorBVar, current),
+                            m
                         )),
                         Expression.Return(returnTarget, Expression.Constant(false))
                     )

@@ -21,6 +21,13 @@ namespace Annium.Data.Models.Extensions
 
         public static bool IsShallowEqual<T, D>(this T value, D data)
         {
+            var mapper = Mapper.GetFor(Assembly.GetCallingAssembly());
+
+            return value.IsShallowEqual(data, mapper);
+        }
+
+        public static bool IsShallowEqual<T, D>(this T value, D data, IMapper mapper)
+        {
             var type = typeof(D);
 
             if (type.IsClass)
@@ -46,13 +53,13 @@ namespace Annium.Data.Models.Extensions
             if (type == typeof(object))
                 return true;
 
-            var comparable = Mapper.Map(value!, type);
+            var comparable = mapper.Map(value!, type);
 
             lock (Locker)
             {
                 try
                 {
-                    ResolveComparer(type);
+                    ResolveComparer(type, mapper);
                 }
                 finally
                 {
@@ -73,15 +80,15 @@ namespace Annium.Data.Models.Extensions
             }
         }
 
-        private static LambdaExpression ResolveComparer(Type type)
+        private static LambdaExpression ResolveComparer(Type type, IMapper mapper)
         {
             if (RawComparers.TryGetValue(type, out var comparer))
                 return comparer;
 
             if (!ComparersInProgress.Add(type))
-                return BuildExtensionCallComparer(type);
+                return BuildExtensionCallComparer(type, mapper);
 
-            comparer = RawComparers[type] = BuildComparer(type);
+            comparer = RawComparers[type] = BuildComparer(type, mapper);
             ComparersInProgress.Remove(type);
 
             Comparers[type] = comparer.Compile();

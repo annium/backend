@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Annium.Core.Mapper;
 using Annium.Core.Reflection;
 
 namespace Annium.Data.Models.Extensions
 {
     public static partial class IsShallowEqualExtensions
     {
-        private static LambdaExpression BuildPropertyFieldComparer(Type type)
+        private static LambdaExpression BuildPropertyFieldComparer(Type type, IMapper mapper)
         {
             var a = Expression.Parameter(type);
             var b = Expression.Parameter(type);
@@ -41,7 +42,7 @@ namespace Annium.Data.Models.Extensions
 
             void RegisterMember(Type memberType, MemberExpression ax, MemberExpression bx)
             {
-                var comparer = ResolveComparer(memberType);
+                var comparer = ResolveComparer(memberType, mapper);
                 var comparerVar = Expression.Variable(comparer.Type);
 
                 vars.Add(comparerVar);

@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Annium.Core.Mapper;
 using Annium.Core.Reflection;
 
 namespace Annium.Data.Models.Extensions
 {
     public static partial class IsShallowEqualExtensions
     {
-        private static LambdaExpression BuildGenericEnumerableComparer(Type type)
+        private static LambdaExpression BuildGenericEnumerableComparer(Type type, IMapper mapper)
         {
             var elementType = type.GetTargetImplementation(typeof(IEnumerable<>))!.GenericTypeArguments[0];
 
@@ -41,7 +42,7 @@ namespace Annium.Data.Models.Extensions
 
             var comparerVar = Expression.Variable(typeof(Func<,,>).MakeGenericType(elementType, elementType, typeof(bool)));
             vars.Add(comparerVar);
-            expressions.Add(Expression.Assign(comparerVar, ResolveComparer(elementType)));
+            expressions.Add(Expression.Assign(comparerVar, ResolveComparer(elementType, mapper)));
 
             var breakLabel = Expression.Label(typeof(void));
             expressions.Add(Expression.Loop(
