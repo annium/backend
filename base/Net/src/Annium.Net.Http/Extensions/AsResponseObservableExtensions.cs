@@ -45,18 +45,18 @@ namespace Annium.Net.Http
 
         private static IObservable<IHttpResponse<T>> ToResponseObservable<T>(
             this IHttpRequest request,
-            Func<HttpContent, Task<T>> parseAsync
+            Func<IHttpRequest, HttpContent, Task<T>> parseAsync
         ) => Observable.FromAsync(async () =>
         {
             var response = await request.RunAsync();
-            var data = await parseAsync(response.Content);
+            var data = await parseAsync(request, response.Content);
 
             return new HttpResponse<T>(response, data);
         });
 
         private static IObservable<IHttpResponse<T>> ToResponseObservable<T>(
             this IHttpRequest request,
-            Func<HttpContent, T, Task<T>> parseAsync,
+            Func<IHttpRequest, HttpContent, T, Task<T>> parseAsync,
             T defaultValue
         ) => Observable.FromAsync(async () =>
         {
@@ -72,7 +72,7 @@ namespace Annium.Net.Http
 
             try
             {
-                var data = await parseAsync(response.Content, defaultValue);
+                var data = await parseAsync(request, response.Content, defaultValue);
 
                 return new HttpResponse<T>(response, data);
             }

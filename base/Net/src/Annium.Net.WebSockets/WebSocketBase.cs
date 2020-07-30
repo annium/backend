@@ -20,9 +20,9 @@ namespace Annium.Net.WebSockets
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
-        private readonly ISerializer<byte[]> serializer;
-        private readonly UTF8Encoding encoding = new UTF8Encoding();
-        private readonly IObservable<SocketData> socketObservable;
+        private readonly ISerializer<byte[]> _serializer;
+        private readonly UTF8Encoding _encoding = new UTF8Encoding();
+        private readonly IObservable<SocketData> _socketObservable;
 
         internal WebSocketBase(
             TNativeSocket socket,
@@ -30,28 +30,28 @@ namespace Annium.Net.WebSockets
         )
         {
             Socket = socket;
-            this.serializer = serializer;
-            socketObservable = CreateSocketObservable();
+            this._serializer = serializer;
+            _socketObservable = CreateSocketObservable();
         }
 
         public IObservable<int> Send<T>(T data, CancellationToken token) =>
-            Send(encoding.GetString(serializer.Serialize(data)), token);
+            Send(_encoding.GetString(_serializer.Serialize(data)), token);
 
         public IObservable<int> Send(string data, CancellationToken token) =>
-            Send(encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
+            Send(_encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
 
         public IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
             Send(data, WebSocketMessageType.Binary, token);
 
-        public IObservable<T> Listen<T>() where T : notnull => socketObservable
+        public IObservable<T> Listen<T>() where T : notnull => _socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
-            .Select(x => serializer.Deserialize<T>(x.Data.ToArray()));
+            .Select(x => _serializer.Deserialize<T>(x.Data.ToArray()));
 
-        public IObservable<string> ListenText() => socketObservable
+        public IObservable<string> ListenText() => _socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
-            .Select(x => encoding.GetString(x.Data.Span));
+            .Select(x => _encoding.GetString(x.Data.Span));
 
-        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => socketObservable
+        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => _socketObservable
             .Where(x => x.Type == WebSocketMessageType.Binary)
             .Select(x => x.Data);
 

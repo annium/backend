@@ -3,6 +3,9 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
+using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace Annium.Net.WebSockets.DemoServer
@@ -33,7 +36,9 @@ namespace Annium.Net.WebSockets.DemoServer
                 return;
             }
 
-            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), Serializers.Json);
+            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+            var serializer = ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
+            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), serializer);
 
             if (path == "/ws/echo")
                 await Echo(ws);

@@ -8,40 +8,40 @@ namespace Annium.Net.Http.Internal
 {
     internal static class Parse
     {
-        public static Task<string> String(HttpContent x) =>
-            x.ReadAsStringAsync();
+        public static Task<string> String(IHttpRequest request, HttpContent content) =>
+            content.ReadAsStringAsync();
 
-        public static Task<string> String(HttpContent x, string _) =>
-            x.ReadAsStringAsync();
+        public static Task<string> String(IHttpRequest request, HttpContent content, string _) =>
+            content.ReadAsStringAsync();
 
-        public static async Task<ReadOnlyMemory<byte>> Memory(HttpContent x) =>
-            new ReadOnlyMemory<byte>(await x.ReadAsByteArrayAsync());
+        public static async Task<ReadOnlyMemory<byte>> Memory(IHttpRequest request, HttpContent content) =>
+            new ReadOnlyMemory<byte>(await content.ReadAsByteArrayAsync());
 
-        public static async Task<ReadOnlyMemory<byte>> Memory(HttpContent x, ReadOnlyMemory<byte> _) =>
-            new ReadOnlyMemory<byte>(await x.ReadAsByteArrayAsync());
+        public static async Task<ReadOnlyMemory<byte>> Memory(IHttpRequest request, HttpContent content, ReadOnlyMemory<byte> _) =>
+            new ReadOnlyMemory<byte>(await content.ReadAsByteArrayAsync());
 
-        public static Task<Stream> Stream(HttpContent x) =>
-            x.ReadAsStreamAsync();
+        public static Task<Stream> Stream(IHttpRequest request, HttpContent content) =>
+            content.ReadAsStreamAsync();
 
-        public static Task<Stream> Stream(HttpContent x, Stream _) =>
-            x.ReadAsStreamAsync();
+        public static Task<Stream> Stream(IHttpRequest request, HttpContent content, Stream _) =>
+            content.ReadAsStreamAsync();
 
-        public static Task<T> T<T>(HttpContent x) =>
-            x.ParseAsync<T>();
+        public static Task<T> T<T>(IHttpRequest request, HttpContent content) =>
+            request.ParseAsync<T>(content);
 
-        public static Task<T> T<T>(HttpContent x, T defaultValue) =>
-            x.ParseAsync<T>(defaultValue);
+        public static Task<T> T<T>(IHttpRequest request, HttpContent content, T defaultValue) =>
+            request.ParseAsync(content, defaultValue);
 
-        public static Task<IResult> Result(HttpContent x) =>
-            x.ParseAsync<IResult>();
+        public static Task<IResult> Result(IHttpRequest request, HttpContent content) =>
+            request.ParseAsync<IResult>(content);
 
-        public static Task<IResult> Result(HttpContent x, IResult defaultValue) =>
-            x.ParseAsync<IResult>(defaultValue);
+        public static Task<IResult> Result(IHttpRequest request, HttpContent content, IResult defaultValue) =>
+            request.ParseAsync(content, defaultValue);
 
-        public static Task<IResult<T>> ResultT<T>(HttpContent x) =>
-            x.ParseAsync<IResult<T>>();
+        public static Task<IResult<T>> ResultT<T>(IHttpRequest request, HttpContent content) =>
+            request.ParseAsync<IResult<T>>(content);
 
-        public static Task<IResult<T>> ResultT<T>(HttpContent x, IResult<T> defaultValue) =>
-            x.ParseAsync<IResult<T>>(defaultValue);
+        public static Task<IResult<T>> ResultT<T>(IHttpRequest request, HttpContent content, IResult<T> defaultValue) =>
+            request.ParseAsync(content, defaultValue);
     }
 }

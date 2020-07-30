@@ -40,7 +40,10 @@ namespace Annium.Net.Http
         public static IObservable<T> AsObservable<T>(this IHttpRequest request, T defaultValue) =>
             request.ToObservable(Parse.T<T>, defaultValue);
 
-        private static IObservable<T> ToObservable<T>(this IHttpRequest request, Func<HttpContent, Task<T>> parseAsync) =>
+        private static IObservable<T> ToObservable<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, Task<T>> parseAsync
+        ) =>
             Observable.FromAsync(async () =>
             {
                 if (!request.IsEnsuringSuccess)
@@ -48,10 +51,14 @@ namespace Annium.Net.Http
 
                 var response = await request.RunAsync();
 
-                return await parseAsync(response.Content);
+                return await parseAsync(request, response.Content);
             });
 
-        private static IObservable<T> ToObservable<T>(this IHttpRequest request, Func<HttpContent, T, Task<T>> parseAsync, T defaultValue) =>
+        private static IObservable<T> ToObservable<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, T, Task<T>> parseAsync,
+            T defaultValue
+        ) =>
             Observable.FromAsync(async () =>
             {
                 try
@@ -61,7 +68,7 @@ namespace Annium.Net.Http
 
                     var response = await request.RunAsync();
 
-                    return await parseAsync(response.Content, defaultValue);
+                    return await parseAsync(request, response.Content, defaultValue);
                 }
                 catch
                 {

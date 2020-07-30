@@ -1,7 +1,6 @@
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
-using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http
 {
@@ -9,7 +8,7 @@ namespace Annium.Net.Http
     {
         public static IHttpRequest JsonContent<T>(this IHttpRequest request, T data)
         {
-            var content = Serializers.Json.Serialize(data);
+            var content = request.ContentSerializer.Serialize(MediaTypeNames.Application.Json, data);
 
             return request.Attach(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
         }

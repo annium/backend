@@ -46,16 +46,23 @@ namespace Annium.Net.Http
         public static Task<IHttpResponse<T>> AsResponseAsync<T>(this IHttpRequest request, T defaultValue) =>
             request.ToResponseAsync(Parse.T, defaultValue);
 
-        private static async Task<IHttpResponse<T>> ToResponseAsync<T>(this IHttpRequest request, Func<HttpContent, Task<T>> parseAsync)
+        private static async Task<IHttpResponse<T>> ToResponseAsync<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, Task<T>> parseAsync
+        )
         {
             var response = await request.RunAsync();
 
-            var data = await parseAsync(response.Content);
+            var data = await parseAsync(request, response.Content);
 
             return new HttpResponse<T>(response, data);
         }
 
-        private static async Task<IHttpResponse<T>> ToResponseAsync<T>(this IHttpRequest request, Func<HttpContent, T, Task<T>> parseAsync, T defaultValue)
+        private static async Task<IHttpResponse<T>> ToResponseAsync<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, T, Task<T>> parseAsync,
+            T defaultValue
+        )
         {
             IHttpResponse response;
             try
@@ -69,7 +76,7 @@ namespace Annium.Net.Http
 
             try
             {
-                var data = await parseAsync(response.Content, defaultValue);
+                var data = await parseAsync(request, response.Content, defaultValue);
 
                 return new HttpResponse<T>(response, data);
             }

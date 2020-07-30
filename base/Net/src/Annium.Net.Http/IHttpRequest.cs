@@ -12,6 +12,7 @@ namespace Annium.Net.Http
         IReadOnlyDictionary<string, string> Params { get; }
         HttpContent? Content { get; }
         bool IsEnsuringSuccess { get; }
+        IHttpContentSerializer ContentSerializer { get; }
         IHttpRequest Base(Uri baseUri);
         IHttpRequest Base(string baseUri);
         IHttpRequest UseClient(HttpClient client);

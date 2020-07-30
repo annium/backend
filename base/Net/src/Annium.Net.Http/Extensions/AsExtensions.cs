@@ -45,17 +45,24 @@ namespace Annium.Net.Http
         public static Task<T> AsAsync<T>(this IHttpRequest request, T defaultValue) =>
             request.ToAsync(Parse.T<T>, defaultValue);
 
-        private static async Task<T> ToAsync<T>(this IHttpRequest request, Func<HttpContent, Task<T>> parseAsync)
+        private static async Task<T> ToAsync<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, Task<T>> parseAsync
+        )
         {
             if (!request.IsEnsuringSuccess)
                 request.EnsureSuccessStatusCode();
 
             var response = await request.RunAsync();
 
-            return await parseAsync(response.Content);
+            return await parseAsync(request, response.Content);
         }
 
-        private static async Task<T> ToAsync<T>(this IHttpRequest request, Func<HttpContent, T, Task<T>> parseAsync, T defaultValue)
+        private static async Task<T> ToAsync<T>(
+            this IHttpRequest request,
+            Func<IHttpRequest, HttpContent, T, Task<T>> parseAsync,
+            T defaultValue
+        )
         {
             try
             {
@@ -64,7 +71,7 @@ namespace Annium.Net.Http
 
                 var response = await request.RunAsync();
 
-                return await parseAsync(response.Content, defaultValue);
+                return await parseAsync(request, response.Content, defaultValue);
             }
             catch
             {

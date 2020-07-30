@@ -12,7 +12,11 @@ namespace Annium.Net.Http.Internal
 {
     internal partial class HttpRequest : IHttpRequest
     {
-        private delegate Task<IHttpResponse> Middleware(Func<Task<IHttpResponse>> next, IHttpRequest request, HttpRequestOptions options);
+        private delegate Task<IHttpResponse> Middleware(
+            Func<Task<IHttpResponse>> next,
+            IHttpRequest request,
+            HttpRequestOptions options
+        );
 
         private static readonly HttpClient DefaultClient = new HttpClient();
 
@@ -21,6 +25,7 @@ namespace Annium.Net.Http.Internal
         public IReadOnlyDictionary<string, string> Params => _parameters;
         public HttpContent? Content { get; private set; }
         public bool IsEnsuringSuccess => _getFailureMessage != null;
+        public IHttpContentSerializer ContentSerializer { get; }
         private HttpClient _client = DefaultClient;
         private Uri? _baseUri;
         private string? _uri;
@@ -29,18 +34,27 @@ namespace Annium.Net.Http.Internal
         private Func<IHttpResponse, Task<string>>? _getFailureMessage;
         private readonly IList<Middleware> _middlewares = new List<Middleware>();
 
-        internal HttpRequest(Uri baseUri) : this()
+        internal HttpRequest(
+            IHttpContentSerializer httpContentSerializer,
+            Uri baseUri
+        ) : this(
+            httpContentSerializer
+        )
         {
             _baseUri = baseUri;
         }
 
-        internal HttpRequest()
+        internal HttpRequest(
+            IHttpContentSerializer httpContentSerializer
+        )
         {
+            ContentSerializer = httpContentSerializer;
             using var message = new HttpRequestMessage();
             _headers = message.Headers;
         }
 
         private HttpRequest(
+            IHttpContentSerializer httpContentSerializer,
             HttpClient client,
             HttpMethod method,
             Uri? baseUri,
@@ -51,6 +65,7 @@ namespace Annium.Net.Http.Internal
             Func<IHttpResponse, Task<string>>? getFailureMessage
         )
         {
+            ContentSerializer = httpContentSerializer;
             _client = client;
             Method = method;
             _baseUri = baseUri;
@@ -120,7 +135,7 @@ namespace Annium.Net.Http.Internal
         }
 
         public IHttpRequest Clone() =>
-            new HttpRequest(_client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
+            new HttpRequest(ContentSerializer, _client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray());
