@@ -1,6 +1,7 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using System.Reflection;
 using System.Text.Json;
+using Annium.Core.Mapper;
 using Annium.Data.Models.Extensions;
 
 namespace Annium.Testing
@@ -29,7 +30,7 @@ namespace Annium.Testing
 
         public static void IsEqual<T, D>(this T value, D data, string message = "")
         {
-            if (!AreEqual(value, data))
+            if (!value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is not equal to {JsonSerializer.Serialize(data)}"
@@ -39,7 +40,7 @@ namespace Annium.Testing
 
         public static void IsNotEqual<T, D>(this T value, D data, string message = "")
         {
-            if (AreEqual(value, data))
+            if (value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is equal to {JsonSerializer.Serialize(data)}"
@@ -56,22 +57,38 @@ namespace Annium.Testing
 
         public static T IsDefault<T>(this T value, string message = "")
         {
-            value.IsEqual(default(T)!, message);
+            if (!value.IsShallowEqual(default(T)!, Mapper.GetFor(Assembly.GetCallingAssembly())))
+                throw new AssertionFailedException(
+                    string.IsNullOrEmpty(message)
+                        ? $"{JsonSerializer.Serialize(value)} is not default"
+                        : message
+                );
 
             return value;
         }
 
         public static T IsNotDefault<T>(this T value, string message = "")
         {
-            value.IsNotEqual(default(T)!, message);
+            if (value.IsShallowEqual(default(T)!, Mapper.GetFor(Assembly.GetCallingAssembly())))
+                throw new AssertionFailedException(
+                    string.IsNullOrEmpty(message)
+                        ? $"{JsonSerializer.Serialize(value)} is default"
+                        : message
+                );
 
             return value;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static bool AreEqual<T, D>(T value, D data)
+        public static void IsEqual<T, D>(this T value, D data, IMapper mapper, string message)
         {
-            return value.IsShallowEqual(data);
+            if (!value.IsShallowEqual(data, mapper))
+                throw new AssertionFailedException(message);
+        }
+
+        public static void IsNotEqual<T, D>(this T value, D data, IMapper mapper, string message)
+        {
+            if (value.IsShallowEqual(data, mapper))
+                throw new AssertionFailedException(message);
         }
     }
 }

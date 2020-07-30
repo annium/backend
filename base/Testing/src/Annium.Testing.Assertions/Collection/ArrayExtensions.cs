@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using Annium.Core.Mapper;
 
 namespace Annium.Testing
 {
@@ -21,7 +23,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Length;
-            total.IsEqual(count, $"Array expected to have `{count}` items, but has `{total}` items");
+            total.IsEqual(count, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Array expected to have `{count}` items, but has `{total}` items");
 
             return value;
         }
@@ -32,7 +34,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Length;
-            total.IsEqual(0, $"Array expected to be empty, but has `{total}` items");
+            total.IsEqual(0, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Array expected to be empty, but has `{total}` items");
 
             return value;
         }

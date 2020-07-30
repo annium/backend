@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
+using Annium.Core.Mapper;
 
 namespace Annium.Testing
 {
@@ -34,7 +36,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Count;
-            total.IsEqual(count, $"Dictionary expected to have `{count}` items, but has `{total}` items");
+            total.IsEqual(count, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Dictionary expected to have `{count}` items, but has `{total}` items");
 
             return value;
         }
@@ -46,7 +48,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Count;
-            total.IsEqual(count, $"Dictionary expected to have `{count}` items, but has `{total}` items");
+            total.IsEqual(count, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Dictionary expected to have `{count}` items, but has `{total}` items");
 
             return value;
         }
@@ -58,7 +60,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Count;
-            total.IsEqual(0, $"Dictionary expected to be empty, but has `{total}` items");
+            total.IsEqual(0, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Dictionary expected to be empty, but has `{total}` items");
 
             return value;
         }
@@ -70,7 +72,7 @@ namespace Annium.Testing
                 throw new ArgumentNullException(nameof(value));
 
             var total = value.Count;
-            total.IsEqual(0, $"Dictionary expected to be empty, but has `{total}` items");
+            total.IsEqual(0, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Dictionary expected to be empty, but has `{total}` items");
 
             return value;
         }
