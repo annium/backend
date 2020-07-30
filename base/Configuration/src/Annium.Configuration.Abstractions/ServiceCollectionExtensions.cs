@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Configuration.Abstractions;
+using Annium.Core.Mapper;
 using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -15,7 +17,10 @@ namespace Annium.Core.DependencyInjection
         )
             where T : class, new()
         {
-            var builder = new ConfigurationBuilder();
+            var serviceProvider = services.Clone().AddMapper().BuildServiceProvider();
+            var typeManager = serviceProvider.GetRequiredService<ITypeManager>();
+            var mapper = serviceProvider.GetRequiredService<IMapper>();
+            var builder = new ConfigurationBuilder(typeManager, mapper);
             configure(builder);
             var configuration = builder.Build<T>();
 
@@ -26,7 +31,7 @@ namespace Annium.Core.DependencyInjection
 
         private static void Register(IServiceCollection services, object cfg)
         {
-            services.AddSingleton(cfg);
+            services.AddSingleton(cfg.GetType(), cfg);
 
             var props = cfg.GetType().GetProperties()
                 .Where(x =>

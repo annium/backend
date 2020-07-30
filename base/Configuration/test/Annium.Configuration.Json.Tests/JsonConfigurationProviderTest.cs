@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
 using Annium.Testing;
 using Xunit;
@@ -22,7 +24,8 @@ namespace Annium.Configuration.Json.Tests
                 Array = new[] { 4, 7 },
                 Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
                 List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Dictionary = new Dictionary<string, Val>()
+                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
             };
@@ -31,13 +34,12 @@ namespace Annium.Configuration.Json.Tests
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, StringSerializer.Default.Serialize(cfg));
-
-                var builder = new ConfigurationBuilder();
-                builder.AddJsonFile(jsonFile);
+                var typeManager = TypeManager.GetInstance(GetType().Assembly);
+                var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
+                File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
                 // act
-                var result = builder.Build<Config>();
+                var result = Helper.BuildConfiguration<Config>(builder => builder.AddJsonFile(jsonFile));
 
                 // assert
                 result.IsNotDefault();

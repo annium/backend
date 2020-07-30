@@ -20,11 +20,8 @@ namespace Annium.Configuration.CommandLine.Tests
             args.AddRange("-nested.plain", "4");
             args.AddRange("-nested.array", "4", "-nested.array", "13");
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCommandLineArgs(args.ToArray());
-
             // act
-            var result = builder.Build<Config>();
+            var result = Helper.BuildConfiguration<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
 
             // assert
             result.IsNotDefault();

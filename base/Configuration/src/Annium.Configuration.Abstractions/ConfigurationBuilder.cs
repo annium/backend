@@ -8,13 +8,22 @@ using Annium.Extensions.Primitives;
 
 namespace Annium.Configuration.Abstractions
 {
-    public class ConfigurationBuilder : IConfigurationBuilder
+    internal class ConfigurationBuilder : IConfigurationBuilder
     {
+        private readonly ITypeManager _typeManager;
+        private readonly IMapper _mapper;
+        private string[] Path => _context.Reverse().ToArray();
         private readonly IDictionary<string[], string> _config = new Dictionary<string[], string>(new KeyComparer());
-
         private readonly Stack<string> _context = new Stack<string>();
 
-        protected string[] Path => _context.Reverse().ToArray();
+        public ConfigurationBuilder(
+            ITypeManager typeManager,
+            IMapper mapper
+        )
+        {
+            _typeManager = typeManager;
+            _mapper = mapper;
+        }
 
         public IConfigurationBuilder Add(IReadOnlyDictionary<string[], string> config)
         {
@@ -31,7 +40,7 @@ namespace Annium.Configuration.Abstractions
 
         private object Process(Type type)
         {
-            if (Mapper.HasMap(string.Empty, type))
+            if (_mapper.HasMap(string.Empty, type))
                 return ProcessValue(type);
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -57,7 +66,7 @@ namespace Annium.Configuration.Abstractions
             {
                 // var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
                 _context.Push(name);
-                result[Mapper.Map(name, keyType)] = Process(valueType);
+                result[_mapper.Map(name, keyType)] = Process(valueType);
                 _context.Pop();
             }
 
@@ -98,7 +107,7 @@ namespace Annium.Configuration.Abstractions
         {
             if (type.IsAbstract || type.IsInterface)
             {
-                var resolutionKeyProperty = TypeManager.Instance.GetResolutionKeyProperty(type);
+                var resolutionKeyProperty = _typeManager.GetResolutionKeyProperty(type);
                 if (resolutionKeyProperty is null)
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
@@ -108,7 +117,7 @@ namespace Annium.Configuration.Abstractions
                 if (!hasKey)
                     return null!;
 
-                var resolution = TypeManager.Instance.ResolveByKey(key!, type);
+                var resolution = _typeManager.ResolveByKey(key!, type);
                 if (resolution is null)
                     throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
                 type = resolution;
@@ -130,7 +139,7 @@ namespace Annium.Configuration.Abstractions
         private object ProcessValue(Type type)
         {
             if (_config.TryGetValue(Path, out var value))
-                return Mapper.Map(value, type);
+                return _mapper.Map(value, type);
 
             throw new ArgumentException($"Key {string.Join('.', Path)} not found in configuration.");
         }

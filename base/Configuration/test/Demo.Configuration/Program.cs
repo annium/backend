@@ -4,7 +4,9 @@ using System.IO;
 using System.Threading;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
 using Demo.Extensions.Configuration;
 using YamlDotNet.Serialization;
@@ -34,11 +36,7 @@ namespace Demo.Configuration
                 [new[] { "abstract_config", "type" }] = "ConfigOne",
                 [new[] { "abstract_config", "value" }] = "14"
             };
-            var builder = new ConfigurationBuilder();
-            builder.Add(cfg);
-
-            // act
-            _ = builder.Build<Config>();
+            Helper.BuildConfiguration<Config>(builder => builder.Add(cfg));
         }
 
         private static void TestCli()
@@ -50,11 +48,7 @@ namespace Demo.Configuration
             args.AddRange("-list.plain", "8");
             args.AddRange("-list.array", "2", "-list.array", "6");
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCommandLineArgs(args.ToArray());
-
-            // act
-            _ = builder.Build<Config>();
+            Helper.BuildConfiguration<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
         }
 
         private static void TestJson()
@@ -66,7 +60,8 @@ namespace Demo.Configuration
                 Array = new[] { 4, 7 },
                 Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
                 List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Dictionary = new Dictionary<string, Val>()
+                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
             };
@@ -75,13 +70,11 @@ namespace Demo.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                File.WriteAllText(jsonFile, StringSerializer.Default.Serialize(cfg));
+                var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+                var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
+                File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
-                var builder = new ConfigurationBuilder();
-                builder.AddJsonFile(jsonFile);
-
-                // act
-                var result = builder.Build<Config>();
+                Helper.BuildConfiguration<Config>(builder => builder.AddJsonFile(jsonFile));
             }
             finally
             {
@@ -99,7 +92,8 @@ namespace Demo.Configuration
                 Array = new[] { 4, 7 },
                 Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
                 List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Dictionary = new Dictionary<string, Val>()
+                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } }
             };
 
@@ -110,11 +104,7 @@ namespace Demo.Configuration
                 var serializer = new SerializerBuilder().Build();
                 File.WriteAllText(yamlFile, serializer.Serialize(cfg));
 
-                var builder = new ConfigurationBuilder();
-                builder.AddYamlFile(yamlFile);
-
-                // act
-                var result = builder.Build<Config>();
+                Helper.BuildConfiguration<Config>(builder => builder.AddYamlFile(yamlFile));
             }
             finally
             {

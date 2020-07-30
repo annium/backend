@@ -22,7 +22,8 @@ namespace Annium.Configuration.Yaml.Tests
                 Array = new[] { 4, 7 },
                 Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
                 List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>() { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Dictionary = new Dictionary<string, Val>()
+                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
             };
@@ -34,11 +35,8 @@ namespace Annium.Configuration.Yaml.Tests
                 var serializer = new SerializerBuilder().Build();
                 File.WriteAllText(yamlFile, serializer.Serialize(cfg));
 
-                var builder = new ConfigurationBuilder();
-                builder.AddYamlFile(yamlFile);
-
                 // act
-                var result = builder.Build<Config>();
+                var result = Helper.BuildConfiguration<Config>(builder => builder.AddYamlFile(yamlFile));
 
                 // assert
                 result.IsNotDefault();

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using System.Reflection;
 using Annium.Configuration.Tests;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyModel;
 using Xunit;
 
 namespace Annium.Configuration.Abstractions.Tests
@@ -15,11 +17,9 @@ namespace Annium.Configuration.Abstractions.Tests
             cfg[new[] { "plain" }] = "10";
             cfg[new[] { "abstract", "type" }] = "ConfigOne";
             cfg[new[] { "abstract", "value" }] = "14";
-            var builder = new ConfigurationBuilder();
-            builder.Add(cfg);
 
             // act
-            var result = builder.Build<Config>();
+            var result = Helper.BuildConfiguration<Config>(builder => builder.Add(cfg));
 
             // assert
             result.IsNotDefault();
