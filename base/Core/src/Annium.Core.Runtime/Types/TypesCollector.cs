@@ -1,58 +1,49 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
-using Microsoft.Extensions.DependencyModel;
 
 namespace Annium.Core.Runtime.Types
 {
     internal class TypesCollector
     {
-        private readonly DependencyContext _dependencyContext;
-        private readonly AssemblyLoadContext _loadContext;
+        private readonly Assembly _assembly;
+        private readonly IReadOnlyDictionary<string, Assembly> _assemblies;
+        private readonly HashSet<Assembly> _processedAssemblies = new HashSet<Assembly>();
 
         public TypesCollector(
             Assembly assembly
         )
         {
-            _dependencyContext = DependencyContext.Load(assembly) ??
-                throw new InvalidOperationException(
-                    $"Assembly {assembly} seems to have no {nameof(DependencyContext)}"
-                );
-            _loadContext = AssemblyLoadContext.GetLoadContext(assembly)!;
+            _assembly = assembly;
+
+            var assemblies = new Dictionary<string, Assembly>();
+            foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (!assemblies.ContainsKey(domainAssembly.FullName))
+                    assemblies[domainAssembly.FullName] = domainAssembly;
+            }
+
+            _assemblies = assemblies;
         }
 
         public HashSet<Type> CollectTypes()
         {
-            var core = typeof(object).Assembly.GetName();
-            var assemblyNames = _dependencyContext.CompileLibraries
-                .Select(x => new AssemblyName(x.Name))
-                .Prepend(core)
-                .ToArray();
-
-            return assemblyNames.SelectMany(CollectAssemblyTypes).ToHashSet();
+            var types = new HashSet<Type>();
+            CollectTypes(_assembly.GetName(), type => types.Add(type));
+            return types;
         }
 
-        private Type[] CollectAssemblyTypes(AssemblyName name)
+        private void CollectTypes(AssemblyName name, Action<Type> add)
         {
-            try
-            {
-                var assembly = _loadContext.LoadFromAssemblyName(name);
-                return assembly.GetTypes();
-            }
-            catch (Exception e) when (
-                e is FileNotFoundException ||
-                e is FileLoadException
-            )
-            {
-                return Type.EmptyTypes;
-            }
-            catch
-            {
-                return Type.EmptyTypes;
-            }
+            if (!_assemblies.TryGetValue(name.FullName, out var assembly))
+                return;
+            if (!_processedAssemblies.Add(assembly))
+                return;
+            foreach (var type in assembly.GetTypes())
+
+                add(type);
+            foreach (var assemblyName in assembly.GetReferencedAssemblies())
+                CollectTypes(assemblyName, add);
         }
     }
 }
