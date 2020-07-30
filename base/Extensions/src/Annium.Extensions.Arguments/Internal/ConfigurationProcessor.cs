@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal class ConfigurationProcessor : IConfigurationProcessor
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal class ArgumentProcessor : IArgumentProcessor
     {
@@ -62,7 +62,10 @@ namespace Annium.Extensions.Arguments
                 positions,
                 flags,
                 options,
-                multiOptions.ToDictionary(e => e.Key, e => e.Value.AsEnumerable()),
+                multiOptions.ToDictionary(
+                    e => e.Key,
+                    e => e.Value.ToArray() as IReadOnlyCollection<string>
+                ),
                 raw
             );
         }

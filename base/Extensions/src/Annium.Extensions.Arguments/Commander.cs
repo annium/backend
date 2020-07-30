@@ -6,18 +6,18 @@ namespace Annium.Extensions.Arguments
 {
     public class Commander
     {
-        private readonly IServiceProvider provider;
+        private readonly IServiceProvider _provider;
 
         public Commander(IServiceProvider provider)
         {
-            this.provider = provider;
+            _provider = provider;
         }
 
         public void Run<TGroup>(string[] args, CancellationToken token = default)
             where TGroup : Group
         {
-            var group = provider.GetRequiredService<TGroup>();
-            group.SetRoot(provider.GetRequiredService<Root>());
+            var group = _provider.GetRequiredService<TGroup>();
+            group.SetRoot(_provider.GetRequiredService<Root>());
             group.Process(group.Id, args, token);
         }
     }

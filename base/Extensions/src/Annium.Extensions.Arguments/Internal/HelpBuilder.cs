@@ -4,17 +4,17 @@ using System.Linq;
 using System.Text;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal class HelpBuilder : IHelpBuilder
     {
-        private readonly IConfigurationProcessor configurationProcessor;
+        private readonly IConfigurationProcessor _configurationProcessor;
 
         public HelpBuilder(
             IConfigurationProcessor configurationProcessor
         )
         {
-            this.configurationProcessor = configurationProcessor;
+            _configurationProcessor = configurationProcessor;
         }
 
         public string BuildHelp(string command, string description, IEnumerable<CommandBase> commands)
@@ -125,7 +125,7 @@ namespace Annium.Extensions.Arguments
         }
 
         private IReadOnlyDictionary<string, bool> GetPositions(Type[] types) => types
-            .SelectMany(t => configurationProcessor.GetPropertiesWithAttribute<PositionAttribute>(t))
+            .SelectMany(t => _configurationProcessor.GetPropertiesWithAttribute<PositionAttribute>(t))
             .OrderBy(e => e.attribute.Position)
             .ToDictionary(
                 e => e.property.Name.KebabCase(),
@@ -133,7 +133,7 @@ namespace Annium.Extensions.Arguments
             );
 
         private IReadOnlyDictionary<string, ValueTuple<string?, bool, OptionType>> GetOptions(Type[] types) => types
-            .SelectMany(t => configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(t))
+            .SelectMany(t => _configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(t))
             .OrderBy(e => e.attribute.IsRequired)
             .ThenBy(e => e.property.Name)
             .ToDictionary(
@@ -150,14 +150,14 @@ namespace Annium.Extensions.Arguments
             );
 
         private IReadOnlyDictionary<string, string> GetHelps(Type[] types) => types
-            .SelectMany(t => configurationProcessor.GetPropertiesWithAttribute<HelpAttribute>(t))
+            .SelectMany(t => _configurationProcessor.GetPropertiesWithAttribute<HelpAttribute>(t))
             .ToDictionary(
                 e => e.property.Name.KebabCase(),
                 e => e.attribute.Help
             );
 
         private string GetRaw(Type[] types) => types
-            .SelectMany(t => configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(t))
+            .SelectMany(t => _configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(t))
             .Select(e => e.property.Name.KebabCase())
             .FirstOrDefault();
 

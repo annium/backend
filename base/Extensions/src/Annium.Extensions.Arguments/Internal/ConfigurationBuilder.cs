@@ -6,27 +6,30 @@ using System.Reflection;
 using Annium.Core.Mapper;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal class ConfigurationBuilder : IConfigurationBuilder
     {
-        private readonly IArgumentProcessor argumentProcessor;
+        private readonly IArgumentProcessor _argumentProcessor;
 
-        private readonly IConfigurationProcessor configurationProcessor;
+        private readonly IConfigurationProcessor _configurationProcessor;
+        private readonly IMapper _mapper;
 
         public ConfigurationBuilder(
             IArgumentProcessor argumentProcessor,
-            IConfigurationProcessor configurationProcessor
+            IConfigurationProcessor configurationProcessor,
+            IMapper mapper
         )
         {
-            this.argumentProcessor = argumentProcessor;
-            this.configurationProcessor = configurationProcessor;
+            _argumentProcessor = argumentProcessor;
+            _configurationProcessor = configurationProcessor;
+            _mapper = mapper;
         }
 
         public T Build<T>(string[] args)
             where T : new()
         {
-            var raw = argumentProcessor.Compose(args);
+            var raw = _argumentProcessor.Compose(args);
 
             var value = new T();
 
@@ -40,7 +43,7 @@ namespace Annium.Extensions.Arguments
 
         private void SetPositions<T>(T value, string[] positions)
         {
-            var properties = configurationProcessor.GetPropertiesWithAttribute<PositionAttribute>(typeof(T))
+            var properties = _configurationProcessor.GetPropertiesWithAttribute<PositionAttribute>(typeof(T))
                 .OrderBy(e => e.attribute.Position);
 
             var i = 1;
@@ -62,7 +65,7 @@ namespace Annium.Extensions.Arguments
 
         private void SetFlags<T>(T value, string[] flags)
         {
-            var properties = configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T))
+            var properties = _configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T))
                 .Where(e => e.property.PropertyType == typeof(bool))
                 .ToArray();
 
@@ -76,18 +79,21 @@ namespace Annium.Extensions.Arguments
         private void SetOptions<T>(
             T value,
             IReadOnlyDictionary<string, string> plainOptions,
-            IReadOnlyDictionary<string, IEnumerable<string>> multiOptions
+            IReadOnlyDictionary<string, IReadOnlyCollection<string>> multiOptions
         )
         {
-            var properties = configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T));
+            var properties = _configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T));
             var plainProperties = properties
                 .Where(e => e.property.PropertyType != typeof(bool) && !e.property.PropertyType.IsArray)
                 .ToArray();
 
+            var plainOptionsKeys = plainOptions.Keys.ToArray();
+            var multiOptionsKeys = multiOptions.Keys.ToArray();
+
             // for base properties - set values from options
             foreach (var (property, attribute) in plainProperties)
             {
-                var key = FindOptionName(plainOptions.Keys, property.Name, attribute.Alias);
+                var key = FindOptionName(plainOptionsKeys, property.Name, attribute.Alias);
                 if (key == null)
                     if (attribute.IsRequired)
                         throw new Exception($"Required option argument '{property.Name}' has no value");
@@ -97,18 +103,18 @@ namespace Annium.Extensions.Arguments
                 property.SetValue(value, GetValue(property, property.PropertyType, plainOptions[key]));
             }
 
-            var arrayProperties = configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T))
+            var arrayProperties = _configurationProcessor.GetPropertiesWithAttribute<OptionAttribute>(typeof(T))
                 .Where(e => e.property.PropertyType.IsArray)
                 .ToArray();
 
-            // for array properties - set values from multioptions with fallback to options
+            // for array properties - set values from multi-options with fallback to options
             foreach (var (property, attribute) in arrayProperties)
             {
-                string? key = null;
-                string[] raw = Array.Empty<string>();
-                if ((key = FindOptionName(multiOptions.Keys, property.Name, attribute.Alias)) != null)
+                string? key;
+                string[] raw;
+                if ((key = FindOptionName(multiOptionsKeys, property.Name, attribute.Alias)) != null)
                     raw = multiOptions[key].ToArray();
-                else if ((key = FindOptionName(plainOptions.Keys, property.Name, attribute.Alias)) != null)
+                else if ((key = FindOptionName(plainOptionsKeys, property.Name, attribute.Alias)) != null)
                     raw = new[] { plainOptions[key] };
                 else if (attribute.IsRequired)
                     throw new Exception($"Required multi option argument '{property.Name}' has no value");
@@ -126,14 +132,14 @@ namespace Annium.Extensions.Arguments
 
         private void SetRaw<T>(T value, string raw)
         {
-            var (property, _) = configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(typeof(T))
+            var (property, _) = _configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(typeof(T))
                 .FirstOrDefault();
 
             if (property != null)
                 property.SetValue(value, GetValue(property, property.PropertyType, raw));
         }
 
-        private string? FindOptionName(IEnumerable<string> names, string name, string? alias)
+        private string? FindOptionName(IReadOnlyCollection<string> names, string name, string? alias)
         {
             if (alias == null)
                 return names.Contains(name) ? name : null;
@@ -155,7 +161,7 @@ namespace Annium.Extensions.Arguments
             if (values != null && !values.Contains(value))
                 throw new Exception($"Given value '{value}' isn't in allowed values: {string.Join(", ", values)}");
 
-            return Mapper.Map(value, type);
+            return _mapper.Map(value, type);
         }
     }
 }

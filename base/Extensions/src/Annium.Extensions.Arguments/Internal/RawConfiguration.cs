@@ -1,24 +1,24 @@
 using System.Collections.Generic;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal class RawConfiguration
     {
-        public IEnumerable<string> Positions { get; }
+        public IReadOnlyCollection<string> Positions { get; }
 
-        public IEnumerable<string> Flags { get; }
+        public IReadOnlyCollection<string> Flags { get; }
 
         public IReadOnlyDictionary<string, string> Options { get; }
 
-        public IReadOnlyDictionary<string, IEnumerable<string>> MultiOptions { get; }
+        public IReadOnlyDictionary<string, IReadOnlyCollection<string>> MultiOptions { get; }
 
         public string Raw { get; }
 
         public RawConfiguration(
-            IEnumerable<string> positions,
-            IEnumerable<string> flags,
+            IReadOnlyCollection<string> positions,
+            IReadOnlyCollection<string> flags,
             IReadOnlyDictionary<string, string> options,
-            IReadOnlyDictionary<string, IEnumerable<string>> multiOptions,
+            IReadOnlyDictionary<string, IReadOnlyCollection<string>> multiOptions,
             string raw
         )
         {

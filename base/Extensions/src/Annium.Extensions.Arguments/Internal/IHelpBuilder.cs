@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal interface IHelpBuilder
     {

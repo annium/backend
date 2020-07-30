@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments.Internal
 {
     internal interface IConfigurationProcessor
     {
