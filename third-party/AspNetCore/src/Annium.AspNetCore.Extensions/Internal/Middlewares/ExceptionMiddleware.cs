@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Architecture.Http.Exceptions;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
@@ -16,28 +17,29 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
     public class ExceptionMiddleware
     {
-        private readonly RequestDelegate next;
-        private readonly ILogger<ExceptionMiddleware> logger;
-
-        private readonly ISerializer<string> serializer = StringSerializer.Configure(opts =>
-            opts.ConfigureDefault()
-                .ConfigureForOperations()
-                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider));
+        private readonly RequestDelegate _next;
+        private readonly ISerializer<string> _serializer;
+        private readonly ILogger<ExceptionMiddleware> _logger;
 
         public ExceptionMiddleware(
             RequestDelegate next,
+            ITypeManager typeManager,
             ILogger<ExceptionMiddleware> logger
         )
         {
-            this.next = next;
-            this.logger = logger;
+            _next = next;
+            _serializer = StringSerializer.Configure(opts => opts
+                .ConfigureDefault(typeManager)
+                .ConfigureForOperations()
+                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider));
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
         {
             try
             {
-                await next(context);
+                await _next(context);
             }
             catch (ValidationException e)
             {
@@ -57,13 +59,13 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             }
             catch (ServerException e)
             {
-                logger.Error(e);
+                _logger.Error(e);
 
                 await WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
             }
             catch (Exception e)
             {
-                logger.Error(e);
+                _logger.Error(e);
                 var result = Result.Status(OperationStatus.UncaughtException).Error(e.ToString());
                 await WriteResponse(context, HttpStatusCode.InternalServerError, result);
             }
@@ -74,7 +76,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             context.Response.StatusCode = (int) status;
             context.Response.ContentType = MediaTypeNames.Application.Json;
 
-            return context.Response.WriteAsync(serializer.Serialize(result));
+            return context.Response.WriteAsync(_serializer.Serialize(result));
         }
     }
 }

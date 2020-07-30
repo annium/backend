@@ -10,7 +10,9 @@ namespace Annium.AspNetCore.IntegrationTesting
     public class IntegrationTest : IDisposable
     {
         private readonly ConcurrentBag<IDisposable> _disposables = new ConcurrentBag<IDisposable>();
-        private readonly ConcurrentDictionary<Type, IHttpRequest> _requestSamples = new ConcurrentDictionary<Type, IHttpRequest>();
+
+        private readonly ConcurrentDictionary<Type, IHttpRequest> _requestSamples =
+            new ConcurrentDictionary<Type, IHttpRequest>();
 
         protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder
@@ -63,8 +65,9 @@ namespace Annium.AspNetCore.IntegrationTesting
                 var appFactory = new TestWebApplicationFactory<TStartup>(configureHost);
                 _disposables.Add(appFactory);
                 var client = appFactory.CreateClient();
+                var requestFactory = appFactory.Services.GetRequiredService<IHttpRequestFactory>();
 
-                return Http.Open().UseClient(client);
+                return requestFactory.Get().UseClient(client);
             }).Clone();
 
         public void Dispose()
