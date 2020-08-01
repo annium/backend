@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Annium.Net.Http
@@ -26,5 +27,6 @@ namespace Annium.Net.Http
         IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, Task<string>> getFailureMessage);
         IHttpRequest Clone();
         Task<IHttpResponse> RunAsync();
+        Task<IHttpResponse> RunAsync(CancellationToken ct);
     }
 }

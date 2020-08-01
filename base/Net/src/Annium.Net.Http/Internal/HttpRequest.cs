@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Primitives;
 using Annium.Net.Base;
@@ -138,16 +140,22 @@ namespace Annium.Net.Http.Internal
             new HttpRequest(ContentSerializer, _client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray());
+        public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray(), CancellationToken.None);
 
-        private async Task<IHttpResponse> InternalRunAsync(Middleware[] middlewares)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public Task<IHttpResponse> RunAsync(CancellationToken ct) => InternalRunAsync(_middlewares.ToArray(), ct);
+
+        private async Task<IHttpResponse> InternalRunAsync(Middleware[] middlewares, CancellationToken ct)
         {
+            if (ct.IsCancellationRequested)
+                return GetRequestCanceledResponse();
+
             if (middlewares.Length == 0)
                 return await InternalRunAsync().ConfigureAwait(false);
 
             var (middleware, rest) = middlewares;
 
-            Func<Task<IHttpResponse>> next = () => InternalRunAsync(rest);
+            Func<Task<IHttpResponse>> next = () => InternalRunAsync(rest, ct);
             var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
 
             return await middleware(next, this, options).ConfigureAwait(false);
@@ -168,6 +176,14 @@ namespace Annium.Net.Http.Internal
                 throw new HttpRequestException(await _getFailureMessage(response).ConfigureAwait(false));
 
             return response;
+        }
+
+        private IHttpResponse GetRequestCanceledResponse()
+        {
+            var message = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
+            message.ReasonPhrase = "Request canceled";
+
+            return new HttpResponse(message);
         }
 
         private Uri BuildUri()
