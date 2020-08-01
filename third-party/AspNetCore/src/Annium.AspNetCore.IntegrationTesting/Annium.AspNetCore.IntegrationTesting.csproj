@@ -16,6 +16,6 @@
         <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.5" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.6" />
     </ItemGroup>
 </Project>

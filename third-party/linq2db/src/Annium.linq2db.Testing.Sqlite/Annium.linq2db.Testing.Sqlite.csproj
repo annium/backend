@@ -15,8 +15,8 @@
         <ProjectReference Include="../Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="FluentMigrator" Version="3.2.6" />
-        <PackageReference Include="FluentMigrator.Runner" Version="3.2.6" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.4" />
+        <PackageReference Include="FluentMigrator" Version="3.2.8" />
+        <PackageReference Include="FluentMigrator.Runner" Version="3.2.8" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.6" />
     </ItemGroup>
 </Project>
