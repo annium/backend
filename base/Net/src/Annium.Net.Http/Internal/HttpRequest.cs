@@ -173,7 +173,10 @@ namespace Annium.Net.Http.Internal
             var response = new HttpResponse(await _client.SendAsync(message).ConfigureAwait(false));
 
             if (response.IsFailure && _getFailureMessage != null)
-                throw new HttpRequestException(await _getFailureMessage(response).ConfigureAwait(false));
+            {
+                var failure = await _getFailureMessage(response).ConfigureAwait(false);
+                throw new HttpRequestException(failure);
+            }
 
             return response;
         }
