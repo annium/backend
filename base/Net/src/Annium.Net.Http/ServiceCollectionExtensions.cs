@@ -6,10 +6,12 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddHttpRequestFactory(this IServiceCollection services)
+        public static IServiceCollection AddHttpRequestFactory(this IServiceCollection services)
         {
             services.AddSingleton<IHttpRequestFactory, HttpRequestFactory>();
             services.AddSingleton<IHttpContentSerializer, HttpContentSerializer>();
+
+            return services;
         }
     }
 }
