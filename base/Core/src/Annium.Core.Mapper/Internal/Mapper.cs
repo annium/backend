@@ -38,7 +38,7 @@ namespace Annium.Core.Mapper.Internal
             if (source is null)
                 return Activator.CreateInstance(type)!;
 
-            if (type.IsAssignableFrom(source.GetType()))
+            if (type.IsInstanceOfType(source))
                 return source;
 
             if (type.IsEnum)
