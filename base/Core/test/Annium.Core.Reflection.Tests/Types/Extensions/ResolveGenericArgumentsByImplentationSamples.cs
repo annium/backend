@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation
+namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation
 {
     public class ParentOther<T1, T2> : Base<T1[], T2, bool, IEnumerable<T1[]>>, IParentOther<T1, T2> where T2 : struct
     {

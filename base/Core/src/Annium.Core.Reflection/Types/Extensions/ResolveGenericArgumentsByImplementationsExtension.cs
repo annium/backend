@@ -3,13 +3,13 @@ using System.Linq;
 
 namespace Annium.Core.Reflection
 {
-    internal static class ResolveGenericArgumentsByImplentationsExtension
+    internal static class ResolveGenericArgumentsByImplementationsExtension
     {
         public static Type[]? ResolveGenericArgumentsByImplentations(this Type type, params Type[] targets)
         {
             var argsMatrix = targets
                 .Select(t =>
-                    type.ResolveGenericArgumentsByImplentation(t)?
+                    type.ResolveGenericArgumentsByImplementation(t)?
                         .Select(a => a.IsGenericParameter ? null : a)
                         .ToArray()
                 )

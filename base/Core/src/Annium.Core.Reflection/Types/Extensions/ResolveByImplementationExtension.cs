@@ -16,7 +16,7 @@ namespace Annium.Core.Reflection
                 // TODO: fix
                 return type;
 
-            var args = type.ResolveGenericArgumentsByImplentation(target);
+            var args = type.ResolveGenericArgumentsByImplementation(target);
             if (args is null || args.Any(arg => arg is null))
                 return null;
 

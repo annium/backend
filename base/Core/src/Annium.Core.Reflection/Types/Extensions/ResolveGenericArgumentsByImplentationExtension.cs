@@ -6,7 +6,7 @@ namespace Annium.Core.Reflection
 {
     public static class ResolveGenericArgumentsByImplentationExtension
     {
-        public static Type[]? ResolveGenericArgumentsByImplentation(this Type type, Type target)
+        public static Type[]? ResolveGenericArgumentsByImplementation(this Type type, Type target)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -125,7 +125,7 @@ namespace Annium.Core.Reflection
             // ensure all parameter constraints are implemented
             var meetsConstraints = target.GetGenericParameterConstraints()
                 .All(targetConstraint => type.GetGenericParameterConstraints()
-                    .Any(typeConstraint => typeConstraint.ResolveGenericArgumentsByImplentation(targetConstraint) != null)
+                    .Any(typeConstraint => typeConstraint.ResolveGenericArgumentsByImplementation(targetConstraint) != null)
                 );
 
             return meetsConstraints ? new[] { type } : null;
@@ -145,7 +145,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = type.GetGenericParameterConstraints()
-                .All(constraint => constraint.ResolveGenericArgumentsByImplentation(target) != null);
+                .All(constraint => constraint.ResolveGenericArgumentsByImplementation(target) != null);
 
             return meetsConstraints ? new[] { type } : null;
         }
@@ -168,7 +168,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = type.GetGenericParameterConstraints()
-                .All(constraint => target.ResolveGenericArgumentsByImplentation(constraint) != null);
+                .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
 
             return meetsConstraints ? new[] { type } : null;
         }
@@ -191,7 +191,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = type.GetGenericParameterConstraints()
-                .All(constraint => target.ResolveGenericArgumentsByImplentation(constraint) != null);
+                .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
 
             return meetsConstraints ? new[] { type } : null;
         }
@@ -210,7 +210,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = target.GetGenericParameterConstraints()
-                .All(constraint => type.ResolveGenericArgumentsByImplentation(constraint) != null);
+                .All(constraint => type.ResolveGenericArgumentsByImplementation(constraint) != null);
 
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
@@ -270,7 +270,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = target.GetGenericParameterConstraints()
-                .All(constraint => type.ResolveGenericArgumentsByImplentation(constraint) != null);
+                .All(constraint => type.ResolveGenericArgumentsByImplementation(constraint) != null);
 
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
@@ -315,7 +315,7 @@ namespace Annium.Core.Reflection
 
             // ensure all parameter constraints are implemented
             var meetsConstraints = target.GetGenericParameterConstraints()
-                .All(constraint => type.ResolveGenericArgumentsByImplentation(constraint) != null);
+                .All(constraint => type.ResolveGenericArgumentsByImplementation(constraint) != null);
 
             return meetsConstraints ? type.GetGenericArguments() : null;
         }
@@ -340,14 +340,14 @@ namespace Annium.Core.Reflection
         private static Type[]? ResolveBase(Type type, Type target)
         {
             var unboundBaseType = type.GetUnboundBaseType();
-            var baseArgs = unboundBaseType!.ResolveGenericArgumentsByImplentation(target);
+            var baseArgs = unboundBaseType!.ResolveGenericArgumentsByImplementation(target);
             if (baseArgs is null)
                 return null;
 
             if (!type.BaseType!.GetGenericTypeDefinition().TryMakeGenericType(out var baseImplementation, baseArgs))
                 return null;
 
-            return type.ResolveGenericArgumentsByImplentation(baseImplementation!);
+            return type.ResolveGenericArgumentsByImplementation(baseImplementation!);
         }
 
         private static Type[]? BuildArgs(Type type, Type source, Type target)

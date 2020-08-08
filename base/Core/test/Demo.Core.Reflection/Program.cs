@@ -24,7 +24,7 @@ namespace Demo.Core.Reflection
             var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.InnerTwo });
 
             var impl = typeManager.GetImplementations(typeof(System.Linq.Expressions.MemberExpression));
-            var result = typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplentation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>));
+            var result = typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplementation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>));
         }
 
         public static int Main(string[] args) => new Entrypoint()
