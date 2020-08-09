@@ -1,8 +1,6 @@
-using Annium.Logging.Microsoft;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
-namespace Microsoft.Extensions.Hosting
+namespace Annium.Core.DependencyInjection
 {
     public static class HostBuilderExtensions
     {
@@ -10,12 +8,7 @@ namespace Microsoft.Extensions.Hosting
             this IHostBuilder builder
         )
         {
-            return builder
-                .ConfigureLogging((ctx, logging) =>
-                {
-                    logging.ClearProviders();
-                    logging.Services.AddScoped<ILoggerProvider, LoggerBridgeProvider>();
-                });
+            return builder.ConfigureLogging((ctx, logging) => logging.ConfigureLoggingBridge());
         }
     }
 }

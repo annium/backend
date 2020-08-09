@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using Annium.Core.Reflection;
-using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplentation;
+using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Core.Entrypoint;
 using System.Collections.Generic;
 using System.Linq;
