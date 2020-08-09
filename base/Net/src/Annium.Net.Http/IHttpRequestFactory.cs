@@ -4,8 +4,8 @@ namespace Annium.Net.Http
 {
     public interface IHttpRequestFactory
     {
-        IHttpRequest Get();
-        IHttpRequest Get(string baseUri);
-        IHttpRequest Get(Uri baseUri);
+        IHttpRequest New();
+        IHttpRequest New(string baseUri);
+        IHttpRequest New(Uri baseUri);
     }
 }

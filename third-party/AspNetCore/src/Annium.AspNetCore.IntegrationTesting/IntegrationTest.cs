@@ -67,7 +67,7 @@ namespace Annium.AspNetCore.IntegrationTesting
                 var client = appFactory.CreateClient();
                 var requestFactory = appFactory.Services.GetRequiredService<IHttpRequestFactory>();
 
-                return requestFactory.Get().UseClient(client);
+                return requestFactory.New().UseClient(client);
             }).Clone();
 
         public void Dispose()
