@@ -69,9 +69,25 @@ namespace Annium.Core.DependencyInjection.Internal
                 throw new InvalidOperationException("Registration already done");
             _hasRegistered = true;
 
+            Func<IServiceCollection, Type, Func<IServiceProvider, object>, IServiceCollection> register = lifetime switch
+            {
+                ServiceLifetime.Transient => ServiceCollectionServiceExtensions.AddTransient,
+                ServiceLifetime.Scoped    => ServiceCollectionServiceExtensions.AddScoped,
+                _                         => ServiceCollectionServiceExtensions.AddSingleton,
+            };
+
             foreach (var implementationType in _types)
-            foreach (var serviceType in _registrations.SelectMany(x => x.ResolveServiceTypes(implementationType)))
-                _services.Add(new ServiceDescriptor(serviceType, implementationType, lifetime));
+            {
+                _services.Add(new ServiceDescriptor(implementationType, implementationType, lifetime));
+
+                var serviceTypes = _registrations
+                    .SelectMany(x => x.ResolveServiceTypes(implementationType))
+                    .Where(x => x != implementationType)
+                    .ToArray();
+
+                foreach (var serviceType in serviceTypes)
+                    register(_services, serviceType, sp => sp.GetRequiredService(implementationType));
+            }
         }
     }
 }
