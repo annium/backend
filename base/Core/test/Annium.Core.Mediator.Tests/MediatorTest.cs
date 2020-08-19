@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;

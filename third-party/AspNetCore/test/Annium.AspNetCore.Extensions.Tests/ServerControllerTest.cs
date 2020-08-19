@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Annium.Net.Http;
 using Annium.Testing;
 using Demo.AspNetCore;

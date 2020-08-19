@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using Annium.Extensions.Primitives;
 using X = Annium.Data.Operations.IBooleanResult;
 
-namespace Annium.Data.Operations.Serialization
+namespace Annium.Data.Operations.Serialization.Json
 {
     internal class BooleanResultConverter : ResultConverterBase<X>
     {
@@ -16,8 +16,8 @@ namespace Annium.Data.Operations.Serialization
         )
         {
             var isSuccess = false;
-            IEnumerable<string> plainErrors = Array.Empty<string>();
-            IReadOnlyDictionary<string, IEnumerable<string>> labeledErrors = new Dictionary<string, IEnumerable<string>>();
+            IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
+            IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
             var depth = reader.CurrentDepth;
             while (reader.Read() && reader.CurrentDepth > depth)
@@ -27,9 +27,9 @@ namespace Annium.Data.Operations.Serialization
                 else if (reader.HasProperty(nameof(X.IsFailure)))
                     isSuccess = !JsonSerializer.Deserialize<bool>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.PlainErrors)))
-                    plainErrors = JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options);
+                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
-                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options);
+                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options);
             }
 
             var value = isSuccess ? Result.Success() : Result.Failure();

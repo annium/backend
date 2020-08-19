@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace Annium.Data.Operations.Serialization
+namespace Annium.Data.Operations.Serialization.Json
 {
     internal static class HelperExtensions
     {

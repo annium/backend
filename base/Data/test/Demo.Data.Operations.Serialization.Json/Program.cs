@@ -100,11 +100,11 @@ namespace Demo.Data.Operations.Serialization.Json
                     var name = reader.GetString();
 
                     if (name.Equals(nameof(IResultBase.PlainErrors), StringComparison.InvariantCultureIgnoreCase))
-                        value.Errors(JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options));
+                        value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options));
                     else if (name.Equals(nameof(IResultBase.LabeledErrors),
                         StringComparison.InvariantCultureIgnoreCase))
                         value.Errors(
-                            JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader,
+                            JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader,
                                 options));
                 }
             }

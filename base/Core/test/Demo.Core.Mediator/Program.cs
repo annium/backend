@@ -6,6 +6,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Requests;
 using Demo.Core.Mediator.ViewModels;

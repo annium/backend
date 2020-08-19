@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using X = Annium.Data.Operations.IResult;
 
-namespace Annium.Data.Operations.Serialization
+namespace Annium.Data.Operations.Serialization.Json
 {
     internal class ResultConverter : ResultConverterBase<X>
     {
@@ -20,9 +20,9 @@ namespace Annium.Data.Operations.Serialization
             while (reader.Read() && reader.CurrentDepth > depth)
             {
                 if (reader.HasProperty(nameof(X.PlainErrors)))
-                    value.Errors(JsonSerializer.Deserialize<IEnumerable<string>>(ref reader, options));
+                    value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options));
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
-                    value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IEnumerable<string>>>(ref reader, options));
+                    value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options));
             }
 
             return value;

@@ -8,7 +8,7 @@ namespace Annium.Data.Operations
         public static IResult Join(params IResult[] results) =>
             new Implementations.Result().Join(results);
 
-        public static IResult Join(IEnumerable<IResult> results) =>
+        public static IResult Join(IReadOnlyCollection<IResult> results) =>
             new Implementations.Result().Join(results);
 
         public static IResult New() =>

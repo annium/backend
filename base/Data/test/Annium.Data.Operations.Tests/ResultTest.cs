@@ -123,7 +123,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(new Dictionary<string, IEnumerable<string>>() { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
+            result.Errors(new Dictionary<string, IReadOnlyCollection<string>>() { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);

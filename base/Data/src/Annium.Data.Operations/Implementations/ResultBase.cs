@@ -7,10 +7,10 @@ namespace Annium.Data.Operations.Implementations
     internal abstract class ResultBase<T> : IResultBase<T>, IResultBase
         where T : class, IResultBase<T>
     {
-        public IEnumerable<string> PlainErrors => _plainErrors;
+        public IReadOnlyCollection<string> PlainErrors => _plainErrors;
 
-        public IReadOnlyDictionary<string, IEnumerable<string>> LabeledErrors =>
-            _labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IEnumerable<string>);
+        public IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors =>
+            _labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IReadOnlyCollection<string>);
 
         public bool HasErrors => _plainErrors.Count > 0 || _labeledErrors.Count > 0;
         private readonly object _locker = new object();
@@ -59,7 +59,7 @@ namespace Annium.Data.Operations.Implementations
             return (this as T) !;
         }
 
-        public T Errors(IEnumerable<string> errors)
+        public T Errors(IReadOnlyCollection<string> errors)
         {
             lock (_locker)
                 foreach (var error in errors)
@@ -68,7 +68,7 @@ namespace Annium.Data.Operations.Implementations
             return (this as T) !;
         }
 
-        public T Errors(params ValueTuple<string, IEnumerable<string>>[] errors)
+        public T Errors(params ValueTuple<string, IReadOnlyCollection<string>>[] errors)
         {
             lock (_locker)
             {
@@ -84,7 +84,7 @@ namespace Annium.Data.Operations.Implementations
             return (this as T) !;
         }
 
-        public T Errors(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>> errors)
+        public T Errors(IReadOnlyCollection<KeyValuePair<string, IReadOnlyCollection<string>>> errors)
         {
             lock (_locker)
             {
@@ -111,7 +111,7 @@ namespace Annium.Data.Operations.Implementations
             return (this as T) !;
         }
 
-        public T Join(IEnumerable<IResultBase> results)
+        public T Join(IReadOnlyCollection<IResultBase> results)
         {
             foreach (var result in results)
             {

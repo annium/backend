@@ -13,15 +13,15 @@ namespace Annium.Data.Operations
 
         T Errors(params string[] errors);
 
-        T Errors(IEnumerable<string> errors);
+        T Errors(IReadOnlyCollection<string> errors);
 
-        T Errors(params ValueTuple<string, IEnumerable<string>>[] errors);
+        T Errors(params ValueTuple<string, IReadOnlyCollection<string>>[] errors);
 
-        T Errors(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>> errors);
+        T Errors(IReadOnlyCollection<KeyValuePair<string, IReadOnlyCollection<string>>> errors);
 
         T Join(params IResultBase[] results);
 
-        T Join(IEnumerable<IResultBase> results);
+        T Join(IReadOnlyCollection<IResultBase> results);
     }
 
     public interface ICloneableResultBase<T>
@@ -36,8 +36,8 @@ namespace Annium.Data.Operations
 
     public interface IResultBase
     {
-        IEnumerable<string> PlainErrors { get; }
-        IReadOnlyDictionary<string, IEnumerable<string>> LabeledErrors { get; }
+        IReadOnlyCollection<string> PlainErrors { get; }
+        IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors { get; }
         bool HasErrors { get; }
     }
 }
