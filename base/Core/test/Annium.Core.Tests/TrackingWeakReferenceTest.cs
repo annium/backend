@@ -13,11 +13,12 @@ namespace Annium.Core.Tests
             // arrange
             var counter = 0;
             object target;
-            TrackingWeakReference<object> reference = default!;
+            ITrackingWeakReference<object> reference = default!;
             Wrap(() =>
             {
                 target = new object();
-                reference = new TrackingWeakReference<object>(target, () => counter++);
+                reference = TrackingWeakReference.Get(target);
+                reference.Collected += () => counter++;
             });
 
             // act
