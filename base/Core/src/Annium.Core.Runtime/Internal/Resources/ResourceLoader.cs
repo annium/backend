@@ -1,18 +1,22 @@
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Runtime.Resources;
 
-namespace Annium.Core.Runtime.Resources
+namespace Annium.Core.Runtime.Internal.Resources
 {
     internal class ResourceLoader : IResourceLoader
     {
-        public IResource[] Load(string prefix) => Load(prefix, Assembly.GetCallingAssembly());
+        public IReadOnlyCollection<IResource> Load(string prefix) => Load(prefix, Assembly.GetCallingAssembly());
 
-        public IResource[] Load(string prefix, Assembly assembly)
+        public IReadOnlyCollection<IResource> Load(string prefix, Assembly assembly)
         {
             prefix = $"{assembly.GetName().Name}.{prefix}.";
 
-            return assembly.GetManifestResourceNames()
+            var names = assembly.GetManifestResourceNames();
+
+            return names
                 .Where(r => r.StartsWith(prefix))
                 .Select(r =>
                 {

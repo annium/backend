@@ -1,7 +1,8 @@
 using System;
 using System.Reflection;
+using Annium.Core.Runtime.Types;
 
-namespace Annium.Core.Runtime.Types
+namespace Annium.Core.Runtime.Internal.Types
 {
     internal sealed class Descendant
     {

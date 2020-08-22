@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Annium.Core.Runtime.Types
+namespace Annium.Core.Runtime.Internal.Types
 {
     internal class TypesCollector
     {

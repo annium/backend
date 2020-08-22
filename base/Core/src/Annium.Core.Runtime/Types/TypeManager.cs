@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Reflection;
+using Annium.Core.Runtime.Internal.Types;
 
 namespace Annium.Core.Runtime.Types
 {

@@ -1,6 +1,7 @@
 using System.IO;
+using Annium.Core.Runtime.Resources;
 
-namespace Annium.Core.Runtime.Resources
+namespace Annium.Core.Runtime.Internal.Resources
 {
     internal class Resource : IResource
     {

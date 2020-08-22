@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Runtime.Types;
 
-namespace Annium.Core.Runtime.Types
+namespace Annium.Core.Runtime.Internal.Types
 {
     internal class TypeManagerInstance : ITypeManager
     {
