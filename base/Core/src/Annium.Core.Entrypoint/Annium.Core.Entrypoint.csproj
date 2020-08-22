@@ -14,4 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    </ItemGroup>
 </Project>
