@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Extensions.Primitives.Tests
+namespace Annium.Core.Tests
 {
     public class AsyncLazyTest
     {
