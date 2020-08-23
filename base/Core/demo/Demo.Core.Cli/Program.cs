@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading;
-using Annium.Cli.Lib;
+using Demo.Core.Cli.Lib;
 using Annium.Core;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Loader;
@@ -37,7 +37,7 @@ namespace Demo.Core.Cli
         {
             var pluginsSet = new Dictionary<string, string>
             {
-                { "Annium.Cli.PluginHello", @"Annium.Cli.PluginHello/bin/Debug/netstandard2.1/Annium.Cli.PluginHello.dll" }
+                { "Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/netstandard2.1/Demo.Core.Cli.PluginHello.dll" }
             };
 
             Console.WriteLine("---BEFORE---");

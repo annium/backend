@@ -12,6 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Demo.Core.Cli.Lib/Demo.Core.Cli.Lib.csproj" />
+        <ProjectReference Include="../Demo.Core.Cli.Lib/Demo.Core.Cli.Lib.csproj">
+            <Private>false</Private>
+            <ExcludeAssets>runtime</ExcludeAssets>
+        </ProjectReference>
     </ItemGroup>
 </Project>
