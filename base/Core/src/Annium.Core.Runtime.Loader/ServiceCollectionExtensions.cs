@@ -6,9 +6,9 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLoadContextFactories(this IServiceCollection services)
+        public static IServiceCollection AddAssemblyLoader(this IServiceCollection services)
         {
-            services.AddSingleton<IPluginLoadContextFactory, PluginLoadContextFactory>();
+            services.AddTransient<IAssemblyLoaderBuilder, AssemblyLoaderBuilder>();
 
             return services;
         }
