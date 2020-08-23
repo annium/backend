@@ -5,7 +5,7 @@ using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
-namespace Demo.AspNetCore
+namespace Annium.AspNetCore.TestServer
 {
     public class ServicePack : ServicePackBase
     {

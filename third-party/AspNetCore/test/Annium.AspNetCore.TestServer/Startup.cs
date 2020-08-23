@@ -2,7 +2,7 @@ using Annium.Core.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Demo.AspNetCore
+namespace Annium.AspNetCore.TestServer
 {
     public class Startup
     {

@@ -3,7 +3,7 @@ using Annium.Core.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Demo.AspNetCore
+namespace Annium.AspNetCore.TestServer
 {
     internal static class Program
     {

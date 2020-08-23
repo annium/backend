@@ -1,8 +1,8 @@
 using System.Net;
 using System.Threading.Tasks;
+using Annium.AspNetCore.TestServer;
 using Annium.Net.Http;
 using Annium.Testing;
-using Demo.AspNetCore;
 using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests

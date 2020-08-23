@@ -8,7 +8,7 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Demo.AspNetCore.Controllers
+namespace Annium.AspNetCore.TestServer.Controllers
 {
     [Route("/")]
     public class IndexController : ServerController

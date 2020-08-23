@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <PackageId>Demo.AspNetCore</PackageId>
+        <PackageId>Annium.AspNetCore.TestServer</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Demo.AspNetCore</Description>
         <TargetFramework>netcoreapp3.1</TargetFramework>
