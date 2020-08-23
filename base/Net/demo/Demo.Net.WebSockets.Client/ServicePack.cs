@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Net.WebSockets.DemoServer
+namespace Demo.Net.WebSockets.Client
 {
     internal class ServicePack : ServicePackBase
     {

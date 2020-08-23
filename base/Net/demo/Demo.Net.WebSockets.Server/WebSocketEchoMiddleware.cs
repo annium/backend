@@ -5,20 +5,21 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
+using Annium.Net.WebSockets;
 using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Http;
 
-namespace Annium.Net.WebSockets.DemoServer
+namespace Demo.Net.WebSockets.Server
 {
     public class WebSocketEchoMiddleware
     {
-        private readonly RequestDelegate next;
+        private readonly RequestDelegate _next;
 
         public WebSocketEchoMiddleware(
             RequestDelegate next
         )
         {
-            this.next = next;
+            _next = next;
         }
 
         public async Task Invoke(HttpContext context)
@@ -26,7 +27,7 @@ namespace Annium.Net.WebSockets.DemoServer
             var path = context.Request.Path;
             if (!path.StartsWithSegments("/ws"))
             {
-                await next(context);
+                await _next(context);
                 return;
             }
 

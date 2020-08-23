@@ -6,7 +6,7 @@ using Annium.Core.Entrypoint;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 
-namespace Annium.Net.WebSockets.DemoServer
+namespace Demo.Net.WebSockets.Server
 {
     internal static class Program
     {

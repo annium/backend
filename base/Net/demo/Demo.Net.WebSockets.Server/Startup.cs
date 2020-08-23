@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 
-namespace Annium.Net.WebSockets.DemoServer
+namespace Demo.Net.WebSockets.Server
 {
     public class Startup
     {

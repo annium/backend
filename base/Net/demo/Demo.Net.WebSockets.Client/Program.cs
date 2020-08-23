@@ -4,8 +4,9 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Types;
+using Annium.Net.WebSockets;
 
-namespace Annium.Net.WebSockets.DemoClient
+namespace Demo.Net.WebSockets.Client
 {
     public class Program
     {
@@ -16,7 +17,7 @@ namespace Annium.Net.WebSockets.DemoClient
         )
         {
             var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
-            var serializer = Serialization.Json.ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
+            var serializer = Annium.Serialization.Json.ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
             var socket = new ClientWebSocket(serializer);
 
             await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), token);
