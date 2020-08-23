@@ -20,19 +20,39 @@ namespace Annium.Core.Runtime.Loader.Internal
 
         public Assembly Load(string name)
         {
-            var assembly = Load(new AssemblyName(name));
+            var registry = new Dictionary<string, Assembly>();
+            foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+                if (!registry.ContainsKey(asm.GetName().FullName))
+                    registry[asm.GetName().FullName] = asm;
 
-            return assembly;
+            var asmName = new AssemblyName(name);
+            Load(
+                asmName,
+                assemblyName => registry.ContainsKey(assemblyName.FullName),
+                assemblyName => registry[assemblyName.FullName] = default!,
+                (assemblyName, assembly) => registry[assemblyName.FullName] = assembly
+            );
+            var result = registry[asmName.FullName];
+
+            return result;
         }
 
-        private Assembly Load(AssemblyName name)
+        private void Load(
+            AssemblyName name,
+            Func<AssemblyName, bool> isRegistered,
+            Action<AssemblyName> lockRegistration,
+            Action<AssemblyName, Assembly> register
+        )
         {
+            if (isRegistered(name))
+                return;
+
+            lockRegistration(name);
             var assembly = _context.LoadFromAssemblyName(name);
+            register(name, assembly);
 
             foreach (var referenceName in assembly.GetReferencedAssemblies())
-                Load(referenceName);
-
-            return assembly;
+                Load(referenceName, isRegistered, lockRegistration, register);
         }
     }
 }
