@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>Demo.Core.Cli</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>Annium.Cli</Description>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <DebugType>portable</DebugType>
+        <LangVersion>latest</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../src/Annium.Core/Annium.Core.csproj" />
+        <ProjectReference Include="../../src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
+        <ProjectReference Include="../../src/Annium.Core.Runtime.Loader/Annium.Core.Runtime.Loader.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
+        <ProjectReference Include="../Demo.Core.Cli.Lib/Demo.Core.Cli.Lib.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.Entrypoint" Version="0.1.0" />
+    </ItemGroup>
+</Project>
