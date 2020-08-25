@@ -3,35 +3,35 @@ using System.IO;
 using System.Text.Json;
 using Annium.Configuration.Abstractions;
 
-namespace Annium.Configuration.Json
+namespace Annium.Configuration.Json.Internal
 {
     internal class JsonConfigurationProvider : ConfigurationProviderBase
     {
-        private readonly string filePath;
+        private readonly string _filePath;
 
         public JsonConfigurationProvider(string filePath)
         {
-            this.filePath = filePath;
+            _filePath = filePath;
         }
 
         public override IReadOnlyDictionary<string[], string> Read()
         {
             Init();
 
-            var element = JsonDocument.Parse(File.ReadAllBytes(filePath)).RootElement;
+            var element = JsonDocument.Parse(File.ReadAllBytes(_filePath)).RootElement;
 
             Process(element);
 
-            return data;
+            return Data;
         }
 
         private void ProcessObject(JsonElement token)
         {
             foreach (var property in token.EnumerateObject())
             {
-                context.Push(property.Name);
+                Context.Push(property.Name);
                 Process(property.Value);
-                context.Pop();
+                Context.Pop();
             }
         }
 
@@ -40,16 +40,16 @@ namespace Annium.Configuration.Json
             var index = 0;
             foreach (var item in token.EnumerateArray())
             {
-                context.Push(index.ToString());
+                Context.Push(index.ToString());
                 Process(item);
-                context.Pop();
+                Context.Pop();
                 index++;
             }
         }
 
         private void ProcessLeaf(JsonElement token)
         {
-            data[Path] = token.ToString();
+            Data[Path] = token.ToString();
         }
 
         private void Process(JsonElement element)

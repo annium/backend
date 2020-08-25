@@ -14,7 +14,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             services.AddTransient<IConfigurationBuilder, ConfigurationBuilder>();
-            services.AddTransient<Func<IConfigurationBuilder>>(sp => () => sp.GetRequiredService<IConfigurationBuilder>());
+            services.AddTransient<Func<IConfigurationBuilder>>(sp => sp.GetRequiredService<IConfigurationBuilder>);
 
             return services;
         }

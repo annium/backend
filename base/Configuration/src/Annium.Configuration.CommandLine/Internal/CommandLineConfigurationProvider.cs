@@ -5,17 +5,17 @@ using System.Text.RegularExpressions;
 using Annium.Configuration.Abstractions;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Configuration.CommandLine
+namespace Annium.Configuration.CommandLine.Internal
 {
     internal class CommandLineConfigurationProvider : ConfigurationProviderBase
     {
         private const string Separator = "|";
 
-        private readonly string[] args;
+        private readonly string[] _args;
 
         public CommandLineConfigurationProvider(string[] args)
         {
-            this.args = args;
+            _args = args;
         }
 
         public override IReadOnlyDictionary<string[], string> Read()
@@ -26,14 +26,14 @@ namespace Annium.Configuration.CommandLine
             var options = new Dictionary<string, string>();
             var multiOptions = new Dictionary<string, List<string>>();
 
-            for (var i = 0; i < args.Length; i++)
+            for (var i = 0; i < _args.Length; i++)
             {
-                var value = args[i];
+                var value = _args[i];
                 if (IsPosition(value))
                     continue;
 
                 var name = ParseName(value);
-                var next = i < args.Length - 1 ? args[i + 1] : string.Empty;
+                var next = i < _args.Length - 1 ? _args[i + 1] : string.Empty;
 
                 if (IsOption(value, next))
                 {
@@ -61,19 +61,19 @@ namespace Annium.Configuration.CommandLine
             }
 
             foreach (var name in flags)
-                data[name.Split(Separator)] = true.ToString();
+                Data[name.Split(Separator)] = true.ToString();
 
             foreach (var (name, value) in options)
-                data[name.Split(Separator)] = value;
+                Data[name.Split(Separator)] = value;
 
             foreach (var (name, values) in multiOptions)
             {
                 var path = name.Split(Separator);
                 for (var i = 0; i < values.Count; i++)
-                    data[path.Append(i.ToString()).ToArray()] = values[i];
+                    Data[path.Append(i.ToString()).ToArray()] = values[i];
             }
 
-            return data;
+            return Data;
         }
 
         private bool IsPosition(string value) =>

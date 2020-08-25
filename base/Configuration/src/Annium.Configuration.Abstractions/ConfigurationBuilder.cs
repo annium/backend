@@ -195,9 +195,6 @@ namespace Annium.Configuration.Abstractions
 
             public int GetHashCode(string[] obj)
             {
-                if (obj == null)
-                    return 0;
-
                 unchecked
                 {
                     int hash = 17;
@@ -205,7 +202,7 @@ namespace Annium.Configuration.Abstractions
                     // get hash code for all items in array
                     foreach (var item in obj)
                     {
-                        hash = hash * 23 + (item == null ? 0 : item.CamelCase().GetHashCode());
+                        hash = hash * 23 + item.CamelCase().GetHashCode();
                     }
 
                     return hash;

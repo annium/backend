@@ -3,15 +3,15 @@ using System.IO;
 using Annium.Configuration.Abstractions;
 using YamlDotNet.RepresentationModel;
 
-namespace Annium.Configuration.Yaml
+namespace Annium.Configuration.Yaml.Internal
 {
     internal class YamlConfigurationProvider : ConfigurationProviderBase
     {
-        private readonly string filePath;
+        private readonly string _filePath;
 
         public YamlConfigurationProvider(string filePath)
         {
-            this.filePath = filePath;
+            this._filePath = filePath;
         }
 
         public override IReadOnlyDictionary<string[], string> Read()
@@ -19,24 +19,24 @@ namespace Annium.Configuration.Yaml
             Init();
 
             var stream = new YamlStream();
-            using (var fs = File.OpenText(filePath))
+            using (var fs = File.OpenText(_filePath))
             {
                 stream.Load(fs);
             }
 
             if (stream.Documents.Count == 0)
-                return data;
+                return Data;
 
             Process((YamlMappingNode) stream.Documents[0].RootNode);
 
-            return data;
+            return Data;
         }
 
         private void Process(YamlMappingNode node)
         {
             foreach (var (key, value) in node.Children)
             {
-                context.Push(((YamlScalarNode) key).Value!);
+                Context.Push(((YamlScalarNode) key).Value!);
 
                 if (value is YamlMappingNode map)
                     Process(map);
@@ -45,7 +45,7 @@ namespace Annium.Configuration.Yaml
                 else
                     Process((YamlScalarNode) value);
 
-                context.Pop();
+                Context.Pop();
             }
         }
 
@@ -54,7 +54,7 @@ namespace Annium.Configuration.Yaml
             var index = 0;
             foreach (var item in node)
             {
-                context.Push(index.ToString());
+                Context.Push(index.ToString());
 
                 if (item is YamlMappingNode map)
                     Process(map);
@@ -63,14 +63,14 @@ namespace Annium.Configuration.Yaml
                 else
                     Process((YamlScalarNode) item);
 
-                context.Pop();
+                Context.Pop();
                 index++;
             }
         }
 
         private void Process(YamlScalarNode token)
         {
-            data[Path] = token.Value!;
+            Data[Path] = token.Value!;
         }
     }
 }

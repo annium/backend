@@ -1,5 +1,5 @@
 using System.IO;
-using Annium.Configuration.Json;
+using Annium.Configuration.Json.Internal;
 
 namespace Annium.Configuration.Abstractions
 {

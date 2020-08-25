@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Annium.Configuration.CommandLine;
+using Annium.Configuration.CommandLine.Internal;
 
 namespace Annium.Configuration.Abstractions
 {
