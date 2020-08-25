@@ -18,7 +18,8 @@ namespace Annium.Configuration.Abstractions
                 else
                     throw new FileNotFoundException($"Yaml configuration file {path} not found and is not optional");
 
-            var configuration = new YamlConfigurationProvider(path).Read();
+            var raw = File.ReadAllText(path);
+            var configuration = new YamlConfigurationProvider(raw).Read();
 
             return builder.Add(configuration);
         }

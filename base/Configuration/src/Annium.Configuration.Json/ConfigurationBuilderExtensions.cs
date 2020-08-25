@@ -18,7 +18,8 @@ namespace Annium.Configuration.Abstractions
                 else
                     throw new FileNotFoundException($"Json configuration file {path} not found and is not optional");
 
-            var configuration = new JsonConfigurationProvider(path).Read();
+            var raw = File.ReadAllText(path);
+            var configuration = new JsonConfigurationProvider(raw).Read();
 
             return builder.Add(configuration);
         }

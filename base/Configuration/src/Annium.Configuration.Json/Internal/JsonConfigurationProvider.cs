@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using Annium.Configuration.Abstractions;
 
@@ -7,18 +6,18 @@ namespace Annium.Configuration.Json.Internal
 {
     internal class JsonConfigurationProvider : ConfigurationProviderBase
     {
-        private readonly string _filePath;
+        private readonly string _raw;
 
-        public JsonConfigurationProvider(string filePath)
+        public JsonConfigurationProvider(string raw)
         {
-            _filePath = filePath;
+            _raw = raw;
         }
 
         public override IReadOnlyDictionary<string[], string> Read()
         {
             Init();
 
-            var element = JsonDocument.Parse(File.ReadAllBytes(_filePath)).RootElement;
+            var element = JsonDocument.Parse(_raw).RootElement;
 
             Process(element);
 

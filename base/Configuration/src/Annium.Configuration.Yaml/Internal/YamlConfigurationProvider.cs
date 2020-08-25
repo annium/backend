@@ -7,11 +7,11 @@ namespace Annium.Configuration.Yaml.Internal
 {
     internal class YamlConfigurationProvider : ConfigurationProviderBase
     {
-        private readonly string _filePath;
+        private readonly string _raw;
 
-        public YamlConfigurationProvider(string filePath)
+        public YamlConfigurationProvider(string raw)
         {
-            this._filePath = filePath;
+            _raw = raw;
         }
 
         public override IReadOnlyDictionary<string[], string> Read()
@@ -19,10 +19,8 @@ namespace Annium.Configuration.Yaml.Internal
             Init();
 
             var stream = new YamlStream();
-            using (var fs = File.OpenText(_filePath))
-            {
-                stream.Load(fs);
-            }
+            using var reader = new StringReader(_raw);
+            stream.Load(reader);
 
             if (stream.Documents.Count == 0)
                 return Data;
