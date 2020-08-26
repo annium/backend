@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Annium.Configuration.Abstractions;
 using Annium.Core.Reflection;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +29,22 @@ namespace Annium.Core.DependencyInjection
             var serviceProvider = services.Clone().AddMapper().AddConfigurationBuilder().BuildServiceProvider();
             var builder = serviceProvider.GetRequiredService<IConfigurationBuilder>();
             configure(builder);
+            var configuration = builder.Build<T>();
+
+            Register(services, configuration);
+
+            return services;
+        }
+
+        public static async Task<IServiceCollection> AddConfigurationAsync<T>(
+            this IServiceCollection services,
+            Func<IConfigurationBuilder, Task> configure
+        )
+            where T : class, new()
+        {
+            var serviceProvider = services.Clone().AddMapper().AddConfigurationBuilder().BuildServiceProvider();
+            var builder = serviceProvider.GetRequiredService<IConfigurationBuilder>();
+            await configure(builder);
             var configuration = builder.Build<T>();
 
             Register(services, configuration);
