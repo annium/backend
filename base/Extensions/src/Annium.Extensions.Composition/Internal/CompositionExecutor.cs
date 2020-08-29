@@ -57,7 +57,7 @@ namespace Annium.Extensions.Composition.Internal
             foreach (var composer in _composers)
                 result.Join(await composer.ComposeAsync(value, label, _localizer));
 
-            return Result.Status(result.HasErrors ? OperationStatus.NotFound : OperationStatus.OK).Join(result);
+            return Result.Status(result.IsOk ? OperationStatus.OK : OperationStatus.NotFound).Join(result);
         }
 
         private IReadOnlyDictionary<PropertyInfo, IList<Type>> GetDuplicates(ICompositionContainer<TValue>[] composers)

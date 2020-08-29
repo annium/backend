@@ -49,7 +49,7 @@ namespace Annium.Extensions.Composition.Tests
             var result = await composer.ComposeAsync(data);
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
             data.Name.IsEqual(nameof(Person.Name));
         }
 
@@ -64,7 +64,7 @@ namespace Annium.Extensions.Composition.Tests
             var result = await composer.ComposeAsync(data);
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
             data.Email.IsEqual(nameof(User.Email));
             data.Login.IsEqual(nameof(User.Login));
         }
@@ -82,12 +82,12 @@ namespace Annium.Extensions.Composition.Tests
             var resultWithUser = await composer.ComposeAsync(personWithUser);
 
             // assert
-            resultWithoutUser.HasErrors.IsFalse();
+            resultWithoutUser.IsOk.IsTrue();
             personWithoutUser.IsShallowEqual(new Person
             {
                 Name = nameof(Person.Name),
             });
-            resultWithUser.HasErrors.IsFalse();
+            resultWithUser.IsOk.IsTrue();
             personWithUser.IsShallowEqual(new Person
             {
                 Name = nameof(Person.Name),

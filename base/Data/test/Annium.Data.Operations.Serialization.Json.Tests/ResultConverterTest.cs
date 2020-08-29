@@ -1,10 +1,9 @@
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Data.Operations.Serialization.Tests
+namespace Annium.Data.Operations.Serialization.Json.Tests
 {
     public class ResultConverterTest
     {
@@ -55,7 +54,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonSerializer.Deserialize<IResult>("{}", GetSettings());
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
         }
 
         [Fact]
@@ -79,7 +78,7 @@ namespace Annium.Data.Operations.Serialization.Tests
             var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5}", GetSettings());
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
             result.Data.IsEqual(5);
         }
 

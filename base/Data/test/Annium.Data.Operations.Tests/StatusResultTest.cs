@@ -42,7 +42,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             succeedClone.Status.IsEqual(Access.Allowed);
-            succeedClone.HasErrors.IsFalse();
+            succeedClone.IsOk.IsTrue();
             failedClone.Status.IsEqual(Access.Denied);
             failedClone.HasErrors.IsTrue();
             failedClone.PlainErrors.Has(1);
@@ -65,7 +65,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             succeedClone.Status.IsEqual(Access.Allowed);
-            succeedClone.HasErrors.IsFalse();
+            succeedClone.IsOk.IsTrue();
             succeedClone.Data.IsEqual("welcome");
             failedClone.Status.IsEqual(Access.Denied);
             failedClone.HasErrors.IsTrue();

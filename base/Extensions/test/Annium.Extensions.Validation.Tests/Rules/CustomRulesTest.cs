@@ -17,7 +17,7 @@ namespace Annium.Extensions.Validation.Tests.Rules
             var resultBad = await validator.ValidateAsync(new Person { Name = "Max", Age = 16 });
 
             // assert
-            resultGood.HasErrors.IsFalse();
+            resultGood.IsOk.IsTrue();
             resultBad.HasErrors.IsTrue();
             resultBad.LabeledErrors.Has(1);
             resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).IsEqual("Value doesn't match condition");

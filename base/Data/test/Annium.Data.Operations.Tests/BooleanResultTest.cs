@@ -96,7 +96,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             succeedClone.IsSuccess.IsTrue();
-            succeedClone.HasErrors.IsFalse();
+            succeedClone.IsOk.IsTrue();
             failedClone.IsFailure.IsTrue();
             failedClone.HasErrors.IsTrue();
             failedClone.PlainErrors.Has(1);
@@ -119,7 +119,7 @@ namespace Annium.Data.Operations.Tests
 
             // assert
             succeedClone.IsSuccess.IsTrue();
-            succeedClone.HasErrors.IsFalse();
+            succeedClone.IsOk.IsTrue();
             succeedClone.Data.IsEqual("x");
             failedClone.IsFailure.IsTrue();
             failedClone.HasErrors.IsTrue();

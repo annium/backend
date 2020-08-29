@@ -12,6 +12,7 @@ namespace Annium.Data.Operations.Implementations
         public IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors =>
             _labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IReadOnlyCollection<string>);
 
+        public bool IsOk => _plainErrors.Count == 0 && _labeledErrors.Count == 0;
         public bool HasErrors => _plainErrors.Count > 0 || _labeledErrors.Count > 0;
         private readonly object _locker = new object();
         private readonly HashSet<string> _plainErrors = new HashSet<string>();

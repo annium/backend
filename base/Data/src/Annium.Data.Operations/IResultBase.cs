@@ -38,6 +38,7 @@ namespace Annium.Data.Operations
     {
         IReadOnlyCollection<string> PlainErrors { get; }
         IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors { get; }
+        bool IsOk { get; }
         bool HasErrors { get; }
     }
 }

@@ -39,7 +39,7 @@ namespace Annium.Architecture.Mediator.Tests
 
             // assert
             result.Status.IsEqual(OperationStatus.OK);
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
         }
 
         private class LoginRequest : IUserName, IPassword, IThrowing

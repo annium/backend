@@ -13,7 +13,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
         }
 
         [Fact]
@@ -23,7 +23,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New(5);
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
             result.Data.IsEqual(5);
         }
 
@@ -37,7 +37,7 @@ namespace Annium.Data.Operations.Tests
             result.Clear();
 
             // assert
-            result.HasErrors.IsFalse();
+            result.IsOk.IsTrue();
         }
 
         [Fact]
