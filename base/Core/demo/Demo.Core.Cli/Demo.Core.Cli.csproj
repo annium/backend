@@ -13,13 +13,11 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Core/Annium.Core.csproj" />
+        <ProjectReference Include="../../src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
+        <ProjectReference Include="../../src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
         <ProjectReference Include="../../src/Annium.Core.Runtime.Loader/Annium.Core.Runtime.Loader.csproj" />
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
         <ProjectReference Include="../Demo.Core.Cli.Lib/Demo.Core.Cli.Lib.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
-        <PackageReference Include="Annium.Core.Entrypoint" Version="0.1.0" />
     </ItemGroup>
 </Project>
