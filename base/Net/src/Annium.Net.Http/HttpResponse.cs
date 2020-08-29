@@ -26,21 +26,6 @@ namespace Annium.Net.Http
         public HttpResponseHeaders Headers { get; }
         public HttpContent Content { get; }
 
-        public HttpResponse(
-            HttpStatusCode statusCode,
-            string statusText,
-            HttpResponseHeaders headers,
-            HttpContent content
-        )
-        {
-            IsSuccess = (int) statusCode < 400;
-            IsFailure = !IsSuccess;
-            StatusCode = statusCode;
-            StatusText = statusText;
-            Headers = headers;
-            Content = content;
-        }
-
         public HttpResponse(HttpResponseMessage message)
         {
             IsSuccess = message.IsSuccessStatusCode;
