@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http.Internal
+namespace Annium.Net.Http
 {
-    internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
+    public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
     {
         public T Data { get; }
 
@@ -17,7 +17,7 @@ namespace Annium.Net.Http.Internal
         }
     }
 
-    internal class HttpResponse : IHttpResponse
+    public class HttpResponse : IHttpResponse
     {
         public bool IsSuccess { get; }
         public bool IsFailure { get; }
@@ -25,6 +25,21 @@ namespace Annium.Net.Http.Internal
         public string StatusText { get; }
         public HttpResponseHeaders Headers { get; }
         public HttpContent Content { get; }
+
+        public HttpResponse(
+            HttpStatusCode statusCode,
+            string statusText,
+            HttpResponseHeaders headers,
+            HttpContent content
+        )
+        {
+            IsSuccess = (int) statusCode < 400;
+            IsFailure = !IsSuccess;
+            StatusCode = statusCode;
+            StatusText = statusText;
+            Headers = headers;
+            Content = content;
+        }
 
         public HttpResponse(HttpResponseMessage message)
         {
