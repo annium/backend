@@ -12,7 +12,7 @@ namespace Annium.AspNetCore.TestServer
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
             // register and setup services
-            services.AddRuntimeTools(GetType().Assembly);
+            services.AddRuntimeTools(GetType().Assembly, true);
             services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
             services.AddHttpRequestFactory();
             services.AddMediatorConfiguration(ConfigureMediator);

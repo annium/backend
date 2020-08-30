@@ -76,7 +76,7 @@ namespace Demo.Core.Cli
                 Console.WriteLine("---TYPES---");
                 foreach (var (name, plugin) in plugins)
                 {
-                    Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin).Types.Count}");
+                    Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin, false).Types.Count}");
                     TypeManager.Release(plugin);
                 }
 

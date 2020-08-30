@@ -32,7 +32,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper() => new ServiceCollection()
-            .AddRuntimeTools(Assembly.GetCallingAssembly())
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .AddProfile(ConfigureProfile)
             .BuildServiceProvider()

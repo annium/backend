@@ -78,7 +78,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         private ISerializer<string> GetSerializer() => StringSerializer.Configure(
-            opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly))
+            opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly, false))
         );
     }
 

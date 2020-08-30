@@ -22,7 +22,7 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IMapper, Mapper.Internal.Mapper>();
 
             // register resolvers
-            services.AddAllTypes(typeof(IMapResolver).Assembly)
+            services.AddAllTypes(typeof(IMapResolver).Assembly, false)
                 .AssignableTo<IMapResolver>()
                 .As<IMapResolver>()
                 .SingleInstance();

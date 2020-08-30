@@ -35,7 +35,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper(Type profileType) => new ServiceCollection()
-            .AddRuntimeTools(Assembly.GetCallingAssembly())
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .AddProfile(profileType)
             .BuildServiceProvider()

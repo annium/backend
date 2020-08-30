@@ -7,7 +7,7 @@ namespace Annium.Extensions.Validation.Tests
     public class TestBase
     {
         protected IValidator<T> GetValidator<T>() => new ServiceCollection()
-            .AddRuntimeTools(Assembly.GetCallingAssembly())
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddValidation()
             .AddLocalization(opts => opts.UseInMemoryStorage())
             .BuildServiceProvider()

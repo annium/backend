@@ -9,7 +9,7 @@ namespace Demo.Core.WebAssembly
     {
         public override void Register(IServiceCollection services, IServiceProvider provider)
         {
-            services.AddRuntimeTools(GetType().Assembly);
+            services.AddRuntimeTools(GetType().Assembly, false);
         }
 
         public override void Setup(IServiceProvider provider)

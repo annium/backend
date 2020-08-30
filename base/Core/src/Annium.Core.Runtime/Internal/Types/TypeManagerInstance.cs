@@ -11,17 +11,18 @@ namespace Annium.Core.Runtime.Internal.Types
         /// <summary>
         /// Contains collection of all types, collected for given Assembly
         /// </summary>
-        public IReadOnlyCollection<Type> Types => _types.Value;
+        public IReadOnlyCollection<Type> Types { get; }
 
-        private readonly Lazy<HashSet<Type>> _types;
-        private readonly Lazy<IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>>> _hierarchy;
+        private readonly IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> _hierarchy;
 
         public TypeManagerInstance(
-            Assembly assembly
+            Assembly assembly,
+            bool tryLoadReferences
         )
         {
-            _types = new Lazy<HashSet<Type>>(new TypesCollector(assembly).CollectTypes, true);
-            _hierarchy = new Lazy<IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>>>(BuildHierarchy, true);
+            var types = new TypesCollector().CollectTypes(assembly, tryLoadReferences);
+            _hierarchy = new HierarchyBuilder().BuildHierarchy(types);
+            Types = types;
         }
 
         /// <summary>
@@ -62,7 +63,7 @@ namespace Annium.Core.Runtime.Internal.Types
 
             var lookupType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
 
-            return _hierarchy.Value.Keys.FirstOrDefault(x => x.Type == lookupType)?.KeyProperty;
+            return _hierarchy.Keys.FirstOrDefault(x => x.Type == lookupType)?.KeyProperty;
         }
 
         /// <summary>
@@ -178,7 +179,7 @@ namespace Annium.Core.Runtime.Internal.Types
         private Descendant[] GetImplementationDescendants(Type baseType)
         {
             baseType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
-            var node = _hierarchy.Value.FirstOrDefault(x => x.Key.Type == baseType);
+            var node = _hierarchy.FirstOrDefault(x => x.Key.Type == baseType);
 
             return node.Key is null ? Array.Empty<Descendant>() : node.Value.ToArray();
         }
@@ -211,7 +212,5 @@ namespace Annium.Core.Runtime.Internal.Types
 
             return realProperty;
         }
-
-        private IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> BuildHierarchy() => new HierarchyBuilder().BuildHierarchy(_types.Value);
     }
 }

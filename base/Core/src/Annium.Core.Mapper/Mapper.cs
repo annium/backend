@@ -9,7 +9,7 @@ namespace Annium.Core.Mapper
         public static IMapper GetFor(Assembly assembly)
         {
             var services = new ServiceCollection();
-            services.AddRuntimeTools(assembly);
+            services.AddRuntimeTools(assembly, false);
             services.AddMapper(false);
 
             var provider = services.BuildServiceProvider();

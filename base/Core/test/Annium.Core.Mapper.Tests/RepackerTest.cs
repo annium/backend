@@ -102,7 +102,7 @@ namespace Annium.Core.Mapper.Tests
         private Func<S, R> Repack<S, R>(Expression<Func<S, R>> ex)
         {
             var repacker = new ServiceCollection()
-                .AddRuntimeTools(Assembly.GetCallingAssembly())
+                .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
                 .AddMapper(false)
                 .BuildServiceProvider()
                 .GetRequiredService<IRepacker>();

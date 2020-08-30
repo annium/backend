@@ -14,7 +14,7 @@ namespace Annium.Configuration.Tests
             where T : class, new()
         {
             var services = new ServiceCollection();
-            services.AddRuntimeTools(Assembly.GetCallingAssembly());
+            services.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
             services.AddConfiguration<T>(configure);
 
             var provider = services.BuildServiceProvider();

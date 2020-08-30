@@ -37,7 +37,7 @@ namespace Demo.Net.WebSockets.Server
                 return;
             }
 
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
             var serializer = ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
             var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), serializer);
 

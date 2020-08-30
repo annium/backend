@@ -17,7 +17,7 @@ namespace Demo.Serialization.Json
         )
         {
             var serializer = StringSerializer.Configure(
-                opts => opts.ConfigureDefault(TypeManager.GetInstance(typeof(Program).Assembly))
+                opts => opts.ConfigureDefault(TypeManager.GetInstance(typeof(Program).Assembly, false))
             );
 
             KeyBase a = new KeyChildA { Value = 1 };

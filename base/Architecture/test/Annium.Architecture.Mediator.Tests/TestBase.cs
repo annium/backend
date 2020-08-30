@@ -13,7 +13,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             var services = new ServiceCollection();
 
-            services.AddRuntimeTools(Assembly.GetCallingAssembly());
+            services.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
             services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
 
             services.AddLogging(route => route.UseInMemory());

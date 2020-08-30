@@ -17,7 +17,7 @@ namespace Demo.Core.Reflection
             CancellationToken token
         )
         {
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
             var canResolveEnumerable = typeManager.HasImplementations(typeof(IList<>));
             var enumerable = typeManager.Types.Where(x => x == typeof(IEnumerable<>)).ToArray();
 

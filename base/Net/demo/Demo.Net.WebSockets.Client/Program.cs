@@ -16,7 +16,7 @@ namespace Demo.Net.WebSockets.Client
             CancellationToken token
         )
         {
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
             var serializer = Annium.Serialization.Json.ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
             var socket = new ClientWebSocket(serializer);
 

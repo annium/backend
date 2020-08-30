@@ -10,10 +10,11 @@ namespace Annium.Core.DependencyInjection
     {
         public static IServiceCollection AddRuntimeTools(
             this IServiceCollection services,
-            Assembly assembly
+            Assembly assembly,
+            bool tryLoadReferences
         )
         {
-            services.AddSingleton(TypeManager.GetInstance(assembly));
+            services.AddSingleton(TypeManager.GetInstance(assembly, tryLoadReferences));
 
             return services;
         }

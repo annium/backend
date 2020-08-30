@@ -34,7 +34,7 @@ namespace Annium.Configuration.Json.Tests
             try
             {
                 jsonFile = Path.GetTempFileName();
-                var typeManager = TypeManager.GetInstance(GetType().Assembly);
+                var typeManager = TypeManager.GetInstance(GetType().Assembly, false);
                 var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 

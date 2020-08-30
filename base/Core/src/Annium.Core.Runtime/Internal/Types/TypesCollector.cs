@@ -6,16 +6,9 @@ namespace Annium.Core.Runtime.Internal.Types
 {
     internal class TypesCollector
     {
-        private readonly Assembly _assembly;
-        private readonly IReadOnlyDictionary<string, Assembly> _assemblies;
-        private readonly HashSet<Assembly> _processedAssemblies = new HashSet<Assembly>();
-
-        public TypesCollector(
-            Assembly assembly
-        )
+        public HashSet<Type> CollectTypes(Assembly assembly, bool tryLoadReferences)
         {
-            _assembly = assembly;
-
+            // collect assemblies, already residing in AppDomain
             var assemblies = new Dictionary<string, Assembly>();
             foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             {
@@ -23,27 +16,55 @@ namespace Annium.Core.Runtime.Internal.Types
                     assemblies[domainAssembly.FullName] = domainAssembly;
             }
 
-            _assemblies = assemblies;
-        }
+            // list of processed assemblies
+            var processedAssemblies = new HashSet<Assembly>();
 
-        public HashSet<Type> CollectTypes()
-        {
+            // list of collected types
             var types = new HashSet<Type>();
-            CollectTypes(_assembly.GetName(), type => types.Add(type));
+
+            var resolveAssembly = tryLoadReferences ? (Func<AssemblyName, Assembly?>) LoadAssembly : GetAssembly;
+            CollectTypes(
+                assembly.GetName(),
+                resolveAssembly,
+                processedAssemblies.Add,
+                type => types.Add(type)
+            );
+
             return types;
+
+            Assembly? GetAssembly(AssemblyName name)
+            {
+                if (assemblies.TryGetValue(name.FullName, out var asm))
+                    return asm;
+
+                return null;
+            }
+
+            Assembly? LoadAssembly(AssemblyName name)
+            {
+                if (assemblies.TryGetValue(name.FullName, out var asm))
+                    return asm;
+
+                return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
+            }
         }
 
-        private void CollectTypes(AssemblyName name, Action<Type> add)
+        private void CollectTypes(
+            AssemblyName name,
+            Func<AssemblyName, Assembly?> resolveAssembly,
+            Func<Assembly, bool> registerAssembly,
+            Action<Type> registerType
+        )
         {
-            if (!_assemblies.TryGetValue(name.FullName, out var assembly))
+            var assembly = resolveAssembly(name);
+            if (assembly is null)
                 return;
-            if (!_processedAssemblies.Add(assembly))
+            if (!registerAssembly(assembly))
                 return;
             foreach (var type in assembly.GetTypes())
-
-                add(type);
+                registerType(type);
             foreach (var assemblyName in assembly.GetReferencedAssemblies())
-                CollectTypes(assemblyName, add);
+                CollectTypes(assemblyName, resolveAssembly, registerAssembly, registerType);
         }
     }
 }

@@ -9,9 +9,9 @@ namespace Annium.Core.Runtime.Types
         private static readonly ConcurrentDictionary<Assembly, ITypeManager> Instances =
             new ConcurrentDictionary<Assembly, ITypeManager>();
 
-        public static ITypeManager GetInstance(Assembly assembly)
+        public static ITypeManager GetInstance(Assembly assembly, bool tryLoadReferences)
         {
-            return Instances.GetOrAdd(assembly, x => new TypeManagerInstance(x));
+            return Instances.GetOrAdd(assembly, x => new TypeManagerInstance(x, tryLoadReferences));
         }
 
         public static void Release(Assembly assembly)

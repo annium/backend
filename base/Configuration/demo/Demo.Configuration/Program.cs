@@ -70,7 +70,7 @@ namespace Demo.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);
+                var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
                 var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
