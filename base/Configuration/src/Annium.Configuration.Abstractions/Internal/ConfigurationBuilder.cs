@@ -6,7 +6,7 @@ using Annium.Core.Mapper;
 using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Abstractions.Internal
 {
     internal class ConfigurationBuilder : IConfigurationBuilder
     {
