@@ -13,6 +13,7 @@ namespace Annium.Core.Runtime.Internal.Types
         /// </summary>
         public IReadOnlyCollection<Type> Types { get; }
 
+        private readonly Assembly _assembly;
         private readonly IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> _hierarchy;
 
         public TypeManagerInstance(
@@ -20,6 +21,7 @@ namespace Annium.Core.Runtime.Internal.Types
             bool tryLoadReferences
         )
         {
+            _assembly = assembly;
             var types = new TypesCollector().CollectTypes(assembly, tryLoadReferences);
             _hierarchy = new HierarchyBuilder().BuildHierarchy(types);
             Types = types;
