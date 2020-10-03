@@ -39,7 +39,7 @@ namespace Annium.Configuration.Abstractions
                 if (optional)
                     return builder;
                 else
-                    throw new FileNotFoundException($"Json configuration not available at {uri} and is not optional");
+                    throw new FileNotFoundException($"Yaml configuration not available at {uri} and is not optional");
 
             var raw = await response.Content.ReadAsStringAsync();
             var configuration = new YamlConfigurationProvider(raw).Read();
