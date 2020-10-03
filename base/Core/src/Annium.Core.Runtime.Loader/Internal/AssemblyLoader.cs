@@ -48,7 +48,17 @@ namespace Annium.Core.Runtime.Loader.Internal
                 return;
 
             lockRegistration(name);
-            var assembly = _context.LoadFromAssemblyName(name);
+            Assembly assembly;
+            try
+            {
+                assembly = _context.LoadFromAssemblyName(name);
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine($"Failed to load {name}: {e}");
+                return;
+            }
+
             register(name, assembly);
 
             foreach (var referenceName in assembly.GetReferencedAssemblies())
