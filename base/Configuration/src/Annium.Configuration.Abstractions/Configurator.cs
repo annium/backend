@@ -7,31 +7,37 @@ namespace Annium.Configuration.Abstractions
 {
     public static class Configurator
     {
-        public static T Get<T>(Action<IConfigurationBuilder> configure)
+        public static T Get<T>(
+            Action<IConfigurationBuilder> configure,
+            bool tryLoadReferences
+        )
             where T : class, new()
         {
-            var services = GetServices<T>();
+            var services = GetServices<T>(tryLoadReferences);
 
             services.AddConfiguration<T>(configure);
 
             return Get<T>(services);
         }
 
-        public static async Task<T> Get<T>(Func<IConfigurationBuilder, Task> configure)
+        public static async Task<T> Get<T>(
+            Func<IConfigurationBuilder, Task> configure,
+            bool tryLoadReferences
+        )
             where T : class, new()
         {
-            var services = GetServices<T>();
+            var services = GetServices<T>(tryLoadReferences);
 
             await services.AddConfigurationAsync<T>(configure);
 
             return Get<T>(services);
         }
 
-        private static IServiceCollection GetServices<T>()
+        private static IServiceCollection GetServices<T>(bool tryLoadReferences)
         {
             var services = new ServiceCollection();
 
-            services.AddRuntimeTools(typeof(T).Assembly, false);
+            services.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
 
             return services;
         }
