@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Core
+namespace Annium.Core.Primitives
 {
     public interface ITrackingWeakReference<T>
         where T : class

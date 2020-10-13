@@ -1,6 +1,6 @@
-using Annium.Core.Internal;
+using Annium.Core.Primitives.Internal;
 
-namespace Annium.Core
+namespace Annium.Core.Primitives
 {
     public sealed class TrackingWeakReference
     {

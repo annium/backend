@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace Annium.Core.Internal
+namespace Annium.Core.Primitives.Internal
 {
     internal sealed class TrackingWeakReference<T> : ITrackingWeakReference<T>
         where T : class

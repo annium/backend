@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Core
+namespace Annium.Core.Primitives
 {
     public struct AsyncDisposer : IAsyncDisposable
     {

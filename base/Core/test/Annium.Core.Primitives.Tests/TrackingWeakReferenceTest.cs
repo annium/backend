@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Tests
+namespace Annium.Core.Primitives.Tests
 {
     public class TrackingWeakReferenceTest
     {

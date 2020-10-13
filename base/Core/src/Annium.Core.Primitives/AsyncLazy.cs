@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
-namespace Annium.Core
+namespace Annium.Core.Primitives
 {
     /// <summary>
     /// Provides support for asynchronous lazy initialization. This type is fully threadsafe.
