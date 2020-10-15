@@ -1,4 +1,5 @@
 using System;
+using Annium.Extensions.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,6 @@ namespace Annium.Core.DependencyInjection
         }
 
         private static string DefaultFormat(LogMessage m, string message) =>
-            $"[{m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] {m.Level} - {m.Source.Name}: {message}";
+            $"[{m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] {m.Level} - {m.Source.FriendlyName()}: {message}";
     }
 }
