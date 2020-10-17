@@ -1,9 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Internal
 {
-    public struct AsyncDisposer : IAsyncDisposable
+    internal struct AsyncDisposer : IAsyncDisposable
     {
         private readonly Func<Task> _handle;
 

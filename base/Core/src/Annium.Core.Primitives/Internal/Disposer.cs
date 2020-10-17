@@ -1,8 +1,8 @@
 using System;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Internal
 {
-    public struct Disposer : IDisposable
+    internal struct Disposer : IDisposable
     {
         private readonly Action _handle;
 
