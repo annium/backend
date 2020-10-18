@@ -20,7 +20,7 @@ namespace Annium.Configuration.Abstractions
             return Get<T>(services);
         }
 
-        public static async Task<T> Get<T>(
+        public static T Get<T>(
             Func<IConfigurationBuilder, Task> configure,
             bool tryLoadReferences
         )
@@ -28,7 +28,7 @@ namespace Annium.Configuration.Abstractions
         {
             var services = GetServices<T>(tryLoadReferences);
 
-            await services.AddConfigurationAsync<T>(configure);
+            services.AddConfiguration<T>(configure);
 
             return Get<T>(services);
         }

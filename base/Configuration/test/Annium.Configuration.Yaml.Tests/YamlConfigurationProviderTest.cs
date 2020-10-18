@@ -3,7 +3,9 @@ using System.IO;
 using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Data.Models.Extensions;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using YamlDotNet.Serialization;
 
@@ -36,7 +38,9 @@ namespace Annium.Configuration.Yaml.Tests
                 File.WriteAllText(yamlFile, serializer.Serialize(cfg));
 
                 // act
-                var result = Helper.BuildConfiguration<Config>(builder => builder.AddYamlFile(yamlFile));
+                var provider = Helper.GetProvider<Config>(builder => builder.AddYamlFile(yamlFile));
+                var result = provider.GetRequiredService<Config>();
+                var nested = provider.GetRequiredService<SomeConfig>();
 
                 // assert
                 result.IsNotDefault();
@@ -58,6 +62,8 @@ namespace Annium.Configuration.Yaml.Tests
                 result.Nested.Plain.IsEqual(4);
                 result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
                 result.Abstract.As<ConfigTwo>().Value.IsEqual(10);
+                result.Abstract.IsEqual(nested);
+                nested.IsShallowEqual(new ConfigTwo { Value = 10 });
             }
             finally
             {

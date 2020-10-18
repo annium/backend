@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Data.Models.Extensions;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Configuration.CommandLine.Tests
@@ -21,7 +23,9 @@ namespace Annium.Configuration.CommandLine.Tests
             args.AddRange("-nested.array", "4", "-nested.array", "13");
 
             // act
-            var result = Helper.BuildConfiguration<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
+            var provider = Helper.GetProvider<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
+            var result = provider.GetRequiredService<Config>();
+            var nested = provider.GetRequiredService<Val>();
 
             // assert
             result.IsNotDefault();
@@ -30,6 +34,8 @@ namespace Annium.Configuration.CommandLine.Tests
             result.Array.SequenceEqual(new[] { 4, 7 }).IsTrue();
             result.Nested.Plain.IsEqual(4);
             result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
+            result.Nested.IsEqual(nested);
+            nested.IsShallowEqual(new Val { Plain = 4, Array = new[] { 4m, 13m } });
         }
     }
 

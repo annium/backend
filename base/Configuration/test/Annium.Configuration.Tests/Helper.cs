@@ -8,18 +8,19 @@ namespace Annium.Configuration.Tests
 {
     public static class Helper
     {
-        public static T BuildConfiguration<T>(
+        public static IServiceProvider GetProvider<T>(
             Action<IConfigurationBuilder> configure
         )
             where T : class, new()
         {
             var services = new ServiceCollection();
             services.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+            services.AddMapper();
             services.AddConfiguration<T>(configure);
 
             var provider = services.BuildServiceProvider();
 
-            return provider.GetRequiredService<T>();
+            return provider;
         }
     }
 }

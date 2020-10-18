@@ -1,8 +1,8 @@
 using System.Collections.Generic;
-using System.Reflection;
 using Annium.Configuration.Tests;
+using Annium.Data.Models.Extensions;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyModel;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Configuration.Abstractions.Tests
@@ -19,14 +19,15 @@ namespace Annium.Configuration.Abstractions.Tests
             cfg[new[] { "abstract", "value" }] = "14";
 
             // act
-            var result = Helper.BuildConfiguration<Config>(builder => builder.Add(cfg));
+            var provider = Helper.GetProvider<Config>(builder => builder.Add(cfg));
+            var result = provider.GetRequiredService<Config>();
+            var nested = provider.GetRequiredService<SomeConfig>();
 
             // assert
             result.IsNotDefault();
             result.Plain.IsEqual(10);
-            result.Abstract.IsNotDefault();
-            result.Abstract.As<ConfigOne>().Type.IsEqual("ConfigOne");
-            result.Abstract.As<ConfigOne>().Value.IsEqual(14U);
+            result.Abstract.IsEqual(nested);
+            nested.IsShallowEqual(new ConfigOne { Value = 14 });
         }
     }
 }

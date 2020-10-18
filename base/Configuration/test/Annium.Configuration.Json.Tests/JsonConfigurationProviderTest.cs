@@ -5,8 +5,10 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
+using Annium.Data.Models.Extensions;
 using Annium.Serialization.Json;
 using Annium.Testing;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Configuration.Json.Tests
@@ -39,7 +41,9 @@ namespace Annium.Configuration.Json.Tests
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
                 // act
-                var result = Helper.BuildConfiguration<Config>(builder => builder.AddJsonFile(jsonFile));
+                var provider = Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile));
+                var result = provider.GetRequiredService<Config>();
+                var nested = provider.GetRequiredService<SomeConfig>();
 
                 // assert
                 result.IsNotDefault();
@@ -61,6 +65,8 @@ namespace Annium.Configuration.Json.Tests
                 result.Nested.Plain.IsEqual(4);
                 result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
                 result.Abstract.As<ConfigTwo>().Value.IsEqual(10);
+                result.Abstract.IsEqual(nested);
+                nested.IsShallowEqual(new ConfigTwo { Value = 10 });
             }
             finally
             {
