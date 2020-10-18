@@ -4,13 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using AgileObjects.ReadableExpressions;
 using Annium.Core.Reflection;
+using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Mapper.Internal
 {
     internal class MapBuilder : IMapBuilder
     {
         private readonly IReadOnlyCollection<Profile> _knownProfiles;
-        private readonly IProfileTypeResolver _profileTypeResolver;
+        private readonly ITypeResolver _typeResolver;
         private readonly IEnumerable<IMapResolver> _mapResolvers;
         private readonly IRepacker _repacker;
         private readonly IDictionary<ValueTuple<Type, Type>, Entry> _entries = new Dictionary<ValueTuple<Type, Type>, Entry>();
@@ -18,13 +19,13 @@ namespace Annium.Core.Mapper.Internal
 
         public MapBuilder(
             IEnumerable<Profile> profiles,
-            IProfileTypeResolver profileTypeResolver,
+            ITypeResolver typeResolver,
             IEnumerable<IMapResolver> mapResolvers,
             IRepacker repacker
         )
         {
             _knownProfiles = profiles.ToArray();
-            _profileTypeResolver = profileTypeResolver;
+            _typeResolver = typeResolver;
             _mapResolvers = mapResolvers;
             _repacker = repacker;
             _context = new MappingContext(GetMap, ResolveMapping);
@@ -101,7 +102,7 @@ namespace Annium.Core.Mapper.Internal
             Type profileType
         )
         {
-            var types = _profileTypeResolver.ResolveType(profileType);
+            var types = _typeResolver.ResolveType(profileType);
 
             foreach (var type in types)
             {

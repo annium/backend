@@ -5,6 +5,7 @@ using Annium.Core.Mapper.Internal;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -16,10 +17,9 @@ namespace Annium.Core.DependencyInjection
         )
         {
             // register base services
-            services.AddSingleton<IRepacker, Repacker>();
-            services.AddSingleton<IProfileTypeResolver, ProfileTypeResolver>();
-            services.AddSingleton<IMapBuilder, MapBuilder>();
-            services.AddSingleton<IMapper, Mapper.Internal.Mapper>();
+            services.TryAddSingleton<IRepacker, Repacker>();
+            services.TryAddSingleton<IMapBuilder, MapBuilder>();
+            services.TryAddSingleton<IMapper, Mapper.Internal.Mapper>();
 
             // register resolvers
             services.AddAllTypes(typeof(IMapResolver).Assembly, false)
@@ -28,17 +28,17 @@ namespace Annium.Core.DependencyInjection
                 .SingleInstance();
 
             // add default profile
-            services.AddSingleton<Profile>(new DefaultProfile());
+            services.TryAddSingleton<Profile>(new DefaultProfile());
 
             // if autoload requested - discover and register profiles
             if (autoload)
             {
                 var serviceProvider = services.BuildServiceProvider();
                 var typeManager = serviceProvider.GetRequiredService<ITypeManager>();
-                var profileTypeResolver = serviceProvider.GetRequiredService<IProfileTypeResolver>();
+                var typeResolver = serviceProvider.GetRequiredService<ITypeResolver>();
 
                 foreach (var profile in typeManager.GetImplementations(typeof(Profile)))
-                    services.AddProfileInternal(profile, profileTypeResolver);
+                    services.AddProfileInternal(profile, typeResolver);
             }
 
             return services;
@@ -75,7 +75,7 @@ namespace Annium.Core.DependencyInjection
             if (!profileType.GetInheritanceChain().Contains(typeof(Profile)))
                 throw new ArgumentException($"Type {profileType} is not inherited from {typeof(Profile)}");
 
-            var profileTypeResolver = services.BuildServiceProvider().GetRequiredService<IProfileTypeResolver>();
+            var profileTypeResolver = services.BuildServiceProvider().GetRequiredService<ITypeResolver>();
 
             return services.AddProfileInternal(profileType, profileTypeResolver);
         }
@@ -83,10 +83,10 @@ namespace Annium.Core.DependencyInjection
         private static IServiceCollection AddProfileInternal(
             this IServiceCollection services,
             Type profileType,
-            IProfileTypeResolver profileTypeResolver
+            ITypeResolver typeResolver
         )
         {
-            var types = profileTypeResolver.ResolveType(profileType);
+            var types = typeResolver.ResolveType(profileType);
 
             foreach (var type in types)
                 services.AddSingleton(typeof(Profile), type);

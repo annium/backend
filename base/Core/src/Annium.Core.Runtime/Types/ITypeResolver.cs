@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Runtime.Types
 {
-    public interface IProfileTypeResolver
+    public interface ITypeResolver
     {
         IReadOnlyCollection<Type> ResolveType(Type type);
     }

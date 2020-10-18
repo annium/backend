@@ -13,8 +13,6 @@
         <RazorLangVersion>3.0</RazorLangVersion>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
-        <ProjectReference Include="../../src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
         <ProjectReference Include="../../../Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
     </ItemGroup>
     <ItemGroup>

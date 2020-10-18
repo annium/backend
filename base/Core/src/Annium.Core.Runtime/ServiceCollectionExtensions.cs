@@ -1,8 +1,10 @@
 using System.Reflection;
 using Annium.Core.Runtime.Internal.Resources;
+using Annium.Core.Runtime.Internal.Types;
 using Annium.Core.Runtime.Resources;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -15,6 +17,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             services.AddSingleton(TypeManager.GetInstance(assembly, tryLoadReferences));
+            services.TryAddSingleton<ITypeResolver, TypeResolver>();
 
             return services;
         }

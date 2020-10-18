@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Annium.Testing;
 using Xunit;
@@ -19,6 +20,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(bool).IsDerivedFrom(typeof(object)).IsTrue();
+            typeof(IEnumerable<>).IsDerivedFrom(typeof(IEnumerable)).IsTrue();
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<>)).IsTrue();
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<int>)).IsTrue();
             typeof(List<int>).IsDerivedFrom(typeof(IEnumerable<long>)).IsFalse();

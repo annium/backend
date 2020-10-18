@@ -4,13 +4,13 @@ using System.Linq;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Runtime.Internal.Types
 {
-    internal class ProfileTypeResolver : IProfileTypeResolver
+    internal class TypeResolver : ITypeResolver
     {
         private readonly ITypeManager _typeManager;
 
-        public ProfileTypeResolver(ITypeManager typeManager)
+        public TypeResolver(ITypeManager typeManager)
         {
             _typeManager = typeManager;
         }
