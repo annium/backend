@@ -13,7 +13,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             var cfg = new MediatorConfiguration();
-            var typeManager = services.BuildServiceProvider().GetRequiredService<ITypeManager>();
+            var typeManager = services.GetTypeManager();
             configure(cfg, typeManager);
 
             return services.AddMediatorConfiguration(cfg);

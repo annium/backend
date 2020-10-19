@@ -1,7 +1,5 @@
 using System;
 using Annium.AspNetCore.Extensions.Internal.DynamicControllers;
-using Annium.Core.Runtime.Types;
-using Annium.Data.Operations.Serialization.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime.Xml;
@@ -36,7 +34,7 @@ namespace Annium.Core.DependencyInjection
             Action<JsonOptions> configure
         ) => builder.AddJsonOptions(opts =>
         {
-            var typeManager = builder.Services.BuildServiceProvider().GetRequiredService<ITypeManager>();
+            var typeManager = builder.Services.GetTypeManager();
             opts.JsonSerializerOptions
                 .ConfigureDefault(typeManager)
                 .ConfigureForOperations()

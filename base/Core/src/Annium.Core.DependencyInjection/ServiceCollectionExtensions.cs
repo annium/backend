@@ -11,7 +11,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static IRegistrationBuilder AddAllTypes(this IServiceCollection services)
         {
-            var typeManager = services.BuildServiceProvider().GetRequiredService<ITypeManager>();
+            var typeManager = services.GetTypeManager();
 
             return new RegistrationBuilder(services, typeManager.Types);
         }
