@@ -30,16 +30,16 @@ namespace Annium.Core.DependencyInjection
                 .SingleInstance();
 
             // add default profile
-            services.AddProfile(new EmptyProfile());
-            services.AddProfile(new DefaultProfile());
+            services.AddProfileInstance(new EmptyProfile());
+            services.AddProfileInstance(new DefaultProfile());
 
             // if autoload requested - discover and register profiles
             if (autoload)
             {
                 var typeManager = services.GetTypeManager();
 
-                foreach (var profile in typeManager.GetImplementations(typeof(Profile)))
-                    services.AddSingleton(new ProfileType(profile));
+                foreach (var profileType in typeManager.GetImplementations(typeof(Profile)))
+                    services.AddProfileType(profileType);
             }
 
             // register profile resolution
@@ -66,8 +66,7 @@ namespace Annium.Core.DependencyInjection
         )
             where T : Profile
         {
-            services.AddSingleton(typeof(T));
-            services.AddSingleton(new ProfileType(typeof(T)));
+            services.AddProfileType(typeof(T));
 
             return services;
         }
@@ -80,13 +79,12 @@ namespace Annium.Core.DependencyInjection
             if (!profileType.GetInheritanceChain().Contains(typeof(Profile)))
                 throw new ArgumentException($"Type {profileType} is not inherited from {typeof(Profile)}");
 
-            services.AddSingleton(profileType);
-            services.AddSingleton(new ProfileType(profileType));
+            services.AddProfileType(profileType);
 
             return services;
         }
 
-        private static IServiceCollection AddProfile<T>(
+        private static IServiceCollection AddProfileInstance<T>(
             this IServiceCollection services,
             T profile
         )
@@ -94,6 +92,17 @@ namespace Annium.Core.DependencyInjection
         {
             services.AddSingleton(profile);
             services.AddSingleton(new ProfileInstance(profile));
+
+            return services;
+        }
+
+        private static IServiceCollection AddProfileType(
+            this IServiceCollection services,
+            Type profileType
+        )
+        {
+            services.AddSingleton(profileType);
+            services.AddSingleton(new ProfileType(profileType));
 
             return services;
         }
