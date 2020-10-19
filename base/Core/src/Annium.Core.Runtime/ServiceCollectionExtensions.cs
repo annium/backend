@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Internal.Resources;
 using Annium.Core.Runtime.Internal.Types;
@@ -27,6 +29,20 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IResourceLoader, ResourceLoader>();
 
             return services;
+        }
+
+        public static ITypeManager GetTypeManager(this IServiceCollection services)
+        {
+            var descriptors = services.Where(x => x.ServiceType == typeof(ITypeManager)).ToArray();
+
+            if (descriptors.Length != 1)
+                throw new InvalidOperationException($"Single {nameof(ITypeManager)} instance must be registered.");
+
+            var descriptor = descriptors[0];
+            if (descriptor.ImplementationInstance is null)
+                throw new InvalidOperationException($"{nameof(ITypeManager)} must be registered with instance.");
+
+            return (ITypeManager) descriptor.ImplementationInstance;
         }
     }
 }
