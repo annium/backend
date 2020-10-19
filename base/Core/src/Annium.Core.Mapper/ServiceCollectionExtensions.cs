@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
+using Annium.Core.Mapper.Internal.DependencyInjection;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,18 +30,20 @@ namespace Annium.Core.DependencyInjection
                 .SingleInstance();
 
             // add default profile
-            services.TryAddSingleton<Profile>(new DefaultProfile());
+            services.AddProfile(new EmptyProfile());
+            services.AddProfile(new DefaultProfile());
 
             // if autoload requested - discover and register profiles
             if (autoload)
             {
-                var serviceProvider = services.BuildServiceProvider();
-                var typeManager = serviceProvider.GetRequiredService<ITypeManager>();
-                var typeResolver = serviceProvider.GetRequiredService<ITypeResolver>();
+                var typeManager = services.GetTypeManager();
 
                 foreach (var profile in typeManager.GetImplementations(typeof(Profile)))
-                    services.AddProfileInternal(profile, typeResolver);
+                    services.AddSingleton(new ProfileType(profile));
             }
+
+            // register profile resolution
+            services.AddSingleton(ResolveProfiles);
 
             return services;
         }
@@ -52,7 +56,7 @@ namespace Annium.Core.DependencyInjection
             var profile = new EmptyProfile();
             configure(profile);
 
-            services.AddSingleton<Profile>(profile);
+            services.AddSingleton(new ProfileInstance(profile));
 
             return services;
         }
@@ -62,7 +66,8 @@ namespace Annium.Core.DependencyInjection
         )
             where T : Profile
         {
-            services.AddSingleton(typeof(Profile), typeof(T));
+            services.AddSingleton(typeof(T));
+            services.AddSingleton(new ProfileType(typeof(T)));
 
             return services;
         }
@@ -75,23 +80,42 @@ namespace Annium.Core.DependencyInjection
             if (!profileType.GetInheritanceChain().Contains(typeof(Profile)))
                 throw new ArgumentException($"Type {profileType} is not inherited from {typeof(Profile)}");
 
-            var profileTypeResolver = services.BuildServiceProvider().GetRequiredService<ITypeResolver>();
-
-            return services.AddProfileInternal(profileType, profileTypeResolver);
-        }
-
-        private static IServiceCollection AddProfileInternal(
-            this IServiceCollection services,
-            Type profileType,
-            ITypeResolver typeResolver
-        )
-        {
-            var types = typeResolver.ResolveType(profileType);
-
-            foreach (var type in types)
-                services.AddSingleton(typeof(Profile), type);
+            services.AddSingleton(profileType);
+            services.AddSingleton(new ProfileType(profileType));
 
             return services;
+        }
+
+        private static IServiceCollection AddProfile<T>(
+            this IServiceCollection services,
+            T profile
+        )
+            where T : Profile
+        {
+            services.AddSingleton(profile);
+            services.AddSingleton(new ProfileInstance(profile));
+
+            return services;
+        }
+
+        private static IEnumerable<Profile> ResolveProfiles(
+            IServiceProvider sp
+        )
+        {
+            var baseInstances = sp.GetRequiredService<IEnumerable<ProfileInstance>>()
+                .Select(x => x.Instance)
+                .ToArray();
+
+            var typeResolver = sp.GetRequiredService<ITypeResolver>();
+            var types = sp.GetRequiredService<IEnumerable<ProfileType>>()
+                .SelectMany(x => typeResolver.ResolveType(x.Type))
+                .ToArray();
+            var typeInstances = types
+                .Select(sp.GetRequiredService)
+                .OfType<Profile>()
+                .ToArray();
+
+            return baseInstances.Concat(typeInstances).ToArray();
         }
     }
 }
