@@ -38,6 +38,7 @@ namespace Annium.Configuration.Abstractions
             var services = new ServiceCollection();
 
             services.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
+            services.AddMapper();
 
             return services;
         }
