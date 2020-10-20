@@ -9,16 +9,22 @@ namespace Annium.Core.DependencyInjection
     {
         public static JsonSerializerOptions ConfigureDefault(
             this JsonSerializerOptions options,
-            ITypeManager typeManager
+            ITypeManager typeManager,
+            bool useCamelCase = true
         )
         {
             options.Converters.Add(new AbstractJsonConverterFactory(typeManager));
             options.Converters.Add(new GenericDictionaryJsonConverterFactory());
 
-            options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             options.PropertyNameCaseInsensitive = true;
-            options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+
+            if (useCamelCase)
+            {
+                options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+                options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            }
 
             return options;
         }
