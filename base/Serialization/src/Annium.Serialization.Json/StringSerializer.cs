@@ -18,7 +18,7 @@ namespace Annium.Serialization.Json
 
         private StringSerializer(JsonSerializerOptions options)
         {
-            this._options = options;
+            _options = options;
         }
 
         public T Deserialize<T>(string value)
