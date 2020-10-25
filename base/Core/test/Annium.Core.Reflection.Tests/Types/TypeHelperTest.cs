@@ -7,6 +7,41 @@ namespace Annium.Core.Reflection.Tests.Types
     public class TypeHelperTest
     {
         [Fact]
+        public void GetAccessExpressions_Multiple_Works()
+        {
+            // arrange
+            var data = new B { InnerOne = new A { One = "a", Two = "b" }, InnerTwo = new A { One = "c", Two = "d" } };
+
+            // act
+            var expressions = TypeHelper.GetAccessExpressions<B>(x => new { x.InnerOne.One, x.InnerTwo });
+
+            // assert
+            expressions.Has(2);
+            var getOne = expressions.At(0).Compile();
+            var result = getOne.DynamicInvoke(data);
+            result.IsEqual(data.InnerOne.One);
+            var getTwo = expressions.At(1).Compile();
+            result = getTwo.DynamicInvoke(data);
+            result.IsEqual(data.InnerTwo);
+        }
+
+        [Fact]
+        public void GetAccessExpressions_Single_Works()
+        {
+            // arrange
+            var data = new B { InnerOne = new A { One = "a", Two = "b" }, InnerTwo = new A { One = "c", Two = "d" } };
+
+            // act
+            var expressions = TypeHelper.GetAccessExpressions<B>(x => x.InnerOne.One);
+
+            // assert
+            expressions.Has(1);
+            var getOne = expressions.At(0).Compile();
+            var result = getOne.DynamicInvoke(data);
+            result.IsEqual(data.InnerOne.One);
+        }
+
+        [Fact]
         public void ResolveProperties_Multiple_Works()
         {
             // act

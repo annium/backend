@@ -7,6 +7,16 @@ namespace Annium.Core.Reflection
 {
     public static class TypeHelper
     {
+        public static LambdaExpression[] GetAccessExpressions<T>(Expression<Func<T, object>> map)
+        {
+            if (map.Body is NewExpression create)
+                return create.Arguments
+                    .Select(x => Expression.Lambda(x, map.Parameters))
+                    .ToArray();
+
+            return new[] { map };
+        }
+
         public static PropertyInfo[] ResolveProperties<T>(Expression<Func<T, object>> map)
         {
             if (map.Body is NewExpression create)
