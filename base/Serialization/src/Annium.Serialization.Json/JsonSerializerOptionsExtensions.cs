@@ -1,7 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Annium.Core.Runtime.Types;
-using Annium.Serialization.Json.Converters;
+using Annium.Serialization.Json.Internal.Converters;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -14,8 +14,8 @@ namespace Annium.Core.DependencyInjection
         )
         {
             options.Converters.Add(new AbstractJsonConverterFactory(typeManager));
+            options.Converters.Add(new ConstructorJsonConverterFactory());
             options.Converters.Add(new GenericDictionaryJsonConverterFactory());
-
 
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             options.PropertyNameCaseInsensitive = true;

@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Serialization.Json.Converters
+namespace Annium.Serialization.Json.Internal.Converters
 {
     internal class AbstractJsonConverterFactory : JsonConverterFactory
     {

@@ -20,13 +20,13 @@ namespace Demo.Serialization.Json
                 opts => opts.ConfigureDefault(TypeManager.GetInstance(typeof(Program).Assembly, false))
             );
 
-            KeyBase a = new KeyChildA { Value = 1 };
-            KeyBase b = new KeyChildB { Value = 2 };
-            KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new[] { a, b } };
+            AbstractJsonConverterTest.KeyBase a = new AbstractJsonConverterTest.KeyChildA { Value = 1 };
+            AbstractJsonConverterTest.KeyBase b = new AbstractJsonConverterTest.KeyChildB { Value = 2 };
+            AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase> container = new AbstractJsonConverterTest.KeyDataContainer<AbstractJsonConverterTest.KeyBase> { Items = new[] { a, b } };
             var str = serializer.Serialize(container);
 
             // act
-            var result = serializer.Deserialize<KeyBaseContainer<KeyBase>>(str);
+            var result = serializer.Deserialize<AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase>>(str);
         }
 
         public static int Main(string[] args) => new Entrypoint()

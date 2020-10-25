@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Annium.Serialization.Json.Converters
+namespace Annium.Serialization.Json.Internal.Converters
 {
     internal class GenericDictionaryJsonConverter<TKey, TValue> : JsonConverter<Dictionary<TKey, TValue>>
         where TKey : notnull

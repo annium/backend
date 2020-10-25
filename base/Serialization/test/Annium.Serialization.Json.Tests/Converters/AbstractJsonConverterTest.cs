@@ -7,7 +7,7 @@ using Xunit;
 
 namespace Annium.Serialization.Json.Tests.Converters
 {
-    public class AbstractConverterTest
+    public class AbstractJsonConverterTest
     {
         [Fact]
         public void Serialization_SignaturePlain_Works()
@@ -154,89 +154,89 @@ namespace Annium.Serialization.Json.Tests.Converters
         private ISerializer<string> GetSerializer() => StringSerializer.Configure(
             opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly, false))
         );
-    }
 
-    public abstract class Base
-    {
-    }
-
-    public class ChildA : Base
-    {
-        public int A { get; set; }
-    }
-
-    public class ChildB : Base
-    {
-        public int B { get; set; }
-    }
-
-    public abstract class KeyBase
-    {
-        [ResolutionKey]
-        public char Type { get; set; }
-    }
-
-    [ResolutionKeyValue('a')]
-    public class KeyChildA : KeyBase
-    {
-        public int Value { get; set; }
-
-        public KeyChildA()
+        public abstract class Base
         {
-            Type = 'a';
         }
-    }
 
-    [ResolutionKeyValue('b')]
-    public class KeyChildB : KeyBase
-    {
-        public int Value { get; set; }
-
-        public KeyChildB()
+        public class ChildA : Base
         {
-            Type = 'b';
+            public int A { get; set; }
         }
-    }
 
-    public abstract class BaseContainer<T>
-    {
-    }
-
-    public class DataContainer<T> : BaseContainer<T>
-    {
-        public T[] Data { get; set; } = Array.Empty<T>();
-    }
-
-    public class DemoContainer<T> : BaseContainer<T>
-    {
-        public T[] Demo { get; set; } = Array.Empty<T>();
-    }
-
-    public abstract class KeyBaseContainer<T>
-    {
-        [ResolutionKey]
-        public char Type { get; set; }
-    }
-
-    [ResolutionKeyValue('a')]
-    public class KeyDataContainer<T> : KeyBaseContainer<T>
-    {
-        public T[] Items { get; set; } = Array.Empty<T>();
-
-        public KeyDataContainer()
+        public class ChildB : Base
         {
-            Type = 'a';
+            public int B { get; set; }
         }
-    }
 
-    [ResolutionKeyValue('b')]
-    public class KeyDemoContainer<T> : KeyBaseContainer<T>
-    {
-        public T[] Demo { get; set; } = Array.Empty<T>();
-
-        public KeyDemoContainer()
+        public abstract class KeyBase
         {
-            Type = 'b';
+            [ResolutionKey]
+            public char Type { get; set; }
+        }
+
+        [ResolutionKeyValue('a')]
+        public class KeyChildA : KeyBase
+        {
+            public int Value { get; set; }
+
+            public KeyChildA()
+            {
+                Type = 'a';
+            }
+        }
+
+        [ResolutionKeyValue('b')]
+        public class KeyChildB : KeyBase
+        {
+            public int Value { get; set; }
+
+            public KeyChildB()
+            {
+                Type = 'b';
+            }
+        }
+
+        public abstract class BaseContainer<T>
+        {
+        }
+
+        public class DataContainer<T> : BaseContainer<T>
+        {
+            public T[] Data { get; set; } = Array.Empty<T>();
+        }
+
+        public class DemoContainer<T> : BaseContainer<T>
+        {
+            public T[] Demo { get; set; } = Array.Empty<T>();
+        }
+
+        public abstract class KeyBaseContainer<T>
+        {
+            [ResolutionKey]
+            public char Type { get; set; }
+        }
+
+        [ResolutionKeyValue('a')]
+        public class KeyDataContainer<T> : KeyBaseContainer<T>
+        {
+            public T[] Items { get; set; } = Array.Empty<T>();
+
+            public KeyDataContainer()
+            {
+                Type = 'a';
+            }
+        }
+
+        [ResolutionKeyValue('b')]
+        public class KeyDemoContainer<T> : KeyBaseContainer<T>
+        {
+            public T[] Demo { get; set; } = Array.Empty<T>();
+
+            public KeyDemoContainer()
+            {
+                Type = 'b';
+            }
         }
     }
 }

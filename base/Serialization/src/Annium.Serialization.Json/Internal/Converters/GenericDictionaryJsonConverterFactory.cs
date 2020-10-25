@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Annium.Serialization.Json.Converters
+namespace Annium.Serialization.Json.Internal.Converters
 {
     internal class GenericDictionaryJsonConverterFactory : JsonConverterFactory
     {

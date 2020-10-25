@@ -9,7 +9,7 @@ using Xunit;
 
 namespace Annium.Serialization.Json.Tests.Converters
 {
-    public class GenericDictionaryConverterTest
+    public class GenericDictionaryJsonConverterTest
     {
         [Fact]
         public void Serialization_Basic_Works()

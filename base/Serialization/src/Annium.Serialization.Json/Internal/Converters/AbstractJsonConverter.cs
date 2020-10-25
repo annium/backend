@@ -8,7 +8,7 @@ using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Serialization.Json.Converters
+namespace Annium.Serialization.Json.Internal.Converters
 {
     internal class AbstractJsonConverter<T> : JsonConverter<T>
     {
