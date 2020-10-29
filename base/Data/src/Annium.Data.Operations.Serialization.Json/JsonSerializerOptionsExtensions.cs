@@ -23,12 +23,12 @@ namespace Annium.Core.DependencyInjection
 
         private static void AddDefaultConverters(IList<JsonConverter> converters)
         {
-            converters.Add(new ResultConverterFactory());
-            converters.Add(new ResultDataConverterFactory());
-            converters.Add(new StatusResultConverterFactory());
-            converters.Add(new StatusDataResultConverterFactory());
-            converters.Add(new BooleanResultConverterFactory());
-            converters.Add(new BooleanDataResultConverterFactory());
+            converters.Insert(0, new BooleanDataResultConverterFactory());
+            converters.Insert(0, new BooleanResultConverterFactory());
+            converters.Insert(0, new StatusDataResultConverterFactory());
+            converters.Insert(0, new StatusResultConverterFactory());
+            converters.Insert(0, new ResultDataConverterFactory());
+            converters.Insert(0, new ResultConverterFactory());
         }
     }
 }

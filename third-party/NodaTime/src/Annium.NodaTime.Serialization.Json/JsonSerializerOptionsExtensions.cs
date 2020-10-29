@@ -53,20 +53,20 @@ namespace Annium.Core.DependencyInjection
             IDateTimeZoneProvider provider
         )
         {
-            converters.Add(Converters.InstantConverter);
-            converters.Add(Converters.IntervalConverter);
-            converters.Add(Converters.LocalDateConverter);
-            converters.Add(Converters.LocalDateTimeConverter);
-            converters.Add(Converters.LocalTimeConverter);
-            converters.Add(Converters.DateIntervalConverter);
-            converters.Add(Converters.OffsetConverter);
-            converters.Add(Converters.CreateDateTimeZoneConverter(provider));
-            converters.Add(Converters.DurationConverter);
-            converters.Add(Converters.RoundtripPeriodConverter);
-            converters.Add(Converters.OffsetDateTimeConverter);
-            converters.Add(Converters.OffsetDateConverter);
-            converters.Add(Converters.OffsetTimeConverter);
-            converters.Add(Converters.CreateZonedDateTimeConverter(provider));
+            converters.Insert(0, Converters.InstantConverter);
+            converters.Insert(0, Converters.IntervalConverter);
+            converters.Insert(0, Converters.LocalDateConverter);
+            converters.Insert(0, Converters.LocalDateTimeConverter);
+            converters.Insert(0, Converters.LocalTimeConverter);
+            converters.Insert(0, Converters.DateIntervalConverter);
+            converters.Insert(0, Converters.OffsetConverter);
+            converters.Insert(0, Converters.CreateDateTimeZoneConverter(provider));
+            converters.Insert(0, Converters.DurationConverter);
+            converters.Insert(0, Converters.RoundtripPeriodConverter);
+            converters.Insert(0, Converters.OffsetDateTimeConverter);
+            converters.Insert(0, Converters.OffsetDateConverter);
+            converters.Insert(0, Converters.OffsetTimeConverter);
+            converters.Insert(0, Converters.CreateZonedDateTimeConverter(provider));
         }
 
         private static void ReplaceExistingConverters<T>(IList<JsonConverter> converters, JsonConverter newConverter)
