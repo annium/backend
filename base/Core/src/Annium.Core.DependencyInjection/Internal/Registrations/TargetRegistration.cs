@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.Internal.Registrations
 {
@@ -12,9 +13,9 @@ namespace Annium.Core.DependencyInjection.Internal.Registrations
             _serviceType = serviceType;
         }
 
-        public IEnumerable<Type> ResolveServiceTypes(Type implementationType)
+        public IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime)
         {
-            yield return _serviceType;
+            yield return new ServiceDescriptor(_serviceType, implementationType, lifetime);
         }
     }
 }

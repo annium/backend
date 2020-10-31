@@ -5,13 +5,18 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.Internal.Registrations
 {
-    internal class InterfacesRegistration : IRegistration
+    internal class InterfacesFactoriesRegistration : IRegistration
     {
         public IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime)
         {
             return implementationType
                 .GetInterfaces()
-                .Select(x => new ServiceDescriptor(x, implementationType, lifetime));
+                .Select(x =>
+                {
+                    var factory = RegistrationHelper.CreateFactory(implementationType);
+
+                    return new ServiceDescriptor(typeof(Func<>).MakeGenericType(x), factory, lifetime);
+                });
         }
     }
 }

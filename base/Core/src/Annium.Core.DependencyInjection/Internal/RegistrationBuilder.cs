@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.Internal
 {
-    public class RegistrationBuilder : IRegistrationBuilder
+    internal class RegistrationBuilder : IRegistrationBuilder
     {
         private readonly IServiceCollection _services;
         private readonly ICollection<IRegistration> _registrations = new List<IRegistration>();
@@ -19,7 +19,13 @@ namespace Annium.Core.DependencyInjection.Internal
         )
         {
             _services = services;
-            _types = types;
+            _types = types
+                .Where(x =>
+                    !x.IsGenericTypeDefinition &&
+                    !x.IsAbstract &&
+                    !x.IsInterface
+                )
+                .ToArray();
         }
 
         public IRegistrationBuilder Where(Func<Type, bool> predicate)
@@ -50,9 +56,23 @@ namespace Annium.Core.DependencyInjection.Internal
             return this;
         }
 
+        public IRegistrationBuilder AsSelfFactory()
+        {
+            _registrations.Add(new SelfFactoryRegistration());
+
+            return this;
+        }
+
         public IRegistrationBuilder AsImplementedInterfaces()
         {
             _registrations.Add(new InterfacesRegistration());
+
+            return this;
+        }
+
+        public IRegistrationBuilder AsImplementedInterfacesFactories()
+        {
+            _registrations.Add(new InterfacesFactoriesRegistration());
 
             return this;
         }
@@ -69,24 +89,15 @@ namespace Annium.Core.DependencyInjection.Internal
                 throw new InvalidOperationException("Registration already done");
             _hasRegistered = true;
 
-            Func<IServiceCollection, Type, Func<IServiceProvider, object>, IServiceCollection> register = lifetime switch
-            {
-                ServiceLifetime.Transient => ServiceCollectionServiceExtensions.AddTransient,
-                ServiceLifetime.Scoped    => ServiceCollectionServiceExtensions.AddScoped,
-                _                         => ServiceCollectionServiceExtensions.AddSingleton,
-            };
-
             foreach (var implementationType in _types)
             {
-                _services.Add(new ServiceDescriptor(implementationType, implementationType, lifetime));
+                _services.AddChecked(new ServiceDescriptor(implementationType, implementationType, lifetime));
 
-                var serviceTypes = _registrations
-                    .SelectMany(x => x.ResolveServiceTypes(implementationType))
-                    .Where(x => x != implementationType)
+                var descriptors = _registrations
+                    .SelectMany(x => x.ResolveServiceDescriptors(implementationType, lifetime))
                     .ToArray();
-
-                foreach (var serviceType in serviceTypes)
-                    register(_services, serviceType, sp => sp.GetRequiredService(implementationType));
+                foreach (var descriptor in descriptors)
+                    _services.AddChecked(descriptor);
             }
         }
     }

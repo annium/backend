@@ -383,6 +383,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.Primitives", "b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.Primitives.Tests", "base\Core\test\Annium.Core.Primitives.Tests\Annium.Core.Primitives.Tests.csproj", "{690CFCB5-674E-4114-9D42-22E818C9647F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.DependencyInjection.Tests", "base\Core\test\Annium.Core.DependencyInjection.Tests\Annium.Core.DependencyInjection.Tests.csproj", "{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1908,6 +1910,18 @@ Global
 		{690CFCB5-674E-4114-9D42-22E818C9647F}.Release|x64.Build.0 = Release|Any CPU
 		{690CFCB5-674E-4114-9D42-22E818C9647F}.Release|x86.ActiveCfg = Release|Any CPU
 		{690CFCB5-674E-4114-9D42-22E818C9647F}.Release|x86.Build.0 = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|x64.Build.0 = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Debug|x86.Build.0 = Debug|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|x64.ActiveCfg = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|x64.Build.0 = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|x86.ActiveCfg = Release|Any CPU
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{21A37D74-CEA5-409F-8E8C-3FB5712C81AB} = {4F348BC7-7C34-421A-9630-F67A0F5BF49B}
@@ -2098,5 +2112,6 @@ Global
 		{CB57B0F4-CB91-44D0-9630-D7B85165DED0} = {CC9CE150-2B5F-4B96-AE0C-E56AEF74D118}
 		{C4992E17-BA7B-4451-980F-FD284F1112B1} = {2212FD3B-3923-4037-81AA-3D5C27B036A9}
 		{690CFCB5-674E-4114-9D42-22E818C9647F} = {00F11618-502E-4442-AB62-9F3F7B8E678A}
+		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0} = {00F11618-502E-4442-AB62-9F3F7B8E678A}
 	EndGlobalSection
 EndGlobal
