@@ -79,7 +79,9 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
-                if (provider is IDisposable disposableProvider)
+                if (provider is IAsyncDisposable asyncDisposableProvider)
+                    asyncDisposableProvider.DisposeAsync().GetAwaiter().GetResult();
+                else if (provider is IDisposable disposableProvider)
                     disposableProvider.Dispose();
                 gate.Set();
             }
@@ -110,7 +112,9 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
-                if (provider is IDisposable disposableProvider)
+                if (provider is IAsyncDisposable asyncDisposableProvider)
+                    await asyncDisposableProvider.DisposeAsync();
+                else if (provider is IDisposable disposableProvider)
                     disposableProvider.Dispose();
                 gate.Set();
             }
