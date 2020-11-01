@@ -32,6 +32,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                 throw new JsonException();
 
             var parameters = new object[_parameters.Count];
+            var properties = _properties.ToDictionary(x => options.PropertyNamingPolicy.ConvertName(x.Name), x => x.PropertyType);
             var comparison = options.PropertyNameCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
             while (reader.Read())
@@ -64,8 +65,9 @@ namespace Annium.Serialization.Json.Internal.Converters
                 // for now - no special handling for extra properties, just skip them
                 if (index < 0)
                 {
-                    var property = _properties.SingleOrDefault(x => x.Name.Equals(name, comparison)) ?? throw new JsonException();
-                    JsonSerializer.Deserialize(ref reader, property.PropertyType, options);
+                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison)) ?? throw new JsonException();
+                    var propertyType = properties[key];
+                    JsonSerializer.Deserialize(ref reader, propertyType, options);
                     continue;
                 }
 
