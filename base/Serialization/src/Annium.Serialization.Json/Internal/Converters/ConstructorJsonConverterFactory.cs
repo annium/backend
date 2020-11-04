@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 using Annium.Serialization.Abstractions;
 
@@ -30,6 +31,10 @@ namespace Annium.Serialization.Json.Internal.Converters
 
             // must be object-like
             if (typeof(IEnumerable).IsAssignableFrom(type))
+                return false;
+
+            // must not be nullable struct
+            if (type.IsNullableValueType())
                 return false;
 
             // select non-default constructors
