@@ -16,6 +16,6 @@
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Scriban" Version="2.1.3" />
+        <PackageReference Include="Scriban" Version="2.1.4" />
     </ItemGroup>
 </Project>
