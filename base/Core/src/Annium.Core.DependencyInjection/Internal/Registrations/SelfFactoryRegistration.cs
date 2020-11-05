@@ -8,13 +8,7 @@ namespace Annium.Core.DependencyInjection.Internal.Registrations
     {
         public IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime)
         {
-            var factory = RegistrationHelper.CreateFactory(implementationType);
-
-            yield return new ServiceDescriptor(
-                typeof(Func<>).MakeGenericType(implementationType),
-                factory,
-                lifetime
-            );
+            yield return RegistrationHelper.CreateFuncFactoryDescriptor(implementationType, implementationType, lifetime);
         }
     }
 }

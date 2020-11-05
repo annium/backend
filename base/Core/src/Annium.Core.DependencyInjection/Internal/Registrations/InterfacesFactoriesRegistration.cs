@@ -11,12 +11,7 @@ namespace Annium.Core.DependencyInjection.Internal.Registrations
         {
             return implementationType
                 .GetInterfaces()
-                .Select(x =>
-                {
-                    var factory = RegistrationHelper.CreateFactory(implementationType);
-
-                    return new ServiceDescriptor(typeof(Func<>).MakeGenericType(x), factory, lifetime);
-                });
+                .Select(x => RegistrationHelper.CreateFuncFactoryDescriptor(x, implementationType, lifetime));
         }
     }
 }

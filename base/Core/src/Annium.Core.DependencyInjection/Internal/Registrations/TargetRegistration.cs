@@ -15,7 +15,10 @@ namespace Annium.Core.DependencyInjection.Internal.Registrations
 
         public IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime)
         {
-            yield return new ServiceDescriptor(_serviceType, implementationType, lifetime);
+            if (implementationType == _serviceType)
+                yield return new ServiceDescriptor(_serviceType, implementationType, lifetime);
+            else
+                yield return RegistrationHelper.CreateTypeFactoryDescriptor(_serviceType, implementationType, lifetime);
         }
     }
 }

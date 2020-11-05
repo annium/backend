@@ -9,131 +9,158 @@ namespace Annium.Core.DependencyInjection.Tests
 {
     public class RegistrationBuilderTest
     {
+        private ServiceCollection _services = new ServiceCollection();
+        private IServiceProvider _provider = default!;
+
         [Fact]
         public void As_Works_Ok()
         {
-            // arrange
-            var services = new ServiceCollection();
-
             // act
-            services
+            _services
                 .AddAssemblyTypes(GetType().Assembly)
                 .AssignableTo<IA>()
                 .As<A>()
                 .SingleInstance();
+            Build();
 
             // assert
-            services.Has(3);
-            services.HasSingleton(typeof(A), typeof(A));
-            services.HasSingleton(typeof(A), typeof(B));
-            services.HasSingleton(typeof(B), typeof(B));
-            var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<A>().As<B>();
+            _services.Has(3);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingletonTypeFactory(typeof(A));
+            _services.HasSingleton(typeof(B), typeof(B));
+            Get<A>().Is(Get<B>());
         }
 
         [Fact]
         public void AsSelf_Works_Ok()
         {
-            // arrange
-            var services = new ServiceCollection();
-
             // act
-            services
+            _services
                 .AddAssemblyTypes(GetType().Assembly)
                 .AssignableTo<IA>()
                 .AsSelf()
                 .SingleInstance();
+            Build();
 
             // assert
-            services.Has(2);
-            services.HasSingleton(typeof(A), typeof(A));
-            services.HasSingleton(typeof(B), typeof(B));
-            var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<A>().As<A>();
-            provider.GetRequiredService<B>().As<B>();
+            _services.Has(2);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingleton(typeof(B), typeof(B));
+
+            Get<A>().As<A>().Is(Get<A>());
+            Get<B>().As<B>().Is(Get<B>());
         }
 
         [Fact]
         public void AsSelfFactory_Works_Ok()
         {
-            // arrange
-            var services = new ServiceCollection();
-
             // act
-            services
+            _services
                 .AddAssemblyTypes(GetType().Assembly)
                 .AssignableTo<IA>()
                 .AsSelfFactory()
                 .SingleInstance();
+            Build();
 
             // assert
-            services.Has(4);
-            services.HasSingleton(typeof(A), typeof(A));
-            services.HasSingletonFactory(typeof(A));
-            services.HasSingleton(typeof(B), typeof(B));
-            services.HasSingletonFactory(typeof(B));
-            var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<Func<A>>()().As<A>();
-            provider.GetRequiredService<Func<B>>()().As<B>();
+            _services.Has(4);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingletonFuncFactory(typeof(A));
+            _services.HasSingleton(typeof(B), typeof(B));
+            _services.HasSingletonFuncFactory(typeof(B));
+
+            Get<Func<A>>()().As<A>().Is(Get<A>());
+            Get<Func<B>>()().As<B>().Is(Get<B>());
         }
 
         [Fact]
         public void AsImplementedInterfaces_Works_Ok()
         {
-            // arrange
-            var services = new ServiceCollection();
-
             // act
-            services
+            _services
                 .AddAssemblyTypes(GetType().Assembly)
                 .AssignableTo<IA>()
                 .AsImplementedInterfaces()
                 .SingleInstance();
+            Build();
 
             // assert
-            services.Has(5);
-            services.HasSingleton(typeof(A), typeof(A));
-            services.HasSingleton(typeof(IA), typeof(A));
-            services.HasSingleton(typeof(B), typeof(B));
-            services.HasSingleton(typeof(IA), typeof(B));
-            services.HasSingleton(typeof(IB), typeof(B));
-            var provider = services.BuildServiceProvider();
-            provider.GetRequiredService<IA>().As<B>();
-            var arr = provider.GetRequiredService<IEnumerable<IA>>().ToArray();
+            _services.Has(5);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingletonTypeFactory(typeof(IA), 2);
+            _services.HasSingleton(typeof(B), typeof(B));
+            _services.HasSingletonTypeFactory(typeof(IB));
+
+            Get<IA>().Is(Get<B>());
+            var arr = Get<IEnumerable<IA>>().ToArray();
             arr.Has(2);
-            arr.At(0).GetType().Is(typeof(A));
-            arr.At(1).GetType().Is(typeof(B));
-            provider.GetRequiredService<IB>().As<B>();
+            arr.At(0).Is(Get<A>());
+            arr.At(1).Is(Get<B>());
+            Get<IB>().Is(Get<B>());
         }
 
         [Fact]
         public void AsImplementedInterfacesFactories_Works_Ok()
         {
-            // arrange
-            var services = new ServiceCollection();
-
             // act
-            services
+            _services
                 .AddAssemblyTypes(GetType().Assembly)
                 .AssignableTo<IA>()
                 .AsImplementedInterfacesFactories()
                 .SingleInstance();
+            Build();
 
             // assert
-            services.Has(5);
-            services.HasSingleton(typeof(A), typeof(A));
-            services.HasSingletonFactory(typeof(IA), 2);
-            services.HasSingleton(typeof(B), typeof(B));
-            services.HasSingletonFactory(typeof(IB));
-            var provider = services.BuildServiceProvider();
-            var a = provider.GetRequiredService<Func<IA>>()();
-            a.GetType().Is(typeof(B));
-            var arr = provider.GetRequiredService<IEnumerable<Func<IA>>>().ToArray();
+            _services.Has(5);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingletonFuncFactory(typeof(IA), 2);
+            _services.HasSingleton(typeof(B), typeof(B));
+            _services.HasSingletonFuncFactory(typeof(IB));
+
+            Get<Func<IA>>()().Is(Get<B>());
+            var arr = Get<IEnumerable<Func<IA>>>().ToArray();
             arr.Has(2);
-            arr.At(0)().GetType().Is(typeof(A));
-            arr.At(1)().GetType().Is(typeof(B));
-            var b = provider.GetRequiredService<Func<IB>>()();
-            b.GetType().Is(typeof(B));
+            arr.At(0)().Is(Get<A>());
+            arr.At(1)().Is(Get<B>());
+            Get<Func<IB>>()().Is(Get<B>());
+        }
+
+        [Fact]
+        public void AsAll_Works_Ok()
+        {
+            // act
+            _services
+                .AddAssemblyTypes(GetType().Assembly)
+                .AssignableTo<IA>()
+                .As<A>()
+                .AsSelf()
+                .AsSelfFactory()
+                .AsImplementedInterfaces()
+                .AsImplementedInterfacesFactories()
+                .SingleInstance();
+            Build();
+
+            // assert
+            _services.Has(11);
+            _services.HasSingleton(typeof(A), typeof(A));
+            _services.HasSingleton(typeof(B), typeof(B));
+            _services.HasSingletonTypeFactory(typeof(A));
+            _services.HasSingletonTypeFactory(typeof(IA), 2);
+            _services.HasSingletonTypeFactory(typeof(IB));
+            _services.HasSingletonFuncFactory(typeof(A));
+            _services.HasSingletonFuncFactory(typeof(B));
+            _services.HasSingletonFuncFactory(typeof(IA), 2);
+            _services.HasSingletonFuncFactory(typeof(IB));
+        }
+
+        private void Build()
+        {
+            _provider = _services.BuildServiceProvider();
+        }
+
+        private T Get<T>()
+        {
+            return _provider.GetRequiredService<T>();
         }
 
         internal class A : IA
