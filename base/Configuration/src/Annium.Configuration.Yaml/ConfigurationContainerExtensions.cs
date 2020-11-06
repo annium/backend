@@ -7,11 +7,12 @@ namespace Annium.Configuration.Abstractions
 {
     public static class ConfigurationBuilderExtensions
     {
-        public static IConfigurationContainer AddYamlFile(
-            this IConfigurationContainer container,
+        public static TContainer AddYamlFile<TContainer>(
+            this TContainer container,
             string path,
             bool optional = false
         )
+            where TContainer : IConfigurationContainer
         {
             path = Path.GetFullPath(path);
             if (!File.Exists(path))
@@ -23,14 +24,17 @@ namespace Annium.Configuration.Abstractions
             var raw = File.ReadAllText(path);
             var configuration = new YamlConfigurationProvider(raw).Read();
 
-            return container.Add(configuration);
+            container.Add(configuration);
+
+            return container;
         }
 
-        public static async Task<IConfigurationContainer> AddRemoteYaml(
-            this IConfigurationContainer container,
+        public static async Task<TContainer> AddRemoteYaml<TContainer>(
+            this TContainer container,
             string uri,
             bool optional = false
         )
+            where TContainer : IConfigurationContainer
         {
             var client = new HttpClient();
             var message = new HttpRequestMessage(HttpMethod.Get, uri);
@@ -44,7 +48,9 @@ namespace Annium.Configuration.Abstractions
             var raw = await response.Content.ReadAsStringAsync();
             var configuration = new YamlConfigurationProvider(raw).Read();
 
-            return container.Add(configuration);
+            container.Add(configuration);
+
+            return container;
         }
     }
 }
