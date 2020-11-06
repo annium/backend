@@ -9,7 +9,7 @@ namespace Annium.Configuration.Tests
     public static class Helper
     {
         public static IServiceProvider GetProvider<T>(
-            Action<IConfigurationBuilder> configure
+            Action<IConfigurationContainer> configure
         )
             where T : class, new()
         {

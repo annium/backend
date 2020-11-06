@@ -8,7 +8,7 @@ namespace Annium.Configuration.Abstractions
     public static class Configurator
     {
         public static T Get<T>(
-            Action<IConfigurationBuilder> configure,
+            Action<IConfigurationContainer> configure,
             bool tryLoadReferences
         )
             where T : class, new()
@@ -20,15 +20,15 @@ namespace Annium.Configuration.Abstractions
             return Get<T>(services);
         }
 
-        public static T Get<T>(
-            Func<IConfigurationBuilder, Task> configure,
+        public static async Task<T> Get<T>(
+            Func<IConfigurationContainer, Task> configure,
             bool tryLoadReferences
         )
             where T : class, new()
         {
             var services = GetServices<T>(tryLoadReferences);
 
-            services.AddConfiguration<T>(configure);
+            await services.AddConfiguration<T>(configure);
 
             return Get<T>(services);
         }

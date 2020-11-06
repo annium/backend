@@ -13,56 +13,60 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddConfigurationBuilder(
+        public static IServiceCollection AddConfiguration<T>(
+            this IServiceCollection services,
+            Action<IConfigurationContainer> configure
+        )
+            where T : class, new()
+        {
+            services.AddConfigurationBuilder();
+
+            var container = new ConfigurationContainer();
+            configure(container);
+
+            services.AddSingleton(sp =>
+            {
+                var builder = sp.GetRequiredService<IConfigurationBuilder>();
+                builder.Add(container.Get());
+
+                return builder.Build<T>();
+            });
+
+            Register(services, typeof(T));
+
+            return services;
+        }
+
+        public static async Task<IServiceCollection> AddConfiguration<T>(
+            this IServiceCollection services,
+            Func<IConfigurationContainer, Task> configure
+        )
+            where T : class, new()
+        {
+            services.AddConfigurationBuilder();
+
+            var container = new ConfigurationContainer();
+            await configure(container);
+
+            services.AddSingleton(sp =>
+            {
+                var builder = sp.GetRequiredService<IConfigurationBuilder>();
+                builder.Add(container.Get());
+
+                return builder.Build<T>();
+            });
+
+            Register(services, typeof(T));
+
+            return services;
+        }
+
+        private static void AddConfigurationBuilder(
             this IServiceCollection services
         )
         {
             services.TryAddTransient<IConfigurationBuilder, ConfigurationBuilder>();
             services.TryAddTransient<Func<IConfigurationBuilder>>(sp => sp.GetRequiredService<IConfigurationBuilder>);
-
-            return services;
-        }
-
-        public static IServiceCollection AddConfiguration<T>(
-            this IServiceCollection services,
-            Action<IConfigurationBuilder> configure
-        )
-            where T : class, new()
-        {
-            services.AddConfigurationBuilder();
-            services.AddSingleton(sp =>
-            {
-                var builder = sp.GetRequiredService<IConfigurationBuilder>();
-
-                configure(builder);
-
-                return builder.Build<T>();
-            });
-
-            Register(services, typeof(T));
-
-            return services;
-        }
-
-        public static IServiceCollection AddConfiguration<T>(
-            this IServiceCollection services,
-            Func<IConfigurationBuilder, Task> configure
-        )
-            where T : class, new()
-        {
-            services.AddConfigurationBuilder();
-            services.AddSingleton(sp =>
-            {
-                var builder = sp.GetRequiredService<IConfigurationBuilder>();
-
-                configure(builder).Wait();
-
-                return builder.Build<T>();
-            });
-
-            Register(services, typeof(T));
-
-            return services;
         }
 
         private static void Register(
