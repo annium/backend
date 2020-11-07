@@ -1,4 +1,4 @@
-using System.IO;
+using System;
 using Annium.Core.Runtime.Resources;
 
 namespace Annium.Core.Runtime.Internal.Resources
@@ -6,11 +6,11 @@ namespace Annium.Core.Runtime.Internal.Resources
     internal class Resource : IResource
     {
         public string Name { get; }
-        public Stream Content { get; }
+        public ReadOnlyMemory<byte> Content { get; }
 
         public Resource(
             string name,
-            Stream content
+            ReadOnlyMemory<byte> content
         )
         {
             Name = name;
@@ -19,7 +19,7 @@ namespace Annium.Core.Runtime.Internal.Resources
 
         public void Deconstruct(
             out string name,
-            out Stream content
+            out ReadOnlyMemory<byte> content
         )
         {
             name = Name;

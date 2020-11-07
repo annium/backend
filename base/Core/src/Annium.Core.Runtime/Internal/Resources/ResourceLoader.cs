@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,10 +22,12 @@ namespace Annium.Core.Runtime.Internal.Resources
                 .Select(r =>
                 {
                     var name = r.Substring(prefix.Length);
-                    var rs = assembly.GetManifestResourceStream(r)!;
+                    using var rs = assembly.GetManifestResourceStream(r)!;
                     rs.Seek(0, SeekOrigin.Begin);
+                    using var ms = new MemoryStream();
+                    rs.CopyTo(ms);
 
-                    return new Resource(name, rs);
+                    return new Resource(name, ms.ToArray().AsMemory());
                 })
                 .ToArray();
         }

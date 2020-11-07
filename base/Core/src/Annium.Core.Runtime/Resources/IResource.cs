@@ -1,15 +1,15 @@
-using System.IO;
+using System;
 
 namespace Annium.Core.Runtime.Resources
 {
     public interface IResource
     {
         string Name { get; }
-        Stream Content { get; }
+        ReadOnlyMemory<byte> Content { get; }
 
         void Deconstruct(
             out string name,
-            out Stream content
+            out ReadOnlyMemory<byte> content
         );
     }
 }
