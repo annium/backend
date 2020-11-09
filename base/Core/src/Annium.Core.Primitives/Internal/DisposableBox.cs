@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -8,11 +9,10 @@ namespace Annium.Core.Primitives.Internal
 {
     internal class DisposableBox : IDisposableBox
     {
-        private readonly object _locker = new object();
-        private readonly IList<IDisposable> _syncDisposables = new List<IDisposable>();
-        private readonly IList<IAsyncDisposable> _asyncDisposables = new List<IAsyncDisposable>();
-        private readonly IList<Action> _syncDisposes = new List<Action>();
-        private readonly IList<Func<Task>> _asyncDisposes = new List<Func<Task>>();
+        private readonly ConcurrentBag<IDisposable> _syncDisposables = new ConcurrentBag<IDisposable>();
+        private readonly ConcurrentBag<IAsyncDisposable> _asyncDisposables = new ConcurrentBag<IAsyncDisposable>();
+        private readonly ConcurrentBag<Action> _syncDisposes = new ConcurrentBag<Action>();
+        private readonly ConcurrentBag<Func<Task>> _asyncDisposes = new ConcurrentBag<Func<Task>>();
 
         public IDisposableBox Add(IDisposable disposable) => Push(_syncDisposables, disposable);
 
@@ -40,23 +40,20 @@ namespace Annium.Core.Primitives.Internal
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IDisposableBox Push<T>(IList<T> entries, T entry)
+        private IDisposableBox Push<T>(ConcurrentBag<T> entries, T entry)
         {
-            lock (_locker)
-                entries.Add(entry);
+            entries.Add(entry);
 
             return this;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private IReadOnlyCollection<T> Pull<T>(IList<T> entries)
+        private IReadOnlyCollection<T> Pull<T>(ConcurrentBag<T> entries)
         {
-            lock (_locker)
-            {
-                var slice = entries.ToArray();
-                entries.Clear();
-                return slice;
-            }
+            var slice = entries.ToArray();
+            entries.Clear();
+
+            return slice;
         }
     }
 }

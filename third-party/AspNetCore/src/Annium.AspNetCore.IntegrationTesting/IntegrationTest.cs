@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public class IntegrationTest : IDisposable
+    public class IntegrationTest : IAsyncDisposable
     {
-        private readonly ConcurrentBag<IDisposable> _disposables = new ConcurrentBag<IDisposable>();
+        private readonly IDisposableBox _disposable = Disposable.Box();
 
         private readonly ConcurrentDictionary<Type, IHttpRequest> _requestSamples =
             new ConcurrentDictionary<Type, IHttpRequest>();
@@ -63,17 +65,16 @@ namespace Annium.AspNetCore.IntegrationTesting
             _requestSamples.GetOrAdd(typeof(TStartup), _ =>
             {
                 var appFactory = new TestWebApplicationFactory<TStartup>(configureHost);
-                _disposables.Add(appFactory);
+                _disposable.Add(appFactory);
                 var client = appFactory.CreateClient();
                 var requestFactory = appFactory.Services.GetRequiredService<IHttpRequestFactory>();
 
                 return requestFactory.New().UseClient(client);
             }).Clone();
 
-        public void Dispose()
+        public async ValueTask DisposeAsync()
         {
-            foreach (var disposable in _disposables)
-                disposable.Dispose();
+            await _disposable.DisposeAsync();
         }
     }
 }
