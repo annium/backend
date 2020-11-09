@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
@@ -13,7 +14,7 @@ namespace Annium.AspNetCore.TestServer.Controllers
     [Route("/")]
     public class IndexController : ServerController
     {
-        public IndexController(IMediator mediator) : base(mediator)
+        public IndexController(IMediator mediator, IServiceProvider sp) : base(mediator, sp)
         {
         }
 
