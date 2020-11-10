@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Net.Http;
@@ -9,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public class IntegrationTest : IAsyncDisposable
+    public class IntegrationTest : IDisposable
     {
         private readonly IDisposableBox _disposable = Disposable.Box();
 
@@ -72,9 +71,9 @@ namespace Annium.AspNetCore.IntegrationTesting
                 return requestFactory.New().UseClient(client);
             }).Clone();
 
-        public async ValueTask DisposeAsync()
+        public void Dispose()
         {
-            await _disposable.DisposeAsync();
+            _disposable.Dispose();
         }
     }
 }
