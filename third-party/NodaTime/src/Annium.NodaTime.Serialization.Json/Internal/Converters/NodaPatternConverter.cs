@@ -1,10 +1,9 @@
 using System;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 using NodaTime.Text;
 using NodaTime.Utility;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// A JSON converter for types which can be represented by a single string value, parsed or formatted
@@ -13,8 +12,8 @@ namespace Annium.NodaTime.Serialization.Json
     /// <typeparam name="T">The type to convert to/from JSON.</typeparam>
     internal sealed class NodaPatternConverter<T> : ConverterBase<T>
     {
-        private readonly IPattern<T> pattern;
-        private readonly Action<T> validator;
+        private readonly IPattern<T> _pattern;
+        private readonly Action<T> _validator;
 
         /// <summary>
         /// Creates a new instance with a pattern and no validator.
@@ -35,8 +34,8 @@ namespace Annium.NodaTime.Serialization.Json
         public NodaPatternConverter(IPattern<T> pattern, Action<T> validator)
         {
             Preconditions.CheckNotNull(pattern, nameof(pattern));
-            this.pattern = pattern;
-            this.validator = validator;
+            _pattern = pattern;
+            _validator = validator;
         }
 
         public override T ReadImplementation(
@@ -48,7 +47,7 @@ namespace Annium.NodaTime.Serialization.Json
             if (reader.TokenType != JsonTokenType.String)
                 throw new InvalidNodaDataException($"Unexpected token parsing {typeof(T).Name}. Expected String, got {reader.TokenType}.");
 
-            return pattern.Parse(reader.GetString()).Value;
+            return _pattern.Parse(reader.GetString()!).Value;
         }
 
         public override void WriteImplementation(
@@ -57,8 +56,8 @@ namespace Annium.NodaTime.Serialization.Json
             JsonSerializerOptions options
         )
         {
-            validator?.Invoke(value);
-            writer.WriteStringValue(pattern.Format(value));
+            _validator.Invoke(value);
+            writer.WriteStringValue(_pattern.Format(value));
         }
     }
 }

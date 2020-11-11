@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// Base class for all the Json converters which handle value types (which is most of them).

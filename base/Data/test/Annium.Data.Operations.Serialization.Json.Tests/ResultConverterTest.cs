@@ -51,7 +51,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IResult>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult>("{}", GetSettings())!;
 
             // assert
             result.IsOk.IsTrue();
@@ -61,7 +61,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_WithErrors_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IResult>(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult>(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
 
             // assert
             result.HasErrors.IsTrue();
@@ -75,7 +75,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5}", GetSettings());
+            var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5}", GetSettings())!;
 
             // assert
             result.IsOk.IsTrue();
@@ -87,7 +87,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         {
             // act
             var result = JsonSerializer.Deserialize<IResult<int>>(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}",
-                GetSettings());
+                GetSettings())!;
 
             // assert
             result.HasErrors.IsTrue();

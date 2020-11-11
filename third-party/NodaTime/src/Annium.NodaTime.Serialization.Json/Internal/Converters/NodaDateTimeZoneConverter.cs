@@ -2,19 +2,19 @@ using System;
 using System.Text.Json;
 using NodaTime;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// Json converter for <see cref="DateTimeZone"/>.
     /// </summary>
     internal sealed class NodaDateTimeZoneConverter : ConverterBase<DateTimeZone>
     {
-        private readonly IDateTimeZoneProvider provider;
+        private readonly IDateTimeZoneProvider _provider;
 
         /// <param name="provider">Provides the <see cref="DateTimeZone"/> that corresponds to each time zone ID in the JSON string.</param>
         public NodaDateTimeZoneConverter(IDateTimeZoneProvider provider)
         {
-            this.provider = provider;
+            _provider = provider;
         }
 
         public override DateTimeZone ReadImplementation(
@@ -25,9 +25,9 @@ namespace Annium.NodaTime.Serialization.Json
         {
             Preconditions.CheckData(reader.TokenType == JsonTokenType.String, $"Unexpected token parsing instant. Expected String, got {reader.TokenType}.");
 
-            var timeZoneId = reader.GetString();
+            var timeZoneId = reader.GetString()!;
 
-            return provider[timeZoneId];
+            return _provider[timeZoneId];
         }
 
         public override void WriteImplementation(

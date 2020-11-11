@@ -31,7 +31,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_BlankValueType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<int>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<int>>("{}", GetSettings())!;
 
             // assert
             result.Status.IsEqual(0);
@@ -41,7 +41,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_BlankReferenceType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<string>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<string>>("{}", GetSettings())!;
 
             // assert
             result.Status.IsDefault();
@@ -51,7 +51,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<int>>(@"{""status"":5}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<int>>(@"{""status"":5}", GetSettings())!;
 
             // assert
             result.Status.IsEqual(5);
@@ -64,7 +64,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
             var result = JsonSerializer.Deserialize<IStatusResult<int>>(
                 @"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}",
                 GetSettings()
-            );
+            )!;
 
             // assert
             result.Status.IsEqual(5);
@@ -98,7 +98,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_BlankValueType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<int, int>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<int, int>>("{}", GetSettings())!;
 
             // assert
             result.Status.IsEqual(0);
@@ -109,7 +109,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_BlankReferenceType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<string, string>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<string, string>>("{}", GetSettings())!;
 
             // assert
             result.Status.IsDefault();
@@ -120,7 +120,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IStatusResult<int, string>>(@"{""status"":5,""data"":""some""}", GetSettings());
+            var result = JsonSerializer.Deserialize<IStatusResult<int, string>>(@"{""status"":5,""data"":""some""}", GetSettings())!;
 
             // assert
             result.Status.IsEqual(5);
@@ -132,7 +132,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         {
             // act
             var result = JsonSerializer.Deserialize<IStatusResult<int, string>>(
-                @"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+                @"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
 
             // assert
             result.Status.IsEqual(5);

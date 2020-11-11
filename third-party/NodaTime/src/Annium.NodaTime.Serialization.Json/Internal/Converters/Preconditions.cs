@@ -1,7 +1,7 @@
 using System;
 using NodaTime.Utility;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// Helper static methods for argument/state validation. (Just the subset used within this library.)

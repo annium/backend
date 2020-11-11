@@ -9,7 +9,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 {
     public class NodaDateIntervalConverterTest
     {
-        private readonly JsonConverter[] converters = new[] { Converters.DateIntervalConverter, Converters.LocalDateConverter };
+        private readonly JsonConverter[] _converters = new[] { Converters.DateIntervalConverter, Converters.LocalDateConverter };
 
         [Fact]
         public void RoundTrip()
@@ -17,7 +17,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
             var startLocalDate = new LocalDate(2012, 1, 2);
             var endLocalDate = new LocalDate(2013, 6, 7);
             var dateInterval = new DateInterval(startLocalDate, endLocalDate);
-            AssertConversions(dateInterval, "{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}", converters);
+            AssertConversions(dateInterval, "{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}", _converters);
         }
 
         [Fact]
@@ -29,7 +29,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 
             var testObject = new TestObject { Interval = dateInterval };
 
-            var json = JsonSerializer.Serialize(testObject, With(converters));
+            var json = JsonSerializer.Serialize(testObject, With(_converters));
             json.IsEqual("{\"interval\":{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}}");
         }
 
@@ -38,7 +38,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
         {
             string json = "{\"interval\":{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}}";
 
-            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(converters));
+            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(_converters))!;
 
             var interval = testObject.Interval;
 

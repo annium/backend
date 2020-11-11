@@ -4,11 +4,11 @@ using NodaTime;
 using NodaTime.Text;
 using NodaTime.Utility;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// Json converter for <see cref="Interval"/>.
-    /// </summary>   
+    /// </summary>
     internal sealed class NodaIsoIntervalConverter : ConverterBase<Interval>
     {
         public override Interval ReadImplementation(
@@ -20,7 +20,7 @@ namespace Annium.NodaTime.Serialization.Json
             if (reader.TokenType != JsonTokenType.String)
                 throw new InvalidNodaDataException($"Unexpected token parsing Interval. Expected String, got {reader.TokenType}.");
 
-            var text = reader.GetString();
+            var text = reader.GetString()!;
             var slash = text.IndexOf('/');
             if (slash == -1)
                 throw new InvalidNodaDataException("Expected ISO-8601-formatted interval; slash was missing.");

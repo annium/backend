@@ -4,13 +4,13 @@ using Annium.Extensions.Primitives;
 using NodaTime;
 using NodaTime.Utility;
 
-namespace Annium.NodaTime.Serialization.Json
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 {
     /// <summary>
     /// Json converter for <see cref="DateInterval"/> using a compound representation. The start and
     /// end aspects of the date interval are represented with separate properties, each parsed and formatted
     /// by the <see cref="LocalDate"/> converter for the serializer provided.
-    /// </summary>   
+    /// </summary>
     internal sealed class NodaDateIntervalConverter : ConverterBase<DateInterval>
     {
         public override DateInterval ReadImplementation(

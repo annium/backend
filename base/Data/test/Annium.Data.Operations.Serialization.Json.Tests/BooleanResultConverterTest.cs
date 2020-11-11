@@ -31,7 +31,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_Blank_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult>("{}", GetSettings())!;
 
             // assert
             result.IsSuccess.IsFalse();
@@ -42,7 +42,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void BaseRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>(@"{""isSuccess"":true}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult>(@"{""isSuccess"":true}", GetSettings())!;
 
             // assert
             result.IsSuccess.IsTrue();
@@ -56,7 +56,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
             var result = JsonSerializer.Deserialize<IBooleanResult>(
                 @"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}"
                 , GetSettings()
-            );
+            )!;
 
             // assert
             result.IsSuccess.IsTrue();
@@ -91,7 +91,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_BlankValueType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult<int>>("{}", GetSettings())!;
 
             // assert
             result.Data.IsEqual(0);
@@ -103,7 +103,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_BlankReferenceType_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<string>>("{}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult<string>>("{}", GetSettings())!;
 
             // assert
             result.Data.IsDefault();
@@ -115,7 +115,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         public void DataRead_Result_ReadsCorrectly()
         {
             // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings());
+            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings())!;
 
             // assert
             result.Data.IsEqual(5);
@@ -128,7 +128,7 @@ namespace Annium.Data.Operations.Serialization.Json.Tests
         {
             // act
             var result = JsonSerializer.Deserialize<IBooleanResult<int>>(
-                @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings());
+                @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
 
             // assert
             result.Data.IsEqual(5);

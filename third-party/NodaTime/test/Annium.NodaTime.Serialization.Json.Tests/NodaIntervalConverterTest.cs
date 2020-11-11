@@ -9,7 +9,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 {
     public class NodaIntervalConverterTest
     {
-        private readonly JsonConverter[] converters = new[] { Converters.IntervalConverter, Converters.InstantConverter };
+        private readonly JsonConverter[] _converters = new[] { Converters.IntervalConverter, Converters.InstantConverter };
 
         [Fact]
         public void RoundTrip()
@@ -17,16 +17,16 @@ namespace Annium.NodaTime.Serialization.Json.Tests
             var startInstant = Instant.FromUtc(2012, 1, 2, 3, 4, 5) + Duration.FromMilliseconds(670);
             var endInstant = Instant.FromUtc(2013, 6, 7, 8, 9, 10) + Duration.FromNanoseconds(123456789);
             var interval = new Interval(startInstant, endInstant);
-            AssertConversions(interval, "{\"start\":\"2012-01-02T03:04:05.67Z\",\"end\":\"2013-06-07T08:09:10.123456789Z\"}", converters);
+            AssertConversions(interval, "{\"start\":\"2012-01-02T03:04:05.67Z\",\"end\":\"2013-06-07T08:09:10.123456789Z\"}", _converters);
         }
 
         [Fact]
         public void RoundTrip_Infinite()
         {
             var instant = Instant.FromUtc(2013, 6, 7, 8, 9, 10) + Duration.FromNanoseconds(123456789);
-            AssertConversions(new Interval(null, instant), "{\"end\":\"2013-06-07T08:09:10.123456789Z\"}", converters);
-            AssertConversions(new Interval(instant, null), "{\"start\":\"2013-06-07T08:09:10.123456789Z\"}", converters);
-            AssertConversions(new Interval(null, null), "{}", converters);
+            AssertConversions(new Interval(null, instant), "{\"end\":\"2013-06-07T08:09:10.123456789Z\"}", _converters);
+            AssertConversions(new Interval(instant, null), "{\"start\":\"2013-06-07T08:09:10.123456789Z\"}", _converters);
+            AssertConversions(new Interval(null, null), "{}", _converters);
         }
 
         [Fact]
@@ -38,7 +38,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 
             var testObject = new TestObject { Interval = interval };
 
-            var json = JsonSerializer.Serialize(testObject, With(converters));
+            var json = JsonSerializer.Serialize(testObject, With(_converters));
             json.IsEqual("{\"interval\":{\"start\":\"2012-01-02T03:04:05Z\",\"end\":\"2013-06-07T08:09:10Z\"}}");
         }
 
@@ -51,7 +51,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
 
             var testObject = new TestObject { Interval = interval };
 
-            var json = JsonSerializer.Serialize(testObject, With(converters));
+            var json = JsonSerializer.Serialize(testObject, With(_converters));
             json.IsEqual("{\"interval\":{\"start\":\"2012-01-02T03:04:05Z\",\"end\":\"2013-06-07T08:09:10Z\"}}");
         }
 
@@ -60,7 +60,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
         {
             string json = "{\"interval\":{\"start\":\"2012-01-02T03:04:05Z\",\"end\":\"2013-06-07T08:09:10Z\"}}";
 
-            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(converters));
+            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(_converters))!;
 
             var interval = testObject.Interval;
 
@@ -75,7 +75,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
         {
             string json = "{\"interval\":{\"start\":\"2012-01-02T03:04:05Z\",\"end\":\"2013-06-07T08:09:10Z\"}}";
 
-            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(converters));
+            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(_converters))!;
 
             var interval = testObject.Interval;
 

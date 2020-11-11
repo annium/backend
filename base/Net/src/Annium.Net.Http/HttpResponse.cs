@@ -31,7 +31,7 @@ namespace Annium.Net.Http
             IsSuccess = message.IsSuccessStatusCode;
             IsFailure = !message.IsSuccessStatusCode;
             StatusCode = message.StatusCode;
-            StatusText = message.ReasonPhrase;
+            StatusText = message.ReasonPhrase!;
             Headers = message.Headers;
             Content = message.Content;
         }
