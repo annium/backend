@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 using Annium.Localization.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +17,7 @@ namespace Annium.Core.DependencyInjection
             foreach (var service in options.LocaleStorageServices)
                 services.Add(service);
 
-            services.AddSingleton<Func<CultureInfo>>(options.CultureAccessor);
+            services.AddSingleton(options.CultureAccessor);
 
             services.AddSingleton(typeof(ILocalizer<>), typeof(Localizer<>));
 

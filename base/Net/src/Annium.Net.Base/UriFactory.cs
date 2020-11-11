@@ -85,7 +85,7 @@ namespace Annium.Net.Base
             if (baseUri is null)
             {
                 if (string.IsNullOrWhiteSpace(this.uri))
-                    throw new UriFormatException($"Request URI is empty");
+                    throw new UriFormatException("Request URI is empty");
 
                 var uri = new Uri(this.uri);
                 EnsureAbsolute(uri);
@@ -99,9 +99,9 @@ namespace Annium.Net.Base
             if (!uri.StartsWith("/"))
             {
                 if (Uri.TryCreate(uri, UriKind.Absolute, out _))
-                    throw new UriFormatException($"Both base and path are absolute URI");
+                    throw new UriFormatException("Both base and path are absolute URI");
 
-                return new Uri($"{baseUri.ToString().TrimEnd('/')}/{uri.ToString().TrimStart('/')}");
+                return new Uri($"{baseUri.ToString().TrimEnd('/')}/{uri.TrimStart('/')}");
             }
 
             var sb = new StringBuilder();
@@ -110,7 +110,7 @@ namespace Annium.Net.Base
             if (!baseUri.IsDefaultPort)
                 sb.Append($":{baseUri.Port}");
 
-            return new Uri($"{sb.ToString()}/{uri.ToString().TrimStart('/')}");
+            return new Uri($"{sb}/{uri.TrimStart('/')}");
         }
 
         private void EnsureAbsolute(Uri uri)

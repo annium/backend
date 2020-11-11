@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;
@@ -200,7 +199,7 @@ namespace Annium.Core.Mediator.Tests
                 logger.Info(GetType().FullName!);
                 logger.Info(request.GetHashCode().ToString());
 
-                var response = new TResponse() { Value = request.Value!.Replace(' ', '_') };
+                var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
                 return Task.FromResult(response);
             }
@@ -225,7 +224,7 @@ namespace Annium.Core.Mediator.Tests
                 logger.Info(GetType().FullName!);
                 logger.Info(request.GetHashCode().ToString());
 
-                return Task.FromResult(new One() { First = request.Value!.Length, Value = request.Value });
+                return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
             }
         }
 

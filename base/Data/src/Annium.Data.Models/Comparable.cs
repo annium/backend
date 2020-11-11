@@ -23,8 +23,7 @@ namespace Annium.Data.Models
         {
             if (obj is T other)
                 return CompareTo(other);
-            else
-                throw new ArgumentException($"Cannot compare {typeof(T)} with {obj?.GetType().FullName ?? "null"}");
+            throw new ArgumentException($"Cannot compare {typeof(T)} with {obj?.GetType().FullName ?? "null"}");
         }
 
         protected abstract IEnumerable<Func<T, IComparable>> GetComparables();

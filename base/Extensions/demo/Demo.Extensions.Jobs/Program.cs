@@ -4,6 +4,7 @@ using Annium.Core.Entrypoint;
 using Annium.Extensions.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
+using Interval = Annium.Extensions.Jobs.Interval;
 
 namespace Demo.Extensions.Jobs
 {
@@ -17,7 +18,7 @@ namespace Demo.Extensions.Jobs
         {
             var resolver = provider.GetRequiredService<IIntervalResolver>();
 
-            var isMatch = resolver.GetMatcher(Annium.Extensions.Jobs.Interval.Minutely);
+            var isMatch = resolver.GetMatcher(Interval.Minutely);
 
             var matched = isMatch(GetInstant(2000, 1, 12, 5, 6, 15));
         }

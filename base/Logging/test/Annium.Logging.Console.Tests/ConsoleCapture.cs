@@ -1,7 +1,7 @@
-using SysConsole = System.Console;
 using System;
 using System.IO;
 using System.Threading;
+using SysConsole = System.Console;
 
 namespace Annium.Logging.Console.Tests
 {

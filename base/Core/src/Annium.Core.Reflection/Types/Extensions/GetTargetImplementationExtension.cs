@@ -21,7 +21,7 @@ namespace Annium.Core.Reflection
 
             // can't resolve implementation by type with generic parameters
             if (type.ContainsGenericParameters)
-                throw new ArgumentException($"Can't resolve implementation of generic type with parameters");
+                throw new ArgumentException("Can't resolve implementation of generic type with parameters");
 
             // if can assign type to target - just return target
             if (target.IsAssignableFrom(type))

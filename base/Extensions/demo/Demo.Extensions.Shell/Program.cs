@@ -19,7 +19,7 @@ namespace Demo.Extensions.Shell
             var shell = provider.GetRequiredService<IShell>();
             var ls = await shell
                 .Cmd("ls")
-                .Configure(new ProcessStartInfo() { WorkingDirectory = "/" })
+                .Configure(new ProcessStartInfo { WorkingDirectory = "/" })
                 .RunAsync(token);
 
             Console.WriteLine(ls.IsSuccess);

@@ -1,10 +1,11 @@
 using System;
-using System.Threading;
-using Annium.Core.Reflection;
-using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
-using Annium.Core.Entrypoint;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Threading;
+using Annium.Core.Entrypoint;
+using Annium.Core.Reflection;
+using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Core.Runtime.Types;
 
 namespace Demo.Core.Reflection
@@ -23,7 +24,7 @@ namespace Demo.Core.Reflection
 
             var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.InnerTwo });
 
-            var impl = typeManager.GetImplementations(typeof(System.Linq.Expressions.MemberExpression));
+            var impl = typeManager.GetImplementations(typeof(MemberExpression));
             var result = typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplementation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>));
         }
 

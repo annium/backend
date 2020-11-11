@@ -1,11 +1,12 @@
 using System;
 using Annium.Logging.Abstractions;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 using MicrosoftEventId = Microsoft.Extensions.Logging.EventId;
 using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Annium.Logging.Microsoft
 {
-    internal class LoggerBridge : global::Microsoft.Extensions.Logging.ILogger
+    internal class LoggerBridge : ILogger
     {
         private readonly ILogRouter _router;
         private readonly Type _source;

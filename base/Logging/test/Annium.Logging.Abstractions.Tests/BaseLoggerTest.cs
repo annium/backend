@@ -135,7 +135,7 @@ namespace Annium.Logging.Abstractions.Tests
 
             services.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
-                .Use(ServiceDescriptor.Singleton<LogHandler>(new LogHandler(messages)))
+                .Use(ServiceDescriptor.Singleton(new LogHandler(messages)))
             );
 
             return services.BuildServiceProvider().GetRequiredService<ILogger<BaseLoggerTest>>();

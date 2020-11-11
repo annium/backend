@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Annium.Testing
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Method)]
     public class BeforeAttribute : Attribute, ILocatedAttribute
     {
         public string File { get; }

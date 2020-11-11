@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace Annium.Storage.FileSystem
         ) : base(logger)
         {
             if (configuration is null)
-                throw new System.ArgumentNullException(nameof(configuration));
+                throw new ArgumentNullException(nameof(configuration));
 
             VerifyPath(configuration.Directory);
 

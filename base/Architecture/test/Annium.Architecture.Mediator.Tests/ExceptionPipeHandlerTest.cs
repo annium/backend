@@ -14,7 +14,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddExceptionHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest() { Throw = true };
+            var request = new LoginRequest { Throw = true };
 
             // act
             var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
@@ -30,7 +30,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest() { Throw = false };
+            var request = new LoginRequest { Throw = false };
 
             // act
             var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);

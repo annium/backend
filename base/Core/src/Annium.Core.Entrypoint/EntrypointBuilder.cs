@@ -7,12 +7,12 @@ namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {
-        private bool isAlreadyBuilt = false;
+        private bool isAlreadyBuilt;
 
         private RunPack Build()
         {
             if (isAlreadyBuilt)
-                throw new InvalidOperationException($"Entrypoint is already built");
+                throw new InvalidOperationException("Entrypoint is already built");
             isAlreadyBuilt = true;
 
             var gate = new ManualResetEventSlim(false);
@@ -28,7 +28,7 @@ namespace Annium.Core.Entrypoint
         {
             var cts = new CancellationTokenSource();
 
-            AssemblyLoadContext.Default.Unloading += (context) => HandleEnd();
+            AssemblyLoadContext.Default.Unloading += context => HandleEnd();
             Console.CancelKeyPress += (sender, args) => HandleEnd();
 
             return cts.Token;

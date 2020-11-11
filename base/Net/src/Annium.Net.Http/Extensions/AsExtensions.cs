@@ -37,13 +37,13 @@ namespace Annium.Net.Http
             request.ToAsync(Parse.ResultT<T>);
 
         public static Task<IResult<T>> AsResultAsync<T>(this IHttpRequest request, IResult<T> defaultValue) =>
-            request.ToAsync(Parse.ResultT<T>, defaultValue);
+            request.ToAsync(Parse.ResultT, defaultValue);
 
         public static Task<T> AsAsync<T>(this IHttpRequest request) =>
             request.ToAsync(Parse.T<T>);
 
         public static Task<T> AsAsync<T>(this IHttpRequest request, T defaultValue) =>
-            request.ToAsync(Parse.T<T>, defaultValue);
+            request.ToAsync(Parse.T, defaultValue);
 
         private static async Task<T> ToAsync<T>(
             this IHttpRequest request,

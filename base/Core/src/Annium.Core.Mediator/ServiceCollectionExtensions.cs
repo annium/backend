@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.Mediator;
+using Annium.Core.Mediator.Internal;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -32,8 +33,8 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceCollection AddMediator(this IServiceCollection services)
         {
-            services.AddSingleton<Mediator.Internal.ChainBuilder>();
-            services.AddSingleton<Mediator.Internal.NextBuilder>();
+            services.AddSingleton<ChainBuilder>();
+            services.AddSingleton<NextBuilder>();
             services.AddSingleton<IMediator, Mediator.Internal.Mediator>();
 
             return services;

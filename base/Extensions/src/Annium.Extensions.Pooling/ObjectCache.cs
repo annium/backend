@@ -164,7 +164,7 @@ namespace Annium.Extensions.Pooling
             public bool HasReferences => references != 0;
 
             private readonly AutoResetEvent gate = new AutoResetEvent(initialState: false);
-            private uint references = 0;
+            private uint references;
 
             public void Wait() => gate.WaitOne();
             public void Unlock() => gate.Set();
@@ -174,7 +174,7 @@ namespace Annium.Extensions.Pooling
                 if (Value?.Equals(default) ?? true)
                     Value = value;
                 else
-                    throw new InvalidOperationException($"Can't change CacheEntry Value");
+                    throw new InvalidOperationException("Can't change CacheEntry Value");
             }
 
             public void AddReference() => ++references;

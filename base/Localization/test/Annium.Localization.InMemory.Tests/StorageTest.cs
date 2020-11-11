@@ -32,8 +32,8 @@ namespace Annium.Localization.InMemory.Tests
             var services = new ServiceCollection();
 
             var locales = new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
-            locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string>() { { "test", "demo" } };
-            locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string>() { { "test", "демо" } };
+            locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string> { { "test", "demo" } };
+            locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string> { { "test", "демо" } };
 
             services.AddLocalization(opts => opts.UseInMemoryStorage(locales));
 

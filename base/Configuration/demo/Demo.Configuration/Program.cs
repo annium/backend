@@ -59,10 +59,9 @@ namespace Demo.Configuration
                 Flag = true,
                 Plain = 7,
                 Array = new[] { 4, 7 },
-                Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
-                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>()
-                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Matrix = new List<int[]> { new[] { 3, 2 }, new[] { 5, 4 } },
+                List = new List<Val> { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val> { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
             };
@@ -91,10 +90,9 @@ namespace Demo.Configuration
                 Flag = true,
                 Plain = 7,
                 Array = new[] { 4, 7 },
-                Matrix = new List<int[]>() { new[] { 3, 2 }, new[] { 5, 4 } },
-                List = new List<Val>() { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
-                Dictionary = new Dictionary<string, Val>()
-                    { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
+                Matrix = new List<int[]> { new[] { 3, 2 }, new[] { 5, 4 } },
+                List = new List<Val> { new Val { Plain = 8 }, new Val { Array = new[] { 2m, 6m } } },
+                Dictionary = new Dictionary<string, Val> { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } }
             };
 

@@ -51,7 +51,6 @@ namespace Annium.Extensions.Arguments
             if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
             {
                 Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, commands));
-                return;
             }
         }
     }

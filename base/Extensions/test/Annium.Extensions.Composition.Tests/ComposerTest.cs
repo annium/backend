@@ -74,7 +74,7 @@ namespace Annium.Extensions.Composition.Tests
         {
             // arrange
             var personWithoutUser = new Person();
-            var personWithUser = new Person() { UserId = Guid.NewGuid() };
+            var personWithUser = new Person { UserId = Guid.NewGuid() };
             var composer = GetComposer<Person>();
 
             // act

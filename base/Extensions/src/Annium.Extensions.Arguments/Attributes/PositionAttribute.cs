@@ -2,7 +2,7 @@
 
 namespace Annium.Extensions.Arguments
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class PositionAttribute : BaseAttribute
     {
         public int Position { get; }

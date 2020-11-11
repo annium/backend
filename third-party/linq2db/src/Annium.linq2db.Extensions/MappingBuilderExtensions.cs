@@ -23,7 +23,7 @@ namespace Annium.linq2db.Extensions
 
                 // set as basic column
                 if (isForeignKey)
-                    fluentBuilder.HasAttribute(column.Member, new ColumnAttribute() { IsColumn = true });
+                    fluentBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
             }
         }, MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns);
 

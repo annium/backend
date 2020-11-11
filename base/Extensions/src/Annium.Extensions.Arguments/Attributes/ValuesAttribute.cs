@@ -2,7 +2,7 @@
 
 namespace Annium.Extensions.Arguments
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class ValuesAttribute : BaseAttribute
     {
         public string[] Values { get; }

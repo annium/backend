@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
-using Annium.Extensions.CommandLine;
 using Annium.Core.Entrypoint;
+using Annium.Extensions.CommandLine;
 
 namespace Demo.Extensions.CommandLine
 {

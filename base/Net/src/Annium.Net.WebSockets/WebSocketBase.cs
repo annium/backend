@@ -30,7 +30,7 @@ namespace Annium.Net.WebSockets
         )
         {
             Socket = socket;
-            this._serializer = serializer;
+            _serializer = serializer;
             _socketObservable = CreateSocketObservable();
         }
 

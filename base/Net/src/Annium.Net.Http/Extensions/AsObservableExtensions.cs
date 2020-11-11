@@ -32,13 +32,13 @@ namespace Annium.Net.Http
             request.ToObservable(Parse.ResultT<T>);
 
         public static IObservable<IResult<T>> AsResultObservable<T>(this IHttpRequest request, IResult<T> defaultValue) =>
-            request.ToObservable(Parse.ResultT<T>, defaultValue);
+            request.ToObservable(Parse.ResultT, defaultValue);
 
         public static IObservable<T> AsObservable<T>(this IHttpRequest request) =>
             request.ToObservable(Parse.T<T>);
 
         public static IObservable<T> AsObservable<T>(this IHttpRequest request, T defaultValue) =>
-            request.ToObservable(Parse.T<T>, defaultValue);
+            request.ToObservable(Parse.T, defaultValue);
 
         private static IObservable<T> ToObservable<T>(
             this IHttpRequest request,

@@ -39,7 +39,7 @@ namespace Annium.Extensions.Arguments.Internal
                         multiOptions[name].Add(next);
                     else if (options.ContainsKey(name))
                     {
-                        multiOptions[name] = new List<string>() { options[name], next };
+                        multiOptions[name] = new List<string> { options[name], next };
                         options.Remove(name);
                     }
                     else

@@ -2,7 +2,7 @@
 
 namespace Annium.Extensions.Arguments
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class HelpAttribute : BaseAttribute
     {
         public string Help { get; }

@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Annium.Testing
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class SkipAttribute : Attribute, ILocatedAttribute
     {
         public string File { get; }

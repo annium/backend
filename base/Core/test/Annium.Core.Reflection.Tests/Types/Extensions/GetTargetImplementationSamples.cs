@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -57,7 +58,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.GetTargetImplementation
     {
         public IEnumerator GetEnumerator()
         {
-            throw new System.NotImplementedException();
+            throw new NotImplementedException();
         }
     }
 

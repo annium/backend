@@ -2,7 +2,7 @@
 
 namespace Annium.Testing
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class)]
     public class FixtureAttribute : Attribute
     {
     }

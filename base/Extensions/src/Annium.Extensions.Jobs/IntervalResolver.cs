@@ -29,7 +29,7 @@ namespace Annium.Extensions.Jobs
             ));
 
             var type = typeof(ZonedDateTime);
-            var parts = new Expression?[]
+            var parts = new[]
             {
                 GetPartExpression("second", "0", 0, 59, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Second))),
                 GetPartExpression("minute", intervals[0], 0, 59, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Minute))),

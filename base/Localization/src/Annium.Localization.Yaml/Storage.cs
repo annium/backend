@@ -17,6 +17,7 @@ namespace Annium.Localization.Yaml
 
         public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
         {
+            // TODO: upgrade to load locales from current directory (will require build task?)
             var assembly = target.GetTypeInfo().Assembly;
             var location = Path.GetDirectoryName(assembly.Location);
 

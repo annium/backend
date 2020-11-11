@@ -35,7 +35,7 @@ namespace Annium.Core.DependencyInjection
         public ServiceProvider Build()
         {
             if (isAlreadyBuilt)
-                throw new InvalidOperationException($"Entrypoint is already built");
+                throw new InvalidOperationException("Entrypoint is already built");
             isAlreadyBuilt = true;
 
             // configure all packs

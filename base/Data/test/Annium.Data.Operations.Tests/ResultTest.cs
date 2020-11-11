@@ -92,7 +92,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(new List<string>() { "plain", "another", "another" });
+            result.Errors(new List<string> { "plain", "another", "another" });
 
             // assert
             result.PlainErrors.Has(2);
@@ -123,7 +123,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New();
 
             // act
-            result.Errors(new Dictionary<string, IReadOnlyCollection<string>>() { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
+            result.Errors(new Dictionary<string, IReadOnlyCollection<string>> { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
 
             // assert
             result.LabeledErrors.Count.IsEqual(2);
@@ -163,7 +163,7 @@ namespace Annium.Data.Operations.Tests
             var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
-            result.Join(new List<IResult>() { plain, labeled });
+            result.Join(new List<IResult> { plain, labeled });
 
             // assert
             result.HasErrors.IsTrue();
@@ -248,7 +248,7 @@ namespace Annium.Data.Operations.Tests
             var labeled = Result.New().Errors(("a", new[] { "va" }), ("b", new[] { "vb" }));
 
             // act
-            var output = Result.Join(new List<IResult>() { result, plain, labeled });
+            var output = Result.Join(new List<IResult> { result, plain, labeled });
 
             // assert
             output.HasErrors.IsTrue();

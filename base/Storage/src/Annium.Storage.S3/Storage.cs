@@ -43,7 +43,7 @@ namespace Annium.Storage.S3
 
         protected override async Task<string[]> DoListAsync()
         {
-            var listRequest = new ListObjectsRequest() { BucketName = configuration.Bucket, MaxKeys = 100, Prefix = directory };
+            var listRequest = new ListObjectsRequest { BucketName = configuration.Bucket, MaxKeys = 100, Prefix = directory };
 
             using (var s3 = GetClient())
             {
@@ -60,7 +60,7 @@ namespace Annium.Storage.S3
             VerifyName(name);
 
             source.Position = 0;
-            var putRequest = new PutObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name), InputStream = source, };
+            var putRequest = new PutObjectRequest { BucketName = configuration.Bucket, Key = getKey(name), InputStream = source, };
 
             using (var s3 = GetClient())
             {
@@ -76,7 +76,7 @@ namespace Annium.Storage.S3
             {
                 try
                 {
-                    var getRequest = new GetObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name) };
+                    var getRequest = new GetObjectRequest { BucketName = configuration.Bucket, Key = getKey(name) };
                     using (var getResponse = await s3.GetObjectAsync(getRequest))
                     {
                         var ms = new MemoryStream();
@@ -100,7 +100,7 @@ namespace Annium.Storage.S3
 
             using (var s3 = GetClient())
             {
-                var getRequest = new GetObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name) };
+                var getRequest = new GetObjectRequest { BucketName = configuration.Bucket, Key = getKey(name) };
                 try
                 {
                     await s3.GetObjectAsync(getRequest);
@@ -111,7 +111,7 @@ namespace Annium.Storage.S3
                     return false;
                 }
 
-                var deleteRequest = new DeleteObjectRequest() { BucketName = configuration.Bucket, Key = getKey(name) };
+                var deleteRequest = new DeleteObjectRequest { BucketName = configuration.Bucket, Key = getKey(name) };
                 var deleteResponse = await s3.DeleteObjectAsync(deleteRequest);
 
                 return true;

@@ -2,6 +2,7 @@ using System.Linq;
 using Annium.Core.Runtime.Types;
 using Annium.Logging.Abstractions;
 using Microsoft.Extensions.Logging;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Annium.Logging.Microsoft
 {
@@ -19,7 +20,7 @@ namespace Annium.Logging.Microsoft
             _typeManager = typeManager;
         }
 
-        public global::Microsoft.Extensions.Logging.ILogger CreateLogger(string categoryName)
+        public ILogger CreateLogger(string categoryName)
         {
             var type = _typeManager.Types.FirstOrDefault(x => x.FullName == categoryName) ?? typeof(LoggerBridgeProvider);
 

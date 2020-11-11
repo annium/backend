@@ -32,7 +32,7 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddValidationHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest() { UserName = "user", Password = "pass" };
+            var request = new LoginRequest { UserName = "user", Password = "pass" };
 
             // act
             var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);

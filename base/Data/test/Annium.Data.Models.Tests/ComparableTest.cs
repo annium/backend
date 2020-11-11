@@ -17,7 +17,7 @@ namespace Annium.Data.Models.Tests
             Action deniedObjectOther = () => a.CompareTo(10);
 
             // assert
-            a.CompareTo((null as Money) !).IsEqual(1);
+            a.CompareTo(null !).IsEqual(1);
             deniedObjectOther.Throws<ArgumentException>();
             a.CompareTo(a as object).IsEqual(0);
             a.CompareTo(b as object).IsEqual(-1);
@@ -41,7 +41,7 @@ namespace Annium.Data.Models.Tests
             new[] { a, b, c, null }.Max().IsEqual(c);
             // reference comparison
             (a > d).IsFalse();
-            ((null as Money) ! <= (null as Money) !).IsTrue();
+            (null ! <= (null as Money) !).IsTrue();
             // >
             (a > b).IsFalse();
             (null! > a).IsFalse();
