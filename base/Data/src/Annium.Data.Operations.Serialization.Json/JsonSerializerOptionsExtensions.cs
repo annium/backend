@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Data.Operations.Serialization.Json.Internal;
 
-namespace Annium.Data.Operations.Serialization.Json
+namespace Annium.Core.DependencyInjection
 {
     public static class JsonSerializerOptionsExtensions
     {
