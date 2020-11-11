@@ -7,20 +7,20 @@ namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {
-        private bool isAlreadyBuilt;
+        private bool _isAlreadyBuilt;
 
         private RunPack Build()
         {
-            if (isAlreadyBuilt)
+            if (_isAlreadyBuilt)
                 throw new InvalidOperationException("Entrypoint is already built");
-            isAlreadyBuilt = true;
+            _isAlreadyBuilt = true;
 
             var gate = new ManualResetEventSlim(false);
 
             return new RunPack(
                 gate,
                 GetCancellationToken(gate),
-                new ServiceProviderFactory().CreateServiceProvider(serviceProviderBuilder)
+                new ServiceProviderFactory().CreateServiceProvider(_serviceProviderBuilder)
             );
         }
 

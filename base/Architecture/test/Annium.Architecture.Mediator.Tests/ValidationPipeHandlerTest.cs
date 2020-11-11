@@ -38,7 +38,7 @@ namespace Annium.Architecture.Mediator.Tests
             var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
 
             // assert
-            result.Status.IsEqual(OperationStatus.OK);
+            result.Status.IsEqual(OperationStatus.Ok);
             result.IsOk.IsTrue();
         }
 

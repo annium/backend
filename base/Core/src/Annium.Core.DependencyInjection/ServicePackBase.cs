@@ -6,12 +6,12 @@ namespace Annium.Core.DependencyInjection
 {
     public abstract class ServicePackBase
     {
-        private readonly IList<ServicePackBase> packs = new List<ServicePackBase>();
+        private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
 
         public void Add<TServicePack>()
             where TServicePack : ServicePackBase, new()
         {
-            packs.Add(new TServicePack());
+            _packs.Add(new TServicePack());
         }
 
         public virtual void Configure(IServiceCollection services)
@@ -28,7 +28,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalConfigure(IServiceCollection services)
         {
-            foreach (var pack in packs)
+            foreach (var pack in _packs)
                 pack.InternalConfigure(services);
 
             Configure(services);
@@ -36,7 +36,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalRegister(IServiceCollection services, IServiceProvider provider)
         {
-            foreach (var pack in packs)
+            foreach (var pack in _packs)
                 pack.InternalRegister(services, provider);
 
             Register(services, provider);
@@ -44,7 +44,7 @@ namespace Annium.Core.DependencyInjection
 
         internal void InternalSetup(IServiceProvider provider)
         {
-            foreach (var pack in packs)
+            foreach (var pack in _packs)
                 pack.InternalSetup(provider);
 
             Setup(provider);

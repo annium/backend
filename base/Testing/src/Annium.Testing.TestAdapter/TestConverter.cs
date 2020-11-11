@@ -8,18 +8,18 @@ namespace Annium.Testing.TestAdapter
 {
     public class TestConverter
     {
-        private readonly Uri executorUri;
+        private readonly Uri _executorUri;
 
         public TestConverter(string executorUri)
         {
-            this.executorUri = new Uri(executorUri);
+            _executorUri = new Uri(executorUri);
         }
 
         public TestCase Convert(Assembly assembly, Test test)
         {
             var testCase = new TestCase
             {
-                ExecutorUri = executorUri,
+                ExecutorUri = _executorUri,
                 Source = assembly.FullName,
                 CodeFilePath = test.File,
                 LineNumber = test.Line,

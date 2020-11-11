@@ -50,14 +50,14 @@ namespace Annium.Extensions.Composition.Internal
                     : Result.Status(OperationStatus.BadRequest).Error("Value is null");
 
             if (_composers.Length == 0)
-                return Result.Status(OperationStatus.OK);
+                return Result.Status(OperationStatus.Ok);
 
             var result = Result.New();
 
             foreach (var composer in _composers)
                 result.Join(await composer.ComposeAsync(value, label, _localizer));
 
-            return Result.Status(result.IsOk ? OperationStatus.OK : OperationStatus.NotFound).Join(result);
+            return Result.Status(result.IsOk ? OperationStatus.Ok : OperationStatus.NotFound).Join(result);
         }
 
         private IReadOnlyDictionary<PropertyInfo, IList<Type>> GetDuplicates(ICompositionContainer<TValue>[] composers)

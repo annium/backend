@@ -6,13 +6,13 @@ namespace Annium.Storage.Abstractions
 {
     internal class StorageFactory : IStorageFactory
     {
-        private readonly IServiceProvider provider;
+        private readonly IServiceProvider _provider;
 
         public StorageFactory(
             IServiceProvider provider
         )
         {
-            this.provider = provider;
+            _provider = provider;
         }
 
         public IStorage CreateStorage(ConfigurationBase configuration)
@@ -22,7 +22,7 @@ namespace Annium.Storage.Abstractions
 
             var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(IStorage));
 
-            var factory = (Delegate) provider.GetRequiredService(factoryType);
+            var factory = (Delegate) _provider.GetRequiredService(factoryType);
 
             try
             {

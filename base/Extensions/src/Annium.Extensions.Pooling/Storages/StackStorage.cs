@@ -5,45 +5,45 @@ namespace Annium.Extensions.Pooling.Storages
 {
     internal class StackStorage<T> : StorageBase<T>, IStorage<T>
     {
-        private readonly Stack<T> freeItems;
-        private readonly List<T> usedItems;
+        private readonly Stack<T> _freeItems;
+        private readonly List<T> _usedItems;
 
         public StackStorage(int capacity) : base(capacity)
         {
-            freeItems = new Stack<T>(capacity);
-            usedItems = new List<T>(capacity);
+            _freeItems = new Stack<T>(capacity);
+            _usedItems = new List<T>(capacity);
         }
 
-        protected override void Register(T item) => freeItems.Push(item);
+        protected override void Register(T item) => _freeItems.Push(item);
 
         protected override T Acquire()
         {
-            var item = freeItems.Pop();
-            usedItems.Add(item);
+            var item = _freeItems.Pop();
+            _usedItems.Add(item);
 
             return item;
         }
 
         protected override bool Release(T item)
         {
-            var released = usedItems.Remove(item);
+            var released = _usedItems.Remove(item);
             if (!released)
                 return false;
 
-            freeItems.Push(item);
+            _freeItems.Push(item);
 
             return true;
         }
 
         protected override void DisposeInternal()
         {
-            foreach (var item in freeItems)
+            foreach (var item in _freeItems)
                 (item as IDisposable)!.Dispose();
-            freeItems.Clear();
+            _freeItems.Clear();
 
-            foreach (var item in usedItems)
+            foreach (var item in _usedItems)
                 (item as IDisposable)!.Dispose();
-            usedItems.Clear();
+            _usedItems.Clear();
         }
     }
 }

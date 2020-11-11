@@ -5,28 +5,28 @@ namespace Annium.Extensions.Pooling.Loaders
 {
     internal class EagerLoader<T> : ILoader<T>
     {
-        private readonly Func<T> factory;
-        private readonly IStorage<T> storage;
+        private readonly Func<T> _factory;
+        private readonly IStorage<T> _storage;
 
         public EagerLoader(
             Func<T> factory,
             IStorage<T> storage
         )
         {
-            this.factory = factory;
-            this.storage = storage;
+            _factory = factory;
+            _storage = storage;
         }
 
         public T Get()
         {
             // if not all created yet - create first
-            if (storage.Free + storage.Used < storage.Capacity)
+            if (_storage.Free + _storage.Used < _storage.Capacity)
             {
-                var item = factory();
-                storage.Add(item);
+                var item = _factory();
+                _storage.Add(item);
             }
 
-            return storage.Get();
+            return _storage.Get();
         }
     }
 }

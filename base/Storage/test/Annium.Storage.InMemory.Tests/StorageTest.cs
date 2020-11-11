@@ -14,7 +14,7 @@ namespace Annium.Storage.InMemory.Tests
 {
     public class StorageTest
     {
-        private readonly Random random = new Random();
+        private readonly Random _random = new Random();
 
         [Fact]
         public async Task Setup_Works()

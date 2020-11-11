@@ -12,16 +12,16 @@ namespace Demo.Core.Mediator.Handlers
 {
     internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
     {
-        private readonly IEnumerable<IValidator<TRequest>> validators;
-        private readonly ILogger<ValidationHandler<TRequest, TResponse>> logger;
+        private readonly IEnumerable<IValidator<TRequest>> _validators;
+        private readonly ILogger<ValidationHandler<TRequest, TResponse>> _logger;
 
         public ValidationHandler(
             IEnumerable<IValidator<TRequest>> validators,
             ILogger<ValidationHandler<TRequest, TResponse>> logger
         )
         {
-            this.validators = validators;
-            this.logger = logger;
+            _validators = validators;
+            _logger = logger;
         }
 
         public async Task<IBooleanResult<TResponse>> HandleAsync(
@@ -30,10 +30,10 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            logger.Trace($"Start {typeof(TRequest).Name} validation");
+            _logger.Trace($"Start {typeof(TRequest).Name} validation");
             var result = Result.Failure(default(TResponse) !)
-                .Join(await Task.WhenAll(validators.Select(v => v.ValidateAsync(request))));
-            logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
+                .Join(await Task.WhenAll(_validators.Select(v => v.ValidateAsync(request))));
+            _logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
             if (result.HasErrors)
                 return result;
 

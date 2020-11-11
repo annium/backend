@@ -7,16 +7,16 @@ namespace Annium.Testing.TestAdapter
 {
     public class TestResultConverter
     {
-        private readonly TestConverter testConverter;
+        private readonly TestConverter _testConverter;
 
         public TestResultConverter(TestConverter testConverter)
         {
-            this.testConverter = testConverter;
+            _testConverter = testConverter;
         }
 
         public MsTestResult Convert(Assembly assembly, Test test, TestResult testResult)
         {
-            var result = new MsTestResult(testConverter.Convert(assembly, test))
+            var result = new MsTestResult(_testConverter.Convert(assembly, test))
             {
                 Outcome = (MsTestOutcome) testResult.Outcome,
                 ErrorMessage = testResult.Failure?.Message,

@@ -8,10 +8,10 @@ namespace Annium.Core.Mediator.Internal
 {
     internal class Mediator : IMediator
     {
-        private readonly ChainBuilder chainBuilder;
-        private readonly IServiceProvider provider;
+        private readonly ChainBuilder _chainBuilder;
+        private readonly IServiceProvider _provider;
 
-        private readonly IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> chainCache =
+        private readonly IDictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>> _chainCache =
             new Dictionary<ValueTuple<Type, Type>, IReadOnlyList<ChainElement>>();
 
         public Mediator(
@@ -19,8 +19,8 @@ namespace Annium.Core.Mediator.Internal
             IServiceProvider provider
         )
         {
-            this.chainBuilder = chainBuilder;
-            this.provider = provider;
+            _chainBuilder = chainBuilder;
+            _provider = provider;
         }
 
         public async Task<TResponse> SendAsync<TRequest, TResponse>(
@@ -32,7 +32,7 @@ namespace Annium.Core.Mediator.Internal
             var chain = GetChain(typeof(TRequest), typeof(TResponse));
 
             // use scoped service provider
-            using var scope = provider.CreateScope();
+            using var scope = _provider.CreateScope();
 
             return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!, cancellationToken);
         }
@@ -52,13 +52,13 @@ namespace Annium.Core.Mediator.Internal
 
         private IReadOnlyList<ChainElement> GetChain(Type input, Type output)
         {
-            lock (chainCache)
+            lock (_chainCache)
             {
                 var key = (input, output);
-                if (chainCache.TryGetValue(key, out var chain))
+                if (_chainCache.TryGetValue(key, out var chain))
                     return chain;
 
-                return chainCache[key] = chainBuilder.BuildExecutionChain(input, output);
+                return _chainCache[key] = _chainBuilder.BuildExecutionChain(input, output);
             }
         }
     }

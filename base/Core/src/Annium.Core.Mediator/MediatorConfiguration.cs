@@ -11,12 +11,12 @@ namespace Annium.Core.Mediator
         {
             return new MediatorConfiguration
             {
-                handlers = configurations.SelectMany(c => c.Handlers).ToList()
+                _handlers = configurations.SelectMany(c => c.Handlers).ToList()
             };
         }
 
-        internal IEnumerable<Handler> Handlers => handlers;
-        private IList<Handler> handlers = new List<Handler>();
+        internal IEnumerable<Handler> Handlers => _handlers;
+        private IList<Handler> _handlers = new List<Handler>();
 
         internal MediatorConfiguration()
         {
@@ -34,14 +34,14 @@ namespace Annium.Core.Mediator
             foreach (var serviceType in interfaces.Where(i => i.GetGenericTypeDefinition() == Constants.PipeHandlerType))
             {
                 var args = serviceType.GetGenericArguments();
-                handlers.Add(new Handler(handlerType, args[0], args[1], args[2], args[3]));
+                _handlers.Add(new Handler(handlerType, args[0], args[1], args[2], args[3]));
                 isRegistered = true;
             }
 
             foreach (var serviceType in interfaces.Where(i => i.GetGenericTypeDefinition() == Constants.FinalHandlerType))
             {
                 var args = serviceType.GetGenericArguments();
-                handlers.Add(new Handler(handlerType, args[0], null, null, args[1]));
+                _handlers.Add(new Handler(handlerType, args[0], null, null, args[1]));
                 isRegistered = true;
             }
 

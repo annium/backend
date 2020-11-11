@@ -12,7 +12,7 @@ namespace Annium.Architecture.Base
         public static OperationStatus Conflict { get; } = Register(nameof(Conflict));
         public static OperationStatus Forbidden { get; } = Register(nameof(Forbidden));
         public static OperationStatus NotFound { get; } = Register(nameof(NotFound));
-        public static OperationStatus OK { get; } = Register(nameof(OK));
+        public static OperationStatus Ok { get; } = Register(nameof(Ok));
         public static OperationStatus UncaughtException { get; } = Register(nameof(UncaughtException));
 
         public static OperationStatus Register(string name)
@@ -31,15 +31,15 @@ namespace Annium.Architecture.Base
             return status;
         }
 
-        private readonly string name;
+        private readonly string _name;
 
         private OperationStatus(string name)
         {
-            this.name = name;
+            _name = name;
         }
 
-        public override int GetHashCode() => name.GetHashCode();
+        public override int GetHashCode() => _name.GetHashCode();
 
-        public override string ToString() => name;
+        public override string ToString() => _name;
     }
 }

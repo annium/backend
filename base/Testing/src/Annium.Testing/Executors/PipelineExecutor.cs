@@ -9,27 +9,27 @@ namespace Annium.Testing.Executors
 {
     public class PipelineExecutor
     {
-        private readonly ITestExecutor[] executors;
+        private readonly ITestExecutor[] _executors;
 
-        private readonly ILogger<PipelineExecutor> logger;
+        private readonly ILogger<PipelineExecutor> _logger;
 
         public PipelineExecutor(
             IEnumerable<ITestExecutor> executors,
             ILogger<PipelineExecutor> logger
         )
         {
-            this.executors = executors.OrderBy(e => e.Order).ToArray();
-            this.logger = logger;
+            _executors = executors.OrderBy(e => e.Order).ToArray();
+            _logger = logger;
         }
 
         public async Task ExecuteAsync(Target target)
         {
-            logger.Trace($"Start pipeline of {target.Test.DisplayName}.");
+            _logger.Trace($"Start pipeline of {target.Test.DisplayName}.");
 
             var result = target.Result;
             result.ExecutionStart = DateTime.Now;
 
-            foreach (var executor in executors)
+            foreach (var executor in _executors)
             {
                 await executor.ExecuteAsync(target);
                 if (result.Outcome != TestOutcome.None)
@@ -41,7 +41,7 @@ namespace Annium.Testing.Executors
 
             result.ExecutionEnd = DateTime.Now;
 
-            logger.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
+            _logger.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
         }
     }
 }

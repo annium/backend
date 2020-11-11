@@ -10,10 +10,10 @@ namespace Annium.Logging.Abstractions.Tests
 {
     public class BaseLoggerTest
     {
-        private readonly Func<Instant> getInstant =
+        private readonly Func<Instant> _getInstant =
             () => Instant.FromUnixTimeSeconds(60);
 
-        private readonly IList<LogMessage> messages = new List<LogMessage>();
+        private readonly IList<LogMessage> _messages = new List<LogMessage>();
 
         [Fact]
         public void Log_ValidLevel_WritesLogEntry()
@@ -25,11 +25,11 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Log(LogLevel.Trace, "sample");
 
             // assert
-            messages.Has(1);
-            messages.At(0).Instant.IsEqual(getInstant());
-            messages.At(0).Level.IsEqual(LogLevel.Trace);
-            messages.At(0).Source.IsEqual(typeof(BaseLoggerTest));
-            messages.At(0).Message.IsEqual("sample");
+            _messages.Has(1);
+            _messages.At(0).Instant.IsEqual(_getInstant());
+            _messages.At(0).Level.IsEqual(LogLevel.Trace);
+            _messages.At(0).Source.IsEqual(typeof(BaseLoggerTest));
+            _messages.At(0).Message.IsEqual("sample");
         }
 
         [Fact]
@@ -42,7 +42,7 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Log(LogLevel.Trace, "sample");
 
             // assert
-            messages.IsEmpty();
+            _messages.IsEmpty();
         }
 
         [Fact]
@@ -55,7 +55,7 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Trace("sample");
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Trace);
+            _messages.At(0).Level.IsEqual(LogLevel.Trace);
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Debug("sample");
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Debug);
+            _messages.At(0).Level.IsEqual(LogLevel.Debug);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Info("sample");
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Info);
+            _messages.At(0).Level.IsEqual(LogLevel.Info);
         }
 
         [Fact]
@@ -94,7 +94,7 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Warn("sample");
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Warn);
+            _messages.At(0).Level.IsEqual(LogLevel.Warn);
         }
 
         [Fact]
@@ -108,9 +108,9 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Error(exception);
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Error);
-            messages.At(0).Message.IsEqual(exception.Message);
-            messages.At(0).Exception.IsEqual(exception);
+            _messages.At(0).Level.IsEqual(LogLevel.Error);
+            _messages.At(0).Message.IsEqual(exception.Message);
+            _messages.At(0).Exception.IsEqual(exception);
         }
 
         [Fact]
@@ -123,8 +123,8 @@ namespace Annium.Logging.Abstractions.Tests
             logger.Error("sample");
 
             // assert
-            messages.At(0).Level.IsEqual(LogLevel.Error);
-            messages.At(0).Message.IsEqual("sample");
+            _messages.At(0).Level.IsEqual(LogLevel.Error);
+            _messages.At(0).Message.IsEqual("sample");
         }
 
         private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
@@ -135,7 +135,7 @@ namespace Annium.Logging.Abstractions.Tests
 
             services.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
-                .Use(ServiceDescriptor.Singleton(new LogHandler(messages)))
+                .Use(ServiceDescriptor.Singleton(new LogHandler(_messages)))
             );
 
             return services.BuildServiceProvider().GetRequiredService<ILogger<BaseLoggerTest>>();

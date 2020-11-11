@@ -7,28 +7,28 @@ namespace Annium.Logging.Console.Tests
 {
     internal class ConsoleCapture : IDisposable
     {
-        private static readonly object locker = new object();
+        private static readonly object Locker = new object();
 
         public static ConsoleCapture Start() => new ConsoleCapture();
 
-        public string Output => writer.ToString();
+        public string Output => _writer.ToString();
 
-        private TextWriter stdout;
+        private TextWriter _stdout;
 
-        private StringWriter writer = new StringWriter();
+        private StringWriter _writer = new StringWriter();
 
         private ConsoleCapture()
         {
-            Monitor.Enter(locker);
-            stdout = SysConsole.Out;
-            SysConsole.SetOut(writer);
+            Monitor.Enter(Locker);
+            _stdout = SysConsole.Out;
+            SysConsole.SetOut(_writer);
         }
 
         public void Dispose()
         {
-            SysConsole.SetOut(stdout);
-            writer.Dispose();
-            Monitor.Exit(locker);
+            SysConsole.SetOut(_stdout);
+            _writer.Dispose();
+            Monitor.Exit(Locker);
         }
     }
 }

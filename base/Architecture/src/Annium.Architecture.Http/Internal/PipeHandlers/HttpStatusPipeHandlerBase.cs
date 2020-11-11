@@ -40,7 +40,7 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
                 throw new ServerException(result);
 
             // if mapping fails - it's critical error
-            if (status != OperationStatus.OK)
+            if (status != OperationStatus.Ok)
                 throw new ServerException(result);
         }
     }

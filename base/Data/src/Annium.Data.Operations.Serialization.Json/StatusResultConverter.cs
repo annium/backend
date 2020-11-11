@@ -7,15 +7,15 @@ using X = Annium.Data.Operations.IStatusResult<object>;
 
 namespace Annium.Data.Operations.Serialization.Json
 {
-    internal class StatusResultConverter<S> : ResultConverterBase<IStatusResult<S>>
+    internal class StatusResultConverter<TS> : ResultConverterBase<IStatusResult<TS>>
     {
-        public override IStatusResult<S> Read(
+        public override IStatusResult<TS> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
         )
         {
-            S status = default !;
+            TS status = default !;
             IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
             IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
@@ -23,7 +23,7 @@ namespace Annium.Data.Operations.Serialization.Json
             while (reader.Read() && reader.CurrentDepth > depth)
             {
                 if (reader.HasProperty(nameof(X.Status)))
-                    status = JsonSerializer.Deserialize<S>(ref reader, options);
+                    status = JsonSerializer.Deserialize<TS>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.PlainErrors)))
                     plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
@@ -40,7 +40,7 @@ namespace Annium.Data.Operations.Serialization.Json
 
         public override void Write(
             Utf8JsonWriter writer,
-            IStatusResult<S> value,
+            IStatusResult<TS> value,
             JsonSerializerOptions options
         )
         {

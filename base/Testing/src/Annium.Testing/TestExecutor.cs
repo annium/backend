@@ -12,13 +12,13 @@ namespace Annium.Testing
 {
     public class TestExecutor
     {
-        private readonly TestingConfiguration cfg;
+        private readonly TestingConfiguration _cfg;
 
-        private readonly IServiceProvider provider;
+        private readonly IServiceProvider _provider;
 
-        private readonly PipelineExecutor executor;
+        private readonly PipelineExecutor _executor;
 
-        private readonly ILogger<TestExecutor> logger;
+        private readonly ILogger<TestExecutor> _logger;
 
         public TestExecutor(
             TestingConfiguration cfg,
@@ -27,33 +27,33 @@ namespace Annium.Testing
             ILogger<TestExecutor> logger
         )
         {
-            this.cfg = cfg;
-            this.provider = provider;
-            this.executor = executor;
-            this.logger = logger;
+            _cfg = cfg;
+            _provider = provider;
+            _executor = executor;
+            _logger = logger;
         }
 
         public async Task RunTestsAsync(IEnumerable<Test> tests, Action<Test, TestResult> handleResult)
         {
-            logger.Debug("Start tests execution");
+            _logger.Debug("Start tests execution");
 
             var concurrency = Environment.ProcessorCount;
 
             using (var semaphore = new Semaphore(concurrency, concurrency))
             {
-                await Task.WhenAll(tests.FilterMask(cfg.Filter).Select(async test =>
+                await Task.WhenAll(tests.FilterMask(_cfg.Filter).Select(async test =>
                 {
                     try
                     {
                         semaphore.WaitOne();
-                        logger.Debug($"Run test {test.DisplayName}");
+                        _logger.Debug($"Run test {test.DisplayName}");
 
-                        using var scope = provider.CreateScope();
+                        using var scope = _provider.CreateScope();
                         var target = new Target(scope.ServiceProvider, test, new TestResult());
 
-                        await executor.ExecuteAsync(target);
+                        await _executor.ExecuteAsync(target);
 
-                        logger.Debug($"Complete test {test.DisplayName}");
+                        _logger.Debug($"Complete test {test.DisplayName}");
                         handleResult(target.Test, target.Result);
                     }
                     finally
@@ -63,7 +63,7 @@ namespace Annium.Testing
                 }));
             }
 
-            logger.Debug("Complete tests execution");
+            _logger.Debug("Complete tests execution");
         }
     }
 }

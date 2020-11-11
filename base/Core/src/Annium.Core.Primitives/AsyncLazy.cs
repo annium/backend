@@ -13,17 +13,17 @@ namespace Annium.Core.Primitives
         /// <summary>
         /// The underlying lazy task's value state.
         /// </summary>
-        public bool IsValueCreated => instance.IsValueCreated;
+        public bool IsValueCreated => _instance.IsValueCreated;
 
         /// <summary>
         /// The underlying lazy task's value state.
         /// </summary>
-        public T Value => instance.Value.GetAwaiter().GetResult();
+        public T Value => _instance.Value.GetAwaiter().GetResult();
 
         /// <summary>
         /// The underlying lazy task.
         /// </summary>
-        private readonly Lazy<Task<T>> instance;
+        private readonly Lazy<Task<T>> _instance;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AsyncLazy&lt;T&gt;"/> class.
@@ -31,7 +31,7 @@ namespace Annium.Core.Primitives
         /// <param name="factory">The delegate that is invoked on a background thread to produce the value when it is needed.</param>
         public AsyncLazy(Func<T> factory)
         {
-            instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
+            _instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Annium.Core.Primitives
         /// <param name="factory">The asynchronous delegate that is invoked on a background thread to produce the value when it is needed.</param>
         public AsyncLazy(Func<Task<T>> factory)
         {
-            instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
+            _instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Annium.Core.Primitives
         /// </summary>
         public TaskAwaiter<T> GetAwaiter()
         {
-            return instance.Value.GetAwaiter();
+            return _instance.Value.GetAwaiter();
         }
     }
 }

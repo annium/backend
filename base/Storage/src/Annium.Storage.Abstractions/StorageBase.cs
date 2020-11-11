@@ -8,15 +8,15 @@ namespace Annium.Storage.Abstractions
 {
     public abstract class StorageBase : IStorage
     {
-        private static readonly Regex nameRe = new Regex(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex NameRe = new Regex(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
-        private readonly ILogger logger;
+        private readonly ILogger _logger;
 
         public StorageBase(
             ILogger logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public Task SetupAsync() => SafeAsync("setup", DoSetupAsync);
@@ -43,15 +43,15 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                logger.Debug($"{operation} start");
+                _logger.Debug($"{operation} start");
                 var result = await handleAsync();
-                logger.Debug($"{operation} succeed");
+                _logger.Debug($"{operation} succeed");
 
                 return result;
             }
             catch
             {
-                logger.Debug($"{operation} failed");
+                _logger.Debug($"{operation} failed");
                 throw;
             }
         }
@@ -60,13 +60,13 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                logger.Debug($"{operation} start");
+                _logger.Debug($"{operation} start");
                 await handleAsync();
-                logger.Debug($"{operation} succeed");
+                _logger.Debug($"{operation} succeed");
             }
             catch
             {
-                logger.Debug($"{operation} failed");
+                _logger.Debug($"{operation} failed");
                 throw;
             }
         }
@@ -76,7 +76,7 @@ namespace Annium.Storage.Abstractions
             if (name == null)
                 throw new ArgumentNullException(nameof(name));
 
-            if (!nameRe.IsMatch(name))
+            if (!NameRe.IsMatch(name))
                 throw new ArgumentException($"Name {name} in invalid");
         }
 
@@ -91,11 +91,11 @@ namespace Annium.Storage.Abstractions
             if (path.EndsWith('/'))
                 throw new ArgumentException($"Path {path} must not end with /");
 
-            foreach (var part in getPathParts())
-                if (!nameRe.IsMatch(part))
+            foreach (var part in GetPathParts())
+                if (!NameRe.IsMatch(part))
                     throw new ArgumentException($"Path part {part} has invalid format");
 
-            string[] getPathParts() => path
+            string[] GetPathParts() => path
                 .TrimStart('/')
                 .Split('/');
         }

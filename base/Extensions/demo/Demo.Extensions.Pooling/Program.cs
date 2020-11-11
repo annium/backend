@@ -66,34 +66,34 @@ namespace Demo.Extensions.Pooling
 
         private class Item : IDisposable
         {
-            private readonly uint id;
-            private readonly Action<string> log;
+            private readonly uint _id;
+            private readonly Action<string> _log;
 
             public Item(
                 uint id,
                 Action<string> log
             )
             {
-                this.id = id;
-                this.log = log;
+                _id = id;
+                _log = log;
                 log($"{id} {Created}");
             }
 
             public async Task Suspend()
             {
                 await Task.Delay(10);
-                log($"{id} {Suspended}");
+                _log($"{_id} {Suspended}");
             }
 
             public async Task Resume()
             {
                 await Task.Delay(10);
-                log($"{id} {Resumed}");
+                _log($"{_id} {Resumed}");
             }
 
             public void Dispose()
             {
-                log($"{id} {Disposed}");
+                _log($"{_id} {Disposed}");
             }
         }
     }

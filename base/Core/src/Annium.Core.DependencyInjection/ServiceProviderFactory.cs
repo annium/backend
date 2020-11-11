@@ -5,22 +5,22 @@ namespace Annium.Core.DependencyInjection
 {
     public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
     {
-        private readonly Action<ServiceProviderBuilder> configure;
+        private readonly Action<ServiceProviderBuilder> _configure;
 
         public ServiceProviderFactory()
         {
-            configure = builder => { };
+            _configure = builder => { };
         }
 
         public ServiceProviderFactory(Action<IServiceProviderBuilder> configure)
         {
-            this.configure = configure;
+            _configure = configure;
         }
 
         public IServiceProviderBuilder CreateBuilder(IServiceCollection services)
         {
             var container = new ServiceProviderBuilder(services);
-            configure(container);
+            _configure(container);
 
             return container;
         }

@@ -5,45 +5,45 @@ namespace Annium.Extensions.Pooling.Storages
 {
     internal class QueueStorage<T> : StorageBase<T>, IStorage<T>
     {
-        private readonly Queue<T> freeItems;
-        private readonly List<T> usedItems;
+        private readonly Queue<T> _freeItems;
+        private readonly List<T> _usedItems;
 
         public QueueStorage(int capacity) : base(capacity)
         {
-            freeItems = new Queue<T>(capacity);
-            usedItems = new List<T>(capacity);
+            _freeItems = new Queue<T>(capacity);
+            _usedItems = new List<T>(capacity);
         }
 
-        protected override void Register(T item) => freeItems.Enqueue(item);
+        protected override void Register(T item) => _freeItems.Enqueue(item);
 
         protected override T Acquire()
         {
-            var item = freeItems.Dequeue();
-            usedItems.Add(item);
+            var item = _freeItems.Dequeue();
+            _usedItems.Add(item);
 
             return item;
         }
 
         protected override bool Release(T item)
         {
-            var released = usedItems.Remove(item);
+            var released = _usedItems.Remove(item);
             if (!released)
                 return false;
 
-            freeItems.Enqueue(item);
+            _freeItems.Enqueue(item);
 
             return true;
         }
 
         protected override void DisposeInternal()
         {
-            foreach (var item in freeItems)
+            foreach (var item in _freeItems)
                 (item as IDisposable)!.Dispose();
-            freeItems.Clear();
+            _freeItems.Clear();
 
-            foreach (var item in usedItems)
+            foreach (var item in _usedItems)
                 (item as IDisposable)!.Dispose();
-            usedItems.Clear();
+            _usedItems.Clear();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace Annium.Extensions.Execution
 {
     public class BatchExecutor
     {
-        private IList<Delegate> handlers = new List<Delegate>();
+        private IList<Delegate> _handlers = new List<Delegate>();
 
         internal BatchExecutor()
         {
@@ -18,7 +18,7 @@ namespace Annium.Extensions.Execution
 
         private BatchExecutor WithInternal(Delegate handler)
         {
-            handlers.Add(handler);
+            _handlers.Add(handler);
 
             return this;
         }
@@ -28,7 +28,7 @@ namespace Annium.Extensions.Execution
             var exceptions = new List<Exception>();
 
             // run each stage
-            foreach (var handler in handlers)
+            foreach (var handler in _handlers)
             {
                 try
                 {

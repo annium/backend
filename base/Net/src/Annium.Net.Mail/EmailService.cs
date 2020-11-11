@@ -10,13 +10,13 @@ namespace Annium.Net.Mail
 {
     internal class EmailService : IEmailService
     {
-        private readonly Configuration cfg;
+        private readonly Configuration _cfg;
 
         public EmailService(
             Configuration cfg
         )
         {
-            this.cfg = cfg;
+            _cfg = cfg;
         }
 
         public async Task<IBooleanResult> SendAsync<T>(MailMessage message, string template, T data)
@@ -40,18 +40,18 @@ namespace Annium.Net.Mail
 
         private SmtpClient GetClient()
         {
-            return new SmtpClient(cfg.Host, cfg.Port)
+            return new SmtpClient(_cfg.Host, _cfg.Port)
             {
-                EnableSsl = cfg.UseSsl,
+                EnableSsl = _cfg.UseSsl,
                 UseDefaultCredentials = false,
                 DeliveryMethod = SmtpDeliveryMethod.Network,
-                Credentials = new NetworkCredential(cfg.User, cfg.Password),
+                Credentials = new NetworkCredential(_cfg.User, _cfg.Password),
             };
         }
 
         private string LoadBody<T>(string template, T data)
         {
-            var templatesDirectory = Path.GetFullPath(cfg.TemplatesDirectory);
+            var templatesDirectory = Path.GetFullPath(_cfg.TemplatesDirectory);
             if (!Directory.Exists(templatesDirectory))
                 throw new DirectoryNotFoundException($"Email templates directory {templatesDirectory} missing");
 

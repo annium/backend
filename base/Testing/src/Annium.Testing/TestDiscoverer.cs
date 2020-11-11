@@ -9,11 +9,11 @@ namespace Annium.Testing
 {
     public class TestDiscoverer
     {
-        private readonly ILogger<TestDiscoverer> logger;
+        private readonly ILogger<TestDiscoverer> _logger;
 
         public TestDiscoverer(ILogger<TestDiscoverer> logger)
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public Task FindTestsAsync(
@@ -33,11 +33,11 @@ namespace Annium.Testing
         {
             if (testClass.GetCustomAttribute<SkipAttribute>() != null)
             {
-                logger.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
+                _logger.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
                 return;
             }
 
-            logger.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
+            _logger.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
             foreach (var test in testClass.GetMethods().Where(IsTest).Select(method => new Test(method)))
                 handleTestFound(test);
         }

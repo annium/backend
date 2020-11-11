@@ -11,13 +11,13 @@ namespace Demo.Core.Mediator.Handlers
         IFinalRequestHandler<Authored<CreateTodoRequest>, int>,
         IFinalRequestHandler<DeleteTodoRequest, bool>
     {
-        private readonly TodoRepository todoRepository;
+        private readonly TodoRepository _todoRepository;
 
         public TodoCommandHandler(
             TodoRepository todoRepository
         )
         {
-            this.todoRepository = todoRepository;
+            _todoRepository = todoRepository;
         }
 
         public Task<int> HandleAsync(
@@ -25,7 +25,7 @@ namespace Demo.Core.Mediator.Handlers
             CancellationToken ct
         )
         {
-            return Task.FromResult(todoRepository.Add(new Todo(request.Entity.Value)));
+            return Task.FromResult(_todoRepository.Add(new Todo(request.Entity.Value)));
         }
 
         public Task<bool> HandleAsync(
@@ -33,7 +33,7 @@ namespace Demo.Core.Mediator.Handlers
             CancellationToken ct
         )
         {
-            return Task.FromResult(todoRepository.Delete(request.Id));
+            return Task.FromResult(_todoRepository.Delete(request.Id));
         }
     }
 }

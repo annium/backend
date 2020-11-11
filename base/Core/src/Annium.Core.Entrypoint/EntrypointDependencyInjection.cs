@@ -5,13 +5,13 @@ namespace Annium.Core.Entrypoint
 {
     public partial class Entrypoint
     {
-        private readonly IServiceProviderBuilder serviceProviderBuilder =
+        private readonly IServiceProviderBuilder _serviceProviderBuilder =
             new ServiceProviderFactory().CreateBuilder(new ServiceCollection());
 
         public Entrypoint UseServicePack<TServicePack>()
             where TServicePack : ServicePackBase, new()
         {
-            serviceProviderBuilder.UseServicePack<TServicePack>();
+            _serviceProviderBuilder.UseServicePack<TServicePack>();
 
             return this;
         }

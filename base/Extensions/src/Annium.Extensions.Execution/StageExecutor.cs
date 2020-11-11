@@ -7,7 +7,7 @@ namespace Annium.Extensions.Execution
 {
     public class StageExecutor
     {
-        private IList<ValueTuple<Delegate, Delegate, bool>> stages =
+        private IList<ValueTuple<Delegate, Delegate, bool>> _stages =
             new List<ValueTuple<Delegate, Delegate, bool>>();
 
         internal StageExecutor()
@@ -28,7 +28,7 @@ namespace Annium.Extensions.Execution
 
         private StageExecutor StageInternal(Delegate commit, Delegate rollback, bool rollbackFailed)
         {
-            stages.Add((commit, rollback, rollbackFailed));
+            _stages.Add((commit, rollback, rollbackFailed));
 
             return this;
         }
@@ -39,7 +39,7 @@ namespace Annium.Extensions.Execution
             var exceptions = new List<Exception>();
 
             // run each stage
-            foreach (var (commit, _, _) in stages)
+            foreach (var (commit, _, _) in _stages)
             {
                 try
                 {
@@ -61,7 +61,7 @@ namespace Annium.Extensions.Execution
 
             var j = 0;
             // exception caught, rollback
-            foreach (var (_, rollback, rollbackFailed) in stages.Take(i))
+            foreach (var (_, rollback, rollbackFailed) in _stages.Take(i))
             {
                 try
                 {

@@ -95,15 +95,15 @@ namespace Annium.Core.Mediator.Tests
 
         internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
         {
-            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
 
-            private readonly ILogger<MediatorTest> logger;
+            private readonly ILogger<MediatorTest> _logger;
 
             public ConversionHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                this.logger = logger;
+                _logger = logger;
             }
 
             public async Task<Response<TResponse>> HandleAsync(
@@ -112,52 +112,52 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, Task<TResponse>> next
             )
             {
-                logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
-                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, options);
+                _logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
+                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options);
 
                 var result = await next(payload);
 
-                logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
-                return new Response<TResponse>(JsonSerializer.Serialize(result, options));
+                _logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
+                return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
             }
         }
 
         internal class Request<T>
         {
-            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
 
             public string Value { get; }
 
             public Request(T value)
             {
-                Value = JsonSerializer.Serialize(value, options);
+                Value = JsonSerializer.Serialize(value, Options);
             }
         }
 
         internal class Response<T>
         {
-            private static readonly JsonSerializerOptions options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
 
             public T Value { get; }
 
             public Response(string value)
             {
-                Value = JsonSerializer.Deserialize<T>(value, options);
+                Value = JsonSerializer.Deserialize<T>(value, Options);
             }
         }
 
         internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
         {
-            private readonly Func<TRequest, bool> validate;
-            private readonly ILogger<MediatorTest> logger;
+            private readonly Func<TRequest, bool> _validate;
+            private readonly ILogger<MediatorTest> _logger;
 
             public ValidationHandler(
                 Func<TRequest, bool> validate,
                 ILogger<MediatorTest> logger
             )
             {
-                this.validate = validate;
-                this.logger = logger;
+                _validate = validate;
+                _logger = logger;
             }
 
             public async Task<IBooleanResult<TResponse>> HandleAsync(
@@ -166,9 +166,9 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, Task<TResponse>> next
             )
             {
-                logger.Trace($"Start {typeof(TRequest).Name} validation");
-                var result = validate(request) ? Result.Success(default(TResponse) !) : Result.Failure(default(TResponse) !).Error("Validation failed");
-                logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsSuccess}");
+                _logger.Trace($"Start {typeof(TRequest).Name} validation");
+                var result = _validate(request) ? Result.Success(default(TResponse) !) : Result.Failure(default(TResponse) !).Error("Validation failed");
+                _logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
 
@@ -182,13 +182,13 @@ namespace Annium.Core.Mediator.Tests
             where TRequest : TResponse
             where TResponse : Base, new()
         {
-            private readonly ILogger<MediatorTest> logger;
+            private readonly ILogger<MediatorTest> _logger;
 
             public OpenFinalHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                this.logger = logger;
+                _logger = logger;
             }
 
             public Task<TResponse> HandleAsync(
@@ -196,8 +196,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                logger.Info(GetType().FullName!);
-                logger.Info(request.GetHashCode().ToString());
+                _logger.Info(GetType().FullName!);
+                _logger.Info(request.GetHashCode().ToString());
 
                 var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
@@ -207,13 +207,13 @@ namespace Annium.Core.Mediator.Tests
 
         private class ClosedFinalHandler : IFinalRequestHandler<Base, One>
         {
-            private readonly ILogger<MediatorTest> logger;
+            private readonly ILogger<MediatorTest> _logger;
 
             public ClosedFinalHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                this.logger = logger;
+                _logger = logger;
             }
 
             public Task<One> HandleAsync(
@@ -221,8 +221,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                logger.Info(GetType().FullName!);
-                logger.Info(request.GetHashCode().ToString());
+                _logger.Info(GetType().FullName!);
+                _logger.Info(request.GetHashCode().ToString());
 
                 return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
             }

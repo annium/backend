@@ -10,7 +10,7 @@ namespace Annium.Storage.FileSystem
 {
     internal class Storage : StorageBase
     {
-        private readonly string directory;
+        private readonly string _directory;
 
         public Storage(
             Configuration configuration,
@@ -22,20 +22,20 @@ namespace Annium.Storage.FileSystem
 
             VerifyPath(configuration.Directory);
 
-            directory = configuration.Directory;
+            _directory = configuration.Directory;
         }
 
         protected override Task DoSetupAsync()
         {
-            if (!Directory.Exists(directory))
-                Directory.CreateDirectory(directory);
+            if (!Directory.Exists(_directory))
+                Directory.CreateDirectory(_directory);
 
             return Task.CompletedTask;
         }
 
         protected override Task<string[]> DoListAsync()
         {
-            var entries = Directory.GetFiles(directory).Select(e => Path.GetRelativePath(directory, e)).ToArray();
+            var entries = Directory.GetFiles(_directory).Select(e => Path.GetRelativePath(_directory, e)).ToArray();
 
             return Task.FromResult(entries);
         }
@@ -44,8 +44,8 @@ namespace Annium.Storage.FileSystem
         {
             VerifyName(name);
 
-            var path = Path.Combine(directory, name);
-            using (var target = File.Open(Path.Combine(directory, name), FileMode.Create))
+            var path = Path.Combine(_directory, name);
+            using (var target = File.Open(Path.Combine(_directory, name), FileMode.Create))
             {
                 source.Position = 0;
                 await source.CopyToAsync(target);
@@ -56,7 +56,7 @@ namespace Annium.Storage.FileSystem
         {
             VerifyName(name);
 
-            var path = Path.Combine(directory, name);
+            var path = Path.Combine(_directory, name);
             if (!File.Exists(path))
                 throw new KeyNotFoundException($"{name} not found in storage");
 
@@ -76,7 +76,7 @@ namespace Annium.Storage.FileSystem
         {
             VerifyName(name);
 
-            var path = Path.Combine(directory, name);
+            var path = Path.Combine(_directory, name);
             if (!File.Exists(path))
                 return Task.FromResult(false);
 

@@ -14,13 +14,13 @@ namespace Annium.Storage.FileSystem.Tests
 {
     public class StorageTest : IDisposable
     {
-        private readonly Random random = new Random();
+        private readonly Random _random = new Random();
 
-        private readonly string directory;
+        private readonly string _directory;
 
         public StorageTest()
         {
-            directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            _directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace Annium.Storage.FileSystem.Tests
 
             var factory = provider.GetRequiredService<IStorageFactory>();
             var configuration = new Configuration();
-            configuration.Directory = directory;
+            configuration.Directory = _directory;
 
             var storage = factory.CreateStorage(configuration);
             await storage.SetupAsync();
@@ -165,7 +165,7 @@ namespace Annium.Storage.FileSystem.Tests
 
         public void Dispose()
         {
-            Directory.Delete(directory, true);
+            Directory.Delete(_directory, true);
         }
     }
 }

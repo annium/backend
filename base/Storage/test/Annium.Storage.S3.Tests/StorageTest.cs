@@ -14,13 +14,13 @@ namespace Annium.Storage.S3.Tests
 {
     public class StorageTest : IDisposable
     {
-        private readonly Random random = new Random();
+        private readonly Random _random = new Random();
 
-        private readonly string directory;
+        private readonly string _directory;
 
         public StorageTest()
         {
-            directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
+            _directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
         }
 
         [Fact(Skip = "Needs durable test basis")]
@@ -158,7 +158,7 @@ namespace Annium.Storage.S3.Tests
             configuration.AccessSecret = "access-secret";
             configuration.Region = "us-east-1";
             configuration.Bucket = "annium.tests";
-            configuration.Directory = directory;
+            configuration.Directory = _directory;
 
             var storage = factory.CreateStorage(configuration);
             await storage.SetupAsync();

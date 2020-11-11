@@ -7,16 +7,16 @@ using X = Annium.Data.Operations.IStatusResult<object, object>;
 
 namespace Annium.Data.Operations.Serialization.Json
 {
-    internal class StatusDataResultConverter<S, D> : ResultConverterBase<IStatusResult<S, D>>
+    internal class StatusDataResultConverter<TS, TD> : ResultConverterBase<IStatusResult<TS, TD>>
     {
-        public override IStatusResult<S, D> Read(
+        public override IStatusResult<TS, TD> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
         )
         {
-            S status = default !;
-            D data = default !;
+            TS status = default !;
+            TD data = default !;
             IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
             IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
@@ -24,9 +24,9 @@ namespace Annium.Data.Operations.Serialization.Json
             while (reader.Read() && reader.CurrentDepth > depth)
             {
                 if (reader.HasProperty(nameof(X.Status)))
-                    status = JsonSerializer.Deserialize<S>(ref reader, options);
+                    status = JsonSerializer.Deserialize<TS>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.Data)))
-                    data = JsonSerializer.Deserialize<D>(ref reader, options);
+                    data = JsonSerializer.Deserialize<TD>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.PlainErrors)))
                     plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
@@ -43,7 +43,7 @@ namespace Annium.Data.Operations.Serialization.Json
 
         public override void Write(
             Utf8JsonWriter writer,
-            IStatusResult<S, D> value,
+            IStatusResult<TS, TD> value,
             JsonSerializerOptions options
         )
         {

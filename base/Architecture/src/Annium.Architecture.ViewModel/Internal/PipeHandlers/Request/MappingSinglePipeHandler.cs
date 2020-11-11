@@ -16,16 +16,16 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
         >
         where TRequestIn : IRequest<TRequestOut>
     {
-        private readonly IMapper mapper;
-        private readonly ILogger<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>> logger;
+        private readonly IMapper _mapper;
+        private readonly ILogger<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>> _logger;
 
         public MappingSinglePipeHandler(
             IMapper mapper,
             ILogger<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>> logger
         )
         {
-            this.mapper = mapper;
-            this.logger = logger;
+            _mapper = mapper;
+            _logger = logger;
         }
 
         public Task<TResponse> HandleAsync(
@@ -34,8 +34,8 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
             Func<TRequestOut, Task<TResponse>> next
         )
         {
-            logger.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
-            var mappedRequest = mapper.Map<TRequestOut>(request);
+            _logger.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
+            var mappedRequest = _mapper.Map<TRequestOut>(request);
 
             return next(mappedRequest);
         }

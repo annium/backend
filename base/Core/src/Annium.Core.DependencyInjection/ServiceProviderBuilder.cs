@@ -7,58 +7,58 @@ namespace Annium.Core.DependencyInjection
 {
     public class ServiceProviderBuilder : IServiceProviderBuilder
     {
-        private bool isAlreadyBuilt;
+        private bool _isAlreadyBuilt;
 
-        private readonly IServiceCollection services;
+        private readonly IServiceCollection _services;
 
-        private readonly IList<ServicePackBase> packs = new List<ServicePackBase>();
+        private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
 
         public ServiceProviderBuilder()
         {
-            services = new ServiceCollection();
+            _services = new ServiceCollection();
         }
 
         public ServiceProviderBuilder(IServiceCollection services)
         {
-            this.services = services;
+            _services = services;
         }
 
         public IServiceProviderBuilder UseServicePack<TServicePack>()
             where TServicePack : ServicePackBase, new()
         {
-            if (packs.All(e => e.GetType() != typeof(TServicePack)))
-                packs.Add(new TServicePack());
+            if (_packs.All(e => e.GetType() != typeof(TServicePack)))
+                _packs.Add(new TServicePack());
 
             return this;
         }
 
         public ServiceProvider Build()
         {
-            if (isAlreadyBuilt)
+            if (_isAlreadyBuilt)
                 throw new InvalidOperationException("Entrypoint is already built");
-            isAlreadyBuilt = true;
+            _isAlreadyBuilt = true;
 
             // configure all packs
             var configurationServices = new ServiceCollection();
-            foreach (var pack in packs)
+            foreach (var pack in _packs)
                 pack.InternalConfigure(configurationServices);
 
             // copy all configuration services to services
             foreach (var descriptor in configurationServices)
-                services.Add(descriptor);
+                _services.Add(descriptor);
 
             // create provider from configurationServices
-            var provider = services.BuildServiceProvider();
+            var provider = _services.BuildServiceProvider();
 
             // register all services from packs
-            foreach (var pack in packs)
-                pack.InternalRegister(services, provider);
+            foreach (var pack in _packs)
+                pack.InternalRegister(_services, provider);
 
             // create provider from actual services
-            provider = services.BuildServiceProvider();
+            provider = _services.BuildServiceProvider();
 
             // setup all services from packs
-            foreach (var pack in packs)
+            foreach (var pack in _packs)
                 pack.InternalSetup(provider);
 
             return provider;

@@ -25,7 +25,7 @@ namespace Annium.Core.Reflection
             return new[] { ResolveProperty(map.Body) };
         }
 
-        public static PropertyInfo ResolveProperty<T, V>(Expression<Func<T, V>> map)
+        public static PropertyInfo ResolveProperty<T, TV>(Expression<Func<T, TV>> map)
             => ResolveProperty(map.Body);
 
         public static PropertyInfo ResolveProperty<T>(Expression<Func<T, object>> map)

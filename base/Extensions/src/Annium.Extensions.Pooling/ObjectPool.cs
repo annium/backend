@@ -7,10 +7,10 @@ namespace Annium.Extensions.Pooling
 {
     public class ObjectPool<T> : IObjectPool<T>, IDisposable
     {
-        private readonly object poolLocker = new object();
-        private readonly ILoader<T> loader;
-        private readonly IStorage<T> storage;
-        private readonly Semaphore semaphore;
+        private readonly object _poolLocker = new object();
+        private readonly ILoader<T> _loader;
+        private readonly IStorage<T> _storage;
+        private readonly Semaphore _semaphore;
 
         public ObjectPool(
             Func<T> factory,
@@ -25,42 +25,42 @@ namespace Annium.Extensions.Pooling
             if (capacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(capacity), capacity, $"Argument '{nameof(capacity)}' must be greater than zero.");
 
-            storage = StorageFactory.Create<T>(storageMode, capacity);
-            loader = LoaderFactory.Create(loadMode, factory, storage);
-            semaphore = new Semaphore(capacity, capacity);
+            _storage = StorageFactory.Create<T>(storageMode, capacity);
+            _loader = LoaderFactory.Create(loadMode, factory, _storage);
+            _semaphore = new Semaphore(capacity, capacity);
         }
 
         public T Get()
         {
-            semaphore.WaitOne();
-            lock (poolLocker)
-                return loader.Get();
+            _semaphore.WaitOne();
+            lock (_poolLocker)
+                return _loader.Get();
         }
 
         public void Return(T item)
         {
-            lock (poolLocker)
-                storage.Return(item);
-            semaphore.Release();
+            lock (_poolLocker)
+                _storage.Return(item);
+            _semaphore.Release();
         }
 
         #region IDisposable support
 
-        private bool disposedValue; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (disposedValue)
+            if (_disposedValue)
                 return;
 
             if (disposing)
             {
                 if (typeof(IDisposable).IsAssignableFrom(typeof(T)))
-                    storage.Dispose();
-                semaphore.Close();
+                    _storage.Dispose();
+                _semaphore.Close();
             }
 
-            disposedValue = true;
+            _disposedValue = true;
         }
 
         public void Dispose()

@@ -1,44 +1,44 @@
 namespace Annium.Data.Operations.Implementations
 {
-    internal sealed class StatusResult<S, D> : ResultBase<IStatusResult<S, D>>, IStatusResult<S, D>
+    internal sealed class StatusResult<TS, TD> : ResultBase<IStatusResult<TS, TD>>, IStatusResult<TS, TD>
     {
-        public S Status { get; }
+        public TS Status { get; }
 
-        public D Data { get; }
+        public TD Data { get; }
 
-        internal StatusResult(S status, D data)
+        internal StatusResult(TS status, TD data)
         {
             Status = status;
             Data = data;
         }
 
-        public void Deconstruct(out S status, out D data)
+        public void Deconstruct(out TS status, out TD data)
         {
             status = Status;
             data = Data;
         }
 
-        public override IStatusResult<S, D> Clone()
+        public override IStatusResult<TS, TD> Clone()
         {
-            var clone = new StatusResult<S, D>(Status, Data);
+            var clone = new StatusResult<TS, TD>(Status, Data);
             CloneTo(clone);
 
             return clone;
         }
     }
 
-    internal sealed class StatusResult<S> : ResultBase<IStatusResult<S>>, IStatusResult<S>
+    internal sealed class StatusResult<TS> : ResultBase<IStatusResult<TS>>, IStatusResult<TS>
     {
-        public S Status { get; }
+        public TS Status { get; }
 
-        internal StatusResult(S status)
+        internal StatusResult(TS status)
         {
             Status = status;
         }
 
-        public override IStatusResult<S> Clone()
+        public override IStatusResult<TS> Clone()
         {
-            var clone = new StatusResult<S>(Status);
+            var clone = new StatusResult<TS>(Status);
             CloneTo(clone);
 
             return clone;

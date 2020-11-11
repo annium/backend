@@ -3,16 +3,16 @@ using System.Linq.Expressions;
 
 namespace Annium.Core.Mapper
 {
-    public interface IMapConfigurationBuilder<S, T>
+    public interface IMapConfigurationBuilder<TS, T>
     {
-        void With(Expression<Func<S, T>> map);
+        void With(Expression<Func<TS, T>> map);
 
-        IMapConfigurationBuilder<S, T> For<F>(
+        IMapConfigurationBuilder<TS, T> For<TF>(
             Expression<Func<T, object>> members,
-            Expression<Func<S, F>> map
+            Expression<Func<TS, TF>> map
         );
 
-        IMapConfigurationBuilder<S, T> Ignore(
+        IMapConfigurationBuilder<TS, T> Ignore(
             Expression<Func<T, object>> members
         );
     }

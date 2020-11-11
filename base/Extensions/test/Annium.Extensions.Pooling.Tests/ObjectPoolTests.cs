@@ -85,28 +85,28 @@ namespace Annium.Extensions.Pooling.Tests
 
         private class Item : IDisposable
         {
-            private readonly uint id;
-            private readonly Action<string> log;
+            private readonly uint _id;
+            private readonly Action<string> _log;
 
             public Item(
                 uint id,
                 Action<string> log
             )
             {
-                this.id = id;
-                this.log = log;
+                _id = id;
+                _log = log;
                 log($"{id} {Created}");
             }
 
             public void ExecuteAction(int i)
             {
                 Thread.Sleep(10);
-                log($"{id} {Action} {i}");
+                _log($"{_id} {Action} {i}");
             }
 
             public void Dispose()
             {
-                log($"{id} {Disposed}");
+                _log($"{_id} {Disposed}");
             }
         }
     }

@@ -15,9 +15,9 @@ namespace Annium.Net.Base
 
         public static UriFactory Base() => new UriFactory();
 
-        private readonly Uri? baseUri;
-        private string? uri;
-        private readonly Dictionary<string, string> parameters = new Dictionary<string, string>();
+        private readonly Uri? _baseUri;
+        private string? _uri;
+        private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
 
         private UriFactory(
             Uri? baseUri,
@@ -28,9 +28,9 @@ namespace Annium.Net.Base
             if (baseUri != null)
                 EnsureAbsolute(baseUri);
 
-            this.baseUri = baseUri;
-            this.uri = uri;
-            this.parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
+            _baseUri = baseUri;
+            _uri = uri;
+            _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
         }
 
         private UriFactory(
@@ -39,7 +39,7 @@ namespace Annium.Net.Base
         {
             EnsureAbsolute(baseUri);
 
-            this.baseUri = baseUri;
+            _baseUri = baseUri;
         }
 
         private UriFactory()
@@ -48,20 +48,20 @@ namespace Annium.Net.Base
 
         public UriFactory Path(string uri)
         {
-            this.uri = uri.Trim();
+            _uri = uri.Trim();
 
             return this;
         }
 
         public UriFactory Param<T>(string key, T value)
         {
-            parameters[key] = value?.ToString() ?? string.Empty;
+            _parameters[key] = value?.ToString() ?? string.Empty;
 
             return this;
         }
 
 
-        public UriFactory Clone() => new UriFactory(baseUri, uri, parameters);
+        public UriFactory Clone() => new UriFactory(_baseUri, _uri, _parameters);
 
         public Uri Build()
         {
@@ -74,7 +74,7 @@ namespace Annium.Net.Base
                     qb.Add(name, (IEnumerable<string>) value);
 
             // add manually defined params to queryBuilder
-            foreach (var (name, value) in parameters)
+            foreach (var (name, value) in _parameters)
                 qb.Add(name, value);
 
             return new UriBuilder(uri) { Query = qb.ToString() }.Uri;
@@ -82,35 +82,35 @@ namespace Annium.Net.Base
 
         private Uri BuildUriBase()
         {
-            if (baseUri is null)
+            if (_baseUri is null)
             {
-                if (string.IsNullOrWhiteSpace(this.uri))
+                if (string.IsNullOrWhiteSpace(_uri))
                     throw new UriFormatException("Request URI is empty");
 
-                var uri = new Uri(this.uri);
+                var uri = new Uri(_uri);
                 EnsureAbsolute(uri);
 
                 return uri;
             }
 
-            if (string.IsNullOrWhiteSpace(uri) || uri == "/")
-                return baseUri;
+            if (string.IsNullOrWhiteSpace(_uri) || _uri == "/")
+                return _baseUri;
 
-            if (!uri.StartsWith("/"))
+            if (!_uri.StartsWith("/"))
             {
-                if (Uri.TryCreate(uri, UriKind.Absolute, out _))
+                if (Uri.TryCreate(_uri, UriKind.Absolute, out _))
                     throw new UriFormatException("Both base and path are absolute URI");
 
-                return new Uri($"{baseUri.ToString().TrimEnd('/')}/{uri.TrimStart('/')}");
+                return new Uri($"{_baseUri.ToString().TrimEnd('/')}/{_uri.TrimStart('/')}");
             }
 
             var sb = new StringBuilder();
-            sb.Append($"{baseUri.Scheme}://");
-            sb.Append(baseUri.Host);
-            if (!baseUri.IsDefaultPort)
-                sb.Append($":{baseUri.Port}");
+            sb.Append($"{_baseUri.Scheme}://");
+            sb.Append(_baseUri.Host);
+            if (!_baseUri.IsDefaultPort)
+                sb.Append($":{_baseUri.Port}");
 
-            return new Uri($"{sb}/{uri.TrimStart('/')}");
+            return new Uri($"{sb}/{_uri.TrimStart('/')}");
         }
 
         private void EnsureAbsolute(Uri uri)

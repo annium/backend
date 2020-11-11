@@ -9,23 +9,23 @@ namespace Annium.MongoDb.NodaTime
 {
     public abstract class PatternSerializer<TValue> : SerializerBase<TValue>
     {
-        private readonly IPattern<TValue> pattern;
+        private readonly IPattern<TValue> _pattern;
 
-        private readonly Func<TValue, TValue> valueConverter = (v => v);
+        private readonly Func<TValue, TValue> _valueConverter = (v => v);
 
         protected PatternSerializer(
             IPattern<TValue> pattern,
             Func<TValue, TValue> valueConverter
         ) : this(pattern)
         {
-            this.valueConverter = valueConverter ?? (v => v);
+            _valueConverter = valueConverter ?? (v => v);
         }
 
         protected PatternSerializer(
             IPattern<TValue> pattern
         )
         {
-            this.pattern = pattern;
+            _pattern = pattern;
         }
 
         public override TValue Deserialize(BsonDeserializationContext context, BsonDeserializationArgs args)
@@ -34,7 +34,7 @@ namespace Annium.MongoDb.NodaTime
             switch (type)
             {
                 case BsonType.String:
-                    return valueConverter(pattern.CheckedParse(context.Reader.ReadString()));
+                    return _valueConverter(_pattern.CheckedParse(context.Reader.ReadString()));
                 case BsonType.Null:
                     if (typeof(TValue).GetTypeInfo().IsValueType)
                         throw new InvalidOperationException($"{typeof(TValue).Name} is a value type, but the BsonValue is null.");
@@ -49,7 +49,7 @@ namespace Annium.MongoDb.NodaTime
 
         public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, TValue value)
         {
-            context.Writer.WriteString(pattern.Format(valueConverter(value)));
+            context.Writer.WriteString(_pattern.Format(_valueConverter(value)));
         }
     }
 }

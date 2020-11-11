@@ -11,12 +11,12 @@ namespace Annium.Extensions.Pooling
         where TKey : notnull
         where TValue : notnull
     {
-        private readonly IDictionary<TKey, CacheEntry> entries = new Dictionary<TKey, CacheEntry>();
-        private readonly Func<TKey, Task<TValue>>? factory;
-        private readonly Func<TKey, Task<ICacheReference<TValue>>>? externalFactory;
-        private readonly Func<TValue, Task> suspend;
-        private readonly Func<TValue, Task> resume;
-        private readonly ILogger<ObjectCache<TKey, TValue>> logger;
+        private readonly IDictionary<TKey, CacheEntry> _entries = new Dictionary<TKey, CacheEntry>();
+        private readonly Func<TKey, Task<TValue>>? _factory;
+        private readonly Func<TKey, Task<ICacheReference<TValue>>>? _externalFactory;
+        private readonly Func<TValue, Task> _suspend;
+        private readonly Func<TValue, Task> _resume;
+        private readonly ILogger<ObjectCache<TKey, TValue>> _logger;
 
         public ObjectCache(
             Func<TKey, Task<TValue>> factory,
@@ -37,10 +37,10 @@ namespace Annium.Extensions.Pooling
             ILogger<ObjectCache<TKey, TValue>> logger
         )
         {
-            this.factory = factory;
-            this.suspend = suspend;
-            this.resume = resume;
-            this.logger = logger;
+            _factory = factory;
+            _suspend = suspend;
+            _resume = resume;
+            _logger = logger;
         }
 
         public ObjectCache(
@@ -62,10 +62,10 @@ namespace Annium.Extensions.Pooling
             ILogger<ObjectCache<TKey, TValue>> logger
         )
         {
-            this.externalFactory = externalFactory;
-            this.suspend = suspend;
-            this.resume = resume;
-            this.logger = logger;
+            _externalFactory = externalFactory;
+            _suspend = suspend;
+            _resume = resume;
+            _logger = logger;
         }
 
         public async Task<ICacheReference<TValue>> GetAsync(TKey key)
@@ -73,14 +73,14 @@ namespace Annium.Extensions.Pooling
             // get or create CacheEntry
             CacheEntry entry;
             var isInitializing = false;
-            lock (entries)
+            lock (_entries)
             {
-                if (entries.TryGetValue(key, out entry!))
+                if (_entries.TryGetValue(key, out entry!))
                     Trace($"Get by {key}: entry already exists");
                 else
                 {
                     Trace($"Get by {key}: entry missed, creating");
-                    entry = entries[key] = new CacheEntry();
+                    entry = _entries[key] = new CacheEntry();
                     isInitializing = true;
                 }
             }
@@ -90,11 +90,11 @@ namespace Annium.Extensions.Pooling
             if (isInitializing)
             {
                 Trace($"Get by {key}: initialize entry");
-                if (factory != null)
-                    entry.SetValue(await factory(key));
-                else if (externalFactory != null)
+                if (_factory != null)
+                    entry.SetValue(await _factory(key));
+                else if (_externalFactory != null)
                 {
-                    reference = await externalFactory(key);
+                    reference = await _externalFactory(key);
                     entry.SetValue(reference.Value);
                 }
             }
@@ -108,7 +108,7 @@ namespace Annium.Extensions.Pooling
             if (!isInitializing && !entry.HasReferences)
             {
                 Trace($"Get by {key}: resume entry");
-                await resume(entry.Value);
+                await _resume(entry.Value);
             }
 
             // create reference, incrementing reference counter
@@ -132,7 +132,7 @@ namespace Annium.Extensions.Pooling
             if (!entry.HasReferences)
             {
                 Trace($"Release by {key}: suspend entry");
-                await suspend(entry.Value);
+                await _suspend(entry.Value);
             }
 
             entry.Unlock();
@@ -140,16 +140,16 @@ namespace Annium.Extensions.Pooling
 
         private void Trace(string message)
         {
-            logger.Trace($"[{Thread.CurrentThread.ManagedThreadId,3:D}] {message}");
+            _logger.Trace($"[{Thread.CurrentThread.ManagedThreadId,3:D}] {message}");
         }
 
         public async ValueTask DisposeAsync()
         {
             IList<KeyValuePair<TKey, CacheEntry>> cacheEntries;
-            lock (entries)
+            lock (_entries)
             {
-                cacheEntries = entries.ToList();
-                entries.Clear();
+                cacheEntries = _entries.ToList();
+                _entries.Clear();
             }
 
             Trace($"Dispose cache: {cacheEntries.Count} entries");
@@ -161,13 +161,13 @@ namespace Annium.Extensions.Pooling
         private class CacheEntry : IAsyncDisposable
         {
             public TValue Value { get; private set; } = default!;
-            public bool HasReferences => references != 0;
+            public bool HasReferences => _references != 0;
 
-            private readonly AutoResetEvent gate = new AutoResetEvent(initialState: false);
-            private uint references;
+            private readonly AutoResetEvent _gate = new AutoResetEvent(initialState: false);
+            private uint _references;
 
-            public void Wait() => gate.WaitOne();
-            public void Unlock() => gate.Set();
+            public void Wait() => _gate.WaitOne();
+            public void Unlock() => _gate.Set();
 
             public void SetValue(TValue value)
             {
@@ -177,13 +177,13 @@ namespace Annium.Extensions.Pooling
                     throw new InvalidOperationException("Can't change CacheEntry Value");
             }
 
-            public void AddReference() => ++references;
-            public void RemoveReference() => --references;
+            public void AddReference() => ++_references;
+            public void RemoveReference() => --_references;
 
             public async ValueTask DisposeAsync()
             {
-                gate.Reset();
-                gate.Dispose();
+                _gate.Reset();
+                _gate.Dispose();
 
                 switch (Value)
                 {

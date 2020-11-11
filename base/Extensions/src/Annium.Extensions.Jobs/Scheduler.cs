@@ -9,13 +9,13 @@ namespace Annium.Extensions.Jobs
 {
     internal class Scheduler : IScheduler, IDisposable
     {
-        private readonly Func<Instant> getInstant;
+        private readonly Func<Instant> _getInstant;
 
-        private readonly IIntervalResolver intervalResolver;
+        private readonly IIntervalResolver _intervalResolver;
 
-        private readonly CancellationTokenSource cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
 
-        private readonly IDictionary<Func<Task>, Func<Instant, bool>> handlers =
+        private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers =
             new Dictionary<Func<Task>, Func<Instant, bool>>();
 
         public Scheduler(
@@ -23,17 +23,17 @@ namespace Annium.Extensions.Jobs
             IIntervalResolver intervalResolver
         )
         {
-            this.getInstant = getInstant;
-            this.intervalResolver = intervalResolver;
-            Run(cts.Token).GetAwaiter();
+            _getInstant = getInstant;
+            _intervalResolver = intervalResolver;
+            Run(_cts.Token).GetAwaiter();
         }
 
         public Action Schedule(Func<Task> handler, string interval)
         {
-            var isMatch = intervalResolver.GetMatcher(interval);
-            handlers.Add(handler, isMatch);
+            var isMatch = _intervalResolver.GetMatcher(interval);
+            _handlers.Add(handler, isMatch);
 
-            return () => handlers.Remove(handler);
+            return () => _handlers.Remove(handler);
         }
 
         private async Task Run(CancellationToken token)
@@ -41,7 +41,7 @@ namespace Annium.Extensions.Jobs
             while (!token.IsCancellationRequested)
             {
                 // wait till next minute start
-                var time = getInstant().InUtc();
+                var time = _getInstant().InUtc();
                 await Task.Delay(
                     TimeSpan.FromMinutes(1) -
                     TimeSpan.FromSeconds(time.Second) -
@@ -49,27 +49,27 @@ namespace Annium.Extensions.Jobs
                 );
 
                 // run handlers
-                var instant = getInstant();
-                await Task.WhenAll(handlers.Where(e => e.Value(instant)).ToArray().Select(e => e.Key()));
+                var instant = _getInstant();
+                await Task.WhenAll(_handlers.Where(e => e.Value(instant)).ToArray().Select(e => e.Key()));
             }
         }
 
         #region IDisposable Support
 
-        private bool disposedValue; // To detect redundant calls
+        private bool _disposedValue; // To detect redundant calls
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    cts.Cancel();
-                    cts.Dispose();
-                    handlers.Clear();
+                    _cts.Cancel();
+                    _cts.Dispose();
+                    _handlers.Clear();
                 }
 
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 

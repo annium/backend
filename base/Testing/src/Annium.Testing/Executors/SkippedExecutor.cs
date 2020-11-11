@@ -6,7 +6,7 @@ namespace Annium.Testing.Executors
 {
     public class SkippedExecutor : ITestExecutor
     {
-        private readonly ILogger<SkippedExecutor> logger;
+        private readonly ILogger<SkippedExecutor> _logger;
 
         public uint Order { get; } = 1;
 
@@ -14,7 +14,7 @@ namespace Annium.Testing.Executors
             ILogger<SkippedExecutor> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
@@ -23,7 +23,7 @@ namespace Annium.Testing.Executors
             {
                 target.Result.Outcome = TestOutcome.Skipped;
 
-                logger.Trace($"Skip {target.Test.DisplayName}.");
+                _logger.Trace($"Skip {target.Test.DisplayName}.");
             }
 
             return Task.CompletedTask;

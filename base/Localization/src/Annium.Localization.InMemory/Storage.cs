@@ -7,18 +7,18 @@ namespace Annium.Localization.InMemoryStorage
 {
     internal class Storage : ILocaleStorage
     {
-        private readonly IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales;
+        private readonly IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> _locales;
 
         public Storage(
             IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
         )
         {
-            this.locales = locales;
+            _locales = locales;
         }
 
         public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
         {
-            return locales.TryGetValue(culture, out var locale) ? locale : new Dictionary<string, string>();
+            return _locales.TryGetValue(culture, out var locale) ? locale : new Dictionary<string, string>();
         }
     }
 }

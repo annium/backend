@@ -99,7 +99,7 @@ namespace Annium.Core.Mapper.Tests
             result(false).IsTrue();
         }
 
-        private Func<S, R> Repack<S, R>(Expression<Func<S, R>> ex)
+        private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
         {
             var repacker = new ServiceCollection()
                 .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
@@ -107,9 +107,9 @@ namespace Annium.Core.Mapper.Tests
                 .BuildServiceProvider()
                 .GetRequiredService<IRepacker>();
 
-            var param = Expression.Parameter(typeof(S));
+            var param = Expression.Parameter(typeof(TS));
 
-            return ((Expression<Func<S, R>>) repacker.Repack(ex)(param)).Compile();
+            return ((Expression<Func<TS, TR>>) repacker.Repack(ex)(param)).Compile();
         }
     }
 }

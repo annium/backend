@@ -15,18 +15,18 @@ namespace Annium.Testing.TestAdapter
     [DefaultExecutorUri(Constants.ExecutorUri)]
     public class AdapterTestDiscoverer : ITestDiscoverer
     {
-        private readonly TestConverter testConverter;
+        private readonly TestConverter _testConverter;
 
-        private TestDiscoverer? testDiscoverer;
+        private TestDiscoverer? _testDiscoverer;
 
-        private ILogger<AdapterTestDiscoverer>? logger;
+        private ILogger<AdapterTestDiscoverer>? _logger;
 
         public AdapterTestDiscoverer()
         {
             var factory = new ServiceProviderFactory();
             var provider = factory.CreateServiceProvider(factory.CreateBuilder(new ServiceCollection()).UseServicePack<ServicePack>());
 
-            testConverter = provider.GetRequiredService<TestConverter>();
+            _testConverter = provider.GetRequiredService<TestConverter>();
         }
 
         public void DiscoverTests(
@@ -37,10 +37,10 @@ namespace Annium.Testing.TestAdapter
         )
         {
             var provider = AdapterServiceProviderBuilder.Build(discoveryContext);
-            testDiscoverer = provider.GetRequiredService<TestDiscoverer>();
-            this.logger = provider.GetRequiredService<ILogger<AdapterTestDiscoverer>>();
+            _testDiscoverer = provider.GetRequiredService<TestDiscoverer>();
+            _logger = provider.GetRequiredService<ILogger<AdapterTestDiscoverer>>();
 
-            this.logger.Debug("Start discovery.");
+            _logger.Debug("Start discovery.");
 
             DiscoverSourcesAsync(sources, discoverySink).Wait();
         }
@@ -52,11 +52,11 @@ namespace Annium.Testing.TestAdapter
         {
             var assembly = Source.Resolve(source);
 
-            logger!.Debug($"Start discovery of {assembly.FullName}.");
+            _logger!.Debug($"Start discovery of {assembly.FullName}.");
 
-            return testDiscoverer!.FindTestsAsync(
+            return _testDiscoverer!.FindTestsAsync(
                 assembly,
-                test => discoverySink.SendTestCase(testConverter.Convert(assembly, test))
+                test => discoverySink.SendTestCase(_testConverter.Convert(assembly, test))
             );
         }
     }

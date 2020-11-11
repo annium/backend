@@ -9,7 +9,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class SampleTest : IntegrationTest
     {
-        private IHttpRequest http => GetRequest<Startup>(
+        private IHttpRequest Http => GetRequest<Startup>(
             builder => builder.UseServicePack<ServicePack>()
         );
 
@@ -17,7 +17,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         public async Task True_IsTrue()
         {
             // act
-            var response = await http.Get("/").RunAsync();
+            var response = await Http.Get("/").RunAsync();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.OK);

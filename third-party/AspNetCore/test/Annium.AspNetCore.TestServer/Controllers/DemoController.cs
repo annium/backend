@@ -44,7 +44,7 @@ namespace Annium.AspNetCore.TestServer.Controllers
             if (!request.IsOk)
                 return Task.FromResult(Result.Status(OperationStatus.BadRequest).Error("Not ok"));
 
-            return Task.FromResult(Result.Status(OperationStatus.OK));
+            return Task.FromResult(Result.Status(OperationStatus.Ok));
         }
     }
 
@@ -60,7 +60,7 @@ namespace Annium.AspNetCore.TestServer.Controllers
             if (request.Q == 0)
                 return Task.FromResult(Result.Status<OperationStatus, DemoResponse>(OperationStatus.NotFound, default!).Error("Not found"));
 
-            return Task.FromResult(Result.Status(OperationStatus.OK, new DemoResponse { X = request.Q }));
+            return Task.FromResult(Result.Status(OperationStatus.Ok, new DemoResponse { X = request.Q }));
         }
     }
 

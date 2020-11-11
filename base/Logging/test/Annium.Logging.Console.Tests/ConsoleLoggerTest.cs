@@ -10,7 +10,7 @@ namespace Annium.Logging.Console.Tests
 {
     public class ConsoleLoggerTest
     {
-        private readonly Func<Instant> getInstant = () => Instant.FromUnixTimeSeconds(60);
+        private readonly Func<Instant> _getInstant = () => Instant.FromUnixTimeSeconds(60);
 
         [Fact]
         public void LogMessage_WritesLogMessageToConsole()

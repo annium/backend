@@ -10,14 +10,14 @@ namespace Annium.Core.Mediator.Internal
 {
     internal class NextBuilder
     {
-        private readonly MethodInfo executeAsync = typeof(ChainExecutor)
+        private readonly MethodInfo _executeAsync = typeof(ChainExecutor)
             .GetMethod(nameof(ChainExecutor.ExecuteAsync), BindingFlags.Public | BindingFlags.Static)!;
 
-        private readonly MethodInfo getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter))!;
+        private readonly MethodInfo _getAwaiter = typeof(Task<object>).GetMethod(nameof(Task<int>.GetAwaiter))!;
 
-        private readonly MethodInfo getResult = typeof(TaskAwaiter<object>).GetMethod(nameof(TaskAwaiter<int>.GetResult))!;
+        private readonly MethodInfo _getResult = typeof(TaskAwaiter<object>).GetMethod(nameof(TaskAwaiter<int>.GetResult))!;
 
-        private readonly MethodInfo fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
+        private readonly MethodInfo _fromResult = typeof(Task).GetMethod(nameof(Task.FromResult))!;
 
         public Delegate BuildNext(
             Type input,
@@ -34,14 +34,14 @@ namespace Annium.Core.Mediator.Internal
             var next = Ex.Lambda(
                 Ex.Call(
                     null,
-                    fromResult.MakeGenericMethod(output),
+                    _fromResult.MakeGenericMethod(output),
                     Ex.Convert(
                         Ex.Call(
                             Ex.Call(
-                                Ex.Call(null, executeAsync, provider, chain, Ex.Convert(request, typeof(object)), token, index),
-                                getAwaiter
+                                Ex.Call(null, _executeAsync, provider, chain, Ex.Convert(request, typeof(object)), token, index),
+                                _getAwaiter
                             ),
-                            getResult
+                            _getResult
                         ),
                         output
                     )

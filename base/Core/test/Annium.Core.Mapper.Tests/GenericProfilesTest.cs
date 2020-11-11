@@ -41,9 +41,9 @@ namespace Annium.Core.Mapper.Tests
             .BuildServiceProvider()
             .GetRequiredService<IMapper>();
 
-        private class ValidProfile<T, Z> : Profile
+        private class ValidProfile<T, TZ> : Profile
             where T : A
-            where Z : IEnumerable
+            where TZ : IEnumerable
         {
             public ValidProfile()
             {

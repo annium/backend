@@ -5,7 +5,7 @@ namespace Annium.Testing.Executors
 {
     public class SetupExecutor : ITestExecutor
     {
-        private readonly ILogger<SetupExecutor> logger;
+        private readonly ILogger<SetupExecutor> _logger;
 
         public uint Order { get; } = 2;
 
@@ -13,12 +13,12 @@ namespace Annium.Testing.Executors
             ILogger<SetupExecutor> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
         {
-            logger.Trace($"Setup {target.Test.DisplayName}.");
+            _logger.Trace($"Setup {target.Test.DisplayName}.");
 
             target.Init();
 

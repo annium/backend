@@ -40,7 +40,7 @@ namespace Annium.Core.Mediator.Internal
 
                 foreach (var handler in handlers.ToArray())
                 {
-                    service = resolveHandler(handler);
+                    service = ResolveHandler(handler);
 
                     _logger.Trace($"Resolved {handler.RequestIn} -> {handler.ResponseOut} handler into {service}");
 
@@ -75,14 +75,14 @@ namespace Annium.Core.Mediator.Internal
                 chain.Add(new ChainElement(service, _nextBuilder.BuildNext(input, output)));
             }
 
-            traceChain();
+            TraceChain();
 
             if (!isFinalized)
                 throw new InvalidOperationException($"Can't resolve request handler by input {input} and output {output}");
 
             return chain;
 
-            Type? resolveHandler(Handler handler)
+            Type? ResolveHandler(Handler handler)
             {
                 var requestIn = input.GetTargetImplementation(handler.RequestIn);
                 // var responseOut = handler.ResponseOut.ResolveByImplentations(output);
@@ -102,7 +102,7 @@ namespace Annium.Core.Mediator.Internal
                 return service;
             }
 
-            void traceChain()
+            void TraceChain()
             {
                 _logger.Trace($"Composed chain with {chain.Count} handler(s):");
                 foreach (var element in chain)

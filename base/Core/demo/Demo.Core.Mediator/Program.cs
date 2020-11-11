@@ -27,9 +27,9 @@ namespace Demo.Core.Mediator
             var options = new JsonSerializerOptions().ConfigureForOperations();
 
             var request = new CreateTodoRequest("wake up");
-            var payload = encode(request);
+            var payload = Encode(request);
             var result = await mediator.SendAsync<Request<CreateTodoRequest>, Response<IBooleanResult<int>>>(payload, token);
-            _ = decode(result);
+            _ = Decode(result);
 
             /*
             emulation:
@@ -42,9 +42,9 @@ namespace Demo.Core.Mediator
             - response handler (mutates response)
              */
 
-            Request<TRequest> encode<TRequest>(TRequest e) => new Request<TRequest>(JsonSerializer.Serialize(e, options));
+            Request<TRequest> Encode<TRequest>(TRequest e) => new Request<TRequest>(JsonSerializer.Serialize(e, options));
 
-            TResponse decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options);
+            TResponse Decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options);
         }
 
         public static Task<int> Main(string[] args) => new Entrypoint()

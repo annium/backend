@@ -22,7 +22,7 @@ namespace Annium.Extensions.Pooling
         where TValue : notnull
     {
         public TValue Value { get; private set; }
-        private readonly Func<Task> dispose;
+        private readonly Func<Task> _dispose;
 
         public CacheReference(
             TValue value,
@@ -30,13 +30,13 @@ namespace Annium.Extensions.Pooling
         )
         {
             Value = value;
-            this.dispose = dispose;
+            _dispose = dispose;
         }
 
         public async ValueTask DisposeAsync()
         {
             Value = default!;
-            await dispose();
+            await _dispose();
         }
     }
 }

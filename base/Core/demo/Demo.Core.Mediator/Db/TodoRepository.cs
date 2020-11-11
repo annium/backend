@@ -6,29 +6,29 @@ namespace Demo.Core.Mediator.Db
 {
     internal class TodoRepository
     {
-        private int nextId = 1;
+        private int _nextId = 1;
 
-        private readonly List<Todo> data = new List<Todo>();
+        private readonly List<Todo> _data = new List<Todo>();
 
         public int Add(Todo model)
         {
-            model = new Todo(nextId++, model.Value);
-            data.Add(model);
+            model = new Todo(_nextId++, model.Value);
+            _data.Add(model);
 
             return model.Id;
         }
 
         public bool Delete(int id)
         {
-            var item = data.FirstOrDefault(e => e.Id == id);
+            var item = _data.FirstOrDefault(e => e.Id == id);
             if (item is null)
                 return false;
 
-            data.Remove(item);
+            _data.Remove(item);
 
             return true;
         }
 
-        public IEnumerable<Todo> GetAll() => data.AsEnumerable();
+        public IEnumerable<Todo> GetAll() => _data.AsEnumerable();
     }
 }

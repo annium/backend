@@ -10,9 +10,9 @@ namespace Annium.Localization.Yaml
 {
     internal class Storage : ILocaleStorage
     {
-        private readonly IDeserializer deserializer = new DeserializerBuilder().Build();
+        private readonly IDeserializer _deserializer = new DeserializerBuilder().Build();
 
-        private readonly IDictionary<string, IReadOnlyDictionary<string, string>> locales =
+        private readonly IDictionary<string, IReadOnlyDictionary<string, string>> _locales =
             new Dictionary<string, IReadOnlyDictionary<string, string>>();
 
         public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
@@ -32,16 +32,16 @@ namespace Annium.Localization.Yaml
 
         private IReadOnlyDictionary<string, string> ResolveLocale(string file)
         {
-            lock (locales)
+            lock (_locales)
             {
-                if (locales.TryGetValue(file, out var locale))
+                if (_locales.TryGetValue(file, out var locale))
                     return locale;
 
                 locale = File.Exists(file)
-                    ? deserializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file))
+                    ? _deserializer.Deserialize<Dictionary<string, string>>(File.ReadAllText(file))
                     : new Dictionary<string, string>();
 
-                locales[file] = locale;
+                _locales[file] = locale;
 
                 return locale;
             }

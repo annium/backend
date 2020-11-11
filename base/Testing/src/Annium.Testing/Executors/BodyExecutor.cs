@@ -7,17 +7,17 @@ namespace Annium.Testing.Executors
     {
         public uint Order { get; } = 4;
 
-        private readonly MethodExecutor executor;
+        private readonly MethodExecutor _executor;
 
-        private readonly ILogger<BodyExecutor> logger;
+        private readonly ILogger<BodyExecutor> _logger;
 
         public BodyExecutor(
             MethodExecutor executor,
             ILogger<BodyExecutor> logger
         )
         {
-            this.executor = executor;
-            this.logger = logger;
+            _executor = executor;
+            _logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
@@ -26,9 +26,9 @@ namespace Annium.Testing.Executors
             if (test.Method == null)
                 return Task.CompletedTask;
 
-            logger.Trace($"Execute Body of {target.Test.DisplayName}.");
+            _logger.Trace($"Execute Body of {target.Test.DisplayName}.");
 
-            return executor.ExecuteAsync(instance, test.Method, result);
+            return _executor.ExecuteAsync(instance, test.Method, result);
         }
     }
 }

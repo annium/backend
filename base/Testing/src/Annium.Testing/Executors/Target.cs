@@ -8,8 +8,8 @@ namespace Annium.Testing.Executors
     {
         public Test Test { get; }
         public TestResult Result { get; }
-        private readonly IServiceProvider provider;
-        public object? instance;
+        private readonly IServiceProvider _provider;
+        public object? Instance;
 
         public Target(
             IServiceProvider provider,
@@ -19,13 +19,13 @@ namespace Annium.Testing.Executors
         {
             Test = test;
             Result = result;
-            this.provider = provider;
+            _provider = provider;
         }
 
         public void Init()
         {
-            if (instance is null)
-                instance = provider.GetRequiredService(Test.Method.DeclaringType);
+            if (Instance is null)
+                Instance = _provider.GetRequiredService(Test.Method.DeclaringType);
             else
                 throw new InvalidOperationException("Instance already created");
         }
@@ -36,7 +36,7 @@ namespace Annium.Testing.Executors
             out TestResult result
         )
         {
-            instance = this.instance!;
+            instance = Instance!;
             test = Test;
             result = Result;
         }

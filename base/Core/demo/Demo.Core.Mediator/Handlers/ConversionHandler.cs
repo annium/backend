@@ -10,13 +10,13 @@ namespace Demo.Core.Mediator.Handlers
 {
     internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
     {
-        private readonly ILogger<ConversionHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<ConversionHandler<TRequest, TResponse>> _logger;
 
         public ConversionHandler(
             ILogger<ConversionHandler<TRequest, TResponse>> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task<Response<TResponse>> HandleAsync(
@@ -25,12 +25,12 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
+            _logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
             var payload = JsonSerializer.Deserialize<TRequest>(request.Value);
 
             var result = await next(payload);
 
-            logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
+            _logger.Trace($"Serialize {typeof(TResponse).Name} to Response");
             return new Response<TResponse>(JsonSerializer.Serialize(result));
         }
     }

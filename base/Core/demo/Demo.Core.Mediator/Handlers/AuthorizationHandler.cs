@@ -9,13 +9,13 @@ namespace Demo.Core.Mediator.Handlers
 {
     internal class AuthorizationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, Authored<TRequest>, TResponse, TResponse>
     {
-        private readonly ILogger<AuthorizationHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<AuthorizationHandler<TRequest, TResponse>> _logger;
 
         public AuthorizationHandler(
             ILogger<AuthorizationHandler<TRequest, TResponse>> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -24,7 +24,7 @@ namespace Demo.Core.Mediator.Handlers
             Func<Authored<TRequest>, Task<TResponse>> next
         )
         {
-            logger.Trace($"Start {typeof(TRequest).Name} authorization");
+            _logger.Trace($"Start {typeof(TRequest).Name} authorization");
             var authoredRequest = new Authored<TRequest>(1, request);
 
             var response = await next(authoredRequest);

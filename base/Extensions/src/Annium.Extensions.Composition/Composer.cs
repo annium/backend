@@ -49,7 +49,7 @@ namespace Annium.Extensions.Composition
                 result.Join(ruleResult);
             }
 
-            return Result.Status(result.IsOk ? OperationStatus.OK : OperationStatus.NotFound).Join(result);
+            return Result.Status(result.IsOk ? OperationStatus.Ok : OperationStatus.NotFound).Join(result);
         }
     }
 }

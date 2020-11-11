@@ -10,13 +10,13 @@ namespace Demo.Core.Mediator.Handlers
 {
     internal class TodoQueryHandler // : IRequestHandler<ListTodosRequest, Todo[]>
     {
-        private readonly TodoRepository todoRepository;
+        private readonly TodoRepository _todoRepository;
 
         public TodoQueryHandler(
             TodoRepository todoRepository
         )
         {
-            this.todoRepository = todoRepository;
+            _todoRepository = todoRepository;
         }
 
         public Task<Todo[]> HandleAsync(
@@ -25,7 +25,7 @@ namespace Demo.Core.Mediator.Handlers
             Func<Task<Todo[]>> next
         )
         {
-            return Task.FromResult(todoRepository.GetAll().ToArray());
+            return Task.FromResult(_todoRepository.GetAll().ToArray());
         }
     }
 }

@@ -7,16 +7,16 @@ using X = Annium.Data.Operations.IBooleanResult<object>;
 
 namespace Annium.Data.Operations.Serialization.Json
 {
-    internal class BooleanDataResultConverter<D> : ResultConverterBase<IBooleanResult<D>>
+    internal class BooleanDataResultConverter<TD> : ResultConverterBase<IBooleanResult<TD>>
     {
-        public override IBooleanResult<D> Read(
+        public override IBooleanResult<TD> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
         )
         {
             var isSuccess = false;
-            D data = default !;
+            TD data = default !;
             IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
             IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
@@ -28,7 +28,7 @@ namespace Annium.Data.Operations.Serialization.Json
                 else if (reader.HasProperty(nameof(X.IsFailure)))
                     isSuccess = !JsonSerializer.Deserialize<bool>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.Data)))
-                    data = JsonSerializer.Deserialize<D>(ref reader, options);
+                    data = JsonSerializer.Deserialize<TD>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.PlainErrors)))
                     plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options);
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
@@ -45,7 +45,7 @@ namespace Annium.Data.Operations.Serialization.Json
 
         public override void Write(
             Utf8JsonWriter writer,
-            IBooleanResult<D> value,
+            IBooleanResult<TD> value,
             JsonSerializerOptions options
         )
         {

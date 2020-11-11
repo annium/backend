@@ -1,27 +1,27 @@
 namespace Annium.Data.Operations.Implementations
 {
-    internal sealed class BooleanResult<D> : ResultBase<IBooleanResult<D>>, IBooleanResult<D>
+    internal sealed class BooleanResult<TD> : ResultBase<IBooleanResult<TD>>, IBooleanResult<TD>
     {
         public bool IsSuccess => _value;
         public bool IsFailure => !_value;
-        public D Data { get; }
+        public TD Data { get; }
         private readonly bool _value;
 
-        internal BooleanResult(bool value, D data)
+        internal BooleanResult(bool value, TD data)
         {
             _value = value;
             Data = data;
         }
 
-        public void Deconstruct(out bool succeed, out D data)
+        public void Deconstruct(out bool succeed, out TD data)
         {
             succeed = IsSuccess;
             data = Data;
         }
 
-        public override IBooleanResult<D> Clone()
+        public override IBooleanResult<TD> Clone()
         {
-            var clone = new BooleanResult<D>(_value, Data);
+            var clone = new BooleanResult<TD>(_value, Data);
             CloneTo(clone);
 
             return clone;

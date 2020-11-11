@@ -14,7 +14,7 @@ namespace Annium.AspNetCore.Extensions.Tests
 {
     public class ServerControllerTest : IntegrationTest
     {
-        private IHttpRequest http => GetRequest<Startup>(
+        private IHttpRequest Http => GetRequest<Startup>(
             builder => builder.UseServicePack<ServicePack>()
         );
 
@@ -22,7 +22,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         public async Task Command_BadRequest_Works()
         {
             // act
-            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseResultAsync();
+            var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseResultAsync();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.BadRequest);
@@ -33,7 +33,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         public async Task Command_Ok_Works()
         {
             // act
-            var response = await http.Post("/command").JsonContent(new DemoCommand { IsOk = true }).AsResponseAsync<IResult>();
+            var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = true }).AsResponseAsync<IResult>();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.OK);
@@ -44,7 +44,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         public async Task Query_NotFound_Works()
         {
             // act
-            var response = await http.Get("/query").Param(nameof(DemoQuery.Q), 0).AsResponseAsync<IResult<DemoResponse>>();
+            var response = await Http.Get("/query").Param(nameof(DemoQuery.Q), 0).AsResponseAsync<IResult<DemoResponse>>();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.NotFound);
@@ -55,7 +55,7 @@ namespace Annium.AspNetCore.Extensions.Tests
         public async Task Query_Ok_Works()
         {
             // act
-            var response = await http.Get("/query").Param(nameof(DemoQuery.Q), 1).AsResponseAsync<IResult<DemoResponse>>();
+            var response = await Http.Get("/query").Param(nameof(DemoQuery.Q), 1).AsResponseAsync<IResult<DemoResponse>>();
 
             // assert
             response.StatusCode.IsEqual(HttpStatusCode.OK);

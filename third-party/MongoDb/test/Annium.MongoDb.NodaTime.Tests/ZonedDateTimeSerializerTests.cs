@@ -9,7 +9,7 @@ namespace Annium.MongoDb.NodaTime.Tests
 {
     public class ZonedDateTimeSerializerTests
     {
-        private readonly static DateTimeZone easternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
+        private readonly static DateTimeZone EasternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
 
         static ZonedDateTimeSerializerTests()
         {
@@ -19,14 +19,14 @@ namespace Annium.MongoDb.NodaTime.Tests
         [Fact]
         public void CanRoundTripValue_Eastern()
         {
-            var dateTime = new ZonedDateTime(new LocalDateTime(2015, 1, 2, 3, 4, 5).InUtc().ToInstant(), easternTimezone);
+            var dateTime = new ZonedDateTime(new LocalDateTime(2015, 1, 2, 3, 4, 5).InUtc().ToInstant(), EasternTimezone);
             var obj = new Test { ZonedDateTime = dateTime };
             obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-01T22:04:05 America/New_York (-05)'").IsTrue();
 
             obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
             obj.ZonedDateTime.IsEqual(obj.ZonedDateTime);
             obj.ZonedDateTime.IsEqual(dateTime);
-            obj.ZonedDateTime.Zone.IsEqual(easternTimezone);
+            obj.ZonedDateTime.Zone.IsEqual(EasternTimezone);
         }
 
         [Fact]

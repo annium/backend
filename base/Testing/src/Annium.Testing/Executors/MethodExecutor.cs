@@ -9,18 +9,18 @@ namespace Annium.Testing.Executors
 {
     public class MethodExecutor
     {
-        private readonly ILogger<MethodExecutor> logger;
+        private readonly ILogger<MethodExecutor> _logger;
 
         public MethodExecutor(
             ILogger<MethodExecutor> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
         {
-            logger.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+            _logger.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
             var watch = new Stopwatch();
             watch.Start();
@@ -43,7 +43,7 @@ namespace Annium.Testing.Executors
                 watch.Stop();
                 result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
 
-                logger.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+                _logger.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Testing.Executors
             result.Outcome = TestOutcome.Failed;
             result.Failure = exception;
 
-            logger.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+            _logger.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
         }
     }
 }

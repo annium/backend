@@ -19,16 +19,16 @@ namespace Annium.Data.Models.Extensions
         private static readonly IDictionary<Type, LambdaExpression> RawComparers =
             new Dictionary<Type, LambdaExpression>();
 
-        public static bool IsShallowEqual<T, D>(this T value, D data)
+        public static bool IsShallowEqual<T, TD>(this T value, TD data)
         {
             var mapper = Mapper.GetFor(Assembly.GetCallingAssembly());
 
             return value.IsShallowEqual(data, mapper);
         }
 
-        public static bool IsShallowEqual<T, D>(this T value, D data, IMapper mapper)
+        public static bool IsShallowEqual<T, TD>(this T value, TD data, IMapper mapper)
         {
-            var type = typeof(D);
+            var type = typeof(TD);
 
             if (type.IsClass)
             {

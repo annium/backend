@@ -10,7 +10,7 @@ namespace Annium.Storage.InMemory
 {
     internal class Storage : StorageBase
     {
-        private IDictionary<string, byte[]> storage = new Dictionary<string, byte[]>();
+        private IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
 
         public Storage(
             Configuration configuration,
@@ -23,7 +23,7 @@ namespace Annium.Storage.InMemory
 
         protected override Task DoSetupAsync() => Task.CompletedTask;
 
-        protected override Task<string[]> DoListAsync() => Task.FromResult(storage.Keys.ToArray());
+        protected override Task<string[]> DoListAsync() => Task.FromResult(_storage.Keys.ToArray());
 
         protected override async Task DoUploadAsync(Stream source, string name)
         {
@@ -33,7 +33,7 @@ namespace Annium.Storage.InMemory
             {
                 ms.Position = 0;
                 await source.CopyToAsync(ms);
-                storage[name] = ms.ToArray();
+                _storage[name] = ms.ToArray();
             }
         }
 
@@ -41,20 +41,20 @@ namespace Annium.Storage.InMemory
         {
             VerifyName(name);
 
-            if (!storage.ContainsKey(name))
+            if (!_storage.ContainsKey(name))
                 throw new KeyNotFoundException($"{name} not found in storage");
 
-            return Task.FromResult<Stream>(new MemoryStream(storage[name]));
+            return Task.FromResult<Stream>(new MemoryStream(_storage[name]));
         }
 
         protected override Task<bool> DoDeleteAsync(string name)
         {
             VerifyName(name);
 
-            if (!storage.ContainsKey(name))
+            if (!_storage.ContainsKey(name))
                 return Task.FromResult(false);
 
-            storage.Remove(name);
+            _storage.Remove(name);
 
             return Task.FromResult(true);
         }

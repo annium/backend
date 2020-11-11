@@ -28,7 +28,7 @@ namespace Annium.Testing
                 );
         }
 
-        public static void IsEqual<T, D>(this T value, D data, string message = "")
+        public static void IsEqual<T, TD>(this T value, TD data, string message = "")
         {
             if (!value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
@@ -38,7 +38,7 @@ namespace Annium.Testing
                 );
         }
 
-        public static void IsNotEqual<T, D>(this T value, D data, string message = "")
+        public static void IsNotEqual<T, TD>(this T value, TD data, string message = "")
         {
             if (value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
@@ -79,13 +79,13 @@ namespace Annium.Testing
             return value;
         }
 
-        public static void IsEqual<T, D>(this T value, D data, IMapper mapper, string message)
+        public static void IsEqual<T, TD>(this T value, TD data, IMapper mapper, string message)
         {
             if (!value.IsShallowEqual(data, mapper))
                 throw new AssertionFailedException(message);
         }
 
-        public static void IsNotEqual<T, D>(this T value, D data, IMapper mapper, string message)
+        public static void IsNotEqual<T, TD>(this T value, TD data, IMapper mapper, string message)
         {
             if (value.IsShallowEqual(data, mapper))
                 throw new AssertionFailedException(message);

@@ -8,13 +8,13 @@ namespace Demo.Core.Mediator.Handlers
 {
     internal class LoggingHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>
     {
-        private readonly ILogger<LoggingHandler<TRequest, TResponse>> logger;
+        private readonly ILogger<LoggingHandler<TRequest, TResponse>> _logger;
 
         public LoggingHandler(
             ILogger<LoggingHandler<TRequest, TResponse>> logger
         )
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -23,9 +23,9 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, Task<TResponse>> next
         )
         {
-            logger.Trace($"Start {typeof(TRequest).Name} handle");
+            _logger.Trace($"Start {typeof(TRequest).Name} handle");
             var result = await next(request);
-            logger.Trace($"Complete {typeof(TRequest).Name} handle");
+            _logger.Trace($"Complete {typeof(TRequest).Name} handle");
 
             return result;
         }
