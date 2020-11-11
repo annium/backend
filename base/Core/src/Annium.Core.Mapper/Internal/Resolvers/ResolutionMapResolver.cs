@@ -38,7 +38,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             vars.Add(typeVar);
 
             var resolve = typeof(ITypeManager)
-                .GetMethod(nameof(ITypeManager.Resolve), new[] { typeof(object), typeof(Type) });
+                .GetMethod(nameof(ITypeManager.Resolve), new[] { typeof(object), typeof(Type) })!;
 
             expressions.Add(Expression.Assign(
                 typeVar,
@@ -62,12 +62,12 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var mapVar = Expression.Variable(typeof(Delegate));
             vars.Add(mapVar);
 
-            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap));
+            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap))!;
             var getTypeEx = Expression.Call(source, typeof(object).GetMethod(nameof(GetType))!);
             expressions.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, typeVar)));
 
             // invoke map and return result
-            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
+            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke))!;
             expressions.Add(Expression.Label(
                 returnTarget,
                 Expression.Convert(

@@ -23,7 +23,7 @@ namespace Annium.Extensions.Arguments
         {
             var root = Root!;
             var commands = _commands.Select(root.Provider.GetRequiredService).OfType<CommandBase>().ToArray();
-            CommandBase cmd;
+            CommandBase? cmd;
 
             // if any args - try to find command by id and execute it
             if (args.Length > 0)

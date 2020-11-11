@@ -8,7 +8,7 @@ namespace Annium.Core.Mapper.Internal
     //      Repacks given expression with given source expression, replacing parameter expressions to given source expression
     internal class Repacker : IRepacker
     {
-        public Mapping Repack(Expression ex) => source =>
+        public Mapping Repack(Expression? ex) => source =>
         {
             if (ex is null)
                 return null!;
@@ -51,14 +51,14 @@ namespace Annium.Core.Mapper.Internal
             );
 
         private Mapping Lambda(LambdaExpression ex) => source =>
-            Expression.Lambda(Repack(ex.Body)(source), source as ParameterExpression);
+            Expression.Lambda(Repack(ex.Body)(source), (ParameterExpression) source);
 
         private Mapping Member(MemberExpression ex) => source =>
             Expression.MakeMemberAccess(Repack(ex.Expression)(source), ex.Member);
 
         private Mapping MemberInit(MemberInitExpression ex) => source =>
             Expression.MemberInit(
-                Repack(ex.NewExpression)(source) as NewExpression,
+                (NewExpression) Repack(ex.NewExpression)(source),
                 ex.Bindings.Select(b =>
                 {
                     if (b is MemberAssignment ma)
@@ -69,7 +69,7 @@ namespace Annium.Core.Mapper.Internal
             );
 
         private Mapping New(NewExpression ex) => source =>
-            Expression.New(ex.Constructor, ex.Arguments.Select(a => Repack(a)(source)));
+            Expression.New(ex.Constructor!, ex.Arguments.Select(a => Repack(a)(source)));
 
         private Mapping Unary(UnaryExpression ex) => source =>
             Expression.MakeUnary(ex.NodeType, Repack(ex.Operand)(source), ex.Type, ex.Method);

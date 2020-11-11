@@ -17,7 +17,7 @@ namespace Annium.Extensions.Arguments.Internal
             _configurationProcessor = configurationProcessor;
         }
 
-        public string BuildHelp(string command, string description, IEnumerable<CommandBase> commands)
+        public string BuildHelp(string command, string description, IReadOnlyCollection<CommandBase> commands)
         {
             var sb = new StringBuilder();
 
@@ -156,7 +156,7 @@ namespace Annium.Extensions.Arguments.Internal
                 e => e.attribute.Help
             );
 
-        private string GetRaw(Type[] types) => types
+        private string? GetRaw(Type[] types) => types
             .SelectMany(t => _configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(t))
             .Select(e => e.property.Name.KebabCase())
             .FirstOrDefault();

@@ -12,7 +12,7 @@ namespace Annium.Core.Runtime.Internal.Types
             var assemblies = new Dictionary<string, Assembly>();
             foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             {
-                if (!assemblies.ContainsKey(domainAssembly.FullName))
+                if (domainAssembly.FullName != null && !assemblies.ContainsKey(domainAssembly.FullName))
                     assemblies[domainAssembly.FullName] = domainAssembly;
             }
 

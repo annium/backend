@@ -6,6 +6,7 @@ using Annium.AspNetCore.TestServer;
 using Annium.AspNetCore.TestServer.Controllers;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;

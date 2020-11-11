@@ -72,12 +72,12 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             // get map for element type
             var mapVar = Expression.Variable(typeof(Delegate));
             vars.Add(mapVar);
-            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap));
+            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap))!;
             var getTypeEx = Expression.Call(param, typeof(object).GetMethod(nameof(GetType))!);
             body.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, Expression.Constant(tgtEl))));
 
             // invoke map and return result
-            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke));
+            var invokeMap = typeof(Delegate).GetMethod(nameof(Delegate.DynamicInvoke))!;
             body.Add(Expression.Label(
                 returnTarget,
                 Expression.Convert(

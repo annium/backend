@@ -24,7 +24,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var variables = new List<ParameterExpression>();
             var instance = Expression.Variable(tgt);
             variables.Add(instance);
-            var init = Expression.Assign(instance, Expression.New(tgt.GetConstructor(Type.EmptyTypes)));
+            var constructor = tgt.GetConstructor(Type.EmptyTypes) ?? throw new InvalidOperationException("Parameterless constructor not found");
+            var init = Expression.Assign(instance, Expression.New(constructor));
 
             // get source and target type properties
             var sources = src.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance).Where(x => x.CanRead).ToArray();

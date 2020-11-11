@@ -44,6 +44,7 @@ namespace Annium.Configuration.Abstractions
         }
 
         private static T Get<T>(IServiceCollection services)
+            where T : notnull
         {
             var provider = services.BuildServiceProvider();
 

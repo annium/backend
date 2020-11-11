@@ -23,12 +23,12 @@ namespace Annium.Serialization.Json
 
         public T Deserialize<T>(string value)
         {
-            return JsonSerializer.Deserialize<T>(value, _options);
+            return JsonSerializer.Deserialize<T>(value, _options)!;
         }
 
         public object Deserialize(Type type, string value)
         {
-            return JsonSerializer.Deserialize(value, type, _options);
+            return JsonSerializer.Deserialize(value, type, _options)!;
         }
 
         public string Serialize<T>(T value)

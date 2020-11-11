@@ -29,11 +29,11 @@ namespace Annium.Serialization.Json.Internal.Converters
                     throw new JsonException();
 
                 // TODO: try parse with & without quotes
-                var keyString = reader.GetString();
+                var keyString = reader.GetString()!;
                 keyString = keyString.StartsWith("{") || keyString.StartsWith("[") ? keyString : $@"""{keyString}""";
-                var key = JsonSerializer.Deserialize<TKey>(keyString, options);
+                var key = JsonSerializer.Deserialize<TKey>(keyString, options)!;
                 reader.Read();
-                var value = JsonSerializer.Deserialize<TValue>(ref reader, options);
+                var value = JsonSerializer.Deserialize<TValue>(ref reader, options)!;
                 result[key] = value;
             }
 

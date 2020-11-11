@@ -1,5 +1,6 @@
 using System;
 using Annium.AspNetCore.Extensions.Internal.DynamicControllers;
+using Annium.Data.Operations.Serialization.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime.Xml;

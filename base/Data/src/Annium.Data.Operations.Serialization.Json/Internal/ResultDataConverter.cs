@@ -3,34 +3,34 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Extensions.Primitives;
-using X = Annium.Data.Operations.IStatusResult<object>;
+using X = Annium.Data.Operations.IResult<object>;
 
-namespace Annium.Data.Operations.Serialization.Json
+namespace Annium.Data.Operations.Serialization.Json.Internal
 {
-    internal class StatusResultConverter<TS> : ResultConverterBase<IStatusResult<TS>>
+    internal class ResultDataConverter<TD> : ResultConverterBase<IResult<TD>>
     {
-        public override IStatusResult<TS> Read(
+        public override IResult<TD> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options
         )
         {
-            TS status = default !;
+            TD data = default !;
             IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
             IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
             var depth = reader.CurrentDepth;
             while (reader.Read() && reader.CurrentDepth > depth)
             {
-                if (reader.HasProperty(nameof(X.Status)))
-                    status = JsonSerializer.Deserialize<TS>(ref reader, options);
+                if (reader.HasProperty(nameof(X.Data)))
+                    data = JsonSerializer.Deserialize<TD>(ref reader, options)!;
                 else if (reader.HasProperty(nameof(X.PlainErrors)))
-                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options);
+                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!;
                 else if (reader.HasProperty(nameof(X.LabeledErrors)))
-                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options);
+                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!;
             }
 
-            var value = Result.Status(status);
+            var value = Result.New(data);
 
             value.Errors(plainErrors);
             value.Errors(labeledErrors);
@@ -40,14 +40,14 @@ namespace Annium.Data.Operations.Serialization.Json
 
         public override void Write(
             Utf8JsonWriter writer,
-            IStatusResult<TS> value,
+            IResult<TD> value,
             JsonSerializerOptions options
         )
         {
             writer.WriteStartObject();
 
-            writer.WritePropertyName(nameof(X.Status).CamelCase());
-            JsonSerializer.Serialize(writer, value.Status, options);
+            writer.WritePropertyName(nameof(X.Data).CamelCase());
+            JsonSerializer.Serialize(writer, value.Data, options);
 
             WriteErrors(writer, value, options);
 
@@ -55,16 +55,16 @@ namespace Annium.Data.Operations.Serialization.Json
         }
     }
 
-    internal class StatusResultConverterFactory : ResultConverterBaseFactory
+    internal class ResultDataConverterFactory : ResultConverterBaseFactory
     {
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
             var typeArgs = GetImplementation(typeToConvert).GetGenericArguments();
 
-            return (JsonConverter) Activator.CreateInstance(typeof(StatusResultConverter<>).MakeGenericType(typeArgs[0])) !;
+            return (JsonConverter) Activator.CreateInstance(typeof(ResultDataConverter<>).MakeGenericType(typeArgs[0])) !;
         }
 
         protected override bool IsConvertibleInterface(Type type) =>
-            type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IStatusResult<>);
+            type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IResult<>);
     }
 }

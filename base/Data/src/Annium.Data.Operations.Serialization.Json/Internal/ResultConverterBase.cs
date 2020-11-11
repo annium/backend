@@ -4,7 +4,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Extensions.Primitives;
 
-namespace Annium.Data.Operations.Serialization.Json
+namespace Annium.Data.Operations.Serialization.Json.Internal
 {
     internal abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase
     {

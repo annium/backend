@@ -21,7 +21,10 @@ namespace Annium.Core.DependencyInjection
             services.AddSingleton<IEnumerable<LogRoute>>(routes);
 
             foreach (var route in routes)
-                services.Add(route.Service);
+            {
+                if (route.Service != null)
+                    services.Add(route.Service);
+            }
 
             services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
             services.AddScoped<ILoggerFactory, LoggerFactory>();

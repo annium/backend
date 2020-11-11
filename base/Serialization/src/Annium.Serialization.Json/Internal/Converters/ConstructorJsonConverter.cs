@@ -31,8 +31,9 @@ namespace Annium.Serialization.Json.Internal.Converters
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException();
 
-            var parameters = new object[_parameters.Count];
-            var properties = _properties.ToDictionary(x => options.PropertyNamingPolicy.ConvertName(x.Name), x => x.PropertyType);
+            var parameters = new object?[_parameters.Count];
+            var namingPolicy = options.PropertyNamingPolicy ?? JsonNamingPolicy.CamelCase;
+            var properties = _properties.ToDictionary(x => namingPolicy.ConvertName(x.Name), x => x.PropertyType);
             var comparison = options.PropertyNameCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
 
             while (reader.Read())
@@ -59,7 +60,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                 if (reader.TokenType != JsonTokenType.PropertyName)
                     throw new JsonException();
 
-                var name = options.PropertyNamingPolicy.ConvertName(reader.GetString());
+                var name = namingPolicy.ConvertName(reader.GetString()!);
                 var index = _parameters.FindIndex(x => x.Name.Equals(name, comparison));
 
                 // for now - no special handling for extra properties, just skip them

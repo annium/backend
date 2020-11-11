@@ -33,7 +33,7 @@ namespace Annium.Serialization.Json.Internal.Converters
             if (type is null)
                 throw new SerializationException($"Can't resolve concrete type for {type} by {typeToConvert}");
 
-            return (T) JsonSerializer.Deserialize(doc.RootElement.GetRawText(), type, options);
+            return (T) JsonSerializer.Deserialize(doc.RootElement.GetRawText(), type, options)!;
         }
 
         public override void Write(
@@ -69,7 +69,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                 !root.TryGetProperty(resolutionKeyProperty.Name.CamelCase(), out keyElement))
                 throw new SerializationException(Error(baseType, "key property is missing"));
 
-            var key = JsonSerializer.Deserialize(keyElement.GetRawText(), resolutionKeyProperty.PropertyType, options);
+            var key = JsonSerializer.Deserialize(keyElement.GetRawText(), resolutionKeyProperty.PropertyType, options)!;
             var type = _typeManager.ResolveByKey(key, baseType);
             if (type is null)
                 throw new SerializationException(Error(baseType, $"no match for key {key}"));

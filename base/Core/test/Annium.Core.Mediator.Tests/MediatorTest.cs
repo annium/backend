@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;
@@ -113,7 +114,7 @@ namespace Annium.Core.Mediator.Tests
             )
             {
                 _logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
-                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options);
+                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
 
                 var result = await next(payload);
 
@@ -142,7 +143,7 @@ namespace Annium.Core.Mediator.Tests
 
             public Response(string value)
             {
-                Value = JsonSerializer.Deserialize<T>(value, Options);
+                Value = JsonSerializer.Deserialize<T>(value, Options)!;
             }
         }
 
