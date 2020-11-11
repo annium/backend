@@ -2,7 +2,6 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
@@ -45,7 +44,7 @@ namespace Demo.Core.Mediator
 
             Request<TRequest> Encode<TRequest>(TRequest e) => new Request<TRequest>(JsonSerializer.Serialize(e, options));
 
-            TResponse Decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options);
+            TResponse Decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options)!;
         }
 
         public static Task<int> Main(string[] args) => new Entrypoint()

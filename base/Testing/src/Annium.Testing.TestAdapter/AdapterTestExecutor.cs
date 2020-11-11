@@ -47,6 +47,8 @@ namespace Annium.Testing.TestAdapter
 
         public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
+            var testSet = tests.ToArray();
+
             if (runContext.IsBeingDebugged)
                 Debugger.Launch();
 
@@ -55,8 +57,8 @@ namespace Annium.Testing.TestAdapter
 
             _logger.Debug("Start execution.");
 
-            Task.WhenAll(tests.Select(test => test.Source).Distinct().Select(
-                source => RunAssemblyTestsAsync(Source.Resolve(source), tests.Where(test => test.Source == source), frameworkHandle)
+            Task.WhenAll(testSet.Select(test => test.Source).Distinct().Select(
+                source => RunAssemblyTestsAsync(Source.Resolve(source), testSet.Where(test => test.Source == source), frameworkHandle)
             ));
         }
 
@@ -69,38 +71,42 @@ namespace Annium.Testing.TestAdapter
             _logger!.Debug($"Start execution of all tests in {assembly.FullName}.");
 
             var tests = new List<Test>();
-            await _provider.GetRequiredService<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
+            await _provider!.GetRequiredService<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
 
             await RunTestsAsync(assembly, tests, frameworkHandle);
         }
 
         private Task RunAssemblyTestsAsync(Assembly assembly, IEnumerable<TestCase> testCases, IFrameworkHandle frameworkHandle)
         {
-            _logger!.Debug($"Start execution of specific {testCases.Count()} tests in {assembly.FullName}.");
+            var testCasesSet = testCases.ToArray();
 
-            var tests = testCases.Select(testCase => _testConverter.Convert(assembly, testCase)).ToArray();
+            _logger!.Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
+
+            var tests = testCasesSet.Select(testCase => _testConverter.Convert(assembly, testCase)).ToArray();
 
             return RunTestsAsync(assembly, tests, frameworkHandle);
         }
 
         private Task RunTestsAsync(Assembly assembly, IEnumerable<Test> tests, IFrameworkHandle frameworkHandle)
         {
-            var cfg = _provider.GetRequiredService<TestingConfiguration>();
-            tests = tests.FilterMask(cfg.Filter);
+            var cfg = _provider!.GetRequiredService<TestingConfiguration>();
+            var testSet = tests.FilterMask(cfg.Filter).ToArray();
 
-            return GetExecutor(assembly, tests)
+            return GetExecutor(assembly, testSet)
                 .RunTestsAsync(
-                    tests,
+                    testSet,
                     (test, result) => frameworkHandle.RecordResult(_testResultConverter.Convert(assembly, test, result))
                 );
         }
 
         private TestExecutor GetExecutor(Assembly assembly, IEnumerable<Test> tests)
         {
-            _logger!.Trace($"Build test executor for assembly {assembly.FullName} and given {tests.Count()} tests.");
+            var testSet = tests.ToArray();
 
-            var services = AssemblyServicesCollector.Collect(assembly, tests);
-            services.AddSingleton(_provider.GetRequiredService<TestingConfiguration>());
+            _logger!.Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
+
+            var services = AssemblyServicesCollector.Collect(assembly, testSet);
+            services.AddSingleton(_provider!.GetRequiredService<TestingConfiguration>());
 
             var factory = new ServiceProviderFactory();
             var provider = factory.CreateServiceProvider(factory.CreateBuilder(services).UseServicePack<Testing.ServicePack>());

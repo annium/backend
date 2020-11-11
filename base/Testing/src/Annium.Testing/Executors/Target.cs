@@ -25,7 +25,7 @@ namespace Annium.Testing.Executors
         public void Init()
         {
             if (Instance is null)
-                Instance = _provider.GetRequiredService(Test.Method.DeclaringType);
+                Instance = _provider.GetRequiredService(Test.Method.DeclaringType!);
             else
                 throw new InvalidOperationException("Instance already created");
         }

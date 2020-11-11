@@ -12,7 +12,7 @@ namespace Annium.Serialization.Abstractions.Tests
         {
             // arrange
             Func<object, string> serialize = value => JsonSerializer.Serialize(value);
-            Func<Type, string, object> deserialize = (type, value) => JsonSerializer.Deserialize(value, type);
+            Func<Type, string, object> deserialize = (type, value) => JsonSerializer.Deserialize(value, type)!;
             var data = new Point { X = 1, Y = -1 };
 
             // act
@@ -30,7 +30,7 @@ namespace Annium.Serialization.Abstractions.Tests
         {
             // arrange
             Func<Point, string> serialize = value => JsonSerializer.Serialize(value);
-            Func<string, Point> deserialize = value => JsonSerializer.Deserialize<Point>(value);
+            Func<string, Point> deserialize = value => JsonSerializer.Deserialize<Point>(value)!;
             var data = new Point { X = 1, Y = -1 };
 
             // act

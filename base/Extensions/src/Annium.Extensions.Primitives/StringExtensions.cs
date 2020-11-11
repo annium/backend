@@ -89,7 +89,7 @@ namespace Annium.Extensions.Primitives
                         // if current is upper and next is lower - end here
                         if (s == Symbol.Upper)
                         {
-                            if ((value.Length - i) > 1 && GetSymbol(value[i + 1]) == Symbol.Lower)
+                            if (value.Length - i > 1 && GetSymbol(value[i + 1]) == Symbol.Lower)
                                 yield return End(i, s);
                         }
                         else if (s == Symbol.Lower || s == Symbol.Digit)

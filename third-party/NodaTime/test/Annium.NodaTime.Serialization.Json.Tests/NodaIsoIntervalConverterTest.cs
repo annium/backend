@@ -64,7 +64,7 @@ namespace Annium.NodaTime.Serialization.Json.Tests
         {
             string json = "{\"interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}";
 
-            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(_converters));
+            var testObject = JsonSerializer.Deserialize<TestObject>(json, With(_converters))!;
 
             var interval = testObject.Interval;
 

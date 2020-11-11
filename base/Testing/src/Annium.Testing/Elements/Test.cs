@@ -72,6 +72,6 @@ namespace Annium.Testing.Elements
 
         ///checking line on each attribute to find best match.
         ///generally, next string will be the one with method
-        private void UpdateLine(int line) => Line = (line + 1) > Line ? (line + 1) : Line;
+        private void UpdateLine(int line) => Line = line + 1 > Line ? line + 1 : Line;
     }
 }

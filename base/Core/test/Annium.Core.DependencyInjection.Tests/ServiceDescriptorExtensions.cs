@@ -13,7 +13,7 @@ namespace Annium.Core.DependencyInjection.Tests
             if (descriptor.ImplementationFactory != null)
                 return $"{descriptor.ServiceType.FriendlyName()} -> Factory {descriptor.ImplementationFactory.GetType().FriendlyName()}";
 
-            return $"{descriptor.ServiceType.FriendlyName()} -> Instance {descriptor.ImplementationInstance.GetType().FriendlyName()}";
+            return $"{descriptor.ServiceType.FriendlyName()} -> Instance {descriptor.ImplementationInstance!.GetType().FriendlyName()}";
         }
     }
 }

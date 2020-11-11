@@ -48,7 +48,7 @@ namespace Annium.Configuration.Json.Internal
 
         private void ProcessLeaf(JsonElement token)
         {
-            Data[Path] = token.ToString();
+            Data[Path] = token.ToString()!;
         }
 
         private void Process(JsonElement element)

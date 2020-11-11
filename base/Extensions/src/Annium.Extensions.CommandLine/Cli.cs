@@ -29,7 +29,7 @@ namespace Annium.Extensions.CommandLine
         {
             Console.Write(label);
 
-            return Console.ReadLine();
+            return Console.ReadLine() ?? string.Empty;
         }
 
         public static string ReadSecure(string label)

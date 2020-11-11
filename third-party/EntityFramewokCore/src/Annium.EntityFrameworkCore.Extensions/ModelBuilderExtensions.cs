@@ -3,6 +3,7 @@ using System.Linq;
 using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Annium.Core.DependencyInjection
@@ -22,11 +23,14 @@ namespace Annium.Core.DependencyInjection
         {
             foreach (var entity in builder.Model.GetEntityTypes())
             {
+                var schemaName = entity.GetSchema();
+                var tableName = entity.GetTableName();
+                var soId = StoreObjectIdentifier.Table(tableName, schemaName);
                 if (entity.BaseType is null)
                     entity.SetTableName(entity.GetTableName().SnakeCase());
 
                 foreach (var property in entity.GetProperties())
-                    property.SetColumnName(property.GetColumnName().SnakeCase());
+                    property.SetColumnName(property.GetColumnName(soId).SnakeCase());
 
                 foreach (var key in entity.GetKeys())
                     key.SetName(key.GetName().SnakeCase());
@@ -35,7 +39,7 @@ namespace Annium.Core.DependencyInjection
                     key.SetConstraintName(key.GetConstraintName().SnakeCase());
 
                 foreach (var key in entity.GetIndexes())
-                    key.SetName(key.GetName().SnakeCase());
+                    key.SetDatabaseName(key.GetDatabaseName().SnakeCase());
             }
         }
 

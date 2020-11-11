@@ -26,7 +26,7 @@ namespace Demo.Core.Mediator.Handlers
         )
         {
             _logger.Trace($"Deserialize Request to {typeof(TRequest).Name}");
-            var payload = JsonSerializer.Deserialize<TRequest>(request.Value);
+            var payload = JsonSerializer.Deserialize<TRequest>(request.Value)!;
 
             var result = await next(payload);
 

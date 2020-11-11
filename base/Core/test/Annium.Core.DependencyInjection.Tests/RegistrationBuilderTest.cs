@@ -159,6 +159,7 @@ namespace Annium.Core.DependencyInjection.Tests
         }
 
         private T Get<T>()
+            where T : notnull
         {
             return _provider.GetRequiredService<T>();
         }

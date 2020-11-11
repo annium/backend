@@ -23,7 +23,7 @@ namespace Annium.NodaTime.Serialization.Json.Internal.Converters
 
         public override bool CanConvert(Type objectType) =>
             objectType == typeof(T) || objectType == NullableT ||
-            (CheckAssignableFrom && typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo()));
+            CheckAssignableFrom && typeof(T).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
 
         public override T Read(
             ref Utf8JsonReader reader,

@@ -86,7 +86,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             var propertyType = property.PropertyType;
-            services.AddSingleton(propertyType, sp => property.GetValue(sp.GetRequiredService(type)));
+            services.AddSingleton(propertyType, sp => property.GetValue(sp.GetRequiredService(type))!);
 
             foreach (var prop in GetRegisteredProperties(propertyType))
                 Register(services, propertyType, prop);

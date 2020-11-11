@@ -25,7 +25,7 @@ namespace Annium.Extensions.Jobs
             // convert instant to it
             expressions.Add(Expression.Assign(
                 zonedTime,
-                Expression.Call(instant, typeof(Instant).GetMethod(nameof(Instant.InUtc)))
+                Expression.Call(instant, typeof(Instant).GetMethod(nameof(Instant.InUtc))!)
             ));
 
             var type = typeof(ZonedDateTime);
@@ -38,13 +38,13 @@ namespace Annium.Extensions.Jobs
                 GetPartExpression("month", intervals[3], 0, 11, ZonedDateTimeProperty(zonedTime, nameof(ZonedDateTime.Month))),
                 GetPartExpression("day of week", intervals[4], 1, 7,
                     Expression.Convert(
-                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.DayOfWeek))),
+                        Expression.Property(zonedTime, type.GetProperty(nameof(ZonedDateTime.DayOfWeek))!),
                         typeof(int)
                     )
                 )
             }.OfType<Expression>().ToArray();
 
-            var match = parts.Length == 0 ? Expression.Constant(true) : parts[0];
+            Expression match = parts.Length == 0 ? Expression.Constant(true) : parts[0];
             foreach (var part in parts.Skip(1))
                 match = Expression.And(match, part);
 
@@ -70,14 +70,14 @@ namespace Annium.Extensions.Jobs
                 if (value >= min && value <= max)
                     return Expression.Equal(getPart, Expression.Constant((int) value));
                 else
-                    throw new ArgumentOutOfRangeException("value", value, $"'{name}' must be in [{min};{max}] range");
+                    throw new ArgumentOutOfRangeException(nameof(part), value, $"'{name}' must be in [{min};{max}] range");
 
             // if list - handle with "or" equality
             if (Regex.IsMatch(part, "([0-9]{1,2})(?:,[0-9]{1,2})+"))
             {
                 var values = part.Split(',').Select(uint.Parse).ToArray();
                 if (values.Any(v => v < min || v > max))
-                    throw new ArgumentOutOfRangeException("value", $"'{name}' must be in [{min};{max}] range");
+                    throw new ArgumentOutOfRangeException(nameof(part), $"'{name}' must be in [{min};{max}] range");
 
                 var result = Expression.Equal(getPart, Expression.Constant((int) values[0]));
                 foreach (var orValue in values.Skip(1))
@@ -93,6 +93,6 @@ namespace Annium.Extensions.Jobs
         }
 
         private MemberExpression ZonedDateTimeProperty(ParameterExpression ex, string name) =>
-            Expression.Property(ex, typeof(ZonedDateTime).GetProperty(name));
+            Expression.Property(ex, typeof(ZonedDateTime).GetProperty(name)!);
     }
 }

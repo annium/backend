@@ -18,7 +18,7 @@ namespace Annium.Core.Primitives.Internal
             _ref = new WeakReference<T>(target);
         }
 
-        public bool TryGetTarget(out T target) => _ref.TryGetTarget(out target);
+        public bool TryGetTarget(out T target) => _ref.TryGetTarget(out target!);
 
         ~TrackingWeakReference()
         {

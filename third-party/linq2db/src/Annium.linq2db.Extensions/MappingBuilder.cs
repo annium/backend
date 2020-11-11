@@ -64,12 +64,12 @@ namespace Annium.linq2db.Extensions
             var configurationTypes = concreteClasses
                 .Select(x => (
                     x,
-                    i: x.GetInterfaces().SingleOrDefault(x =>
-                        x.IsGenericType && x.GetGenericTypeDefinition() == configurationType
+                    i: x.GetInterfaces().SingleOrDefault(y =>
+                        y.IsGenericType && y.GetGenericTypeDefinition() == configurationType
                     )
                 ))
                 .Where(p => p.i != null)
-                .Select(p => (p.x, p.i.GenericTypeArguments.Single()))
+                .Select(p => (p.x, p.i!.GenericTypeArguments.Single()))
                 .ToArray();
 
             return configurationTypes;

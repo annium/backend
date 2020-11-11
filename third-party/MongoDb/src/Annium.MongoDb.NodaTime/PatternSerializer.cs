@@ -11,7 +11,7 @@ namespace Annium.MongoDb.NodaTime
     {
         private readonly IPattern<TValue> _pattern;
 
-        private readonly Func<TValue, TValue> _valueConverter = (v => v);
+        private readonly Func<TValue, TValue> _valueConverter = v => v;
 
         protected PatternSerializer(
             IPattern<TValue> pattern,

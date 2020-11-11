@@ -28,7 +28,7 @@ namespace Annium.Serialization.Json.Internal.Converters
             // if implements IEnumerable - likely will be serialized as Json Array, so not suitable for type resolution
             if (objectType.GetInterfaces().Any(
                 x => x == typeof(IEnumerable) ||
-                    (x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                    x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
             ))
                 return false;
 

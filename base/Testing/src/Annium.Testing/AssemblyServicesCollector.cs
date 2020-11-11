@@ -17,7 +17,7 @@ namespace Annium.Testing
                 services.AddTransient(type);
 
             // test classes
-            foreach (var type in tests.Select(t => t.Method.DeclaringType).Distinct())
+            foreach (var type in tests.Select(t => t.Method.DeclaringType!).Distinct())
                 services.AddTransient(type);
 
             return services;
