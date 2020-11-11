@@ -3,7 +3,7 @@
         <PackageId>Demo.Net.WebSockets.Client</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Net.WebSockets.DemoClient</Description>
-        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <TargetFramework>net5.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>latest</LangVersion>

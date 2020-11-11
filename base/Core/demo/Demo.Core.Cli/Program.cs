@@ -38,7 +38,7 @@ namespace Demo.Core.Cli
         {
             var pluginsSet = new Dictionary<string, string>
             {
-                { "Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/netstandard2.1/Demo.Core.Cli.PluginHello.dll" }
+                { "Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/net5.0/Demo.Core.Cli.PluginHello.dll" }
             };
 
             Console.WriteLine("---BEFORE---");
