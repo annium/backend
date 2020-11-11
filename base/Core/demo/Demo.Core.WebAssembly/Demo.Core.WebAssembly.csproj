@@ -1,8 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
     <PropertyGroup>
         <PackageId>Demo.Core.WebAssembly</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Wasm</Description>
+        <Description>Demo.Core.WebAssembly</Description>
         <TargetFramework>net5.0</TargetFramework>
         <OutputType>Exe</OutputType>
         <DebugType>portable</DebugType>
@@ -10,16 +10,12 @@
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
-        <RazorLangVersion>3.0</RazorLangVersion>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="BlazorStyled" Version="3.0.0" />
-        <PackageReference Include="MatBlazor" Version="2.7.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="5.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="5.0.0" />
         <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
     </ItemGroup>
