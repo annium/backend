@@ -3,7 +3,6 @@ using System.Linq;
 using Annium.Core.Reflection;
 using Annium.Extensions.Primitives;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Annium.Core.DependencyInjection
@@ -21,16 +20,13 @@ namespace Annium.Core.DependencyInjection
 
         public static void UseSnakeCase(this ModelBuilder builder)
         {
-            foreach (var entity in builder.Model.GetEntityTypes())
+            foreach (var entity in builder.Model.GetEntityTypes().Where(x => x.BaseType is null))
             {
-                var schemaName = entity.GetSchema();
-                var tableName = entity.GetTableName();
-                var soId = StoreObjectIdentifier.Table(tableName, schemaName);
-                if (entity.BaseType is null)
-                    entity.SetTableName(entity.GetTableName().SnakeCase());
+                var tableName = entity.GetTableName().SnakeCase();
+                entity.SetTableName(tableName);
 
                 foreach (var property in entity.GetProperties())
-                    property.SetColumnName(property.GetColumnName(soId).SnakeCase());
+                    property.SetColumnName(property.GetColumnBaseName().SnakeCase());
 
                 foreach (var key in entity.GetKeys())
                     key.SetName(key.GetName().SnakeCase());
