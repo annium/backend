@@ -1,11 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Core.Runtime.Types;
 using Annium.Net.WebSockets;
-using Annium.Serialization.Json;
 
 namespace Demo.Net.WebSockets.Client
 {
@@ -17,9 +14,7 @@ namespace Demo.Net.WebSockets.Client
             CancellationToken token
         )
         {
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
-            var serializer = ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
-            var socket = new ClientWebSocket(serializer);
+            var socket = new ClientWebSocket();
 
             await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), token);
 

@@ -1,7 +1,6 @@
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Serialization.Abstractions;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
@@ -9,11 +8,9 @@ namespace Annium.Net.WebSockets
     public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     {
         public WebSocket(
-            NativeWebSocket socket,
-            ISerializer<byte[]> serializer
+            NativeWebSocket socket
         ) : base(
-            socket,
-            serializer
+            socket
         )
         {
         }

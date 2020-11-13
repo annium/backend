@@ -2,7 +2,6 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Serialization.Abstractions;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets
@@ -13,11 +12,9 @@ namespace Annium.Net.WebSockets
         private Uri? _uri;
 
         public ClientWebSocket(
-            ISerializer<byte[]> serializer,
             ClientWebSocketOptions? options = null
         ) : base(
-            new NativeClientWebSocket(),
-            serializer
+            new NativeClientWebSocket()
         )
         {
             _options = options ?? new ClientWebSocketOptions

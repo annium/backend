@@ -3,10 +3,7 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime.Types;
 using Annium.Net.WebSockets;
-using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Http;
 
 namespace Demo.Net.WebSockets.Server
@@ -37,9 +34,7 @@ namespace Demo.Net.WebSockets.Server
                 return;
             }
 
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
-            var serializer = ByteArraySerializer.Configure(opts => opts.ConfigureDefault(typeManager));
-            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), serializer);
+            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync());
 
             if (path == "/ws/echo")
                 await Echo(ws);
@@ -74,7 +69,7 @@ namespace Demo.Net.WebSockets.Server
         private async Task Data(IWebSocket ws)
         {
             var isClosed = false;
-            ws.ListenText().Subscribe(x => { }, () => isClosed = true);
+            ws.ListenText().Subscribe(_ => { }, () => isClosed = true);
 
             for (var i = 0; i < 1000; i++)
             {
@@ -87,7 +82,7 @@ namespace Demo.Net.WebSockets.Server
                 }
 
                 Console.WriteLine($"Out: '{i}'");
-                await ws.Send(i, CancellationToken.None);
+                await ws.Send(i.ToString(), CancellationToken.None);
             }
         }
     }

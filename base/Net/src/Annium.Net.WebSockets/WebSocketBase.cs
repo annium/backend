@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Serialization.Abstractions;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
@@ -20,22 +19,16 @@ namespace Annium.Net.WebSockets
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
-        private readonly ISerializer<byte[]> _serializer;
         private readonly UTF8Encoding _encoding = new UTF8Encoding();
-        private readonly IObservable<SocketData> _socketObservable;
+        private readonly IObservable<SocketMessage> _socketObservable;
 
         internal WebSocketBase(
-            TNativeSocket socket,
-            ISerializer<byte[]> serializer
+            TNativeSocket socket
         )
         {
             Socket = socket;
-            _serializer = serializer;
             _socketObservable = CreateSocketObservable();
         }
-
-        public IObservable<int> Send<T>(T data, CancellationToken token) =>
-            Send(_encoding.GetString(_serializer.Serialize(data)), token);
 
         public IObservable<int> Send(string data, CancellationToken token) =>
             Send(_encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
@@ -43,11 +36,9 @@ namespace Annium.Net.WebSockets
         public IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
             Send(data, WebSocketMessageType.Binary, token);
 
-        public IObservable<T> Listen<T>() where T : notnull => _socketObservable
-            .Where(x => x.Type == WebSocketMessageType.Text)
-            .Select(x => _serializer.Deserialize<T>(x.Data.ToArray()));
+        public IObservable<SocketMessage> Listen() => _socketObservable;
 
-        public IObservable<string> ListenText() => _socketObservable
+        public IObservable<string> ListenText() => Listen()
             .Where(x => x.Type == WebSocketMessageType.Text)
             .Select(x => _encoding.GetString(x.Data.Span));
 
@@ -60,7 +51,7 @@ namespace Annium.Net.WebSockets
         private IObservable<int> Send(
             ReadOnlyMemory<byte> data,
             WebSocketMessageType messageType,
-            CancellationToken token
+            CancellationToken ct
         ) => Observable.FromAsync(async () =>
         {
             // TODO: implement chunking, if needed
@@ -68,14 +59,14 @@ namespace Annium.Net.WebSockets
                 buffer: data,
                 messageType: messageType,
                 endOfMessage: true,
-                cancellationToken: token
+                cancellationToken: ct
             );
 
             return data.Length;
         });
 
-        private IObservable<SocketData> CreateSocketObservable() =>
-            Observable.Create<SocketData>(async (observer, token) =>
+        private IObservable<SocketMessage> CreateSocketObservable() =>
+            Observable.Create<SocketMessage>(async (observer, token) =>
             {
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
@@ -90,7 +81,7 @@ namespace Annium.Net.WebSockets
             }).Publish().RefCount();
 
         private async ValueTask<bool> ReceiveAsync(
-            IObserver<SocketData> observer,
+            IObserver<SocketMessage> observer,
             Memory<byte> buffer,
             CancellationToken token
         )
@@ -120,7 +111,7 @@ namespace Annium.Net.WebSockets
                     stream.Write(buffer.Slice(0, result.Count).Span);
                 } while (!result.EndOfMessage);
 
-                observer.OnNext(new SocketData(result.MessageType, stream.ToArray()));
+                observer.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
 
                 return true;
             }
@@ -149,21 +140,6 @@ namespace Annium.Net.WebSockets
         public void Dispose()
         {
             Socket.Dispose();
-        }
-
-        private struct SocketData
-        {
-            public WebSocketMessageType Type { get; }
-            public ReadOnlyMemory<byte> Data { get; }
-
-            public SocketData(
-                WebSocketMessageType type,
-                ReadOnlyMemory<byte> data
-            )
-            {
-                Type = type;
-                Data = data;
-            }
         }
     }
 }
