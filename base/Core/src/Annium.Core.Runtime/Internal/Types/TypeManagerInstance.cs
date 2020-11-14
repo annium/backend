@@ -87,7 +87,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (GetResolutionKeyProperty(baseType) is null)
                 throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionKeyAttribute)}");
 
-            var descendants = GetImplementationDescendants(baseType).Where(x => x.HasKey && x.Key!.Equals(key)).ToArray();
+            var descendants = GetImplementationDescendants(baseType).Where(x => x.HasKey && key.Equals(x.Key)).ToArray();
             if (descendants.Length > 1)
                 throw new TypeResolutionException(typeof(object), baseType,
                     $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
