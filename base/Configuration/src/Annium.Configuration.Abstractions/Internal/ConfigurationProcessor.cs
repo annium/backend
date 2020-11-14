@@ -107,11 +107,12 @@ namespace Annium.Configuration.Abstractions.Internal
                     throw new ArgumentException($"Can't resolve abstract type {type}");
 
                 _context.Push(resolutionKeyProperty.Name);
-                var hasKey = _config.TryGetValue(Path, out var key);
+                var hasKey = _config.TryGetValue(Path, out var rawKey);
                 _context.Pop();
-                if (!hasKey)
+                if (!hasKey || rawKey is null)
                     return null!;
 
+                var key = _mapper.Map(rawKey, resolutionKeyProperty.PropertyType);
                 type = _typeManager.ResolveByKey(key!, type)
                     ?? throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
             }
