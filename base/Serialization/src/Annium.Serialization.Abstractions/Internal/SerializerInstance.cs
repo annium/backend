@@ -1,13 +1,13 @@
 using System;
 
-namespace Annium.Serialization.Abstractions
+namespace Annium.Serialization.Abstractions.Internal
 {
-    internal class InternalSerializer<TSource, TDestination> : ISerializer<TSource, TDestination>
+    internal class SerializerInstance<TSource, TDestination> : ISerializer<TSource, TDestination>
     {
         private readonly Func<TSource, TDestination> _serialize;
         private readonly Func<TDestination, TSource> _deserialize;
 
-        public InternalSerializer(
+        public SerializerInstance(
             Func<TSource, TDestination> serialize,
             Func<TDestination, TSource> deserialize
         )
@@ -21,12 +21,12 @@ namespace Annium.Serialization.Abstractions
         public TDestination Serialize(TSource value) => _serialize(value);
     }
 
-    internal class InternalSerializer<TValue> : ISerializer<TValue>
+    internal class SerializerInstance<TValue> : ISerializer<TValue>
     {
         private readonly Func<object, TValue> _serialize;
         private readonly Func<Type, TValue, object> _deserialize;
 
-        public InternalSerializer(
+        public SerializerInstance(
             Func<object, TValue> serialize,
             Func<Type, TValue, object> deserialize
         )
