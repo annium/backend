@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.DependencyInjection.Internal;
 
 namespace Annium.Core.DependencyInjection
 {

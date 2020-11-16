@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Internal
 {
-    public class ServiceProviderBuilder : IServiceProviderBuilder
+    internal class ServiceProviderBuilder : IServiceProviderBuilder
     {
         private bool _isAlreadyBuilt;
 

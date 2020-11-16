@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.DependencyInjection.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
