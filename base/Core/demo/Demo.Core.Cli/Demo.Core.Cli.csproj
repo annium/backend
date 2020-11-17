@@ -13,7 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
-        <ProjectReference Include="../../src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
         <ProjectReference Include="../../src/Annium.Core.Runtime.Loader/Annium.Core.Runtime.Loader.csproj" />
         <ProjectReference Include="../Demo.Core.Cli.Lib/Demo.Core.Cli.Lib.csproj" />
     </ItemGroup>
