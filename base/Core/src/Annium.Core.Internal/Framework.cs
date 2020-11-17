@@ -28,5 +28,17 @@ namespace Annium.Core.Internal
                 Console.WriteLine($"{caller}.{member}: {getMessage()}");
             }
         }
+
+        public static void Log(
+            [CallerFilePath] string callerFilePath = "",
+            [CallerMemberName] string member = ""
+        )
+        {
+            if (Mode == SetupMode.Debug)
+            {
+                var caller = Path.GetFileNameWithoutExtension(callerFilePath);
+                Console.WriteLine($"{caller}.{member}");
+            }
+        }
     }
 }
