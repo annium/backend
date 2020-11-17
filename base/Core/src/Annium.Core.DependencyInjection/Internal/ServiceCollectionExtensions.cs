@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -5,6 +6,7 @@ namespace Annium.Core.DependencyInjection.Internal
 {
     internal static class ServiceCollectionExtensions
     {
+        [Obsolete]
         public static IServiceCollection AddChecked(this IServiceCollection services, ServiceDescriptor descriptor)
         {
             // skip if descriptor has ImplementationType and it is already registered
