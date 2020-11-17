@@ -5,8 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using Annium.Core.Entrypoint;
+using Annium.Core.Primitives;
 using Annium.Data.Operations;
-using Annium.Extensions.Primitives;
 
 namespace Demo.Data.Operations.Serialization.Json
 {

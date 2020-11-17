@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Annium.Extensions.Primitives
+namespace Annium.Core.Primitives
 {
     public static class EnumExtensions
     {
@@ -82,7 +82,7 @@ namespace Annium.Extensions.Primitives
         {
             var values = str.Split(separator)
                 .Select(x => x.Trim())
-                .Where(x => !x.IsNullOrWhiteSpace())
+                .Where(x => !string.IsNullOrWhiteSpace(x))
                 .Select(x => x.ParseEnum(defaultValue))
                 .ToList();
 

@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Annium.Net.Base;
 
 namespace Annium.Net.Http.Internal

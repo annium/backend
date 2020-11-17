@@ -13,8 +13,8 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
-        <ProjectReference Include="../Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
         <ProjectReference Include="../../../Localization/src/Annium.Localization.Abstractions/Annium.Localization.Abstractions.csproj" />
     </ItemGroup>
 </Project>

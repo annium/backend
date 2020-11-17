@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
 

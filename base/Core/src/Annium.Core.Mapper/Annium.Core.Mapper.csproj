@@ -13,7 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
+        <ProjectReference Include="../Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AgileObjects.ReadableExpressions" Version="2.5.1" />

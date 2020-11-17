@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using X = Annium.Data.Operations.IStatusResult<object, object>;
 
 namespace Annium.Data.Operations.Serialization.Json.Internal

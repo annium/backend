@@ -1,6 +1,6 @@
 using System.Linq;
 
-namespace Annium.Extensions.Primitives
+namespace Annium.Core.Primitives
 {
     public static class ArrayExtensions
     {

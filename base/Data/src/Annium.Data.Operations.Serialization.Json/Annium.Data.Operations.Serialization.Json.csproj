@@ -12,8 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../Core/src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
         <ProjectReference Include="../Annium.Data.Operations/Annium.Data.Operations.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Primitives/Annium.Extensions.Primitives.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Text.Json" Version="5.0.0" />

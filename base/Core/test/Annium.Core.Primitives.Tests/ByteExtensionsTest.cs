@@ -1,7 +1,7 @@
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Extensions.Primitives.Tests
+namespace Annium.Core.Primitives.Tests
 {
     public class ByteExtensionsTest
     {

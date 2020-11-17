@@ -1,4 +1,4 @@
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.Tests

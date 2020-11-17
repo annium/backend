@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 
 namespace Annium.Extensions.Arguments.Internal
 {

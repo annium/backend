@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Extensions.Primitives.Tests
+namespace Annium.Core.Primitives.Tests
 {
     public class TypeExtensionsTest
     {

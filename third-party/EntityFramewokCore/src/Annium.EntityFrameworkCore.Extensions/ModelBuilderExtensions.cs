@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using Annium.Core.Reflection;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

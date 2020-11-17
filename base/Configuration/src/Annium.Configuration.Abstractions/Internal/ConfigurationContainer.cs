@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 
 namespace Annium.Configuration.Abstractions.Internal
 {

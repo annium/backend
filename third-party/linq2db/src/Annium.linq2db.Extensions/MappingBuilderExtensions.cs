@@ -1,5 +1,5 @@
 using System.Linq;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal.Converters

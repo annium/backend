@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Annium.Extensions.Primitives
+namespace Annium.Core.Primitives
 {
     public static class StringExtensions
     {

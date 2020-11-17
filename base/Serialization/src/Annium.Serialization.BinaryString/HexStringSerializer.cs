@@ -1,4 +1,4 @@
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.BinaryString

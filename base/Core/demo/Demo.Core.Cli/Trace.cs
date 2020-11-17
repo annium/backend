@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 
 namespace Demo.Core.Cli
 {

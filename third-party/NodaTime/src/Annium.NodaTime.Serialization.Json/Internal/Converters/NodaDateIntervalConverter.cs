@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using NodaTime;
 using NodaTime.Utility;
 

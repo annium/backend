@@ -1,5 +1,5 @@
 using System;
-using Annium.Extensions.Primitives;
+using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
 using Microsoft.Extensions.DependencyInjection;
