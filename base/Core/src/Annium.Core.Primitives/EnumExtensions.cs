@@ -43,18 +43,7 @@ namespace Annium.Core.Primitives
             if (values.Count == 0)
                 return (T) (ValueType) 0;
 
-            var typeCode = default(T).GetTypeCode();
-
-            return typeCode switch
-            {
-                TypeCode.Byte   => (T) (ValueType) values.Cast<byte>().Aggregate(0, (a, v) => a | v),
-                TypeCode.UInt16 => (T) (ValueType) values.Cast<ushort>().Aggregate(0, (a, v) => a | v),
-                TypeCode.Int32  => (T) (ValueType) values.Cast<int>().Aggregate(0, (a, v) => a | v),
-                TypeCode.UInt32 => (T) (ValueType) values.Cast<uint>().Aggregate(0U, (a, v) => a | v),
-                TypeCode.Int64  => (T) (ValueType) values.Cast<long>().Aggregate(0L, (a, v) => a | v),
-                TypeCode.UInt64 => (T) (ValueType) values.Cast<ulong>().Aggregate(0UL, (a, v) => a | v),
-                _               => throw new ArgumentException($"'{typeCode}' based Flags Enum is not supported"),
-            };
+            return CastValues(values);
         }
 
         #endregion
@@ -89,18 +78,7 @@ namespace Annium.Core.Primitives
             if (values.Count == 0)
                 return defaultValue;
 
-            var typeCode = default(T).GetTypeCode();
-
-            return typeCode switch
-            {
-                TypeCode.Byte   => (T) (ValueType) values.Cast<byte>().Aggregate(0, (a, v) => a | v),
-                TypeCode.UInt16 => (T) (ValueType) values.Cast<ushort>().Aggregate(0, (a, v) => a | v),
-                TypeCode.Int32  => (T) (ValueType) values.Cast<int>().Aggregate(0, (a, v) => a | v),
-                TypeCode.UInt32 => (T) (ValueType) values.Cast<uint>().Aggregate(0U, (a, v) => a | v),
-                TypeCode.Int64  => (T) (ValueType) values.Cast<long>().Aggregate(0L, (a, v) => a | v),
-                TypeCode.UInt64 => (T) (ValueType) values.Cast<ulong>().Aggregate(0UL, (a, v) => a | v),
-                _               => throw new ArgumentException($"'{typeCode}' based Flags Enum is not supported"),
-            };
+            return CastValues(values);
         }
 
         #endregion
@@ -185,6 +163,27 @@ namespace Annium.Core.Primitives
             }
 
             return result;
+        }
+
+        #endregion
+
+        # region helpers
+
+        private static T CastValues<T>(IReadOnlyCollection<T> values)
+            where T : struct, Enum
+        {
+            var typeCode = default(T).GetTypeCode();
+
+            return typeCode switch
+            {
+                TypeCode.Byte   => (T) (ValueType) values.Cast<byte>().Aggregate(0, (a, v) => a | v),
+                TypeCode.UInt16 => (T) (ValueType) values.Cast<ushort>().Aggregate(0, (a, v) => a | v),
+                TypeCode.Int32  => (T) (ValueType) values.Cast<int>().Aggregate(0, (a, v) => a | v),
+                TypeCode.UInt32 => (T) (ValueType) values.Cast<uint>().Aggregate(0U, (a, v) => a | v),
+                TypeCode.Int64  => (T) (ValueType) values.Cast<long>().Aggregate(0L, (a, v) => a | v),
+                TypeCode.UInt64 => (T) (ValueType) values.Cast<ulong>().Aggregate(0UL, (a, v) => a | v),
+                _               => throw new ArgumentException($"'{typeCode}' based Flags Enum is not supported"),
+            };
         }
 
         #endregion
