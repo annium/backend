@@ -10,7 +10,7 @@ namespace Annium.Core.DependencyInjection
 
         public ServiceProviderFactory()
         {
-            _configure = builder => { };
+            _configure = _ => { };
         }
 
         public ServiceProviderFactory(Action<IServiceProviderBuilder> configure)
@@ -20,10 +20,10 @@ namespace Annium.Core.DependencyInjection
 
         public IServiceProviderBuilder CreateBuilder(IServiceCollection services)
         {
-            var container = new ServiceProviderBuilder(services);
-            _configure(container);
+            var builder = new ServiceProviderBuilder(services);
+            _configure(builder);
 
-            return container;
+            return builder;
         }
 
         public IServiceProvider CreateServiceProvider(IServiceProviderBuilder container)

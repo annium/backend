@@ -14,10 +14,20 @@ namespace Annium.Core.DependencyInjection
             _packs.Add(new TServicePack());
         }
 
+        public virtual void Configure(IServiceContainer services)
+        {
+        }
+
+        [Obsolete("Use IServiceContainer-based method instead")]
         public virtual void Configure(IServiceCollection services)
         {
         }
 
+        public virtual void Register(IServiceContainer services, IServiceProvider provider)
+        {
+        }
+
+        [Obsolete("Use IServiceContainer-based method instead")]
         public virtual void Register(IServiceCollection services, IServiceProvider provider)
         {
         }
@@ -26,20 +36,22 @@ namespace Annium.Core.DependencyInjection
         {
         }
 
-        internal void InternalConfigure(IServiceCollection services)
+        internal void InternalConfigure(IServiceContainer services)
         {
             foreach (var pack in _packs)
                 pack.InternalConfigure(services);
 
             Configure(services);
+            Configure(services.Collection);
         }
 
-        internal void InternalRegister(IServiceCollection services, IServiceProvider provider)
+        internal void InternalRegister(IServiceContainer services, IServiceProvider provider)
         {
             foreach (var pack in _packs)
                 pack.InternalRegister(services, provider);
 
             Register(services, provider);
+            Register(services.Collection, provider);
         }
 
         internal void InternalSetup(IServiceProvider provider)

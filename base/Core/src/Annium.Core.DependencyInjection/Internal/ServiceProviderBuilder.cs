@@ -9,18 +9,18 @@ namespace Annium.Core.DependencyInjection.Internal
     {
         private bool _isAlreadyBuilt;
 
-        private readonly IServiceCollection _services;
+        private readonly IServiceContainer _container;
 
         private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
 
         public ServiceProviderBuilder()
         {
-            _services = new ServiceCollection();
+            _container = new ServiceContainer();
         }
 
         public ServiceProviderBuilder(IServiceCollection services)
         {
-            _services = services;
+            _container = new ServiceContainer(services);
         }
 
         public IServiceProviderBuilder UseServicePack<TServicePack>()
@@ -39,23 +39,23 @@ namespace Annium.Core.DependencyInjection.Internal
             _isAlreadyBuilt = true;
 
             // configure all packs
-            var configurationServices = new ServiceCollection();
+            var configurationContainer = new ServiceContainer();
             foreach (var pack in _packs)
-                pack.InternalConfigure(configurationServices);
+                pack.InternalConfigure(configurationContainer);
 
             // copy all configuration services to services
-            foreach (var descriptor in configurationServices)
-                _services.Add(descriptor);
+            foreach (var descriptor in configurationContainer)
+                _container.Add(descriptor);
 
             // create provider from configurationServices
-            var provider = _services.BuildServiceProvider();
+            var provider = _container.BuildServiceProvider();
 
             // register all services from packs
             foreach (var pack in _packs)
-                pack.InternalRegister(_services, provider);
+                pack.InternalRegister(_container, provider);
 
             // create provider from actual services
-            provider = _services.BuildServiceProvider();
+            provider = _container.BuildServiceProvider();
 
             // setup all services from packs
             foreach (var pack in _packs)
