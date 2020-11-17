@@ -59,7 +59,7 @@ namespace Annium.Core.Primitives
 
         #endregion
 
-        #region internal parse by value
+        #region parse width default
 
         public static T ParseEnum<T>(this string str, T defaultValue)
             where T : struct, Enum
@@ -105,7 +105,7 @@ namespace Annium.Core.Primitives
 
         #endregion
 
-        #region parse with default
+        #region try parse by label
 
         public static (bool succeed, T value) TryParseEnum<T>(this string label)
             where T : struct, Enum
@@ -144,7 +144,7 @@ namespace Annium.Core.Primitives
 
         #endregion
 
-        #region internal parse by value
+        #region try parse by value
 
         public static (bool succeed, T value) TryParseEnum<T>(this ValueType raw)
             where T : struct, Enum
