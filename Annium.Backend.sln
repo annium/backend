@@ -381,6 +381,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.DependencyInjec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.Internal", "base\Core\src\Annium.Core.Internal\Annium.Core.Internal.csproj", "{FE118B16-8D81-4413-B77E-4A2512E38E26}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Core.DependencyInjection.Abstractions", "base\Core\src\Annium.Core.DependencyInjection.Abstractions\Annium.Core.DependencyInjection.Abstractions.csproj", "{75DFA4AE-CC62-4A46-9823-77D9131B9C69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1894,6 +1896,18 @@ Global
 		{FE118B16-8D81-4413-B77E-4A2512E38E26}.Release|x64.Build.0 = Release|Any CPU
 		{FE118B16-8D81-4413-B77E-4A2512E38E26}.Release|x86.ActiveCfg = Release|Any CPU
 		{FE118B16-8D81-4413-B77E-4A2512E38E26}.Release|x86.Build.0 = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|x64.Build.0 = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Debug|x86.Build.0 = Debug|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|x64.ActiveCfg = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|x64.Build.0 = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|x86.ActiveCfg = Release|Any CPU
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{21A37D74-CEA5-409F-8E8C-3FB5712C81AB} = {4F348BC7-7C34-421A-9630-F67A0F5BF49B}
@@ -2083,5 +2097,6 @@ Global
 		{690CFCB5-674E-4114-9D42-22E818C9647F} = {00F11618-502E-4442-AB62-9F3F7B8E678A}
 		{E32C889C-BE57-4A9A-9E2D-E119B464D7C0} = {00F11618-502E-4442-AB62-9F3F7B8E678A}
 		{FE118B16-8D81-4413-B77E-4A2512E38E26} = {2212FD3B-3923-4037-81AA-3D5C27B036A9}
+		{75DFA4AE-CC62-4A46-9823-77D9131B9C69} = {2212FD3B-3923-4037-81AA-3D5C27B036A9}
 	EndGlobalSection
 EndGlobal
