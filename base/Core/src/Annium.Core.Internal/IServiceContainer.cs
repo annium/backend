@@ -3,8 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
-    public interface IServiceContainer : ICollection<ServiceDescriptor>
+    public interface IServiceContainer : IEnumerable<ServiceDescriptor>
     {
-        public IServiceCollection Collection { get; }
+        int Count { get; }
+        IServiceContainer Add(ServiceDescriptor item);
+        IServiceContainer TryAdd(ServiceDescriptor item);
+        IServiceContainer Clear();
+        bool Contains(ServiceDescriptor item);
+        bool Remove(ServiceDescriptor item);
+        IServiceCollection Collection { get; }
     }
 }
