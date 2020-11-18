@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Mediator;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Handlers;

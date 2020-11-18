@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Testing.Executors;
 using Microsoft.Extensions.DependencyInjection;
 using NodaTime;

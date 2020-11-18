@@ -1,9 +1,10 @@
 using System;
-using Annium.Core.DependencyInjection.Internal;
+using Annium.Core.DependencyInjection.Obsolete.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Obsolete
 {
+    [Obsolete]
     public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
     {
         private readonly Action<ServiceProviderBuilder> _configure;

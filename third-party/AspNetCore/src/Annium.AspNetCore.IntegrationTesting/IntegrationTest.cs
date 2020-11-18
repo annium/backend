@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Primitives;
 using Annium.Net.Http;
 using Microsoft.Extensions.DependencyInjection;

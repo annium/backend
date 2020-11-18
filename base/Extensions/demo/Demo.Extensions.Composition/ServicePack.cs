@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Composition;
 using Microsoft.Extensions.DependencyInjection;
 

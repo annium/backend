@@ -1,7 +1,8 @@
 using System;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Obsolete
 {
+    [Obsolete]
     public interface IRegistrationBuilder
     {
         IRegistrationBuilder Where(Func<Type, bool> predicate);

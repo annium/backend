@@ -1,5 +1,6 @@
 using System.IO;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 

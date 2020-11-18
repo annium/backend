@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Obsolete
 {
+    [Obsolete]
     public abstract class ServicePackBase
     {
         private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();

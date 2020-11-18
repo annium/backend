@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
 namespace Demo.Core.WebAssembly

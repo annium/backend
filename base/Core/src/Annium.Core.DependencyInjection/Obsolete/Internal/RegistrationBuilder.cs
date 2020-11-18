@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Core.DependencyInjection.Internal.Registrations;
-using Annium.Core.DependencyInjection.Obsolete;
+using Annium.Core.DependencyInjection.Obsolete.Internal.Registrations;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.Internal
+namespace Annium.Core.DependencyInjection.Obsolete.Internal
 {
     internal class RegistrationBuilder : IRegistrationBuilder
     {

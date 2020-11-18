@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Localization

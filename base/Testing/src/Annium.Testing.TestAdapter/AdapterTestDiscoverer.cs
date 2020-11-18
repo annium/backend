@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Logging.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;

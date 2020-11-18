@@ -1,3 +1,4 @@
+using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Validation;
 using Annium.Extensions.Validation.Internal;
 using Microsoft.Extensions.DependencyInjection;

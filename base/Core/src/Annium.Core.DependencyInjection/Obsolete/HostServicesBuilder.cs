@@ -1,12 +1,13 @@
 using System;
-using Annium.Core.DependencyInjection.Internal;
+using Annium.Core.DependencyInjection.Obsolete.Internal;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection.Obsolete
 {
     /// <summary>
     /// This is emulation class for compatibility with extensions, expecting HostBuilder pattern implementation
     /// </summary>
     /// <typeparam name="TServicePack"></typeparam>
+    [Obsolete]
     public class HostServicesBuilder<TServicePack>
         where TServicePack : ServicePackBase, new()
     {
@@ -19,6 +20,7 @@ namespace Annium.Core.DependencyInjection
         }
     }
 
+    [Obsolete]
     public class HostServicesProvider
     {
         public IServiceProvider Services { get; }
