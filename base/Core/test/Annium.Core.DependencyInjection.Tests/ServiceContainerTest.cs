@@ -17,7 +17,7 @@ namespace Annium.Core.DependencyInjection.Tests
             var instance = new object();
 
             // act
-            _container.Add(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(instance));
+            _container.Add(instance).Singleton();
             Build();
 
             // assert

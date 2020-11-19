@@ -1,18 +1,18 @@
 using System;
+using Annium.Core.DependencyInjection.Internal.Builders.Units;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class SingleRegistrationBuilder : ISingleRegistrationBuilderBase
     {
-        public ISingleRegistrationUnit Unit { get; }
+        public ISingleRegistrationUnit Unit => _unit;
+        private readonly Action<IServiceDescriptor> _register;
+        private readonly SingleRegistrationUnit _unit;
 
-        public SingleRegistrationBuilder(Type type)
+        public SingleRegistrationBuilder(Type type, Action<IServiceDescriptor> register)
         {
-        }
-
-        public ISingleRegistrationBuilderBase Where(Func<Type, bool> predicate)
-        {
-            throw new NotImplementedException();
+            _register = register;
+            _unit = new SingleRegistrationUnit(type);
         }
 
         public ISingleRegistrationBuilderTarget As(Type serviceType)

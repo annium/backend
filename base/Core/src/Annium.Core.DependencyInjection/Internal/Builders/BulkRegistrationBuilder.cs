@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders.Units;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
@@ -7,15 +8,20 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     internal class BulkRegistrationBuilder : IBulkRegistrationBuilderBase
     {
         public IReadOnlyCollection<IBulkRegistrationUnit> Units => _units;
-        private readonly List<BulkRegistrationUnit> _units = new();
+        private readonly Action<IServiceDescriptor> _register;
+        private readonly List<BulkRegistrationUnit> _units;
 
-        public BulkRegistrationBuilder(IEnumerable<Type> types)
+        public BulkRegistrationBuilder(IEnumerable<Type> types, Action<IServiceDescriptor> register)
         {
+            _register = register;
+            _units = new List<BulkRegistrationUnit>(types.Select(x => new BulkRegistrationUnit(x)));
         }
 
         public IBulkRegistrationBuilderBase Where(Func<Type, bool> predicate)
         {
-            throw new NotImplementedException();
+            _units.RemoveAll(x => predicate(x.Type));
+
+            return this;
         }
 
         public IBulkRegistrationBuilderTarget As(Type serviceType)

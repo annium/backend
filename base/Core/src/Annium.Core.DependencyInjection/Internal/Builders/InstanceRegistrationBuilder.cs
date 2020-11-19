@@ -6,15 +6,13 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     internal class InstanceRegistrationBuilder : IInstanceRegistrationBuilderBase
     {
         public IInstanceRegistrationUnit Unit => _unit;
+        private readonly Action<IServiceDescriptor> _register;
         private readonly InstanceRegistrationUnit _unit;
 
-        public InstanceRegistrationBuilder(Type type)
+        public InstanceRegistrationBuilder(Type type, object instance, Action<IServiceDescriptor> register)
         {
-        }
-
-        public IInstanceRegistrationBuilderBase Where(Func<Type, bool> predicate)
-        {
-            throw new NotImplementedException();
+            _register = register;
+            _unit = new InstanceRegistrationUnit(type, instance);
         }
 
         public IInstanceRegistrationBuilderTarget As(Type serviceType)

@@ -4,7 +4,6 @@ namespace Annium.Core.DependencyInjection
 {
     public interface IInstanceRegistrationBuilderBase : IInstanceRegistrationBuilderTarget
     {
-        IInstanceRegistrationBuilderBase Where(Func<Type, bool> predicate);
     }
 
     public interface IInstanceRegistrationBuilderTarget : IInstanceRegistrationBuilderConfigure
