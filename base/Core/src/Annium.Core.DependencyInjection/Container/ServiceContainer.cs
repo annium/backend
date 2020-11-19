@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.DependencyInjection.Internal.Builders;
 using Annium.Core.Internal;
+using Annium.Core.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -10,42 +12,28 @@ namespace Annium.Core.DependencyInjection
     public class ServiceContainer : IServiceContainer
     {
         public IServiceCollection Collection { get; }
+        public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) => new BulkRegistrationBuilder(types, Add);
+        public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : notnull => new InstanceRegistrationBuilder(typeof(T), instance, Add);
+        public ISingleRegistrationBuilderBase Add(Type type) => new SingleRegistrationBuilder(type, Add);
+        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types) => new BulkRegistrationBuilder(types, TryAdd);
+        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance) where T : notnull => new InstanceRegistrationBuilder(typeof(T), instance, TryAdd);
+        public ISingleRegistrationBuilderBase TryAdd(Type type) => new SingleRegistrationBuilder(type, TryAdd);
 
-        public ISingleRegistrationBuilderBase Add(Type type)
+        public bool Contains(IServiceDescriptor descriptor)
         {
-            throw new NotImplementedException();
-        }
+            var lifetime = (Microsoft.Extensions.DependencyInjection.ServiceLifetime) descriptor.Lifetime;
 
-        public IInstanceRegistrationBuilderBase Add<T>(T instance)
-        {
-            throw new NotImplementedException();
+            return descriptor switch
+            {
+                ITypeServiceDescriptor d => Collection
+                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationType == d.ImplementationType),
+                IFactoryServiceDescriptor d => Collection
+                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationFactory == d.ImplementationFactory),
+                IInstanceServiceDescriptor d => Collection
+                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationInstance == d.ImplementationInstance),
+                _ => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
+            };
         }
-
-        public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISingleRegistrationBuilderBase TryAdd(Type type)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Contains(IServiceDescriptor item)
-        {
-            throw new NotImplementedException();
-        }
-
 
         public ServiceContainer() : this(new ServiceCollection())
         {
@@ -60,49 +48,23 @@ namespace Annium.Core.DependencyInjection
 
         IEnumerator IEnumerable.GetEnumerator() => Collection.GetEnumerator();
 
-        internal IServiceContainer Add(IServiceDescriptor item)
+        private void Add(IServiceDescriptor item)
         {
             Framework.Log(() => $"{item.ToReadableString()}");
             Collection.Add(item.ToMicrosoft());
-
-            return this;
         }
 
-        public IServiceContainer TryAdd(IServiceDescriptor item)
+        private void TryAdd(IServiceDescriptor item)
         {
-            // skip if it's ITypeServiceDescriptor and ImplementationType is already registered
-            if (
-                item is ITypeServiceDescriptor typeDescriptor &&
-                Collection.Any(x =>
-                    x.ServiceType == typeDescriptor.ServiceType &&
-                    x.ImplementationType == typeDescriptor.ImplementationType
-                )
-            )
+            if (Contains(item))
             {
-                Framework.Log(() => $"{item.ToReadableString()} - skip, implementation type is already registered");
+                Framework.Log(() => $"{item.ToReadableString()} - skip, is already registered");
 
-                return this;
-            }
-
-            // skip if it's ITypeServiceDescriptor and ImplementationType is already registered
-            // skip if descriptor has ImplementationInstance and it is already registered
-            if (
-                item is IInstanceServiceDescriptor instanceDescriptor &&
-                Collection.Any(x =>
-                    x.ServiceType == instanceDescriptor.ServiceType &&
-                    x.ImplementationInstance?.Equals(instanceDescriptor.ImplementationInstance) == true
-                )
-            )
-            {
-                Framework.Log(() => $"{item.ToReadableString()} - skip, implementation instance is already registered");
-
-                return this;
+                return;
             }
 
             Framework.Log(() => $"{item.ToReadableString()} - add");
             Collection.Add(item.ToMicrosoft());
-
-            return this;
         }
     }
 }
