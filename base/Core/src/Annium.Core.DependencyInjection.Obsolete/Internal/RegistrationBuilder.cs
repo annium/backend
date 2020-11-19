@@ -8,7 +8,7 @@ using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.Servic
 
 namespace Annium.Core.DependencyInjection.Obsolete.Internal
 {
-    internal class RegistrationBuilder : IRegistrationBuilder
+    public class RegistrationBuilder : IRegistrationBuilder
     {
         private readonly IServiceCollection _services;
         private readonly ICollection<IRegistration> _registrations = new List<IRegistration>();

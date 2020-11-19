@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.Reflection;
 
 namespace Annium.Core.DependencyInjection.Obsolete
 {
@@ -7,11 +6,11 @@ namespace Annium.Core.DependencyInjection.Obsolete
     {
         [Obsolete]
         public static IRegistrationBuilder AssignableTo<T>(this IRegistrationBuilder builder)
-            => builder.Where(x => x.IsDerivedFrom(typeof(T)));
+            => builder.Where(typeof(T).IsAssignableFrom);
 
         [Obsolete]
         public static IRegistrationBuilder AssignableTo(this IRegistrationBuilder builder, Type baseType)
-            => builder.Where(x => x.IsDerivedFrom(baseType));
+            => builder.Where(baseType.IsAssignableFrom);
 
         [Obsolete]
         public static IRegistrationBuilder StartingWith(this IRegistrationBuilder builder, string prefix)

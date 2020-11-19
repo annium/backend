@@ -9,18 +9,18 @@ namespace Annium.Core.DependencyInjection.Obsolete.Internal
     {
         private bool _isAlreadyBuilt;
 
-        private readonly IServiceContainer _container;
+        private readonly IServiceCollection _container;
 
         private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
 
         public ServiceProviderBuilder()
         {
-            _container = new ServiceContainer();
+            _container = new ServiceCollection();
         }
 
         public ServiceProviderBuilder(IServiceCollection services)
         {
-            _container = new ServiceContainer(services);
+            _container = services;
         }
 
         public IServiceProviderBuilder UseServicePack<TServicePack>()
@@ -39,7 +39,7 @@ namespace Annium.Core.DependencyInjection.Obsolete.Internal
             _isAlreadyBuilt = true;
 
             // configure all packs
-            var configurationContainer = new ServiceContainer();
+            var configurationContainer = new ServiceCollection();
             foreach (var pack in _packs)
                 pack.InternalConfigure(configurationContainer);
 

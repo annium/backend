@@ -1,7 +1,6 @@
 using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection.Obsolete.Internal;
-using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
@@ -9,18 +8,6 @@ namespace Annium.Core.DependencyInjection.Obsolete
 {
     public static class ServiceCollectionExtensions
     {
-        [Obsolete]
-        public static IRegistrationBuilder AddAllTypes(this IServiceCollection services)
-        {
-            var typeManager = services.GetTypeManager();
-
-            return new RegistrationBuilder(services, typeManager.Types);
-        }
-
-        [Obsolete]
-        public static IRegistrationBuilder AddAllTypes(this IServiceCollection services, Assembly assembly, bool tryLoadReferences)
-            => new RegistrationBuilder(services, TypeManager.GetInstance(assembly, tryLoadReferences).Types);
-
         [Obsolete]
         public static IRegistrationBuilder AddAssemblyTypes(this IServiceCollection services, Assembly assembly)
             => new RegistrationBuilder(services, assembly.GetTypes());

@@ -12,12 +12,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Core/src/Annium.Core.DependencyInjection.Abstractions/Annium.Core.DependencyInjection.Abstractions.csproj" />
-        <ProjectReference Include="../../../../base/Core/src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
+        <ProjectReference Include="../../../../base/Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
         <ProjectReference Include="../../../../base/Core/src/Annium.Core.Reflection/Annium.Core.Reflection.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.0" />
     </ItemGroup>
 </Project>
