@@ -1,6 +1,6 @@
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceContainerExtensions
+    public static class ServiceContainerAbstractionsExtensions
     {
         public static ISingleRegistrationBuilderBase Add<TImplementationType>(this IServiceContainer container) =>
             container.Add(typeof(TImplementationType));

@@ -6,13 +6,13 @@ namespace Annium.Core.DependencyInjection
 {
     public interface IServiceContainer : IEnumerable<IServiceDescriptor>
     {
+        IServiceCollection Collection { get; }
         ISingleRegistrationBuilderBase Add(Type type);
         IInstanceRegistrationBuilderBase Add<T>(T instance);
-        IBulkRegistrationBuilderBase Add(Type[] types);
+        IBulkRegistrationBuilderBase Add(IEnumerable<Type> types);
         ISingleRegistrationBuilderBase TryAdd(Type type);
         IInstanceRegistrationBuilderBase TryAdd<T>(T instance);
-        IBulkRegistrationBuilderBase TryAdd(Type[] types);
+        IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types);
         bool Contains(IServiceDescriptor item);
-        IServiceCollection Collection { get; }
     }
 }
