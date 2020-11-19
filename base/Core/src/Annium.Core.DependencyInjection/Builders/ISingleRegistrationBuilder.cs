@@ -2,24 +2,24 @@ using System;
 
 namespace Annium.Core.DependencyInjection
 {
-    public interface ISingleRegistrationBuilderBase : ISingleRegistrationBuilderTarget
+    public interface ISingleRegistrationBuilderBase : ISingleRegistrationBuilderLifetime
     {
-    }
-
-    public interface ISingleRegistrationBuilderTarget : ISingleRegistrationBuilderConfigure
-    {
-        ISingleRegistrationBuilderTarget As(Type serviceType);
-        ISingleRegistrationBuilderTarget AsFactory(Type serviceType);
-    }
-
-    public interface ISingleRegistrationBuilderConfigure : ISingleRegistrationBuilderLifetime
-    {
-        ISingleRegistrationBuilderConfigure Configure(Action<ISingleRegistrationUnit> configure);
+        ISingleRegistrationBuilderBase AsSelf();
+        ISingleRegistrationBuilderBase As(Type serviceType);
+        ISingleRegistrationBuilderBase As<T>();
+        ISingleRegistrationBuilderBase AsSelfKeyed<TKey>(TKey key);
+        ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key);
+        ISingleRegistrationBuilderBase AsKeyed<T, TKey>(TKey key);
+        ISingleRegistrationBuilderBase AsSelfFactory();
+        ISingleRegistrationBuilderBase AsFactory(Type serviceType);
+        ISingleRegistrationBuilderBase AsFactory<T>();
+        ISingleRegistrationBuilderBase AsSelfKeyedFactory<TKey>(TKey key);
+        ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key);
+        ISingleRegistrationBuilderBase AsKeyedFactory<T, TKey>(TKey key);
     }
 
     public interface ISingleRegistrationBuilderLifetime
     {
-        ISingleRegistrationUnit Unit { get; }
         void Scoped();
         void Singleton();
         void Transient();
