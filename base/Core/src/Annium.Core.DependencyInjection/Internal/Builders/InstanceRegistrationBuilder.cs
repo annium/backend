@@ -1,27 +1,18 @@
 using System;
+using Annium.Core.DependencyInjection.Internal.Builders.Units;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class InstanceRegistrationBuilder : IInstanceRegistrationBuilderBase
     {
-        public IInstanceRegistrationUnit Unit { get; }
+        public IInstanceRegistrationUnit Unit => _unit;
+        private readonly InstanceRegistrationUnit _unit;
 
-        public void Scoped()
+        public InstanceRegistrationBuilder(Type type)
         {
-            throw new NotImplementedException();
         }
 
-        public void Singleton()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transient()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IInstanceRegistrationBuilderConfigure Configure(Action<IInstanceRegistrationUnit> configure)
+        public IInstanceRegistrationBuilderBase Where(Func<Type, bool> predicate)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +27,22 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             throw new NotImplementedException();
         }
 
-        public IInstanceRegistrationBuilderBase Where(Func<Type, bool> predicate)
+        public IInstanceRegistrationBuilderConfigure Configure(Action<IInstanceRegistrationUnit> configure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Scoped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Singleton()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Transient()
         {
             throw new NotImplementedException();
         }

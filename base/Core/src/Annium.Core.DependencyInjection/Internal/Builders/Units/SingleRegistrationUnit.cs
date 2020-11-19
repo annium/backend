@@ -6,7 +6,13 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Units
     internal class SingleRegistrationUnit : ISingleRegistrationUnit
     {
         public Type Type { get; }
-        public IReadOnlyCollection<IServiceDescriptor> Descriptors { get; }
+        public IReadOnlyCollection<IServiceDescriptor> Descriptors => _descriptors;
+        private readonly List<IServiceDescriptor> _descriptors = new();
+
+        public SingleRegistrationUnit(Type type)
+        {
+            Type = type;
+        }
 
         public void As(Type serviceType)
         {

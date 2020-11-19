@@ -6,22 +6,11 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     {
         public ISingleRegistrationUnit Unit { get; }
 
-        public void Scoped()
+        public SingleRegistrationBuilder(Type type)
         {
-            throw new NotImplementedException();
         }
 
-        public void Singleton()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transient()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ISingleRegistrationBuilderConfigure Configure(Action<ISingleRegistrationUnit> configure)
+        public ISingleRegistrationBuilderBase Where(Func<Type, bool> predicate)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +25,22 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             throw new NotImplementedException();
         }
 
-        public ISingleRegistrationBuilderBase Where(Func<Type, bool> predicate)
+        public ISingleRegistrationBuilderConfigure Configure(Action<ISingleRegistrationUnit> configure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Scoped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Singleton()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Transient()
         {
             throw new NotImplementedException();
         }

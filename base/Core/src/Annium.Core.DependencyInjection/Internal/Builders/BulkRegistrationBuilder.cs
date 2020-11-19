@@ -1,28 +1,19 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.DependencyInjection.Internal.Builders.Units;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class BulkRegistrationBuilder : IBulkRegistrationBuilderBase
     {
-        public IReadOnlyCollection<IBulkRegistrationUnit> Units { get; }
+        public IReadOnlyCollection<IBulkRegistrationUnit> Units => _units;
+        private readonly List<BulkRegistrationUnit> _units = new();
 
-        public void Scoped()
+        public BulkRegistrationBuilder(IEnumerable<Type> types)
         {
-            throw new NotImplementedException();
         }
 
-        public void Singleton()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transient()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IBulkRegistrationBuilderConfigure Configure(Action<IBulkRegistrationUnit> configure)
+        public IBulkRegistrationBuilderBase Where(Func<Type, bool> predicate)
         {
             throw new NotImplementedException();
         }
@@ -37,7 +28,22 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             throw new NotImplementedException();
         }
 
-        public IBulkRegistrationBuilderBase Where(Func<Type, bool> predicate)
+        public IBulkRegistrationBuilderConfigure Configure(Action<IBulkRegistrationUnit> configure)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Scoped()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Singleton()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Transient()
         {
             throw new NotImplementedException();
         }
