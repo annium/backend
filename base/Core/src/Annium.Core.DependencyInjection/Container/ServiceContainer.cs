@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +9,43 @@ namespace Annium.Core.DependencyInjection
 {
     public class ServiceContainer : IServiceContainer
     {
-        public int Count => Collection.Count;
         public IServiceCollection Collection { get; }
+
+        public ISingleRegistrationBuilderBase Add(Type type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IInstanceRegistrationBuilderBase Add<T>(T instance)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase TryAdd(Type type)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Contains(IServiceDescriptor item)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public ServiceContainer() : this(new ServiceCollection())
         {
@@ -20,26 +56,26 @@ namespace Annium.Core.DependencyInjection
             Collection = collection;
         }
 
-        public IEnumerator<ServiceDescriptor> GetEnumerator() => Collection.GetEnumerator();
+        public IEnumerator<IServiceDescriptor> GetEnumerator() => Collection.Select(ServiceDescriptor.From).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Collection.GetEnumerator();
 
-        public IServiceContainer Add(ServiceDescriptor item)
+        internal IServiceContainer Add(IServiceDescriptor item)
         {
             Framework.Log(() => $"{item.ToReadableString()}");
-            Collection.Add(item);
+            Collection.Add(item.ToMicrosoft());
 
             return this;
         }
 
-        public IServiceContainer TryAdd(ServiceDescriptor item)
+        public IServiceContainer TryAdd(IServiceDescriptor item)
         {
-            // skip if descriptor has ImplementationType and it is already registered
+            // skip if it's ITypeServiceDescriptor and ImplementationType is already registered
             if (
-                item.ImplementationType != null &&
+                item is ITypeServiceDescriptor typeDescriptor &&
                 Collection.Any(x =>
-                    x.ServiceType == item.ServiceType &&
-                    x.ImplementationType == item.ImplementationType
+                    x.ServiceType == typeDescriptor.ServiceType &&
+                    x.ImplementationType == typeDescriptor.ImplementationType
                 )
             )
             {
@@ -48,12 +84,13 @@ namespace Annium.Core.DependencyInjection
                 return this;
             }
 
+            // skip if it's ITypeServiceDescriptor and ImplementationType is already registered
             // skip if descriptor has ImplementationInstance and it is already registered
             if (
-                item.ImplementationInstance != null &&
+                item is IInstanceServiceDescriptor instanceDescriptor &&
                 Collection.Any(x =>
-                    x.ServiceType == item.ServiceType &&
-                    x.ImplementationInstance?.Equals(item.ImplementationInstance) == true
+                    x.ServiceType == instanceDescriptor.ServiceType &&
+                    x.ImplementationInstance?.Equals(instanceDescriptor.ImplementationInstance) == true
                 )
             )
             {
@@ -63,23 +100,9 @@ namespace Annium.Core.DependencyInjection
             }
 
             Framework.Log(() => $"{item.ToReadableString()} - add");
-            Collection.Add(item);
+            Collection.Add(item.ToMicrosoft());
 
             return this;
         }
-
-        public IServiceContainer Clear()
-        {
-            Framework.Log();
-            Collection.Clear();
-
-            return this;
-        }
-
-        public bool Contains(ServiceDescriptor item) => Collection.Contains(item);
-
-        public void CopyTo(ServiceDescriptor[] array, int arrayIndex) => Collection.CopyTo(array, arrayIndex);
-
-        public bool Remove(ServiceDescriptor item) => Collection.Remove(item);
     }
 }
