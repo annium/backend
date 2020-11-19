@@ -17,27 +17,12 @@ namespace Annium.Core.DependencyInjection.Tests
             var instance = new object();
 
             // act
-            _container.Add(ServiceDescriptor.Singleton(instance));
+            _container.Add(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(instance));
             Build();
 
             // assert
             _container.Has(1);
             Get<object>().Is(instance);
-        }
-
-        [Fact]
-        public void Clear_Works_Ok()
-        {
-            // arrange
-            var instance = new object();
-
-            // act
-            _container.Add(ServiceDescriptor.Singleton(instance));
-            _container.Clear();
-            Build();
-
-            // assert
-            _container.IsEmpty();
         }
 
         private void Build()

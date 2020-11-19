@@ -1,11 +1,10 @@
 using Annium.Core.Primitives;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.Tests
 {
     internal static class ServiceDescriptorExtensions
     {
-        public static string FriendlyName(this ServiceDescriptor descriptor)
+        public static string FriendlyName(this Microsoft.Extensions.DependencyInjection.ServiceDescriptor descriptor)
         {
             if (descriptor.ImplementationType != null)
                 return $"{descriptor.ServiceType.FriendlyName()} -> Type {descriptor.ImplementationType.FriendlyName()}";

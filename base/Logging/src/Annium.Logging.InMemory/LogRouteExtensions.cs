@@ -1,6 +1,5 @@
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -8,14 +7,14 @@ namespace Annium.Core.DependencyInjection
     {
         public static LogRoute UseInMemory(this LogRoute route)
         {
-            route.Use(ServiceDescriptor.Singleton<InMemoryLogHandler, InMemoryLogHandler>());
+            route.Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton<InMemoryLogHandler, InMemoryLogHandler>());
 
             return route;
         }
 
         public static LogRoute UseInMemory(this LogRoute route, InMemoryLogHandler handler)
         {
-            route.Use(ServiceDescriptor.Singleton(handler));
+            route.Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(handler));
 
             return route;
         }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 
 namespace Annium.Core.DependencyInjection.Obsolete.Internal.Registrations
 {
@@ -13,10 +14,10 @@ namespace Annium.Core.DependencyInjection.Obsolete.Internal.Registrations
             _serviceType = serviceType;
         }
 
-        public IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime)
+        public IEnumerable<MicrosoftServiceDescriptor> ResolveServiceDescriptors(Type implementationType, MicrosoftServiceLifetime lifetime)
         {
             if (implementationType == _serviceType)
-                yield return new ServiceDescriptor(_serviceType, implementationType, lifetime);
+                yield return new MicrosoftServiceDescriptor(_serviceType, implementationType, lifetime);
             else
                 yield return RegistrationHelper.CreateTypeFactoryDescriptor(_serviceType, implementationType, lifetime);
         }

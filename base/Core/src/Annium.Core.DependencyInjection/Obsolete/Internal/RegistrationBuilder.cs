@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.DependencyInjection.Obsolete.Internal.Registrations;
 using Microsoft.Extensions.DependencyInjection;
+using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 
 namespace Annium.Core.DependencyInjection.Obsolete.Internal
 {
@@ -77,13 +79,13 @@ namespace Annium.Core.DependencyInjection.Obsolete.Internal
             return this;
         }
 
-        public void InstancePerScope() => Register(ServiceLifetime.Scoped);
+        public void InstancePerScope() => Register(MicrosoftServiceLifetime.Scoped);
 
-        public void SingleInstance() => Register(ServiceLifetime.Singleton);
+        public void SingleInstance() => Register(MicrosoftServiceLifetime.Singleton);
 
-        public void InstancePerDependency() => Register(ServiceLifetime.Transient);
+        public void InstancePerDependency() => Register(MicrosoftServiceLifetime.Transient);
 
-        private void Register(ServiceLifetime lifetime)
+        private void Register(MicrosoftServiceLifetime lifetime)
         {
             if (_hasRegistered)
                 throw new InvalidOperationException("Registration already done");
@@ -91,7 +93,7 @@ namespace Annium.Core.DependencyInjection.Obsolete.Internal
 
             foreach (var implementationType in _types)
             {
-                _services.AddChecked(new ServiceDescriptor(implementationType, implementationType, lifetime));
+                _services.AddChecked(new MicrosoftServiceDescriptor(implementationType, implementationType, lifetime));
 
                 var descriptors = _registrations
                     .SelectMany(x => x.ResolveServiceDescriptors(implementationType, lifetime))

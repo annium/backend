@@ -1,23 +1,25 @@
 using System;
 using System.Linq.Expressions;
 using Microsoft.Extensions.DependencyInjection;
+using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 
 namespace Annium.Core.DependencyInjection.Obsolete.Internal.Registrations
 {
     internal static class RegistrationHelper
     {
-        public static ServiceDescriptor CreateTypeFactoryDescriptor(Type serviceType, Type implementationType, ServiceLifetime lifetime)
+        public static MicrosoftServiceDescriptor CreateTypeFactoryDescriptor(Type serviceType, Type implementationType, MicrosoftServiceLifetime lifetime)
         {
             var factory = CreateTypeFactory(implementationType);
 
-            return new ServiceDescriptor(serviceType, factory, lifetime);
+            return new MicrosoftServiceDescriptor(serviceType, factory, lifetime);
         }
 
-        public static ServiceDescriptor CreateFuncFactoryDescriptor(Type serviceType, Type implementationType, ServiceLifetime lifetime)
+        public static MicrosoftServiceDescriptor CreateFuncFactoryDescriptor(Type serviceType, Type implementationType, MicrosoftServiceLifetime lifetime)
         {
             var factory = CreateFuncFactory(implementationType);
 
-            return new ServiceDescriptor(typeof(Func<>).MakeGenericType(serviceType), factory, lifetime);
+            return new MicrosoftServiceDescriptor(typeof(Func<>).MakeGenericType(serviceType), factory, lifetime);
         }
 
         private static Func<IServiceProvider, object> CreateTypeFactory(Type implementationType)

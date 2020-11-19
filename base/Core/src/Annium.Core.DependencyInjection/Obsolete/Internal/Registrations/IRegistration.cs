@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 
 namespace Annium.Core.DependencyInjection.Obsolete.Internal.Registrations
 {
     internal interface IRegistration
     {
-        IEnumerable<ServiceDescriptor> ResolveServiceDescriptors(Type implementationType, ServiceLifetime lifetime);
+        IEnumerable<MicrosoftServiceDescriptor> ResolveServiceDescriptors(Type implementationType, MicrosoftServiceLifetime lifetime);
     }
 }

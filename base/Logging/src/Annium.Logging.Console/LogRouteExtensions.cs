@@ -2,7 +2,6 @@ using System;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -19,7 +18,7 @@ namespace Annium.Core.DependencyInjection
             bool color = false
         )
         {
-            route.Use(ServiceDescriptor.Singleton(new ConsoleLogHandler(format, color)));
+            route.Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(new ConsoleLogHandler(format, color)));
 
             return route;
         }

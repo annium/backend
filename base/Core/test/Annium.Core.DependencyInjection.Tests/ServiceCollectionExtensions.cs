@@ -3,6 +3,8 @@ using System.Linq;
 using Annium.Core.Primitives;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
+using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
+using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 
 namespace Annium.Core.DependencyInjection.Tests
 {
@@ -27,33 +29,33 @@ namespace Annium.Core.DependencyInjection.Tests
         }
 
         public static void HasScoped(this IServiceCollection services, Type serviceType, Type implementationType) =>
-            services.Has(serviceType, implementationType, ServiceLifetime.Scoped);
+            services.Has(serviceType, implementationType, MicrosoftServiceLifetime.Scoped);
 
         public static void HasSingleton(this IServiceCollection services, Type serviceType, Type implementationType) =>
-            services.Has(serviceType, implementationType, ServiceLifetime.Singleton);
+            services.Has(serviceType, implementationType, MicrosoftServiceLifetime.Singleton);
 
         public static void HasTransient(this IServiceCollection services, Type serviceType, Type implementationType) =>
-            services.Has(serviceType, implementationType, ServiceLifetime.Transient);
+            services.Has(serviceType, implementationType, MicrosoftServiceLifetime.Transient);
 
         public static void HasScopedTypeFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasTypeFactory(serviceType, ServiceLifetime.Scoped, count);
+            services.HasTypeFactory(serviceType, MicrosoftServiceLifetime.Scoped, count);
 
         public static void HasSingletonTypeFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasTypeFactory(serviceType, ServiceLifetime.Singleton, count);
+            services.HasTypeFactory(serviceType, MicrosoftServiceLifetime.Singleton, count);
 
         public static void HasTransientTypeFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasTypeFactory(serviceType, ServiceLifetime.Transient, count);
+            services.HasTypeFactory(serviceType, MicrosoftServiceLifetime.Transient, count);
 
         public static void HasScopedFuncFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasFuncFactory(serviceType, ServiceLifetime.Scoped, count);
+            services.HasFuncFactory(serviceType, MicrosoftServiceLifetime.Scoped, count);
 
         public static void HasSingletonFuncFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasFuncFactory(serviceType, ServiceLifetime.Singleton, count);
+            services.HasFuncFactory(serviceType, MicrosoftServiceLifetime.Singleton, count);
 
         public static void HasTransientFuncFactory(this IServiceCollection services, Type serviceType, int count = 1) =>
-            services.HasFuncFactory(serviceType, ServiceLifetime.Transient, count);
+            services.HasFuncFactory(serviceType, MicrosoftServiceLifetime.Transient, count);
 
-        private static void Has(this IServiceCollection services, Type serviceType, Type implementationType, ServiceLifetime lifetime)
+        private static void Has(this IServiceCollection services, Type serviceType, Type implementationType, MicrosoftServiceLifetime lifetime)
         {
             var descriptors = services.GetDescriptors(serviceType);
             var descriptor = descriptors.SingleOrDefault(x => x.ImplementationType == implementationType);
@@ -64,7 +66,7 @@ namespace Annium.Core.DependencyInjection.Tests
             );
         }
 
-        private static void HasTypeFactory(this IServiceCollection services, Type serviceType, ServiceLifetime lifetime, int count)
+        private static void HasTypeFactory(this IServiceCollection services, Type serviceType, MicrosoftServiceLifetime lifetime, int count)
         {
             var descriptors = services
                 .GetDescriptors(serviceType)
@@ -78,7 +80,7 @@ namespace Annium.Core.DependencyInjection.Tests
                 );
         }
 
-        private static void HasFuncFactory(this IServiceCollection services, Type serviceType, ServiceLifetime lifetime, int count)
+        private static void HasFuncFactory(this IServiceCollection services, Type serviceType, MicrosoftServiceLifetime lifetime, int count)
         {
             var descriptors = services
                 .GetDescriptors(typeof(Func<>).MakeGenericType(serviceType))
@@ -92,7 +94,7 @@ namespace Annium.Core.DependencyInjection.Tests
                 );
         }
 
-        private static ServiceDescriptor[] GetDescriptors(
+        private static MicrosoftServiceDescriptor[] GetDescriptors(
             this IServiceCollection services,
             Type serviceType
         )
