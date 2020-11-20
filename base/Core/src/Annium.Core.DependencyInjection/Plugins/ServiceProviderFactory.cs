@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection.New
 {
-    [Obsolete]
     public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
     {
         private readonly Action<ServiceProviderBuilder> _configure;
