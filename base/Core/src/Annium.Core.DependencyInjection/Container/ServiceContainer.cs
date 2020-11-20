@@ -12,12 +12,39 @@ namespace Annium.Core.DependencyInjection
     public class ServiceContainer : IServiceContainer
     {
         public IServiceCollection Collection { get; }
-        public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) => new BulkRegistrationBuilder(types, Add);
-        public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : notnull => new InstanceRegistrationBuilder(typeof(T), instance, Add);
-        public ISingleRegistrationBuilderBase Add(Type type) => new SingleRegistrationBuilder(type, Add);
-        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types) => new BulkRegistrationBuilder(types, TryAdd);
-        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance) where T : notnull => new InstanceRegistrationBuilder(typeof(T), instance, TryAdd);
-        public ISingleRegistrationBuilderBase TryAdd(Type type) => new SingleRegistrationBuilder(type, TryAdd);
+
+        public ServiceContainer() : this(new ServiceCollection())
+        {
+        }
+
+        public ServiceContainer(IServiceCollection collection)
+        {
+            Collection = collection;
+        }
+
+        public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) =>
+            new BulkRegistrationBuilder(types, Add);
+
+        public IFactoryRegistrationBuilderBase Add<T>(Func<IServiceProvider, T> factory) where T : class =>
+            new FactoryRegistrationBuilder(typeof(T), factory, Add);
+
+        public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class =>
+            new InstanceRegistrationBuilder(typeof(T), instance, Add);
+
+        public ISingleRegistrationBuilderBase Add(Type type) =>
+            new SingleRegistrationBuilder(type, Add);
+
+        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types) =>
+            new BulkRegistrationBuilder(types, TryAdd);
+
+        public IFactoryRegistrationBuilderBase TryAdd<T>(Func<IServiceProvider, T> factory) where T : class =>
+            new FactoryRegistrationBuilder(typeof(T), factory, TryAdd);
+
+        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance) where T : class =>
+            new InstanceRegistrationBuilder(typeof(T), instance, TryAdd);
+
+        public ISingleRegistrationBuilderBase TryAdd(Type type) =>
+            new SingleRegistrationBuilder(type, TryAdd);
 
         public bool Contains(IServiceDescriptor descriptor)
         {
@@ -33,15 +60,6 @@ namespace Annium.Core.DependencyInjection
                     .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationInstance == d.ImplementationInstance),
                 _ => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
             };
-        }
-
-        public ServiceContainer() : this(new ServiceCollection())
-        {
-        }
-
-        public ServiceContainer(IServiceCollection collection)
-        {
-            Collection = collection;
         }
 
         public IEnumerator<IServiceDescriptor> GetEnumerator() => Collection.Select(ServiceDescriptor.From).GetEnumerator();
