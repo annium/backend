@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Units
 {
-    internal class InstanceRegistrationUnit : IInstanceRegistrationUnit
+    internal class InstanceRegistrationUnit
     {
         public Type Type { get; }
         public object Instance { get; }

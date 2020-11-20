@@ -5,7 +5,6 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class SingleRegistrationBuilder : ISingleRegistrationBuilderBase
     {
-        public ISingleRegistrationUnit Unit => _unit;
         private readonly Action<IServiceDescriptor> _register;
         private readonly SingleRegistrationUnit _unit;
 
@@ -15,17 +14,63 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             _unit = new SingleRegistrationUnit(type);
         }
 
-        public ISingleRegistrationBuilderTarget As(Type serviceType)
+
+        public ISingleRegistrationBuilderBase AsSelf()
         {
             throw new NotImplementedException();
         }
 
-        public ISingleRegistrationBuilderTarget AsFactory(Type serviceType)
+        public ISingleRegistrationBuilderBase As(Type serviceType)
         {
             throw new NotImplementedException();
         }
 
-        public ISingleRegistrationBuilderConfigure Configure(Action<ISingleRegistrationUnit> configure)
+        public ISingleRegistrationBuilderBase As<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsSelfKeyed<TKey>(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsKeyed<T, TKey>(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsSelfFactory()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsFactory(Type serviceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsFactory<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsSelfKeyedFactory<TKey>(TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ISingleRegistrationBuilderBase AsKeyedFactory<T, TKey>(TKey key)
         {
             throw new NotImplementedException();
         }

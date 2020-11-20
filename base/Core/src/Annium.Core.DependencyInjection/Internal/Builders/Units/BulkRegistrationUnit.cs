@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Units
 {
-    internal class BulkRegistrationUnit : IBulkRegistrationUnit
+    internal class BulkRegistrationUnit
     {
         public Type Type { get; }
         public IReadOnlyCollection<IServiceDescriptor> Descriptors => _descriptors;

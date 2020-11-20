@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Units
 {
-    internal class SingleRegistrationUnit
+    internal class FactoryRegistrationUnit
     {
         public Type Type { get; }
         public IReadOnlyCollection<IServiceDescriptor> Descriptors => _descriptors;
         private readonly List<IServiceDescriptor> _descriptors = new();
 
-        public SingleRegistrationUnit(Type type)
+        public FactoryRegistrationUnit(Type type)
         {
             Type = type;
         }

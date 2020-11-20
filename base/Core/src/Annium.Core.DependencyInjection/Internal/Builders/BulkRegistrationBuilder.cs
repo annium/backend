@@ -7,7 +7,6 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class BulkRegistrationBuilder : IBulkRegistrationBuilderBase
     {
-        public IReadOnlyCollection<IBulkRegistrationUnit> Units => _units;
         private readonly Action<IServiceDescriptor> _register;
         private readonly List<BulkRegistrationUnit> _units;
 
@@ -24,7 +23,37 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             return this;
         }
 
+        public IBulkRegistrationBuilderTarget AsSelf()
+        {
+            throw new NotImplementedException();
+        }
+
         public IBulkRegistrationBuilderTarget As(Type serviceType)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget As<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsSelfKeyed<TKey>(Func<Type, TKey> getKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsKeyed<TKey>(Type serviceType, Func<Type, TKey> getKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsKeyed<T, TKey>(Func<Type, TKey> getKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsSelfFactory()
         {
             throw new NotImplementedException();
         }
@@ -34,7 +63,22 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             throw new NotImplementedException();
         }
 
-        public IBulkRegistrationBuilderConfigure Configure(Action<IBulkRegistrationUnit> configure)
+        public IBulkRegistrationBuilderTarget AsFactory<T>()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsSelfKeyedFactory<TKey>(Func<Type, TKey> getKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsKeyedFactory<TKey>(Type serviceType, Func<Type, TKey> getKey)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBulkRegistrationBuilderTarget AsKeyedFactory<T, TKey>(Func<Type, TKey> getKey)
         {
             throw new NotImplementedException();
         }
