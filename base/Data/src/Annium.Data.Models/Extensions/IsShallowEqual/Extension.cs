@@ -30,7 +30,7 @@ namespace Annium.Data.Models.Extensions
         {
             var type = typeof(TD);
 
-            if (type.IsClass)
+            if (type.IsClass || type.IsInterface)
             {
                 // if data is null, simply compare to null
                 if (data is null)
