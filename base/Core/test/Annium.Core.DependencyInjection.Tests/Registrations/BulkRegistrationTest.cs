@@ -83,7 +83,6 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
 
             // assert
             var index = Get<IIndex<string, A>>();
-            // TODO:
             index[nameof(A)].AsExact<A>();
             index[nameof(B)].AsExact<B>();
         }

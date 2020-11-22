@@ -22,35 +22,35 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
 
         public ISingleRegistrationBuilderBase AsSelf() =>
-            WithRegistration(new TargetRegistration(_type, _type));
+            WithRegistration(new TypeRegistration(_type, _type));
 
         public ISingleRegistrationBuilderBase As(Type serviceType) =>
-            WithRegistration(new TargetRegistration(serviceType, _type));
+            WithRegistration(new TypeRegistration(serviceType, _type));
 
         public ISingleRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
-            WithRegistration(new TargetKeyedRegistration(_type, _type, typeof(TKey), key));
+            WithRegistration(new TypeKeyedRegistration(_type, _type, typeof(TKey), key));
 
         public ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull =>
-            WithRegistration(new TargetKeyedRegistration(serviceType, _type, typeof(TKey), key));
+            WithRegistration(new TypeKeyedRegistration(serviceType, _type, typeof(TKey), key));
 
         public ISingleRegistrationBuilderBase AsSelfFactory() =>
-            WithRegistration(new TargetFactoryRegistration(_type, _type));
+            WithRegistration(new TypeFactoryRegistration(_type, _type));
 
         public ISingleRegistrationBuilderBase AsFactory(Type serviceType) =>
-            WithRegistration(new TargetFactoryRegistration(serviceType, _type));
+            WithRegistration(new TypeFactoryRegistration(serviceType, _type));
 
         public ISingleRegistrationBuilderBase AsKeyedSelfFactory<TKey>(TKey key) where TKey : notnull =>
-            WithRegistration(new TargetKeyedFactoryRegistration(_type, _type, typeof(TKey), key));
+            WithRegistration(new TypeKeyedFactoryRegistration(_type, _type, typeof(TKey), key));
 
         public ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull =>
-            WithRegistration(new TargetKeyedFactoryRegistration(serviceType, _type, typeof(TKey), key));
+            WithRegistration(new TypeKeyedFactoryRegistration(serviceType, _type, typeof(TKey), key));
 
         public void Scoped() => Register(ServiceLifetime.Scoped);
         public void Singleton() => Register(ServiceLifetime.Singleton);
         public void Transient() => Register(ServiceLifetime.Transient);
 
         private void Register(ServiceLifetime lifetime) => _registrator
-            .Register(new[] { new TargetRegistration(_type, _type) }.Concat(_registrations).ToArray(), lifetime);
+            .Register(new[] { new TypeRegistration(_type, _type) }.Concat(_registrations).ToArray(), lifetime);
 
         private ISingleRegistrationBuilderBase WithRegistration(IRegistration registration)
         {

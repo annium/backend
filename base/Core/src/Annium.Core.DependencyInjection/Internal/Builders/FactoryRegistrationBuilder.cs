@@ -29,10 +29,10 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             WithRegistration(new FactoryRegistration(serviceType, _factory));
 
         public IFactoryRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
-            WithRegistration(new KeyedFactoryRegistration(_type, _factory, typeof(TKey), key));
+            WithRegistration(new FactoryKeyedRegistration(_type, _factory, typeof(TKey), key));
 
         public IFactoryRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull =>
-            WithRegistration(new KeyedFactoryRegistration(serviceType, _factory, typeof(TKey), key));
+            WithRegistration(new FactoryKeyedRegistration(serviceType, _factory, typeof(TKey), key));
 
         public void Scoped() => Register(ServiceLifetime.Scoped);
         public void Singleton() => Register(ServiceLifetime.Singleton);

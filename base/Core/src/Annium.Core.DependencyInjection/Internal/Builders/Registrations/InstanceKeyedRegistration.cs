@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using static Annium.Core.DependencyInjection.Internal.Builders.Registrations.Helper;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 {
@@ -20,8 +22,11 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 
         public IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime)
         {
-            // TODO:
-            yield break;
+            yield return Factory(
+                KeyValueType(_keyType, _serviceType),
+                _ => KeyValue(_keyType, _serviceType, _key, Expression.Constant(_instance)),
+                lifetime
+            );
         }
     }
 }

@@ -1,14 +1,15 @@
 using System;
 using System.Collections.Generic;
+using static Annium.Core.DependencyInjection.Internal.Builders.Registrations.Helper;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 {
-    internal class TargetRegistration : IRegistration
+    internal class TypeRegistration : IRegistration
     {
         private readonly Type _serviceType;
         private readonly Type _implementationType;
 
-        public TargetRegistration(Type serviceType, Type implementationType)
+        public TypeRegistration(Type serviceType, Type implementationType)
         {
             _serviceType = serviceType;
             _implementationType = implementationType;
@@ -19,7 +20,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
             if (_implementationType == _serviceType)
                 yield return ServiceDescriptor.Type(_serviceType, _implementationType, lifetime);
             else
-                yield return RegistrationHelper.CreateTypeFactoryDescriptor(_serviceType, _implementationType, lifetime);
+                yield return Factory(_serviceType, sp => Resolve(sp, _implementationType), lifetime);
         }
     }
 }

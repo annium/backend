@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
+using static Annium.Core.DependencyInjection.Internal.Builders.Registrations.Helper;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 {
-    internal class TargetKeyedFactoryRegistration : IRegistration
+    internal class TypeKeyedRegistration : IRegistration
     {
         private readonly Type _serviceType;
         private readonly Type _implementationType;
         private readonly Type _keyType;
         private readonly object _key;
 
-        public TargetKeyedFactoryRegistration(Type serviceType, Type implementationType, Type keyType, object key)
+        public TypeKeyedRegistration(Type serviceType, Type implementationType, Type keyType, object key)
         {
             _serviceType = serviceType;
             _implementationType = implementationType;
@@ -20,8 +21,11 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 
         public IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime)
         {
-            yield return RegistrationHelper.CreateFuncFactoryDescriptor(_serviceType, _implementationType, lifetime);
-            yield return RegistrationHelper.CreateFuncKeyFactoryDescriptor(_serviceType, _implementationType, _keyType, _key, lifetime);
+            yield return Factory(
+                KeyValueType(_keyType, _serviceType),
+                sp => KeyValue(_keyType, _serviceType, _key, Resolve(sp, _implementationType)),
+                lifetime
+            );
         }
     }
 }
