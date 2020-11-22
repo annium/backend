@@ -2,23 +2,15 @@ using System;
 using System.Text.Json;
 using Annium.Serialization.Abstractions;
 
-namespace Annium.Serialization.Json
+namespace Annium.Serialization.Json.Internal
 {
-    public class StringSerializer : ISerializer<string>
+    internal class StringSerializer : ISerializer<string>
     {
-        public static ISerializer<string> Configure(Action<JsonSerializerOptions> configure)
-        {
-            var options = new JsonSerializerOptions();
-            configure(options);
-
-            return new StringSerializer(options);
-        }
-
         private readonly JsonSerializerOptions _options;
 
-        private StringSerializer(JsonSerializerOptions options)
+        public StringSerializer(OptionsContainer options)
         {
-            _options = options;
+            _options = options.Value;
         }
 
         public T Deserialize<T>(string value)

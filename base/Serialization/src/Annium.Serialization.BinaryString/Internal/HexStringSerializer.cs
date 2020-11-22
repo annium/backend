@@ -1,16 +1,10 @@
 using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 
-namespace Annium.Serialization.BinaryString
+namespace Annium.Serialization.BinaryString.Internal
 {
-    public class HexStringSerializer : ISerializer<byte[], string>
+    internal class HexStringSerializer : ISerializer<byte[], string>
     {
-        public static ISerializer<byte[], string> Instance { get; } = new HexStringSerializer();
-
-        private HexStringSerializer()
-        {
-        }
-
         public byte[] Deserialize(string value)
         {
             return value.FromHexStringToByteArray();
