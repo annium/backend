@@ -2,7 +2,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Entrypoint;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;

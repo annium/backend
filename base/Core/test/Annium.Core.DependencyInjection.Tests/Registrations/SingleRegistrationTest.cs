@@ -35,6 +35,20 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         }
 
         [Fact]
+        public void AsInterfaces_Works()
+        {
+            // arrange
+            _container.Add(typeof(B)).AsInterfaces().Singleton();
+
+            // act
+            Build();
+
+            // assert
+            Get<IA>().Is(Get<IB>());
+            Get<IB>().Is(Get<IB>());
+        }
+
+        [Fact]
         public void AsKeyedSelf_Works()
         {
             // arrange
@@ -112,12 +126,20 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
             Get<IIndex<string, Func<A>>>()[nameof(B)]().Is(Get<B>());
         }
 
-        private sealed class B : A
+        private sealed class B : A, IB
         {
         }
 
-        private class A
+        private class A : IA
         {
-        };
+        }
+
+        private interface IB : IA
+        {
+        }
+
+        private interface IA
+        {
+        }
     }
 }

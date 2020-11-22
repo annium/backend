@@ -1,17 +1,15 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Composition;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Composition
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddLocalization(opts => opts.UseInMemoryStorage());
-            services.AddComposition();
+            container.AddLocalization(opts => opts.UseInMemoryStorage());
+            container.AddComposition();
         }
     }
 

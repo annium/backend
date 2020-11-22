@@ -1,8 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Annium.Configuration.Abstractions
 {
     public static class Configurator
@@ -13,11 +11,11 @@ namespace Annium.Configuration.Abstractions
         )
             where T : class, new()
         {
-            var services = GetServices<T>(tryLoadReferences);
+            var container = GetServices<T>(tryLoadReferences);
 
-            services.AddConfiguration<T>(configure);
+            container.AddConfiguration<T>(configure);
 
-            return Get<T>(services);
+            return Get<T>(container);
         }
 
         public static async Task<T> Get<T>(
@@ -26,29 +24,29 @@ namespace Annium.Configuration.Abstractions
         )
             where T : class, new()
         {
-            var services = GetServices<T>(tryLoadReferences);
+            var container = GetServices<T>(tryLoadReferences);
 
-            await services.AddConfiguration<T>(configure);
+            await container.AddConfiguration<T>(configure);
 
-            return Get<T>(services);
+            return Get<T>(container);
         }
 
-        private static IServiceCollection GetServices<T>(bool tryLoadReferences)
+        private static IServiceContainer GetServices<T>(bool tryLoadReferences)
         {
-            var services = new ServiceCollection();
+            var container = new ServiceContainer();
 
-            services.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
-            services.AddMapper();
+            container.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
+            container.AddMapper();
 
-            return services;
+            return container;
         }
 
-        private static T Get<T>(IServiceCollection services)
+        private static T Get<T>(IServiceContainer container)
             where T : notnull
         {
-            var provider = services.BuildServiceProvider();
+            var provider = container.BuildServiceProvider();
 
-            var configuration = provider.GetRequiredService<T>();
+            var configuration = provider.Resolve<T>();
 
             return configuration;
         }

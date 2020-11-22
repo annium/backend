@@ -6,7 +6,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Pooling;
 using Annium.Logging.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Demo.Extensions.Pooling
@@ -37,11 +36,13 @@ namespace Demo.Extensions.Pooling
 
         private static (IObjectCache<uint, Item>, IReadOnlyCollection<string>) CreateCache()
         {
-            var logger = new ServiceCollection()
-                .AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant)
+            var container = new ServiceContainer();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+
+            var logger = container
                 .AddLogging(route => route.UseConsole())
                 .BuildServiceProvider()
-                .GetRequiredService<ILogger<ObjectCache<uint, Item>>>();
+                .Resolve<ILogger<ObjectCache<uint, Item>>>();
 
             var logs = new List<string>();
 

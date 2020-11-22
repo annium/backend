@@ -1,9 +1,9 @@
 using System;
 using System.Globalization;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Localization.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Localization
 {
@@ -15,7 +15,7 @@ namespace Demo.Localization
             CancellationToken token
         )
         {
-            var localizer = provider.GetRequiredService<ILocalizer<Program>>();
+            var localizer = provider.Resolve<ILocalizer<Program>>();
 
             var entry = "demo";
             Console.WriteLine($"Source: {entry}");

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.Core.DependencyInjection.New
+namespace Annium.Core.DependencyInjection
 {
     public abstract class ServicePackBase
     {
@@ -25,20 +25,20 @@ namespace Annium.Core.DependencyInjection.New
         {
         }
 
-        internal void InternalConfigure(IServiceContainer services)
+        internal void InternalConfigure(IServiceContainer container)
         {
             foreach (var pack in _packs)
-                pack.InternalConfigure(services);
+                pack.InternalConfigure(container);
 
-            Configure(services);
+            Configure(container);
         }
 
-        internal void InternalRegister(IServiceContainer services, IServiceProvider provider)
+        internal void InternalRegister(IServiceContainer container, IServiceProvider provider)
         {
             foreach (var pack in _packs)
-                pack.InternalRegister(services, provider);
+                pack.InternalRegister(container, provider);
 
-            Register(services, provider);
+            Register(container, provider);
         }
 
         internal void InternalSetup(IServiceProvider provider)

@@ -9,7 +9,7 @@ namespace Annium.Core.DependencyInjection
         int Count { get; }
         IServiceCollection Collection { get; }
         IBulkRegistrationBuilderBase Add(IEnumerable<Type> types);
-        IFactoryRegistrationBuilderBase Add<T>(Func<IServiceProvider, T> factory) where T : class;
+        IFactoryRegistrationBuilderBase Add(Type type, Func<IServiceProvider, object> factory);
         IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class;
         ISingleRegistrationBuilderBase Add(Type type);
         bool Contains(IServiceDescriptor descriptor);

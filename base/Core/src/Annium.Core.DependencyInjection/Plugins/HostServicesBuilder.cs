@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection.Internal;
 using Annium.Core.DependencyInjection.Internal.Packs;
 
-namespace Annium.Core.DependencyInjection.New
+namespace Annium.Core.DependencyInjection
 {
     /// <summary>
     /// This is emulation class for compatibility with extensions, expecting HostBuilder pattern implementation

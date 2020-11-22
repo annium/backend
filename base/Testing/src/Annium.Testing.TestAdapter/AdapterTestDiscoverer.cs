@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Logging.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
@@ -27,7 +26,7 @@ namespace Annium.Testing.TestAdapter
             var factory = new ServiceProviderFactory();
             var provider = factory.CreateServiceProvider(factory.CreateBuilder(new ServiceCollection()).UseServicePack<ServicePack>());
 
-            _testConverter = provider.GetRequiredService<TestConverter>();
+            _testConverter = provider.Resolve<TestConverter>();
         }
 
         public void DiscoverTests(
@@ -38,8 +37,8 @@ namespace Annium.Testing.TestAdapter
         )
         {
             var provider = AdapterServiceProviderBuilder.Build(discoveryContext);
-            _testDiscoverer = provider.GetRequiredService<TestDiscoverer>();
-            _logger = provider.GetRequiredService<ILogger<AdapterTestDiscoverer>>();
+            _testDiscoverer = provider.Resolve<TestDiscoverer>();
+            _logger = provider.Resolve<ILogger<AdapterTestDiscoverer>>();
 
             _logger.Debug("Start discovery.");
 

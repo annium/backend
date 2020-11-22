@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Core.Mediator.Internal
 {
@@ -27,7 +27,7 @@ namespace Annium.Core.Mediator.Internal
             var handler = element.Handler;
             var handleMethodName = hasNext ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
             var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray())!;
-            var result = handleMethod.Invoke(provider.GetRequiredService(handler), parameters.ToArray())!;
+            var result = handleMethod.Invoke(provider.Resolve(handler), parameters.ToArray())!;
             await (Task) result;
 
             return result.GetType().GetProperty(nameof(Task<int>.Result))!.GetGetMethod()!.Invoke(result, Array.Empty<object>())!;

@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Jobs;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Interval = Annium.Extensions.Jobs.Interval;
 
@@ -16,7 +16,7 @@ namespace Demo.Extensions.Jobs
             CancellationToken token
         )
         {
-            var resolver = provider.GetRequiredService<IIntervalResolver>();
+            var resolver = provider.Resolve<IIntervalResolver>();
 
             var isMatch = resolver.GetMatcher(Interval.Minutely);
 

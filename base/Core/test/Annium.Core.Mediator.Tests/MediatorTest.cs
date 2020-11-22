@@ -5,11 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
@@ -78,20 +76,20 @@ namespace Annium.Core.Mediator.Tests
         {
             var logHandler = new InMemoryLogHandler();
 
-            var provider = new ServiceCollection()
-                .AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant)
-                .AddLogging(route => route.For(m => m.Source == typeof(MediatorTest)).UseInMemory(logHandler))
-                .AddSingleton<Func<One, bool>>(value => value.First % 2 == 1)
-                .AddSingleton<Func<Two, bool>>(value => value.Second % 2 == 0)
-                .AddMediatorConfiguration(cfg =>
-                {
-                    foreach (var handlerType in handlerTypes)
-                        cfg.Add(handlerType);
-                })
-                .AddMediator()
-                .BuildServiceProvider();
+            var container = new ServiceContainer();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.Add<Func<One, bool>>(value => value.First % 2 == 1).Singleton();
+            container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).Singleton();
+            container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest)).UseInMemory(logHandler));
+            container.AddMediatorConfiguration(cfg =>
+            {
+                foreach (var handlerType in handlerTypes)
+                    cfg.Add(handlerType);
+            });
+            container.AddMediator();
+            var provider = container.BuildServiceProvider();
 
-            return (provider.GetRequiredService<IMediator>(), logHandler.Logs);
+            return (provider.Resolve<IMediator>(), logHandler.Logs);
         }
 
         internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>

@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Logging.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Logging
 {
@@ -14,7 +14,7 @@ namespace Demo.Logging
             CancellationToken token
         )
         {
-            var logger = provider.GetRequiredService<ILogger<Program>>();
+            var logger = provider.Resolve<ILogger<Program>>();
             logger.Debug("debug");
             logger.Trace("trace");
         }

@@ -6,12 +6,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Loader;
 using System.Threading;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Loader;
 using Annium.Core.Runtime.Types;
 using Demo.Core.Cli.Lib;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Core.Cli
 {
@@ -114,7 +114,7 @@ namespace Demo.Core.Cli
             var directory = Path.Combine(SolutionRoot, Path.GetDirectoryName(relativePath)!);
             var name = Path.GetFileNameWithoutExtension(relativePath);
 
-            var loader = provider.GetRequiredService<IAssemblyLoaderBuilder>().UseFileSystemLoader(directory).Build();
+            var loader = provider.Resolve<IAssemblyLoaderBuilder>().UseFileSystemLoader(directory).Build();
 
             var assembly = loader.Load(name);
 

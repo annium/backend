@@ -1,5 +1,5 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Logging.Abstractions.Internal
 {
@@ -12,6 +12,6 @@ namespace Annium.Logging.Abstractions.Internal
             _serviceProvider = serviceProvider;
         }
 
-        public ILogger<T> GetLogger<T>() => _serviceProvider.GetRequiredService<ILogger<T>>();
+        public ILogger<T> GetLogger<T>() => _serviceProvider.Resolve<ILogger<T>>();
     }
 }

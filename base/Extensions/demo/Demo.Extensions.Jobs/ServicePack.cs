@@ -1,15 +1,13 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Jobs
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddScheduler();
+            container.AddScheduler();
         }
     }
 }

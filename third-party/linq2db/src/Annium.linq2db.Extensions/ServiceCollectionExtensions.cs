@@ -3,8 +3,6 @@ using System.Diagnostics;
 using Annium.linq2db.Extensions;
 using Annium.Logging.Abstractions;
 using LinqToDB.Data;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceProviderExtensions
@@ -14,7 +12,7 @@ namespace Annium.Core.DependencyInjection
         )
             where TConnection : DataConnectionBase
         {
-            var logger = provider.GetRequiredService<ILogger<TConnection>>();
+            var logger = provider.Resolve<ILogger<TConnection>>();
             DataConnection.TurnTraceSwitchOn();
             DataConnection.WriteTraceLine = (message, displayName, traceLevel) => logger.Log(MapTraceLevel(traceLevel), $"{message} {displayName}");
 

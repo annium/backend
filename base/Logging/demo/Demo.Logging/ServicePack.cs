@@ -1,19 +1,17 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Logging.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Demo.Logging
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
 
-            services.AddLogging(route => route
+            container.AddLogging(route => route
                 .For(m => m.Level == LogLevel.Debug).UseConsole()
                 .For(m => m.Level == LogLevel.Trace).UseInMemory());
         }

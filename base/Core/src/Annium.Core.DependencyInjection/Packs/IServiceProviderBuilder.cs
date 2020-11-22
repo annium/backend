@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.New
+namespace Annium.Core.DependencyInjection
 {
     public interface IServiceProviderBuilder
     {

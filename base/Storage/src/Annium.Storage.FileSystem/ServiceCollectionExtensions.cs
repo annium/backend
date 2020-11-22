@@ -2,21 +2,20 @@ using System;
 using Annium.Logging.Abstractions;
 using Annium.Storage.Abstractions;
 using Annium.Storage.FileSystem;
-using Microsoft.Extensions.DependencyInjection;
 using FsStorage = Annium.Storage.FileSystem.Storage;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddFileSystemStorage(this IServiceCollection services)
+        public static IServiceContainer AddFileSystemStorage(this IServiceContainer container)
         {
             Func<IServiceProvider, Func<Configuration, FsStorage>> factory =
-                sp => configuration => new FsStorage(configuration, sp.GetRequiredService<ILogger<FsStorage>>());
+                sp => configuration => new FsStorage(configuration, sp.Resolve<ILogger<FsStorage>>());
 
-            services.AddSingleton<Func<Configuration, IStorage>>(factory);
+            container.Add<Func<Configuration, IStorage>>(factory).Singleton();
 
-            return services;
+            return container;
         }
     }
 }

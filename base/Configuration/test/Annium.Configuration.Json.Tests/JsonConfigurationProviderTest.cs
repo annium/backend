@@ -8,7 +8,6 @@ using Annium.Core.Runtime.Types;
 using Annium.Data.Models.Extensions;
 using Annium.Serialization.Json;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Configuration.Json.Tests
@@ -41,8 +40,8 @@ namespace Annium.Configuration.Json.Tests
 
                 // act
                 var provider = Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile));
-                var result = provider.GetRequiredService<Config>();
-                var nested = provider.GetRequiredService<SomeConfig>();
+                var result = provider.Resolve<Config>();
+                var nested = provider.Resolve<SomeConfig>();
 
                 // assert
                 result.IsNotDefault();

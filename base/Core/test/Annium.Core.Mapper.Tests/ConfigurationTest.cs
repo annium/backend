@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
@@ -31,12 +30,12 @@ namespace Annium.Core.Mapper.Tests
             result.At(1).As<LinkModel>().Created.IsEqual(instant.ToDateTimeUtc());
         }
 
-        private IMapper GetMapper() => new ServiceCollection()
+        private IMapper GetMapper() => new ServiceContainer()
             .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .AddProfile(ConfigureProfile)
             .BuildServiceProvider()
-            .GetRequiredService<IMapper>();
+            .Resolve<IMapper>();
 
         private void ConfigureProfile(Profile p)
         {

@@ -1,15 +1,14 @@
 using Annium.Extensions.Shell;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddShell(this IServiceCollection services)
+        public static IServiceContainer AddShell(this IServiceContainer container)
         {
-            services.AddSingleton<IShell, Shell>();
+            container.Add<IShell, Shell>().Singleton();
 
-            return services;
+            return container;
         }
     }
 }

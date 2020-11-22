@@ -6,90 +6,87 @@ using System.Threading.Tasks;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Abstractions.Internal;
 using Annium.Core.Reflection;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddConfiguration<T>(
-            this IServiceCollection services,
+        public static IServiceContainer AddConfiguration<T>(
+            this IServiceContainer container,
             Action<IConfigurationContainer> configure
         )
             where T : class, new()
         {
-            services.AddConfigurationBuilder();
+            container.AddConfigurationBuilder();
 
-            var container = new ConfigurationContainer();
-            configure(container);
+            var cfgContainer = new ConfigurationContainer();
+            configure(cfgContainer);
 
-            services.AddSingleton(sp =>
+            container.Add(sp =>
             {
-                var builder = sp.GetRequiredService<IConfigurationBuilder>();
-                builder.Add(container.Get());
+                var builder = sp.Resolve<IConfigurationBuilder>();
+                builder.Add(cfgContainer.Get());
 
                 return builder.Build<T>();
             });
 
-            Register(services, typeof(T));
+            Register(container, typeof(T));
 
-            return services;
+            return container;
         }
 
-        public static async Task<IServiceCollection> AddConfiguration<T>(
-            this IServiceCollection services,
+        public static async Task<IServiceContainer> AddConfiguration<T>(
+            this IServiceContainer container,
             Func<IConfigurationContainer, Task> configure
         )
             where T : class, new()
         {
-            services.AddConfigurationBuilder();
+            container.AddConfigurationBuilder();
 
-            var container = new ConfigurationContainer();
-            await configure(container);
+            var cfgContainer = new ConfigurationContainer();
+            await configure(cfgContainer);
 
-            services.AddSingleton(sp =>
+            container.Add(sp =>
             {
-                var builder = sp.GetRequiredService<IConfigurationBuilder>();
-                builder.Add(container.Get());
+                var builder = sp.Resolve<IConfigurationBuilder>();
+                builder.Add(cfgContainer.Get());
 
                 return builder.Build<T>();
-            });
+            }).Singleton();
 
-            Register(services, typeof(T));
+            Register(container, typeof(T));
 
-            return services;
+            return container;
         }
 
         private static void AddConfigurationBuilder(
-            this IServiceCollection services
+            this IServiceContainer container
         )
         {
-            services.TryAddTransient<IConfigurationBuilder, ConfigurationBuilder>();
-            services.TryAddTransient<Func<IConfigurationBuilder>>(sp => sp.GetRequiredService<IConfigurationBuilder>);
+            container.Add<IConfigurationBuilder, ConfigurationBuilder>().AsFactory<IConfigurationBuilder>().Transient();
         }
 
         private static void Register(
-            IServiceCollection services,
+            IServiceContainer container,
             Type type
         )
         {
             foreach (var property in GetRegisteredProperties(type))
-                Register(services, type, property);
+                Register(container, type, property);
         }
 
 
         private static void Register(
-            IServiceCollection services,
+            IServiceContainer container,
             Type type,
             PropertyInfo property
         )
         {
             var propertyType = property.PropertyType;
-            services.AddSingleton(propertyType, sp => property.GetValue(sp.GetRequiredService(type))!);
+            container.Add(propertyType, sp => property.GetValue(sp.Resolve(type))!).Singleton();
 
             foreach (var prop in GetRegisteredProperties(propertyType))
-                Register(services, propertyType, prop);
+                Register(container, propertyType, prop);
         }
 
         private static IReadOnlyCollection<PropertyInfo> GetRegisteredProperties(Type type) => type

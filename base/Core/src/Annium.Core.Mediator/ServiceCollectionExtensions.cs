@@ -2,54 +2,53 @@ using System;
 using Annium.Core.Mediator;
 using Annium.Core.Mediator.Internal;
 using Annium.Core.Runtime.Types;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMediatorConfiguration(
-            this IServiceCollection services,
+        public static IServiceContainer AddMediatorConfiguration(
+            this IServiceContainer container,
             Action<MediatorConfiguration, ITypeManager> configure
         )
         {
             var cfg = new MediatorConfiguration();
-            var typeManager = services.GetTypeManager();
+            var typeManager = container.GetTypeManager();
             configure(cfg, typeManager);
 
-            return services.AddMediatorConfiguration(cfg);
+            return container.AddMediatorConfiguration(cfg);
         }
 
-        public static IServiceCollection AddMediatorConfiguration(
-            this IServiceCollection services,
+        public static IServiceContainer AddMediatorConfiguration(
+            this IServiceContainer container,
             Action<MediatorConfiguration> configure
         )
         {
             var cfg = new MediatorConfiguration();
             configure(cfg);
 
-            return services.AddMediatorConfiguration(cfg);
+            return container.AddMediatorConfiguration(cfg);
         }
 
-        public static IServiceCollection AddMediator(this IServiceCollection services)
+        public static IServiceContainer AddMediator(this IServiceContainer container)
         {
-            services.AddSingleton<ChainBuilder>();
-            services.AddSingleton<NextBuilder>();
-            services.AddSingleton<IMediator, Mediator.Internal.Mediator>();
+            container.Add<ChainBuilder>().AsSelf().Singleton();
+            container.Add<NextBuilder>().AsSelf().Singleton();
+            container.Add<IMediator, Mediator.Internal.Mediator>().AsSelf().Singleton();
 
-            return services;
+            return container;
         }
 
-        private static IServiceCollection AddMediatorConfiguration(
-            this IServiceCollection services,
+        private static IServiceContainer AddMediatorConfiguration(
+            this IServiceContainer container,
             MediatorConfiguration cfg
         )
         {
-            services.AddSingleton(cfg);
+            container.Add(cfg).Singleton();
             foreach (var handler in cfg.Handlers)
-                services.AddScoped(handler.Implementation);
+                container.Add(handler.Implementation).AsSelf().Scoped();
 
-            return services;
+            return container;
         }
     }
 }

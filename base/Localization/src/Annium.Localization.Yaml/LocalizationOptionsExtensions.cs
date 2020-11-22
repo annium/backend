@@ -1,6 +1,5 @@
 using Annium.Localization.Abstractions;
 using Annium.Localization.Yaml;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -10,7 +9,7 @@ namespace Annium.Core.DependencyInjection
             this LocalizationOptions options
         )
         {
-            options.SetLocaleStorage(services => { services.AddSingleton<ILocaleStorage, Storage>(); });
+            options.SetLocaleStorage(container => { container.Add<ILocaleStorage, Storage>().Singleton(); });
 
             return options;
         }

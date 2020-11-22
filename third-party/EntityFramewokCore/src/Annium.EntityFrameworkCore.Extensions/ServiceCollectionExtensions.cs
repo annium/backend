@@ -7,25 +7,25 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
-            this IServiceCollection services,
+        public static IServiceContainer AddEntityFrameworkSqliteInMemory<TContext>(
+            this IServiceContainer container,
             IServiceProvider provider
         )
             where TContext : DbContext
         {
-            return services.AddEntityFrameworkSqliteInMemory<TContext>(provider.GetRequiredService<SqliteConnection>());
+            return container.AddEntityFrameworkSqliteInMemory<TContext>(provider.Resolve<SqliteConnection>());
         }
 
-        public static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
-            this IServiceCollection services
+        public static IServiceContainer AddEntityFrameworkSqliteInMemory<TContext>(
+            this IServiceContainer container
         )
             where TContext : DbContext
         {
-            return services.AddEntityFrameworkSqliteInMemory<TContext>(new SqliteConnection("Data Source=:memory:"));
+            return container.AddEntityFrameworkSqliteInMemory<TContext>(new SqliteConnection("Data Source=:memory:"));
         }
 
-        private static IServiceCollection AddEntityFrameworkSqliteInMemory<TContext>(
-            this IServiceCollection services,
+        private static IServiceContainer AddEntityFrameworkSqliteInMemory<TContext>(
+            this IServiceContainer container,
             SqliteConnection cn
         )
             where TContext : DbContext
@@ -33,13 +33,15 @@ namespace Annium.Core.DependencyInjection
             cn.Open();
 
             // register context itself
-            return services
+            container.Collection
                 .AddDbContext<TContext>(builder =>
                 {
                     var opts = builder.UseSqlite(cn).Options;
                     using var ctx = (DbContext) Activator.CreateInstance(typeof(TContext), opts)!;
                     ctx.Database.EnsureCreated();
                 });
+
+            return container;
         }
     }
 }

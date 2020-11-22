@@ -12,28 +12,28 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddTestingSqlite<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddTestingSqlite<TConnection>(
+            this IServiceContainer container,
             Assembly migrationsAssembly
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddTestingSqlite<TConnection>(
                     Assembly.GetCallingAssembly(),
                     migrationsAssembly,
-                    mappingSchema => { }
+                    _ => { }
                 );
         }
 
-        public static IServiceCollection AddTestingSqlite<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddTestingSqlite<TConnection>(
+            this IServiceContainer container,
             Assembly migrationsAssembly,
             Action<MappingSchema> configure
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddTestingSqlite<TConnection>(
                     Assembly.GetCallingAssembly(),
                     migrationsAssembly,
@@ -41,23 +41,23 @@ namespace Annium.Core.DependencyInjection
                 );
         }
 
-        public static IServiceCollection AddTestingSqlite<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddTestingSqlite<TConnection>(
+            this IServiceContainer container,
             Assembly configurationsAssembly,
             Assembly migrationsAssembly
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddTestingSqlite<TConnection>(
                     configurationsAssembly,
                     migrationsAssembly,
-                    mappingSchema => { }
+                    _ => { }
                 );
         }
 
-        public static IServiceCollection AddTestingSqlite<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddTestingSqlite<TConnection>(
+            this IServiceContainer container,
             Assembly configurationsAssembly,
             Assembly migrationsAssembly,
             Action<MappingSchema> configure
@@ -68,9 +68,9 @@ namespace Annium.Core.DependencyInjection
             mappingSchema.GetMappingBuilder(configurationsAssembly)
                 .ApplyConfigurations()
                 .SnakeCaseColumns();
-            configure?.Invoke(mappingSchema);
+            configure(mappingSchema);
 
-            services.AddSingleton(sp =>
+            container.Add(_ =>
             {
                 var testingReference = new TestingSqliteReference();
 
@@ -78,24 +78,24 @@ namespace Annium.Core.DependencyInjection
                 migrationRunner.MigrateUp();
 
                 return testingReference;
-            });
+            }).Singleton();
 
 
-            services.AddScoped(sp => (TConnection) Activator.CreateInstance(
+            container.Add(sp => (TConnection) Activator.CreateInstance(
                 typeof(TConnection),
                 ProviderName.SQLiteMS,
-                sp.GetRequiredService<TestingSqliteReference>().ConnectionString,
+                sp.Resolve<TestingSqliteReference>().ConnectionString,
                 mappingSchema
-            )!);
+            )!).Scoped();
             Configuration.Linq.AllowMultipleQuery = true;
 
-            return services;
+            return container;
         }
 
         private static IMigrationRunner CreateMigrationRunner(string connectionString, Assembly migrationsAssembly)
         {
-            var localServices = new ServiceCollection();
-            localServices
+            var container = new ServiceContainer();
+            container.Collection
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb => rb
                     .AddSQLite()
@@ -103,7 +103,7 @@ namespace Annium.Core.DependencyInjection
                     .ScanIn(migrationsAssembly).For.Migrations()
                 );
 
-            return localServices.BuildServiceProvider().GetRequiredService<IMigrationRunner>();
+            return container.BuildServiceProvider().Resolve<IMigrationRunner>();
         }
     }
 }

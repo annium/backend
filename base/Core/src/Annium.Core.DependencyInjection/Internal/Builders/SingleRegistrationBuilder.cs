@@ -27,6 +27,9 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public ISingleRegistrationBuilderBase As(Type serviceType) =>
             WithRegistration(new TypeRegistration(serviceType, _type));
 
+        public ISingleRegistrationBuilderBase AsInterfaces() =>
+            WithRegistrations(_type.GetInterfaces().Select(x => new TypeRegistration(x, _type)));
+
         public ISingleRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
             WithRegistration(new TypeKeyedRegistration(_type, _type, typeof(TKey), key));
 
@@ -51,6 +54,13 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private void Register(ServiceLifetime lifetime) => _registrator
             .Register(new[] { new TypeRegistration(_type, _type) }.Concat(_registrations).ToArray(), lifetime);
+
+        private ISingleRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
+        {
+            _registrations.AddRange(registrations);
+
+            return this;
+        }
 
         private ISingleRegistrationBuilderBase WithRegistration(IRegistration registration)
         {

@@ -56,6 +56,21 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         }
 
         [Fact]
+        public void AsInterfaces_Works()
+        {
+            // arrange
+            _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsInterfaces().Singleton();
+
+            // act
+            Build();
+
+            // assert
+            Get<IA>().Is(Get<IB>());
+            Get<IEnumerable<IA>>().At(0).AsExact<A>();
+            Get<IEnumerable<IA>>().At(1).AsExact<B>();
+        }
+
+        [Fact]
         public void AsKeyedSelf_Works()
         {
             // arrange
@@ -156,11 +171,19 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
             index[nameof(B)]().AsExact<B>();
         }
 
-        private sealed class B : A
+        private sealed class B : A, IB
         {
         }
 
-        private class A
+        private class A : IA
+        {
+        }
+
+        private interface IB : IA
+        {
+        }
+
+        private interface IA
         {
         }
     }

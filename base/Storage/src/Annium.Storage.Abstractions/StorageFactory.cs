@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Storage.Abstractions
 {
@@ -22,7 +22,7 @@ namespace Annium.Storage.Abstractions
 
             var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(IStorage));
 
-            var factory = (Delegate) _provider.GetRequiredService(factoryType);
+            var factory = (Delegate) _provider.Resolve(factoryType);
 
             try
             {

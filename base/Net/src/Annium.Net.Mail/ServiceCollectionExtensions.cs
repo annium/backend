@@ -1,22 +1,21 @@
 using Annium.Net.Mail;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddEmailService(this IServiceCollection services)
+        public static IServiceContainer AddEmailService(this IServiceContainer container)
         {
-            services.AddSingleton<IEmailService, EmailService>();
+            container.Add<IEmailService, EmailService>().Singleton();
 
-            return services;
+            return container;
         }
 
-        public static IServiceCollection AddTestEmailService(this IServiceCollection services, TestEmailService service)
+        public static IServiceContainer AddTestEmailService(this IServiceContainer container, TestEmailService service)
         {
-            services.AddSingleton<IEmailService>(service);
+            container.Add<IEmailService>(service).Singleton();
 
-            return services;
+            return container;
         }
     }
 }

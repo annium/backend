@@ -9,8 +9,6 @@ using Annium.Data.Operations;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Requests;
 using Demo.Core.Mediator.ViewModels;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Demo.Core.Mediator
 {
     public class Program
@@ -21,8 +19,8 @@ namespace Demo.Core.Mediator
             CancellationToken token
         )
         {
-            var mediator = provider.GetRequiredService<IMediator>();
-            _ = provider.GetRequiredService<TodoRepository>();
+            var mediator = provider.Resolve<IMediator>();
+            _ = provider.Resolve<TodoRepository>();
 
             var options = new JsonSerializerOptions().ConfigureForOperations();
 

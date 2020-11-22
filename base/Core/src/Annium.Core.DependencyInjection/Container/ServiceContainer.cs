@@ -28,8 +28,8 @@ namespace Annium.Core.DependencyInjection
         public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) =>
             new BulkRegistrationBuilder(types, Register);
 
-        public IFactoryRegistrationBuilderBase Add<T>(Func<IServiceProvider, T> factory) where T : class =>
-            new FactoryRegistrationBuilder(typeof(T), factory, Register);
+        public IFactoryRegistrationBuilderBase Add(Type type, Func<IServiceProvider, object> factory) =>
+            new FactoryRegistrationBuilder(type, factory, Register);
 
         public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class =>
             new InstanceRegistrationBuilder(typeof(T), instance, Register);

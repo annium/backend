@@ -1,16 +1,14 @@
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Validation;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Validation
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Configure(IServiceCollection services)
+        public override void Configure(IServiceContainer container)
         {
-            services.AddLocalization(opts => opts.UseInMemoryStorage());
-            services.AddValidation();
+            container.AddLocalization(opts => opts.UseInMemoryStorage());
+            container.AddValidation();
         }
     }
 

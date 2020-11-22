@@ -2,21 +2,20 @@ using System;
 using Annium.Logging.Abstractions;
 using Annium.Storage.Abstractions;
 using Annium.Storage.InMemory;
-using Microsoft.Extensions.DependencyInjection;
 using MemoryStorage = Annium.Storage.InMemory.Storage;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddInMemoryStorage(this IServiceCollection services)
+        public static IServiceContainer AddInMemoryStorage(this IServiceContainer container)
         {
             Func<IServiceProvider, Func<Configuration, MemoryStorage>> factory =
-                sp => configuration => new MemoryStorage(configuration, sp.GetRequiredService<ILogger<MemoryStorage>>());
+                sp => configuration => new MemoryStorage(configuration, sp.Resolve<ILogger<MemoryStorage>>());
 
-            services.AddSingleton<Func<Configuration, IStorage>>(factory);
+            container.Add<Func<Configuration, IStorage>>(factory).Singleton();
 
-            return services;
+            return container;
         }
     }
 }

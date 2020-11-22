@@ -20,11 +20,29 @@ namespace Annium.Core.DependencyInjection
             throw new NotSupportedException($"{descriptor} has unsupported configuration");
         }
 
+        public static ITypeServiceDescriptor Type<TService, TImplementation>(ServiceLifetime lifetime)
+            where TImplementation : TService
+            => new TypeServiceDescriptor
+            {
+                ServiceType = typeof(TService),
+                ImplementationType = typeof(TImplementation),
+                Lifetime = lifetime,
+            };
+
         public static ITypeServiceDescriptor Type(Type serviceType, Type implementationType, ServiceLifetime lifetime)
             => new TypeServiceDescriptor
             {
                 ServiceType = serviceType,
                 ImplementationType = implementationType,
+                Lifetime = lifetime,
+            };
+
+        public static IFactoryServiceDescriptor Factory<T>(Func<IServiceProvider, T> implementationFactory, ServiceLifetime lifetime)
+            where T : class
+            => new FactoryServiceDescriptor
+            {
+                ServiceType = typeof(T),
+                ImplementationFactory = implementationFactory,
                 Lifetime = lifetime,
             };
 
@@ -34,6 +52,15 @@ namespace Annium.Core.DependencyInjection
                 ServiceType = serviceType,
                 ImplementationFactory = implementationFactory,
                 Lifetime = lifetime,
+            };
+
+        public static IInstanceServiceDescriptor Instance<T>(T implementationInstance, ServiceLifetime lifetime)
+            where T : notnull
+            => new InstanceServiceDescriptor
+            {
+                ServiceType = typeof(T),
+                ImplementationInstance = implementationInstance,
+                Lifetime = lifetime
             };
 
         public static IInstanceServiceDescriptor Instance(Type serviceType, object implementationInstance, ServiceLifetime lifetime)
@@ -48,21 +75,21 @@ namespace Annium.Core.DependencyInjection
     internal sealed record TypeServiceDescriptor : ITypeServiceDescriptor
     {
         public ServiceLifetime Lifetime { get; init; }
-        public Type ServiceType { get; init; }
-        public Type ImplementationType { get; init; }
+        public Type ServiceType { get; init; } = default!;
+        public Type ImplementationType { get; init; } = default!;
     }
 
     internal sealed record FactoryServiceDescriptor : IFactoryServiceDescriptor
     {
         public ServiceLifetime Lifetime { get; init; }
-        public Type ServiceType { get; init; }
-        public Func<IServiceProvider, object> ImplementationFactory { get; init; }
+        public Type ServiceType { get; init; } = default!;
+        public Func<IServiceProvider, object> ImplementationFactory { get; init; } = default!;
     }
 
     internal sealed record InstanceServiceDescriptor : IInstanceServiceDescriptor
     {
         public ServiceLifetime Lifetime { get; init; }
-        public Type ServiceType { get; init; }
-        public object ImplementationInstance { get; init; }
+        public Type ServiceType { get; init; } = default!;
+        public object ImplementationInstance { get; init; } = default!;
     }
 }

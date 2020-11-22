@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Configuration.CommandLine.Tests
@@ -24,8 +24,8 @@ namespace Annium.Configuration.CommandLine.Tests
 
             // act
             var provider = Helper.GetProvider<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
-            var result = provider.GetRequiredService<Config>();
-            var nested = provider.GetRequiredService<Val>();
+            var result = provider.Resolve<Config>();
+            var nested = provider.Resolve<Val>();
 
             // assert
             result.IsNotDefault();

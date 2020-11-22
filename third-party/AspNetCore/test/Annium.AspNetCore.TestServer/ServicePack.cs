@@ -1,24 +1,22 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.AspNetCore.TestServer
 {
     public class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
             // register and setup services
-            services.AddRuntimeTools(GetType().Assembly, true);
-            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
-            services.AddHttpRequestFactory();
-            services.AddMediatorConfiguration(ConfigureMediator);
-            services.AddMediator();
-            services.AddLogging(route => route.UseInMemory());
+            container.AddRuntimeTools(GetType().Assembly, true);
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddHttpRequestFactory();
+            container.AddMediatorConfiguration(ConfigureMediator);
+            container.AddMediator();
+            container.AddLogging(route => route.UseInMemory());
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager typeManager)

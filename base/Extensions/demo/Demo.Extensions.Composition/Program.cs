@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Composition;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Composition
 {
@@ -15,7 +15,7 @@ namespace Demo.Extensions.Composition
             CancellationToken token
         )
         {
-            var composer = provider.GetRequiredService<IComposer<User>>();
+            var composer = provider.Resolve<IComposer<User>>();
 
             var value = new User();
             var result = await composer.ComposeAsync(value);

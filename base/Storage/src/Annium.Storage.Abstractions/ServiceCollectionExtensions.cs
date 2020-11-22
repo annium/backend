@@ -1,15 +1,14 @@
 using Annium.Storage.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddStorage(this IServiceCollection services)
+        public static IServiceContainer AddStorage(this IServiceContainer container)
         {
-            services.AddSingleton<IStorageFactory, StorageFactory>();
+            container.Add<IStorageFactory, StorageFactory>().Singleton();
 
-            return services;
+            return container;
         }
     }
 }

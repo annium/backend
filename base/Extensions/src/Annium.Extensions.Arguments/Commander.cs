@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Extensions.Arguments
 {
@@ -16,8 +16,8 @@ namespace Annium.Extensions.Arguments
         public void Run<TGroup>(string[] args, CancellationToken token = default)
             where TGroup : Group
         {
-            var group = _provider.GetRequiredService<TGroup>();
-            group.SetRoot(_provider.GetRequiredService<Root>());
+            var group = _provider.Resolve<TGroup>();
+            group.SetRoot(_provider.Resolve<Root>());
             group.Process(group.Id, args, token);
         }
     }

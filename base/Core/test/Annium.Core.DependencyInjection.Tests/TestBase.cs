@@ -1,6 +1,4 @@
 using System;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Annium.Core.DependencyInjection.Tests
 {
     public class TestBase
@@ -16,7 +14,7 @@ namespace Annium.Core.DependencyInjection.Tests
         protected T Get<T>()
             where T : notnull
         {
-            return _provider.GetRequiredService<T>();
+            return _provider.Resolve<T>();
         }
     }
 }

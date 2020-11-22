@@ -1,23 +1,21 @@
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Validation;
 using Annium.Extensions.Validation.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddValidation(this IServiceCollection services)
+        public static IServiceContainer AddValidation(this IServiceContainer container)
         {
-            services.AddAllTypes()
+            container.AddAll()
                 .AssignableTo(typeof(Validator<>))
                 .Where(x => !x.IsGenericType)
-                .AsImplementedInterfaces()
-                .InstancePerScope();
+                .AsInterfaces()
+                .Scoped();
 
-            services.AddScoped(typeof(IValidator<>), typeof(ValidationExecutor<>));
+            container.Add(typeof(ValidationExecutor<>)).As(typeof(IValidator<>)).Scoped();
 
-            return services;
+            return container;
         }
     }
 }

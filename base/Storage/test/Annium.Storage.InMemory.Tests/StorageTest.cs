@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
@@ -137,14 +136,14 @@ namespace Annium.Storage.InMemory.Tests
 
         private IStorage GetStorage()
         {
-            var services = new ServiceCollection();
-            services.AddStorage().AddInMemoryStorage();
-            services.AddLogging(route => route.UseInMemory());
-            services.AddSingleton<Func<Instant>>(() => Instant.MinValue);
+            var container = new ServiceContainer();
+            container.AddStorage().AddInMemoryStorage();
+            container.AddLogging(route => route.UseInMemory());
+            container.Add<Func<Instant>>(() => Instant.MinValue).Singleton();
 
-            var provider = services.BuildServiceProvider();
+            var provider = container.BuildServiceProvider();
 
-            var factory = provider.GetRequiredService<IStorageFactory>();
+            var factory = provider.Resolve<IStorageFactory>();
 
             return factory.CreateStorage(new Configuration());
         }

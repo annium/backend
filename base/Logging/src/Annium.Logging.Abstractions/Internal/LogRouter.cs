@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Logging.Abstractions.Internal
@@ -40,7 +40,7 @@ namespace Annium.Logging.Abstractions.Internal
                 if (_handlers.TryGetValue(route, out var handler))
                     return handler;
 
-                return _handlers[route] = (ILogHandler) _provider.GetRequiredService(route.Service!.ServiceType);
+                return _handlers[route] = (ILogHandler) _provider.Resolve(route.Service!.ServiceType);
             }
         }
     }

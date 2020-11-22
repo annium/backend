@@ -1,16 +1,14 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Testing.TestAdapter
 {
     public class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddSingleton(new TestConverter(Constants.ExecutorUri));
-            services.AddSingleton<TestResultConverter>();
+            container.Add(new TestConverter(Constants.ExecutorUri)).Singleton();
+            container.Add<TestResultConverter>().Singleton();
         }
     }
 }

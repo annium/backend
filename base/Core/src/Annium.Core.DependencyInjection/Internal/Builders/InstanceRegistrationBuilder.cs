@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
@@ -29,6 +30,9 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IInstanceRegistrationBuilderBase As(Type serviceType) =>
             WithRegistration(new InstanceRegistration(serviceType, _instance));
 
+        public IInstanceRegistrationBuilderBase AsInterfaces() =>
+            WithRegistrations(_type.GetInterfaces().Select(x => new TypeRegistration(x, _type)));
+
         public IInstanceRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
             WithRegistration(new InstanceKeyedRegistration(_type, _instance, typeof(TKey), key));
 
@@ -48,6 +52,13 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             WithRegistration(new InstanceKeyedFactoryRegistration(serviceType, _instance, typeof(TKey), key));
 
         public void Singleton() => _registrator.Register(_registrations, ServiceLifetime.Singleton);
+
+        private IInstanceRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
+        {
+            _registrations.AddRange(registrations);
+
+            return this;
+        }
 
         private IInstanceRegistrationBuilderBase WithRegistration(IRegistration registration)
         {

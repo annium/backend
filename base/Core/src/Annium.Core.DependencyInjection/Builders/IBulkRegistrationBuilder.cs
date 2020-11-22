@@ -11,6 +11,7 @@ namespace Annium.Core.DependencyInjection
     {
         IBulkRegistrationBuilderTarget AsSelf();
         IBulkRegistrationBuilderTarget As(Type serviceType);
+        IBulkRegistrationBuilderTarget AsInterfaces();
         IBulkRegistrationBuilderTarget AsKeyedSelf<TKey>(Func<Type, TKey> getKey) where TKey : notnull;
         IBulkRegistrationBuilderTarget AsKeyed<TKey>(Type serviceType, Func<Type, TKey> getKey) where TKey : notnull;
         IBulkRegistrationBuilderTarget AsSelfFactory();

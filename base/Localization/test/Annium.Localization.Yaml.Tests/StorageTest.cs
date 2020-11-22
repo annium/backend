@@ -2,7 +2,6 @@ using System.Globalization;
 using Annium.Core.DependencyInjection;
 using Annium.Localization.Abstractions;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Localization.Yaml.Tests
@@ -28,11 +27,11 @@ namespace Annium.Localization.Yaml.Tests
 
         private ILocalizer<StorageTest> GetLocalizer()
         {
-            var services = new ServiceCollection();
+            var container = new ServiceContainer();
 
-            services.AddLocalization(opts => opts.UseYamlStorage());
+            container.AddLocalization(opts => opts.UseYamlStorage());
 
-            return services.BuildServiceProvider().GetRequiredService<ILocalizer<StorageTest>>();
+            return container.BuildServiceProvider().Resolve<ILocalizer<StorageTest>>();
         }
     }
 }

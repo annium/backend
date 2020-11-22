@@ -1,21 +1,19 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Runtime.Types;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Core.WebAssembly
 {
     public class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddRuntimeTools(GetType().Assembly, false);
+            container.AddRuntimeTools(GetType().Assembly, false);
         }
 
         public override void Setup(IServiceProvider provider)
         {
-            var typeManager = provider.GetRequiredService<ITypeManager>();
+            var typeManager = provider.Resolve<ITypeManager>();
             Console.WriteLine($"TypeManager has {typeManager.Types.Count} types");
         }
     }

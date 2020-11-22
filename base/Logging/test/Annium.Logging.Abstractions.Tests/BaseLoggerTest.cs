@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
@@ -129,16 +128,16 @@ namespace Annium.Logging.Abstractions.Tests
 
         private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
         {
-            var services = new ServiceCollection();
+            var container = new ServiceContainer();
 
-            services.AddSingleton<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60));
+            container.Add<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60)).Singleton();
 
-            services.AddLogging(route => route
+            container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
-                .Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(new LogHandler(_messages)))
+                .Use(ServiceDescriptor.Instance(new LogHandler(_messages), ServiceLifetime.Singleton))
             );
 
-            return services.BuildServiceProvider().GetRequiredService<ILogger<BaseLoggerTest>>();
+            return container.BuildServiceProvider().Resolve<ILogger<BaseLoggerTest>>();
         }
     }
 

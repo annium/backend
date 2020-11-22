@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Abstractions.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLogging(
-            this IServiceCollection services,
+        public static IServiceContainer AddLogging(
+            this IServiceContainer container,
             Action<LogRoute> configure
         )
         {
@@ -18,19 +17,19 @@ namespace Annium.Core.DependencyInjection
             configure(new LogRoute(routes.Add));
             routes = routes.Where(r => r.Service != null).ToList();
 
-            services.AddSingleton<IEnumerable<LogRoute>>(routes);
+            container.Add<IEnumerable<LogRoute>>(routes).Singleton();
 
             foreach (var route in routes)
             {
                 if (route.Service != null)
-                    services.Add(route.Service);
+                    container.Add(route.Service);
             }
 
-            services.AddScoped(typeof(ILogger<>), typeof(Logger<>));
-            services.AddScoped<ILoggerFactory, LoggerFactory>();
-            services.AddScoped<ILogRouter, LogRouter>();
+            container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).Scoped();
+            container.Add<ILoggerFactory, LoggerFactory>().Scoped();
+            container.Add<ILogRouter, LogRouter>().Scoped();
 
-            return services;
+            return container;
         }
     }
 }

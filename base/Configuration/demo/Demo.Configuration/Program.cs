@@ -9,7 +9,6 @@ using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
 using Demo.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using YamlDotNet.Serialization;
 
 namespace Demo.Configuration
@@ -37,7 +36,7 @@ namespace Demo.Configuration
                 [new[] { "abstract_config", "type" }] = "ConfigOne",
                 [new[] { "abstract_config", "value" }] = "14"
             };
-            Helper.GetProvider<Config>(builder => builder.Add(cfg)).GetRequiredService<Config>();
+            Helper.GetProvider<Config>(builder => builder.Add(cfg)).Resolve<Config>();
         }
 
         private static void TestCli()
@@ -74,7 +73,7 @@ namespace Demo.Configuration
                 var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
-                Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile)).GetRequiredService<Config>();
+                Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile)).Resolve<Config>();
             }
             finally
             {
@@ -103,7 +102,7 @@ namespace Demo.Configuration
                 var serializer = new SerializerBuilder().Build();
                 File.WriteAllText(yamlFile, serializer.Serialize(cfg));
 
-                Helper.GetProvider<Config>(builder => builder.AddYamlFile(yamlFile)).GetRequiredService<Config>();
+                Helper.GetProvider<Config>(builder => builder.AddYamlFile(yamlFile)).Resolve<Config>();
             }
             finally
             {

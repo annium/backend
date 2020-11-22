@@ -4,10 +4,10 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Reflection;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Extensions.Composition.Internal
 {
@@ -28,7 +28,7 @@ namespace Annium.Extensions.Composition.Internal
         )
         {
             _composers = ComposerSets
-                .Select(s => (IEnumerable<ICompositionContainer<TValue>>) serviceProvider.GetRequiredService(s))
+                .Select(s => (IEnumerable<ICompositionContainer<TValue>>) serviceProvider.Resolve(s))
                 .SelectMany(v => v)
                 .ToArray();
 
@@ -37,7 +37,7 @@ namespace Annium.Extensions.Composition.Internal
                 throw new InvalidOperationException(
                     $@"{typeof(TValue)} has {duplicates.Count} properties with multiple loaders:{Environment.NewLine}{string.Join(Environment.NewLine, duplicates.Select(p => $"{p.Key.Name}: {string.Join(", ", p.Value)}"))}");
 
-            _localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
+            _localizer = serviceProvider.Resolve<ILocalizer<TValue>>();
         }
 
         public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "")

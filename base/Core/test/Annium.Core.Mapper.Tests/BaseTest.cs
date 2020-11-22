@@ -1,7 +1,6 @@
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Core.Mapper.Tests
@@ -99,11 +98,11 @@ namespace Annium.Core.Mapper.Tests
             result.Value.IsEqual(value.Value);
         }
 
-        private IMapper GetMapper() => new ServiceCollection()
+        private IMapper GetMapper() => new ServiceContainer()
             .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .BuildServiceProvider()
-            .GetRequiredService<IMapper>();
+            .Resolve<IMapper>();
 
         private class A
         {

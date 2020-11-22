@@ -2,8 +2,6 @@ using System;
 using System.Reflection;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Annium.Configuration.Tests
 {
     public static class Helper
@@ -13,12 +11,12 @@ namespace Annium.Configuration.Tests
         )
             where T : class, new()
         {
-            var services = new ServiceCollection();
-            services.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
-            services.AddMapper();
-            services.AddConfiguration<T>(configure);
+            var container = new ServiceContainer();
+            container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+            container.AddMapper();
+            container.AddConfiguration<T>(configure);
 
-            var provider = services.BuildServiceProvider();
+            var provider = container.BuildServiceProvider();
 
             return provider;
         }

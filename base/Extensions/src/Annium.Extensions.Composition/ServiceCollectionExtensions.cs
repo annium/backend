@@ -1,23 +1,21 @@
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Extensions.Composition;
 using Annium.Extensions.Composition.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddComposition(this IServiceCollection services)
+        public static IServiceContainer AddComposition(this IServiceContainer container)
         {
-            services.AddAllTypes()
+            container.AddAll()
                 .AssignableTo(typeof(Composer<>))
                 .Where(x => !x.IsGenericType)
-                .AsImplementedInterfaces()
-                .InstancePerScope();
+                .AsInterfaces()
+                .Scoped();
 
-            services.AddScoped(typeof(IComposer<>), typeof(CompositionExecutor<>));
+            container.Add(typeof(CompositionExecutor<>)).As(typeof(IComposer<>)).Scoped();
 
-            return services;
+            return container;
         }
     }
 }

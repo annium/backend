@@ -1,17 +1,16 @@
 using Annium.Net.Http;
 using Annium.Net.Http.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddHttpRequestFactory(this IServiceCollection services)
+        public static IServiceContainer AddHttpRequestFactory(this IServiceContainer container)
         {
-            services.AddSingleton<IHttpRequestFactory, HttpRequestFactory>();
-            services.AddSingleton<IHttpContentSerializer, HttpContentSerializer>();
+            container.Add<IHttpRequestFactory, HttpRequestFactory>().Singleton();
+            container.Add<IHttpContentSerializer, HttpContentSerializer>().Singleton();
 
-            return services;
+            return container;
         }
     }
 }

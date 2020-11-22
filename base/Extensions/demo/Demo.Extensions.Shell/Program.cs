@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Shell;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Shell
 {
@@ -16,7 +16,7 @@ namespace Demo.Extensions.Shell
             CancellationToken token
         )
         {
-            var shell = provider.GetRequiredService<IShell>();
+            var shell = provider.Resolve<IShell>();
             var ls = await shell
                 .Cmd("ls")
                 .Configure(new ProcessStartInfo { WorkingDirectory = "/" })

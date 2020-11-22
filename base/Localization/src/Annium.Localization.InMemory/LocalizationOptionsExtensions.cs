@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Annium.Localization.Abstractions;
 using Annium.Localization.InMemoryStorage;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -20,10 +19,10 @@ namespace Annium.Core.DependencyInjection
             IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
         )
         {
-            options.SetLocaleStorage(services =>
+            options.SetLocaleStorage(container =>
             {
                 var storage = new Storage(locales ?? new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>());
-                services.AddSingleton<ILocaleStorage>(storage);
+                container.Add<ILocaleStorage>(storage).Singleton();
             });
 
             return options;

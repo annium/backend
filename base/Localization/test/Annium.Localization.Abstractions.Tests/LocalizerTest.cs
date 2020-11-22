@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Localization.Abstractions.Tests
@@ -88,15 +87,15 @@ namespace Annium.Localization.Abstractions.Tests
 
         private ILocalizer<LocalizerTest> GetLocalizer(Action<LocalizationOptions> configure)
         {
-            var services = new ServiceCollection();
+            var container = new ServiceContainer();
 
             var locales = new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
             locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string> { { "test", "demo" }, { "test params", "demo {0}" } };
             locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string> { { "test", "демо" }, { "test params", "демо {0}" } };
 
-            services.AddLocalization(opts => configure(opts.UseInMemoryStorage(locales)));
+            container.AddLocalization(opts => configure(opts.UseInMemoryStorage(locales)));
 
-            return services.BuildServiceProvider().GetRequiredService<ILocalizer<LocalizerTest>>();
+            return container.BuildServiceProvider().Resolve<ILocalizer<LocalizerTest>>();
         }
     }
 }

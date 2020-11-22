@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Primitives;
 using Annium.Net.Http;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting
@@ -30,14 +28,14 @@ namespace Annium.AspNetCore.IntegrationTesting
 
         protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder,
-            Action<IServiceCollection> configureServices
+            Action<IServiceContainer> configureServices
         )
             where TStartup : class
         {
             return GetRequestBase<TStartup>(hostBuilder =>
             {
                 var serviceProviderFactory = new ServiceProviderFactory(configureBuilder);
-                hostBuilder.ConfigureServices((ctx, services) => configureServices(services));
+                hostBuilder.ConfigureServices((ctx, services) => configureServices(new ServiceContainer(services)));
                 hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
             });
         }
@@ -53,7 +51,7 @@ namespace Annium.AspNetCore.IntegrationTesting
 
         protected IHttpRequest GetRequest<TStartup>(
             Action<IServiceProviderBuilder> configureBuilder,
-            Action<IServiceCollection> configureServices,
+            Action<IServiceContainer> configureServices,
             Func<IHttpRequest, IHttpRequest> configureRequest
         )
             where TStartup : class
@@ -67,7 +65,7 @@ namespace Annium.AspNetCore.IntegrationTesting
                 var appFactory = new TestWebApplicationFactory<TStartup>(configureHost);
                 _disposable.Add(appFactory);
                 var client = appFactory.CreateClient();
-                var requestFactory = appFactory.Services.GetRequiredService<IHttpRequestFactory>();
+                var requestFactory = appFactory.Services.Resolve<IHttpRequestFactory>();
 
                 return requestFactory.New().UseClient(client);
             }).Clone();

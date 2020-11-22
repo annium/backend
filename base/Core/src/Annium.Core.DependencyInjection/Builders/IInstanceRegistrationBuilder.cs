@@ -6,6 +6,7 @@ namespace Annium.Core.DependencyInjection
     {
         IInstanceRegistrationBuilderBase AsSelf();
         IInstanceRegistrationBuilderBase As(Type serviceType);
+        IInstanceRegistrationBuilderBase AsInterfaces();
         IInstanceRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull;
         IInstanceRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull;
         IInstanceRegistrationBuilderBase AsSelfFactory();

@@ -30,6 +30,9 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IBulkRegistrationBuilderTarget As(Type serviceType) =>
             WithRegistration(type => new TypeRegistration(serviceType, type));
 
+        public IBulkRegistrationBuilderTarget AsInterfaces() =>
+            WithRegistrations(type => type.GetInterfaces().Select(x => new TypeRegistration(x, type)));
+
         public IBulkRegistrationBuilderTarget AsKeyedSelf<TKey>(Func<Type, TKey> getKey) where TKey : notnull =>
             WithRegistration(type => new TypeKeyedRegistration(type, type, typeof(TKey), getKey(type)));
 
@@ -54,6 +57,13 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private void Register(ServiceLifetime lifetime) => _registrator
             .Register(_types.Select(x => new TypeRegistration(x, x)).ToArray().Concat(_registrations).ToArray(), lifetime);
+
+        private IBulkRegistrationBuilderTarget WithRegistrations(Func<Type, IEnumerable<IRegistration>> createRegistrations)
+        {
+            _registrations.AddRange(_types.SelectMany(createRegistrations));
+
+            return this;
+        }
 
         private IBulkRegistrationBuilderTarget WithRegistration(Func<Type, IRegistration> createRegistration)
         {

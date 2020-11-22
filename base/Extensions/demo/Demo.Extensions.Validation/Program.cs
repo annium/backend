@@ -1,9 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Validation;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Extensions.Validation
 {
@@ -15,7 +15,7 @@ namespace Demo.Extensions.Validation
             CancellationToken token
         )
         {
-            var validator = provider.GetRequiredService<IValidator<User>>();
+            var validator = provider.Resolve<IValidator<User>>();
 
             var value = new User();
             var result = await validator.ValidateAsync(value);

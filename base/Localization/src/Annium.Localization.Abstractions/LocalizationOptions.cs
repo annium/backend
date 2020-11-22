@@ -1,21 +1,21 @@
 using System;
 using System.Globalization;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Localization.Abstractions
 {
     public class LocalizationOptions
     {
-        internal IServiceCollection LocaleStorageServices { get; private set; } = new ServiceCollection();
+        internal IServiceContainer LocaleStorageServices { get; private set; } = new ServiceContainer();
         internal Func<CultureInfo> CultureAccessor { get; private set; } = () => CultureInfo.CurrentCulture;
 
         internal LocalizationOptions()
         {
         }
 
-        public LocalizationOptions SetLocaleStorage(Action<IServiceCollection> configure)
+        public LocalizationOptions SetLocaleStorage(Action<IServiceContainer> configure)
         {
-            configure(LocaleStorageServices = new ServiceCollection());
+            configure(LocaleStorageServices = new ServiceContainer());
 
             return this;
         }

@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
+using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using YamlDotNet.Serialization;
 
@@ -38,8 +38,8 @@ namespace Annium.Configuration.Yaml.Tests
 
                 // act
                 var provider = Helper.GetProvider<Config>(builder => builder.AddYamlFile(yamlFile));
-                var result = provider.GetRequiredService<Config>();
-                var nested = provider.GetRequiredService<SomeConfig>();
+                var result = provider.Resolve<Config>();
+                var nested = provider.Resolve<SomeConfig>();
 
                 // assert
                 result.IsNotDefault();

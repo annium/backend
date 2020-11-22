@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
 using Annium.Testing.Executors;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Testing
 {

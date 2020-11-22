@@ -1,19 +1,18 @@
 using Annium.Extensions.Arguments;
 using Annium.Extensions.Arguments.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static void AddArguments(this IServiceCollection services)
+        public static void AddArguments(this IServiceContainer container)
         {
-            services.AddSingleton<IArgumentProcessor, ArgumentProcessor>();
-            services.AddSingleton<IConfigurationBuilder, ConfigurationBuilder>();
-            services.AddSingleton<IConfigurationProcessor, ConfigurationProcessor>();
-            services.AddSingleton<IHelpBuilder, HelpBuilder>();
-            services.AddSingleton<Commander>();
-            services.AddSingleton<Root>();
+            container.Add<IArgumentProcessor, ArgumentProcessor>().Singleton();
+            container.Add<IConfigurationBuilder, ConfigurationBuilder>().Singleton();
+            container.Add<IConfigurationProcessor, ConfigurationProcessor>().Singleton();
+            container.Add<IHelpBuilder, HelpBuilder>().Singleton();
+            container.Add<Commander>().Singleton();
+            container.Add<Root>().Singleton();
         }
     }
 }

@@ -5,34 +5,33 @@ using Annium.linq2db.PostgreSql;
 using LinqToDB;
 using LinqToDB.Common;
 using LinqToDB.Mapping;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddPostgreSql<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddPostgreSql<TConnection>(
+            this IServiceContainer container,
             IPostgreSqlConfiguration cfg
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddPostgreSql<TConnection>(
                     Assembly.GetCallingAssembly(),
                     cfg,
-                    mappingSchema => { }
+                    _ => { }
                 );
         }
 
-        public static IServiceCollection AddPostgreSql<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddPostgreSql<TConnection>(
+            this IServiceContainer container,
             IPostgreSqlConfiguration cfg,
             Action<MappingSchema> configure
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddPostgreSql<TConnection>(
                     Assembly.GetCallingAssembly(),
                     cfg,
@@ -40,23 +39,23 @@ namespace Annium.Core.DependencyInjection
                 );
         }
 
-        public static IServiceCollection AddPostgreSql<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddPostgreSql<TConnection>(
+            this IServiceContainer container,
             Assembly configurationsAssembly,
             IPostgreSqlConfiguration cfg
         )
             where TConnection : DataConnectionBase
         {
-            return services
+            return container
                 .AddPostgreSql<TConnection>(
                     configurationsAssembly,
                     cfg,
-                    mappingSchema => { }
+                    _ => { }
                 );
         }
 
-        public static IServiceCollection AddPostgreSql<TConnection>(
-            this IServiceCollection services,
+        public static IServiceContainer AddPostgreSql<TConnection>(
+            this IServiceContainer container,
             Assembly configurationsAssembly,
             IPostgreSqlConfiguration cfg,
             Action<MappingSchema> configure
@@ -69,7 +68,7 @@ namespace Annium.Core.DependencyInjection
                 .SnakeCaseColumns();
             configure(mappingSchema);
 
-            services.AddScoped(sp => (TConnection) Activator.CreateInstance(
+            container.Add(_ => (TConnection) Activator.CreateInstance(
                 typeof(TConnection),
                 ProviderName.PostgreSQL95,
                 string.Join(
@@ -83,10 +82,10 @@ namespace Annium.Core.DependencyInjection
                     "Trust Server Certificate=true"
                 ),
                 mappingSchema
-            )!);
+            )!).Scoped();
             Configuration.Linq.AllowMultipleQuery = true;
 
-            return services;
+            return container;
         }
     }
 }

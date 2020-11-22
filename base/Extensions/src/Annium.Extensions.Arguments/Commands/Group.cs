@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Annium.Extensions.Arguments.Internal;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Extensions.Arguments
 {
@@ -22,7 +22,7 @@ namespace Annium.Extensions.Arguments
         public override void Process(string command, string[] args, CancellationToken token)
         {
             var root = Root!;
-            var commands = _commands.Select(root.Provider.GetRequiredService).OfType<CommandBase>().ToArray();
+            var commands = _commands.Select(root.Provider.Resolve).OfType<CommandBase>().ToArray();
             CommandBase? cmd;
 
             // if any args - try to find command by id and execute it

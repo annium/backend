@@ -1,35 +1,33 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Testing.Executors;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Testing
 {
     public class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
 
             // components
-            services.AddSingleton<TestDiscoverer>();
-            services.AddSingleton<TestExecutor>();
+            container.Add<TestDiscoverer>().Singleton();
+            container.Add<TestExecutor>().Singleton();
 
             // executors
-            services.AddSingleton<PipelineExecutor>();
-            services.AddSingleton<ITestExecutor, SkippedExecutor>();
-            services.AddSingleton<ITestExecutor, SetupExecutor>();
-            services.AddSingleton<ITestExecutor, BeforeExecutor>();
-            services.AddSingleton<ITestExecutor, BodyExecutor>();
-            services.AddSingleton<ITestExecutor, AfterExecutor>();
-            services.AddSingleton<MethodExecutor>();
+            container.Add<PipelineExecutor>().Singleton();
+            container.Add<ITestExecutor, SkippedExecutor>().Singleton();
+            container.Add<ITestExecutor, SetupExecutor>().Singleton();
+            container.Add<ITestExecutor, BeforeExecutor>().Singleton();
+            container.Add<ITestExecutor, BodyExecutor>().Singleton();
+            container.Add<ITestExecutor, AfterExecutor>().Singleton();
+            container.Add<MethodExecutor>().Singleton();
 
             // tools
-            services.AddLogging(route =>
+            container.AddLogging(route =>
             {
-                var cfg = provider.GetService<TestingConfiguration>();
+                var cfg = provider.Resolve<TestingConfiguration>();
                 if (cfg is null)
                     route.UseConsole();
                 else

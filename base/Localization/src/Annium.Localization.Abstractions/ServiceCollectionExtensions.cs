@@ -1,13 +1,12 @@
 using System;
 using Annium.Localization.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddLocalization(
-            this IServiceCollection services,
+        public static IServiceContainer AddLocalization(
+            this IServiceContainer container,
             Action<LocalizationOptions> configure
         )
         {
@@ -15,13 +14,13 @@ namespace Annium.Core.DependencyInjection
             configure(options);
 
             foreach (var service in options.LocaleStorageServices)
-                services.Add(service);
+                container.Add(service);
 
-            services.AddSingleton(options.CultureAccessor);
+            container.Add(options.CultureAccessor).Singleton();
 
-            services.AddSingleton(typeof(ILocalizer<>), typeof(Localizer<>));
+            container.Add(typeof(Localizer<>)).As(typeof(ILocalizer<>)).Singleton();
 
-            return services;
+            return container;
         }
     }
 }

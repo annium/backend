@@ -1,4 +1,4 @@
-using Annium.Core.DependencyInjection.Obsolete;
+using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.Entrypoint

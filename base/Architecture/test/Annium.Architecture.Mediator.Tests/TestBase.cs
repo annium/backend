@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Annium.Architecture.Mediator.Tests
@@ -11,22 +10,22 @@ namespace Annium.Architecture.Mediator.Tests
     {
         protected IMediator GetMediator(Action<MediatorConfiguration> configure)
         {
-            var services = new ServiceCollection();
+            var container = new ServiceContainer();
 
-            services.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
-            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
+            container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
 
-            services.AddLogging(route => route.UseInMemory());
+            container.AddLogging(route => route.UseInMemory());
 
-            services.AddLocalization(opts => opts.UseInMemoryStorage());
+            container.AddLocalization(opts => opts.UseInMemoryStorage());
 
-            services.AddComposition();
-            services.AddValidation();
+            container.AddComposition();
+            container.AddValidation();
 
-            services.AddMediatorConfiguration(configure);
-            services.AddMediator();
+            container.AddMediatorConfiguration(configure);
+            container.AddMediator();
 
-            return services.BuildServiceProvider().GetRequiredService<IMediator>();
+            return container.BuildServiceProvider().Resolve<IMediator>();
         }
     }
 }

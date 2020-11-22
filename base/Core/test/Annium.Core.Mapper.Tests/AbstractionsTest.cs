@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Core.Mapper.Tests
@@ -25,11 +24,11 @@ namespace Annium.Core.Mapper.Tests
             result.At(1).As<LinkModel>().Link.IsEqual("lnk");
         }
 
-        private IMapper GetMapper() => new ServiceCollection()
+        private IMapper GetMapper() => new ServiceContainer()
             .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .BuildServiceProvider()
-            .GetRequiredService<IMapper>();
+            .Resolve<IMapper>();
 
         private abstract class Payload
         {

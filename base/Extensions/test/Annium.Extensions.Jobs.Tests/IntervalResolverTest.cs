@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
@@ -53,10 +52,10 @@ namespace Annium.Extensions.Jobs.Tests
             isMatch(GetInstant(2000, 1, 12, 0, 30, 0)).IsTrue();
         }
 
-        private IIntervalResolver GetResolver() => new ServiceCollection()
+        private IIntervalResolver GetResolver() => new ServiceContainer()
             .AddScheduler()
             .BuildServiceProvider()
-            .GetRequiredService<IIntervalResolver>();
+            .Resolve<IIntervalResolver>();
 
         private Instant GetInstant(int year, int month, int day, int hour, int minute, int second) =>
             Instant.FromDateTimeUtc(new DateTime(year, month, day, hour, minute, second, DateTimeKind.Utc));

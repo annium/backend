@@ -7,14 +7,14 @@ namespace Annium.Core.DependencyInjection
     {
         public static LogRoute UseInMemory(this LogRoute route)
         {
-            route.Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton<InMemoryLogHandler, InMemoryLogHandler>());
+            route.Use(ServiceDescriptor.Type<InMemoryLogHandler, InMemoryLogHandler>(ServiceLifetime.Singleton));
 
             return route;
         }
 
         public static LogRoute UseInMemory(this LogRoute route, InMemoryLogHandler handler)
         {
-            route.Use(Microsoft.Extensions.DependencyInjection.ServiceDescriptor.Singleton(handler));
+            route.Use(ServiceDescriptor.Instance(handler, ServiceLifetime.Singleton));
 
             return route;
         }

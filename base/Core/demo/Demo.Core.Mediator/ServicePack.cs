@@ -1,25 +1,23 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
 using Annium.Core.Mediator;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Handlers;
-using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 
 namespace Demo.Core.Mediator
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddSingleton<Func<Instant>>(SystemClock.Instance.GetCurrentInstant);
-            services.AddMediatorConfiguration(ConfigureMediator);
-            services.AddMediator();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddMediatorConfiguration(ConfigureMediator);
+            container.AddMediator();
 
-            services.AddSingleton<TodoRepository>();
+            container.Add<TodoRepository>().Singleton();
 
-            services.AddLogging(route => route.UseConsole());
+            container.AddLogging(route => route.UseConsole());
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg)

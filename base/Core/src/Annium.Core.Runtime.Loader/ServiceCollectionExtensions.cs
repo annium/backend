@@ -1,16 +1,15 @@
 using Annium.Core.Runtime.Loader;
 using Annium.Core.Runtime.Loader.Internal;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddAssemblyLoader(this IServiceCollection services)
+        public static IServiceContainer AddAssemblyLoader(this IServiceContainer container)
         {
-            services.AddTransient<IAssemblyLoaderBuilder, AssemblyLoaderBuilder>();
+            container.Add<IAssemblyLoaderBuilder, AssemblyLoaderBuilder>().Transient();
 
-            return services;
+            return container;
         }
     }
 }

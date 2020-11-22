@@ -1,20 +1,18 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Core.Cli
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Configure(IServiceCollection services)
+        public override void Configure(IServiceContainer container)
         {
             // register configurations
         }
 
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddAssemblyLoader();
+            container.AddAssemblyLoader();
         }
 
         public override void Setup(IServiceProvider provider)

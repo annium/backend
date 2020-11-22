@@ -3,7 +3,6 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Core.Mapper.Tests
@@ -101,11 +100,11 @@ namespace Annium.Core.Mapper.Tests
 
         private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
         {
-            var repacker = new ServiceCollection()
+            var repacker = new ServiceContainer()
                 .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
                 .AddMapper(false)
                 .BuildServiceProvider()
-                .GetRequiredService<IRepacker>();
+                .Resolve<IRepacker>();
 
             var param = Expression.Parameter(typeof(TS));
 

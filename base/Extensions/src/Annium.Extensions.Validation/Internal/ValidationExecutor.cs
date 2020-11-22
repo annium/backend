@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Reflection;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Extensions.Validation.Internal
 {
@@ -26,11 +26,11 @@ namespace Annium.Extensions.Validation.Internal
         )
         {
             _validators = ValidatorSets
-                .Select(s => (IEnumerable<IValidationContainer<TValue>>) serviceProvider.GetRequiredService(s))
+                .Select(s => (IEnumerable<IValidationContainer<TValue>>) serviceProvider.Resolve(s))
                 .SelectMany(v => v)
                 .ToArray();
 
-            _localizer = serviceProvider.GetRequiredService<ILocalizer<TValue>>();
+            _localizer = serviceProvider.Resolve<ILocalizer<TValue>>();
         }
 
         public async Task<IResult> ValidateAsync(TValue value, string? label = null)

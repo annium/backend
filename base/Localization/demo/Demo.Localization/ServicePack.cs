@@ -1,21 +1,19 @@
 using System;
 using System.Globalization;
 using Annium.Core.DependencyInjection;
-using Annium.Core.DependencyInjection.Obsolete;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Demo.Localization
 {
     internal class ServicePack : ServicePackBase
     {
-        public override void Configure(IServiceCollection services)
+        public override void Configure(IServiceContainer container)
         {
             // register configurations
         }
 
-        public override void Register(IServiceCollection services, IServiceProvider provider)
+        public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            services.AddLocalization(opts => opts.UseYamlStorage().UseCulture(() => CultureInfo.CurrentCulture));
+            container.AddLocalization(opts => opts.UseYamlStorage().UseCulture(() => CultureInfo.CurrentCulture));
         }
 
         public override void Setup(IServiceProvider provider)

@@ -1,6 +1,6 @@
 using System;
+using Annium.Core.DependencyInjection;
 using Annium.Testing.Elements;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Testing.Executors
 {
@@ -25,7 +25,7 @@ namespace Annium.Testing.Executors
         public void Init()
         {
             if (Instance is null)
-                Instance = _provider.GetRequiredService(Test.Method.DeclaringType!);
+                Instance = _provider.Resolve(Test.Method.DeclaringType!);
             else
                 throw new InvalidOperationException("Instance already created");
         }

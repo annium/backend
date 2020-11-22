@@ -1,9 +1,8 @@
 using System;
-using Annium.Core.DependencyInjection.Internal;
 using Annium.Core.DependencyInjection.Internal.Packs;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.New
+namespace Annium.Core.DependencyInjection
 {
     public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
     {

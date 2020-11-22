@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Loader;
 using System.Threading;
-using Annium.Core.DependencyInjection.Obsolete;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Core.Entrypoint
 {
