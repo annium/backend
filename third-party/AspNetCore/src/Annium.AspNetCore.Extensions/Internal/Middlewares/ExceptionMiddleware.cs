@@ -11,6 +11,7 @@ using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;
+using Annium.Serialization.Json.Internal;
 using Microsoft.AspNetCore.Http;
 using NodaTime.Xml;
 

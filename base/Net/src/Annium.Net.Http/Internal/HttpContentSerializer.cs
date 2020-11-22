@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Mime;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Serialization.Abstractions;
-using Annium.Serialization.Json;
 using NodaTime.Xml;
 
 namespace Annium.Net.Http.Internal
@@ -15,7 +12,8 @@ namespace Annium.Net.Http.Internal
         private readonly IReadOnlyDictionary<string, ISerializer<string>> _serializers;
 
         public HttpContentSerializer(
-            ITypeManager typeManager
+            ITypeManager typeManager,
+            ISerializer<string> serializer
         )
         {
             var serializers = new Dictionary<string, ISerializer<string>>();

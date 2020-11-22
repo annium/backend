@@ -2,6 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json.Internal;
 using Annium.Testing;
 using Xunit;
 

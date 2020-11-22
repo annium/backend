@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json.Internal;
 using Annium.Serialization.Json.Tests.Converters.GenericDictionaryConverter;
 using Annium.Testing;
 using Xunit;

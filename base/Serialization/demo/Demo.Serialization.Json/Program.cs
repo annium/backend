@@ -4,6 +4,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
+using Annium.Serialization.Json.Internal;
 using Annium.Serialization.Json.Tests.Converters;
 
 namespace Demo.Serialization.Json

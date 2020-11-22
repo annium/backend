@@ -7,6 +7,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
 using Annium.Data.Models.Extensions;
 using Annium.Serialization.Json;
+using Annium.Serialization.Json.Internal;
 using Annium.Testing;
 using Xunit;
 

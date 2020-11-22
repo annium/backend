@@ -8,6 +8,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json;
+using Annium.Serialization.Json.Internal;
 using Demo.Extensions.Configuration;
 using YamlDotNet.Serialization;
 
