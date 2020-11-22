@@ -13,6 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Core.DependencyInjection.Obsolete/Annium.Core.DependencyInjection.Obsolete.csproj" />
-        <ProjectReference Include="../Annium.Core.Internal/Annium.Core.Internal.csproj" />
+        <ProjectReference Include="../Annium.Core.Reflection/Annium.Core.Reflection.csproj" />
     </ItemGroup>
 </Project>

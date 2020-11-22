@@ -1,5 +1,3 @@
-using System.Linq;
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -8,15 +6,6 @@ namespace Annium.Core.DependencyInjection
     {
         public static ISingleRegistrationBuilderBase Add<TImplementationType>(this IServiceContainer container) =>
             container.Add(typeof(TImplementationType));
-
-        // public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container)
-        //     => container.Add(container.GetTypeManager().Types.AsEnumerable());
-        //
-        // public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container, Assembly assembly, bool tryLoadReferences)
-        //     => container.Add(TypeManager.GetInstance(assembly, tryLoadReferences).Types.AsEnumerable());
-
-        public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container, Assembly assembly)
-            => container.Add(assembly.GetTypes().AsEnumerable());
 
         public static IServiceContainer Clone(this IServiceContainer container)
         {
