@@ -12,7 +12,7 @@ namespace Annium.AspNetCore.TestServer
         {
             // register and setup services
             container.AddRuntimeTools(GetType().Assembly, true);
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
             container.AddHttpRequestFactory();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();

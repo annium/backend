@@ -25,6 +25,13 @@ namespace Annium.Core.DependencyInjection
             AddInternalTypes();
         }
 
+        public IServiceContainer Add(IServiceDescriptor descriptor)
+        {
+            Register(descriptor);
+
+            return this;
+        }
+
         public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) =>
             new BulkRegistrationBuilder(types, Register);
 

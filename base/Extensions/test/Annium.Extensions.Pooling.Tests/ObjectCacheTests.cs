@@ -66,7 +66,7 @@ namespace Annium.Extensions.Pooling.Tests
         private (IObjectCache<uint, Item>, IReadOnlyCollection<string>) CreateCache()
         {
             var container = new ServiceContainer();
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
 
             var logger = container
                 .AddLogging(route => route.UseInMemory())

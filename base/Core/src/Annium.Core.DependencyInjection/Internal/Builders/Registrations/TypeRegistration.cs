@@ -17,7 +17,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 
         public IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime)
         {
-            if (_implementationType == _serviceType)
+            if (_implementationType == _serviceType || _implementationType.ContainsGenericParameters)
                 yield return ServiceDescriptor.Type(_serviceType, _implementationType, lifetime);
             else
                 yield return Factory(_serviceType, sp => Resolve(sp, _implementationType), lifetime);

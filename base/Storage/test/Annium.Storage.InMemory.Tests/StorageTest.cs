@@ -139,7 +139,7 @@ namespace Annium.Storage.InMemory.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddInMemoryStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.Add<Func<Instant>>(() => Instant.MinValue).Singleton();
+            container.Add<Func<Instant>>(() => Instant.MinValue).AsSelf().Singleton();
 
             var provider = container.BuildServiceProvider();
 

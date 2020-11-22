@@ -28,7 +28,7 @@ namespace Annium.Core.DependencyInjection
                 builder.Add(cfgContainer.Get());
 
                 return builder.Build<T>();
-            });
+            }).AsSelf().Singleton();
 
             Register(container, typeof(T));
 
@@ -52,7 +52,7 @@ namespace Annium.Core.DependencyInjection
                 builder.Add(cfgContainer.Get());
 
                 return builder.Build<T>();
-            }).Singleton();
+            }).AsSelf().Singleton();
 
             Register(container, typeof(T));
 
@@ -83,7 +83,7 @@ namespace Annium.Core.DependencyInjection
         )
         {
             var propertyType = property.PropertyType;
-            container.Add(propertyType, sp => property.GetValue(sp.Resolve(type))!).Singleton();
+            container.Add(propertyType, sp => property.GetValue(sp.Resolve(type))!).AsSelf().Singleton();
 
             foreach (var prop in GetRegisteredProperties(propertyType))
                 Register(container, propertyType, prop);

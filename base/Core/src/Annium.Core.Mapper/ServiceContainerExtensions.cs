@@ -41,7 +41,7 @@ namespace Annium.Core.DependencyInjection
             }
 
             // register profile resolution
-            container.Add(ResolveProfiles).Singleton();
+            container.Add(ResolveProfiles).AsSelf().Singleton();
 
             return container;
         }
@@ -54,7 +54,7 @@ namespace Annium.Core.DependencyInjection
             var profile = new EmptyProfile();
             configure(profile);
 
-            container.Add(new ProfileInstance(profile)).Singleton();
+            container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
 
             return container;
         }
@@ -88,8 +88,8 @@ namespace Annium.Core.DependencyInjection
         )
             where T : Profile
         {
-            container.Add(profile).Singleton();
-            container.Add(new ProfileInstance(profile)).Singleton();
+            container.Add(profile).AsSelf().Singleton();
+            container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
 
             return container;
         }
@@ -99,8 +99,8 @@ namespace Annium.Core.DependencyInjection
             Type profileType
         )
         {
-            container.Add(profileType).Singleton();
-            container.Add(new ProfileType(profileType)).Singleton();
+            container.Add(profileType).AsSelf().Singleton();
+            container.Add(new ProfileType(profileType)).AsSelf().Singleton();
 
             return container;
         }

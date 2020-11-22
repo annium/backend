@@ -21,8 +21,8 @@ namespace Annium.Core.DependencyInjection
         {
             options.SetLocaleStorage(container =>
             {
-                var storage = new Storage(locales ?? new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>());
-                container.Add<ILocaleStorage>(storage).Singleton();
+                var storage = new Storage(locales);
+                container.Add<ILocaleStorage>(storage).AsSelf().Singleton();
             });
 
             return options;

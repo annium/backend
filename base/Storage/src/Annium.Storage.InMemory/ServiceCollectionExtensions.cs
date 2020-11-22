@@ -13,7 +13,7 @@ namespace Annium.Core.DependencyInjection
             Func<IServiceProvider, Func<Configuration, MemoryStorage>> factory =
                 sp => configuration => new MemoryStorage(configuration, sp.Resolve<ILogger<MemoryStorage>>());
 
-            container.Add<Func<Configuration, IStorage>>(factory).Singleton();
+            container.Add<Func<Configuration, IStorage>>(factory).AsSelf().Singleton();
 
             return container;
         }

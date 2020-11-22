@@ -16,7 +16,7 @@ namespace Annium.Core.DependencyInjection
             foreach (var service in options.LocaleStorageServices)
                 container.Add(service);
 
-            container.Add(options.CultureAccessor).Singleton();
+            container.Add(options.CultureAccessor).AsSelf().Singleton();
 
             container.Add(typeof(Localizer<>)).As(typeof(ILocalizer<>)).Singleton();
 

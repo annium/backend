@@ -17,14 +17,14 @@ namespace Annium.Core.DependencyInjection
         )
         {
             container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>().Singleton();
-            container.Add<TypeResolver>().As<ITypeResolver>().Singleton();
+            container.Add<ITypeResolver, TypeResolver>().Singleton();
 
             return container;
         }
 
         public static IServiceContainer AddResourceLoader(this IServiceContainer container)
         {
-            container.Add<ResourceLoader>().As<IResourceLoader>().Singleton();
+            container.Add<IResourceLoader, ResourceLoader>().Singleton();
 
             return container;
         }

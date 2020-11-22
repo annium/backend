@@ -44,7 +44,7 @@ namespace Annium.Core.DependencyInjection
             MediatorConfiguration cfg
         )
         {
-            container.Add(cfg).Singleton();
+            container.Add(cfg).AsSelf().Singleton();
             foreach (var handler in cfg.Handlers)
                 container.Add(handler.Implementation).AsSelf().Scoped();
 

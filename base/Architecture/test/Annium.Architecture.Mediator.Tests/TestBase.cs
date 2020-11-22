@@ -13,7 +13,7 @@ namespace Annium.Architecture.Mediator.Tests
             var container = new ServiceContainer();
 
             container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
 
             container.AddLogging(route => route.UseInMemory());
 

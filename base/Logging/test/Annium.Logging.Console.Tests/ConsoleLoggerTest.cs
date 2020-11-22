@@ -71,7 +71,7 @@ namespace Annium.Logging.Console.Tests
         {
             var container = new ServiceContainer();
 
-            container.Add<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60)).Singleton();
+            container.Add<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60)).AsSelf().Singleton();
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)

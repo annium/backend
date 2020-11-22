@@ -6,11 +6,11 @@ namespace Annium.AspNetCore.TestServer
 {
     public class Startup
     {
-        public void ConfigureServices(IServiceContainer container)
+        public void ConfigureServices(IServiceCollection services)
         {
-            container.Collection.AddControllers();
-            container.Collection.AddCors();
-            container.Collection.AddMvc()
+            services.AddControllers();
+            services.AddCors();
+            services.AddMvc()
                 .AddDefaultJsonOptions();
         }
 

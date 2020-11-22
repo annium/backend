@@ -146,7 +146,7 @@ namespace Annium.Storage.FileSystem.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddFileSystemStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.Add<Func<Instant>>(() => Instant.MinValue).Singleton();
+            container.Add<Func<Instant>>(() => Instant.MinValue).AsSelf().Singleton();
 
             var provider = container.BuildServiceProvider();
 

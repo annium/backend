@@ -17,7 +17,7 @@ namespace Annium.Core.DependencyInjection
             configure(new LogRoute(routes.Add));
             routes = routes.Where(r => r.Service != null).ToList();
 
-            container.Add<IEnumerable<LogRoute>>(routes).Singleton();
+            container.Add<IEnumerable<LogRoute>>(routes).AsSelf().Singleton();
 
             foreach (var route in routes)
             {

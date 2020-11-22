@@ -21,7 +21,7 @@ namespace Annium.Logging.Abstractions
 
         public LogRoute Use(IServiceDescriptor descriptor)
         {
-            if (!descriptor.ServiceType.GetInterfaces().Contains(typeof(ILogHandler)))
+            if (descriptor.ServiceType != typeof(ILogHandler) && !descriptor.ServiceType.GetInterfaces().Contains(typeof(ILogHandler)))
                 throw new ArgumentException($"{descriptor.ServiceType} must implement {typeof(ILogHandler)} to be used as log handler");
 
             Service = descriptor;
