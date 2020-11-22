@@ -1,92 +1,59 @@
 using System;
-using Annium.Core.DependencyInjection.Internal.Builders.Units;
+using System.Collections.Generic;
+using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class InstanceRegistrationBuilder : IInstanceRegistrationBuilderBase
     {
-        private readonly Action<IServiceDescriptor> _register;
-        private readonly InstanceRegistrationUnit _unit;
+        private readonly Type _type;
+        private readonly object _instance;
+        private readonly Registrator _registrator;
+        private readonly List<IRegistration> _registrations = new();
 
-        public InstanceRegistrationBuilder(Type type, object instance, Action<IServiceDescriptor> register)
+
+        public InstanceRegistrationBuilder(
+            Type type,
+            object instance,
+            Action<IServiceDescriptor> register
+        )
         {
-            _register = register;
-            _unit = new InstanceRegistrationUnit(type, instance);
+            _type = type;
+            _instance = instance;
+            _registrator = new Registrator(register);
         }
 
-        public IInstanceRegistrationBuilderBase AsSelf()
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsSelf() =>
+            WithRegistration(new InstanceRegistration(_type, _instance));
 
-        public IInstanceRegistrationBuilderBase As(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase As(Type serviceType) =>
+            WithRegistration(new InstanceRegistration(serviceType, _instance));
 
-        public IInstanceRegistrationBuilderBase As<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
+            WithRegistration(new InstanceKeyedRegistration(_type, _instance, typeof(TKey), key));
 
-        public IInstanceRegistrationBuilderBase AsSelfKeyed<TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull =>
+            WithRegistration(new InstanceKeyedRegistration(serviceType, _instance, typeof(TKey), key));
 
-        public IInstanceRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsSelfFactory() =>
+            WithRegistration(new InstanceFactoryRegistration(_type, _instance));
 
-        public IInstanceRegistrationBuilderBase AsKeyed<T, TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsFactory(Type serviceType) =>
+            WithRegistration(new InstanceFactoryRegistration(serviceType, _instance));
 
-        public IInstanceRegistrationBuilderBase AsSelfFactory()
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsKeyedSelfFactory<TKey>(TKey key) where TKey : notnull =>
+            WithRegistration(new InstanceKeyedFactoryRegistration(_type, _instance, typeof(TKey), key));
 
-        public IInstanceRegistrationBuilderBase AsFactory(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
+        public IInstanceRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull =>
+            WithRegistration(new InstanceKeyedFactoryRegistration(serviceType, _instance, typeof(TKey), key));
 
-        public IInstanceRegistrationBuilderBase AsFactory<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public void Singleton() => _registrator.Register(_registrations, ServiceLifetime.Singleton);
 
-        public IInstanceRegistrationBuilderBase AsSelfKeyedFactory<TKey>(TKey key)
+        private IInstanceRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
-            throw new NotImplementedException();
-        }
+            _registrations.Add(registration);
 
-        public IInstanceRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IInstanceRegistrationBuilderBase AsKeyedFactory<T, TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Scoped()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Singleton()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transient()
-        {
-            throw new NotImplementedException();
+            return this;
         }
     }
 }

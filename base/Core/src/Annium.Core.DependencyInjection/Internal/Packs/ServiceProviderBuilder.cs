@@ -4,7 +4,7 @@ using System.Linq;
 using Annium.Core.DependencyInjection.New;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.Internal
+namespace Annium.Core.DependencyInjection.Internal.Packs
 {
     internal class ServiceProviderBuilder : IServiceProviderBuilder
     {

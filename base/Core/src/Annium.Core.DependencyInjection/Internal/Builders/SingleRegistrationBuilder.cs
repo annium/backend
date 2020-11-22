@@ -1,93 +1,62 @@
 using System;
-using Annium.Core.DependencyInjection.Internal.Builders.Units;
+using System.Collections.Generic;
+using System.Linq;
+using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class SingleRegistrationBuilder : ISingleRegistrationBuilderBase
     {
-        private readonly Action<IServiceDescriptor> _register;
-        private readonly SingleRegistrationUnit _unit;
+        private readonly Type _type;
+        private readonly Registrator _registrator;
+        private readonly List<IRegistration> _registrations = new();
 
-        public SingleRegistrationBuilder(Type type, Action<IServiceDescriptor> register)
+        public SingleRegistrationBuilder(
+            Type type,
+            Action<IServiceDescriptor> register
+        )
         {
-            _register = register;
-            _unit = new SingleRegistrationUnit(type);
+            _type = type;
+            _registrator = new Registrator(register);
         }
 
 
-        public ISingleRegistrationBuilderBase AsSelf()
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsSelf() =>
+            WithRegistration(new TargetRegistration(_type, _type));
 
-        public ISingleRegistrationBuilderBase As(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase As(Type serviceType) =>
+            WithRegistration(new TargetRegistration(serviceType, _type));
 
-        public ISingleRegistrationBuilderBase As<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
+            WithRegistration(new TargetKeyedRegistration(_type, _type, typeof(TKey), key));
 
-        public ISingleRegistrationBuilderBase AsSelfKeyed<TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull =>
+            WithRegistration(new TargetKeyedRegistration(serviceType, _type, typeof(TKey), key));
 
-        public ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsSelfFactory() =>
+            WithRegistration(new TargetFactoryRegistration(_type, _type));
 
-        public ISingleRegistrationBuilderBase AsKeyed<T, TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsFactory(Type serviceType) =>
+            WithRegistration(new TargetFactoryRegistration(serviceType, _type));
 
-        public ISingleRegistrationBuilderBase AsSelfFactory()
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsKeyedSelfFactory<TKey>(TKey key) where TKey : notnull =>
+            WithRegistration(new TargetKeyedFactoryRegistration(_type, _type, typeof(TKey), key));
 
-        public ISingleRegistrationBuilderBase AsFactory(Type serviceType)
-        {
-            throw new NotImplementedException();
-        }
+        public ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull =>
+            WithRegistration(new TargetKeyedFactoryRegistration(serviceType, _type, typeof(TKey), key));
 
-        public ISingleRegistrationBuilderBase AsFactory<T>()
-        {
-            throw new NotImplementedException();
-        }
+        public void Scoped() => Register(ServiceLifetime.Scoped);
+        public void Singleton() => Register(ServiceLifetime.Singleton);
+        public void Transient() => Register(ServiceLifetime.Transient);
 
-        public ISingleRegistrationBuilderBase AsSelfKeyedFactory<TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
+        private void Register(ServiceLifetime lifetime) => _registrator
+            .Register(new[] { new TargetRegistration(_type, _type) }.Concat(_registrations).ToArray(), lifetime);
 
-        public ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key)
+        private ISingleRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
-            throw new NotImplementedException();
-        }
+            _registrations.Add(registration);
 
-        public ISingleRegistrationBuilderBase AsKeyedFactory<T, TKey>(TKey key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Scoped()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Singleton()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transient()
-        {
-            throw new NotImplementedException();
+            return this;
         }
     }
 }

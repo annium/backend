@@ -9,9 +9,6 @@ namespace Annium.Core.DependencyInjection
         public static ISingleRegistrationBuilderBase Add<TImplementationType>(this IServiceContainer container) =>
             container.Add(typeof(TImplementationType));
 
-        public static ISingleRegistrationBuilderBase TryAdd<TImplementationType>(this IServiceContainer container) =>
-            container.TryAdd(typeof(TImplementationType));
-
         // public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container)
         //     => container.Add(container.GetTypeManager().Types.AsEnumerable());
         //

@@ -9,9 +9,9 @@ namespace Annium.Core.DependencyInjection
     {
         public static string ToReadableString(this IServiceDescriptor descriptor) => descriptor switch
         {
-            ITypeServiceDescriptor x     => $"{x.ServiceType.FriendlyName()} -> {x.ImplementationType} type",
-            IFactoryServiceDescriptor x  => $"{x.ServiceType} -> {x.ImplementationFactory.GetType()} factory",
-            IInstanceServiceDescriptor x => $"{x.ServiceType} -> {x.ImplementationInstance.GetType()} instance",
+            ITypeServiceDescriptor x     => $"type {x.ServiceType.FriendlyName()} -> {x.ImplementationType.FriendlyName()}",
+            IFactoryServiceDescriptor x  => $"factory {x.ServiceType.FriendlyName()}",
+            IInstanceServiceDescriptor x => $"instance {x.ServiceType.FriendlyName()} -> {x.ImplementationInstance.GetType().FriendlyName()}",
             _                            => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
         };
 

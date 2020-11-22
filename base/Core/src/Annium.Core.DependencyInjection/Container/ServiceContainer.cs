@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders;
+using Annium.Core.DependencyInjection.Internal.Container;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ namespace Annium.Core.DependencyInjection
 {
     public class ServiceContainer : IServiceContainer
     {
+        public int Count => Collection.Count;
         public IServiceCollection Collection { get; }
 
         public ServiceContainer() : this(new ServiceCollection())
@@ -20,31 +22,20 @@ namespace Annium.Core.DependencyInjection
         public ServiceContainer(IServiceCollection collection)
         {
             Collection = collection;
+            AddInternalTypes();
         }
 
         public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) =>
-            new BulkRegistrationBuilder(types, Add);
+            new BulkRegistrationBuilder(types, Register);
 
         public IFactoryRegistrationBuilderBase Add<T>(Func<IServiceProvider, T> factory) where T : class =>
-            new FactoryRegistrationBuilder(typeof(T), factory, Add);
+            new FactoryRegistrationBuilder(typeof(T), factory, Register);
 
         public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class =>
-            new InstanceRegistrationBuilder(typeof(T), instance, Add);
+            new InstanceRegistrationBuilder(typeof(T), instance, Register);
 
         public ISingleRegistrationBuilderBase Add(Type type) =>
-            new SingleRegistrationBuilder(type, Add);
-
-        public IBulkRegistrationBuilderBase TryAdd(IEnumerable<Type> types) =>
-            new BulkRegistrationBuilder(types, TryAdd);
-
-        public IFactoryRegistrationBuilderBase TryAdd<T>(Func<IServiceProvider, T> factory) where T : class =>
-            new FactoryRegistrationBuilder(typeof(T), factory, TryAdd);
-
-        public IInstanceRegistrationBuilderBase TryAdd<T>(T instance) where T : class =>
-            new InstanceRegistrationBuilder(typeof(T), instance, TryAdd);
-
-        public ISingleRegistrationBuilderBase TryAdd(Type type) =>
-            new SingleRegistrationBuilder(type, TryAdd);
+            new SingleRegistrationBuilder(type, Register);
 
         public bool Contains(IServiceDescriptor descriptor)
         {
@@ -53,11 +44,24 @@ namespace Annium.Core.DependencyInjection
             return descriptor switch
             {
                 ITypeServiceDescriptor d => Collection
-                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationType == d.ImplementationType),
+                    .Any(x =>
+                        x.Lifetime == lifetime &&
+                        x.ServiceType == d.ServiceType &&
+                        x.ImplementationType == d.ImplementationType
+                    ),
                 IFactoryServiceDescriptor d => Collection
-                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationFactory == d.ImplementationFactory),
+                    .Any(x =>
+                        x.Lifetime == lifetime &&
+                        x.ServiceType == d.ServiceType &&
+                        x.ImplementationFactory?.Method == d.ImplementationFactory.Method &&
+                        x.ImplementationFactory?.Target == d.ImplementationFactory.Target
+                    ),
                 IInstanceServiceDescriptor d => Collection
-                    .Any(x => x.Lifetime == lifetime && x.ServiceType == d.ServiceType && x.ImplementationInstance == d.ImplementationInstance),
+                    .Any(x =>
+                        x.Lifetime == lifetime &&
+                        x.ServiceType == d.ServiceType &&
+                        x.ImplementationInstance == d.ImplementationInstance
+                    ),
                 _ => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
             };
         }
@@ -66,13 +70,7 @@ namespace Annium.Core.DependencyInjection
 
         IEnumerator IEnumerable.GetEnumerator() => Collection.GetEnumerator();
 
-        private void Add(IServiceDescriptor item)
-        {
-            Framework.Log(() => $"{item.ToReadableString()}");
-            Collection.Add(item.ToMicrosoft());
-        }
-
-        private void TryAdd(IServiceDescriptor item)
+        private void Register(IServiceDescriptor item)
         {
             if (Contains(item))
             {
@@ -83,6 +81,11 @@ namespace Annium.Core.DependencyInjection
 
             Framework.Log(() => $"{item.ToReadableString()} - add");
             Collection.Add(item.ToMicrosoft());
+        }
+
+        private void AddInternalTypes()
+        {
+            Register(ServiceDescriptor.Type(typeof(IIndex<,>), typeof(Index<,>), ServiceLifetime.Transient));
         }
     }
 }

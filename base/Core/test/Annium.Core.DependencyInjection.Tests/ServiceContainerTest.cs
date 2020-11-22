@@ -1,39 +1,59 @@
 using System;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Annium.Core.DependencyInjection.Tests
 {
-    public class ServiceContainerTest
+    public class ServiceContainerTest : TestBase
     {
-        private readonly ServiceContainer _container = new ServiceContainer();
-        private IServiceProvider _provider = default!;
-
         [Fact]
-        public void Add_Works_Ok()
+        public void Add_WritesToCollectionImmediately()
         {
             // arrange
-            var instance = new object();
+            var instance = new A();
 
             // act
-            _container.Add(instance).Singleton();
+            _container.Add(instance).AsSelf().Singleton();
             Build();
 
             // assert
-            _container.Has(1);
-            Get<object>().Is(instance);
+            Get<A>().Is(instance);
         }
 
-        private void Build()
+        [Fact]
+        public void ContainsType_Works()
         {
-            _provider = _container.BuildServiceProvider();
+            // arrange
+            _container.Add<A>().AsSelf().Singleton();
+
+            // assert
+            _container.Contains(ServiceDescriptor.Type(typeof(A), typeof(A), ServiceLifetime.Singleton)).IsTrue();
         }
 
-        private T Get<T>()
-            where T : notnull
+        [Fact]
+        public void ContainsFactory_Works()
         {
-            return _provider.GetRequiredService<T>();
+            // arrange
+            static B factory(IServiceProvider _) => new B();
+            _container.Add(factory).AsSelf().Singleton();
+
+            // assert
+            _container.Contains(ServiceDescriptor.Factory(typeof(B), factory, ServiceLifetime.Singleton)).IsTrue();
         }
+
+        [Fact]
+        public void ContainsInstance_Works()
+        {
+            // arrange
+            var instance = new B();
+            _container.Add(instance).AsSelf().Singleton();
+
+            // assert
+            _container.Contains(ServiceDescriptor.Instance(typeof(B), instance, ServiceLifetime.Singleton)).IsTrue();
+        }
+
+        private sealed record B : A;
+
+        private record A;
     }
 }

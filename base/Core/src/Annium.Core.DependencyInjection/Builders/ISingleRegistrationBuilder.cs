@@ -6,16 +6,12 @@ namespace Annium.Core.DependencyInjection
     {
         ISingleRegistrationBuilderBase AsSelf();
         ISingleRegistrationBuilderBase As(Type serviceType);
-        ISingleRegistrationBuilderBase As<T>();
-        ISingleRegistrationBuilderBase AsSelfKeyed<TKey>(TKey key);
-        ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key);
-        ISingleRegistrationBuilderBase AsKeyed<T, TKey>(TKey key);
+        ISingleRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull;
+        ISingleRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull;
         ISingleRegistrationBuilderBase AsSelfFactory();
         ISingleRegistrationBuilderBase AsFactory(Type serviceType);
-        ISingleRegistrationBuilderBase AsFactory<T>();
-        ISingleRegistrationBuilderBase AsSelfKeyedFactory<TKey>(TKey key);
-        ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key);
-        ISingleRegistrationBuilderBase AsKeyedFactory<T, TKey>(TKey key);
+        ISingleRegistrationBuilderBase AsKeyedSelfFactory<TKey>(TKey key) where TKey : notnull;
+        ISingleRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull;
     }
 
     public interface ISingleRegistrationBuilderLifetime

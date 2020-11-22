@@ -20,8 +20,8 @@ namespace Annium.Core.DependencyInjection
             bool tryLoadReferences
         )
         {
-            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>().Singleton();
-            container.TryAdd<TypeResolver>().As<ITypeResolver>().Singleton();
+            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>();
+            container.Add<TypeResolver>().As<ITypeResolver>().Singleton();
 
             return container;
         }
