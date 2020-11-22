@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Testing;
@@ -37,7 +38,7 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         }
 
         [Fact]
-        public void AsType_Works()
+        public void As_Works()
         {
             // arrange
             _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).As(typeof(A)).Singleton();
@@ -87,12 +88,80 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
             index[nameof(B)].AsExact<B>();
         }
 
+        [Fact]
+        public void AsSelfFactory_Works()
+        {
+            // arrange
+            _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsSelfFactory().Singleton();
+
+            // act
+            Build();
+
+            // assert
+            _container.HasSingleton(typeof(A), typeof(A));
+            _container.HasSingleton(typeof(B), typeof(B));
+            _container.HasSingletonFuncFactory(typeof(A));
+            _container.HasSingletonFuncFactory(typeof(B));
+            Get<Func<A>>()().Is(Get<A>());
+            Get<Func<B>>()().Is(Get<B>());
+        }
+
+        [Fact]
+        public void AsFactory_Works()
+        {
+            // arrange
+            _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsFactory<A>().Singleton();
+
+            // act
+            Build();
+
+            // assert
+            _container.HasSingleton(typeof(A), typeof(A));
+            _container.HasSingleton(typeof(B), typeof(B));
+            _container.HasSingletonFuncFactory(typeof(A), 2);
+            Get<IEnumerable<Func<A>>>().At(0)().AsExact<A>();
+            Get<IEnumerable<Func<A>>>().At(1)().AsExact<B>();
+        }
+
+        [Fact]
+        public void AsKeyedSelfFactory_Works()
+        {
+            // arrange
+            _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedSelfFactory(x => x.Name).Singleton();
+
+            // act
+            Build();
+
+            // assert
+            _container.HasSingleton(typeof(A), typeof(A));
+            _container.HasSingleton(typeof(B), typeof(B));
+            Get<IIndex<string, Func<A>>>()[nameof(A)]().AsExact<A>();
+            Get<IIndex<string, Func<B>>>()[nameof(B)]().AsExact<B>();
+        }
+
+        [Fact]
+        public void AsKeyedFactory_Works()
+        {
+            // arrange
+            _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedFactory(typeof(A), x => x.Name).Singleton();
+
+            // act
+            Build();
+
+            // assert
+            _container.HasSingleton(typeof(A), typeof(A));
+            _container.HasSingleton(typeof(B), typeof(B));
+            var index = Get<IIndex<string, Func<A>>>();
+            index[nameof(A)]().AsExact<A>();
+            index[nameof(B)]().AsExact<B>();
+        }
+
         private sealed class B : A
         {
         }
 
         private class A
         {
-        };
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,25 +7,26 @@ namespace Annium.Core.Primitives
 {
     public static class TypeExtensions
     {
-        private static readonly IDictionary<Type, string> TypeNames = new Dictionary<Type, string>
-        {
-            { typeof(int), "int" },
-            { typeof(uint), "uint" },
-            { typeof(long), "long" },
-            { typeof(ulong), "ulong" },
-            { typeof(short), "short" },
-            { typeof(ushort), "ushort" },
-            { typeof(byte), "byte" },
-            { typeof(sbyte), "sbyte" },
-            { typeof(bool), "bool" },
-            { typeof(float), "float" },
-            { typeof(double), "double" },
-            { typeof(decimal), "decimal" },
-            { typeof(char), "char" },
-            { typeof(string), "string" },
-            { typeof(object), "object" },
-            { typeof(void), "void" },
-        };
+        private static readonly ConcurrentDictionary<Type, string> TypeNames = new(new Dictionary<Type, string>()
+            {
+                { typeof(int), "int" },
+                { typeof(uint), "uint" },
+                { typeof(long), "long" },
+                { typeof(ulong), "ulong" },
+                { typeof(short), "short" },
+                { typeof(ushort), "ushort" },
+                { typeof(byte), "byte" },
+                { typeof(sbyte), "sbyte" },
+                { typeof(bool), "bool" },
+                { typeof(float), "float" },
+                { typeof(double), "double" },
+                { typeof(decimal), "decimal" },
+                { typeof(char), "char" },
+                { typeof(string), "string" },
+                { typeof(object), "object" },
+                { typeof(void), "void" },
+            }
+        );
 
         public static string FriendlyName(this Type value)
         {
@@ -41,7 +43,7 @@ namespace Annium.Core.Primitives
             name = name.Substring(0, name.IndexOf('`'));
             var arguments = value.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
-            return TypeNames[value] = $"{name}<{string.Join(", ", arguments)}>";
+            return TypeNames.AddOrUpdate(value, $"{name}<{string.Join(", ", arguments)}>", (_, x) => x);
         }
     }
 }

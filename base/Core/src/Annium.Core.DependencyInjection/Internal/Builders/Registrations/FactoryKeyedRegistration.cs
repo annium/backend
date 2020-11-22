@@ -24,7 +24,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
         {
             yield return Factory(
                 KeyValueType(_keyType, _serviceType),
-                sp => KeyValue(_keyType, _serviceType, _key, Expression.Call(_factory.Method, sp)),
+                sp => KeyValue(_keyType, _serviceType, _key, Expression.Invoke(Expression.Constant(_factory), sp)),
                 lifetime
             );
         }
