@@ -1,13 +1,11 @@
 using System;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
-using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;
 
 namespace Annium.Serialization.Json.Tests.Converters
 {
-    public class AbstractJsonConverterTest
+    public class AbstractJsonConverterTest : TestBase
     {
         [Fact]
         public void Serialization_SignaturePlain_Works()
@@ -150,10 +148,6 @@ namespace Annium.Serialization.Json.Tests.Converters
             data.At(0).As<KeyChildA>().Value.IsEqual(1);
             data.At(1).As<KeyChildB>().Value.IsEqual(2);
         }
-
-        private ISerializer<string> GetSerializer() => StringSerializer.Configure(
-            opts => opts.ConfigureDefault(TypeManager.GetInstance(GetType().Assembly, false))
-        );
 
         public abstract class Base
         {

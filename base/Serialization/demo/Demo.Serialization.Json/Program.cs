@@ -1,9 +1,9 @@
 using System;
+using System.Net.Mime;
 using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Core.Runtime.Types;
-using Annium.Serialization.Json;
+using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json.Tests.Converters;
 
 namespace Demo.Serialization.Json
@@ -16,13 +16,12 @@ namespace Demo.Serialization.Json
             CancellationToken token
         )
         {
-            var serializer = StringSerializer.Configure(
-                opts => opts.ConfigureDefault(TypeManager.GetInstance(typeof(Program).Assembly, false))
-            );
+            var serializer = provider.Resolve<IIndex<string, ISerializer<string>>>()[MediaTypeNames.Application.Json];
 
             AbstractJsonConverterTest.KeyBase a = new AbstractJsonConverterTest.KeyChildA { Value = 1 };
             AbstractJsonConverterTest.KeyBase b = new AbstractJsonConverterTest.KeyChildB { Value = 2 };
-            AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase> container = new AbstractJsonConverterTest.KeyDataContainer<AbstractJsonConverterTest.KeyBase> { Items = new[] { a, b } };
+            AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase> container =
+                new AbstractJsonConverterTest.KeyDataContainer<AbstractJsonConverterTest.KeyBase> { Items = new[] { a, b } };
             var str = serializer.Serialize(container);
 
             // act

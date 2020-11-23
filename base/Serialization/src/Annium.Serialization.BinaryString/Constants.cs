@@ -1,4 +1,4 @@
-namespace Annium.Core.DependencyInjection
+namespace Annium.Serialization.BinaryString
 {
     public static class Constants
     {

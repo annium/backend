@@ -2,6 +2,7 @@ namespace Annium.Core.DependencyInjection
 {
     public interface IIndex<in TKey, TValue>
         where TKey : notnull
+        where TValue : notnull
     {
         /// <summary>
         /// Get the value associated with <paramref name="key"/>.
@@ -16,6 +17,6 @@ namespace Annium.Core.DependencyInjection
         /// <param name="key">The key to look up.</param>
         /// <param name="value">The retrieved value.</param>
         /// <returns>True if a value associated with the key exists.</returns>
-        bool TryGetValue(TKey key, out TValue? value);
+        bool TryGetValue(TKey key, out TValue value);
     }
 }

@@ -5,14 +5,10 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Architecture.Http.Exceptions;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime.Types;
 using Annium.Data.Operations;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
-using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Http;
-using NodaTime.Xml;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
@@ -24,15 +20,12 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 
         public ExceptionMiddleware(
             RequestDelegate next,
-            ITypeManager typeManager,
+            IIndex<string, ISerializer<string>> serializers,
             ILogger<ExceptionMiddleware> logger
         )
         {
             _next = next;
-            _serializer = StringSerializer.Configure(opts => opts
-                .ConfigureDefault(typeManager)
-                .ConfigureForOperations()
-                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider));
+            _serializer = serializers[MediaTypeNames.Application.Json];
             _logger = logger;
         }
 

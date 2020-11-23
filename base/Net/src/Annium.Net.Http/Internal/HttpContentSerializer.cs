@@ -1,34 +1,23 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Mime;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime.Types;
-using Annium.Data.Operations.Serialization.Json;
 using Annium.Serialization.Abstractions;
-using Annium.Serialization.Json;
-using NodaTime.Xml;
 
 namespace Annium.Net.Http.Internal
 {
     internal class HttpContentSerializer : IHttpContentSerializer
     {
-        private readonly IReadOnlyDictionary<string, ISerializer<string>> _serializers;
+        private readonly IIndex<string, ISerializer<string>> _serializers;
 
         public HttpContentSerializer(
-            ITypeManager typeManager
+            IIndex<string, ISerializer<string>> serializers
         )
         {
-            var serializers = new Dictionary<string, ISerializer<string>>();
-            serializers[MediaTypeNames.Application.Json] = StringSerializer.Configure(opts => opts
-                .ConfigureDefault(typeManager)
-                .ConfigureForOperations()
-                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider));
             _serializers = serializers;
         }
 
         public bool CanSerialize(string mediaType)
         {
-            return _serializers.ContainsKey(mediaType);
+            return _serializers.TryGetValue(mediaType, out _);
         }
 
         public string Serialize<T>(string mediaType, T value)

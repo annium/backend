@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Mime;
 using System.Threading;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Types;
-using Annium.Serialization.Json;
+using Annium.Serialization.Abstractions;
 using Demo.Extensions.Configuration;
 using YamlDotNet.Serialization;
 
@@ -69,8 +70,12 @@ namespace Demo.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
-                var serializer = StringSerializer.Configure(opts => opts.ConfigureDefault(typeManager));
+                var serializer = new ServiceContainer()
+                    .AddRuntimeTools(typeof(Program).Assembly, false)
+                    .AddJsonSerializers((sp, opts) => opts.ConfigureDefault(sp.Resolve<ITypeManager>()))
+                    .BuildServiceProvider()
+                    .Resolve<IIndex<string, ISerializer<string>>>()
+                    [MediaTypeNames.Application.Json];
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
                 Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile)).Resolve<Config>();

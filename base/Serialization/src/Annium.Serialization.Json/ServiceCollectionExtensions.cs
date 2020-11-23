@@ -1,7 +1,8 @@
 using System;
+using System.Net.Mime;
 using System.Text.Json;
-using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Annium.Serialization.Json.Internal;
 
 namespace Annium.Core.DependencyInjection
@@ -9,14 +10,14 @@ namespace Annium.Core.DependencyInjection
     public static class ServiceCollectionExtensions
     {
         public static IServiceContainer AddJsonSerializers(
-            IServiceContainer container,
-            Action<ITypeManager, JsonSerializerOptions> configure
+            this IServiceContainer container,
+            Action<IServiceProvider, JsonSerializerOptions> configure
         )
         {
             container.Add(sp =>
             {
                 var opts = new JsonSerializerOptions();
-                configure(sp.Resolve<ITypeManager>(), opts);
+                configure(sp, opts);
 
                 return new OptionsContainer(opts);
             }).AsSelf().Singleton();
@@ -44,8 +45,14 @@ namespace Annium.Core.DependencyInjection
             this IServiceContainer container
         )
         {
-            container.Add<ByteArraySerializer>().AsKeyed<ISerializer<byte[]>, string>(Constants.Key).Singleton();
-            container.Add<StringSerializer>().AsKeyed<ISerializer<string>, string>(Constants.Key).Singleton();
+            container.Add<ByteArraySerializer>()
+                .AsKeyed<ISerializer<byte[]>, string>(Constants.Key)
+                .AsKeyed<ISerializer<byte[]>, string>(MediaTypeNames.Application.Json)
+                .Singleton();
+            container.Add<StringSerializer>()
+                .AsKeyed<ISerializer<string>, string>(Constants.Key)
+                .AsKeyed<ISerializer<string>, string>(MediaTypeNames.Application.Json)
+                .Singleton();
 
             return container;
         }

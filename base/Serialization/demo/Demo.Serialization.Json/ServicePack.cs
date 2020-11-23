@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
 
 namespace Demo.Serialization.Json
 {
@@ -12,7 +13,9 @@ namespace Demo.Serialization.Json
 
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            // register and setup services
+            container.AddJsonSerializers((sp, opts) => opts
+                .ConfigureDefault(sp.Resolve<ITypeManager>())
+            );
         }
 
         public override void Setup(IServiceProvider provider)

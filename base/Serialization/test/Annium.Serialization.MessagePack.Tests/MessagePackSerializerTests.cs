@@ -4,17 +4,18 @@ using Xunit;
 
 namespace Annium.Serialization.MessagePack.Tests
 {
-    public class MessagePackSerializerTests
+    public class MessagePackSerializerTests : TestBase
     {
         [Fact]
         public void Serialization_Deserialization_Works()
         {
             // arrange
+            var serializer = GetSerializer();
             var data = new Person { FirstName = "Max", LastName = "Madness" };
 
             // act
-            var serialized = MessagePackSerializer.Instance.Serialize(data);
-            var deserialized = MessagePackSerializer.Instance.Deserialize<Person>(serialized);
+            var serialized = serializer.Serialize(data);
+            var deserialized = serializer.Deserialize<Person>(serialized);
 
             // assert
             deserialized.IsNotDefault();

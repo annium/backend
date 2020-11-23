@@ -1,5 +1,6 @@
 using System;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.MessagePack;
 using Annium.Serialization.MessagePack.Internal;
 
 namespace Annium.Core.DependencyInjection

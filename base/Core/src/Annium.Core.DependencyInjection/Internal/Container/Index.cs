@@ -8,6 +8,7 @@ namespace Annium.Core.DependencyInjection.Internal.Container
 {
     internal class Index<TKey, TValue> : IIndex<TKey, TValue>
         where TKey : notnull
+        where TValue : notnull
     {
         private readonly IEnumerable<KeyValue<TKey, TValue>> _keyValues;
 
@@ -35,10 +36,10 @@ namespace Annium.Core.DependencyInjection.Internal.Container
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue? value)
+        public bool TryGetValue(TKey key, out TValue value)
         {
             var values = _keyValues.Where(x => x.Key.Equals(key)).Select(x => x.Value).ToArray();
-            value = default;
+            value = default!;
 
             switch (values.Length)
             {
