@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Internal.Resources;
+using Annium.Core.Runtime.Internal.Time;
 using Annium.Core.Runtime.Internal.Types;
 using Annium.Core.Runtime.Resources;
 using Annium.Core.Runtime.Types;
@@ -25,6 +26,20 @@ namespace Annium.Core.DependencyInjection
         public static IServiceContainer AddResourceLoader(this IServiceContainer container)
         {
             container.Add<IResourceLoader, ResourceLoader>().Singleton();
+
+            return container;
+        }
+
+        public static IServiceContainer AddTimeProvider(this IServiceContainer container)
+        {
+            container.Add<TimeProvider>().AsInterfaces().Singleton();
+
+            return container;
+        }
+
+        public static IServiceContainer AddTestTimeProvider(this IServiceContainer container)
+        {
+            container.Add<TestTimeProvider>().AsInterfaces().Singleton();
 
             return container;
         }
