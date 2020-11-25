@@ -13,7 +13,7 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceContainer AddTestEmailService(this IServiceContainer container, TestEmailService service)
         {
-            container.Add<IEmailService>(service).Singleton();
+            container.Add(service).As<IEmailService>().Singleton();
 
             return container;
         }
