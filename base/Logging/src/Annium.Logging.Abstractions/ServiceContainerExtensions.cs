@@ -6,7 +6,7 @@ using Annium.Logging.Abstractions.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddLogging(
             this IServiceContainer container,

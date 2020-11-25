@@ -3,7 +3,7 @@ using Annium.Core.Runtime.Loader.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddAssemblyLoader(this IServiceContainer container)
         {

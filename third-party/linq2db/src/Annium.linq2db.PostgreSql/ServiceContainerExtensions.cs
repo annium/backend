@@ -8,7 +8,7 @@ using LinqToDB.Mapping;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddPostgreSql<TConnection>(
             this IServiceContainer container,

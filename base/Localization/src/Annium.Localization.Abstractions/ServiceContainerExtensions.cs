@@ -3,7 +3,7 @@ using Annium.Localization.Abstractions;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddLocalization(
             this IServiceContainer container,

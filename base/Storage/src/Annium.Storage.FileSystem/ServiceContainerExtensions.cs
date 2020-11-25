@@ -6,7 +6,7 @@ using FsStorage = Annium.Storage.FileSystem.Storage;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddFileSystemStorage(this IServiceContainer container)
         {

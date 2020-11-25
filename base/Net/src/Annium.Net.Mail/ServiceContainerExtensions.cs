@@ -2,7 +2,7 @@ using Annium.Net.Mail;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddEmailService(this IServiceContainer container)
         {

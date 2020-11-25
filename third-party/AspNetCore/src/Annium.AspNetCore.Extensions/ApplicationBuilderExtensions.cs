@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Builder;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder builder)
         {

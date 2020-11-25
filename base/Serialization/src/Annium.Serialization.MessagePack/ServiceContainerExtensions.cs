@@ -5,7 +5,7 @@ using Annium.Serialization.MessagePack.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddMessagePackSerializer(this IServiceContainer container)
         {

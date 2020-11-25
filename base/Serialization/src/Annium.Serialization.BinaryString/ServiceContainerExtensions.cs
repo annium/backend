@@ -4,7 +4,7 @@ using Annium.Serialization.BinaryString.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddBinaryStringSerializer(this IServiceContainer container)
         {

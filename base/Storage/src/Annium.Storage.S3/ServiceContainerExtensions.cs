@@ -6,7 +6,7 @@ using S3Storage = Annium.Storage.S3.Storage;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddS3Storage(this IServiceContainer container)
         {

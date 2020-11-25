@@ -3,7 +3,7 @@ using Annium.Net.Http.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddHttpRequestFactory(this IServiceContainer container)
         {

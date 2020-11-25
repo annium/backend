@@ -7,7 +7,7 @@ using Annium.Serialization.Json.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddJsonSerializers(
             this IServiceContainer container,

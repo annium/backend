@@ -3,7 +3,7 @@ using Annium.Extensions.Arguments.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static void AddArguments(this IServiceContainer container)
         {

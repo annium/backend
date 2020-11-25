@@ -6,7 +6,7 @@ using MemoryStorage = Annium.Storage.InMemory.Storage;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddInMemoryStorage(this IServiceContainer container)
         {

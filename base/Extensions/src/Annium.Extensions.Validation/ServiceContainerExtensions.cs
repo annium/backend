@@ -3,7 +3,7 @@ using Annium.Extensions.Validation.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddValidation(this IServiceContainer container)
         {

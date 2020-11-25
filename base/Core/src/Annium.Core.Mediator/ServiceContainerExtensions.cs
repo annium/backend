@@ -5,7 +5,7 @@ using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddMediatorConfiguration(
             this IServiceContainer container,

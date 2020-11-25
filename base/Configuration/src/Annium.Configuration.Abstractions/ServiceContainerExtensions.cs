@@ -9,7 +9,7 @@ using Annium.Core.Reflection;
 
 namespace Annium.Core.DependencyInjection
 {
-    public static class ServiceCollectionExtensions
+    public static class ServiceContainerExtensions
     {
         public static IServiceContainer AddConfiguration<T>(
             this IServiceContainer container,
