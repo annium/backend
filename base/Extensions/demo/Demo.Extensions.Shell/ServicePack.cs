@@ -1,6 +1,5 @@
 using System;
 using Annium.Core.DependencyInjection;
-using NodaTime;
 
 namespace Demo.Extensions.Shell
 {
@@ -13,7 +12,7 @@ namespace Demo.Extensions.Shell
 
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddTimeProvider();
             container.AddLogging(route => route.UseConsole());
             container.AddShell();
         }

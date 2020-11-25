@@ -3,7 +3,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Handlers;
-using NodaTime;
 
 namespace Demo.Core.Mediator
 {
@@ -11,7 +10,7 @@ namespace Demo.Core.Mediator
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddTimeProvider();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();
 

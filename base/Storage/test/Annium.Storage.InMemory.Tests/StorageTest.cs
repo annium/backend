@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Storage.InMemory.Tests
 {
     public class StorageTest
     {
-        private readonly Random _random = new Random();
-
         [Fact]
         public async Task Setup_Works()
         {
@@ -139,7 +136,7 @@ namespace Annium.Storage.InMemory.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddInMemoryStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.Add<Func<Instant>>(() => Instant.MinValue).AsSelf().Singleton();
+            container.AddTestTimeProvider();
 
             var provider = container.BuildServiceProvider();
 

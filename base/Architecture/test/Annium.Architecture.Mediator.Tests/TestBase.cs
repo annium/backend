@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
-using NodaTime;
 
 namespace Annium.Architecture.Mediator.Tests
 {
@@ -13,7 +12,7 @@ namespace Annium.Architecture.Mediator.Tests
             var container = new ServiceContainer();
 
             container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
+            container.AddTimeProvider();
 
             container.AddLogging(route => route.UseInMemory());
 

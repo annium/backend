@@ -2,15 +2,12 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Logging.Console.Tests
 {
     public class ConsoleLoggerTest
     {
-        private readonly Func<Instant> _getInstant = () => Instant.FromUnixTimeSeconds(60);
-
         [Fact]
         public void LogMessage_WritesLogMessageToConsole()
         {
@@ -71,7 +68,7 @@ namespace Annium.Logging.Console.Tests
         {
             var container = new ServiceContainer();
 
-            container.Add<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60)).AsSelf().Singleton();
+            container.AddTestTimeProvider();
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)

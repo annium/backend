@@ -6,7 +6,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Pooling;
 using Annium.Logging.Abstractions;
-using NodaTime;
 
 namespace Demo.Extensions.Pooling
 {
@@ -23,7 +22,7 @@ namespace Demo.Extensions.Pooling
             CancellationToken token
         )
         {
-            var (cache, logs) = CreateCache();
+            var cache = CreateCache();
 
             // act
             await using var reference = await cache.GetAsync(0);
@@ -34,10 +33,10 @@ namespace Demo.Extensions.Pooling
             .Run(Run, args);
 
 
-        private static (IObjectCache<uint, Item>, IReadOnlyCollection<string>) CreateCache()
+        private static IObjectCache<uint, Item> CreateCache()
         {
             var container = new ServiceContainer();
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddTimeProvider();
 
             var logger = container
                 .AddLogging(route => route.UseConsole())
@@ -62,7 +61,7 @@ namespace Demo.Extensions.Pooling
                 logger
             );
 
-            return (cache, logs);
+            return cache;
         }
 
         private class Item : IDisposable

@@ -1,31 +1,30 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Time;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Logging.Abstractions.Tests
 {
     public class BaseLoggerTest
     {
-        private readonly Func<Instant> _getInstant =
-            () => Instant.FromUnixTimeSeconds(60);
-
         private readonly IList<LogMessage> _messages = new List<LogMessage>();
 
         [Fact]
         public void Log_ValidLevel_WritesLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var timeProvider = provider.Resolve<ITimeProvider>();
 
             // act
             logger.Log(LogLevel.Trace, "sample");
 
             // assert
             _messages.Has(1);
-            _messages.At(0).Instant.IsEqual(_getInstant());
+            _messages.At(0).Instant.IsEqual(timeProvider.Now);
             _messages.At(0).Level.IsEqual(LogLevel.Trace);
             _messages.At(0).Source.IsEqual(typeof(BaseLoggerTest));
             _messages.At(0).Message.IsEqual("sample");
@@ -35,7 +34,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void Log_InvalidLevel_OmitsLogEntry()
         {
             // arrange
-            var logger = GetLogger(LogLevel.Debug);
+            var provider = GetProvider(LogLevel.Debug);
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Log(LogLevel.Trace, "sample");
@@ -48,7 +48,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogTrace_WritesTraceLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Trace("sample");
@@ -61,7 +62,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogDebug_WritesDebugLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Debug("sample");
@@ -74,7 +76,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogInfo_WritesInfoLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Info("sample");
@@ -87,7 +90,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogWarn_WritesWarnLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Warn("sample");
@@ -100,7 +104,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogErrorException_WritesErrorExceptionLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
             var exception = new Exception("sample");
 
             // act
@@ -116,7 +121,8 @@ namespace Annium.Logging.Abstractions.Tests
         public void LogErrorMessage_WritesErrorMessageLogEntry()
         {
             // arrange
-            var logger = GetLogger();
+            var provider = GetProvider();
+            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
 
             // act
             logger.Error("sample");
@@ -126,18 +132,18 @@ namespace Annium.Logging.Abstractions.Tests
             _messages.At(0).Message.IsEqual("sample");
         }
 
-        private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
+        private IServiceProvider GetProvider(LogLevel minLogLevel = LogLevel.Trace)
         {
             var container = new ServiceContainer();
 
-            container.Add<Func<Instant>>(() => Instant.FromUnixTimeSeconds(60)).AsSelf().Singleton();
+            container.AddTestTimeProvider();
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
                 .Use(ServiceDescriptor.Instance(new LogHandler(_messages), ServiceLifetime.Singleton))
             );
 
-            return container.BuildServiceProvider().Resolve<ILogger<BaseLoggerTest>>();
+            return container.BuildServiceProvider();
         }
     }
 

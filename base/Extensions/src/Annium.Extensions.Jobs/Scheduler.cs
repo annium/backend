@@ -3,27 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Runtime.Time;
 using NodaTime;
 
 namespace Annium.Extensions.Jobs
 {
     internal class Scheduler : IScheduler, IDisposable
     {
-        private readonly Func<Instant> _getInstant;
-
+        private readonly ITimeProvider _timeProvider;
         private readonly IIntervalResolver _intervalResolver;
-
         private readonly CancellationTokenSource _cts = new CancellationTokenSource();
-
-        private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers =
-            new Dictionary<Func<Task>, Func<Instant, bool>>();
+        private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers = new Dictionary<Func<Task>, Func<Instant, bool>>();
 
         public Scheduler(
-            Func<Instant> getInstant,
+            ITimeProvider timeProvider,
             IIntervalResolver intervalResolver
         )
         {
-            _getInstant = getInstant;
+            _timeProvider = timeProvider;
             _intervalResolver = intervalResolver;
             Run(_cts.Token).GetAwaiter();
         }
@@ -41,7 +38,7 @@ namespace Annium.Extensions.Jobs
             while (!token.IsCancellationRequested)
             {
                 // wait till next minute start
-                var time = _getInstant().InUtc();
+                var time = _timeProvider.Now.InUtc();
                 await Task.Delay(
                     TimeSpan.FromMinutes(1) -
                     TimeSpan.FromSeconds(time.Second) -
@@ -49,7 +46,7 @@ namespace Annium.Extensions.Jobs
                 );
 
                 // run handlers
-                var instant = _getInstant();
+                var instant = _timeProvider.Now;
                 await Task.WhenAll(_handlers.Where(e => e.Value(instant)).ToArray().Select(e => e.Key()));
             }
         }

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
-using NodaTime;
+using Annium.Core.Runtime.Time;
 
 namespace Annium.Logging.Abstractions.Internal
 {
@@ -9,23 +9,23 @@ namespace Annium.Logging.Abstractions.Internal
     {
         private readonly IEnumerable<LogRoute> _routes;
         private readonly IServiceProvider _provider;
-        private readonly Func<Instant> _getInstant;
+        private readonly ITimeProvider _timeProvider;
         private readonly IDictionary<LogRoute, ILogHandler> _handlers = new Dictionary<LogRoute, ILogHandler>();
 
         public LogRouter(
-            Func<Instant> getInstant,
+            ITimeProvider timeProvider,
             IEnumerable<LogRoute> routes,
             IServiceProvider provider
         )
         {
             _routes = routes;
             _provider = provider;
-            _getInstant = getInstant;
+            _timeProvider = timeProvider;
         }
 
         public void Send(LogLevel level, Type source, string message, Exception? exception)
         {
-            var instant = _getInstant();
+            var instant = _timeProvider.Now;
             var msg = new LogMessage(instant, level, source, message, exception);
 
             foreach (var route in _routes)

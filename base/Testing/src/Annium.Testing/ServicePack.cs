@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Testing.Executors;
-using NodaTime;
 
 namespace Annium.Testing
 {
@@ -9,7 +8,7 @@ namespace Annium.Testing
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddTimeProvider();
 
             // components
             container.Add<TestDiscoverer>().Singleton();

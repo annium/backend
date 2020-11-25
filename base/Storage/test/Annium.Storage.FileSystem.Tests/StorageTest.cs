@@ -6,15 +6,12 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Storage.FileSystem.Tests
 {
     public class StorageTest : IDisposable
     {
-        private readonly Random _random = new Random();
-
         private readonly string _directory;
 
         public StorageTest()
@@ -146,7 +143,7 @@ namespace Annium.Storage.FileSystem.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddFileSystemStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.Add<Func<Instant>>(() => Instant.MinValue).AsSelf().Singleton();
+            container.AddTestTimeProvider();
 
             var provider = container.BuildServiceProvider();
 

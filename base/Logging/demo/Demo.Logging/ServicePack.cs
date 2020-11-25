@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
-using NodaTime;
 
 namespace Demo.Logging
 {
@@ -9,7 +8,7 @@ namespace Demo.Logging
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).Singleton();
+            container.AddTimeProvider();
 
             container.AddLogging(route => route
                 .For(m => m.Level == LogLevel.Debug).UseConsole()

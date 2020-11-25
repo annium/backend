@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Extensions.Pooling.Tests
@@ -66,9 +65,9 @@ namespace Annium.Extensions.Pooling.Tests
         private (IObjectCache<uint, Item>, IReadOnlyCollection<string>) CreateCache()
         {
             var container = new ServiceContainer();
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
 
             var logger = container
+                .AddTestTimeProvider()
                 .AddLogging(route => route.UseInMemory())
                 // .AddLogging(route => route.UseConsole())
                 .BuildServiceProvider()

@@ -3,7 +3,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
 using NodaTime.Xml;
 
 namespace Annium.AspNetCore.TestServer
@@ -14,7 +13,7 @@ namespace Annium.AspNetCore.TestServer
         {
             // register and setup services
             container.AddRuntimeTools(GetType().Assembly, true);
-            container.Add<Func<Instant>>(SystemClock.Instance.GetCurrentInstant).AsSelf().Singleton();
+            container.AddTimeProvider();
             container.AddJsonSerializers((sp, opts) => opts
                 .ConfigureDefault(sp.GetRequiredService<ITypeManager>())
                 .ConfigureForOperations()
