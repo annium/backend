@@ -6,7 +6,7 @@ namespace Annium.Core.Internal
 {
     public static class Framework
     {
-        private static SetupMode Mode { get; }
+        private static SetupMode Mode { get; } = SetupMode.Release;
         private const string ModeVar = "ANNIUM_MODE";
 
         static Framework()
