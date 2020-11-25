@@ -3,7 +3,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime.Xml;
 
 namespace Annium.AspNetCore.TestServer
 {
@@ -17,7 +16,7 @@ namespace Annium.AspNetCore.TestServer
             container.AddJsonSerializers((sp, opts) => opts
                 .ConfigureDefault(sp.GetRequiredService<ITypeManager>())
                 .ConfigureForOperations()
-                .ConfigureForNodaTime(XmlSerializationSettings.DateTimeZoneProvider)
+                .ConfigureForNodaTime()
             );
             container.AddHttpRequestFactory();
             container.AddMediatorConfiguration(ConfigureMediator);

@@ -4,20 +4,20 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.NodaTime.Serialization.Json;
 using NodaTime;
+using NodaTime.Xml;
 
 namespace Annium.Core.DependencyInjection
 {
     public static class JsonSerializerOptionsExtensions
     {
         public static JsonSerializerOptions ConfigureForNodaTime(
-            this JsonSerializerOptions options,
-            IDateTimeZoneProvider provider
+            this JsonSerializerOptions options
         )
         {
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
 
-            AddDefaultConverters(options.Converters, provider);
+            AddDefaultConverters(options.Converters, XmlSerializationSettings.DateTimeZoneProvider);
 
             return options;
         }
