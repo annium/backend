@@ -1,6 +1,5 @@
 using System.Net.Mime;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Tests
@@ -9,7 +8,7 @@ namespace Annium.Serialization.Json.Tests
     {
         protected ISerializer<string> GetSerializer() => new ServiceContainer()
             .AddRuntimeTools(GetType().Assembly, false)
-            .AddJsonSerializers((sp, opts) => opts.ConfigureDefault(sp.Resolve<ITypeManager>()))
+            .AddJsonSerializers()
             .BuildServiceProvider()
             .Resolve<IIndex<string, ISerializer<string>>>()
             [MediaTypeNames.Application.Json];

@@ -5,7 +5,6 @@ using System.Net.Mime;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime.Types;
 using Annium.Data.Models.Extensions;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
@@ -37,7 +36,7 @@ namespace Annium.Configuration.Json.Tests
                 jsonFile = Path.GetTempFileName();
                 var serializer = new ServiceContainer()
                     .AddRuntimeTools(GetType().Assembly, false)
-                    .AddJsonSerializers((sp, opts) => opts.ConfigureDefault(sp.Resolve<ITypeManager>()))
+                    .AddJsonSerializers()
                     .BuildServiceProvider()
                     .Resolve<IIndex<string, ISerializer<string>>>()
                     [MediaTypeNames.Application.Json];

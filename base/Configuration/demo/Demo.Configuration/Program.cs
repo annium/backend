@@ -7,7 +7,6 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 using Demo.Extensions.Configuration;
 using YamlDotNet.Serialization;
@@ -72,7 +71,7 @@ namespace Demo.Configuration
                 jsonFile = Path.GetTempFileName();
                 var serializer = new ServiceContainer()
                     .AddRuntimeTools(typeof(Program).Assembly, false)
-                    .AddJsonSerializers((sp, opts) => opts.ConfigureDefault(sp.Resolve<ITypeManager>()))
+                    .AddJsonSerializers()
                     .BuildServiceProvider()
                     .Resolve<IIndex<string, ISerializer<string>>>()
                     [MediaTypeNames.Application.Json];
