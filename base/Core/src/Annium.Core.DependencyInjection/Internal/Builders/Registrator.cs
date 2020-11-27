@@ -24,6 +24,9 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
                 throw new InvalidOperationException("Registration already done");
             _hasRegistered = true;
 
+            if (registrations.Count == 0)
+                throw new InvalidOperationException("No registration specified");
+
             var descriptors = registrations
                 .SelectMany(x => x.ResolveServiceDescriptors(lifetime))
                 .ToArray();
