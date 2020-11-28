@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Annium.Core.Primitives
 {
@@ -44,6 +45,14 @@ namespace Annium.Core.Primitives
             var arguments = value.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
             return TypeNames.AddOrUpdate(value, $"{name}<{string.Join(", ", arguments)}>", (_, x) => x);
+        }
+
+        public static object? DefaultValue(this Type type)
+        {
+            if (type.GetTypeInfo().IsValueType)
+                return Activator.CreateInstance(type);
+
+            return null;
         }
     }
 }
