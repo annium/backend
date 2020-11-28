@@ -65,8 +65,11 @@ namespace Annium.Serialization.Json.Internal.Converters
             JsonSerializerOptions options
         )
         {
-            if (!root.TryGetProperty(resolutionKeyProperty.Name.PascalCase(), out var keyElement) &&
-                !root.TryGetProperty(resolutionKeyProperty.Name.CamelCase(), out keyElement))
+            var keyPropertyName =
+                resolutionKeyProperty.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ??
+                options.PropertyNamingPolicy?.ConvertName(resolutionKeyProperty.Name) ??
+                resolutionKeyProperty.Name;
+            if (!root.TryGetProperty(keyPropertyName, out var keyElement))
                 throw new SerializationException(Error(baseType, "key property is missing"));
 
             var key = JsonSerializer.Deserialize(keyElement.GetRawText(), resolutionKeyProperty.PropertyType, options)!;

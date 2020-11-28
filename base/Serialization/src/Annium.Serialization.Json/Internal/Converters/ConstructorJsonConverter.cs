@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium.Core.Primitives;
 
 namespace Annium.Serialization.Json.Internal.Converters
 {
@@ -47,7 +48,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                                 return x;
 
                             if (options.IgnoreNullValues)
-                                return Activator.CreateInstance(_parameters[i].Type);
+                                return _parameters[i].Type.DefaultValue();
 
                             throw new JsonException();
                         })

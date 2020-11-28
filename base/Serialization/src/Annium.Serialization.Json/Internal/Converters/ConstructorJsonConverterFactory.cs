@@ -40,7 +40,20 @@ namespace Annium.Serialization.Json.Internal.Converters
             // select non-default constructors
             var constructors = type
                 .GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Where(x => x.GetParameters().Any())
+                .Where(x =>
+                {
+                    var parameters = x.GetParameters();
+
+                    // default constructor is not applicable
+                    if (parameters.Length == 0)
+                        return false;
+
+                    // clone constructor is not applicable
+                    if (parameters.Length == 1 && parameters[0].ParameterType == type)
+                        return false;
+
+                    return true;
+                })
                 .ToArray();
 
             // if many non-default constructors - try find single constructor with DeserializationConstructorAttribute
