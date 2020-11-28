@@ -9,7 +9,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     {
         private readonly Type _type;
         private readonly Registrator _registrator;
-        private readonly List<IRegistration> _registrations = new();
+        private readonly RegistrationsCollection _registrations = new();
 
         public SingleRegistrationBuilder(
             Type type,
@@ -52,11 +52,15 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public void Singleton() => Register(ServiceLifetime.Singleton);
         public void Transient() => Register(ServiceLifetime.Transient);
 
-        private void Register(ServiceLifetime lifetime) => _registrator
-            .Register(new[] { new TypeRegistration(_type, _type) }.Concat(_registrations).ToArray(), lifetime);
+        private void Register(ServiceLifetime lifetime)
+        {
+            _registrations.Add(new TypeRegistration(_type, _type));
+            _registrator.Register(_registrations, lifetime);
+        }
 
         private ISingleRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
         {
+            _registrations.Init();
             _registrations.AddRange(registrations);
 
             return this;
@@ -64,6 +68,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private ISingleRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
+            _registrations.Init();
             _registrations.Add(registration);
 
             return this;

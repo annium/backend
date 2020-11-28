@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
@@ -16,7 +14,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         }
 
         public void Register(
-            IReadOnlyCollection<IRegistration> registrations,
+            RegistrationsCollection registrations,
             ServiceLifetime lifetime
         )
         {
@@ -24,8 +22,8 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
                 throw new InvalidOperationException("Registration already done");
             _hasRegistered = true;
 
-            if (registrations.Count == 0)
-                throw new InvalidOperationException("No registration specified");
+            if (!registrations.IsInitiated)
+                throw new InvalidOperationException("Specify registration targets");
 
             var descriptors = registrations
                 .SelectMany(x => x.ResolveServiceDescriptors(lifetime))

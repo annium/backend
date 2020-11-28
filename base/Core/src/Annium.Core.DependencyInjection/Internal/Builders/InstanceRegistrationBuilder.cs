@@ -10,8 +10,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         private readonly Type _type;
         private readonly object _instance;
         private readonly Registrator _registrator;
-        private readonly List<IRegistration> _registrations = new();
-
+        private readonly RegistrationsCollection _registrations = new();
 
         public InstanceRegistrationBuilder(
             Type type,
@@ -55,6 +54,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private IInstanceRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
         {
+            _registrations.Init();
             _registrations.AddRange(registrations);
 
             return this;
@@ -62,6 +62,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private IInstanceRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
+            _registrations.Init();
             _registrations.Add(registration);
 
             return this;

@@ -9,7 +9,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     {
         private readonly List<Type> _types;
         private readonly Registrator _registrator;
-        private readonly List<IRegistration> _registrations = new();
+        private readonly RegistrationsCollection _registrations = new();
 
         public BulkRegistrationBuilder(IEnumerable<Type> types, Action<IServiceDescriptor> register)
         {
@@ -55,11 +55,15 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public void Singleton() => Register(ServiceLifetime.Singleton);
         public void Transient() => Register(ServiceLifetime.Transient);
 
-        private void Register(ServiceLifetime lifetime) => _registrator
-            .Register(_types.Select(x => new TypeRegistration(x, x)).ToArray().Concat(_registrations).ToArray(), lifetime);
+        private void Register(ServiceLifetime lifetime)
+        {
+            _registrations.AddRange(_types.Select(x => new TypeRegistration(x, x)));
+            _registrator.Register(_registrations, lifetime);
+        }
 
         private IBulkRegistrationBuilderTarget WithRegistrations(Func<Type, IEnumerable<IRegistration>> createRegistrations)
         {
+            _registrations.Init();
             _registrations.AddRange(_types.SelectMany(createRegistrations));
 
             return this;
@@ -67,6 +71,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private IBulkRegistrationBuilderTarget WithRegistration(Func<Type, IRegistration> createRegistration)
         {
+            _registrations.Init();
             _registrations.AddRange(_types.Select(createRegistration));
 
             return this;

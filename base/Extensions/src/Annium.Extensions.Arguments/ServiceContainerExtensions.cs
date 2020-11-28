@@ -11,8 +11,8 @@ namespace Annium.Core.DependencyInjection
             container.Add<IConfigurationBuilder, ConfigurationBuilder>().Singleton();
             container.Add<IConfigurationProcessor, ConfigurationProcessor>().Singleton();
             container.Add<IHelpBuilder, HelpBuilder>().Singleton();
-            container.Add<Commander>().Singleton();
-            container.Add<Root>().Singleton();
+            container.Add<Commander>().AsSelf().Singleton();
+            container.Add<Root>().AsSelf().Singleton();
         }
     }
 }

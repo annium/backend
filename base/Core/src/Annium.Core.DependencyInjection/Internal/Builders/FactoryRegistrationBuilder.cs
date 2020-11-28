@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
@@ -9,7 +8,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         private readonly Type _type;
         private readonly Func<IServiceProvider, object> _factory;
         private readonly Registrator _registrator;
-        private readonly List<IRegistration> _registrations = new();
+        private readonly RegistrationsCollection _registrations = new();
 
         public FactoryRegistrationBuilder(
             Type type,
@@ -41,6 +40,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 
         private IFactoryRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
+            _registrations.Init();
             _registrations.Add(registration);
 
             return this;
