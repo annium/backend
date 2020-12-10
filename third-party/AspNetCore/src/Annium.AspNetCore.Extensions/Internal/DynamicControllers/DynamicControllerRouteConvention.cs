@@ -25,10 +25,12 @@ namespace Annium.AspNetCore.Extensions.Internal.DynamicControllers
 
             var area = model.Area;
             var name = model.Name;
+            var key = model.Key;
             var route = model.Area.IsNullOrWhiteSpace() ? model.Route : $"{area}/{model.Route}";
 
             controller.RouteValues["area"] = area;
             controller.RouteValues["controller"] = name;
+            controller.RouteValues["dynamicKey"] = key;
             controller.Selectors.Add(new SelectorModel
             {
                 AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(route))

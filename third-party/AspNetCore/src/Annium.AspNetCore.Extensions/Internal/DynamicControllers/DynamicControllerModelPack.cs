@@ -7,18 +7,21 @@ namespace Annium.AspNetCore.Extensions.Internal.DynamicControllers
     {
         internal IReadOnlyCollection<DynamicControllerModel> Models => _models;
         private string? _area;
-        private readonly List<DynamicControllerModel> _models = new List<DynamicControllerModel>();
+        private string? _key;
+        private readonly List<DynamicControllerModel> _models = new();
 
-        public IDynamicControllerModelPack SetArea(string? area)
+        public IDynamicControllerModelPack Setup(string? area, string? key)
         {
             _area = area;
+            _key = key;
 
             return this;
         }
 
-        public IDynamicControllerModelPack Add<T>(string name, string route) where T : ControllerBase
+        public IDynamicControllerModelPack Add<T>(string name, string route)
+            where T : ControllerBase
         {
-            _models.Add(new DynamicControllerModel(typeof(T), _area, name, route));
+            _models.Add(new DynamicControllerModel(typeof(T), _area, _key, name, route));
 
             return this;
         }
