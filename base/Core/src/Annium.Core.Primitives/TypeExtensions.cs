@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,16 @@ namespace Annium.Core.Primitives
             var arguments = value.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
             return TypeNames.AddOrUpdate(value, $"{name}<{string.Join(", ", arguments)}>", (_, x) => x);
+        }
+
+        public static bool IsEnumerable(this Type type)
+        {
+            if (type == typeof(string))
+                return false;
+
+            return type.IsArray
+                || type == typeof(IEnumerable)
+                || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
         }
 
         public static object? DefaultValue(this Type type)
