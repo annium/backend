@@ -9,15 +9,15 @@ namespace Annium.Net.Base
 {
     public class UriFactory
     {
-        public static UriFactory Base(Uri baseUri) => new UriFactory(baseUri);
+        public static UriFactory Base(Uri baseUri) => new(baseUri);
 
-        public static UriFactory Base(string baseUri) => new UriFactory(new Uri(baseUri));
+        public static UriFactory Base(string baseUri) => new(new Uri(baseUri));
 
-        public static UriFactory Base() => new UriFactory();
+        public static UriFactory Base() => new();
 
         private readonly Uri? _baseUri;
         private string? _uri;
-        private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _parameters = new();
 
         private UriFactory(
             Uri? baseUri,
@@ -61,7 +61,7 @@ namespace Annium.Net.Base
         }
 
 
-        public UriFactory Clone() => new UriFactory(_baseUri, _uri, _parameters);
+        public UriFactory Clone() => new(_baseUri, _uri, _parameters);
 
         public Uri Build()
         {
