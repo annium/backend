@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using NodaTime;
 
-namespace Annium.Core.Mapper.Internal
+namespace Annium.Core.Mapper.Internal.Profiles
 {
     internal class DefaultProfile : Profile
     {

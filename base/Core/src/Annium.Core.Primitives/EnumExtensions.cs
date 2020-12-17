@@ -97,7 +97,7 @@ namespace Annium.Core.Primitives
         }
 
         private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, ValueType>> ParseLabelsCache =
-            new ConcurrentDictionary<Type, IReadOnlyDictionary<string, ValueType>>();
+            new();
 
         private static IReadOnlyDictionary<string, ValueType> ParseLabels(Type type)
         {
@@ -137,7 +137,7 @@ namespace Annium.Core.Primitives
         }
 
         private static readonly ConcurrentDictionary<Type, HashSet<ValueType>> ParseValuesCache =
-            new ConcurrentDictionary<Type, HashSet<ValueType>>();
+            new();
 
         private static HashSet<ValueType> ParseValues(Type type)
         {

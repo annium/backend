@@ -4,6 +4,7 @@ using System.Linq;
 using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
 using Annium.Core.Mapper.Internal.DependencyInjection;
+using Annium.Core.Mapper.Internal.Profiles;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
@@ -30,6 +31,7 @@ namespace Annium.Core.DependencyInjection
             // add default profile
             container.AddProfileInstance(new EmptyProfile());
             container.AddProfileInstance(new DefaultProfile());
+            container.AddProfileType(typeof(EnumProfile<>));
 
             // if autoload requested - discover and register profiles
             if (autoload)
