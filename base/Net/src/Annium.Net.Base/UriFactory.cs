@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using Microsoft.AspNetCore.Http.Extensions;
-using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Base
 {
@@ -17,12 +15,12 @@ namespace Annium.Net.Base
 
         private readonly Uri? _baseUri;
         private string? _uri;
-        private readonly Dictionary<string, string> _parameters = new();
+        private readonly UriQuery _query = UriQuery.New();
 
         private UriFactory(
             Uri? baseUri,
             string? uri,
-            IReadOnlyDictionary<string, string> parameters
+            UriQuery query
         )
         {
             if (baseUri != null)
@@ -30,7 +28,7 @@ namespace Annium.Net.Base
 
             _baseUri = baseUri;
             _uri = uri;
-            _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
+            _query = query.Copy();
         }
 
         private UriFactory(
@@ -55,29 +53,25 @@ namespace Annium.Net.Base
 
         public UriFactory Param<T>(string key, T value)
         {
-            _parameters[key] = value?.ToString() ?? string.Empty;
+            _query[key] = value?.ToString() ?? string.Empty;
 
             return this;
         }
 
 
-        public UriFactory Clone() => new(_baseUri, _uri, _parameters);
+        public UriFactory Clone() => new(_baseUri, _uri, _query);
 
         public Uri Build()
         {
             var uri = BuildUriBase();
-            var qb = new QueryBuilder();
-
-            // if any query in source uri - add it to queryBuilder
-            if (!string.IsNullOrWhiteSpace(uri.Query))
-                foreach (var (name, value) in QueryHelpers.ParseQuery(uri.Query))
-                    qb.Add(name, (IEnumerable<string>) value);
+            var query = UriQuery.Parse(uri.Query);
 
             // add manually defined params to queryBuilder
-            foreach (var (name, value) in _parameters)
-                qb.Add(name, value);
+            foreach (var (name, value) in _query)
+                if (!query.TryAdd(name, value))
+                    query[name] = StringValues.Concat(query[name], value);
 
-            return new UriBuilder(uri) { Query = qb.ToString() }.Uri;
+            return new UriBuilder(uri) { Query = query.ToString() }.Uri;
         }
 
         private Uri BuildUriBase()
