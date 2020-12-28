@@ -40,7 +40,7 @@ namespace Annium.Logging.Console
         {
             lock (ConsoleLock)
             {
-                var currentColor = System.Console.ForegroundColor;
+                var currentColor = _color ? System.Console.ForegroundColor : default;
                 try
                 {
                     if (_color)
