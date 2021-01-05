@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Net.Http
 {
@@ -14,6 +15,7 @@ namespace Annium.Net.Http
         HttpContent? Content { get; }
         bool IsEnsuringSuccess { get; }
         IHttpContentSerializer ContentSerializer { get; }
+        ILogger<IHttpRequest> Logger { get; }
         IHttpRequest Base(Uri baseUri);
         IHttpRequest Base(string baseUri);
         IHttpRequest UseClient(HttpClient client);

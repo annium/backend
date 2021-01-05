@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 using Annium.Net.Base;
 
 namespace Annium.Net.Http.Internal
@@ -20,7 +21,7 @@ namespace Annium.Net.Http.Internal
             HttpRequestOptions options
         );
 
-        private static readonly HttpClient DefaultClient = new HttpClient();
+        private static readonly HttpClient DefaultClient = new();
 
         public HttpMethod Method { get; private set; } = HttpMethod.Get;
         public Uri Uri => GetUriFactory().Build();
@@ -28,35 +29,42 @@ namespace Annium.Net.Http.Internal
         public HttpContent? Content { get; private set; }
         public bool IsEnsuringSuccess => _getFailureMessage != null;
         public IHttpContentSerializer ContentSerializer { get; }
+        public ILogger<IHttpRequest> Logger { get; }
         private HttpClient _client = DefaultClient;
         private Uri? _baseUri;
         private string? _uri;
         private readonly HttpRequestHeaders _headers;
-        private readonly Dictionary<string, string> _parameters = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> _parameters = new();
         private Func<IHttpResponse, Task<string>>? _getFailureMessage;
         private readonly IList<Middleware> _middlewares = new List<Middleware>();
 
         internal HttpRequest(
             IHttpContentSerializer httpContentSerializer,
+            ILogger<IHttpRequest> logger,
             Uri baseUri
         ) : this(
-            httpContentSerializer
+            httpContentSerializer,
+            logger
         )
         {
+            Logger = logger;
             _baseUri = baseUri;
         }
 
         internal HttpRequest(
-            IHttpContentSerializer httpContentSerializer
+            IHttpContentSerializer httpContentSerializer,
+            ILogger<IHttpRequest> logger
         )
         {
             ContentSerializer = httpContentSerializer;
+            Logger = logger;
             using var message = new HttpRequestMessage();
             _headers = message.Headers;
         }
 
         private HttpRequest(
             IHttpContentSerializer httpContentSerializer,
+            ILogger<IHttpRequest> logger,
             HttpClient client,
             HttpMethod method,
             Uri? baseUri,
@@ -68,6 +76,7 @@ namespace Annium.Net.Http.Internal
         )
         {
             ContentSerializer = httpContentSerializer;
+            Logger = logger;
             _client = client;
             Method = method;
             _baseUri = baseUri;
@@ -124,7 +133,7 @@ namespace Annium.Net.Http.Internal
             EnsureSuccessStatusCode(response => response.Content.ReadAsStringAsync());
 
         public IHttpRequest EnsureSuccessStatusCode(string message) =>
-            EnsureSuccessStatusCode(response => Task.FromResult(message));
+            EnsureSuccessStatusCode(_ => Task.FromResult(message));
 
         public IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, string> getFailureMessage) =>
             EnsureSuccessStatusCode(response => Task.FromResult(getFailureMessage(response)));
@@ -137,7 +146,7 @@ namespace Annium.Net.Http.Internal
         }
 
         public IHttpRequest Clone() =>
-            new HttpRequest(ContentSerializer, _client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
+            new HttpRequest(ContentSerializer, Logger, _client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray(), CancellationToken.None);
@@ -183,8 +192,7 @@ namespace Annium.Net.Http.Internal
 
         private IHttpResponse GetRequestCanceledResponse()
         {
-            var message = new HttpResponseMessage(HttpStatusCode.RequestTimeout);
-            message.ReasonPhrase = "Request canceled";
+            var message = new HttpResponseMessage(HttpStatusCode.RequestTimeout) { ReasonPhrase = "Request canceled" };
 
             return new HttpResponse(message);
         }
