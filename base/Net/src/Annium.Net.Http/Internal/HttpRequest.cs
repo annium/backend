@@ -72,7 +72,8 @@ namespace Annium.Net.Http.Internal
             HttpRequestHeaders headers,
             IReadOnlyDictionary<string, string> parameters,
             HttpContent? content,
-            Func<IHttpResponse, Task<string>>? getFailureMessage
+            Func<IHttpResponse, Task<string>>? getFailureMessage,
+            IList<Middleware> middlewares
         )
         {
             ContentSerializer = httpContentSerializer;
@@ -87,6 +88,7 @@ namespace Annium.Net.Http.Internal
             _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
             Content = content;
             _getFailureMessage = getFailureMessage;
+            _middlewares = middlewares;
         }
 
         public IHttpRequest Base(Uri baseUri)
@@ -146,7 +148,19 @@ namespace Annium.Net.Http.Internal
         }
 
         public IHttpRequest Clone() =>
-            new HttpRequest(ContentSerializer, Logger, _client, Method, _baseUri, _uri, _headers, _parameters, Content, _getFailureMessage);
+            new HttpRequest(
+                ContentSerializer,
+                Logger,
+                _client,
+                Method,
+                _baseUri,
+                _uri,
+                _headers,
+                _parameters,
+                Content,
+                _getFailureMessage,
+                _middlewares
+            );
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray(), CancellationToken.None);
