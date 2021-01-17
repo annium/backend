@@ -23,6 +23,7 @@ namespace Annium.Net.Http
         IHttpRequest With(HttpMethod method, string uri);
         IHttpRequest Param<T>(string key, T value);
         IHttpRequest Attach(HttpContent content);
+        IHttpRequest DontEnsureSuccessStatusCode();
         IHttpRequest EnsureSuccessStatusCode();
         IHttpRequest EnsureSuccessStatusCode(string message);
         IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, string> getFailureMessage);

@@ -131,6 +131,13 @@ namespace Annium.Net.Http.Internal
             return this;
         }
 
+        public IHttpRequest DontEnsureSuccessStatusCode()
+        {
+            _getFailureMessage = null;
+
+            return this;
+        }
+
         public IHttpRequest EnsureSuccessStatusCode() =>
             EnsureSuccessStatusCode(response => response.Content.ReadAsStringAsync());
 
@@ -198,7 +205,7 @@ namespace Annium.Net.Http.Internal
             if (response.IsFailure && _getFailureMessage != null)
             {
                 var failure = await _getFailureMessage(response).ConfigureAwait(false);
-                throw new HttpRequestException(failure);
+                throw new HttpRequestException(failure, null, response.StatusCode);
             }
 
             return response;

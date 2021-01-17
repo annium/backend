@@ -36,6 +36,17 @@ namespace Annium.Net.Http
             Content = message.Content;
         }
 
+        public HttpResponse(HttpRequestException exception)
+        {
+            IsSuccess = false;
+            IsFailure = true;
+            StatusCode = exception.StatusCode ?? HttpStatusCode.InternalServerError;
+            StatusText = exception.Message!;
+            var message = new HttpResponseMessage();
+            Headers = message.Headers;
+            Content = new StringContent(string.Empty);
+        }
+
         internal HttpResponse(IHttpResponse response)
         {
             IsSuccess = response.IsSuccess;
