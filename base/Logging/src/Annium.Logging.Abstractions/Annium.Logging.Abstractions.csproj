@@ -16,6 +16,6 @@
         <ProjectReference Include="../../../Core/src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="NodaTime" Version="3.0.3" />
+        <PackageReference Include="NodaTime" Version="3.0.4" />
     </ItemGroup>
 </Project>
