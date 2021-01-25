@@ -87,7 +87,6 @@ namespace Annium.Core.DependencyInjection
                 sp.Resolve<TestingSqliteReference>().ConnectionString,
                 mappingSchema
             )!).Scoped();
-            Configuration.Linq.AllowMultipleQuery = true;
 
             return container;
         }

@@ -83,7 +83,6 @@ namespace Annium.Core.DependencyInjection
                 ),
                 mappingSchema
             )!).Scoped();
-            Configuration.Linq.AllowMultipleQuery = true;
 
             return container;
         }
