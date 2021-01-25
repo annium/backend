@@ -22,53 +22,6 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
-        public void ConstructorMapping_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var first = new A { Name = "first" };
-            var second = new A { Name = "second" };
-
-            // act
-            var one = mapper.Map<B>(first);
-            var arr = mapper.Map<B[]>(new[] { first, second });
-
-            // assert
-            one.Name.IsEqual(first.Name);
-            arr.Has(2);
-            arr.At(0).Name.IsEqual(first.Name);
-            arr.At(1).Name.IsEqual(second.Name);
-        }
-
-        [Fact]
-        public void PropertyMapping_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var value = new A { Name = "name" };
-
-            // act
-            var result = mapper.Map<C>(value);
-
-            // assert
-            result.Name.IsEqual(value.Name);
-        }
-
-        [Fact]
-        public void PropertyMapping_WithExcessProperties_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var value = new A { Name = "name" };
-
-            // act
-            var result = mapper.Map<F>(value);
-
-            // assert
-            result.IsNotDefault();
-        }
-
-        [Fact]
         public void Nesting_Works()
         {
             // arrange
@@ -119,11 +72,6 @@ namespace Annium.Core.Mapper.Tests
             }
         }
 
-        private class C
-        {
-            public string? Name { get; set; }
-        }
-
         private class D
         {
             public A? Inner { get; }
@@ -142,10 +90,6 @@ namespace Annium.Core.Mapper.Tests
             public B? Inner { get; set; }
 
             public string? Value { get; set; }
-        }
-
-        private class F
-        {
         }
     }
 }

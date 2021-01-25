@@ -4,9 +4,9 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Mapper.Tests
+namespace Annium.Core.Mapper.Tests.Resolvers
 {
-    public class EnumerablesTest
+    public class EnumerableMapResolverTest
     {
         [Fact]
         public void ToArray_Works()

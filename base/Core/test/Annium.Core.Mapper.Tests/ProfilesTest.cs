@@ -8,7 +8,7 @@ using Xunit;
 
 namespace Annium.Core.Mapper.Tests
 {
-    public class ConfigurationTest
+    public class ProfilesTest
     {
         [Fact]
         public void ConfigurationMapping_Works()
