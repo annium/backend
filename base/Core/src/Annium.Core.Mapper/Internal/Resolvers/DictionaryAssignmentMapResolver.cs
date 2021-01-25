@@ -3,20 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Mapper.Internal.Resolvers
 {
-    internal class AssignmentMapResolver : IMapResolver
+    internal class DictionaryAssignmentMapResolver : IMapResolver
     {
-        public int Order => 2000;
+        public int Order => 1900;
         private readonly IRepacker _repacker;
 
-        public AssignmentMapResolver(IRepacker repacker)
+        public DictionaryAssignmentMapResolver(IRepacker repacker)
         {
             _repacker = repacker;
         }
 
-        public bool CanResolveMap(Type src, Type tgt) => tgt.GetConstructor(Type.EmptyTypes) is not null;
+        public bool CanResolveMap(Type src, Type tgt)
+        {
+            return (
+                    src == typeof(Dictionary<string, object>) ||
+                    src == typeof(IDictionary<string, object>) ||
+                    src == typeof(IReadOnlyDictionary<string, object>)
+                ) &&
+                tgt.GetConstructor(Type.EmptyTypes) is not null;
+        }
 
         public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
@@ -28,7 +37,8 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var init = Expression.Assign(instance, Expression.New(constructor));
 
             // get source and target type properties
-            var sources = src.GetReadableProperties();
+            var tryGetValue = src.GetMethod(nameof(Dictionary<object, object>.TryGetValue))
+                ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
             var targets = tgt.GetWriteableProperties();
 
             // exclude target properties, that are configured to be ignored or have configured mapping, from basic assignment mapping
@@ -69,14 +79,21 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             body.AddRange(targets
                 .Select<PropertyInfo, Expression>(target =>
                 {
-                    // otherwise - target field must match respective source field
-                    var prop = sources.FirstOrDefault(p => string.Equals(p.Name, target.Name, StringComparison.InvariantCultureIgnoreCase)) ??
-                        throw new MappingException(src, tgt, $"No property found for target property {target}");
-
                     // resolve map for conversion and use it, if necessary
-                    var map = ctx.ResolveMapping(prop.PropertyType, target.PropertyType);
+                    var map = ctx.ResolveMapping(typeof(object), target.PropertyType);
 
-                    return Expression.Assign(Expression.Property(instance, target), map(Expression.Property(source, prop)));
+                    // otherwise - parameter must match respective source dictionary property
+                    var itemVar = Expression.Variable(typeof(object));
+                    var item = Expression.Condition(
+                        Expression.Call(source, tryGetValue, Expression.Constant(target.Name), itemVar),
+                        itemVar,
+                        Expression.Throw(Expression.New(
+                            typeof(KeyNotFoundException).GetConstructor(new[] { typeof(string) })!,
+                            Expression.Constant($"Missing value for property '{target.Name}'")
+                        ))
+                    );
+
+                    return Expression.Assign(Expression.Property(instance, target), map(item));
                 })
                 .ToArray()
             );

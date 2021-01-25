@@ -2,23 +2,28 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Mapper.Internal.Resolvers
 {
-    internal class ConstructorMapResolver : IMapResolver
+    internal class DictionaryConstructorMapResolver : IMapResolver
     {
-        public int Order => 1500;
+        public int Order => 1400;
         private readonly IRepacker _repacker;
 
-        public ConstructorMapResolver(IRepacker repacker)
+        public DictionaryConstructorMapResolver(IRepacker repacker)
         {
             _repacker = repacker;
         }
 
         public bool CanResolveMap(Type src, Type tgt)
         {
-            return tgt.GetConstructor(Type.EmptyTypes) is null;
+            return (
+                    src == typeof(Dictionary<string, object>) ||
+                    src == typeof(IDictionary<string, object>) ||
+                    src == typeof(IReadOnlyDictionary<string, object>)
+                ) &&
+                tgt.GetConstructor(Type.EmptyTypes) is null;
         }
 
         public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
@@ -26,8 +31,9 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             // find constructor with biggest number of parameters (pretty simple logic for now)
             var constructor = tgt.GetParametrizedConstructor();
 
-            // get source properties and constructor parameters
-            var sources = src.GetReadableProperties();
+            // get source accessor and constructor parameters
+            var tryGetValue = src.GetMethod(nameof(Dictionary<object, object>.TryGetValue))
+                ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
             var parameters = constructor.GetParameters();
 
             var body = new List<Expression>();
@@ -69,24 +75,33 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var values = parameters
                 .Select(param =>
                 {
-                    var paramName = param.Name!.ToLowerInvariant();
+                    var paramName = param.Name!;
+                    var paramNameLow = paramName.ToLowerInvariant();
 
                     // if respective property is ignored - use default value for parameter
-                    if (ignoredMembers.Contains(paramName))
+                    if (ignoredMembers.Contains(paramNameLow))
                         return Expression.Default(param.ParameterType);
 
                     // if respective property is mapped - use variable, containing it's value
-                    if (mappedMembers.Contains(paramName))
-                        return mappedMemberVars[paramName];
+                    if (mappedMembers.Contains(paramNameLow))
+                        return mappedMemberVars[paramNameLow];
 
-                    // otherwise - parameter must match respective source field
-                    var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??
-                        throw new MappingException(src, tgt, $"No property found for constructor parameter {param}");
 
                     // resolve map for conversion and use it, if necessary
-                    var map = ctx.ResolveMapping(prop.PropertyType, param.ParameterType);
+                    var map = ctx.ResolveMapping(typeof(object), param.ParameterType);
 
-                    return map(Expression.Property(source, prop));
+                    // otherwise - parameter must match respective source dictionary property
+                    var itemVar = Expression.Variable(typeof(object));
+                    var item = Expression.Condition(
+                        Expression.Call(source, tryGetValue, Expression.Constant(paramName), itemVar),
+                        itemVar,
+                        Expression.Throw(Expression.New(
+                            typeof(KeyNotFoundException).GetConstructor(new[] { typeof(string) })!,
+                            Expression.Constant($"Missing value for property '{paramName}'")
+                        ))
+                    );
+
+                    return map(item);
                 })
                 .ToArray();
 

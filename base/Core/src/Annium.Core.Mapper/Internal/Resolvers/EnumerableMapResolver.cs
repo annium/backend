@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Annium.Core.Mapper.Internal.Resolvers
 {
@@ -12,13 +11,13 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 
         public bool CanResolveMap(Type src, Type tgt)
         {
-            return GetEnumerableElementType(src) != null && GetEnumerableElementType(tgt) != null;
+            return src.GetEnumerableElementType() != null && tgt.GetEnumerableElementType() != null;
         }
 
         public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
         {
-            var srcEl = GetEnumerableElementType(src)!;
-            var tgtEl = GetEnumerableElementType(tgt)!;
+            var srcEl = src.GetEnumerableElementType()!;
+            var tgtEl = tgt.GetEnumerableElementType()!;
 
             // if tgt is interface - resolve container type
             if (tgt.IsInterface)
@@ -87,24 +86,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             ));
 
             return Expression.Lambda(Expression.Block(vars, body), param);
-        }
-
-
-        private Type? GetEnumerableElementType(Type type)
-        {
-            if (type.IsArray)
-                return type.GetElementType();
-
-            if (type.GenericTypeArguments.Length == 0)
-                return null;
-
-            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-                return type.GenericTypeArguments[0];
-
-            var enumerable = type.GetTypeInfo().ImplementedInterfaces
-                .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-
-            return enumerable?.GenericTypeArguments[0];
         }
     }
 }
