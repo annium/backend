@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
-    public class ExceptionMiddleware
+    internal class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ISerializer<string> _serializer;
