@@ -53,7 +53,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         {
             public int IgnoredA { get; set; }
             public long IgnoredB { get; set; }
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
             public int Age { get; set; }
         }
 

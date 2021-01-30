@@ -9,5 +9,11 @@ namespace Annium.Core.DependencyInjection
         {
             return builder.UseMiddleware<ExceptionMiddleware>();
         }
+        //
+        // public static IApplicationBuilder UseWebSocketsMiddleware(this IApplicationBuilder builder, string url = "/ws")
+        // {
+        //     builder.UseWebSockets();
+        //     return builder.Map(url, x => x.UseMiddleware<WebSocketsMiddleware>());
+        // }
     }
 }

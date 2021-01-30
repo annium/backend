@@ -15,7 +15,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
     internal class ExceptionMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ISerializer<string> _serializer;
+        private readonly Helper _helper;
         private readonly ILogger<ExceptionMiddleware> _logger;
 
         public ExceptionMiddleware(
@@ -25,11 +25,11 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
         )
         {
             _next = next;
-            _serializer = serializers[MediaTypeNames.Application.Json];
+            _helper = new Helper(serializers[MediaTypeNames.Application.Json], MediaTypeNames.Application.Json);
             _logger = logger;
         }
 
-        public async Task Invoke(HttpContext context)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
@@ -37,40 +37,32 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             }
             catch (ValidationException e)
             {
-                await WriteResponse(context, HttpStatusCode.BadRequest, e.Result);
+                await _helper.WriteResponse(context, HttpStatusCode.BadRequest, e.Result);
             }
             catch (ForbiddenException e)
             {
-                await WriteResponse(context, HttpStatusCode.Forbidden, e.Result);
+                await _helper.WriteResponse(context, HttpStatusCode.Forbidden, e.Result);
             }
             catch (NotFoundException e)
             {
-                await WriteResponse(context, HttpStatusCode.NotFound, e.Result);
+                await _helper.WriteResponse(context, HttpStatusCode.NotFound, e.Result);
             }
             catch (ConflictException e)
             {
-                await WriteResponse(context, HttpStatusCode.Conflict, e.Result);
+                await _helper.WriteResponse(context, HttpStatusCode.Conflict, e.Result);
             }
             catch (ServerException e)
             {
                 _logger.Error(e);
 
-                await WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
+                await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
             }
             catch (Exception e)
             {
                 _logger.Error(e);
                 var result = Result.Status(OperationStatus.UncaughtException).Error(e.ToString());
-                await WriteResponse(context, HttpStatusCode.InternalServerError, result);
+                await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
             }
-        }
-
-        private Task WriteResponse(HttpContext context, HttpStatusCode status, IResultBase result)
-        {
-            context.Response.StatusCode = (int) status;
-            context.Response.ContentType = MediaTypeNames.Application.Json;
-
-            return context.Response.WriteAsync(_serializer.Serialize(result));
         }
     }
 }
