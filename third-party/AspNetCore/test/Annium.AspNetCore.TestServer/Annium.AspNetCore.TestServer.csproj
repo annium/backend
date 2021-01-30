@@ -14,8 +14,10 @@
     <ItemGroup>
         <ProjectReference Include="../../../../base/Architecture/src/Annium.Architecture.CQRS/Annium.Architecture.CQRS.csproj" />
         <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
+        <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
         <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
+        <ProjectReference Include="../../../../base/Net/src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
     </ItemGroup>
 </Project>
