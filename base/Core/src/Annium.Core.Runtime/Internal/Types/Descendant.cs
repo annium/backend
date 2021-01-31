@@ -8,6 +8,7 @@ namespace Annium.Core.Runtime.Internal.Types
     {
         public Type Type { get; }
         public TypeSignature Signature { get; }
+        public int Id { get; }
         public object? Key { get; }
         public bool HasKey { get; }
 
@@ -17,6 +18,7 @@ namespace Annium.Core.Runtime.Internal.Types
         {
             Type = type;
             Signature = TypeSignature.Create(type);
+            Id = type.GetId();
             var keyAttribute = type.GetTypeInfo().GetCustomAttribute<ResolutionKeyValueAttribute>();
             Key = keyAttribute?.Key;
             HasKey = keyAttribute != null;

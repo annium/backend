@@ -129,17 +129,17 @@ namespace Annium.Core.Runtime.Tests.Types
         }
 
         [Fact]
-        public void Resolve_BySignature_Works()
+        public void Resolve_ById_Works()
         {
             // arrange
             var manager = GetTypeManager();
-            object source = new B();
+            var source = new L { Type = typeof(K).GetId() };
 
             // act
-            var result = manager.Resolve(source, typeof(A));
+            var result = manager.Resolve(source, typeof(H));
 
             // assert
-            result.IsEqual(typeof(B));
+            result.IsEqual(typeof(K));
         }
 
         [Fact]
@@ -154,6 +154,20 @@ namespace Annium.Core.Runtime.Tests.Types
 
             // assert
             result.IsEqual(typeof(E));
+        }
+
+        [Fact]
+        public void Resolve_BySignature_Works()
+        {
+            // arrange
+            var manager = GetTypeManager();
+            object source = new B();
+
+            // act
+            var result = manager.Resolve(source, typeof(A));
+
+            // assert
+            result.IsEqual(typeof(B));
         }
 
         private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false);
@@ -200,11 +214,31 @@ namespace Annium.Core.Runtime.Tests.Types
         }
 
         [ResolutionKeyValue(nameof(F))]
-        private class X : D
+        private class G : D
         {
-            public X() : base(nameof(F))
+            public G() : base(nameof(F))
             {
             }
+        }
+
+        private class H
+        {
+            [ResolutionId]
+            public int Type => GetType().GetId();
+        }
+
+        private class J : H
+        {
+        }
+
+        private class K : H
+        {
+        }
+
+        private record L
+        {
+            [ResolutionId]
+            public int Type { get; set; }
         }
 
         private interface IGenericInterface<T1, T2>

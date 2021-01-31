@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
@@ -53,6 +54,26 @@ namespace Annium.Core.Runtime.Internal.Types
         }
 
         /// <summary>
+        /// Returns resolution id property for given base type, if exists
+        /// </summary>
+        /// <param name="baseType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        public PropertyInfo? GetResolutionIdProperty(Type baseType)
+        {
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
+
+            var lookupType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
+
+            var property = _hierarchy.Keys.FirstOrDefault(x => x.Type == lookupType)?.IdProperty;
+            if (property is not null && property.PropertyType != typeof(int))
+                throw new InvalidOperationException($"Type '{baseType}' id property '{property}' must be of type '{typeof(int)}'");
+
+            return property;
+        }
+
+        /// <summary>
         /// Returns resolution key property for given base type, if exists
         /// </summary>
         /// <param name="baseType"></param>
@@ -69,7 +90,34 @@ namespace Annium.Core.Runtime.Internal.Types
         }
 
         /// <summary>
-        /// Resolve type descendant by
+        /// Resolve type descendant by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="baseType"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="TypeResolutionException"></exception>
+        public Type? ResolveById(int id, Type baseType)
+        {
+            if (id == 0)
+                throw new InvalidEnumArgumentException("Id must not be default");
+
+            if (baseType is null)
+                throw new ArgumentNullException(nameof(baseType));
+
+            if (GetResolutionIdProperty(baseType) is null)
+                throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionIdAttribute)}");
+
+            var descendants = GetImplementationDescendants(baseType).Where(x => x.Id == id).ToArray();
+            if (descendants.Length > 1)
+                throw new TypeResolutionException(typeof(object), baseType,
+                    $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
+
+            return descendants.FirstOrDefault()?.Type;
+        }
+
+        /// <summary>
+        /// Resolve type descendant by key
         /// </summary>
         /// <param name="key"></param>
         /// <param name="baseType"></param>
@@ -131,17 +179,29 @@ namespace Annium.Core.Runtime.Internal.Types
             if (baseType is null)
                 throw new ArgumentNullException(nameof(baseType));
 
+            var resolutionIdProperty = GetResolutionIdProperty(baseType);
+            if (resolutionIdProperty is not null)
+            {
+                // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
+                resolutionIdProperty = ResolveResolutionIdProperty(instance, resolutionIdProperty);
+
+                var key = (int) resolutionIdProperty.GetValue(instance)!;
+
+                return ResolveById(key, baseType);
+            }
+
             var resolutionKeyProperty = GetResolutionKeyProperty(baseType);
+            if (resolutionKeyProperty is not null)
+            {
+                // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
+                resolutionKeyProperty = ResolveResolutionKeyProperty(instance, resolutionKeyProperty);
 
-            if (resolutionKeyProperty is null)
-                return ResolveBySignature(TypeSignature.Create(instance), baseType, instance.GetType()).FirstOrDefault()?.Type;
+                var key = resolutionKeyProperty.GetValue(instance)!;
 
-            // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
-            resolutionKeyProperty = ResolveResolutionKeyProperty(instance, resolutionKeyProperty);
+                return ResolveByKey(key, baseType);
+            }
 
-            var key = resolutionKeyProperty.GetValue(instance)!;
-
-            return ResolveByKey(key, baseType);
+            return ResolveBySignature(TypeSignature.Create(instance), baseType, instance.GetType()).FirstOrDefault()?.Type;
         }
 
         /// <summary>
@@ -184,6 +244,38 @@ namespace Annium.Core.Runtime.Internal.Types
             var node = _hierarchy.FirstOrDefault(x => x.Key.Type == baseType);
 
             return node.Key is null ? Array.Empty<Descendant>() : node.Value.ToArray();
+        }
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="instance"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        private PropertyInfo ResolveResolutionIdProperty(object instance, PropertyInfo property)
+        {
+            var type = instance.GetType();
+
+            // if instance type is hierarchy - no need to worry
+            if (property.DeclaringType!.IsAssignableFrom(type))
+                return property;
+
+            var ancestor = new Ancestor(instance.GetType());
+            if (!ancestor.HasIdProperty)
+                throw new TypeResolutionException(type, property.DeclaringType, $"Source type '{type}' has no '{nameof(ResolutionIdAttribute)}'");
+
+            var realProperty = ancestor.IdProperty!;
+            if (realProperty.PropertyType != typeof(int))
+                throw new InvalidOperationException($"Type '{ancestor.Type}' id property '{realProperty}' must be of type '{typeof(int)}'");
+
+            if (realProperty.Name != property.Name)
+                throw new TypeResolutionException(
+                    type, property.DeclaringType,
+                    $"Source type '{type}' '{nameof(ResolutionIdAttribute)}' is assigned to property named '{realProperty.Name}'." +
+                    $"Expected property name is '{property.Name}'."
+                );
+
+            return realProperty;
         }
 
         /// <summary>
