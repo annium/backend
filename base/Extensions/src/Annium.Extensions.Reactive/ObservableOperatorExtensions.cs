@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using NodaTime;
 
 namespace System
 {
-    public static class ObservableExtensions
+    public static class ObservableOperatorExtensions
     {
         public static IObservable<TSource> ThrottleBy<TSource, TKey>(
             this IObservable<TSource> source,
@@ -41,8 +40,5 @@ namespace System
                 }, observer.OnError, observer.OnCompleted);
             });
         }
-
-        public static IDisposable Subscribe<T>(this IObservable<T> source, Func<T, Task> onNext)
-            => source.Subscribe(x => onNext(x).GetAwaiter().GetResult());
     }
 }
