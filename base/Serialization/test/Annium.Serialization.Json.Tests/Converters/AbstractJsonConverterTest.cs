@@ -8,19 +8,19 @@ namespace Annium.Serialization.Json.Tests.Converters
     public class AbstractJsonConverterTest : TestBase
     {
         [Fact]
-        public void Serialization_SignaturePlain_Works()
+        public void Serialization_IdPlain_Works()
         {
             // arrange
             var serializer = GetSerializer();
-            Base a = new ChildA { A = 1 };
-            Base b = new ChildB { B = 2 };
-            var arr = new[] { a, b };
+            var a = new IdChildA { Value = 1 };
+            var b = new IdChildB { Value = 2 };
+            var arr = new IdBase[] { a, b };
 
             // act
             var result = serializer.Serialize(arr);
 
             // assert
-            result.IsEqual(@"[{""a"":1},{""b"":2}]");
+            result.IsEqual($@"[{{""value"":1,""type"":{a.Type}}},{{""value"":2,""type"":{b.Type}}}]");
         }
 
         [Fact]
@@ -40,19 +40,35 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         [Fact]
-        public void Serialization_SignatureGeneric_Works()
+        public void Serialization_SignaturePlain_Works()
         {
             // arrange
             var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
-            BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
+            var arr = new[] { a, b };
+
+            // act
+            var result = serializer.Serialize(arr);
+
+            // assert
+            result.IsEqual(@"[{""a"":1},{""b"":2}]");
+        }
+
+        [Fact]
+        public void Serialization_IdGeneric_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var a = new IdChildA { Value = 1 };
+            var b = new IdChildB { Value = 2 };
+            IdBaseContainer<IdBase> container = new IdDataContainer<IdBase> { Items = new IdBase[] { a, b } };
 
             // act
             var result = serializer.Serialize(container);
 
             // assert
-            result.IsEqual(@"{""data"":[{""a"":1},{""b"":2}]}");
+            result.IsEqual($@"{{""items"":[{{""value"":1,""type"":{a.Type}}},{{""value"":2,""type"":{b.Type}}}],""type"":{container.Type}}}");
         }
 
         [Fact]
@@ -72,13 +88,67 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         [Fact]
-        public void Deserialization_SignaturePlain_Works()
+        public void Serialization_SignatureGeneric_Works()
         {
             // arrange
             var serializer = GetSerializer();
             Base a = new ChildA { A = 1 };
             Base b = new ChildB { B = 2 };
-            var arr = new[] { a, b };
+            BaseContainer<Base> container = new DataContainer<Base> { Data = new[] { a, b } };
+
+            // act
+            var result = serializer.Serialize(container);
+
+            // assert
+            result.IsEqual(@"{""data"":[{""a"":1},{""b"":2}]}");
+        }
+
+        [Fact]
+        public void Deserialization_IdPlain_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var a = new IdChildA { Value = 1 };
+            var b = new IdChildB { Value = 2 };
+            var arr = new IdBase[] { a, b };
+            var str = serializer.Serialize(arr);
+
+            // act
+            var result = serializer.Deserialize<IdBase[]>(str);
+
+            // assert
+            result.Has(2);
+            result.At(0).As<IdChildA>().Value.IsEqual(1);
+            result.At(1).As<IdChildB>().Value.IsEqual(2);
+        }
+
+        [Fact]
+        public void Deserialization_KeyPlain_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var a = new KeyChildA { Value = 1 };
+            var b = new KeyChildB { Value = 2 };
+            var arr = new KeyBase[] { a, b };
+            var str = serializer.Serialize(arr);
+
+            // act
+            var result = serializer.Deserialize<KeyBase[]>(str);
+
+            // assert
+            result.Has(2);
+            result.At(0).As<KeyChildA>().Value.IsEqual(1);
+            result.At(1).As<KeyChildB>().Value.IsEqual(2);
+        }
+
+        [Fact]
+        public void Deserialization_SignaturePlain_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var a = new ChildA { A = 1 };
+            var b = new ChildB { B = 2 };
+            var arr = new Base[] { a, b };
             var str = serializer.Serialize(arr);
 
             // act
@@ -91,22 +161,43 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         [Fact]
-        public void Deserialization_KeyPlain_Works()
+        public void Deserialization_IdGeneric_Works()
         {
             // arrange
             var serializer = GetSerializer();
-            KeyBase a = new KeyChildA { Value = 1 };
-            KeyBase b = new KeyChildB { Value = 2 };
-            var arr = new[] { a, b };
-            var str = serializer.Serialize(arr);
+            var a = new IdChildA { Value = 1 };
+            var b = new IdChildB { Value = 2 };
+            IdBaseContainer<IdBase> container = new IdDataContainer<IdBase> { Items = new IdBase[] { a, b } };
+            var str = serializer.Serialize(container);
 
             // act
-            var result = serializer.Deserialize<KeyBase[]>(str);
+            var result = serializer.Deserialize<IdBaseContainer<IdBase>>(str);
 
             // assert
-            result.Has(2);
-            result.At(0).As<KeyChildA>().Value.IsEqual(1);
-            result.At(1).As<KeyChildB>().Value.IsEqual(2);
+            var data = result.As<IdDataContainer<IdBase>>().Items;
+            data.Has(2);
+            data.At(0).As<IdChildA>().Value.IsEqual(1);
+            data.At(1).As<IdChildB>().Value.IsEqual(2);
+        }
+
+        [Fact]
+        public void Deserialization_KeyGeneric_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var a = new KeyChildA { Value = 1 };
+            var b = new KeyChildB { Value = 2 };
+            KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new KeyBase[] { a, b } };
+            var str = serializer.Serialize(container);
+
+            // act
+            var result = serializer.Deserialize<KeyBaseContainer<KeyBase>>(str);
+
+            // assert
+            var data = result.As<KeyDataContainer<KeyBase>>().Items;
+            data.Has(2);
+            data.At(0).As<KeyChildA>().Value.IsEqual(1);
+            data.At(1).As<KeyChildB>().Value.IsEqual(2);
         }
 
         [Fact]
@@ -129,38 +220,20 @@ namespace Annium.Serialization.Json.Tests.Converters
             data.At(1).As<ChildB>().B.IsEqual(2);
         }
 
-        [Fact]
-        public void Deserialization_KeyGeneric_Works()
+        public abstract class IdBase
         {
-            // arrange
-            var serializer = GetSerializer();
-            KeyBase a = new KeyChildA { Value = 1 };
-            KeyBase b = new KeyChildB { Value = 2 };
-            KeyBaseContainer<KeyBase> container = new KeyDataContainer<KeyBase> { Items = new[] { a, b } };
-            var str = serializer.Serialize(container);
-
-            // act
-            var result = serializer.Deserialize<KeyBaseContainer<KeyBase>>(str);
-
-            // assert
-            var data = result.As<KeyDataContainer<KeyBase>>().Items;
-            data.Has(2);
-            data.At(0).As<KeyChildA>().Value.IsEqual(1);
-            data.At(1).As<KeyChildB>().Value.IsEqual(2);
+            [ResolutionId]
+            public int Type => GetType().GetId();
         }
 
-        public abstract class Base
+        public class IdChildA : IdBase
         {
+            public int Value { get; set; }
         }
 
-        public class ChildA : Base
+        public class IdChildB : IdBase
         {
-            public int A { get; set; }
-        }
-
-        public class ChildB : Base
-        {
-            public int B { get; set; }
+            public int Value { get; set; }
         }
 
         public abstract class KeyBase
@@ -191,16 +264,32 @@ namespace Annium.Serialization.Json.Tests.Converters
             }
         }
 
-        public abstract class BaseContainer<T>
+        public abstract class Base
         {
         }
 
-        public class DataContainer<T> : BaseContainer<T>
+        public class ChildA : Base
         {
-            public T[] Data { get; set; } = Array.Empty<T>();
+            public int A { get; set; }
         }
 
-        public class DemoContainer<T> : BaseContainer<T>
+        public class ChildB : Base
+        {
+            public int B { get; set; }
+        }
+
+        public abstract class IdBaseContainer<T>
+        {
+            [ResolutionId]
+            public int Type => GetType().GetId();
+        }
+
+        public class IdDataContainer<T> : IdBaseContainer<T>
+        {
+            public T[] Items { get; set; } = Array.Empty<T>();
+        }
+
+        public class IdDemoContainer<T> : IdBaseContainer<T>
         {
             public T[] Demo { get; set; } = Array.Empty<T>();
         }
@@ -231,6 +320,20 @@ namespace Annium.Serialization.Json.Tests.Converters
             {
                 Type = 'b';
             }
+        }
+
+        public abstract class BaseContainer<T>
+        {
+        }
+
+        public class DataContainer<T> : BaseContainer<T>
+        {
+            public T[] Data { get; set; } = Array.Empty<T>();
+        }
+
+        public class DemoContainer<T> : BaseContainer<T>
+        {
+            public T[] Demo { get; set; } = Array.Empty<T>();
         }
     }
 }

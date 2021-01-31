@@ -6,7 +6,7 @@ namespace Annium.Core.Runtime.Types
     {
         public static int GetId(this Type type) => HashCode.Combine(
             type.Assembly.FullName,
-            type.FullName
+            type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericTypeDefinition().FullName : type.FullName
         );
     }
 }

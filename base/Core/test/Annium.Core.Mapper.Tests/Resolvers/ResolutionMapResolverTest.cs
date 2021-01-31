@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
     public class ResolutionMapResolverTest
     {
         [Fact]
-        public void ToArray_Works()
+        public void SignatureResolution_Works()
         {
             // arrange
             var mapper = GetMapper();
@@ -22,6 +23,22 @@ namespace Annium.Core.Mapper.Tests.Resolvers
             result.Has(2);
             result.At(0).As<ImageModel>().Image.IsEqual("img");
             result.At(1).As<LinkModel>().Link.IsEqual("lnk");
+        }
+
+        [Fact]
+        public void IdResolution_Works()
+        {
+            // arrange
+            var mapper = GetMapper();
+            var value = new Req[] { new ImageReq("img"), new LinkReq { Data = "lnk" } };
+
+            // act
+            var result = mapper.Map<List<Mod>>(value);
+
+            // assert
+            result.Has(2);
+            result.At(0).As<ImageMod>().Data.IsEqual("img");
+            result.At(1).As<LinkMod>().Data.IsEqual("lnk");
         }
 
         private IMapper GetMapper() => new ServiceContainer()
@@ -65,6 +82,57 @@ namespace Annium.Core.Mapper.Tests.Resolvers
             public LinkModel(string link)
             {
                 Link = link;
+            }
+        }
+
+        private abstract class Req
+        {
+            [ResolutionId]
+            public int Type { get; }
+
+            protected Req(int type)
+            {
+                Type = type;
+            }
+        }
+
+        private class ImageReq : Req
+        {
+            public string Data { get; }
+
+            public ImageReq(string data) : base(typeof(ImageMod).GetId())
+            {
+                Data = data;
+            }
+        }
+
+        private class LinkReq : Req
+        {
+            public string Data { get; set; } = string.Empty;
+
+            public LinkReq() : base(typeof(LinkMod).GetId())
+            {
+            }
+        }
+
+        private abstract class Mod
+        {
+            [ResolutionId]
+            public int Type => GetType().GetId();
+        }
+
+        private class ImageMod : Mod
+        {
+            public string Data { get; set; } = string.Empty;
+        }
+
+        private class LinkMod : Mod
+        {
+            public string Data { get; }
+
+            public LinkMod(string data)
+            {
+                Data = data;
             }
         }
     }

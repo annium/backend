@@ -6,7 +6,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
-using Annium.Core.Primitives;
 
 namespace Annium.Serialization.Json.Internal.Converters
 {
@@ -51,11 +50,37 @@ namespace Annium.Serialization.Json.Internal.Converters
             JsonSerializerOptions options
         )
         {
-            var resolutionKeyProperty = _typeManager.GetResolutionKeyProperty(baseType);
+            var resolutionIdProperty = _typeManager.GetResolutionIdProperty(baseType);
+            if (resolutionIdProperty is not null)
+                return ResolveTypeById(root, baseType, resolutionIdProperty, options);
 
-            return resolutionKeyProperty is null
-                ? ResolveTypeBySignature(root, baseType)
-                : ResolveTypeByKey(root, baseType, resolutionKeyProperty, options);
+            var resolutionKeyProperty = _typeManager.GetResolutionKeyProperty(baseType);
+            if (resolutionKeyProperty is not null)
+                return ResolveTypeByKey(root, baseType, resolutionKeyProperty, options);
+
+            return ResolveTypeBySignature(root, baseType);
+        }
+
+        private Type ResolveTypeById(
+            JsonElement root,
+            Type baseType,
+            PropertyInfo resolutionIdProperty,
+            JsonSerializerOptions options
+        )
+        {
+            var idPropertyName =
+                resolutionIdProperty.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ??
+                options.PropertyNamingPolicy?.ConvertName(resolutionIdProperty.Name) ??
+                resolutionIdProperty.Name;
+            if (!root.TryGetProperty(idPropertyName, out var idElement))
+                throw new SerializationException(Error(baseType, "id property is missing"));
+
+            var id = JsonSerializer.Deserialize<int>(idElement.GetRawText(), options)!;
+            var type = _typeManager.ResolveById(id, baseType);
+            if (type is null)
+                throw new SerializationException(Error(baseType, $"no match for id {id}"));
+
+            return type;
         }
 
         private Type ResolveTypeByKey(
