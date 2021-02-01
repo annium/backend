@@ -47,6 +47,7 @@ namespace Annium.Core.DependencyInjection
             }).AsSelf().Singleton();
 
             container.Add<ByteArraySerializer>().AsKeyed<ISerializer<byte[]>, string>(key).Singleton();
+            container.Add<ReadOnlyMemoryByteSerializer>().AsKeyed<ISerializer<ReadOnlyMemory<byte>>, string>(key).Singleton();
             container.Add<StringSerializer>().AsKeyed<ISerializer<string>, string>(key).Singleton();
 
             return container;
