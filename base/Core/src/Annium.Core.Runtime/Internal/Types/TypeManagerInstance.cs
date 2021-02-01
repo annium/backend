@@ -67,8 +67,8 @@ namespace Annium.Core.Runtime.Internal.Types
             var lookupType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
 
             var property = _hierarchy.Keys.FirstOrDefault(x => x.Type == lookupType)?.IdProperty;
-            if (property is not null && property.PropertyType != typeof(int))
-                throw new InvalidOperationException($"Type '{baseType}' id property '{property}' must be of type '{typeof(int)}'");
+            if (property is not null && property.PropertyType != typeof(string))
+                throw new InvalidOperationException($"Type '{baseType}' id property '{property}' must be of type '{typeof(string)}'");
 
             return property;
         }
@@ -97,9 +97,9 @@ namespace Annium.Core.Runtime.Internal.Types
         /// <returns></returns>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="TypeResolutionException"></exception>
-        public Type? ResolveById(int id, Type baseType)
+        public Type? ResolveById(string id, Type baseType)
         {
-            if (id == 0)
+            if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidEnumArgumentException("Id must not be default");
 
             if (baseType is null)
@@ -185,7 +185,7 @@ namespace Annium.Core.Runtime.Internal.Types
                 // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
                 resolutionIdProperty = ResolveResolutionIdProperty(instance, resolutionIdProperty);
 
-                var key = (int) resolutionIdProperty.GetValue(instance)!;
+                var key = (string) resolutionIdProperty.GetValue(instance)!;
 
                 return ResolveById(key, baseType);
             }
@@ -265,8 +265,8 @@ namespace Annium.Core.Runtime.Internal.Types
                 throw new TypeResolutionException(type, property.DeclaringType, $"Source type '{type}' has no '{nameof(ResolutionIdAttribute)}'");
 
             var realProperty = ancestor.IdProperty!;
-            if (realProperty.PropertyType != typeof(int))
-                throw new InvalidOperationException($"Type '{ancestor.Type}' id property '{realProperty}' must be of type '{typeof(int)}'");
+            if (realProperty.PropertyType != typeof(string))
+                throw new InvalidOperationException($"Type '{ancestor.Type}' id property '{realProperty}' must be of type '{typeof(string)}'");
 
             if (realProperty.Name != property.Name)
                 throw new TypeResolutionException(

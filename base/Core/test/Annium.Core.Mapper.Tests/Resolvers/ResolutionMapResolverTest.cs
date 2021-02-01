@@ -88,9 +88,9 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         private abstract class Req
         {
             [ResolutionId]
-            public int Type { get; }
+            public string Type { get; }
 
-            protected Req(int type)
+            protected Req(string type)
             {
                 Type = type;
             }
@@ -118,7 +118,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         private abstract class Mod
         {
             [ResolutionId]
-            public int Type => GetType().GetId();
+            public string Type => GetType().GetId();
         }
 
         private class ImageMod : Mod

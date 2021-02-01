@@ -1,12 +1,16 @@
 using System;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Runtime.Types
 {
     public static class TypeExtensions
     {
-        public static int GetId(this Type type) => HashCode.Combine(
-            type.Assembly.FullName,
-            type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericTypeDefinition().FullName : type.FullName
-        );
+        public static string GetId(this Type type)
+        {
+            var assembly = type.Assembly.GetName().Name;
+            var name = type.IsGenericType && !type.IsGenericTypeDefinition ? type.GetGenericTypeDefinition().FriendlyName() : type.FriendlyName();
+
+            return $"{assembly}.{name}";
+        }
     }
 }

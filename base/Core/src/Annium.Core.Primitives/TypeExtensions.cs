@@ -42,7 +42,8 @@ namespace Annium.Core.Primitives
                 return TypeNames[value] = $"{Nullable.GetUnderlyingType(value)!.FriendlyName()}?";
 
             name = value.GetGenericTypeDefinition().Name;
-            name = name.Substring(0, name.IndexOf('`'));
+            if (name.IndexOf('`') >= 0)
+                name = name.Substring(0, name.IndexOf('`'));
             var arguments = value.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
             return TypeNames.AddOrUpdate(value, $"{name}<{string.Join(", ", arguments)}>", (_, x) => x);

@@ -224,7 +224,7 @@ namespace Annium.Core.Runtime.Tests.Types
         private class H
         {
             [ResolutionId]
-            public int Type => GetType().GetId();
+            public string Type => GetType().GetId();
         }
 
         private class J : H
@@ -238,7 +238,7 @@ namespace Annium.Core.Runtime.Tests.Types
         private record L
         {
             [ResolutionId]
-            public int Type { get; set; }
+            public string Type { get; set; } = string.Empty;
         }
 
         private interface IGenericInterface<T1, T2>

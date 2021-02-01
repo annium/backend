@@ -20,7 +20,7 @@ namespace Annium.Serialization.Json.Tests.Converters
             var result = serializer.Serialize(arr);
 
             // assert
-            result.IsEqual($@"[{{""value"":1,""type"":{a.Type}}},{{""value"":2,""type"":{b.Type}}}]");
+            result.IsEqual($@"[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}]");
         }
 
         [Fact]
@@ -68,7 +68,7 @@ namespace Annium.Serialization.Json.Tests.Converters
             var result = serializer.Serialize(container);
 
             // assert
-            result.IsEqual($@"{{""items"":[{{""value"":1,""type"":{a.Type}}},{{""value"":2,""type"":{b.Type}}}],""type"":{container.Type}}}");
+            result.IsEqual($@"{{""items"":[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}],""type"":""{container.Type}""}}");
         }
 
         [Fact]
@@ -223,7 +223,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public abstract class IdBase
         {
             [ResolutionId]
-            public int Type => GetType().GetId();
+            public string Type => GetType().GetId();
         }
 
         public class IdChildA : IdBase
@@ -281,7 +281,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public abstract class IdBaseContainer<T>
         {
             [ResolutionId]
-            public int Type => GetType().GetId();
+            public string Type => GetType().GetId();
         }
 
         public class IdDataContainer<T> : IdBaseContainer<T>
