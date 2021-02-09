@@ -3,12 +3,12 @@ using System.Linq;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
 {
-    internal class Registrator
+    internal class Registrar
     {
         private readonly Action<IServiceDescriptor> _register;
         private bool _hasRegistered;
 
-        public Registrator(Action<IServiceDescriptor> register)
+        public Registrar(Action<IServiceDescriptor> register)
         {
             _register = register;
         }

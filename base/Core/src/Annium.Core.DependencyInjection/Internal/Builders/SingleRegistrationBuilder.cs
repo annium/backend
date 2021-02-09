@@ -8,16 +8,16 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     internal class SingleRegistrationBuilder : ISingleRegistrationBuilderBase
     {
         private readonly Type _type;
-        private readonly Registrator _registrator;
+        private readonly Registrar _registrar;
         private readonly RegistrationsCollection _registrations = new();
 
         public SingleRegistrationBuilder(
             Type type,
-            Action<IServiceDescriptor> register
+            Registrar registrar
         )
         {
             _type = type;
-            _registrator = new Registrator(register);
+            _registrar = registrar;
         }
 
 
@@ -55,7 +55,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         private void Register(ServiceLifetime lifetime)
         {
             _registrations.Add(new TypeRegistration(_type, _type));
-            _registrator.Register(_registrations, lifetime);
+            _registrar.Register(_registrations, lifetime);
         }
 
         private ISingleRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)

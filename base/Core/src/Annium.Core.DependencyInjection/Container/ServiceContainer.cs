@@ -33,16 +33,16 @@ namespace Annium.Core.DependencyInjection
         }
 
         public IBulkRegistrationBuilderBase Add(IEnumerable<Type> types) =>
-            new BulkRegistrationBuilder(types, Register);
+            new BulkRegistrationBuilder(types, new Registrar(Register));
 
         public IFactoryRegistrationBuilderBase Add(Type type, Func<IServiceProvider, object> factory) =>
-            new FactoryRegistrationBuilder(type, factory, Register);
+            new FactoryRegistrationBuilder(type, factory, new Registrar(Register));
 
         public IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class =>
-            new InstanceRegistrationBuilder(typeof(T), instance, Register);
+            new InstanceRegistrationBuilder(typeof(T), instance, new Registrar(Register));
 
         public ISingleRegistrationBuilderBase Add(Type type) =>
-            new SingleRegistrationBuilder(type, Register);
+            new SingleRegistrationBuilder(type, new Registrar(Register));
 
         public bool Contains(IServiceDescriptor descriptor)
         {

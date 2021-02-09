@@ -7,18 +7,19 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     {
         private readonly Type _type;
         private readonly Func<IServiceProvider, object> _factory;
-        private readonly Registrator _registrator;
+        private readonly Registrar _registrar;
         private readonly RegistrationsCollection _registrations = new();
 
         public FactoryRegistrationBuilder(
             Type type,
             Func<IServiceProvider, object> factory,
-            Action<IServiceDescriptor> register
+            Registrar registrar
+
         )
         {
             _type = type;
             _factory = factory;
-            _registrator = new Registrator(register);
+            _registrar = registrar;
         }
 
         public IFactoryRegistrationBuilderBase AsSelf() =>
@@ -36,7 +37,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public void Scoped() => Register(ServiceLifetime.Scoped);
         public void Singleton() => Register(ServiceLifetime.Singleton);
         public void Transient() => Register(ServiceLifetime.Transient);
-        private void Register(ServiceLifetime lifetime) => _registrator.Register(_registrations, lifetime);
+        private void Register(ServiceLifetime lifetime) => _registrar.Register(_registrations, lifetime);
 
         private IFactoryRegistrationBuilderBase WithRegistration(IRegistration registration)
         {

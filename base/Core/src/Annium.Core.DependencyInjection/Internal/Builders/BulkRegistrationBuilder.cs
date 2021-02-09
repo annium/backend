@@ -8,13 +8,16 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     internal class BulkRegistrationBuilder : IBulkRegistrationBuilderBase
     {
         private readonly List<Type> _types;
-        private readonly Registrator _registrator;
+        private readonly Registrar _registrar;
         private readonly RegistrationsCollection _registrations = new();
 
-        public BulkRegistrationBuilder(IEnumerable<Type> types, Action<IServiceDescriptor> register)
+        public BulkRegistrationBuilder(
+            IEnumerable<Type> types,
+            Registrar registrar
+        )
         {
             _types = types.ToList();
-            _registrator = new Registrator(register);
+            _registrar = registrar;
         }
 
         public IBulkRegistrationBuilderBase Where(Func<Type, bool> predicate)
@@ -58,7 +61,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         private void Register(ServiceLifetime lifetime)
         {
             _registrations.AddRange(_types.Select(x => new TypeRegistration(x, x)));
-            _registrator.Register(_registrations, lifetime);
+            _registrar.Register(_registrations, lifetime);
         }
 
         private IBulkRegistrationBuilderTarget WithRegistrations(Func<Type, IEnumerable<IRegistration>> createRegistrations)
