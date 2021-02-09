@@ -6,21 +6,21 @@ namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
 {
     internal class TypeRegistration : IRegistration
     {
-        private readonly Type _serviceType;
+        public Type ServiceType { get; }
         private readonly Type _implementationType;
 
         public TypeRegistration(Type serviceType, Type implementationType)
         {
-            _serviceType = serviceType;
+            ServiceType = serviceType;
             _implementationType = implementationType;
         }
 
         public IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime)
         {
-            if (_implementationType == _serviceType || _implementationType.ContainsGenericParameters)
-                yield return ServiceDescriptor.Type(_serviceType, _implementationType, lifetime);
+            if (_implementationType == ServiceType || _implementationType.ContainsGenericParameters)
+                yield return ServiceDescriptor.Type(ServiceType, _implementationType, lifetime);
             else
-                yield return Factory(_serviceType, sp => Resolve(sp, _implementationType), lifetime);
+                yield return Factory(ServiceType, sp => Resolve(sp, _implementationType), lifetime);
         }
     }
 }
