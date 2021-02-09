@@ -30,7 +30,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             WithRegistration(new InstanceRegistration(serviceType, _instance));
 
         public IInstanceRegistrationBuilderBase AsInterfaces() =>
-            WithRegistrations(_type.GetInterfaces().Select(x => new TypeRegistration(x, _type)));
+            WithRegistrations(_type.GetInterfaces().Select(x => new InstanceRegistration(x, _instance)));
 
         public IInstanceRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
             WithRegistration(new InstanceKeyedRegistration(_type, _instance, typeof(TKey), key));
