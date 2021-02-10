@@ -16,6 +16,7 @@ namespace Annium.Core.Runtime.Internal.Types
 
         private readonly Assembly _assembly;
         private readonly IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> _hierarchy;
+        private readonly IReadOnlyDictionary<TypeId, Type> _ids;
 
         public TypeManagerInstance(
             Assembly assembly,
@@ -25,6 +26,10 @@ namespace Annium.Core.Runtime.Internal.Types
             _assembly = assembly;
             var types = new TypesCollector().CollectTypes(assembly, tryLoadReferences);
             _hierarchy = new HierarchyBuilder().BuildHierarchy(types);
+            var ids = new Dictionary<TypeId, Type>();
+            foreach (var type in types)
+                ids[type.GetId()] = type;
+            _ids = ids;
             Types = types;
         }
 
@@ -89,31 +94,39 @@ namespace Annium.Core.Runtime.Internal.Types
             return _hierarchy.Keys.FirstOrDefault(x => x.Type == lookupType)?.KeyProperty;
         }
 
-        /// <summary>
-        /// Resolve type descendant by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="baseType"></param>
-        /// <returns></returns>
-        /// <exception cref="ArgumentNullException"></exception>
-        /// <exception cref="TypeResolutionException"></exception>
-        public Type? ResolveById(string id, Type baseType)
+        public TypeId? GetTypeId(string id)
         {
             if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidEnumArgumentException("Id must not be default");
 
-            if (baseType is null)
-                throw new ArgumentNullException(nameof(baseType));
+            return _ids.FirstOrDefault(x => x.Key.Id == id).Key;
+        }
 
-            if (GetResolutionIdProperty(baseType) is null)
-                throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionIdAttribute)}");
+        /// <summary>
+        /// Resolve type descendant by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="TypeResolutionException"></exception>
+        public Type? ResolveById(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                throw new InvalidEnumArgumentException("Id must not be default");
 
-            var descendants = GetImplementationDescendants(baseType).Where(x => x.Id == id).ToArray();
-            if (descendants.Length > 1)
-                throw new TypeResolutionException(typeof(object), baseType,
-                    $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
-
-            return descendants.FirstOrDefault()?.Type;
+            throw new NotImplementedException();
+            // if (baseType is null)
+            //     throw new ArgumentNullException(nameof(baseType));
+            //
+            // if (GetResolutionIdProperty(baseType) is null)
+            //     throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionIdAttribute)}");
+            //
+            // var descendants = GetImplementationDescendants(baseType).Where(x => x.Id == id).ToArray();
+            // if (descendants.Length > 1)
+            //     throw new TypeResolutionException(typeof(object), baseType,
+            //         $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
+            //
+            // return descendants.FirstOrDefault()?.Type;
         }
 
         /// <summary>
@@ -185,9 +198,9 @@ namespace Annium.Core.Runtime.Internal.Types
                 // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
                 resolutionIdProperty = ResolveResolutionIdProperty(instance, resolutionIdProperty);
 
-                var key = (string) resolutionIdProperty.GetValue(instance)!;
+                var id = (string) resolutionIdProperty.GetValue(instance)!;
 
-                return ResolveById(key, baseType);
+                return ResolveById(id);
             }
 
             var resolutionKeyProperty = GetResolutionKeyProperty(baseType);

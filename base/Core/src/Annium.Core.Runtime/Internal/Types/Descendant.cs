@@ -8,7 +8,7 @@ namespace Annium.Core.Runtime.Internal.Types
     {
         public Type Type { get; }
         public TypeSignature Signature { get; }
-        public string Id { get; }
+        public TypeId Id { get; }
         public object? Key { get; }
         public bool HasKey { get; }
 
