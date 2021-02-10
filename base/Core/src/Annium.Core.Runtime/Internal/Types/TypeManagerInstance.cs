@@ -114,19 +114,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidEnumArgumentException("Id must not be default");
 
-            throw new NotImplementedException();
-            // if (baseType is null)
-            //     throw new ArgumentNullException(nameof(baseType));
-            //
-            // if (GetResolutionIdProperty(baseType) is null)
-            //     throw new TypeResolutionException(typeof(object), baseType, $"Type '{baseType}' has no {nameof(ResolutionIdAttribute)}");
-            //
-            // var descendants = GetImplementationDescendants(baseType).Where(x => x.Id == id).ToArray();
-            // if (descendants.Length > 1)
-            //     throw new TypeResolutionException(typeof(object), baseType,
-            //         $"Ambiguous resolution between {string.Join(", ", descendants.Select(x => x.Type.FullName))}");
-            //
-            // return descendants.FirstOrDefault()?.Type;
+            return TypeId.TryParse(id, this)?.Type;
         }
 
         /// <summary>

@@ -223,7 +223,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public abstract class IdBase
         {
             [ResolutionId]
-            public string Type => GetType().GetId();
+            public string Type => GetType().GetIdString();
         }
 
         public class IdChildA : IdBase
@@ -281,7 +281,7 @@ namespace Annium.Serialization.Json.Tests.Converters
         public abstract class IdBaseContainer<T>
         {
             [ResolutionId]
-            public string Type => GetType().GetId();
+            public string Type => GetType().GetIdString();
         }
 
         public class IdDataContainer<T> : IdBaseContainer<T>

@@ -76,7 +76,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                 throw new SerializationException(Error(baseType, "id property is missing"));
 
             var id = JsonSerializer.Deserialize<string>(idElement.GetRawText(), options)!;
-            var type = _typeManager.ResolveById(id, baseType);
+            var type = _typeManager.ResolveById(id);
             if (type is null)
                 throw new SerializationException(Error(baseType, $"no match for id {id}"));
 

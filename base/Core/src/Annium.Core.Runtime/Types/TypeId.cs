@@ -41,7 +41,7 @@ namespace Annium.Core.Runtime.Types
             if (args.Any(x => x is null))
                 return null;
 
-            var type = baseId.Type.MakeGenericType(args.Select(x => x.Type).ToArray());
+            var type = baseId.Type.MakeGenericType(args.Select(x => x!.Type).ToArray());
 
             return Create(type);
         }
@@ -58,7 +58,7 @@ namespace Annium.Core.Runtime.Types
         public Type Type { get; }
         public Type BaseType { get; }
         public string Name { get; }
-        public string Id { get; protected init; }
+        public string Id { get; protected init; } = string.Empty;
 
         protected TypeId(
             Type type,

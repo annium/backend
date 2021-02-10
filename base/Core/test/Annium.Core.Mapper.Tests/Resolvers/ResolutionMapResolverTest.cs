@@ -100,7 +100,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         {
             public string Data { get; }
 
-            public ImageReq(string data) : base(typeof(ImageMod).GetId())
+            public ImageReq(string data) : base(typeof(ImageMod).GetIdString())
             {
                 Data = data;
             }
@@ -110,7 +110,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         {
             public string Data { get; set; } = string.Empty;
 
-            public LinkReq() : base(typeof(LinkMod).GetId())
+            public LinkReq() : base(typeof(LinkMod).GetIdString())
             {
             }
         }
@@ -118,7 +118,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
         private abstract class Mod
         {
             [ResolutionId]
-            public string Type => GetType().GetId();
+            public string Type => GetType().GetIdString();
         }
 
         private class ImageMod : Mod

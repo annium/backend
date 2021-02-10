@@ -133,7 +133,7 @@ namespace Annium.Core.Runtime.Tests.Types
         {
             // arrange
             var manager = GetTypeManager();
-            var source = new L { Type = typeof(K).GetId() };
+            var source = new L { Type = typeof(K).GetIdString() };
 
             // act
             var result = manager.Resolve(source, typeof(H));
@@ -224,7 +224,7 @@ namespace Annium.Core.Runtime.Tests.Types
         private class H
         {
             [ResolutionId]
-            public string Type => GetType().GetId();
+            public string Type => GetType().GetIdString();
         }
 
         private class J : H
