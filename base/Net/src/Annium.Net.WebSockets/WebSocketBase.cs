@@ -88,7 +88,7 @@ namespace Annium.Net.WebSockets
         {
             try
             {
-                using var stream = new MemoryStream();
+                await using var stream = new MemoryStream();
                 ValueWebSocketReceiveResult result;
                 do
                 {
@@ -97,7 +97,7 @@ namespace Annium.Net.WebSockets
                     // if closing - handle disconnect
                     if (result.MessageType == WebSocketMessageType.Close)
                     {
-                        OnDisconnectAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                        await OnDisconnectAsync().ConfigureAwait(false);
 
                         // if after disconnect handling not connected - set completed and break
                         if (!IsConnected)

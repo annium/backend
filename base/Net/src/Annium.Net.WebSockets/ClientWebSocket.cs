@@ -48,9 +48,6 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnDisconnectAsync()
         {
-            if (!IsConnected)
-                throw new InvalidOperationException("WebSocket is not connected");
-
             if (_options.ReconnectOnFailure)
             {
                 await ConnectAsync(_uri!, CancellationToken.None);
