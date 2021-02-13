@@ -8,7 +8,6 @@ using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
 using Annium.Testing;
-using NodaTime;
 using Xunit;
 
 namespace Annium.Core.Mediator.Tests
@@ -20,13 +19,13 @@ namespace Annium.Core.Mediator.Tests
         {
             // arrange
             var (mediator, logs) = GetMediator(typeof(ClosedFinalHandler));
-            var request = new Base { Value = "base" };
+            var request = new Base {Value = "base"};
 
             // act
-            var response = await mediator.SendAsync<Base, One>(request);
+            var response = await mediator.SendAsync<One>(request);
 
             // assert
-            response.GetHashCode().IsEqual(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
+            response.GetHashCode().IsEqual(new One {First = request.Value.Length, Value = request.Value}.GetHashCode());
             logs.Has(2);
             logs.At(0).Message.IsEqual(typeof(ClosedFinalHandler).FullName);
             logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
@@ -37,13 +36,13 @@ namespace Annium.Core.Mediator.Tests
         {
             // arrange
             var (mediator, logs) = GetMediator(typeof(OpenFinalHandler<,>));
-            var request = new Two { Second = 2, Value = "one two three" };
+            var request = new Two {Second = 2, Value = "one two three"};
 
             // act
-            var response = await mediator.SendAsync<Two, Base>(request);
+            var response = await mediator.SendAsync<Base>(request);
 
             // assert
-            response.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+            response.GetHashCode().IsEqual(new Base {Value = "one_two_three"}.GetHashCode());
             logs.Has(2);
             logs.At(0).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FullName);
             logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
@@ -53,16 +52,17 @@ namespace Annium.Core.Mediator.Tests
         public async Task ChainOfHandlers_WithExpectedParameters_Works()
         {
             // arrange
-            var (mediator, logs) = GetMediator(typeof(ConversionHandler<,>), typeof(ValidationHandler<,>), typeof(OpenFinalHandler<,>));
-            var request = new Two { Second = 2, Value = "one two three" };
+            var (mediator, logs) = GetMediator(typeof(ConversionHandler<,>), typeof(ValidationHandler<,>),
+                typeof(OpenFinalHandler<,>));
+            var request = new Two {Second = 2, Value = "one two three"};
             var payload = new Request<Two>(request);
 
             // act
-            var response = (await mediator.SendAsync<Request<Two>, Response<IBooleanResult<Base>>>(payload)).Value;
+            var response = (await mediator.SendAsync<Response<IBooleanResult<Base>>>(payload)).Value;
 
             // assert
             response.IsSuccess.IsTrue();
-            response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+            response.Data.GetHashCode().IsEqual(new Base {Value = "one_two_three"}.GetHashCode());
             logs.Has(6);
             logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).Name}");
             logs.At(1).Message.IsEqual($"Start {typeof(Two).Name} validation");
@@ -92,9 +92,12 @@ namespace Annium.Core.Mediator.Tests
             return (provider.Resolve<IMediator>(), logHandler.Logs);
         }
 
-        internal class ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
+        internal class
+            ConversionHandler<TRequest, TResponse> : IPipeRequestHandler<Request<TRequest>, TRequest, TResponse,
+                Response<TResponse>>
         {
-            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions
+                Options = new JsonSerializerOptions().ConfigureForOperations();
 
             private readonly ILogger<MediatorTest> _logger;
 
@@ -123,7 +126,8 @@ namespace Annium.Core.Mediator.Tests
 
         internal class Request<T>
         {
-            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions
+                Options = new JsonSerializerOptions().ConfigureForOperations();
 
             public string Value { get; }
 
@@ -135,7 +139,8 @@ namespace Annium.Core.Mediator.Tests
 
         internal class Response<T>
         {
-            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+            private static readonly JsonSerializerOptions
+                Options = new JsonSerializerOptions().ConfigureForOperations();
 
             public T Value { get; }
 
@@ -145,7 +150,9 @@ namespace Annium.Core.Mediator.Tests
             }
         }
 
-        internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
+        internal class
+            ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse,
+                IBooleanResult<TResponse>>
         {
             private readonly Func<TRequest, bool> _validate;
             private readonly ILogger<MediatorTest> _logger;
@@ -166,7 +173,9 @@ namespace Annium.Core.Mediator.Tests
             )
             {
                 _logger.Trace($"Start {typeof(TRequest).Name} validation");
-                var result = _validate(request) ? Result.Success(default(TResponse) !) : Result.Failure(default(TResponse) !).Error("Validation failed");
+                var result = _validate(request)
+                    ? Result.Success(default(TResponse) !)
+                    : Result.Failure(default(TResponse) !).Error("Validation failed");
                 _logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
@@ -198,7 +207,7 @@ namespace Annium.Core.Mediator.Tests
                 _logger.Info(GetType().FullName!);
                 _logger.Info(request.GetHashCode().ToString());
 
-                var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
+                var response = new TResponse {Value = request.Value!.Replace(' ', '_')};
 
                 return Task.FromResult(response);
             }
@@ -223,7 +232,7 @@ namespace Annium.Core.Mediator.Tests
                 _logger.Info(GetType().FullName!);
                 _logger.Info(request.GetHashCode().ToString());
 
-                return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
+                return Task.FromResult(new One {First = request.Value!.Length, Value = request.Value});
             }
         }
 

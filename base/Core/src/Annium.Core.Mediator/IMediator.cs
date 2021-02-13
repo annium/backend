@@ -6,14 +6,14 @@ namespace Annium.Core.Mediator
 {
     public interface IMediator
     {
-        Task<TResponse> SendAsync<TRequest, TResponse>(
-            TRequest request,
+        Task<TResponse> SendAsync<TResponse>(
+            object request,
             CancellationToken cancellationToken = default
         );
 
-        Task<TResponse> SendAsync<TRequest, TResponse>(
+        Task<TResponse> SendAsync<TResponse>(
             IServiceProvider serviceProvider,
-            TRequest request,
+            object request,
             CancellationToken cancellationToken = default
         );
     }

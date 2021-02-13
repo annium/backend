@@ -27,7 +27,7 @@ namespace Annium.AspNetCore.Extensions
             CancellationToken ct = default
         )
         {
-            return _mediator.SendAsync<TRequest, IResult<TResponse>>(_serviceProvider, request, ct);
+            return _mediator.SendAsync<IResult<TResponse>>(_serviceProvider, request, ct);
         }
 
         [NonAction]
@@ -36,7 +36,7 @@ namespace Annium.AspNetCore.Extensions
             CancellationToken ct = default
         )
         {
-            return _mediator.SendAsync<TRequest, IResult>(_serviceProvider, request, ct);
+            return _mediator.SendAsync<IResult>(_serviceProvider, request, ct);
         }
     }
 }

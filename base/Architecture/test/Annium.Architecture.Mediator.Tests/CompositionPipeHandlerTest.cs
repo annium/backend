@@ -15,10 +15,10 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest { IsComposedSuccessfully = false };
+            var request = new LoginRequest {IsComposedSuccessfully = false};
 
             // act
-            var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
+            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
             // assert
             result.Status.IsEqual(OperationStatus.NotFound);
@@ -32,10 +32,10 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest { IsComposedSuccessfully = true };
+            var request = new LoginRequest {IsComposedSuccessfully = true};
 
             // act
-            var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
+            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
             // assert
             result.Status.IsEqual(OperationStatus.Ok);

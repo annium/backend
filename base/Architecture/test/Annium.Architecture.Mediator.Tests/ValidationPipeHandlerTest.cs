@@ -18,7 +18,7 @@ namespace Annium.Architecture.Mediator.Tests
             var request = new LoginRequest();
 
             // act
-            var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
+            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
             // assert
             result.Status.IsEqual(OperationStatus.BadRequest);
@@ -32,10 +32,10 @@ namespace Annium.Architecture.Mediator.Tests
         {
             // arrange
             var mediator = GetMediator(cfg => cfg.AddValidationHandler().Add(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest { UserName = "user", Password = "pass" };
+            var request = new LoginRequest {UserName = "user", Password = "pass"};
 
             // act
-            var result = await mediator.SendAsync<LoginRequest, IStatusResult<OperationStatus, LoginRequest>>(request);
+            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
             // assert
             result.Status.IsEqual(OperationStatus.Ok);
