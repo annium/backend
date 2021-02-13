@@ -35,7 +35,9 @@ namespace Annium.Serialization.Json.Internal.Converters
             var parameters = new object?[_parameters.Count];
             var namingPolicy = options.PropertyNamingPolicy ?? JsonNamingPolicy.CamelCase;
             var properties = _properties.ToDictionary(x => namingPolicy.ConvertName(x.Name), x => x.PropertyType);
-            var comparison = options.PropertyNameCaseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            var comparison = options.PropertyNameCaseInsensitive
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal;
 
             while (reader.Read())
             {
@@ -50,7 +52,9 @@ namespace Annium.Serialization.Json.Internal.Converters
                             if (options.IgnoreNullValues)
                                 return _parameters[i].Type.DefaultValue();
 
-                            throw new JsonException();
+                            throw new JsonException(
+                                $"Can't invoke constructor of '{_constructor.DeclaringType!.FriendlyName()}' with empty parameter '{_parameters[i].Name}'"
+                            );
                         })
                         .ToArray();
                     var result = _constructor.Invoke(args);
@@ -67,7 +71,8 @@ namespace Annium.Serialization.Json.Internal.Converters
                 // for now - no special handling for extra properties, just skip them
                 if (index < 0)
                 {
-                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison)) ?? throw new JsonException();
+                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison)) ??
+                              throw new JsonException();
                     var propertyType = properties[key];
                     JsonSerializer.Deserialize(ref reader, propertyType, options);
                     continue;
