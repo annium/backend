@@ -1,6 +1,6 @@
 namespace Annium.Data.Operations.Implementations
 {
-    internal sealed class StatusResult<TS, TD> : ResultBase<IStatusResult<TS, TD>>, IStatusResult<TS, TD>
+    internal sealed record StatusResult<TS, TD> : ResultBase<IStatusResult<TS, TD>>, IStatusResult<TS, TD>
     {
         public TS Status { get; }
 
@@ -18,7 +18,7 @@ namespace Annium.Data.Operations.Implementations
             data = Data;
         }
 
-        public override IStatusResult<TS, TD> Clone()
+        public override IStatusResult<TS, TD> Copy()
         {
             var clone = new StatusResult<TS, TD>(Status, Data);
             CloneTo(clone);
@@ -27,7 +27,7 @@ namespace Annium.Data.Operations.Implementations
         }
     }
 
-    internal sealed class StatusResult<TS> : ResultBase<IStatusResult<TS>>, IStatusResult<TS>
+    internal sealed record StatusResult<TS> : ResultBase<IStatusResult<TS>>, IStatusResult<TS>
     {
         public TS Status { get; }
 
@@ -36,7 +36,7 @@ namespace Annium.Data.Operations.Implementations
             Status = status;
         }
 
-        public override IStatusResult<TS> Clone()
+        public override IStatusResult<TS> Copy()
         {
             var clone = new StatusResult<TS>(Status);
             CloneTo(clone);

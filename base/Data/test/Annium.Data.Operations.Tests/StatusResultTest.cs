@@ -37,8 +37,8 @@ namespace Annium.Data.Operations.Tests
             var failed = Result.Status(Access.Denied).Error("plain").Error("label", "value");
 
             // act
-            var succeedClone = succeed.Clone();
-            var failedClone = failed.Clone();
+            var succeedClone = succeed.Copy();
+            var failedClone = failed.Copy();
 
             // assert
             succeedClone.Status.IsEqual(Access.Allowed);
@@ -60,8 +60,8 @@ namespace Annium.Data.Operations.Tests
             var failed = Result.Status(Access.Denied, "goodbye").Error("plain").Error("label", "value");
 
             // act
-            var succeedClone = succeed.Clone();
-            var failedClone = failed.Clone();
+            var succeedClone = succeed.Copy();
+            var failedClone = failed.Copy();
 
             // assert
             succeedClone.Status.IsEqual(Access.Allowed);

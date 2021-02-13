@@ -184,7 +184,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New().Error("plain").Error("label", "value");
 
             // act
-            var clone = result.Clone();
+            var clone = result.Copy();
 
             // assert
             clone.HasErrors.IsTrue();
@@ -203,7 +203,7 @@ namespace Annium.Data.Operations.Tests
             var result = Result.New(10).Error("plain").Error("label", "value");
 
             // act
-            var clone = result.Clone();
+            var clone = result.Copy();
 
             // assert
             clone.Data.IsEqual(10);

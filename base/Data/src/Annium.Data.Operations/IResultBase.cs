@@ -26,7 +26,7 @@ namespace Annium.Data.Operations
 
     public interface ICloneableResultBase<T>
     {
-        T Clone();
+        T Copy();
     }
 
     public interface IDataResultBase<TD> : IResultBase

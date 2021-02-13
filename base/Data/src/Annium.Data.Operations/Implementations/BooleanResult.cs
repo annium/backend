@@ -1,6 +1,6 @@
 namespace Annium.Data.Operations.Implementations
 {
-    internal sealed class BooleanResult<TD> : ResultBase<IBooleanResult<TD>>, IBooleanResult<TD>
+    internal sealed record BooleanResult<TD> : ResultBase<IBooleanResult<TD>>, IBooleanResult<TD>
     {
         public bool IsSuccess => _value;
         public bool IsFailure => !_value;
@@ -19,7 +19,7 @@ namespace Annium.Data.Operations.Implementations
             data = Data;
         }
 
-        public override IBooleanResult<TD> Clone()
+        public override IBooleanResult<TD> Copy()
         {
             var clone = new BooleanResult<TD>(_value, Data);
             CloneTo(clone);
@@ -28,7 +28,7 @@ namespace Annium.Data.Operations.Implementations
         }
     }
 
-    internal sealed class BooleanResult : ResultBase<IBooleanResult>, IBooleanResult
+    internal sealed record BooleanResult : ResultBase<IBooleanResult>, IBooleanResult
     {
         public bool IsSuccess => _value;
         public bool IsFailure => !_value;
@@ -39,7 +39,7 @@ namespace Annium.Data.Operations.Implementations
             _value = value;
         }
 
-        public override IBooleanResult Clone()
+        public override IBooleanResult Copy()
         {
             var clone = new BooleanResult(_value);
             CloneTo(clone);

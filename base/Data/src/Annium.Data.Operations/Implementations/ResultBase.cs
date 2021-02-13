@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Primitives;
 
 namespace Annium.Data.Operations.Implementations
 {
-    internal abstract class ResultBase<T> : IResultBase<T>, IResultBase
+    internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<T>
         where T : class, IResultBase<T>
     {
         public IReadOnlyCollection<string> PlainErrors => _plainErrors;
@@ -18,7 +19,7 @@ namespace Annium.Data.Operations.Implementations
         private readonly HashSet<string> _plainErrors = new HashSet<string>();
         private readonly Dictionary<string, HashSet<string>> _labeledErrors = new Dictionary<string, HashSet<string>>();
 
-        public abstract T Clone();
+        public abstract T Copy();
 
         public T Clear()
         {

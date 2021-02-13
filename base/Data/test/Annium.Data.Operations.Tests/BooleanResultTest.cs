@@ -91,8 +91,8 @@ namespace Annium.Data.Operations.Tests
             var failed = Result.Failure().Error("plain").Error("label", "value");
 
             // act
-            var succeedClone = succeed.Clone();
-            var failedClone = failed.Clone();
+            var succeedClone = succeed.Copy();
+            var failedClone = failed.Copy();
 
             // assert
             succeedClone.IsSuccess.IsTrue();
@@ -114,8 +114,8 @@ namespace Annium.Data.Operations.Tests
             var failed = Result.Failure(10).Error("plain").Error("label", "value");
 
             // act
-            var succeedClone = succeed.Clone();
-            var failedClone = failed.Clone();
+            var succeedClone = succeed.Copy();
+            var failedClone = failed.Copy();
 
             // assert
             succeedClone.IsSuccess.IsTrue();

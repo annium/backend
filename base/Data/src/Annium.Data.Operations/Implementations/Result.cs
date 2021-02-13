@@ -1,6 +1,6 @@
 namespace Annium.Data.Operations.Implementations
 {
-    internal sealed class Result<TD> : ResultBase<IResult<TD>>, IResult<TD>
+    internal sealed record Result<TD> : ResultBase<IResult<TD>>, IResult<TD>
     {
         public TD Data { get; }
 
@@ -9,7 +9,7 @@ namespace Annium.Data.Operations.Implementations
             Data = data;
         }
 
-        public override IResult<TD> Clone()
+        public override IResult<TD> Copy()
         {
             var clone = new Result<TD>(Data);
             CloneTo(clone);
@@ -18,9 +18,9 @@ namespace Annium.Data.Operations.Implementations
         }
     }
 
-    internal sealed class Result : ResultBase<IResult>, IResult
+    internal sealed record Result : ResultBase<IResult>, IResult
     {
-        public override IResult Clone()
+        public override IResult Copy()
         {
             var clone = new Result();
             CloneTo(clone);
