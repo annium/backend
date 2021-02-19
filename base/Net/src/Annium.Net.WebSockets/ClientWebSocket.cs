@@ -50,6 +50,8 @@ namespace Annium.Net.WebSockets
         {
             if (_options.ReconnectOnFailure)
             {
+                if (_options.BeforeReconnect != null)
+                    await _options.BeforeReconnect();
                 await ConnectAsync(_uri!, CancellationToken.None);
                 if (_options.AfterReconnect != null)
                     await _options.AfterReconnect();
