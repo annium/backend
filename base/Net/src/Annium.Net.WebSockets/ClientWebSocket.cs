@@ -48,13 +48,13 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnDisconnectAsync()
         {
+            if (_options.OnConnectionLost is not null)
+                await _options.OnConnectionLost();
             if (_options.ReconnectOnFailure)
             {
-                if (_options.BeforeReconnect != null)
-                    await _options.BeforeReconnect();
                 await ConnectAsync(_uri!, CancellationToken.None);
-                if (_options.AfterReconnect != null)
-                    await _options.AfterReconnect();
+                if (_options.OnConnectionRestored is not null)
+                    await _options.OnConnectionRestored();
             }
             else
                 await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
