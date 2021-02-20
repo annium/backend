@@ -36,14 +36,20 @@ namespace Annium.Net.WebSockets
                 catch (WebSocketException)
                 {
                     Socket.Dispose();
-                    await Task.Delay(10);
+                    await Task.Delay(10, token);
                 }
-            } while (!IsConnected && !token.IsCancellationRequested);
+            } while (
+                !token.IsCancellationRequested &&
+                !(
+                    Socket.State == WebSocketState.Open ||
+                    Socket.State == WebSocketState.CloseSent
+                )
+            );
         }
 
         public async Task DisconnectAsync(CancellationToken token)
         {
-            await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
         }
 
         protected override async Task OnDisconnectAsync()
@@ -52,12 +58,11 @@ namespace Annium.Net.WebSockets
                 await _options.OnConnectionLost();
             if (_options.ReconnectOnFailure)
             {
+                await Task.Delay(10);
                 await ConnectAsync(_uri!, CancellationToken.None);
                 if (_options.OnConnectionRestored is not null)
                     await _options.OnConnectionRestored();
             }
-            else
-                await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
         }
     }
 }

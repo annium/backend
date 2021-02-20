@@ -1,5 +1,6 @@
 using System;
 using System.Net.WebSockets;
+using System.Reactive;
 using System.Threading;
 
 namespace Annium.Net.WebSockets
@@ -10,8 +11,8 @@ namespace Annium.Net.WebSockets
 
     public interface ISendingWebSocket : IDisposable
     {
-        IObservable<int> Send(string data, CancellationToken token);
-        IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token);
+        IObservable<Unit> Send(string data, CancellationToken token);
+        IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token);
     }
 
     public interface IReceivingWebSocket : IDisposable

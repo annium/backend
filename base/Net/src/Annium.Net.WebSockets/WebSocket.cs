@@ -17,12 +17,12 @@ namespace Annium.Net.WebSockets
 
         public async Task DisconnectAsync(CancellationToken token)
         {
-            await Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
         }
 
-        protected override async Task OnDisconnectAsync()
+        protected override Task OnDisconnectAsync()
         {
-            await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
+            return Task.CompletedTask;
         }
     }
 }

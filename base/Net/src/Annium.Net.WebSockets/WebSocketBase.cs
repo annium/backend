@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -15,7 +16,6 @@ namespace Annium.Net.WebSockets
     {
         private const int BufferSize = 65536;
 
-        public bool IsConnected => State == WebSocketState.Open || State == WebSocketState.CloseReceived || State == WebSocketState.CloseSent;
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
@@ -30,15 +30,15 @@ namespace Annium.Net.WebSockets
             _socketObservable = CreateSocketObservable();
         }
 
-        public IObservable<int> Send(string data, CancellationToken token) =>
+        public IObservable<Unit> Send(string data, CancellationToken token) =>
             Send(_encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
 
-        public IObservable<int> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
+        public IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
             Send(data, WebSocketMessageType.Binary, token);
 
         public IObservable<SocketMessage> Listen() => _socketObservable;
 
-        public IObservable<string> ListenText() => Listen()
+        public IObservable<string> ListenText() => _socketObservable
             .Where(x => x.Type == WebSocketMessageType.Text)
             .Select(x => _encoding.GetString(x.Data.Span));
 
@@ -48,7 +48,7 @@ namespace Annium.Net.WebSockets
 
         protected abstract Task OnDisconnectAsync();
 
-        private IObservable<int> Send(
+        private IObservable<Unit> Send(
             ReadOnlyMemory<byte> data,
             WebSocketMessageType messageType,
             CancellationToken ct
@@ -62,28 +62,31 @@ namespace Annium.Net.WebSockets
                 cancellationToken: ct
             );
 
-            return data.Length;
+            return Unit.Default;
         });
 
         private IObservable<SocketMessage> CreateSocketObservable() =>
-            Observable.Create<SocketMessage>(async (observer, token) =>
+            Observable.Create<SocketMessage>(async (observer, _) =>
             {
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
-                while (await ReceiveAsync(observer, buffer, token))
+                while (await ReceiveAsync(observer, buffer))
                 {
                 }
 
                 pool.Return(buffer);
 
-                return () => Socket.CloseAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+                return () => Socket.CloseOutputAsync(
+                    WebSocketCloseStatus.NormalClosure,
+                    string.Empty,
+                    CancellationToken.None
+                );
             }).Publish().RefCount();
 
         private async ValueTask<bool> ReceiveAsync(
             IObserver<SocketMessage> observer,
-            Memory<byte> buffer,
-            CancellationToken token
+            Memory<byte> buffer
         )
         {
             try
@@ -92,7 +95,7 @@ namespace Annium.Net.WebSockets
                 ValueWebSocketReceiveResult result;
                 do
                 {
-                    result = await Socket.ReceiveAsync(buffer, token);
+                    result = await Socket.ReceiveAsync(buffer, CancellationToken.None);
 
                     // if closing - handle disconnect
                     if (result.MessageType == WebSocketMessageType.Close)
@@ -100,7 +103,11 @@ namespace Annium.Net.WebSockets
                         await OnDisconnectAsync().ConfigureAwait(false);
 
                         // if after disconnect handling not connected - set completed and break
-                        if (!IsConnected)
+                        if (
+                            State == WebSocketState.CloseReceived ||
+                            State == WebSocketState.Closed ||
+                            State == WebSocketState.Aborted
+                        )
                         {
                             observer.OnCompleted();
 
@@ -122,7 +129,7 @@ namespace Annium.Net.WebSockets
 
                 return false;
             }
-            // token was canceled
+            // token was canceled, or connection was aborted during Receive operation
             catch (OperationCanceledException)
             {
                 observer.OnCompleted();
