@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Mediator.Internal
 {
-    internal class ChainElement
+    internal record ChainElement
     {
         public Type Handler { get; }
         public Delegate? Next { get; }

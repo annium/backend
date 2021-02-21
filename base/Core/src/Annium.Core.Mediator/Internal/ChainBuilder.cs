@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Logging.Abstractions;
 
@@ -27,22 +28,24 @@ namespace Annium.Core.Mediator.Internal
         {
             var handlers = _configuration.Handlers.ToList();
 
-            _logger.Trace($"Build execution chain for {input} -> {output} from {handlers.Count} handler(s) available");
+            output = ResolveOutput(input, output);
+
+            _logger.Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
 
             var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
             {
-                _logger.Trace($"Find chain element for {input} -> {output}");
+                _logger.Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
 
                 Type? service = null;
 
                 foreach (var handler in handlers.ToArray())
                 {
-                    service = ResolveHandler(handler);
+                    service = ResolveHandler(input, output, handler);
 
-                    _logger.Trace($"Resolved {handler.RequestIn} -> {handler.ResponseOut} handler into {service}");
+                    _logger.Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
 
                     if (service is null)
                         continue;
@@ -53,11 +56,11 @@ namespace Annium.Core.Mediator.Internal
 
                 if (service is null)
                 {
-                    _logger.Trace($"No handler resolved for {input} -> {output}");
+                    _logger.Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
                     break;
                 }
 
-                _logger.Trace($"Add {service} to chain");
+                _logger.Trace($"Add {service.FriendlyName()} to chain");
 
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
@@ -75,39 +78,47 @@ namespace Annium.Core.Mediator.Internal
                 chain.Add(new ChainElement(service, _nextBuilder.BuildNext(input, output)));
             }
 
-            TraceChain();
+            TraceChain(chain);
 
             if (!isFinalized)
-                throw new InvalidOperationException($"Can't resolve request handler by input {input} and output {output}");
+                throw new InvalidOperationException($"Can't resolve request handler by input {input.FriendlyName()} and output {output.FriendlyName()}");
 
             return chain;
+        }
 
-            Type? ResolveHandler(Handler handler)
+        private Type ResolveOutput(Type input, Type output)
+        {
+            var match = _configuration.Matches
+                .SingleOrDefault(x => x.RequestedType == input && x.ExpectedType == output);
+
+            return match?.ResolvedType ?? output;
+        }
+
+        private Type? ResolveHandler(Type input, Type output, Handler handler)
+        {
+            var requestIn = input.GetTargetImplementation(handler.RequestIn);
+            // var responseOut = handler.ResponseOut.ResolveByImplentations(output);
+            var responseOut = output.GetTargetImplementation(handler.ResponseOut);
+
+            if (requestIn is null || responseOut is null)
+                return null;
+
+            var handlerInput = Constants.HandlerInputType.MakeGenericType(requestIn, responseOut);
+            var service = handler.Implementation.ResolveByImplementation(handlerInput);
+            if (service is null)
             {
-                var requestIn = input.GetTargetImplementation(handler.RequestIn);
-                // var responseOut = handler.ResponseOut.ResolveByImplentations(output);
-                var responseOut = output.GetTargetImplementation(handler.ResponseOut);
-
-                if (requestIn is null || responseOut is null)
-                    return null;
-
-                var handlerInput = Constants.HandlerInputType.MakeGenericType(requestIn, responseOut);
-                var service = handler.Implementation.ResolveByImplementation(handlerInput);
-                if (service is null)
-                {
-                    _logger.Trace($"Can't resolve {handler.Implementation} by input {requestIn} and output {responseOut}");
-                    return null;
-                }
-
-                return service;
+                _logger.Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
+                return null;
             }
 
-            void TraceChain()
-            {
-                _logger.Trace($"Composed chain with {chain.Count} handler(s):");
-                foreach (var element in chain)
-                    _logger.Trace($"- {element.Handler}");
-            }
+            return service;
+        }
+
+        private void TraceChain(IReadOnlyCollection<ChainElement> chain)
+        {
+            _logger.Trace($"Composed chain with {chain.Count} handler(s):");
+            foreach (var element in chain)
+                _logger.Trace($"- {element.Handler}");
         }
     }
 }

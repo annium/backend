@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Mediator.Internal
 {
-    internal class Handler
+    internal record Handler
     {
         public Type Implementation { get; }
         public Type RequestIn { get; }
