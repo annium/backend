@@ -13,7 +13,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task Exception_ReturnsUncaughtExceptionResult()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddExceptionHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddExceptionHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest {Throw = true};
 
             // act
@@ -29,7 +29,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task Success_ReturnsOriginalResult()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest {Throw = false};
 
             // act

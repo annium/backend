@@ -12,13 +12,13 @@ namespace Annium.Core.Mediator
         )
         {
             foreach (var handler in typeManager.GetImplementations(typeof(ICommandHandler<,>)))
-                cfg.Add(handler);
+                cfg.AddHandler(handler);
 
             foreach (var handler in typeManager.GetImplementations(typeof(ICommandHandler<>)))
-                cfg.Add(handler);
+                cfg.AddHandler(handler);
 
             foreach (var handler in typeManager.GetImplementations(typeof(IQueryHandler<,>)))
-                cfg.Add(handler);
+                cfg.AddHandler(handler);
 
             return cfg;
         }

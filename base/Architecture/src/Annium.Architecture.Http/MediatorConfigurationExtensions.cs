@@ -7,8 +7,8 @@ namespace Annium.Core.Mediator
     {
         public static MediatorConfiguration AddHttpStatusPipeHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(HttpStatusPipeHandler<>));
-            cfg.Add(typeof(HttpStatusPipeHandler<,>));
+            cfg.AddHandler(typeof(HttpStatusPipeHandler<>));
+            cfg.AddHandler(typeof(HttpStatusPipeHandler<,>));
 
             return cfg;
         }

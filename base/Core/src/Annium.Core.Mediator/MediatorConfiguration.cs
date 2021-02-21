@@ -22,7 +22,7 @@ namespace Annium.Core.Mediator
         {
         }
 
-        public MediatorConfiguration Add(Type handlerType)
+        public MediatorConfiguration AddHandler(Type handlerType)
         {
             // ensure type is pipe or final handler
             var interfaces = handlerType.GetInterfaces()

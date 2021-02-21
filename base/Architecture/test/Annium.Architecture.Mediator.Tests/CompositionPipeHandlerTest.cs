@@ -14,7 +14,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task CompositionFailure_ReturnsNotFound()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest {IsComposedSuccessfully = false};
 
             // act
@@ -31,7 +31,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task CompositionSuccess_ReturnsOriginalResult()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest {IsComposedSuccessfully = true};
 
             // act

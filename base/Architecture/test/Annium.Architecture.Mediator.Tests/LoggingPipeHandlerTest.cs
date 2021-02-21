@@ -13,7 +13,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task ReturnsOriginalResult()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddLoggingHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddLoggingHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest();
 
             // act

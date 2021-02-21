@@ -21,12 +21,12 @@ namespace Demo.Core.Mediator
 
         private void ConfigureMediator(MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(LoggingHandler<,>));
-            cfg.Add(typeof(ConversionHandler<,>));
-            cfg.Add(typeof(ExceptionHandler<,>));
-            cfg.Add(typeof(ValidationHandler<,>));
-            cfg.Add(typeof(AuthorizationHandler<,>));
-            cfg.Add(typeof(TodoCommandHandler));
+            cfg.AddHandler(typeof(LoggingHandler<,>));
+            cfg.AddHandler(typeof(ConversionHandler<,>));
+            cfg.AddHandler(typeof(ExceptionHandler<,>));
+            cfg.AddHandler(typeof(ValidationHandler<,>));
+            cfg.AddHandler(typeof(AuthorizationHandler<,>));
+            cfg.AddHandler(typeof(TodoCommandHandler));
         }
     }
 }

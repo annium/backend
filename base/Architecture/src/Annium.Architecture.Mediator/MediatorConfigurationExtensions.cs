@@ -8,31 +8,31 @@ namespace Annium.Core.Mediator
     {
         public static MediatorConfiguration AddCompositionHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(CompositionPipeHandler<>));
-            cfg.Add(typeof(CompositionPipeHandler<,>));
+            cfg.AddHandler(typeof(CompositionPipeHandler<>));
+            cfg.AddHandler(typeof(CompositionPipeHandler<,>));
 
             return cfg;
         }
 
         public static MediatorConfiguration AddExceptionHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(ExceptionPipeHandler<>));
-            cfg.Add(typeof(ExceptionPipeHandler<,>));
+            cfg.AddHandler(typeof(ExceptionPipeHandler<>));
+            cfg.AddHandler(typeof(ExceptionPipeHandler<,>));
 
             return cfg;
         }
 
         public static MediatorConfiguration AddLoggingHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(LoggingPipeHandler<,>));
+            cfg.AddHandler(typeof(LoggingPipeHandler<,>));
 
             return cfg;
         }
 
         public static MediatorConfiguration AddValidationHandler(this MediatorConfiguration cfg)
         {
-            cfg.Add(typeof(ValidationPipeHandler<>));
-            cfg.Add(typeof(ValidationPipeHandler<,>));
+            cfg.AddHandler(typeof(ValidationPipeHandler<>));
+            cfg.AddHandler(typeof(ValidationPipeHandler<,>));
 
             return cfg;
         }

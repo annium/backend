@@ -14,7 +14,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task ValidationFailure_ReturnsBadRequest()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddValidationHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest();
 
             // act
@@ -31,7 +31,7 @@ namespace Annium.Architecture.Mediator.Tests
         public async Task ValidationSuccess_ReturnsOriginalResult()
         {
             // arrange
-            var mediator = GetMediator(cfg => cfg.AddValidationHandler().Add(typeof(EchoRequestHandler<>)));
+            var mediator = GetMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
             var request = new LoginRequest {UserName = "user", Password = "pass"};
 
             // act

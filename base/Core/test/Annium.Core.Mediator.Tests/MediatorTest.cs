@@ -84,7 +84,7 @@ namespace Annium.Core.Mediator.Tests
             container.AddMediatorConfiguration(cfg =>
             {
                 foreach (var handlerType in handlerTypes)
-                    cfg.Add(handlerType);
+                    cfg.AddHandler(handlerType);
             });
             container.AddMediator();
             var provider = container.BuildServiceProvider();
