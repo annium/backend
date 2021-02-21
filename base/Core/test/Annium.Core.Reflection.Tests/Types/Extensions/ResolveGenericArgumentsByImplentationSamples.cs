@@ -21,19 +21,19 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsB
     {
     }
 
-    public class ParentDictionary<T1, T2> : CustomDicitonary<T2, T1> where T2 : notnull
+    public class ParentDictionary<T1, T2> : CustomDictionary<T2, T1> where T2 : notnull
     {
     }
 
-    public class CustomDicitonary<T1, T2> : Dictionary<T1, T2> where T1 : notnull
+    public class CustomDictionary<T1, T2> : Dictionary<T1, T2> where T1 : notnull
     {
     }
 
-    public class ClassParametered<T> : ClassBase
+    public class ClassParametrized<T> : ClassBase
     {
         public T X { get; }
 
-        public ClassParametered(T x)
+        public ClassParametrized(T x)
         {
             X = x;
         }

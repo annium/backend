@@ -232,7 +232,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
         {
             //assert
-            typeof(ClassParametered<>)
+            typeof(ClassParametrized<>)
                 .ResolveGenericArgumentsByImplementation(typeof(INewConstraint<>).GetGenericArguments()[0])
                 .IsDefault();
         }
@@ -241,7 +241,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintFailure_ReturnsNull()
         {
             //assert
-            typeof(ClassParametered<>)
+            typeof(ClassParametrized<>)
                 .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])
                 .IsDefault();
         }
@@ -280,7 +280,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfClass_NotGenericBaseType_ReturnsNull()
         {
             //assert
-            typeof(ClassParametered<>).ResolveGenericArgumentsByImplementation(typeof(List<int>))
+            typeof(ClassParametrized<>).ResolveGenericArgumentsByImplementation(typeof(List<int>))
                 .IsDefault();
         }
 
@@ -288,7 +288,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfClass_BaseTypeSameGenericDefinition_BuildArgs()
         {
             //assert
-            typeof(CustomDicitonary<,>).ResolveGenericArgumentsByImplementation(typeof(Dictionary<int, bool>)) !
+            typeof(CustomDictionary<,>).ResolveGenericArgumentsByImplementation(typeof(Dictionary<int, bool>)) !
                 .IsEqual(new[] { typeof(int), typeof(bool) });
         }
 
