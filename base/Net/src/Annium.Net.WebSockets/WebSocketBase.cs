@@ -66,26 +66,29 @@ namespace Annium.Net.WebSockets
         });
 
         private IObservable<SocketMessage> CreateSocketObservable() =>
-            Observable.Create<SocketMessage>(async (observer, _) =>
+            ObservableInstance.Create<SocketMessage>(async ctx =>
             {
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
-                while (await ReceiveAsync(observer, buffer))
-                {
-                }
+                // Debug($"INTERNAL: Resume in {Socket.State} state");
+
+                while (
+                    !ctx.Token.IsCancellationRequested &&
+                    (
+                        Socket.State == WebSocketState.Open ||
+                        Socket.State == WebSocketState.CloseSent
+                    )
+                )
+                    await ReceiveAsync(ctx, buffer);
 
                 pool.Return(buffer);
 
-                return () => Socket.CloseOutputAsync(
-                    WebSocketCloseStatus.NormalClosure,
-                    string.Empty,
-                    CancellationToken.None
-                );
-            }).Publish().RefCount();
+                // Debug($"INTERNAL: Suspend in {Socket.State} state");
+            });
 
-        private async ValueTask<bool> ReceiveAsync(
-            IObserver<SocketMessage> observer,
+        private async ValueTask ReceiveAsync(
+            ObserverContext<SocketMessage> ctx,
             Memory<byte> buffer
         )
         {
@@ -95,7 +98,9 @@ namespace Annium.Net.WebSockets
                 ValueWebSocketReceiveResult result;
                 do
                 {
+                    // Debug($"INTERNAL: Receive in State {Socket.State}");
                     result = await Socket.ReceiveAsync(buffer, CancellationToken.None);
+                    // Debug($"INTERNAL: Received {result.MessageType} in State {Socket.State}");
 
                     // if closing - handle disconnect
                     if (result.MessageType == WebSocketMessageType.Close)
@@ -109,38 +114,31 @@ namespace Annium.Net.WebSockets
                             State == WebSocketState.Aborted
                         )
                         {
-                            observer.OnCompleted();
-
-                            return false;
+                            ctx.OnCompleted();
                         }
                     }
 
                     stream.Write(buffer.Slice(0, result.Count).Span);
                 } while (!result.EndOfMessage);
 
-                observer.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
-
-                return true;
+                ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
             }
             //  remote party closed connection w/o handshake
-            catch (WebSocketException)
+            catch (WebSocketException e)
             {
-                observer.OnCompleted();
-
-                return false;
+                // Debug($"INTERNAL: WebSocketException {e}");
+                ctx.OnCompleted();
             }
             // token was canceled, or connection was aborted during Receive operation
-            catch (OperationCanceledException)
+            catch (OperationCanceledException e)
             {
-                observer.OnCompleted();
-
-                return false;
+                // Debug($"INTERNAL: OperationCanceledException {e}");
+                ctx.OnCompleted();
             }
             catch (Exception e)
             {
-                observer.OnError(e);
-
-                return false;
+                // Debug($"INTERNAL: Exception {e}");
+                ctx.OnError(e);
             }
         }
 
@@ -148,5 +146,7 @@ namespace Annium.Net.WebSockets
         {
             Socket.Dispose();
         }
+
+        // private void Debug(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");
     }
 }
