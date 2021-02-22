@@ -7,7 +7,7 @@ namespace System
 {
     public static class ObservableInstance
     {
-        public static IObservable<T> Create<T>(Func<Action<T>, Action<Exception>, CancellationToken, Task> factory)
+        public static IObservable<T> Create<T>(Func<ObserverContext<T>, Task> factory)
         {
             return new ObservableInstance<T>(factory);
         }
@@ -15,7 +15,7 @@ namespace System
 
     internal class ObservableInstance<T> : IObservable<T>, IAsyncDisposable
     {
-        private readonly Func<Action<T>, Action<Exception>, CancellationToken, Task> _factory;
+        private readonly Func<ObserverContext<T>, Task> _factory;
         private readonly HashSet<IObserver<T>> _subscribers = new();
         private readonly object _lock = new();
         private Task _factoryTask = Task.CompletedTask;
@@ -23,7 +23,7 @@ namespace System
         private bool _isDisposed;
 
         internal ObservableInstance(
-            Func<Action<T>, Action<Exception>, CancellationToken, Task> factory
+            Func<ObserverContext<T>, Task> factory
         )
         {
             _factory = WrapFactory(factory);
@@ -43,7 +43,7 @@ namespace System
                     _factoryTask = Task.Run(async () =>
                     {
                         await factoryTask;
-                        await _factory(OnNext, OnError, _factoryCts.Token);
+                        await _factory(new ObserverContext<T>(OnNext, OnError, OnCompleted, _factoryCts.Token));
                     });
                 }
             }
@@ -67,6 +67,8 @@ namespace System
                 throw new ObjectDisposedException(GetType().FriendlyName());
             _isDisposed = true;
 
+            OnCompleted();
+            _factoryCts.Cancel();
             Task factoryTask;
             lock (_lock) factoryTask = _factoryTask;
 
@@ -100,12 +102,12 @@ namespace System
                 observer.OnCompleted();
         }
 
-        private Func<Action<T>, Action<Exception>, CancellationToken, Task> WrapFactory(
-            Func<Action<T>, Action<Exception>, CancellationToken, Task> factory
-        ) => async (onNext, onError, ct) =>
+        private Func<ObserverContext<T>, Task> WrapFactory(
+            Func<ObserverContext<T>, Task> factory
+        ) => async ctx =>
         {
             _factoryCts = new CancellationTokenSource();
-            await factory(onNext, onError, _factoryCts.Token);
+            await factory(ctx with {Token = _factoryCts.Token});
         };
     }
 }
