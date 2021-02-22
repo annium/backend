@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
@@ -80,7 +81,7 @@ namespace System
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FriendlyName());
 
-            foreach (var observer in _subscribers)
+            foreach (var observer in _subscribers.ToArray())
                 observer.OnNext(value);
         }
 
@@ -89,7 +90,7 @@ namespace System
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FriendlyName());
 
-            foreach (IObserver<T> observer in _subscribers)
+            foreach (var observer in _subscribers.ToArray())
                 observer.OnError(exception);
         }
 
@@ -98,7 +99,7 @@ namespace System
             if (_isDisposed)
                 throw new ObjectDisposedException(GetType().FriendlyName());
 
-            foreach (IObserver<T> observer in _subscribers)
+            foreach (var observer in _subscribers.ToArray())
                 observer.OnCompleted();
         }
 
