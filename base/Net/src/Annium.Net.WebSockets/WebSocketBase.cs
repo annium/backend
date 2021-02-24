@@ -19,7 +19,7 @@ namespace Annium.Net.WebSockets
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
-        private readonly UTF8Encoding _encoding = new UTF8Encoding();
+        private readonly UTF8Encoding _encoding = new();
         private readonly IObservable<SocketMessage> _socketObservable;
 
         internal WebSocketBase(
@@ -71,20 +71,25 @@ namespace Annium.Net.WebSockets
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
-                // Debug($"INTERNAL: Resume in {Socket.State} state");
+                try
+                {
+                    // Debug($"INTERNAL: Resume in {Socket.State} state");
 
-                while (
-                    !ctx.Token.IsCancellationRequested &&
-                    (
-                        Socket.State == WebSocketState.Open ||
-                        Socket.State == WebSocketState.CloseSent
-                    )
-                )
-                    await ReceiveAsync(ctx, buffer);
+                    while (!ctx.Token.IsCancellationRequested)
+                    {
+                        SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
+                        await ReceiveAsync(ctx, buffer);
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                }
+                finally
+                {
+                    pool.Return(buffer);
 
-                pool.Return(buffer);
-
-                // Debug($"INTERNAL: Suspend in {Socket.State} state");
+                    // Debug($"INTERNAL: Suspend in {Socket.State} state");
+                }
             });
 
         private async ValueTask ReceiveAsync(
