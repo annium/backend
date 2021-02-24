@@ -49,11 +49,14 @@ namespace Annium.Collections.Generic
             return _data.ContainsKey(key);
         }
 
-        public bool Remove(TKey key)
+        public bool Remove(TKey key, out TValue value)
         {
             Cleanup();
 
-            return _data.TryRemove(key, out _);
+            var result = _data.TryRemove(key, out var item);
+            value = item is null ? default! : item.Value;
+
+            return result;
         }
 
         public void Clear()

@@ -101,11 +101,11 @@ namespace Annium.Collections.Tests.Generic
             collection.Add(key2, "b", ttl * 2);
 
             // assert
-            collection.Remove(key2).IsTrue();
+            collection.Remove(key2, out _).IsTrue();
             collection.ContainsKey(key1).IsTrue();
             collection.ContainsKey(key2).IsFalse();
             timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            collection.Remove(key2).IsFalse();
+            collection.Remove(key2, out _).IsFalse();
             collection.ContainsKey(key1).IsFalse();
             collection.ContainsKey(key2).IsFalse();
         }
