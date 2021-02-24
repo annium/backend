@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Collections.Generic;
@@ -27,6 +28,46 @@ namespace Annium.Collections.Tests.Generic
             // assert
             foreach (var value in Enumerable.Range(0, 100))
                 collection.ContainsKey(value).IsTrue();
+        }
+
+        [Fact]
+        public void Get_Works()
+        {
+            // arrange
+            var timeProvider = GetTimeProvider();
+            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+            var key = Guid.NewGuid();
+            var value = "secret";
+            var ttl = Duration.FromSeconds(5);
+            collection.Add(key, value, ttl);
+
+            // assert
+            collection.Get(key).Is(value);
+            timeProvider.SetNow(timeProvider.Now + ttl);
+            collection.Get(key).Is(value);
+            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            ((Func<string>) (() => collection.Get(key))).Throws<KeyNotFoundException>();
+        }
+
+        [Fact]
+        public void TryGet_Works()
+        {
+            // arrange
+            var timeProvider = GetTimeProvider();
+            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+            var key = Guid.NewGuid();
+            var value = "secret";
+            var ttl = Duration.FromSeconds(5);
+            collection.Add(key, value, ttl);
+
+            // assert
+            var val = string.Empty;
+            collection.TryGet(key, out val).IsTrue();
+            val.Is(value);
+            timeProvider.SetNow(timeProvider.Now + ttl);
+            collection.Get(key).Is(value);
+            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            ((Func<string>) (() => collection.Get(key))).Throws<KeyNotFoundException>();
         }
 
         [Fact]

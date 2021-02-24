@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using Annium.Core.Runtime.Time;
 using NodaTime;
 
@@ -9,7 +9,7 @@ namespace Annium.Collections.Generic
         where TKey : notnull
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly ConcurrentDictionary<TKey, ValueTuple<TValue, Instant>> _data = new();
+        private readonly ConcurrentDictionary<TKey, Item> _data = new();
 
         public ExpiringDictionary(ITimeProvider timeProvider)
         {
@@ -18,8 +18,28 @@ namespace Annium.Collections.Generic
 
         public void Add(TKey key, TValue value, Duration ttl)
         {
-            var tuple = (value, _timeProvider.Now + ttl);
-            _data.AddOrUpdate(key, tuple, (_, _) => tuple);
+            var item = new Item(value, _timeProvider.Now + ttl);
+            _data.AddOrUpdate(key, item, (_, _) => item);
+        }
+
+        public bool TryGet(TKey key, out TValue value)
+        {
+            Cleanup();
+
+            var result = _data.TryGetValue(key, out var item);
+            value = item is null ? default! : item.Value;
+
+            return result;
+        }
+
+        public TValue Get(TKey key)
+        {
+            Cleanup();
+
+            if (!_data.TryGetValue(key, out var item))
+                throw new KeyNotFoundException($"Key {key} is missing in collection");
+
+            return item.Value;
         }
 
         public bool ContainsKey(TKey key)
@@ -47,9 +67,11 @@ namespace Annium.Collections.Generic
             var pairs = _data.ToArray();
             foreach (var (key, value) in pairs)
             {
-                if (value.Item2 < now)
+                if (value.Expires < now)
                     _data.TryRemove(key, out _);
             }
         }
+
+        private record Item(TValue Value, Instant Expires);
     }
 }
