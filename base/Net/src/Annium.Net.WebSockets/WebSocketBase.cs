@@ -129,13 +129,13 @@ namespace Annium.Net.WebSockets
                 ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
             }
             //  remote party closed connection w/o handshake
-            catch (WebSocketException e)
+            catch (WebSocketException)
             {
                 // Debug($"INTERNAL: WebSocketException {e}");
                 ctx.OnCompleted();
             }
             // token was canceled, or connection was aborted during Receive operation
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 // Debug($"INTERNAL: OperationCanceledException {e}");
                 ctx.OnCompleted();
