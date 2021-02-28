@@ -9,13 +9,13 @@ namespace Annium.Net.WebSockets
     {
     }
 
-    public interface ISendingWebSocket : IDisposable
+    public interface ISendingWebSocket : IWebSocketBase, IDisposable
     {
         IObservable<Unit> Send(string data, CancellationToken token);
         IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token);
     }
 
-    public interface IReceivingWebSocket : IDisposable
+    public interface IReceivingWebSocket : IWebSocketBase, IDisposable
     {
         IObservable<SocketMessage> Listen();
         IObservable<string> ListenText();
@@ -24,7 +24,6 @@ namespace Annium.Net.WebSockets
 
     public interface IWebSocketBase
     {
-        bool IsConnected { get; }
         WebSocketState State { get; }
     }
 }
