@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+    <PropertyGroup>
+        <PackageId>Demo.Infrastructure.WebSockets.Server</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>SocketsServer</Description>
+        <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <DebugType>portable</DebugType>
+        <LangVersion>preview</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../../third-party/AspNetCore/src/Annium.AspNetCore.WebSockets/Annium.AspNetCore.WebSockets.csproj" />
+        <ProjectReference Include="../../../Configuration/src/Annium.Configuration.Abstractions/Annium.Configuration.Abstractions.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
+        <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
+        <ProjectReference Include="../Demo.Infrastructure.WebSockets.Domain/Demo.Infrastructure.WebSockets.Domain.csproj" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>Annium.AspNetCore.WebSockets</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>Annium.AspNetCore.WebSockets</Description>
+        <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <DebugType>portable</DebugType>
+        <LangVersion>preview</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>true</IsPackable>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.WebSockets.Server/Annium.Infrastructure.WebSockets.Server.csproj" />
+    </ItemGroup>
+</Project>

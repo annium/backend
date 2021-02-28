@@ -1,0 +1,9 @@
+ApiClient:
+- generated client
+- server name is prefixed: IdApiClient, ServerApiClient
+- provides ConnectionLost, ConnectionRestored events
+ClientBase:
+- is created from inside IContainer extension, calling ConnectAsync, if needed
+- wraps ClientWebSocket
+- provides ConnectionLost, ConnectionRestored events
+- includes clients hierarchy
