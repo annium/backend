@@ -1,20 +1,19 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Annium.Core.Reflection;
 using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal.Converters
 {
     internal class ConstructorJsonConverterFactory : JsonConverterFactory
     {
-        private readonly IDictionary<Type, ConstructorJsonConverterConfiguration> _configurations =
-            new Dictionary<Type, ConstructorJsonConverterConfiguration>();
+        private readonly ConcurrentDictionary<Type, ConstructorJsonConverterConfiguration> _configurations = new();
 
         public override bool CanConvert(Type type)
         {
@@ -66,7 +65,7 @@ namespace Annium.Serialization.Json.Internal.Converters
             if (constructors.Length != 1)
                 return false;
 
-            _configurations[type] = ParseConfiguration(constructors[0]);
+            _configurations.AddOrUpdate(type, _ => ParseConfiguration(constructors[0]), (_, x) => x);
 
             return true;
         }
