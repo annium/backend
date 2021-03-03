@@ -3,10 +3,10 @@
         <PackageId>Demo.Extensions.Composition</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Demo.Extensions.Composition</Description>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>netstandard2.1</TargetFramework>
         <OutputType>Exe</OutputType>
         <DebugType>portable</DebugType>
-        <LangVersion>preview</LangVersion>
+        <LangVersion>9.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>

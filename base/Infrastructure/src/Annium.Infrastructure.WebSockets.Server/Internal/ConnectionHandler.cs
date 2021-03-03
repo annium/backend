@@ -36,13 +36,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(CancellationToken ct)
         {
-            var tcs = new TaskCompletionSource();
-            ct.Register(() => tcs.TrySetResult());
+            var tcs = new TaskCompletionSource<object>();
+            ct.Register(() => tcs.TrySetResult(new object()));
             _cn.Socket
                 .Listen()
                 .Subscribe(
                     x => _scheduler.Add(() => HandleMessage(x)),
-                    () => tcs.SetResult(),
+                    () => tcs.SetResult(new object()),
                     ct
                 );
             await tcs.Task;

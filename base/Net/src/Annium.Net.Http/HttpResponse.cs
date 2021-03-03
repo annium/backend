@@ -40,7 +40,7 @@ namespace Annium.Net.Http
         {
             IsSuccess = false;
             IsFailure = true;
-            StatusCode = exception.StatusCode ?? HttpStatusCode.InternalServerError;
+            StatusCode = HttpStatusCode.InternalServerError;
             StatusText = exception.Message!;
             var message = new HttpResponseMessage();
             Headers = message.Headers;
