@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Primitives;
-using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Base
 {
-    public sealed record UriQuery : IDictionary<string, StringValues>, IReadOnlyDictionary<string, StringValues>, ICopyable<UriQuery>
+    public sealed record UriQuery : IDictionary<string, StringValues>, IReadOnlyDictionary<string, StringValues>,
+        ICopyable<UriQuery>
     {
         public static UriQuery New()
         {
@@ -40,10 +40,16 @@ namespace Annium.Net.Base
         public bool IsReadOnly => false;
         public void Add(string key, StringValues value) => _data.Add(key, value);
         bool IDictionary<string, StringValues>.ContainsKey(string key) => _data.ContainsKey(key);
-        bool IReadOnlyDictionary<string, StringValues>.TryGetValue(string key, out StringValues value) => _data.TryGetValue(key, out value);
+
+        bool IReadOnlyDictionary<string, StringValues>.TryGetValue(string key, out StringValues value) =>
+            _data.TryGetValue(key, out value);
+
         public bool Remove(string key) => _data.Remove(key);
         bool IReadOnlyDictionary<string, StringValues>.ContainsKey(string key) => _data.ContainsKey(key);
-        bool IDictionary<string, StringValues>.TryGetValue(string key, out StringValues value) => _data.TryGetValue(key, out value);
+
+        bool IDictionary<string, StringValues>.TryGetValue(string key, out StringValues value) =>
+            _data.TryGetValue(key, out value);
+
         IEnumerable<string> IReadOnlyDictionary<string, StringValues>.Keys => _data.Keys;
         IEnumerable<StringValues> IReadOnlyDictionary<string, StringValues>.Values => _data.Values;
         ICollection<string> IDictionary<string, StringValues>.Keys => _data.Keys;
