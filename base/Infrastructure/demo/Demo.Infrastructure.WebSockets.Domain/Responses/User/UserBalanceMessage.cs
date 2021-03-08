@@ -1,4 +1,7 @@
 namespace Demo.Infrastructure.WebSockets.Domain.Responses.User
 {
-    public record UserBalanceMessage(int Balance);
+    public class UserBalanceMessage
+    {
+        public int Balance { get; set; }
+    }
 }

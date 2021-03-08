@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Infrastructure.WebSockets.Domain.Responses
 {
-    public sealed record SubscriptionMessage<T> : AbstractResponseBase
+    public sealed class SubscriptionMessage<T> : AbstractResponseBase
     {
         public Guid SubscriptionId { get; }
         public T Message { get; }

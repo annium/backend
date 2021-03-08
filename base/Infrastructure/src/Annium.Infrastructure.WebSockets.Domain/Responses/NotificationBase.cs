@@ -1,6 +1,6 @@
 namespace Annium.Infrastructure.WebSockets.Domain.Responses
 {
-    public abstract record NotificationBase : AbstractResponseBase
+    public abstract class NotificationBase : AbstractResponseBase
     {
     }
 }

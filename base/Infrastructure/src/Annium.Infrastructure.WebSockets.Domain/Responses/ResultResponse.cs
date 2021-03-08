@@ -4,7 +4,7 @@ using Annium.Data.Operations;
 
 namespace Annium.Infrastructure.WebSockets.Domain.Responses
 {
-    public sealed record ResultResponse : ResponseBase
+    public sealed class ResultResponse : ResponseBase
     {
         public IStatusResult<OperationStatus> Result { get; }
 

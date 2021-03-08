@@ -2,7 +2,7 @@ using Annium.Infrastructure.WebSockets.Domain.Responses;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Responses
 {
-    internal sealed record MetaResponse<T, TR> : AbstractResponseBase, IMetaResponse
+    internal sealed class MetaResponse<T, TR> : AbstractResponseBase, IMetaResponse
         where TR : AbstractResponseBase
     {
         public AbstractResponseBase Response { get; }
@@ -13,7 +13,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Responses
         }
     }
 
-    internal sealed record MetaResponse<T1, T2, TR> : AbstractResponseBase, IMetaResponse
+    internal sealed class MetaResponse<T1, T2, TR> : AbstractResponseBase, IMetaResponse
         where TR : AbstractResponseBase
     {
         public AbstractResponseBase Response { get; }

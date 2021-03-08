@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Infrastructure.WebSockets.Domain.Responses
 {
-    public sealed record StreamEndResponse : ResponseBase
+    public sealed class StreamEndResponse : ResponseBase
     {
         public StreamEndResponse(
             Guid rid

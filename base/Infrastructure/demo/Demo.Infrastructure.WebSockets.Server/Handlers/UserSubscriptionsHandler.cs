@@ -30,7 +30,7 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
             // main code to run until subscription ended
             while (!ctx.Token.IsCancellationRequested)
             {
-                await ctx.Send(new UserBalanceMessage(balance += rnd.Next(-4, 5)));
+                await ctx.Send(new UserBalanceMessage {Balance = balance += rnd.Next(-4, 5)});
                 await Task.Delay(500);
             }
 

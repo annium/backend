@@ -1,6 +1,6 @@
 namespace Annium.Infrastructure.WebSockets.Domain.Requests
 {
-    public abstract record RequestBase : AbstractRequestBase
+    public abstract class RequestBase : AbstractRequestBase
     {
     }
 }
