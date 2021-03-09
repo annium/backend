@@ -12,14 +12,17 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
     internal class PushMessageHandler<T> :
         IFinalRequestHandler<PushMessage<T>, Unit>
     {
+        private readonly IServerLifetime _lifetime;
         private readonly ConnectionTracker _connectionTracker;
         private readonly Serializer _serializer;
 
         public PushMessageHandler(
+            IServerLifetime lifetime,
             ConnectionTracker connectionTracker,
             Serializer serializer
         )
         {
+            _lifetime = lifetime;
             _connectionTracker = connectionTracker;
             _serializer = serializer;
         }
@@ -29,11 +32,23 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             CancellationToken ct
         )
         {
+            if (_lifetime.Stopping.IsCancellationRequested)
+                return Unit.Default;
+
             if (!_connectionTracker.TryGet(request.ConnectionId, out var cn))
                 throw new InvalidOperationException($"Failed to find connection {request.ConnectionId}");
 
             if (cn.Socket.State == WebSocketState.Open)
-                await cn.Socket.Send(_serializer.Serialize(request.Message), CancellationToken.None);
+            {
+                try
+                {
+                    await cn.Socket.Send(_serializer.Serialize(request.Message), CancellationToken.None);
+                }
+                // socket can get closed/aborted in a moment
+                catch (WebSocketException)
+                {
+                }
+            }
 
             return Unit.Default;
         }
