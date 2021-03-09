@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets;
 
@@ -7,16 +6,18 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class Coordinator : ICoordinator
     {
+        private readonly IServerLifetimeManager _lifetimeManager;
         private readonly ConnectionTracker _connectionTracker;
         private readonly ConnectionHandlerFactory _handlerFactory;
-        private readonly CancellationTokenSource _cts = new();
 
         public Coordinator(
+            IServerLifetimeManager lifetimeManager,
             ConnectionTracker connectionTracker,
             ConnectionHandlerFactory handlerFactory,
             BroadcastCoordinator broadcastCoordinator
         )
         {
+            _lifetimeManager = lifetimeManager;
             _connectionTracker = connectionTracker;
             _handlerFactory = handlerFactory;
             broadcastCoordinator.Start();
@@ -26,13 +27,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             await using var cn = new Connection(Guid.NewGuid(), socket);
             _connectionTracker.Track(cn);
-            await _handlerFactory.Create(cn).HandleAsync(_cts.Token);
+            await _handlerFactory.Create(cn).HandleAsync();
             _connectionTracker.Release(cn);
         }
 
         public void Shutdown()
         {
-            _cts.Cancel();
+            _lifetimeManager.Stop();
         }
     }
 }

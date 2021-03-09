@@ -14,6 +14,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class ConnectionHandler
     {
+        private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
         private readonly WorkScheduler _scheduler;
@@ -21,12 +22,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly ConnectionState _state;
 
         public ConnectionHandler(
+            IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
             WorkScheduler scheduler,
             Connection cn
         )
         {
+            _lifetime = lifetime;
             _mediator = mediator;
             _serializer = serializer;
             _scheduler = scheduler;
@@ -34,16 +37,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _state = new ConnectionState(cn.Id);
         }
 
-        public async Task HandleAsync(CancellationToken ct)
+        public async Task HandleAsync()
         {
             var tcs = new TaskCompletionSource<object>();
-            ct.Register(() => tcs.TrySetResult(new object()));
+            _lifetime.Stopping.Register(() => tcs.TrySetResult(new object()));
             _cn.Socket
                 .Listen()
                 .Subscribe(
                     x => _scheduler.Add(() => HandleMessage(x)),
                     () => tcs.SetResult(new object()),
-                    ct
+                    _lifetime.Stopping
                 );
             await tcs.Task;
         }

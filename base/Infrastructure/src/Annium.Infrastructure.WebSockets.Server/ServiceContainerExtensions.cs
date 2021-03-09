@@ -17,6 +17,7 @@ namespace Annium.Core.DependencyInjection
             container.Add<ConnectionTracker>().AsSelf().Singleton();
             container.Add<ICoordinator, Coordinator>().Singleton();
             container.Add<Serializer>().AsSelf().Singleton();
+            container.Add<ServerLifetime>().AsInterfaces().Singleton();
             container.Add<WorkScheduler>().AsSelf().Singleton();
 
             // internal - handlers
