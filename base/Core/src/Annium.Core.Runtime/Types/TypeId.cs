@@ -48,11 +48,10 @@ namespace Annium.Core.Runtime.Types
 
         protected static string GetName(Type type)
         {
-            var assembly = type.Assembly.GetName().Name;
             var ns = type.Namespace;
             var name = type.Name;
 
-            return $"{assembly}:{ns}:{name}";
+            return $"{ns}:{name}";
         }
 
         public Type Type { get; }
