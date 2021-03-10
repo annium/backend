@@ -1,4 +1,5 @@
 using System;
+using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
@@ -11,6 +12,11 @@ namespace Demo.Infrastructure.WebSockets.Server
         public ServicePack()
         {
             Add<Domain.ServicePack>();
+        }
+
+        public override void Configure(IServiceContainer container)
+        {
+            container.AddConfiguration<Configuration>(cfg => cfg.AddCommandLineArgs());
         }
 
         public override void Register(IServiceContainer container, IServiceProvider provider)

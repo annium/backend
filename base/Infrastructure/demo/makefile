@@ -1,5 +1,8 @@
-start:
+start-binary:
 	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj &
+
+start-text:
+	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj --use-text &
 
 stop:
 	$(call kill,Demo.Infrastructure.WebSockets.Server.csproj)
