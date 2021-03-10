@@ -14,6 +14,13 @@ namespace Annium.Infrastructure.WebSockets.Server
             return this;
         }
 
+        public ServerConfiguration UseFormat(SerializationFormat format)
+        {
+            Format = format;
+
+            return this;
+        }
+
         public ServerConfiguration UseBinaryFormat()
         {
             Format = SerializationFormat.Binary;
