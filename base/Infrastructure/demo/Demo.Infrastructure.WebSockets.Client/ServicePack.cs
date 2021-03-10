@@ -21,6 +21,7 @@ namespace Demo.Infrastructure.WebSockets.Client
             container.AddLogging(route => route.UseConsole());
             container.AddMapper();
             container.AddArguments();
+            container.AddWebSocketClient();
 
             // commands
             container.AddAll(GetType().Assembly)

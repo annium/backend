@@ -1,43 +1,41 @@
 using System;
 using System.Collections.Concurrent;
-using System.Net.Mime;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Serialization.Abstractions;
 using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
 using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
-namespace Annium.Infrastructure.WebSockets.Client
+namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    public class ClientBase : IClientBase, IAsyncDisposable
+    internal class ClientBase : IClientBase, IAsyncDisposable
     {
         public bool IsConnected => _socket.State == WebSocketState.Open;
         public event Action ConnectionLost = delegate { };
         public event Action ConnectionRestored = delegate { };
         private readonly ClientConfiguration _configuration;
+        private readonly Serializer _serializer;
         private readonly ClientWebSocket _socket;
-        private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
         private readonly IAsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public ClientBase(
-            ClientConfiguration configuration,
             ITimeProvider timeProvider,
-            IIndex<string, ISerializer<ReadOnlyMemory<byte>>> serializers
+            Serializer serializer,
+            ClientConfiguration configuration
         )
         {
+            _serializer = serializer;
             _configuration = configuration;
 
             var options = new ClientWebSocketOptions();
@@ -49,9 +47,8 @@ namespace Annium.Infrastructure.WebSockets.Client
             }
 
             _socket = new ClientWebSocket(options);
-            _serializer = serializers[MediaTypeNames.Application.Json];
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-            _responseObservable = _socket.ListenBinary().Select(_serializer.Deserialize<AbstractResponseBase>);
+            _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
             _disposable.Add(_responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse));
         }
 
@@ -96,7 +93,8 @@ namespace Annium.Infrastructure.WebSockets.Client
             CancellationToken ct = default
         )
         {
-            return FetchInternal<RequestBase, ResultResponse, IStatusResult<OperationStatus>>(request, ct, x => x.Result);
+            return FetchInternal<RequestBase, ResultResponse, IStatusResult<OperationStatus>>(request, ct,
+                x => x.Result);
         }
 
         public Task<IStatusResult<OperationStatus, TResponse>> Fetch<TResponse>(
@@ -104,7 +102,8 @@ namespace Annium.Infrastructure.WebSockets.Client
             CancellationToken ct = default
         )
         {
-            return FetchInternal<RequestBase, ResultResponse<TResponse>, IStatusResult<OperationStatus, TResponse>>(request, ct, x => x.Result);
+            return FetchInternal<RequestBase, ResultResponse<TResponse>, IStatusResult<OperationStatus, TResponse>>(
+                request, ct, x => x.Result);
         }
         //
         // public Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequest, TResponseChunk>(
@@ -231,7 +230,8 @@ namespace Annium.Infrastructure.WebSockets.Client
             CancellationToken ct = default
         )
         {
-            return FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(request, ct, x => x.Result);
+            return FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(request, ct,
+                x => x.Result);
         }
 
         public async ValueTask DisposeAsync()
@@ -256,9 +256,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         private async Task SendInternal<T>(T data)
             where T : notnull
         {
-            var raw = _serializer.Serialize(data);
-
-            await _socket.Send(raw, CancellationToken.None);
+            await _socket.SendWith(data, _serializer, CancellationToken.None);
         }
 
         private async Task<TResponseData> FetchInternal<TRequest, TResponse, TResponseData>(
@@ -295,7 +293,9 @@ namespace Annium.Infrastructure.WebSockets.Client
         )
             where TInit : SubscriptionInitRequestBase
         {
-            var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct, x => x.Result);
+            var response =
+                await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct,
+                    x => x.Result);
             if (response.HasErrors)
                 return Result.Status(response.Status, Guid.Empty).Join(response);
 
@@ -324,6 +324,7 @@ namespace Annium.Infrastructure.WebSockets.Client
             future.TaskSource.SetResult(response);
         }
 
-        private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
+        private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource,
+            CancellationTokenSource CancellationSource);
     }
 }
