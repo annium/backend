@@ -4,6 +4,7 @@ using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -11,11 +12,14 @@ namespace Annium.Core.DependencyInjection
     {
         public static IServiceContainer AddWebSocketServer(this IServiceContainer container)
         {
+            // public
+            container.Add<ICoordinator, Coordinator>().Singleton();
+            container.Add<ServerConfiguration>().AsSelf().Singleton();
+
             // internal
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
             container.Add<ConnectionHandlerFactory>().AsSelf().Singleton();
             container.Add<ConnectionTracker>().AsSelf().Singleton();
-            container.Add<ICoordinator, Coordinator>().Singleton();
             container.Add<Serializer>().AsSelf().Singleton();
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
             container.Add<WorkScheduler>().AsSelf().Singleton();

@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
@@ -47,7 +48,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             if (connections.Count == 0)
                 return;
             var data = _serializer.Serialize(message);
-            Task.WhenAll(connections.Select(async x => await x.Socket.Send(data, CancellationToken.None)));
+            Task.WhenAll(connections.Select(async x => await x.Socket.SendSerialized(data, CancellationToken.None)));
         }
     }
 }

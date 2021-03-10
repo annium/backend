@@ -1,4 +1,5 @@
 using Annium.Core.Mediator;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {

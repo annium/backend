@@ -1,5 +1,4 @@
 using System;
-using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
@@ -83,9 +83,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private AbstractRequestBase? ParseRequest(SocketMessage msg)
         {
-            if (msg.Type != WebSocketMessageType.Binary)
-                return default;
-
             try
             {
                 return _serializer.Deserialize<AbstractRequestBase>(msg.Data);
@@ -119,7 +116,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task SendInternal(AbstractResponseBase response)
         {
-            await _cn.Socket.Send(_serializer.Serialize(response), CancellationToken.None);
+            await _cn.Socket.SendWith(response, _serializer, CancellationToken.None);
         }
     }
 }

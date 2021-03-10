@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
@@ -42,7 +43,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             {
                 try
                 {
-                    await cn.Socket.Send(_serializer.Serialize(request.Message), CancellationToken.None);
+                    await cn.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
                 }
                 // socket can get closed/aborted in a moment
                 catch (WebSocketException)
