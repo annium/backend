@@ -33,7 +33,7 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration WithAutoConnect(Uri uri)
+        public ClientConfiguration WithAutoConnect()
         {
             AutoConnect = true;
 

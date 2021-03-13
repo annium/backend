@@ -55,10 +55,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public Task ConnectAsync(CancellationToken ct = default) =>
             _socket.ConnectAsync(_configuration.Uri, ct);
 
-        public Task DisconnectAsync(CancellationToken ct = default)
-        {
-            return _socket.DisconnectAsync(ct);
-        }
+        public Task DisconnectAsync(CancellationToken ct = default) =>
+            _socket.DisconnectAsync(ct);
 
         public Action Listen<TNotification>(
             Action<TNotification> handle
