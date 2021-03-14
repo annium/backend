@@ -86,7 +86,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             Task.Run(() => SendInternal(ev));
         }
 
-        public Task<IStatusResult<OperationStatus>> Send(
+        public Task<IStatusResult<OperationStatus>> SendAsync(
             RequestBase request,
             CancellationToken ct = default
         )
@@ -95,7 +95,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 x => x.Result);
         }
 
-        public Task<IStatusResult<OperationStatus, TResponse>> Fetch<TResponse>(
+        public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
             RequestBase request,
             CancellationToken ct = default
         )
@@ -123,7 +123,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
         //
-        // public Task<IStatusResult<OperationStatus>> Send<TRequestChunk>(
+        // public Task<IStatusResult<OperationStatus>> SendAsync<TRequestChunk>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -132,7 +132,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
         //
-        // public Task<IStatusResult<OperationStatus>> Send<TRequest, TRequestChunk>(
+        // public Task<IStatusResult<OperationStatus>> SendAsync<TRequest, TRequestChunk>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -142,7 +142,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
         //
-        // public Task<IStatusResult<OperationStatus, TResponse>> Fetch<TRequestChunk, TResponse>(
+        // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequestChunk, TResponse>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -151,7 +151,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
         //
-        // public Task<IStatusResult<OperationStatus, TResponse>> Fetch<TRequest, TRequestChunk, TResponse>(
+        // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequest, TRequestChunk, TResponse>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -203,7 +203,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
 
-        public Task<IStatusResult<OperationStatus, Guid>> Subscribe<TInit, TMessage>(
+        public Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             Action<TMessage> handle,
             CancellationToken ct = default
@@ -213,7 +213,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             return SubscribeInternal<TInit, TMessage>(request, o => o.Subscribe(x => handle(x.Message)), ct);
         }
 
-        public Task<IStatusResult<OperationStatus, Guid>> Subscribe<TInit, TMessage>(
+        public Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             Func<TMessage, Task> handle,
             CancellationToken ct = default
@@ -223,7 +223,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             return SubscribeInternal<TInit, TMessage>(request, o => o.Subscribe(x => handle(x.Message)), ct);
         }
 
-        public Task<IStatusResult<OperationStatus>> Unsubscribe(
+        public Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
             SubscriptionCancelRequest request,
             CancellationToken ct = default
         )

@@ -33,7 +33,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
             var request = new DeleteOrderRequest();
             _logger.Debug($">>> {request}");
-            var result = await client.Send(request);
+            var result = await client.SendAsync(request);
             _logger.Debug($"<<< {result}");
 
             if (client.IsConnected)

@@ -79,7 +79,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken ct)
             {
                 // _logger.Debug($">>> {request}");
-                var result = await client!.Fetch<T>(request, ct);
+                var result = await client!.FetchAsync<T>(request, ct);
                 // _logger.Debug($"<<< {result}");
                 return result;
             }

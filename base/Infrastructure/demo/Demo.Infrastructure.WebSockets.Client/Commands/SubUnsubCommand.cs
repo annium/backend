@@ -37,17 +37,17 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(token);
 
             _logger.Debug("Init subscription");
-            var result = await client.Subscribe(new UserBalanceSubscriptionInit(), (Action<UserBalanceMessage>) Log, token);
+            var result = await client.SubscribeAsync(new UserBalanceSubscriptionInit(), (Action<UserBalanceMessage>) Log, token);
             _logger.Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
             _logger.Debug("Cancel subscription");
-            await client.Unsubscribe(SubscriptionCancelRequest.New(result.Data), token);
+            await client.UnsubscribeAsync(SubscriptionCancelRequest.New(result.Data), token);
             _logger.Debug("Subscription canceled");
 
             // _logger.Debug("Cancel subscription");
-            // await client.Unsubscribe(SubscriptionCancelRequest.New(Guid.NewGuid()), token);
+            // await client.UnsubscribeAsync(SubscriptionCancelRequest.New(Guid.NewGuid()), token);
             // _logger.Debug("Subscription canceled");
 
             await client.DisconnectAsync(token);

@@ -36,13 +36,13 @@ namespace Annium.Infrastructure.WebSockets.Client
             where TEvent : EventBase;
 
         // request -> void
-        Task<IStatusResult<OperationStatus>> Send(
+        Task<IStatusResult<OperationStatus>> SendAsync(
             RequestBase request,
             CancellationToken ct = default
         );
 
         // request -> response
-        Task<IStatusResult<OperationStatus, TResponse>> Fetch<TResponse>(
+        Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
             RequestBase request,
             CancellationToken ct = default
         );
@@ -63,14 +63,14 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequest : RequestBase;
         //
         // // request stream -> void
-        // Task<IStatusResult<OperationStatus>> Send<TRequestChunk>(
+        // Task<IStatusResult<OperationStatus>> SendAsync<TRequestChunk>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
         // )
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> void
-        // Task<IStatusResult<OperationStatus>> Send<TRequest, TRequestChunk>(
+        // Task<IStatusResult<OperationStatus>> SendAsync<TRequest, TRequestChunk>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -78,14 +78,14 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response
-        // Task<IStatusResult<OperationStatus, TResponse>> Fetch<TRequestChunk, TResponse>(
+        // Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequestChunk, TResponse>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
         // )
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response
-        // Task<IStatusResult<OperationStatus, TResponse>> Fetch<TRequest, TRequestChunk, TResponse>(
+        // Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequest, TRequestChunk, TResponse>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
         // )
@@ -93,14 +93,14 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response stream
-        // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequestChunk, TResponseChunk>(
+        // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStreamAsync<TRequestChunk, TResponseChunk>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
         // )
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response stream
-        // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStream<TRequestChunk, TResponse,
+        // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStreamAsync<TRequestChunk, TResponse,
         //     TResponseChunk>(
         //     DataStream<TRequestChunk> request,
         //     CancellationToken ct = default
@@ -108,7 +108,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response stream
-        // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequest, TRequestChunk,
+        // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStreamAsync<TRequest, TRequestChunk,
         //     TResponseChunk>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
@@ -117,7 +117,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
         //
         // // request stream -> response stream
-        // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStream<TRequest, TRequestChunk,
+        // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStreamAsync<TRequest, TRequestChunk,
         //     TResponse, TResponseChunk>(
         //     DataStream<TRequest, TRequestChunk> request,
         //     CancellationToken ct = default
@@ -126,14 +126,14 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
 
         // init subscription
-        Task<IStatusResult<OperationStatus, Guid>> Subscribe<TInit, TMessage>(
+        Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             Action<TMessage> handle,
             CancellationToken ct = default
         )
             where TInit : SubscriptionInitRequestBase;
 
-        Task<IStatusResult<OperationStatus, Guid>> Subscribe<TInit, TMessage>(
+        Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             Func<TMessage, Task> handle,
             CancellationToken ct = default
@@ -141,7 +141,7 @@ namespace Annium.Infrastructure.WebSockets.Client
             where TInit : SubscriptionInitRequestBase;
 
         // cancel subscription
-        Task<IStatusResult<OperationStatus>> Unsubscribe(
+        Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
             SubscriptionCancelRequest request,
             CancellationToken ct = default
         );
