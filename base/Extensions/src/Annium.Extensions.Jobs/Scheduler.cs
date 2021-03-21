@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using NodaTime;
 
@@ -22,7 +23,7 @@ namespace Annium.Extensions.Jobs
         {
             _timeProvider = timeProvider;
             _intervalResolver = intervalResolver;
-            Run(_cts.Token).GetAwaiter();
+            Run(_cts.Token).Await();
         }
 
         public Action Schedule(Func<Task> handler, string interval)

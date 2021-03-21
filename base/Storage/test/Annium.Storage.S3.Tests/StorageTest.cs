@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
 using Xunit;
@@ -168,7 +169,7 @@ namespace Annium.Storage.S3.Tests
         {
             var storage = GetStorage().Result;
             foreach (var item in storage.ListAsync().Result)
-                storage.DeleteAsync(item).GetAwaiter().GetResult();
+                storage.DeleteAsync(item).Await();
         }
     }
 }

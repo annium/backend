@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 using Annium.Extensions.Arguments.Internal;
 
 namespace Annium.Extensions.Arguments
@@ -18,7 +19,7 @@ namespace Annium.Extensions.Arguments
                 return;
             }
 
-            HandleAsync(token).GetAwaiter().GetResult();
+            HandleAsync(token).Await();
         }
     }
 }

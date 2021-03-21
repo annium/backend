@@ -18,7 +18,7 @@ namespace Annium.Core.Primitives
         /// <summary>
         /// The underlying lazy task's value state.
         /// </summary>
-        public T Value => _instance.Value.GetAwaiter().GetResult();
+        public T Value => _instance.Value.Await();
 
         /// <summary>
         /// The underlying lazy task.

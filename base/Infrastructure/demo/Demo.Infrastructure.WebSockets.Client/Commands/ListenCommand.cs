@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives.Threading;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
@@ -39,7 +40,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
                 x => _logger.Debug($"<<< diagnostics: {x}")
             ));
 
-            token.WaitHandle.WaitOne();
+            await token;
             _logger.Debug("Disconnecting");
             if (client.IsConnected)
                 await client.DisconnectAsync(CancellationToken.None);

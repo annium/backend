@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 using Annium.Extensions.Arguments.Internal;
 
 namespace Annium.Extensions.Arguments
@@ -25,7 +26,7 @@ namespace Annium.Extensions.Arguments
             var cfg2 = root.ConfigurationBuilder.Build<T2>(args);
             var cfg3 = root.ConfigurationBuilder.Build<T3>(args);
 
-            HandleAsync(cfg1, cfg2, cfg3, token).GetAwaiter().GetResult();
+            HandleAsync(cfg1, cfg2, cfg3, token).Await();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 
 namespace Annium.Testing
 {
@@ -11,7 +12,7 @@ namespace Annium.Testing
             try
             {
                 var result = value.DynamicInvoke();
-                if (result is Task task) task.GetAwaiter().GetResult();
+                if (result is Task task) task.Await();
             }
             catch (TargetInvocationException exception)
             {
