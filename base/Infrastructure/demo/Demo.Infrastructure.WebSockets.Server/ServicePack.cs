@@ -23,10 +23,11 @@ namespace Demo.Infrastructure.WebSockets.Server
         {
             container.AddRuntimeTools(GetType().Assembly, true);
             container.AddTimeProvider();
-            container.AddJsonSerializers(opts => opts
-                .ConfigureForOperations()
-                .ConfigureForNodaTime()
-            );
+            container.AddJsonSerializers()
+                .Configure(opts => opts
+                    .ConfigureForOperations()
+                    .ConfigureForNodaTime()
+                );
             container.AddLogging(route => route.UseConsole());
             container.AddMapper();
             container.AddMediator();

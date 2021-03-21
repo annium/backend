@@ -34,10 +34,10 @@ namespace Annium.Configuration.Json.Tests
             try
             {
                 jsonFile = Path.GetTempFileName();
-                var serializer = new ServiceContainer()
-                    .AddRuntimeTools(GetType().Assembly, false)
-                    .AddJsonSerializers()
-                    .BuildServiceProvider()
+                var container = new ServiceContainer();
+                container.AddRuntimeTools(GetType().Assembly, false);
+                container.AddJsonSerializers();
+                var serializer = container.BuildServiceProvider()
                     .Resolve<IIndex<string, ISerializer<string>>>()
                     [MediaTypeNames.Application.Json];
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));

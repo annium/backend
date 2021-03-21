@@ -14,10 +14,11 @@ namespace Demo.Infrastructure.WebSockets.Client
         {
             container.AddRuntimeTools(GetType().Assembly, false);
             container.AddTimeProvider();
-            container.AddJsonSerializers(opts => opts
-                .ConfigureForOperations()
-                .ConfigureForNodaTime()
-            );
+            container.AddJsonSerializers()
+                .Configure(opts => opts
+                    .ConfigureForOperations()
+                    .ConfigureForNodaTime()
+                );
             container.AddLogging(route => route.UseConsole());
             container.AddMapper();
             container.AddArguments();

@@ -32,7 +32,6 @@ namespace Annium.Core.Runtime.Tests.Types
             var id = type.GetId();
 
             // assert
-            id.Id.Contains(type.Assembly.GetName().Name!).IsTrue();
             id.Id.Contains(type.Namespace!).IsTrue();
             id.Id.Contains(type.Name).IsTrue();
             (id == type.GetId()).IsTrue();

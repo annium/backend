@@ -69,9 +69,10 @@ namespace Demo.Configuration
             try
             {
                 jsonFile = Path.GetTempFileName();
-                var serializer = new ServiceContainer()
-                    .AddRuntimeTools(typeof(Program).Assembly, false)
-                    .AddJsonSerializers()
+                var container = new ServiceContainer();
+                container.AddRuntimeTools(typeof(Program).Assembly, false);
+                container.AddJsonSerializers();
+                var serializer = container
                     .BuildServiceProvider()
                     .Resolve<IIndex<string, ISerializer<string>>>()
                     [MediaTypeNames.Application.Json];

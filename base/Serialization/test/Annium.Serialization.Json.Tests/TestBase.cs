@@ -6,11 +6,14 @@ namespace Annium.Serialization.Json.Tests
 {
     public class TestBase
     {
-        protected ISerializer<string> GetSerializer() => new ServiceContainer()
-            .AddRuntimeTools(GetType().Assembly, false)
-            .AddJsonSerializers()
-            .BuildServiceProvider()
-            .Resolve<IIndex<string, ISerializer<string>>>()
-            [MediaTypeNames.Application.Json];
+        protected ISerializer<string> GetSerializer()
+        {
+            var container = new ServiceContainer();
+            container.AddRuntimeTools(GetType().Assembly, false);
+            container.AddJsonSerializers().SetDefault();
+            return container.BuildServiceProvider()
+                .Resolve<IIndex<string, ISerializer<string>>>()
+                [MediaTypeNames.Application.Json];
+        }
     }
 }
