@@ -15,6 +15,11 @@ namespace Annium.Serialization.Json.Internal
         {
             _container = container;
             _key = key;
+
+            _container.Add<ByteArraySerializer>().AsKeyed<ISerializer<byte[]>, string>(_key).Singleton();
+            _container.Add<ReadOnlyMemoryByteSerializer>().AsKeyed<ISerializer<ReadOnlyMemory<byte>>, string>(_key).Singleton();
+            _container.Add<StringSerializer>().AsKeyed<ISerializer<string>, string>(_key).Singleton();
+
             Configure((_, _) => { });
         }
 
@@ -31,10 +36,6 @@ namespace Annium.Serialization.Json.Internal
 
                 return new OptionsContainer(opts);
             }).AsSelf().Singleton();
-
-            _container.Add<ByteArraySerializer>().AsKeyed<ISerializer<byte[]>, string>(_key).Singleton();
-            _container.Add<ReadOnlyMemoryByteSerializer>().AsKeyed<ISerializer<ReadOnlyMemory<byte>>, string>(_key).Singleton();
-            _container.Add<StringSerializer>().AsKeyed<ISerializer<string>, string>(_key).Singleton();
 
             return this;
         }
