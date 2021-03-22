@@ -17,7 +17,7 @@ namespace Annium.Core.Mediator.Internal
             int index = 0
         )
         {
-            var hasNext = index < chain.Count() - 1;
+            var hasNext = index < chain.Count - 1;
             var element = chain[index];
 
             var parameters = new List<object> { request, cancellationToken };
