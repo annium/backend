@@ -37,7 +37,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
                 return Unit.Default;
 
             if (!_connectionTracker.TryGet(request.ConnectionId, out var cn))
-                throw new InvalidOperationException($"Failed to find connection {request.ConnectionId}");
+                return Unit.Default;
 
             if (cn.Socket.State == WebSocketState.Open)
             {
