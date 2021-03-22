@@ -6,12 +6,21 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionContextStore<TInit, TMessage>
+    internal class SubscriptionContextStore<TInit, TMessage> : IDisposable
         where TInit : SubscriptionInitRequestBase
     {
+        private readonly ConnectionTracker _connectionTracker;
         private readonly List<SubscriptionContext<TInit, TMessage>> _contexts = new();
 
-        public void Save(Guid subscriptionId, SubscriptionContext<TInit, TMessage> ctx)
+        public SubscriptionContextStore(
+            ConnectionTracker connectionTracker
+        )
+        {
+            _connectionTracker = connectionTracker;
+            _connectionTracker.OnRelease += Cleanup;
+        }
+
+        public void Save(SubscriptionContext<TInit, TMessage> ctx)
         {
             lock (_contexts) _contexts.Add(ctx);
         }
@@ -31,7 +40,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             }
         }
 
-        public void Cleanup(Guid connectionId)
+        public void Dispose()
+        {
+            _connectionTracker.OnRelease -= Cleanup;
+        }
+
+        private void Cleanup(Guid connectionId)
         {
             lock (_contexts)
             {

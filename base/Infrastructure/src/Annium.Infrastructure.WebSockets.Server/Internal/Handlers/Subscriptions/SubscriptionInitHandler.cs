@@ -16,24 +16,19 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             ISubscriptionContext<TInit, TMessage>,
             Unit,
             VoidResponse<TMessage>
-        >,
-        IDisposable
+        >
         where TInit : SubscriptionInitRequestBase
     {
         private readonly SubscriptionContextStore<TInit, TMessage> _subscriptionContextStore;
         private readonly IMediator _mediator;
-        private readonly ConnectionTracker _connectionTracker;
 
         public SubscriptionInitHandler(
             SubscriptionContextStore<TInit, TMessage> subscriptionContextStore,
-            IMediator mediator,
-            ConnectionTracker connectionTracker
+            IMediator mediator
         )
         {
             _subscriptionContextStore = subscriptionContextStore;
             _mediator = mediator;
-            _connectionTracker = connectionTracker;
-            _connectionTracker.OnRelease += CancelSubscriptions;
         }
 
         public async Task<VoidResponse<TMessage>> HandleAsync(
@@ -46,7 +41,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             var context = new SubscriptionContext<TInit, TMessage>(ctx.Request, ctx.StateInternal, subscriptionId, _mediator);
 
             // when reporting successful init - save to subscription store
-            context.OnInit(() => _subscriptionContextStore.Save(subscriptionId, context));
+            context.OnInit(() => _subscriptionContextStore.Save(context));
 
             // run subscription
             await next(context);
@@ -56,12 +51,5 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
             return Response.Void<TMessage>();
         }
-
-        public void Dispose()
-        {
-            _connectionTracker.OnRelease += CancelSubscriptions;
-        }
-
-        private void CancelSubscriptions(Guid connectionId) => _subscriptionContextStore.Cleanup(connectionId);
     }
 }
