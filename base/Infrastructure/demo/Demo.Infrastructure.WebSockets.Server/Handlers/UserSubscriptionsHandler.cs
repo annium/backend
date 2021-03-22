@@ -26,9 +26,9 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
             var rnd = new Random();
             var balance = rnd.Next(0, 100);
             // callback on subscription end
-            ctx.Token.Register(() => Console.WriteLine("Subscription cancelled"));
+            ct.Register(() => Console.WriteLine("Subscription cancelled"));
             // main code to run until subscription ended
-            while (!ctx.Token.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 await ctx.Send(new UserBalanceMessage {Balance = balance += rnd.Next(-4, 5)});
                 await Task.Delay(500);

@@ -21,12 +21,12 @@ namespace Demo.Core.Mediator.Handlers
         public async Task<IBooleanResult<TResponse>> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<TRequest, Task<IBooleanResult<TResponse>>> next
+            Func<TRequest, CancellationToken, Task<IBooleanResult<TResponse>>> next
         )
         {
             try
             {
-                var result = await next(request);
+                var result = await next(request, ct);
                 _logger.Trace($"Request {typeof(TRequest).Name} complete without errors");
 
                 return result;

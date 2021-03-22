@@ -20,11 +20,11 @@ namespace Demo.Core.Mediator.Handlers
         public async Task<TResponse> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<TRequest, Task<TResponse>> next
+            Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Start {typeof(TRequest).Name} handle");
-            var result = await next(request);
+            var result = await next(request, ct);
             _logger.Trace($"Complete {typeof(TRequest).Name} handle");
 
             return result;

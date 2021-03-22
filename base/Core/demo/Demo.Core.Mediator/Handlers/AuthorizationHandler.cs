@@ -21,13 +21,13 @@ namespace Demo.Core.Mediator.Handlers
         public async Task<TResponse> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<Authored<TRequest>, Task<TResponse>> next
+            Func<Authored<TRequest>, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Start {typeof(TRequest).Name} authorization");
             var authoredRequest = new Authored<TRequest>(1, request);
 
-            var response = await next(authoredRequest);
+            var response = await next(authoredRequest, ct);
 
             return response;
         }

@@ -138,13 +138,13 @@ namespace Annium.Core.Mediator.Tests
             public async Task<Response<TResponse>> HandleAsync(
                 Request<TRequest> request,
                 CancellationToken ct,
-                Func<TRequest, Task<TResponse>> next
+                Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
                 _logger.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
                 var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
 
-                var result = await next(payload);
+                var result = await next(payload, ct);
 
                 _logger.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
                 return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
@@ -197,7 +197,7 @@ namespace Annium.Core.Mediator.Tests
             public async Task<IBooleanResult<TResponse>> HandleAsync(
                 TRequest request,
                 CancellationToken ct,
-                Func<TRequest, Task<TResponse>> next
+                Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
                 _logger.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
@@ -208,7 +208,7 @@ namespace Annium.Core.Mediator.Tests
                 if (result.HasErrors)
                     return result;
 
-                var response = await next(request);
+                var response = await next(request, ct);
 
                 return Result.Success(response);
             }

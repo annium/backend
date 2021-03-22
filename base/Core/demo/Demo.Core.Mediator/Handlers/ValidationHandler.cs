@@ -27,7 +27,7 @@ namespace Demo.Core.Mediator.Handlers
         public async Task<IBooleanResult<TResponse>> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<TRequest, Task<TResponse>> next
+            Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Start {typeof(TRequest).Name} validation");
@@ -37,7 +37,7 @@ namespace Demo.Core.Mediator.Handlers
             if (result.HasErrors)
                 return result;
 
-            var response = await next(request);
+            var response = await next(request, ct);
 
             return Result.Success(response);
         }
