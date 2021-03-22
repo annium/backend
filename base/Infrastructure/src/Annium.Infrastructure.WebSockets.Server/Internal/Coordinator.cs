@@ -27,8 +27,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             await using var cn = new Connection(Guid.NewGuid(), socket);
             _connectionTracker.Track(cn);
-            await _handlerFactory.Create(cn).HandleAsync();
-            _connectionTracker.Release(cn);
+            try
+            {
+                await _handlerFactory.Create(cn).HandleAsync();
+            }
+            finally
+            {
+                _connectionTracker.Release(cn);
+            }
         }
 
         public void Shutdown()

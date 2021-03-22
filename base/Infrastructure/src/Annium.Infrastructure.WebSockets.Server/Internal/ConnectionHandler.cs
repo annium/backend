@@ -45,6 +45,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 .Listen()
                 .Subscribe(
                     x => _scheduler.Add(() => HandleMessage(x)),
+                    x => tcs.SetException(x),
                     () => tcs.SetResult(new object()),
                     _lifetime.Stopping
                 );

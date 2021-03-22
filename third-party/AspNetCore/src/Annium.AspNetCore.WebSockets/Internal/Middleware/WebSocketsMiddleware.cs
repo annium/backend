@@ -1,16 +1,15 @@
 using System;
 using System.Net;
 using System.Net.Mime;
-using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Logging.Abstractions;
+using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
-using WebSocket = Annium.Net.WebSockets.WebSocket;
 
 namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 {
@@ -51,16 +50,13 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
                 var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync());
                 await _coordinator.HandleAsync(socket);
             }
-            catch (WebSocketException)
-            {
-            }
             catch (Exception ex)
             {
                 _logger.Error(ex);
                 await _helper.WriteResponse(
                     context,
                     HttpStatusCode.InternalServerError,
-                    Result.New().Error("WebSocket connection setup failed")
+                    Result.New().Error("WebSocket unhandled failure")
                 );
             }
         }
