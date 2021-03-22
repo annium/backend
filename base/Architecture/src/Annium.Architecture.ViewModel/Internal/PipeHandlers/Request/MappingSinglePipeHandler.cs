@@ -31,13 +31,13 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
         public Task<TResponse> HandleAsync(
             TRequestIn request,
             CancellationToken ct,
-            Func<TRequestOut, Task<TResponse>> next
+            Func<TRequestOut, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
             var mappedRequest = _mapper.Map<TRequestOut>(request);
 
-            return next(mappedRequest);
+            return next(mappedRequest, ct);
         }
     }
 }

@@ -34,10 +34,10 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
         public async Task<IStatusResult<OperationStatus, IEnumerable<TResponseOut>>> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<TRequest, Task<IStatusResult<OperationStatus, IEnumerable<TResponseIn>>>> next
+            Func<TRequest, CancellationToken, Task<IStatusResult<OperationStatus, IEnumerable<TResponseIn>>>> next
         )
         {
-            var response = await next(request);
+            var response = await next(request, ct);
 
             _logger.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
             var mappedResponse = _mapper.Map<IEnumerable<TResponseOut>>(response.Data);

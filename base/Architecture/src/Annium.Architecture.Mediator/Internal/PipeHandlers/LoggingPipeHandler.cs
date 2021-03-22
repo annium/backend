@@ -20,12 +20,12 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
         public async Task<TResponse> HandleAsync(
             TRequest request,
             CancellationToken ct,
-            Func<TRequest, Task<TResponse>> next
+            Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
 
-            var result = await next(request);
+            var result = await next(request, ct);
 
             _logger.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
 

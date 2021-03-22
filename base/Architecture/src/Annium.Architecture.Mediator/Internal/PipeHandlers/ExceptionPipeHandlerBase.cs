@@ -19,13 +19,13 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         public async Task<TResponse> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken,
-            Func<TRequest, Task<TResponse>> next
+            CancellationToken ct,
+            Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
             try
             {
-                return await next(request);
+                return await next(request, ct);
             }
             catch (TargetInvocationException exception)
             {

@@ -12,10 +12,10 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
         public async Task<TResponseOut> HandleAsync(
             TRequest request,
             CancellationToken cancellationToken,
-            Func<TRequest, Task<TResponseIn>> next
+            Func<TRequest, CancellationToken, Task<TResponseIn>> next
         )
         {
-            var response = await next(request);
+            var response = await next(request, cancellationToken);
 
             return GetResponse(response);
         }

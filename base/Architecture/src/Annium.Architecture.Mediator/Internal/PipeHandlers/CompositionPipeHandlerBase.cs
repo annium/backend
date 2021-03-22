@@ -24,8 +24,8 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         public async Task<TResponse> HandleAsync(
             TRequest request,
-            CancellationToken cancellationToken,
-            Func<TRequest, Task<TResponse>> next
+            CancellationToken ct,
+            Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
             _logger.Trace($"Compose {typeof(TRequest)}");
@@ -37,7 +37,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
                 return GetResponse(result);
             }
 
-            return await next(request);
+            return await next(request, ct);
         }
 
         protected abstract TResponse GetResponse(IStatusResult<OperationStatus> compositionResult);
