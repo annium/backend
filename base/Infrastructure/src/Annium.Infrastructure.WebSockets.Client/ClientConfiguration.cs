@@ -6,7 +6,7 @@ namespace Annium.Infrastructure.WebSockets.Client
 {
     public class ClientConfiguration
     {
-        public Uri Uri { get; private set; }
+        public Uri Uri { get; private set; } = default!;
         public SerializationFormat Format { get; private set; }
         public bool AutoConnect { get; private set; }
         public bool AutoReconnect { get; private set; }
