@@ -34,17 +34,18 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         public async Task<VoidResponse<TMessage>> HandleAsync(
             RequestContext<TInit> ctx,
             CancellationToken ct,
-            Func<ISubscriptionContext<TInit, TMessage>, Task<Unit>> next
+            Func<ISubscriptionContext<TInit, TMessage>, CancellationToken, Task<Unit>> next
         )
         {
             var subscriptionId = Guid.NewGuid();
-            var context = new SubscriptionContext<TInit, TMessage>(ctx.Request, ctx.StateInternal, subscriptionId, _mediator);
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            var context = new SubscriptionContext<TInit, TMessage>(ctx.Request, ctx.StateInternal, subscriptionId, cts, _mediator);
 
             // when reporting successful init - save to subscription store
             context.OnInit(() => _subscriptionContextStore.Save(context));
 
             // run subscription
-            await next(context);
+            await next(context, cts.Token);
 
             // remove subscription to prevent memory leak (if finished on server, but not canceled by client)
             _subscriptionContextStore.TryRemove(subscriptionId);

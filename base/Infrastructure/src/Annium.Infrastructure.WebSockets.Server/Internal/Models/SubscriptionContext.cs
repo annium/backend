@@ -21,7 +21,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public IConnectionState State => _state;
         public Guid ConnectionId { get; }
         public Guid SubscriptionId { get; }
-        public CancellationToken Token => _cts.Token;
         private readonly CancellationTokenSource _cts;
         private readonly ConnectionState _state;
         private readonly IMediator _mediator;
@@ -32,13 +31,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             TInit request,
             ConnectionState state,
             Guid subscriptionId,
+            CancellationTokenSource cts,
             IMediator mediator
         )
         {
             Request = request;
             ConnectionId = state.ConnectionId;
             SubscriptionId = subscriptionId;
-            _cts = new CancellationTokenSource();
+            _cts = cts;
             _state = state;
             _mediator = mediator;
         }

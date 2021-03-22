@@ -18,10 +18,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests
         public async Task<ResultResponse> HandleAsync(
             IRequestContext<TRequest> request,
             CancellationToken ct,
-            Func<IRequestContext<TRequest>, Task<IStatusResult<OperationStatus>>> next
+            Func<IRequestContext<TRequest>, CancellationToken, Task<IStatusResult<OperationStatus>>> next
         )
         {
-            var result = await next(request);
+            var result = await next(request, ct);
 
             return Response.Result(request.Request.Rid, result);
         }

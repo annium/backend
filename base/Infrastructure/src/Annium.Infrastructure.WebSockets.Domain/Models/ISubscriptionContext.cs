@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
@@ -10,7 +9,6 @@ namespace Annium.Infrastructure.WebSockets.Domain.Models
         where TInit : SubscriptionInitRequestBase
     {
         Task Handle(IStatusResult<OperationStatus> result);
-        CancellationToken Token { get; }
         Task Send(TMessage message);
     }
 }
