@@ -46,10 +46,11 @@ namespace Annium.Core.Mediator.Internal
                         output
                     )
                 ),
-                request
+                request,
+                token
             );
 
-            return Ex.Lambda(next, provider, chain, token, index).Compile();
+            return Ex.Lambda(next, provider, chain, index).Compile();
         }
     }
 }

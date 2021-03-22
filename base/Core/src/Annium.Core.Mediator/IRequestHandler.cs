@@ -11,7 +11,7 @@ namespace Annium.Core.Mediator
         Task<TResponseOut> HandleAsync(
             TRequestIn request,
             CancellationToken ct,
-            Func<TRequestOut, Task<TResponseIn>> next
+            Func<TRequestOut, CancellationToken, Task<TResponseIn>> next
         );
     }
 

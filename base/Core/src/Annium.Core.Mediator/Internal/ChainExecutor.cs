@@ -22,7 +22,7 @@ namespace Annium.Core.Mediator.Internal
 
             var parameters = new List<object> { request, cancellationToken };
             if (hasNext)
-                parameters.Add(element.Next!.DynamicInvoke(provider, chain, cancellationToken, index + 1)!);
+                parameters.Add(element.Next!.DynamicInvoke(provider, chain, index + 1)!);
 
             var handler = element.Handler;
             var handleMethodName = hasNext ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
