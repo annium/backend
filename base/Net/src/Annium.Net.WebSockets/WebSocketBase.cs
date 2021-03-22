@@ -97,53 +97,61 @@ namespace Annium.Net.WebSockets
             Memory<byte> buffer
         )
         {
-            try
+            await using var stream = new MemoryStream();
+            ValueWebSocketReceiveResult result = default;
+            do
             {
-                await using var stream = new MemoryStream();
-                ValueWebSocketReceiveResult result;
-                do
+                try
                 {
                     // Debug($"INTERNAL: Receive in State {Socket.State}");
                     result = await Socket.ReceiveAsync(buffer, CancellationToken.None);
                     // Debug($"INTERNAL: Received {result.MessageType} in State {Socket.State}");
+                }
+                //  remote party closed connection w/o handshake
+                catch (WebSocketException)
+                {
+                    // Debug($"INTERNAL: WebSocketException {e}");
+                    if (!await HandleDisconnect())
+                        return;
+                }
+                // token was canceled, or connection was aborted during Receive operation
+                catch (OperationCanceledException)
+                {
+                    // Debug($"INTERNAL: OperationCanceledException {e}");
+                    ctx.OnCompleted();
+                    return;
+                }
+                catch (Exception e)
+                {
+                    // Debug($"INTERNAL: Exception {e}");
+                    ctx.OnError(e);
+                }
 
-                    // if closing - handle disconnect
-                    if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        await OnDisconnectAsync().ConfigureAwait(false);
+                // if closing - handle disconnect
+                if (result.MessageType == WebSocketMessageType.Close && !await HandleDisconnect())
+                    return;
 
-                        // if after disconnect handling not connected - set completed and break
-                        if (
-                            State == WebSocketState.CloseReceived ||
-                            State == WebSocketState.Closed ||
-                            State == WebSocketState.Aborted
-                        )
-                        {
-                            ctx.OnCompleted();
-                        }
-                    }
+                stream.Write(buffer.Slice(0, result.Count).Span);
+            } while (!result.EndOfMessage);
 
-                    stream.Write(buffer.Slice(0, result.Count).Span);
-                } while (!result.EndOfMessage);
+            ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
 
-                ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
-            }
-            //  remote party closed connection w/o handshake
-            catch (WebSocketException)
+            async Task<bool> HandleDisconnect()
             {
-                // Debug($"INTERNAL: WebSocketException {e}");
-                ctx.OnCompleted();
-            }
-            // token was canceled, or connection was aborted during Receive operation
-            catch (OperationCanceledException)
-            {
-                // Debug($"INTERNAL: OperationCanceledException {e}");
-                ctx.OnCompleted();
-            }
-            catch (Exception e)
-            {
-                // Debug($"INTERNAL: Exception {e}");
-                ctx.OnError(e);
+                await OnDisconnectAsync().ConfigureAwait(false);
+
+                // if after disconnect handling not connected - set completed and break
+                if (
+                    State == WebSocketState.CloseReceived ||
+                    State == WebSocketState.Closed ||
+                    State == WebSocketState.Aborted
+                )
+                {
+                    ctx.OnCompleted();
+                    return false;
+                }
+
+                return true;
             }
         }
 
