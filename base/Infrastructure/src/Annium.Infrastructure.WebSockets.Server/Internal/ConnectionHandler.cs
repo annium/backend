@@ -18,6 +18,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
         private readonly WorkScheduler _scheduler;
+        private readonly LifeCycleCoordinator _lifeCycleCoordinator;
         private readonly Connection _cn;
         private readonly ConnectionState _state;
 
@@ -26,6 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             IMediator mediator,
             Serializer serializer,
             WorkScheduler scheduler,
+            LifeCycleCoordinator lifeCycleCoordinator,
             Connection cn
         )
         {
@@ -33,23 +35,32 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _mediator = mediator;
             _serializer = serializer;
             _scheduler = scheduler;
+            _lifeCycleCoordinator = lifeCycleCoordinator;
             _cn = cn;
             _state = new ConnectionState(cn.Id);
         }
 
         public async Task HandleAsync()
         {
-            var tcs = new TaskCompletionSource<object>();
-            _lifetime.Stopping.Register(() => tcs.TrySetResult(new object()));
-            _cn.Socket
-                .Listen()
-                .Subscribe(
-                    x => _scheduler.Add(() => HandleMessage(x)),
-                    x => tcs.SetException(x),
-                    () => tcs.SetResult(new object()),
-                    _lifetime.Stopping
-                );
-            await tcs.Task;
+            try
+            {
+                await _lifeCycleCoordinator.HandleStartAsync(_state);
+                var tcs = new TaskCompletionSource<object>();
+                _lifetime.Stopping.Register(() => tcs.TrySetResult(new object()));
+                _cn.Socket
+                    .Listen()
+                    .Subscribe(
+                        x => _scheduler.Add(() => HandleMessage(x)),
+                        x => tcs.SetException(x),
+                        () => tcs.SetResult(new object()),
+                        _lifetime.Stopping
+                    );
+                await tcs.Task;
+            }
+            finally
+            {
+                await _lifeCycleCoordinator.HandleEndAsync(_state);
+            }
         }
 
 

@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal;
@@ -20,12 +21,17 @@ namespace Annium.Core.DependencyInjection
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
             container.Add<ConnectionHandlerFactory>().AsSelf().Singleton();
             container.Add<ConnectionTracker>().AsSelf().Singleton();
+            container.Add<LifeCycleCoordinator>().AsSelf().Singleton();
             container.Add<Serializer>().AsSelf().Singleton();
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
             container.Add<WorkScheduler>().AsSelf().Singleton();
 
             // internal - handlers
             container.Add(typeof(SubscriptionContextStore<,>)).AsSelf().Singleton();
+            container.AddAll(Assembly.GetCallingAssembly(), true)
+                .AssignableTo<ILifeCycleHandler>()
+                .AsInterfaces()
+                .Singleton();
 
             // handlers
             container.AddBroadcasters();
