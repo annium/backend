@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
@@ -10,18 +11,15 @@ namespace Annium.Core.DependencyInjection.Internal.Container
         where TKey : notnull
         where TValue : notnull
     {
-        private readonly IEnumerable<KeyValue<TKey, TValue>> _keyValues;
-
-        public Index(IEnumerable<KeyValue<TKey, TValue>> keyValues)
-        {
-            _keyValues = keyValues;
-        }
+        public int Count => _data.Count;
+        public IEnumerable<TKey> Keys => _data.Select(x => x.Key).Distinct();
+        public IEnumerable<TValue> Values => _data.Select(x => x.Value).Distinct();
 
         public TValue this[TKey key]
         {
             get
             {
-                var values = _keyValues.Where(x => x.Key.Equals(key)).Select(x => x.Value).ToArray();
+                var values = _data.Where(x => x.Key.Equals(key)).Select(x => x.Value).ToArray();
 
                 return values.Length switch
                 {
@@ -36,9 +34,19 @@ namespace Annium.Core.DependencyInjection.Internal.Container
             }
         }
 
+        private readonly IReadOnlyCollection<KeyValuePair<TKey, TValue>> _data;
+
+        public Index(IEnumerable<KeyValue<TKey, TValue>> data)
+        {
+            _data = data.Select(x => new KeyValuePair<TKey, TValue>(x.Key, x.Value)).ToArray();
+        }
+
+        public bool ContainsKey(TKey key) =>
+            TryGetValue(key, out _);
+
         public bool TryGetValue(TKey key, out TValue value)
         {
-            var values = _keyValues.Where(x => x.Key.Equals(key)).Select(x => x.Value).ToArray();
+            var values = _data.Where(x => x.Key.Equals(key)).Select(x => x.Value).ToArray();
             value = default!;
 
             switch (values.Length)
@@ -52,5 +60,9 @@ namespace Annium.Core.DependencyInjection.Internal.Container
                     return true;
             }
         }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() => _data.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => _data.GetEnumerator();
     }
 }
