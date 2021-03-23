@@ -7,12 +7,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class ConnectionTracker
     {
+        public event Action<Guid> OnTrack = delegate { };
         public event Action<Guid> OnRelease = delegate { };
         private readonly ConcurrentDictionary<Guid, Connection> _connections = new();
 
         public void Track(Connection cn)
         {
             _connections.TryAdd(cn.Id, cn);
+            OnTrack.Invoke(cn.Id);
         }
 
         public bool TryGet(Guid id, out Connection cn)
