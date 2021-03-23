@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 
@@ -7,24 +9,30 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class LifeCycleCoordinator
     {
-        private readonly IEnumerable<ILifeCycleHandler> _handlers;
+        private readonly IServiceProvider _sp;
 
         public LifeCycleCoordinator(
-            IEnumerable<ILifeCycleHandler> handlers
+            IServiceProvider sp
         )
         {
-            _handlers = handlers;
+            _sp = sp;
         }
 
         public async Task HandleStartAsync(IConnectionState state)
         {
-            foreach (var handler in _handlers)
+            using var scope = _sp.CreateScope();
+            var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler>>();
+
+            foreach (var handler in handlers)
                 await handler.HandleStartAsync(state);
         }
 
         public async Task HandleEndAsync(IConnectionState state)
         {
-            foreach (var handler in _handlers)
+            using var scope = _sp.CreateScope();
+            var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler>>();
+
+            foreach (var handler in handlers)
                 await handler.HandleEndAsync(state);
         }
     }
