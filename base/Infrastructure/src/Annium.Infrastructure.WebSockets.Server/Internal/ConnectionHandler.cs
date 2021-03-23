@@ -44,9 +44,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             try
             {
-                await _lifeCycleCoordinator.HandleStartAsync(_state);
                 var tcs = new TaskCompletionSource<object>();
+
+                // immediately subscribe to stopping event
                 _lifetime.Stopping.Register(() => tcs.TrySetResult(new object()));
+
+                // start listening to messages and adding them to scheduler
                 _cn.Socket
                     .Listen()
                     .Subscribe(
@@ -55,10 +58,19 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                         () => tcs.SetResult(new object()),
                         _lifetime.Stopping
                     );
+
+                // process start hook
+                await _lifeCycleCoordinator.HandleStartAsync(_state);
+
+                // start scheduler to process backlog and run upcomming work immediately
+                _scheduler.Start();
+
+                // wait until connection complete
                 await tcs.Task;
             }
             finally
             {
+                // process end hook
                 await _lifeCycleCoordinator.HandleEndAsync(_state);
             }
         }

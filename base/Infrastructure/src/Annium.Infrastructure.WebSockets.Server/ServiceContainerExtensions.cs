@@ -24,14 +24,14 @@ namespace Annium.Core.DependencyInjection
             container.Add<LifeCycleCoordinator>().AsSelf().Singleton();
             container.Add<Serializer>().AsSelf().Singleton();
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
-            container.Add<WorkScheduler>().AsSelf().Singleton();
+            container.Add<WorkScheduler>().AsSelf().Scoped();
 
             // internal - handlers
             container.Add(typeof(SubscriptionContextStore<,>)).AsSelf().Singleton();
             container.AddAll(Assembly.GetCallingAssembly(), true)
                 .AssignableTo<ILifeCycleHandler>()
                 .AsInterfaces()
-                .Singleton();
+                .Scoped();
 
             // handlers
             container.AddBroadcasters();

@@ -1,22 +1,27 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Net.WebSockets;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class Coordinator : ICoordinator
     {
+        private readonly IServiceProvider _sp;
         private readonly IServerLifetimeManager _lifetimeManager;
         private readonly ConnectionTracker _connectionTracker;
         private readonly ConnectionHandlerFactory _handlerFactory;
 
         public Coordinator(
+            IServiceProvider sp,
             IServerLifetimeManager lifetimeManager,
             ConnectionTracker connectionTracker,
             ConnectionHandlerFactory handlerFactory,
             BroadcastCoordinator broadcastCoordinator
         )
         {
+            _sp = sp;
             _lifetimeManager = lifetimeManager;
             _connectionTracker = connectionTracker;
             _handlerFactory = handlerFactory;
@@ -27,13 +32,19 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             await using var cn = new Connection(Guid.NewGuid(), socket);
             _connectionTracker.Track(cn);
+            IServiceScope scope = ServiceProviderExtensions.CreateScope(_sp);
             try
             {
-                await _handlerFactory.Create(cn).HandleAsync();
+                await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync();
             }
             finally
             {
                 _connectionTracker.Release(cn);
+
+                if (scope is IAsyncDisposable asyncDisposableScope)
+                    await asyncDisposableScope.DisposeAsync();
+                else if (scope is IDisposable disposableScope)
+                    disposableScope.Dispose();
             }
         }
 
