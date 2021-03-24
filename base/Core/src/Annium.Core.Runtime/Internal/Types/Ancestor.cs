@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Runtime.Internal.Types
@@ -17,7 +18,7 @@ namespace Annium.Core.Runtime.Internal.Types
             Type type
         )
         {
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            var properties = type.GetAllProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
             var idProperties = properties.Where(p => p.GetCustomAttribute<ResolutionIdAttribute>() != null).ToArray();
             var keyProperties = properties.Where(p => p.GetCustomAttribute<ResolutionKeyAttribute>() != null).ToArray();
 
