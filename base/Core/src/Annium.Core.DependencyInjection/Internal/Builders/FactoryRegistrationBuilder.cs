@@ -34,10 +34,10 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IFactoryRegistrationBuilderBase AsKeyed<TKey>(Type serviceType, TKey key) where TKey : notnull =>
             WithRegistration(new FactoryKeyedRegistration(serviceType, _factory, typeof(TKey), key));
 
-        public void Scoped() => Register(ServiceLifetime.Scoped);
-        public void Singleton() => Register(ServiceLifetime.Singleton);
-        public void Transient() => Register(ServiceLifetime.Transient);
-        private void Register(ServiceLifetime lifetime) => _registrar.Register(_registrations, lifetime);
+        public void In(ServiceLifetime lifetime) => _registrar.Register(_registrations, lifetime);
+        public void Scoped() => In(ServiceLifetime.Scoped);
+        public void Singleton() => In(ServiceLifetime.Singleton);
+        public void Transient() => In(ServiceLifetime.Transient);
 
         private IFactoryRegistrationBuilderBase WithRegistration(IRegistration registration)
         {
