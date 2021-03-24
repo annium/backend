@@ -20,7 +20,7 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
         )
         {
             // confirm subscription
-            await ctx.Handle(Result.Status(OperationStatus.Ok));
+            ctx.Handle(Result.Status(OperationStatus.Ok));
 
             // subscription body
             var rnd = new Random();
@@ -30,7 +30,7 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
             // main code to run until subscription ended
             while (!ct.IsCancellationRequested)
             {
-                await ctx.Send(new UserBalanceMessage {Balance = balance += rnd.Next(-4, 5)});
+                ctx.Send(new UserBalanceMessage { Balance = balance += rnd.Next(-4, 5) });
                 await Task.Delay(500);
             }
 
