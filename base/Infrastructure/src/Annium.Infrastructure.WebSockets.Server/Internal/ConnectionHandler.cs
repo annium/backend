@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
+using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
@@ -12,22 +13,24 @@ using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class ConnectionHandler
+    internal class ConnectionHandler<TState>
+        where TState : ConnectionState
     {
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
         private readonly WorkScheduler _scheduler;
-        private readonly LifeCycleCoordinator _lifeCycleCoordinator;
+        private readonly LifeCycleCoordinator<TState> _lifeCycleCoordinator;
         private readonly Connection _cn;
-        private readonly ConnectionState _state;
+        private readonly TState _state;
 
         public ConnectionHandler(
             IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
             WorkScheduler scheduler,
-            LifeCycleCoordinator lifeCycleCoordinator,
+            LifeCycleCoordinator<TState> lifeCycleCoordinator,
+            Func<Guid, TState> stateFactory,
             Connection cn
         )
         {
@@ -37,7 +40,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _scheduler = scheduler;
             _lifeCycleCoordinator = lifeCycleCoordinator;
             _cn = cn;
-            _state = new ConnectionState(cn.Id);
+            _state = stateFactory(cn.Id);
         }
 
         public async Task HandleAsync()

@@ -3,9 +3,10 @@ using Annium.Infrastructure.WebSockets.Domain.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Handlers
 {
-    public interface ILifeCycleHandler
+    public interface ILifeCycleHandler<TState>
+        where TState : ConnectionState
     {
-        Task HandleStartAsync(IConnectionState state);
-        Task HandleEndAsync(IConnectionState state);
+        Task HandleStartAsync(TState state);
+        Task HandleEndAsync(TState state);
     }
 }

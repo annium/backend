@@ -9,15 +9,15 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 namespace Demo.Infrastructure.WebSockets.Server.Handlers
 {
     internal class OrderRequestHandler :
-            IRequestHandler<DeleteOrderRequest>,
-            IRequestResponseHandler<CreateOrderRequest, int>
+            IRequestHandler<DeleteOrderRequest, State>,
+            IRequestResponseHandler<CreateOrderRequest, int, State>
         // IRequestResponseStreamHandler<ValidateOrderItemsRequest, DataStream<bool>>,
         // IRequestStreamHandler<BulkDeleteOrderStream>,
         // IRequestHeadedStreamResponseHandler<UploadOrderFileRequest, UploadOrderFileStreamChunkRequest, Guid>,
         // IRequestHeadedStreamResponseHeadedStreamHandler<BulkCreateOrdersRequest, BulkCreateOrderStreamChunkRequest, int, Guid>
     {
         public async Task<IStatusResult<OperationStatus>> HandleAsync(
-            IRequestContext<DeleteOrderRequest> ctx,
+            IRequestContext<DeleteOrderRequest, State> ctx,
             CancellationToken ct
         )
         {
@@ -27,20 +27,14 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
         }
 
         public async Task<IStatusResult<OperationStatus, int>> HandleAsync(
-            IRequestContext<CreateOrderRequest> ctx,
+            IRequestContext<CreateOrderRequest, State> ctx,
             CancellationToken ct
         )
         {
             var (_, state) = ctx;
             int value;
             using (var _ = state.Lock())
-            {
-                var key = "inc";
-                if (state.TryGet(key, out value))
-                    state.Set(key, value += 1);
-                else
-                    state.Set(key, value = 1);
-            }
+                value = ++state.Value;
 
             await Task.CompletedTask;
 

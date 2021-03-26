@@ -10,20 +10,21 @@ using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionInitHandler<TInit, TMessage> :
+    internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         IPipeRequestHandler<
-            RequestContext<TInit>,
-            ISubscriptionContext<TInit, TMessage>,
+            RequestContext<TInit, TState>,
+            ISubscriptionContext<TInit, TMessage, TState>,
             Unit,
             VoidResponse<TMessage>
         >
         where TInit : SubscriptionInitRequestBase
+        where TState : ConnectionState
     {
-        private readonly SubscriptionContextStore<TInit, TMessage> _subscriptionContextStore;
+        private readonly SubscriptionContextStore<TInit, TMessage, TState> _subscriptionContextStore;
         private readonly IMediator _mediator;
 
         public SubscriptionInitHandler(
-            SubscriptionContextStore<TInit, TMessage> subscriptionContextStore,
+            SubscriptionContextStore<TInit, TMessage, TState> subscriptionContextStore,
             IMediator mediator
         )
         {
@@ -32,14 +33,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         }
 
         public async Task<VoidResponse<TMessage>> HandleAsync(
-            RequestContext<TInit> ctx,
+            RequestContext<TInit, TState> ctx,
             CancellationToken ct,
-            Func<ISubscriptionContext<TInit, TMessage>, CancellationToken, Task<Unit>> next
+            Func<ISubscriptionContext<TInit, TMessage, TState>, CancellationToken, Task<Unit>> next
         )
         {
             var subscriptionId = Guid.NewGuid();
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            var context = new SubscriptionContext<TInit, TMessage>(ctx.Request, ctx.StateInternal, subscriptionId, cts, _mediator);
+            var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator);
 
             // when reporting successful init - save to subscription store
             context.OnInit(() => _subscriptionContextStore.Save(context));

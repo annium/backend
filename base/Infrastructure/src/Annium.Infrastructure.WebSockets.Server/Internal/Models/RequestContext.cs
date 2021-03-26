@@ -6,32 +6,33 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
     internal static class RequestContext
     {
-        public static object CreateDynamic(AbstractRequestBase request, IConnectionState state)
+        public static object CreateDynamic<TState>(AbstractRequestBase request, TState state)
+            where TState : ConnectionState
         {
-            var type = typeof(RequestContext<>).MakeGenericType(request.GetType());
+            var type = typeof(RequestContext<,>).MakeGenericType(request.GetType(), typeof(TState));
 
             return Activator.CreateInstance(type, request, state)!;
         }
     }
 
-    internal record RequestContext<TRequest> : IRequestContext<TRequest>, IRequestContextInternal
+    internal record RequestContext<TRequest, TState> : IRequestContext<TRequest, TState>
+        where TState : ConnectionState
     {
         public TRequest Request { get; }
-        public IConnectionState State => StateInternal;
-        public ConnectionState StateInternal { get; }
+        public TState State { get; }
 
         public RequestContext(
             TRequest request,
-            ConnectionState state1
+            TState state
         )
         {
             Request = request;
-            StateInternal = state1;
+            State = state;
         }
 
         public void Deconstruct(
             out TRequest request,
-            out IConnectionState state
+            out TState state
         )
         {
             request = Request;

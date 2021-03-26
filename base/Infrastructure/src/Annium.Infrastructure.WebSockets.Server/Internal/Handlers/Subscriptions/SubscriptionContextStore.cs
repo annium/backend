@@ -1,16 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionContextStore<TInit, TMessage> : IDisposable
+    internal class SubscriptionContextStore<TInit, TMessage, TState> : IDisposable
         where TInit : SubscriptionInitRequestBase
+        where TState : ConnectionState
     {
         private readonly ConnectionTracker _connectionTracker;
-        private readonly List<SubscriptionContext<TInit, TMessage>> _contexts = new();
+        private readonly List<SubscriptionContext<TInit, TMessage, TState>> _contexts = new();
 
         public SubscriptionContextStore(
             ConnectionTracker connectionTracker
@@ -20,7 +22,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             _connectionTracker.OnRelease += Cleanup;
         }
 
-        public void Save(SubscriptionContext<TInit, TMessage> ctx)
+        public void Save(SubscriptionContext<TInit, TMessage, TState> ctx)
         {
             lock (_contexts) _contexts.Add(ctx);
         }

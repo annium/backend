@@ -10,24 +10,25 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionCancelHandler<TInit, TMessage> :
+    internal class SubscriptionCancelHandler<TInit, TMessage, TState> :
         IFinalRequestHandler<
-            IRequestContext<SubscriptionCancelRequest>,
+            IRequestContext<SubscriptionCancelRequest, TState>,
             MetaResponse<TInit, TMessage, ResultResponse>
         >
         where TInit : SubscriptionInitRequestBase
+        where TState : ConnectionState
     {
-        private readonly SubscriptionContextStore<TInit, TMessage> _subscriptionContextStore;
+        private readonly SubscriptionContextStore<TInit, TMessage, TState> _subscriptionContextStore;
 
         public SubscriptionCancelHandler(
-            SubscriptionContextStore<TInit, TMessage> subscriptionContextStore
+            SubscriptionContextStore<TInit, TMessage, TState> subscriptionContextStore
         )
         {
             _subscriptionContextStore = subscriptionContextStore;
         }
 
         public Task<MetaResponse<TInit, TMessage, ResultResponse>> HandleAsync(
-            IRequestContext<SubscriptionCancelRequest> ctx,
+            IRequestContext<SubscriptionCancelRequest, TState> ctx,
             CancellationToken ct
         )
         {

@@ -4,6 +4,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
 using Annium.Infrastructure.WebSockets.Server;
+using Demo.Infrastructure.WebSockets.Server.Handlers;
 
 namespace Demo.Infrastructure.WebSockets.Server
 {
@@ -32,7 +33,7 @@ namespace Demo.Infrastructure.WebSockets.Server
             container.AddMapper();
             container.AddMediator();
             container.AddMediatorConfiguration(ConfigureMediator);
-            container.AddWebSocketServer();
+            container.AddWebSocketServer<State>(connectionId => new State(connectionId));
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

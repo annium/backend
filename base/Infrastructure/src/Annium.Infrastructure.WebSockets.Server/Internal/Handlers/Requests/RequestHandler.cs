@@ -11,14 +11,15 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests
 {
-    internal class RequestHandler<TRequest> :
-        IPipeRequestHandler<IRequestContext<TRequest>, IRequestContext<TRequest>, IStatusResult<OperationStatus>, ResultResponse>
+    internal class RequestHandler<TRequest, TState> :
+        IPipeRequestHandler<IRequestContext<TRequest, TState>, IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>, ResultResponse>
         where TRequest : RequestBase
+        where TState : ConnectionState
     {
         public async Task<ResultResponse> HandleAsync(
-            IRequestContext<TRequest> request,
+            IRequestContext<TRequest, TState> request,
             CancellationToken ct,
-            Func<IRequestContext<TRequest>, CancellationToken, Task<IStatusResult<OperationStatus>>> next
+            Func<IRequestContext<TRequest, TState>, CancellationToken, Task<IStatusResult<OperationStatus>>> next
         )
         {
             var result = await next(request, ct);

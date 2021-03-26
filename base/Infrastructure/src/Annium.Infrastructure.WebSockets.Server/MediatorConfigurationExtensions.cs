@@ -32,23 +32,23 @@ namespace Annium.Infrastructure.WebSockets.Server
             ITypeManager tm
         )
         {
-            cfg.AddHandler(typeof(RequestResponseHandler<,>));
-            // IRequestHandler<TRequest, TResponse>: TRequest -> ResultResponse<TResponse>
+            cfg.AddHandler(typeof(RequestResponseHandler<,,>));
+            // IRequestResponseHandler<TRequest, TResponse, TState>: TRequest -> ResultResponse<TResponse>
             cfg.AddHandlerImplementations(
                 tm,
-                typeof(IRequestResponseHandler<,>),
+                typeof(IRequestResponseHandler<,,>),
                 args => Arr(
-                    (Context(args[0]), Generic(typeof(ResultResponse<>), args[1]))
+                    (Context(args[0], args[2]), Generic(typeof(ResultResponse<>), args[1]))
                 )
             );
 
-            cfg.AddHandler(typeof(RequestHandler<>));
-            // IRequestHandler<TRequest>: TRequest -> ResultResponse
+            cfg.AddHandler(typeof(RequestHandler<,>));
+            // IRequestHandler<TRequest, TState>: TRequest -> ResultResponse
             cfg.AddHandlerImplementations(
                 tm,
-                typeof(IRequestHandler<>),
+                typeof(IRequestHandler<,>),
                 args => Arr(
-                    (Context(args[0]), typeof(ResultResponse))
+                    (Context(args[0], args[1]), typeof(ResultResponse))
                 )
             );
         }
@@ -58,18 +58,18 @@ namespace Annium.Infrastructure.WebSockets.Server
             ITypeManager tm
         )
         {
-            cfg.AddHandler(typeof(SubscriptionInitHandler<,>));
-            cfg.AddHandler(typeof(SubscriptionCancelHandler<,>));
-            // ISubscriptionHandler<TInit, TMessage, TCancel>:
+            cfg.AddHandler(typeof(SubscriptionInitHandler<,,>));
+            cfg.AddHandler(typeof(SubscriptionCancelHandler<,,>));
+            // ISubscriptionHandler<TInit, TMessage, TState>:
             // - TInit -> VoidResponse<TCancel, TMessage>
             // - TMessage -> VoidResponse<TInit, TCancel>
             // - TCancel -> VoidResponse<TInit, TMessage>
             cfg.AddHandlerImplementations(
                 tm,
-                typeof(ISubscriptionHandler<,>),
+                typeof(ISubscriptionHandler<,,>),
                 args => Arr(
-                    (Context(args[0]), Generic(typeof(VoidResponse<>), args[1])),
-                    (Context(typeof(SubscriptionCancelRequest)), Generic(typeof(MetaResponse<,,>), args[0], args[1], typeof(ResultResponse)))
+                    (Context(args[0], args[2]), Generic(typeof(VoidResponse<>), args[1])),
+                    (Context(typeof(SubscriptionCancelRequest), args[2]), Generic(typeof(MetaResponse<,,>), args[0], args[1], typeof(ResultResponse)))
                 )
             );
         }
@@ -90,9 +90,9 @@ namespace Annium.Infrastructure.WebSockets.Server
             }
         }
 
-        // IRequestContext<T> -> RequestContext<T>
-        private static Type Context(Type type) =>
-            typeof(RequestContext<>).MakeGenericType(type);
+        // IRequestContext<TRequest, TState> -> RequestContext<TRequest, TState>
+        private static Type Context(Type requestType, Type stateType) =>
+            typeof(RequestContext<,>).MakeGenericType(requestType, stateType);
 
         private static Type Generic(Type type, params Type[] args) =>
             type.MakeGenericType(args);

@@ -13,25 +13,26 @@ using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
-    internal sealed record SubscriptionContext<TInit, TMessage> :
-        ISubscriptionContext<TInit, TMessage>,
+    internal sealed record SubscriptionContext<TInit, TMessage, TState> :
+        ISubscriptionContext<TInit, TMessage, TState>,
         IAsyncDisposable
         where TInit : SubscriptionInitRequestBase
+        where TState : ConnectionState
     {
         public TInit Request { get; }
-        public IConnectionState State => _state;
+        public TState State => _state;
         public Guid ConnectionId { get; }
         public Guid SubscriptionId { get; }
         private readonly CancellationTokenSource _cts;
-        private readonly ConnectionState _state;
+        private readonly TState _state;
         private readonly BlockingCollection<object> _events = new();
         private bool _isInitiated;
         private Action _handleInit = () => { };
-        private Task _eventSenderTask;
+        private readonly Task _eventSenderTask;
 
         public SubscriptionContext(
             TInit request,
-            ConnectionState state,
+            TState state,
             Guid subscriptionId,
             CancellationTokenSource cts,
             IMediator mediator
@@ -108,7 +109,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         public void Deconstruct(
             out TInit request,
-            out IConnectionState state
+            out TState state
         )
         {
             request = Request;

@@ -7,18 +7,22 @@ using Annium.Infrastructure.WebSockets.Domain.Requests;
 namespace Annium.Infrastructure.WebSockets.Server.Handlers
 {
     // request -> void
-    public interface IRequestHandler<TRequest> :
-        IFinalRequestHandler<IRequestContext<TRequest>, IStatusResult<OperationStatus>>
+    public interface IRequestHandler<TRequest, TState> :
+        IFinalRequestHandler<IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>>
         where TRequest : RequestBase
+        where TState : ConnectionState
+
     {
     }
 
     // request -> response
-    public interface IRequestResponseHandler<TRequest, TResponse> :
-        IFinalRequestHandler<IRequestContext<TRequest>, IStatusResult<OperationStatus, TResponse>>
+    public interface IRequestResponseHandler<TRequest, TResponse, TState> :
+        IFinalRequestHandler<IRequestContext<TRequest, TState>, IStatusResult<OperationStatus, TResponse>>
         where TRequest : RequestBase
+        where TState : ConnectionState
     {
     }
+
     //
     // // request -> response stream
     // public interface IRequestResponseStreamHandler<TRequest, TResponseChunk> :

@@ -1,9 +1,10 @@
 namespace Annium.Infrastructure.WebSockets.Domain.Models
 {
-    public interface IRequestContext<TRequest>
+    public interface IRequestContext<TRequest, TState>
+        where TState : ConnectionState
     {
         TRequest Request { get; }
-        IConnectionState State { get; }
-        void Deconstruct(out TRequest request, out IConnectionState state);
+        TState State { get; }
+        void Deconstruct(out TRequest request, out TState state);
     }
 }

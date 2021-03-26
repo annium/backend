@@ -5,9 +5,10 @@ using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Handlers
 {
-    public interface ISubscriptionHandler<TInit, TMessage> :
-        IFinalRequestHandler<ISubscriptionContext<TInit, TMessage>, Unit>
+    public interface ISubscriptionHandler<TInit, TMessage, TState> :
+        IFinalRequestHandler<ISubscriptionContext<TInit, TMessage, TState>, Unit>
         where TInit : SubscriptionInitRequestBase
+        where TState : ConnectionState
     {
     }
 }
