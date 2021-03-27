@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>Demo.Infrastructure.MessageBus.EchoServer</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>Demo.Infrastructure.WebSockets.MessageBus.EchoServer</Description>
+        <TargetFramework>net5.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <DebugType>portable</DebugType>
+        <LangVersion>9.0</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../Configuration/src/Annium.Configuration.Yaml/Annium.Configuration.Yaml.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
+        <ProjectReference Include="../../../Core/src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
+        <ProjectReference Include="../../src/Annium.Infrastructure.MessageBus.Node/Annium.Infrastructure.MessageBus.Node.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
+        <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
+    </ItemGroup>
+</Project>

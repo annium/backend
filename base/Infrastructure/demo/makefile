@@ -1,38 +1,38 @@
-start-binary:
+mbus-echo:
+	cd Demo.Infrastructure.MessageBus.EchoServer && dotnet run
+
+mbus-proxy:
+	docker-compose -f Demo.Infrastructure.MessageBus.EchoServer/docker-compose.yml up proxy
+
+mbus-sink:
+	docker-compose -f Demo.Infrastructure.MessageBus.EchoServer/docker-compose.yml up sink
+
+mbus-down:
+	docker-compose -f Demo.Infrastructure.MessageBus.EchoServer/docker-compose.yml down
+
+ws-start-binary:
 	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj &
 
-start-text:
+ws-start-text:
 	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj --use-text &
 
-stop:
+ws-stop:
 	$(call kill,Demo.Infrastructure.WebSockets.Server.csproj)
 
-drop:
+ws-drop:
 	$(call kill,net5.0/Demo.Infrastructure.WebSockets.Client,-9)
 
-listen:
+ws-listen:
 	$(call cli,listen)
 
-request-void:
+ws-request-void:
 	$(call cli,request-void)
 
-request-response:
+ws-request-response:
 	$(call cli,request-response)
 
-sub-unsub:
+ws-sub-unsub:
 	$(call cli,sub-unsub)
-
-demo-request:
-	$(call cli,demo request)
-
-demo-sink:
-	$(call cli,demo sink)
-
-demo-echo:
-	$(call cli,demo echo)
-
-demo-echo-kill:
-	$(call cli,demo echo -k)
 
 define cli
 	@$(eval command := $(1))

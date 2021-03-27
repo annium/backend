@@ -1,0 +1,22 @@
+version: '3.7'
+x-base: &base
+  restart: always
+  logging:
+    driver: json-file
+    options:
+      max-size: 1m
+      max-file: '1'
+services:
+  proxy:
+    <<: *base
+    image: registry.annium.com/tools/mbus.proxy
+    ports:
+      - 8998:9998
+      - 8999:9999
+    volumes:
+      - './cfg_docker.yml:/app/configuration.yml'
+  sink:
+    <<: *base
+    image: registry.annium.com/tools/mbus.sink
+    volumes:
+      - './cfg_docker.yml:/app/configuration.yml'
