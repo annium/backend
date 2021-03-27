@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Mediator.Internal
 {
@@ -32,10 +33,17 @@ namespace Annium.Core.Mediator.Internal
             var chain = GetChain(request.GetType(), typeof(TResponse));
 
             // use scoped service provider
-            using var scope = _provider.CreateScope();
+            var scope = _provider.CreateScope();
 
-            return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!,
-                cancellationToken);
+            try
+            {
+                return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!,
+                    cancellationToken);
+            }
+            finally
+            {
+                await scope.DisposeAsync();
+            }
         }
 
         public async Task<TResponse> SendAsync<TResponse>(
