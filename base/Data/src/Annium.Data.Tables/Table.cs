@@ -7,7 +7,7 @@ namespace Annium.Data.Tables
     public static class Table
     {
         public static ITableBuilder<TR, TW> New<TR, TW>()
-            where TR : IEquatable<TR>
+            where TR : IEquatable<TR>, ICopyable<TR>
             where TW : notnull
         {
             return new TableBuilder<TR, TW>();

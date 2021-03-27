@@ -4,12 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Annium.Core.Mapper;
+using Annium.Core.Primitives;
 using static Annium.Data.Tables.Internal.TableHelper;
 
 namespace Annium.Data.Tables.Internal
 {
     internal sealed class Table<TR, TW> : TableBase<TR>, ITable<TR, TW>
-        where TR : IEquatable<TR>
+        where TR : IEquatable<TR>, ICopyable<TR>
         where TW : notnull
     {
         public int Count
@@ -23,8 +24,8 @@ namespace Annium.Data.Tables.Internal
             }
         }
 
-        private readonly Dictionary<int, TW> _writeTable = new Dictionary<int, TW>();
-        private readonly Dictionary<int, TR> _readTable = new Dictionary<int, TR>();
+        private readonly Dictionary<int, TW> _writeTable = new();
+        private readonly Dictionary<int, TR> _readTable = new();
         private readonly Func<TW, int> _getKey;
         private readonly Action<TW, TW> _update;
         private readonly Func<TW, bool> _isActive;

@@ -22,7 +22,7 @@ namespace Annium.Data.Tables.Internal
             }
         }
 
-        private readonly Dictionary<int, T> _table = new Dictionary<int, T>();
+        private readonly Dictionary<int, T> _table = new();
         private readonly Func<T, int> _getKey;
         private readonly Action<T, T> _update;
         private readonly Func<T, bool> _isActive;

@@ -1,11 +1,12 @@
 using System;
 using System.Linq.Expressions;
 using Annium.Core.Mapper;
+using Annium.Core.Primitives;
 
 namespace Annium.Data.Tables.Internal
 {
     internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
-        where TR : IEquatable<TR>
+        where TR : IEquatable<TR>, ICopyable<TR>
         where TW : notnull
     {
         private TablePermission _permissions;
