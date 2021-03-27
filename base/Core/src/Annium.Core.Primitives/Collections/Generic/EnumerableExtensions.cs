@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Annium.Core.Primitives.Collections.Generic
+namespace Annium.Core.Primitives
 {
     public static class EnumerableExtensions
     {

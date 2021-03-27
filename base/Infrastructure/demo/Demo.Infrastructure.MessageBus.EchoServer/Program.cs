@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Core.Primitives.Threading;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Infrastructure.MessageBus.Node;
 using Annium.Logging.Abstractions;
