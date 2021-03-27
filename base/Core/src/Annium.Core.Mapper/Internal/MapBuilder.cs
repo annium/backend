@@ -61,16 +61,19 @@ namespace Annium.Core.Mapper.Internal
         public Delegate GetMap(Type src, Type tgt)
         {
             var entry = GetEntry((src, tgt));
-            if (entry.HasMap)
-                return entry.Map;
+            lock (entry.MapLock)
+            {
+                if (entry.HasMap)
+                    return entry.Map;
 
-            var param = Expression.Parameter(src);
-            var mapping = ResolveMapping(src, tgt);
+                var param = Expression.Parameter(src);
+                var mapping = ResolveMapping(src, tgt);
 
-            var result = Expression.Lambda(mapping(param), param);
-            var str = result.ToReadableString();
+                var result = Expression.Lambda(mapping(param), param);
+                var str = result.ToReadableString();
 
-            entry.SetMap(result.Compile());
+                entry.SetMap(result.Compile());
+            }
 
             return entry.Map;
         }
@@ -81,10 +84,13 @@ namespace Annium.Core.Mapper.Internal
                 return ex => ex;
 
             var entry = GetEntry((src, tgt));
-            if (entry.HasMapping)
-                return entry.Mapping;
+            lock (entry.MappingLock)
+            {
+                if (entry.HasMapping)
+                    return entry.Mapping;
 
-            entry.SetMapping(BuildMapping(src, tgt, entry.HasConfiguration ? entry.Configuration : MapConfiguration.Empty));
+                entry.SetMapping(BuildMapping(src, tgt, entry.HasConfiguration ? entry.Configuration : MapConfiguration.Empty));
+            }
 
             return entry.Mapping;
         }
@@ -107,7 +113,7 @@ namespace Annium.Core.Mapper.Internal
             foreach (var type in types)
             {
                 var profile = _knownProfiles.SingleOrDefault(x => x.GetType() == type)
-                    ?? (Profile) Activator.CreateInstance(type)!;
+                              ?? (Profile) Activator.CreateInstance(type)!;
 
                 AddEntriesFromProfile(profile);
             }
@@ -117,7 +123,7 @@ namespace Annium.Core.Mapper.Internal
 
         private void AddEntriesFromProfile(Profile profile)
         {
-            foreach (var ( key, cfg) in profile.MapConfigurations)
+            foreach (var (key, cfg) in profile.MapConfigurations)
             {
                 var entry = GetEntry(key);
                 if (!entry.HasConfiguration)
@@ -140,13 +146,15 @@ namespace Annium.Core.Mapper.Internal
 
         private class Entry
         {
-            public static Entry Create() => new Entry();
+            public static Entry Create() => new();
 
-            public bool HasConfiguration => Configuration != null;
+            public bool HasConfiguration => Configuration is not null!;
             public IMapConfiguration Configuration { get; private set; } = default!;
-            public bool HasMapping => Mapping != null;
+            public object MappingLock = new();
+            public bool HasMapping => Mapping is not null!;
             public Mapping Mapping { get; private set; } = default!;
-            public bool HasMap => Map != null;
+            public object MapLock = new();
+            public bool HasMap => Map is not null!;
             public Delegate Map { get; private set; } = default!;
 
             private Entry()
