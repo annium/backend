@@ -19,22 +19,27 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _sp = sp;
         }
 
-        public async Task HandleStartAsync(TState state)
+        public Task HandleStartAsync(TState state) => HandleAsync(state, (x, s) => x.HandleStartAsync(s));
+
+        public Task HandleEndAsync(TState state) => HandleAsync(state, (x, s) => x.HandleEndAsync(s));
+
+        private async Task HandleAsync(TState state, Func<ILifeCycleHandler<TState>, TState, Task> handleState)
         {
-            using var scope = _sp.CreateScope();
-            var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>();
+            var scope = _sp.CreateScope();
+            try
+            {
+                var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>();
 
-            foreach (var handler in handlers)
-                await handler.HandleStartAsync(state);
-        }
-
-        public async Task HandleEndAsync(TState state)
-        {
-            using var scope = _sp.CreateScope();
-            var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>();
-
-            foreach (var handler in handlers)
-                await handler.HandleEndAsync(state);
+                foreach (var handler in handlers)
+                    await handleState(handler, state);
+            }
+            finally
+            {
+                if (scope is IAsyncDisposable asyncDisposable)
+                    await asyncDisposable.DisposeAsync();
+                else if (scope is IDisposable disposable)
+                    disposable.Dispose();
+            }
         }
     }
 }
