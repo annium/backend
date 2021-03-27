@@ -49,7 +49,21 @@ namespace Annium.Net.WebSockets
 
         public async Task DisconnectAsync(CancellationToken token)
         {
-            await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            try
+            {
+                if (
+                    Socket.State == WebSocketState.Connecting ||
+                    Socket.State == WebSocketState.Open
+                )
+                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+            }
+            catch (WebSocketException)
+            {
+            }
+            finally
+            {
+                Socket.Dispose();
+            }
         }
 
         protected override async Task OnDisconnectAsync()
