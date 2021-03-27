@@ -17,7 +17,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         ISubscriptionContext<TInit, TMessage, TState>,
         IAsyncDisposable
         where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         public TInit Request { get; }
         public TState State => _state;

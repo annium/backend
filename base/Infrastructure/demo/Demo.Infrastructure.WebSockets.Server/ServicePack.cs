@@ -33,7 +33,7 @@ namespace Demo.Infrastructure.WebSockets.Server
             container.AddMapper();
             container.AddMediator();
             container.AddMediatorConfiguration(ConfigureMediator);
-            container.AddWebSocketServer<State>(connectionId => new State(connectionId));
+            container.AddWebSocketServer<ConnectionState>(connectionId => new ConnectionState(connectionId));
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

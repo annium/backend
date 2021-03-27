@@ -4,12 +4,12 @@ using Annium.Core.Primitives;
 
 namespace Annium.Infrastructure.WebSockets.Domain.Models
 {
-    public abstract class ConnectionState
+    public abstract class ConnectionStateBase
     {
         public Guid ConnectionId { get; }
         private readonly ManualResetEventSlim _gate = new(true);
 
-        protected ConnectionState(Guid connectionId)
+        protected ConnectionStateBase(Guid connectionId)
         {
             ConnectionId = connectionId;
         }

@@ -14,7 +14,7 @@ using Annium.Net.WebSockets;
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class ConnectionHandler<TState>
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;

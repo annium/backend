@@ -7,7 +7,7 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class ConnectionHandlerFactory<TState>
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;

@@ -17,7 +17,7 @@ namespace Annium.Core.DependencyInjection
             this IServiceContainer container,
             Func<Guid, TState> stateFactory
         )
-            where TState : ConnectionState
+            where TState : ConnectionStateBase
         {
             // public
             container.Add<ICoordinator, Coordinator<TState>>().Singleton();

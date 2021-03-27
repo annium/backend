@@ -8,7 +8,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Handlers
     public interface ISubscriptionHandler<TInit, TMessage, TState> :
         IFinalRequestHandler<ISubscriptionContext<TInit, TMessage, TState>, Unit>
         where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
     }
 }

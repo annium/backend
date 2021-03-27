@@ -14,7 +14,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests
     internal class RequestHandler<TRequest, TState> :
         IPipeRequestHandler<IRequestContext<TRequest, TState>, IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>, ResultResponse>
         where TRequest : RequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         public async Task<ResultResponse> HandleAsync(
             IRequestContext<TRequest, TState> request,

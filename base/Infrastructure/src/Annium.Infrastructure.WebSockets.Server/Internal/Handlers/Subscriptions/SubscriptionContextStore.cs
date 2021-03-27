@@ -9,7 +9,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 {
     internal class SubscriptionContextStore<TInit, TMessage, TState> : IDisposable
         where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly ConnectionTracker _connectionTracker;
         private readonly List<SubscriptionContext<TInit, TMessage, TState>> _contexts = new();

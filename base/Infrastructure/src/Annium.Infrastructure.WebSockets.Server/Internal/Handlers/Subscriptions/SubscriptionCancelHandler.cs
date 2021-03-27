@@ -16,7 +16,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             MetaResponse<TInit, TMessage, ResultResponse>
         >
         where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly SubscriptionContextStore<TInit, TMessage, TState> _subscriptionContextStore;
 

@@ -12,10 +12,10 @@ using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 namespace Demo.Infrastructure.WebSockets.Server.Handlers
 {
     internal class UserSubscriptionsHandler :
-        ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, State>
+        ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState>
     {
         public async Task<Unit> HandleAsync(
-            ISubscriptionContext<UserBalanceSubscriptionInit, UserBalanceMessage, State> ctx,
+            ISubscriptionContext<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState> ctx,
             CancellationToken ct
         )
         {

@@ -7,7 +7,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
     internal static class RequestContext
     {
         public static object CreateDynamic<TState>(AbstractRequestBase request, TState state)
-            where TState : ConnectionState
+            where TState : ConnectionStateBase
         {
             var type = typeof(RequestContext<,>).MakeGenericType(request.GetType(), typeof(TState));
 
@@ -16,7 +16,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
     }
 
     internal record RequestContext<TRequest, TState> : IRequestContext<TRequest, TState>
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         public TRequest Request { get; }
         public TState State { get; }

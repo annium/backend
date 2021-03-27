@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class Coordinator<TState> : ICoordinator
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly IServiceProvider _sp;
         private readonly IServerLifetimeManager _lifetimeManager;

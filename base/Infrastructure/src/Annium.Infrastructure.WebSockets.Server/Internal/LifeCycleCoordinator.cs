@@ -8,7 +8,7 @@ using Annium.Infrastructure.WebSockets.Server.Handlers;
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class LifeCycleCoordinator<TState>
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly IServiceProvider _sp;
 

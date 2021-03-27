@@ -10,7 +10,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Handlers
     public interface IRequestHandler<TRequest, TState> :
         IFinalRequestHandler<IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>>
         where TRequest : RequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
 
     {
     }
@@ -19,7 +19,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Handlers
     public interface IRequestResponseHandler<TRequest, TResponse, TState> :
         IFinalRequestHandler<IRequestContext<TRequest, TState>, IStatusResult<OperationStatus, TResponse>>
         where TRequest : RequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
     }
 

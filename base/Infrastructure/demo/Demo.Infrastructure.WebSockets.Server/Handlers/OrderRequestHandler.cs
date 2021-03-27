@@ -9,15 +9,15 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 namespace Demo.Infrastructure.WebSockets.Server.Handlers
 {
     internal class OrderRequestHandler :
-            IRequestHandler<DeleteOrderRequest, State>,
-            IRequestResponseHandler<CreateOrderRequest, int, State>
+            IRequestHandler<DeleteOrderRequest, ConnectionState>,
+            IRequestResponseHandler<CreateOrderRequest, int, ConnectionState>
         // IRequestResponseStreamHandler<ValidateOrderItemsRequest, DataStream<bool>>,
         // IRequestStreamHandler<BulkDeleteOrderStream>,
         // IRequestHeadedStreamResponseHandler<UploadOrderFileRequest, UploadOrderFileStreamChunkRequest, Guid>,
         // IRequestHeadedStreamResponseHeadedStreamHandler<BulkCreateOrdersRequest, BulkCreateOrderStreamChunkRequest, int, Guid>
     {
         public async Task<IStatusResult<OperationStatus>> HandleAsync(
-            IRequestContext<DeleteOrderRequest, State> ctx,
+            IRequestContext<DeleteOrderRequest, ConnectionState> ctx,
             CancellationToken ct
         )
         {
@@ -27,7 +27,7 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
         }
 
         public async Task<IStatusResult<OperationStatus, int>> HandleAsync(
-            IRequestContext<CreateOrderRequest, State> ctx,
+            IRequestContext<CreateOrderRequest, ConnectionState> ctx,
             CancellationToken ct
         )
         {

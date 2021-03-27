@@ -18,7 +18,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             VoidResponse<TMessage>
         >
         where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionState
+        where TState : ConnectionStateBase
     {
         private readonly SubscriptionContextStore<TInit, TMessage, TState> _subscriptionContextStore;
         private readonly IMediator _mediator;
