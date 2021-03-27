@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Net.WebSockets;
 using Microsoft.Extensions.DependencyInjection;
@@ -43,10 +44,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 _connectionTracker.Release(cn);
 
-                if (scope is IAsyncDisposable asyncDisposableScope)
-                    await asyncDisposableScope.DisposeAsync();
-                else if (scope is IDisposable disposableScope)
-                    disposableScope.Dispose();
+                await scope.DisposeAsync();
             }
         }
 

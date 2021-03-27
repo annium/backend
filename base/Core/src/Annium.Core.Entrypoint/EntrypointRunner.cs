@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Entrypoint
 {
@@ -79,10 +80,8 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
-                if (provider is IAsyncDisposable asyncDisposableProvider)
-                    asyncDisposableProvider.DisposeAsync().GetAwaiter().GetResult();
-                else if (provider is IDisposable disposableProvider)
-                    disposableProvider.Dispose();
+                if (provider is IDisposable disposable)
+                    disposable.DisposeAsync().GetAwaiter().GetResult();
                 gate.Set();
             }
         }
@@ -112,10 +111,8 @@ namespace Annium.Core.Entrypoint
             }
             finally
             {
-                if (provider is IAsyncDisposable asyncDisposableProvider)
-                    await asyncDisposableProvider.DisposeAsync();
-                else if (provider is IDisposable disposableProvider)
-                    disposableProvider.Dispose();
+                if (provider is IDisposable disposable)
+                    disposable.DisposeAsync().GetAwaiter().GetResult();
                 gate.Set();
             }
         }

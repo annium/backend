@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 
@@ -35,10 +36,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             finally
             {
-                if (scope is IAsyncDisposable asyncDisposable)
-                    await asyncDisposable.DisposeAsync();
-                else if (scope is IDisposable disposable)
-                    disposable.Dispose();
+                await scope.DisposeAsync();
             }
         }
     }
