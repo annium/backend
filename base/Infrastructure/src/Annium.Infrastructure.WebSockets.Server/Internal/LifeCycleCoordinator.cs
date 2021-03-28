@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
@@ -29,7 +30,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             var scope = _sp.CreateScope();
             try
             {
-                var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>();
+                var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>().OrderBy(x => x.Order).ToArray();
 
                 foreach (var handler in handlers)
                     await handleState(handler, state);
