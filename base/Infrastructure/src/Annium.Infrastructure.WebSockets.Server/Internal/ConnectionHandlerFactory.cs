@@ -12,32 +12,29 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
-        private readonly LifeCycleCoordinator<TState> _lifeCycleCoordinator;
         private readonly Func<Guid, TState> _stateFactory;
 
         public ConnectionHandlerFactory(
             IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
-            LifeCycleCoordinator<TState> lifeCycleCoordinator,
             Func<Guid,TState> stateFactory
         )
         {
             _lifetime = lifetime;
             _mediator = mediator;
             _serializer = serializer;
-            _lifeCycleCoordinator = lifeCycleCoordinator;
             _stateFactory = stateFactory;
         }
 
         public ConnectionHandler<TState> Create(IServiceProvider sp, Connection connection)
         {
             return new(
+                sp,
                 _lifetime,
                 _mediator,
                 _serializer,
                 sp.Resolve<WorkScheduler>(),
-                _lifeCycleCoordinator,
                 _stateFactory,
                 connection
             );

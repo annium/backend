@@ -28,7 +28,7 @@ namespace Annium.Core.DependencyInjection
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
             container.Add<ConnectionHandlerFactory<TState>>().AsSelf().Singleton();
             container.Add<ConnectionTracker>().AsSelf().Singleton();
-            container.Add<LifeCycleCoordinator<TState>>().AsSelf().Singleton();
+            container.Add<LifeCycleCoordinator<TState>>().AsSelf().Scoped();
             container.Add<Serializer>().AsSelf().Singleton();
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
             container.Add<WorkScheduler>().AsSelf().Scoped();

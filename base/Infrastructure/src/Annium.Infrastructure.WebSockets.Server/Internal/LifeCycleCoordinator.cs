@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 
@@ -12,13 +10,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
     internal class LifeCycleCoordinator<TState>
         where TState : ConnectionStateBase
     {
-        private readonly IServiceProvider _sp;
+        private readonly IEnumerable<ILifeCycleHandler<TState>> _handlers;
 
         public LifeCycleCoordinator(
-            IServiceProvider sp
+            IEnumerable<ILifeCycleHandler<TState>> handlers
         )
         {
-            _sp = sp;
+            _handlers = handlers;
         }
 
         public Task HandleStartAsync(TState state) => HandleAsync(state, (x, s) => x.HandleStartAsync(s));
@@ -27,18 +25,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task HandleAsync(TState state, Func<ILifeCycleHandler<TState>, TState, Task> handleState)
         {
-            var scope = _sp.CreateScope();
-            try
-            {
-                var handlers = scope.ServiceProvider.Resolve<IEnumerable<ILifeCycleHandler<TState>>>().OrderBy(x => x.Order).ToArray();
-
-                foreach (var handler in handlers)
-                    await handleState(handler, state);
-            }
-            finally
-            {
-                await scope.DisposeAsync();
-            }
+            foreach (var handler in _handlers.OrderBy(x => x.Order))
+                await handleState(handler, state);
         }
     }
 }

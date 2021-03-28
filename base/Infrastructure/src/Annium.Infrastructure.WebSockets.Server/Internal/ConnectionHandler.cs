@@ -2,7 +2,9 @@ using System;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -16,37 +18,40 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
     internal class ConnectionHandler<TState>
         where TState : ConnectionStateBase
     {
+        private readonly IServiceProvider _sp;
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
         private readonly WorkScheduler _scheduler;
-        private readonly LifeCycleCoordinator<TState> _lifeCycleCoordinator;
         private readonly Connection _cn;
         private readonly TState _state;
 
         public ConnectionHandler(
+            IServiceProvider sp,
             IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
             WorkScheduler scheduler,
-            LifeCycleCoordinator<TState> lifeCycleCoordinator,
             Func<Guid, TState> stateFactory,
             Connection cn
         )
         {
+            _sp = sp;
             _lifetime = lifetime;
             _mediator = mediator;
             _serializer = serializer;
             _scheduler = scheduler;
-            _lifeCycleCoordinator = lifeCycleCoordinator;
             _cn = cn;
             _state = stateFactory(cn.Id);
         }
 
         public async Task HandleAsync()
         {
+            var scope = _sp.CreateScope();
+            LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
             try
             {
+                lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
                 var tcs = new TaskCompletionSource<object>();
 
                 // immediately subscribe to stopping event
@@ -63,7 +68,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                     );
 
                 // process start hook
-                await _lifeCycleCoordinator.HandleStartAsync(_state);
+                await lifeCycleCoordinator.HandleStartAsync(_state);
 
                 // start scheduler to process backlog and run upcomming work immediately
                 _scheduler.Start();
@@ -74,7 +79,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             finally
             {
                 // process end hook
-                await _lifeCycleCoordinator.HandleEndAsync(_state);
+                if (lifeCycleCoordinator is not null)
+                    await lifeCycleCoordinator.HandleEndAsync(_state);
+                await scope.DisposeAsync();
             }
         }
 
