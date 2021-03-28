@@ -76,7 +76,7 @@ namespace Annium.Collections.Tests.Generic
             var provider = container.BuildServiceProvider();
 
             var timeProvider = provider.GetRequiredService<IManagedTimeProvider>();
-            timeProvider.SetNow(Instant.MinValue);
+            timeProvider.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
 
             return timeProvider;
         }
