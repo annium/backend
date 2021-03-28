@@ -1,6 +1,6 @@
 using System;
+using System.Linq;
 using Annium.Core.Mediator;
-using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -84,9 +84,15 @@ namespace Annium.Infrastructure.WebSockets.Server
             foreach (var handler in tm.GetImplementations(interfaceType))
             {
                 cfg.AddHandler(handler);
-                var matches = resolveMatch(handler.GetTargetImplementation(interfaceType)!.GetGenericArguments());
-                foreach (var (requestedType, resolvedType) in matches)
-                    cfg.AddMatch(requestedType, typeof(AbstractResponseBase), resolvedType);
+                var implementations = handler.GetInterfaces()
+                    .Where(x => x.IsGenericType && x.GetGenericTypeDefinition() == interfaceType)
+                    .ToArray();
+                foreach (var implementation in implementations)
+                {
+                    var matches = resolveMatch(implementation.GetGenericArguments());
+                    foreach (var (requestedType, resolvedType) in matches)
+                        cfg.AddMatch(requestedType, typeof(AbstractResponseBase), resolvedType);
+                }
             }
         }
 
