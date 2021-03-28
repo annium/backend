@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Core.Runtime.Types;
 
 namespace Annium.Data.Tables
 {
@@ -12,6 +13,7 @@ namespace Annium.Data.Tables
 
     public class InitEvent<T> : IChangeEvent<T>
     {
+        public string Tid => GetType().GetIdString();
         public IReadOnlyCollection<T> Values { get; }
 
         internal InitEvent(IReadOnlyCollection<T> values)
@@ -24,6 +26,7 @@ namespace Annium.Data.Tables
 
     public class AddEvent<T> : IChangeEvent<T>
     {
+        public string Tid => GetType().GetIdString();
         public T Value { get; }
 
         internal AddEvent(T value)
@@ -36,6 +39,7 @@ namespace Annium.Data.Tables
 
     public class UpdateEvent<T> : IChangeEvent<T>
     {
+        public string Tid => GetType().GetIdString();
         public T OldValue { get; }
         public T NewValue { get; }
 
@@ -50,6 +54,7 @@ namespace Annium.Data.Tables
 
     public class DeleteEvent<T> : IChangeEvent<T>
     {
+        public string Tid => GetType().GetIdString();
         public T Value { get; }
 
         internal DeleteEvent(T value)
@@ -62,5 +67,7 @@ namespace Annium.Data.Tables
 
     public interface IChangeEvent<out T>
     {
+        [ResolutionId]
+        public string Tid { get; }
     }
 }
