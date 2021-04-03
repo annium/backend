@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Annium.Core.Primitives;
 
 namespace Annium.Serialization.Json.Internal.Converters
 {
@@ -29,14 +30,16 @@ namespace Annium.Serialization.Json.Internal.Converters
 
         internal class ParameterItem
         {
-            public string Name { get; }
             public Type Type { get; }
+            public string Name { get; }
 
-            public ParameterItem(string name, Type type)
+            public ParameterItem(Type type, string name)
             {
-                Name = name;
                 Type = type;
+                Name = name;
             }
+
+            public override string ToString() => $"{Type.FriendlyName()} {Name}";
         }
     }
 }

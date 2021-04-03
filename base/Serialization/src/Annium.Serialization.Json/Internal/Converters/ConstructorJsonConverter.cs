@@ -13,14 +13,12 @@ namespace Annium.Serialization.Json.Internal.Converters
     {
         private readonly ConstructorInfo _constructor;
         private readonly List<ConstructorJsonConverterConfiguration.ParameterItem> _parameters;
-        private readonly IReadOnlyCollection<PropertyInfo> _properties;
 
         public ConstructorJsonConverter(
             ConstructorJsonConverterConfiguration configuration
         )
         {
             (_constructor, _parameters) = configuration;
-            _properties = _constructor.DeclaringType!.GetProperties().ToArray();
         }
 
         public override T Read(
@@ -29,64 +27,48 @@ namespace Annium.Serialization.Json.Internal.Converters
             JsonSerializerOptions options
         )
         {
-            if (reader.TokenType != JsonTokenType.StartObject)
+            using var doc = JsonDocument.ParseValue(ref reader);
+            var root = doc.RootElement;
+            if (root.ValueKind != JsonValueKind.Object)
                 throw new JsonException();
 
             var parameters = new object?[_parameters.Count];
             var namingPolicy = options.PropertyNamingPolicy ?? JsonNamingPolicy.CamelCase;
-            var properties = _properties.ToDictionary(x => namingPolicy.ConvertName(x.Name), x => x.PropertyType);
             var comparison = options.PropertyNameCaseInsensitive
                 ? StringComparison.OrdinalIgnoreCase
                 : StringComparison.Ordinal;
 
-            while (reader.Read())
+            foreach (var prop in root.EnumerateObject())
             {
-                if (reader.TokenType == JsonTokenType.EndObject)
-                {
-                    var args = parameters
-                        .Select((x, i) =>
-                        {
-                            if (x != null)
-                                return x;
-
-                            if (options.IgnoreNullValues)
-                                return _parameters[i].Type.DefaultValue();
-
-                            throw new JsonException(
-                                $"Can't invoke constructor of '{_constructor.DeclaringType!.FriendlyName()}' with empty parameter '{_parameters[i].Name}'"
-                            );
-                        })
-                        .ToArray();
-                    var result = _constructor.Invoke(args);
-
-                    return (T) result;
-                }
-
-                if (reader.TokenType != JsonTokenType.PropertyName)
-                    throw new JsonException();
-
-                var name = namingPolicy.ConvertName(reader.GetString()!);
+                var name = namingPolicy.ConvertName(prop.Name);
                 var index = _parameters.FindIndex(x => x.Name.Equals(name, comparison));
 
                 // for now - no special handling for extra properties, just skip them
                 if (index < 0)
-                {
-                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison));
-                    if (key is not null)
-                    {
-                        var propertyType = properties[key];
-                        JsonSerializer.Deserialize(ref reader, propertyType, options);
-                    }
-
                     continue;
-                }
 
                 var parameter = _parameters[index];
-                var value = JsonSerializer.Deserialize(ref reader, parameter.Type, options);
+                var value = prop.Value.Deserialize(parameter.Type, options);
                 parameters[index] = value;
             }
 
-            throw new JsonException();
+            var args = parameters
+                .Select((x, i) =>
+                {
+                    if (x is not null)
+                        return x;
+
+                    if (options.IgnoreNullValues)
+                        return _parameters[i].Type.DefaultValue();
+
+                    throw new JsonException(
+                        $"Can't invoke constructor of '{_constructor.DeclaringType!.FriendlyName()}' with empty parameter '{_parameters[i].Name}'"
+                    );
+                })
+                .ToArray();
+            var result = _constructor.Invoke(args);
+
+            return (T) result;
         }
 
         public override void Write(

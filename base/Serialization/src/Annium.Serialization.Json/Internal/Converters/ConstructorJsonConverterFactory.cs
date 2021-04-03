@@ -89,7 +89,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                     var property = type.GetProperty(x.Name!.PascalCase());
                     var name = property?.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? x.Name ?? string.Empty;
 
-                    return new ConstructorJsonConverterConfiguration.ParameterItem(name, x.ParameterType);
+                    return new ConstructorJsonConverterConfiguration.ParameterItem(x.ParameterType, name);
                 })
                 .ToList();
 

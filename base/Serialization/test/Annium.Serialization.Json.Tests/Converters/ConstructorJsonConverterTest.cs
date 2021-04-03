@@ -82,6 +82,21 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         [Fact]
+        public void Deserialization_Narrow_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var x = new A(5);
+            var str = serializer.Serialize(x);
+
+            // act
+            var result = serializer.Deserialize<Narrow>(str);
+
+            // assert
+            result.IsEqual(x);
+        }
+
+        [Fact]
         public void Deserialization_Collection_Works()
         {
             // arrange
@@ -116,6 +131,16 @@ namespace Annium.Serialization.Json.Tests.Converters
             {
                 One = one;
                 Two = two;
+            }
+        }
+
+        public class Narrow
+        {
+            public int Value { get; }
+
+            public Narrow(int value)
+            {
+                Value = value;
             }
         }
 
