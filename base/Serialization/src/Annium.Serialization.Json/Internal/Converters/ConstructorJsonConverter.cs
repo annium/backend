@@ -71,10 +71,13 @@ namespace Annium.Serialization.Json.Internal.Converters
                 // for now - no special handling for extra properties, just skip them
                 if (index < 0)
                 {
-                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison)) ??
-                              throw new JsonException();
-                    var propertyType = properties[key];
-                    JsonSerializer.Deserialize(ref reader, propertyType, options);
+                    var key = properties.Keys.SingleOrDefault(x => x.Equals(name, comparison));
+                    if (key is not null)
+                    {
+                        var propertyType = properties[key];
+                        JsonSerializer.Deserialize(ref reader, propertyType, options);
+                    }
+
                     continue;
                 }
 
