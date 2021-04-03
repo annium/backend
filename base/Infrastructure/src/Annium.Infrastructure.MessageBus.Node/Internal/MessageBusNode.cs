@@ -11,7 +11,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         private readonly ISerializer<string> _serializer;
 
         public MessageBusNode(
-            Configuration cfg,
+            IConfiguration cfg,
             IMessageBusSocket socket
         )
         {

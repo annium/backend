@@ -35,31 +35,31 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         }
     }
 
-    internal class TestConfigurationBuilder : ITestConfigurationBuilder
+    internal class InMemoryConfigurationBuilder : IInMemoryConfigurationBuilder
     {
         private ISerializer<string>? _serializer;
-        private IList<string> _messageBox = new List<string>();
+        private IList<string>? _messageBox;
 
-        public ITestConfigurationBuilder WithSerializer(ISerializer<string> serializer)
+        public IInMemoryConfigurationBuilder WithSerializer(ISerializer<string> serializer)
         {
             _serializer = serializer;
 
             return this;
         }
 
-        public ITestConfigurationBuilder WithMessageBox(IList<string> messageBox)
+        public IInMemoryConfigurationBuilder WithMessageBox(IList<string> messageBox)
         {
             _messageBox = messageBox;
 
             return this;
         }
 
-        public TestConfiguration Build()
+        public InMemoryConfiguration Build()
         {
             if (_serializer is null)
                 throw new ArgumentException("MessageBus serializer is not configured");
 
-            return new TestConfiguration(_serializer, _messageBox);
+            return new InMemoryConfiguration(_serializer, _messageBox);
         }
     }
 }

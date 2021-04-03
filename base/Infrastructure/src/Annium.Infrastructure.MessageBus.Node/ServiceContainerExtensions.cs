@@ -16,26 +16,26 @@ namespace Annium.Core.DependencyInjection
                 var builder = sp.Resolve<ConfigurationBuilder>();
                 configure(sp, builder);
                 return builder.Build();
-            }).AsSelf().Singleton();
+            }).AsSelf().AsInterfaces().Singleton();
             container.Add<IMessageBusSocket, MessageBusSocket>().Transient();
             container.Add<ConfigurationBuilder>().AsSelf().Transient();
 
             return container.AddMessageBusBase();
         }
 
-        public static IServiceContainer AddTestMessageBus(
+        public static IServiceContainer AddInMemoryMessageBus(
             this IServiceContainer container,
-            Action<IServiceProvider, ITestConfigurationBuilder> configure
+            Action<IServiceProvider, IInMemoryConfigurationBuilder> configure
         )
         {
             container.Add(sp =>
             {
-                var builder = sp.Resolve<TestConfigurationBuilder>();
+                var builder = sp.Resolve<InMemoryConfigurationBuilder>();
                 configure(sp, builder);
                 return builder.Build();
-            }).AsSelf().Singleton();
-            container.Add<IMessageBusSocket, TestMessageBusSocket>().Transient();
-            container.Add<TestConfigurationBuilder>().AsSelf().Transient();
+            }).AsSelf().AsInterfaces().Singleton();
+            container.Add<IMessageBusSocket, InMemoryMessageBusSocket>().Transient();
+            container.Add<InMemoryConfigurationBuilder>().AsSelf().Transient();
 
             return container.AddMessageBusBase();
         }

@@ -8,8 +8,8 @@ namespace Annium.Infrastructure.MessageBus.Node
         IConfigurationBuilder WithSerializer(ISerializer<string> serializer);
     }
 
-    public interface ITestConfigurationBuilder
+    public interface IInMemoryConfigurationBuilder
     {
-        ITestConfigurationBuilder WithSerializer(ISerializer<string> serializer);
+        IInMemoryConfigurationBuilder WithSerializer(ISerializer<string> serializer);
     }
 }
