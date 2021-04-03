@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
@@ -14,66 +12,50 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
 {
     internal class MessageBusSocket : IMessageBusSocket
     {
-        private readonly EndpointsConfiguration _cfg;
         private readonly PublisherSocket _publisher;
-        private readonly Dictionary<string, IObservable<string>> _observables = new();
+        private readonly SubscriberSocket _subscriber;
+        private readonly IObservable<string> _observable;
         private readonly IAsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public MessageBusSocket(
             Configuration cfg
         )
         {
-            _cfg = cfg.Endpoints;
             _disposable.Add(_publisher = new PublisherSocket());
-            _publisher.Connect(_cfg.PubEndpoint);
+            _publisher.Connect(cfg.Endpoints.PubEndpoint);
+
+            _disposable.Add(_subscriber = new SubscriberSocket());
+            _subscriber.Connect(cfg.Endpoints.SubEndpoint);
+            _subscriber.SubscribeToAnyTopic();
+
+            _observable = Observable.Create<string>(CreateObservable).Publish().RefCount();
         }
 
-        public IObservable<Unit> Send(string topic, string message)
+        public IObservable<Unit> Send(string message)
             => Observable.FromAsync(() =>
             {
                 lock (_publisher)
-                    _publisher.SendFrame($"{topic}{message}");
+                    _publisher.SendFrame(message);
 
                 return Task.CompletedTask;
             });
 
-        public IObservable<string> Listen(string topic)
-        {
-            lock (_observables)
-            {
-                if (_observables.TryGetValue(topic, out var observable))
-                    return observable;
+        public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-                var subscriber = new SubscriberSocket();
-                _disposable.Add(subscriber);
-                subscriber.Connect(_cfg.SubEndpoint);
-                if (string.IsNullOrWhiteSpace(topic))
-                    subscriber.SubscribeToAnyTopic();
-                else
-                    subscriber.Subscribe(topic);
-
-                return _observables[topic] = Observable.Create(CreateObservableFactory(subscriber, topic)).Publish().RefCount();
-            }
-        }
-
-        private Func<IObserver<string>, CancellationToken, Task> CreateObservableFactory(
-            SubscriberSocket subscriber,
-            string topic
-        ) => (observer, token) => Task.Run(() =>
+        private Task CreateObservable(
+            IObserver<string> observer,
+            CancellationToken ct
+        ) => Task.Run(() =>
         {
             try
             {
-                while (!token.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
-                    var msg = subscriber.ReceiveMultipartStrings(Encoding.UTF8);
-
+                    var msg = _subscriber.ReceiveMultipartStrings(Encoding.UTF8);
                     if (msg.Count == 0)
                         continue;
 
-                    var message = topic.Length > 0
-                        ? string.Join(string.Empty, msg.Skip(1).Prepend(msg[0][topic.Length..]))
-                        : string.Join(string.Empty, msg);
-
+                    var message = string.Join(string.Empty, msg);
                     observer.OnNext(message);
                 }
             }
@@ -86,7 +68,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
             {
                 observer.OnError(e);
             }
-        }, token);
+        }, ct);
 
         #region IDisposable support
 

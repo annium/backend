@@ -20,11 +20,10 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         public async Task<IResult<T>> Fetch<T>(string topic, object request, CancellationToken ct = default)
         {
             var id = Guid.NewGuid();
-            var (requestTopic, responseTopic) = Helper.GetRequestResponseTopics(topic);
 
             var tcs = new TaskCompletionSource<IResult<T>>();
             ct.Register(tcs.SetCanceled);
-            _node.Listen<MessageBusEnvelope<T>>(responseTopic)
+            _node.Listen<MessageBusEnvelope<T>>()
                 .Where(x => x.Id == id)
                 .Subscribe(
                     x =>
@@ -38,7 +37,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
                     ct
                 );
 
-            await _node.Send(requestTopic, MessageBusEnvelope.Data(id, request));
+            await _node.Send(MessageBusEnvelope.Data(id, request));
 
             var result = await tcs.Task;
 

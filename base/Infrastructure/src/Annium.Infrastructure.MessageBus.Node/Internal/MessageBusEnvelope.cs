@@ -6,10 +6,10 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
     internal static class MessageBusEnvelope
     {
         public static MessageBusEnvelope<T> Data<T>(Guid id, T data) =>
-            new MessageBusEnvelope<T>(id, data, string.Empty);
+            new(id, data, string.Empty);
 
         public static MessageBusEnvelope<object> Error(Guid id, string error) =>
-            new MessageBusEnvelope<object>(id, default!, error);
+            new(id, default!, error);
     }
 
     internal class MessageBusEnvelope<T>

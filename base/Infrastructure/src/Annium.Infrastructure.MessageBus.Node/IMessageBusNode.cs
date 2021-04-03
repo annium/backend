@@ -3,13 +3,10 @@ using System.Reactive;
 
 namespace Annium.Infrastructure.MessageBus.Node
 {
-    public interface IMessageBusNode
+    public interface IMessageBusNode : IObservable<string>
     {
-        IObservable<Unit> Send<T>(T data);
-        IObservable<Unit> Send<T>(string topic, T data);
-        IObservable<string> Listen();
-        IObservable<string> Listen(string topic);
+        IObservable<Unit> Send<T>(T data) where T : notnull;
+        IObservable<object> Listen();
         IObservable<T> Listen<T>();
-        IObservable<T> Listen<T>(string topic);
     }
 }

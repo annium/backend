@@ -17,8 +17,8 @@ namespace Annium.Core.DependencyInjection
                 configure(sp, builder);
                 return builder.Build();
             }).AsSelf().AsInterfaces().Singleton();
-            container.Add<IMessageBusSocket, MessageBusSocket>().Transient();
-            container.Add<ConfigurationBuilder>().AsSelf().Transient();
+            container.Add<IMessageBusSocket, MessageBusSocket>().Singleton();
+            container.Add<ConfigurationBuilder>().AsSelf().Singleton();
 
             return container.AddMessageBusBase();
         }
@@ -34,8 +34,8 @@ namespace Annium.Core.DependencyInjection
                 configure(sp, builder);
                 return builder.Build();
             }).AsSelf().AsInterfaces().Singleton();
-            container.Add<IMessageBusSocket, InMemoryMessageBusSocket>().Transient();
-            container.Add<InMemoryConfigurationBuilder>().AsSelf().Transient();
+            container.Add<IMessageBusSocket, InMemoryMessageBusSocket>().Singleton();
+            container.Add<InMemoryConfigurationBuilder>().AsSelf().Singleton();
 
             return container.AddMessageBusBase();
         }

@@ -26,14 +26,14 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
             var cfg = provider.Resolve<EndpointsConfiguration>();
             Console.WriteLine($"Start echo server with PUB {cfg.PubEndpoint} / SUB {cfg.SubEndpoint}");
 
-            socket.Listen(string.Empty).Subscribe(x => logger.Info($"<<<{x}"));
+            socket.Subscribe(x => logger.Info($"<<<{x}"));
 
             while (!token.IsCancellationRequested)
             {
                 await Task.Delay(500);
                 var msg = timeProvider.Now.ToString(null, null);
                 Console.WriteLine($">>>{msg}");
-                await socket.Send(string.Empty, msg);
+                await socket.Send(msg);
             }
 
             await token;

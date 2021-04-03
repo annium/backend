@@ -10,32 +10,24 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
 {
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {
-        private readonly IObservable<Message> _observable;
+        private readonly IObservable<string> _observable;
         private readonly ManualResetEventSlim _gate = new(false);
-        private readonly Dictionary<string, Queue<string>> _messages = new();
+        private readonly Queue<string> _messages = new();
         private readonly IDisposableBox _disposable = Disposable.Box();
 
         public InMemoryMessageBusSocket(
             InMemoryConfiguration cfg
         )
         {
-            _observable = Observable.Create<Message>(CreateObservable).Publish().RefCount();
+            _observable = Observable.Create<string>(CreateObservable).Publish().RefCount();
             if (cfg.MessageBox is not null)
-                _disposable.Add(Listen(string.Empty).Subscribe(cfg.MessageBox.Add));
+                _disposable.Add(_observable.Subscribe(cfg.MessageBox.Add));
         }
 
-        public IObservable<Unit> Send(string topic, string message)
+        public IObservable<Unit> Send(string message)
         {
-            if (topic is null)
-                throw new ArgumentNullException(nameof(topic));
-
             lock (_messages)
-            {
-                // add message
-                if (!_messages.TryGetValue(topic, out var box))
-                    box = _messages[topic] = new Queue<string>();
-                box.Enqueue(message);
-            }
+                _messages.Enqueue(message);
 
             // open gate to let messages be read
             _gate.Set();
@@ -43,38 +35,47 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
             return Observable.Return(Unit.Default);
         }
 
-        public IObservable<string> Listen(string topic) => _observable
-            .Where(x => x.Topic == topic)
-            .Select(x => x.Content);
+        public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
         private Task CreateObservable(
-            IObserver<Message> observer,
+            IObserver<string> observer,
             CancellationToken ct
         ) => Task.Run(() =>
         {
-            while (!ct.IsCancellationRequested)
+            try
             {
-                _gate.Wait(ct);
-                _gate.Reset();
-
-                var messages = new List<Message>();
-                lock (_messages)
+                while (!ct.IsCancellationRequested)
                 {
-                    foreach (var (topic, box) in _messages)
-                        while (box.Count > 0)
-                            messages.Add(new Message(topic, box.Dequeue()));
-                }
+                    _gate.Wait(ct);
+                    _gate.Reset();
 
-                foreach (var item in messages)
-                    observer.OnNext(item);
+                    var messages = new List<string>();
+                    lock (_messages)
+                    {
+                        while (_messages.Count > 0)
+                            messages.Add(_messages.Dequeue());
+                    }
+
+                    foreach (var item in messages)
+                        observer.OnNext(item);
+                }
+            }
+            // token was canceled
+            catch (OperationCanceledException)
+            {
+                observer.OnCompleted();
+            }
+            catch (Exception e)
+            {
+                observer.OnError(e);
             }
         }, ct);
 
         public ValueTask DisposeAsync()
         {
+            _disposable.Dispose();
+
             return new(Task.CompletedTask);
         }
-
-        private record Message(string Topic, string Content);
     }
 }

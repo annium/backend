@@ -19,16 +19,21 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
             _serializer = cfg.Serializer;
         }
 
-        public IObservable<Unit> Send<T>(T data) => _socket.Send(string.Empty, _serializer.Serialize(data));
+        public IObservable<Unit> Send<T>(T data)
+            where T : notnull
+        {
+            var message = Activator.CreateInstance(typeof(Message<>).MakeGenericType(data.GetType()), data);
 
-        public IObservable<Unit> Send<T>(string topic, T data) => _socket.Send(topic, _serializer.Serialize(data));
+            return _socket.Send(_serializer.Serialize(message));
+        }
 
-        public IObservable<string> Listen() => _socket.Listen(string.Empty);
+        public IObservable<object> Listen() => Listen<object>();
 
-        public IObservable<string> Listen(string topic) => _socket.Listen(topic);
+        public IObservable<T> Listen<T>() => _socket
+            .Select(_serializer.Deserialize<Message>)
+            .OfType<IMessage<T>>()
+            .Select(x => x.Content);
 
-        public IObservable<T> Listen<T>() => _socket.Listen(string.Empty).Select(_serializer.Deserialize<T>);
-
-        public IObservable<T> Listen<T>(string topic) => _socket.Listen(topic).Select(_serializer.Deserialize<T>);
+        public IDisposable Subscribe(IObserver<string> observer) => _socket.Subscribe(observer);
     }
 }

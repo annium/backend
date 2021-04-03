@@ -3,9 +3,8 @@ using System.Reactive;
 
 namespace Annium.Infrastructure.MessageBus.Node
 {
-    public interface IMessageBusSocket : IAsyncDisposable
+    public interface IMessageBusSocket : IObservable<string>, IAsyncDisposable
     {
-        IObservable<Unit> Send(string topic, string message);
-        IObservable<string> Listen(string topic);
+        IObservable<Unit> Send(string message);
     }
 }
