@@ -1,10 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Net.WebSockets;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
@@ -35,7 +33,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             await using var cn = new Connection(Guid.NewGuid(), socket);
             _connectionTracker.Track(cn);
-            IServiceScope scope = ServiceProviderExtensions.CreateScope(_sp);
+            await using var scope = _sp.CreateAsyncScope();
             try
             {
                 await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync();
@@ -43,8 +41,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             finally
             {
                 _connectionTracker.Release(cn);
-
-                await scope.DisposeAsync();
             }
         }
 

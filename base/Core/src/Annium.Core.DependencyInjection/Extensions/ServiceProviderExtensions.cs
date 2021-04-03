@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.DependencyInjection.Internal.Container;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection
@@ -17,7 +18,7 @@ namespace Annium.Core.DependencyInjection
             where T : notnull
             => provider.GetRequiredService<IIndex<TKey, T>>()[key];
 
-        public static IServiceScope CreateScope(this IServiceProvider provider)
-            => ServiceProviderServiceExtensions.CreateScope(provider);
+        public static IAsyncServiceScope CreateAsyncScope(this IServiceProvider provider)
+            => new AsyncServiceScope(provider.CreateScope());
     }
 }

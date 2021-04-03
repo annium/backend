@@ -8,13 +8,13 @@ namespace Annium.Core.Mediator
     {
         Task<TResponse> SendAsync<TResponse>(
             object request,
-            CancellationToken cancellationToken = default
+            CancellationToken ct = default
         );
 
         Task<TResponse> SendAsync<TResponse>(
             IServiceProvider serviceProvider,
             object request,
-            CancellationToken cancellationToken = default
+            CancellationToken ct = default
         );
     }
 }

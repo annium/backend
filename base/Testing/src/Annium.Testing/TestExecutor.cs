@@ -39,29 +39,27 @@ namespace Annium.Testing
 
             var concurrency = Environment.ProcessorCount;
 
-            using (var semaphore = new Semaphore(concurrency, concurrency))
+            using var semaphore = new Semaphore(concurrency, concurrency);
+            await Task.WhenAll(tests.FilterMask(_cfg.Filter).Select(async test =>
             {
-                await Task.WhenAll(tests.FilterMask(_cfg.Filter).Select(async test =>
+                try
                 {
-                    try
-                    {
-                        semaphore.WaitOne();
-                        _logger.Debug($"Run test {test.DisplayName}");
+                    semaphore.WaitOne();
+                    _logger.Debug($"Run test {test.DisplayName}");
 
-                        using var scope = _provider.CreateScope();
-                        var target = new Target(scope.ServiceProvider, test, new TestResult());
+                    await using var scope = _provider.CreateAsyncScope();
+                    var target = new Target(scope.ServiceProvider, test, new TestResult());
 
-                        await _executor.ExecuteAsync(target);
+                    await _executor.ExecuteAsync(target);
 
-                        _logger.Debug($"Complete test {test.DisplayName}");
-                        handleResult(target.Test, target.Result);
-                    }
-                    finally
-                    {
-                        semaphore.Release();
-                    }
-                }));
-            }
+                    _logger.Debug($"Complete test {test.DisplayName}");
+                    handleResult(target.Test, target.Result);
+                }
+                finally
+                {
+                    semaphore.Release();
+                }
+            }));
 
             _logger.Debug("Complete tests execution");
         }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 
 namespace Annium.Core.Mediator.Internal
 {
@@ -26,37 +25,28 @@ namespace Annium.Core.Mediator.Internal
 
         public async Task<TResponse> SendAsync<TResponse>(
             object request,
-            CancellationToken cancellationToken = default
+            CancellationToken ct = default
         )
         {
             // get execution chain with last item, being final one
             var chain = GetChain(request.GetType(), typeof(TResponse));
 
             // use scoped service provider
-            var scope = _provider.CreateScope();
-
-            try
-            {
-                return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!,
-                    cancellationToken);
-            }
-            finally
-            {
-                await scope.DisposeAsync();
-            }
+            await using var scope = _provider.CreateAsyncScope();
+            return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!, ct);
         }
 
         public async Task<TResponse> SendAsync<TResponse>(
             IServiceProvider serviceProvider,
             object request,
-            CancellationToken cancellationToken = default
+            CancellationToken ct = default
         )
         {
             // get execution chain with last item, being final one
             var chain = GetChain(request.GetType(), typeof(TResponse));
 
             // use given service provider
-            return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request!, cancellationToken);
+            return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request!, ct);
         }
 
         private IReadOnlyList<ChainElement> GetChain(Type input, Type output)

@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -47,7 +46,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync()
         {
-            var scope = _sp.CreateScope();
+            await using var scope = _sp.CreateAsyncScope();
             LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
             try
             {
@@ -81,7 +80,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 // process end hook
                 if (lifeCycleCoordinator is not null)
                     await lifeCycleCoordinator.HandleEndAsync(_state);
-                await scope.DisposeAsync();
             }
         }
 
