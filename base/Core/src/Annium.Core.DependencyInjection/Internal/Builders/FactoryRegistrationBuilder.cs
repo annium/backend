@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 
 namespace Annium.Core.DependencyInjection.Internal.Builders
@@ -14,7 +16,6 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
             Type type,
             Func<IServiceProvider, object> factory,
             Registrar registrar
-
         )
         {
             _type = type;
@@ -28,6 +29,9 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IFactoryRegistrationBuilderBase As(Type serviceType) =>
             WithRegistration(new FactoryRegistration(serviceType, _factory));
 
+        public IFactoryRegistrationBuilderBase AsInterfaces() =>
+            WithRegistrations(_type.GetInterfaces().Select(x => new FactoryRegistration(x, _factory)));
+
         public IFactoryRegistrationBuilderBase AsKeyedSelf<TKey>(TKey key) where TKey : notnull =>
             WithRegistration(new FactoryKeyedRegistration(_type, _factory, typeof(TKey), key));
 
@@ -38,6 +42,14 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public void Scoped() => In(ServiceLifetime.Scoped);
         public void Singleton() => In(ServiceLifetime.Singleton);
         public void Transient() => In(ServiceLifetime.Transient);
+
+        private IFactoryRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
+        {
+            _registrations.Init();
+            _registrations.AddRange(registrations);
+
+            return this;
+        }
 
         private IFactoryRegistrationBuilderBase WithRegistration(IRegistration registration)
         {

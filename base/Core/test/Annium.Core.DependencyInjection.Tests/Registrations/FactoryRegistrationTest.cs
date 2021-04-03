@@ -36,6 +36,21 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         }
 
         [Fact]
+        public void AsInterfaces_Works()
+        {
+            // arrange
+            var instance = new D(new A());
+            _container.Add(_ => instance).AsInterfaces().Singleton();
+
+            // act
+            Build();
+
+            // assert
+            _container.HasSingletonTypeFactory(typeof(IX));
+            Get<IX>().Is(instance);
+        }
+
+        [Fact]
         public void AsKeyedSelf_Works()
         {
             // arrange
@@ -63,7 +78,7 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
             Get<IIndex<string, C>>()[nameof(C)].Is(instance);
         }
 
-        private sealed class D : C
+        private sealed class D : C, IX
         {
             public D(A x) : base(x)
             {
@@ -78,6 +93,10 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         }
 
         private class A
+        {
+        }
+
+        private interface IX
         {
         }
     }
