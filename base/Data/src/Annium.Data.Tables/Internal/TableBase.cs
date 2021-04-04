@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reactive.Linq;
@@ -8,11 +9,12 @@ using Annium.Core.Primitives;
 
 namespace Annium.Data.Tables.Internal
 {
-    internal abstract class TableBase<T> : IObservable<IChangeEvent<T>>
-        where T : IEquatable<T>
+    internal abstract class TableBase<T> : ITableView<T>
+        where T : IEquatable<T>, ICopyable<T>
     {
-        protected readonly object DataLocker = new object();
-        private readonly object _notificationLocker = new object();
+        public abstract int Count { get; }
+        protected readonly object DataLocker = new();
+        private readonly object _notificationLocker = new();
         private readonly IObservable<IChangeEvent<T>> _observable;
         private readonly TablePermission _permissions;
         private readonly BlockingCollection<IChangeEvent<T>> _events;
@@ -24,7 +26,14 @@ namespace Annium.Data.Tables.Internal
             _observable = CreateObservable();
         }
 
-        public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer) => _observable.Subscribe(observer);
+        public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer)
+        {
+            var initEvent = ChangeEvent.Init(Get());
+            var subscription = _observable.Subscribe(observer);
+            observer.OnNext(initEvent);
+
+            return subscription;
+        }
 
         protected void AddEvents(IReadOnlyCollection<IChangeEvent<T>> events)
         {
@@ -45,6 +54,8 @@ namespace Annium.Data.Tables.Internal
                 throw new InvalidOperationException($"Table {GetType().FriendlyName()} has no {permission} permission.");
         }
 
+        protected abstract IReadOnlyCollection<T> Get();
+
         private IObservable<IChangeEvent<T>> CreateObservable() => Observable.Create(
             async (IObserver<IChangeEvent<T>> observer, CancellationToken token) =>
             {
@@ -63,5 +74,11 @@ namespace Annium.Data.Tables.Internal
 
                 return Task.FromResult<Action>(() => { });
             }).Publish().RefCount();
+
+        public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator() => Get().GetEnumerator();
+
+        public abstract void Dispose();
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -11,14 +10,11 @@ namespace Annium.Data.Tables.Internal
     internal sealed class Table<T> : TableBase<T>, ITable<T>
         where T : IEquatable<T>, ICopyable<T>
     {
-        public int Count
+        public override int Count
         {
             get
             {
-                lock (DataLocker)
-                {
-                    return _table.Count;
-                }
+                lock (DataLocker) return _table.Count;
             }
         }
 
@@ -106,7 +102,7 @@ namespace Annium.Data.Tables.Internal
             Cleanup();
         }
 
-        private IReadOnlyCollection<T> Get()
+        protected override IReadOnlyCollection<T> Get()
         {
             lock (DataLocker)
                 return _table.Values.ToArray();
@@ -130,13 +126,9 @@ namespace Annium.Data.Tables.Internal
             AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             _table.Clear();
         }
-
-        public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
-
-        IEnumerator IEnumerable.GetEnumerator() => Get().GetEnumerator();
     }
 }
