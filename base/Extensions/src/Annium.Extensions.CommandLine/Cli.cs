@@ -1,11 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Primitives;
 
 namespace Annium.Extensions.CommandLine
 {
     public static class Cli
     {
+        public static void Clear()
+        {
+            Console.SetCursorPosition(0, 0);
+            var clr = Enumerable.Range(0, Console.WindowHeight)
+                .Select(_ => new String(' ', Console.WindowWidth))
+                .Join(Environment.NewLine);
+            Console.Write(clr);
+            Console.SetCursorPosition(0, 0);
+        }
+
         public static bool Confirm(string label, bool? defaultValue = null)
         {
             var y = defaultValue.HasValue && defaultValue.Value ? 'Y' : 'y';
