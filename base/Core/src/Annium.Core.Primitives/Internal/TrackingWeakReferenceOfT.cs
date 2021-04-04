@@ -6,7 +6,7 @@ namespace Annium.Core.Primitives.Internal
     internal sealed class TrackingWeakReference<T> : ITrackingWeakReference<T>
         where T : class
     {
-        public static readonly ConditionalWeakTable<T, TrackingWeakReference<T>> Registry = new ConditionalWeakTable<T, TrackingWeakReference<T>>();
+        public static readonly ConditionalWeakTable<T, TrackingWeakReference<T>> Registry = new();
 
         public event Action Collected = delegate { };
         private readonly WeakReference<T> _ref;
