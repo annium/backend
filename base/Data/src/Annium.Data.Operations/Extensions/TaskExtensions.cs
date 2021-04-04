@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Annium.Data.Operations
@@ -32,6 +34,13 @@ namespace Annium.Data.Operations
             return result.Data;
         }
 
+        public static async Task<IReadOnlyCollection<T>> GetData<T>(this Task<IBooleanResult<IEnumerable<T>>> task)
+        {
+            var result = await task;
+
+            return result.Data.ToArray();
+        }
+
         public static async Task<TS> GetStatus<TS>(this Task<IStatusResult<TS>> task)
         {
             var result = await task;
@@ -51,6 +60,13 @@ namespace Annium.Data.Operations
             var result = await task;
 
             return result.Data;
+        }
+
+        public static async Task<IReadOnlyCollection<TD>> GetData<TS, TD>(this Task<IStatusResult<TS, IEnumerable<TD>>> task)
+        {
+            var result = await task;
+
+            return result.Data.ToArray();
         }
     }
 }
