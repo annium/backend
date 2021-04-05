@@ -13,7 +13,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         private readonly IObservable<string> _observable;
         private readonly ManualResetEventSlim _gate = new(false);
         private readonly Queue<string> _messages = new();
-        private readonly IDisposableBox _disposable = Disposable.Box();
+        private readonly DisposableBox _disposable = Disposable.Box();
 
         public InMemoryMessageBusSocket(
             InMemoryConfiguration cfg
@@ -21,7 +21,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         {
             _observable = Observable.Create<string>(CreateObservable).Publish().RefCount();
             if (cfg.MessageBox is not null)
-                _disposable.Add(_observable.Subscribe(cfg.MessageBox.Add));
+                _disposable += _observable.Subscribe(cfg.MessageBox.Add);
         }
 
         public IObservable<Unit> Send(string message)

@@ -9,7 +9,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
     internal class WorkScheduler : IAsyncDisposable
     {
-        private readonly IAsyncDisposableBox _disposable = Disposable.AsyncBox();
+        private AsyncDisposableBox _disposable = Disposable.AsyncBox();
         private readonly IList<Func<Task>> _backlog = new List<Func<Task>>();
         private int _isStarted;
 
@@ -39,7 +39,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private void Schedule(Func<Task> work)
         {
             var task = Task.Run(work);
-            _disposable.Add(() => task);
+            _disposable += () => task;
         }
     }
 }

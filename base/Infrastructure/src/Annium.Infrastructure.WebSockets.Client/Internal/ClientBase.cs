@@ -27,7 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
-        private readonly IAsyncDisposableBox _disposable = Disposable.AsyncBox();
+        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public ClientBase(
             ITimeProvider timeProvider,
@@ -49,7 +49,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _socket = new ClientWebSocket(options);
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
-            _disposable.Add(_responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse));
+            _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);
         }
 
         public Task ConnectAsync(CancellationToken ct = default) =>

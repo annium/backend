@@ -15,16 +15,16 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         private readonly PublisherSocket _publisher;
         private readonly SubscriberSocket _subscriber;
         private readonly IObservable<string> _observable;
-        private readonly IAsyncDisposableBox _disposable = Disposable.AsyncBox();
+        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public MessageBusSocket(
             Configuration cfg
         )
         {
-            _disposable.Add(_publisher = new PublisherSocket());
+            _disposable += _publisher = new PublisherSocket();
             _publisher.Connect(cfg.Endpoints.PubEndpoint);
 
-            _disposable.Add(_subscriber = new SubscriberSocket());
+            _disposable += _subscriber = new SubscriberSocket();
             _subscriber.Connect(cfg.Endpoints.SubEndpoint);
             _subscriber.SubscribeToAnyTopic();
 
