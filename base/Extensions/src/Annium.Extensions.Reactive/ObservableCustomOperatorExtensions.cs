@@ -4,7 +4,7 @@ using NodaTime;
 
 namespace System
 {
-    public static class ObservableOperatorExtensions
+    public static class ObservableCustomOperatorExtensions
     {
         public static IObservable<TSource> ThrottleBy<TSource, TKey>(
             this IObservable<TSource> source,
