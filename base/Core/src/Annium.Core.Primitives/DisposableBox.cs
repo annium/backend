@@ -129,7 +129,8 @@ namespace Annium.Core.Primitives
         {
             lock (_locker)
             {
-                EnsureNotDisposed();
+                if (IsDisposed)
+                    return;
                 IsDisposed = true;
             }
 
