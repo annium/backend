@@ -17,9 +17,10 @@ namespace Annium.Configuration.Abstractions.Tests
             cfg[new[] { "plain" }] = "10";
             cfg[new[] { "abstract", "type" }] = "ConfigOne";
             cfg[new[] { "abstract", "value" }] = "14";
+            cfg[new[] { "enum" }] = "two";
 
             // act
-            var provider = Helper.GetProvider<Config>(builder => builder.Add(cfg));
+            var provider = Helper.GetProvider<Config>(x => x.Add(cfg));
             var result = provider.Resolve<Config>();
             var nested = provider.Resolve<SomeConfig>();
 
@@ -27,6 +28,7 @@ namespace Annium.Configuration.Abstractions.Tests
             result.IsNotDefault();
             result.Plain.IsEqual(10);
             result.Abstract.IsEqual(nested);
+            result.Enum.IsEqual(SomeEnum.Two);
             nested.IsShallowEqual(new ConfigOne { Value = 14 });
         }
     }

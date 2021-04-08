@@ -6,20 +6,15 @@ namespace Annium.Configuration.Tests
     public class Config
     {
         public bool Flag { get; set; }
-
         public int Plain { get; set; }
-
         public int[] Array { get; set; } = System.Array.Empty<int>();
-
         public List<int[]> Matrix { get; set; } = new List<int[]>();
-
         public List<Val> List { get; set; } = new List<Val>();
-
         public Dictionary<string, Val> Dictionary { get; set; } = new Dictionary<string, Val>();
-
         public Val Nested { get; set; } = new Val();
 
         public SomeConfig Abstract { get; set; } = new ConfigOne();
+        public SomeEnum Enum { get; set; }
     }
 
     public class Val
@@ -55,5 +50,11 @@ namespace Annium.Configuration.Tests
         {
             Type = nameof(ConfigTwo);
         }
+    }
+
+    public enum SomeEnum
+    {
+        One,
+        Two
     }
 }
