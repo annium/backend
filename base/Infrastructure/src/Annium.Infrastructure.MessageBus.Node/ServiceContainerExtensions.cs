@@ -42,10 +42,10 @@ namespace Annium.Core.DependencyInjection
 
         private static IServiceContainer AddMessageBusBase(this IServiceContainer container)
         {
-            container.Add<IMessageBusNode, MessageBusNode>().Transient();
+            container.Add<IMessageBusNode, MessageBusNode>().Singleton();
 
-            container.Add<IMessageBusClient, MessageBusClient>().Transient();
-            container.Add<IMessageBusServer, MessageBusServer>().Transient();
+            container.Add<IMessageBusClient, MessageBusClient>().Singleton();
+            container.Add<IMessageBusServer, MessageBusServer>().Singleton();
 
             return container;
         }
