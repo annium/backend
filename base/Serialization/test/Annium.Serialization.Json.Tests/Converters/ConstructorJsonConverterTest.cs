@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
 
@@ -111,6 +112,23 @@ namespace Annium.Serialization.Json.Tests.Converters
             result.IsEqual(x);
         }
 
+        [Fact]
+        public void Deserialization_Record_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var x = new MessageBase[] { new ErrorMessage("error"), new InfoMessage("info") };
+            var str = serializer.Serialize(x);
+
+            // act
+            var result = serializer.Deserialize<IReadOnlyCollection<MessageBase>>(str);
+
+            // assert
+            result.Has(2);
+            result.At(0).As<ErrorMessage>().Message.IsEqual("error");
+            result.At(1).As<InfoMessage>().Message.IsEqual("info");
+        }
+
         public class A : IX
         {
             public int Value { get; }
@@ -146,6 +164,16 @@ namespace Annium.Serialization.Json.Tests.Converters
 
         public interface IX
         {
+        }
+
+        public record InfoMessage(string Message) : MessageBase;
+
+        public record ErrorMessage(string Message) : MessageBase;
+
+        public abstract record MessageBase
+        {
+            [ResolutionId]
+            public string Tid => GetType().GetIdString();
         }
     }
 }
