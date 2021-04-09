@@ -1,4 +1,3 @@
-using System.Linq;
 using AgileObjects.NetStandardPolyfills;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;

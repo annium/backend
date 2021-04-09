@@ -18,7 +18,8 @@ namespace Demo.Infrastructure.WebSockets.Client
                 .Configure(opts => opts
                     .ConfigureForOperations()
                     .ConfigureForNodaTime()
-                );
+                )
+                .SetDefault();
             container.AddLogging(route => route.UseConsole());
             container.AddMapper();
             container.AddArguments();

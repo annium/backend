@@ -20,12 +20,12 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 
         public ExceptionMiddleware(
             RequestDelegate next,
-            IIndex<string, ISerializer<string>> serializers,
+            IIndex<SerializerKey, ISerializer<string>> serializers,
             ILogger<ExceptionMiddleware> logger
         )
         {
             _next = next;
-            _helper = new Helper(serializers[MediaTypeNames.Application.Json], MediaTypeNames.Application.Json);
+            _helper = new Helper(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)], MediaTypeNames.Application.Json);
             _logger = logger;
         }
 

@@ -28,12 +28,13 @@ namespace Demo.Infrastructure.WebSockets.Server
                 .Configure(opts => opts
                     .ConfigureForOperations()
                     .ConfigureForNodaTime()
-                );
+                )
+                .SetDefault();
             container.AddLogging(route => route.UseConsole());
             container.AddMapper();
             container.AddMediator();
             container.AddMediatorConfiguration(ConfigureMediator);
-            container.AddWebSocketServer<ConnectionState>(connectionId => new ConnectionState(connectionId));
+            container.AddWebSocketServer(connectionId => new ConnectionState(connectionId));
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

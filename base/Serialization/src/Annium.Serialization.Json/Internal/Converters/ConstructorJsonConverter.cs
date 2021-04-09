@@ -33,15 +33,12 @@ namespace Annium.Serialization.Json.Internal.Converters
                 throw new JsonException();
 
             var parameters = new object?[_parameters.Count];
-            var namingPolicy = options.PropertyNamingPolicy ?? JsonNamingPolicy.CamelCase;
-            var comparison = options.PropertyNameCaseInsensitive
-                ? StringComparison.OrdinalIgnoreCase
-                : StringComparison.Ordinal;
 
             foreach (var prop in root.EnumerateObject())
             {
-                var name = namingPolicy.ConvertName(prop.Name);
-                var index = _parameters.FindIndex(x => x.Name.Equals(name, comparison));
+                // ignore case, when looking up for constructor parameters,
+                // because it's possible, but really weird case to have parameters, differing only by case
+                var index = _parameters.FindIndex(x => x.Name.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
 
                 // for now - no special handling for extra properties, just skip them
                 if (index < 0)

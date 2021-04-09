@@ -9,7 +9,6 @@ namespace Annium.Serialization.BinaryString.Tests
             .AddRuntimeTools(GetType().Assembly, false)
             .AddBinaryStringSerializer()
             .BuildServiceProvider()
-            .Resolve<IIndex<string, ISerializer<byte[], string>>>()
-            [Constants.Key];
+            .ResolveSerializer<byte[], string>(Abstractions.Constants.DefaultKey, Constants.MediaType);
     }
 }

@@ -5,12 +5,14 @@ namespace Annium.Core.DependencyInjection
 {
     public static class ServiceContainerExtensions
     {
-        public static IServiceContainer AddHttpRequestFactory(this IServiceContainer container)
+        public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container)
         {
-            container.Add<IHttpRequestFactory, HttpRequestFactory>().Singleton();
-            container.Add<IHttpContentSerializer, HttpContentSerializer>().Singleton();
+            return new HttpFactoryConfigurationBuilder(container, Constants.DefaultKey);
+        }
 
-            return container;
+        public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container, string key)
+        {
+            return new HttpFactoryConfigurationBuilder(container, key);
         }
     }
 }

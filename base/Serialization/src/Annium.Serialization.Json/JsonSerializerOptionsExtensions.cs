@@ -10,8 +10,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static JsonSerializerOptions ConfigureDefault(
             this JsonSerializerOptions options,
-            ITypeManager typeManager,
-            bool useCamelCase = true
+            ITypeManager typeManager
         )
         {
             options.Converters.Add(new AbstractJsonConverterFactory(typeManager));
@@ -19,10 +18,7 @@ namespace Annium.Core.DependencyInjection
             options.Converters.Add(new GenericDictionaryJsonConverterFactory());
 
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-            options.PropertyNameCaseInsensitive = true;
-
-            if (useCamelCase)
-                options.UseCamelCaseNamingPolicy();
+            options.UseDefaultNamingPolicy();
 
             return options;
         }

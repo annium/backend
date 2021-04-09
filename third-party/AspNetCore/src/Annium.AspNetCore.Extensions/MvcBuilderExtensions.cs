@@ -44,6 +44,6 @@ namespace Annium.Core.DependencyInjection
         });
 
         public static IMvcBuilder AddDefaultJsonOptions(this IMvcBuilder builder) =>
-            builder.AddDefaultJsonOptions(opts => { });
+            builder.AddDefaultJsonOptions(_ => { });
     }
 }

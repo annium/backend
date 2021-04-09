@@ -12,7 +12,8 @@ namespace Demo.Serialization.Json
 
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddJsonSerializers();
+            container.AddRuntimeTools(GetType().Assembly, true);
+            container.AddJsonSerializers().SetDefault();
         }
 
         public override void Setup(IServiceProvider provider)

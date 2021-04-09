@@ -23,14 +23,14 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
             RequestDelegate next,
             ICoordinator coordinator,
             IHostApplicationLifetime applicationLifetime,
-            IIndex<string, ISerializer<string>> serializers,
+            IIndex<SerializerKey, ISerializer<string>> serializers,
             ILogger<WebSocketsMiddleware> logger
         )
         {
             _coordinator = coordinator;
             applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
             _logger = logger;
-            _helper = new Helper(serializers[MediaTypeNames.Application.Json], MediaTypeNames.Application.Json);
+            _helper = new Helper(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)], MediaTypeNames.Application.Json);
         }
 
         public async Task InvokeAsync(HttpContext context)

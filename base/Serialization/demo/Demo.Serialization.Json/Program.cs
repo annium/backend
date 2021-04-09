@@ -1,5 +1,4 @@
 using System;
-using System.Net.Mime;
 using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
@@ -16,7 +15,7 @@ namespace Demo.Serialization.Json
             CancellationToken token
         )
         {
-            var serializer = provider.Resolve<IIndex<string, ISerializer<string>>>()[MediaTypeNames.Application.Json];
+            var serializer = provider.Resolve<ISerializer<string>>();
 
             AbstractJsonConverterTest.KeyBase a = new AbstractJsonConverterTest.KeyChildA { Value = 1 };
             AbstractJsonConverterTest.KeyBase b = new AbstractJsonConverterTest.KeyChildB { Value = 2 };

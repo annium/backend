@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
-using System.Net.Mime;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -27,11 +25,11 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
         public override string Description { get; } = "test demo flow";
 
         public RequestCommand(
-            IIndex<string, ISerializer<ReadOnlyMemory<byte>>> serializers,
+            ISerializer<ReadOnlyMemory<byte>> serializer,
             ILogger<RequestCommand> logger
         )
         {
-            _serializer = serializers[MediaTypeNames.Application.Json];
+            _serializer = serializer;
             _logger = logger;
         }
 

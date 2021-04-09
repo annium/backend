@@ -9,18 +9,37 @@ namespace Annium.Serialization.Json.Internal
     internal class JsonSerializersConfigurationBuilder : IJsonSerializersConfigurationBuilder
     {
         private readonly IServiceContainer _container;
-        private readonly string _key;
+        private readonly SerializerKey _fullKey;
 
         public JsonSerializersConfigurationBuilder(IServiceContainer container, string key)
         {
             _container = container;
-            _key = key;
+            _fullKey = SerializerKey.Create(key, Constants.MediaType);
 
-            _container.Add<ByteArraySerializer>().AsKeyed<ISerializer<byte[]>, string>(_key).Singleton();
-            _container.Add<ReadOnlyMemoryByteSerializer>().AsKeyed<ISerializer<ReadOnlyMemory<byte>>, string>(_key).Singleton();
-            _container.Add<StringSerializer>().AsKeyed<ISerializer<string>, string>(_key).Singleton();
+            Func<IServiceProvider, T> OptionsResolvingFactory<T>(string shortKey, Func<OptionsContainer, T> factory)
+            {
+                return sp =>
+                {
+                    var index = sp.Resolve<IIndex<string, OptionsContainer>>();
+                    return factory(index.TryGetValue(shortKey, out var opts) ? opts : sp.Resolve<OptionsContainer>());
+                };
+            }
 
-            Configure((_, _) => { });
+            _container.Add<ISerializer<byte[]>>(OptionsResolvingFactory(key, opts => new ByteArraySerializer(opts)))
+                .AsKeyed<ISerializer<byte[]>, SerializerKey>(_fullKey).Singleton();
+            _container.Add<ISerializer<ReadOnlyMemory<byte>>>(OptionsResolvingFactory(key, opts => new ReadOnlyMemoryByteSerializer(opts)))
+                .AsKeyed<ISerializer<ReadOnlyMemory<byte>>, SerializerKey>(_fullKey).Singleton();
+            _container.Add<ISerializer<string>>(OptionsResolvingFactory(key, opts => new StringSerializer(opts)))
+                .AsKeyed<ISerializer<string>, SerializerKey>(_fullKey).Singleton();
+
+            // default configuration
+            _container.Add(sp =>
+            {
+                var opts = new JsonSerializerOptions();
+                opts.ConfigureDefault(sp.Resolve<ITypeManager>());
+
+                return new OptionsContainer(opts);
+            }).AsSelf().Singleton();
         }
 
         public IJsonSerializersConfigurationBuilder Configure(Action<JsonSerializerOptions> configure)
@@ -35,16 +54,17 @@ namespace Annium.Serialization.Json.Internal
                 configure(sp, opts);
 
                 return new OptionsContainer(opts);
-            }).AsSelf().Singleton();
+            }).AsKeyed<OptionsContainer, string>(_fullKey.Key).Singleton();
 
             return this;
         }
 
         public IJsonSerializersConfigurationBuilder SetDefault()
         {
-            _container.Add(sp => sp.Resolve<IIndex<string, ISerializer<byte[]>>>()[_key]).As<ISerializer<byte[]>>().Singleton();
-            _container.Add(sp => sp.Resolve<IIndex<string, ISerializer<ReadOnlyMemory<byte>>>>()[_key]).As<ISerializer<ReadOnlyMemory<byte>>>().Singleton();
-            _container.Add(sp => sp.Resolve<IIndex<string, ISerializer<string>>>()[_key]).As<ISerializer<string>>().Singleton();
+            // default serializer for key+type
+            _container.Add(sp => sp.Resolve<IIndex<SerializerKey, ISerializer<byte[]>>>()[_fullKey]).As<ISerializer<byte[]>>().Singleton();
+            _container.Add(sp => sp.Resolve<IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>>>()[_fullKey]).As<ISerializer<ReadOnlyMemory<byte>>>().Singleton();
+            _container.Add(sp => sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>()[_fullKey]).As<ISerializer<string>>().Singleton();
 
             return this;
         }

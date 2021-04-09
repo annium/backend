@@ -1,26 +1,28 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
+using Constants = Annium.Serialization.Json.Constants;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
     internal class SerializerFactory
     {
-        private readonly IIndex<string, ISerializer<ReadOnlyMemory<byte>>> _binarySerializers;
-        private readonly IIndex<string, ISerializer<string>> _textSerializers;
+        private readonly ISerializer<ReadOnlyMemory<byte>> _binarySerializer;
+        private readonly ISerializer<string> _textSerializer;
 
         public SerializerFactory(
-            IIndex<string, ISerializer<ReadOnlyMemory<byte>>> binarySerializers,
-            IIndex<string, ISerializer<string>> textSerializers
+            IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> binarySerializers,
+            IIndex<SerializerKey, ISerializer<string>> textSerializers
         )
         {
-            _binarySerializers = binarySerializers;
-            _textSerializers = textSerializers;
+            var key = SerializerKey.CreateDefault(Constants.MediaType);
+            _binarySerializer = binarySerializers[key];
+            _textSerializer = textSerializers[key];
         }
 
         public Serializer Create(ClientConfiguration configuration)
         {
-            return new Serializer(_binarySerializers, _textSerializers, configuration);
+            return new(_binarySerializer, _textSerializer, configuration);
         }
     }
 }

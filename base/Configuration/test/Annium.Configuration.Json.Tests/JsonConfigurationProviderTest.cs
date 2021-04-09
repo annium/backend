@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
@@ -36,10 +35,9 @@ namespace Annium.Configuration.Json.Tests
                 jsonFile = Path.GetTempFileName();
                 var container = new ServiceContainer();
                 container.AddRuntimeTools(GetType().Assembly, false);
-                container.AddJsonSerializers();
+                container.AddJsonSerializers().SetDefault();
                 var serializer = container.BuildServiceProvider()
-                    .Resolve<IIndex<string, ISerializer<string>>>()
-                    [MediaTypeNames.Application.Json];
+                    .Resolve<ISerializer<string>>();
                 File.WriteAllText(jsonFile, serializer.Serialize(cfg));
 
                 // act

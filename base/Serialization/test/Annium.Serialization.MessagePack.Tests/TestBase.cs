@@ -10,7 +10,6 @@ namespace Annium.Serialization.MessagePack.Tests
             .AddMessagePackSerializer()
             .AddRuntimeTools(GetType().Assembly, false)
             .BuildServiceProvider()
-            .Resolve<IIndex<string, ISerializer<ReadOnlyMemory<byte>>>>()
-            [Constants.Key];
+            .ResolveSerializer<ReadOnlyMemory<byte>>(Abstractions.Constants.DefaultKey, Constants.MediaType);
     }
 }
