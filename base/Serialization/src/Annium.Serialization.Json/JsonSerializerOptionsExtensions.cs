@@ -1,6 +1,7 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using Annium.Core.Runtime.Types;
+using Annium.Serialization.Json.Internal;
 using Annium.Serialization.Json.Internal.Converters;
 
 namespace Annium.Core.DependencyInjection
@@ -21,10 +22,21 @@ namespace Annium.Core.DependencyInjection
             options.PropertyNameCaseInsensitive = true;
 
             if (useCamelCase)
-            {
-                options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
-                options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            }
+                options.UseCamelCaseNamingPolicy();
+
+            return options;
+        }
+
+        public static JsonSerializerOptions UseDefaultNamingPolicy(this JsonSerializerOptions options) =>
+            options.UseNamingPolicy(new DefaultJsonNamingPolicy());
+
+        public static JsonSerializerOptions UseCamelCaseNamingPolicy(this JsonSerializerOptions options) =>
+            options.UseNamingPolicy(JsonNamingPolicy.CamelCase);
+
+        private static JsonSerializerOptions UseNamingPolicy(this JsonSerializerOptions options, JsonNamingPolicy policy)
+        {
+            options.DictionaryKeyPolicy = policy;
+            options.PropertyNamingPolicy = policy;
 
             return options;
         }
