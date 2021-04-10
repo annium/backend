@@ -64,8 +64,7 @@ namespace System
 
         public async ValueTask DisposeAsync()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FriendlyName());
+            EnsureNotDisposed();
             _isDisposed = true;
 
             OnCompleted();
@@ -78,8 +77,7 @@ namespace System
 
         private void OnNext(T value)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FriendlyName());
+            EnsureNotDisposed();
 
             foreach (var observer in _subscribers.ToArray())
                 observer.OnNext(value);
@@ -87,8 +85,7 @@ namespace System
 
         private void OnError(Exception exception)
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FriendlyName());
+            EnsureNotDisposed();
 
             foreach (var observer in _subscribers.ToArray())
                 observer.OnError(exception);
@@ -96,8 +93,7 @@ namespace System
 
         private void OnCompleted()
         {
-            if (_isDisposed)
-                throw new ObjectDisposedException(GetType().FriendlyName());
+            EnsureNotDisposed();
 
             foreach (var observer in _subscribers.ToArray())
                 observer.OnCompleted();
@@ -108,7 +104,13 @@ namespace System
         ) => async ctx =>
         {
             _factoryCts = new CancellationTokenSource();
-            await factory(ctx with {Token = _factoryCts.Token});
+            await factory(ctx with { Token = _factoryCts.Token });
         };
+
+        private void EnsureNotDisposed()
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException(GetType().FriendlyName());
+        }
     }
 }
