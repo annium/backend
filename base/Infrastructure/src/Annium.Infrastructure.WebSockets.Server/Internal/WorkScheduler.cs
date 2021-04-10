@@ -15,6 +15,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Add(Func<Task> work)
         {
+            _disposable.EnsureNotDisposed();
+
             if (_isStarted == 1)
                 Schedule(work);
             else
@@ -23,6 +25,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Start()
         {
+            _disposable.EnsureNotDisposed();
+
             if (Interlocked.CompareExchange(ref _isStarted, 1, 0) == 1)
                 throw new InvalidOperationException("Can't start WorkScheduler twice");
             foreach (var work in _backlog)
