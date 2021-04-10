@@ -2,19 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Execution
+namespace Annium.Extensions.Execution.Internal
 {
-    public class BatchExecutor
+    internal class BatchExecutor : IBatchExecutor
     {
-        private IList<Delegate> _handlers = new List<Delegate>();
+        private readonly IList<Delegate> _handlers = new List<Delegate>();
 
-        internal BatchExecutor()
-        {
-        }
+        public IBatchExecutor With(Action handler) => WithInternal(handler);
 
-        public BatchExecutor With(Action handler) => WithInternal(handler);
-
-        public BatchExecutor With(Func<Task> handler) => WithInternal(handler);
+        public IBatchExecutor With(Func<Task> handler) => WithInternal(handler);
 
         private BatchExecutor WithInternal(Delegate handler)
         {

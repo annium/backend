@@ -3,35 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Execution
+namespace Annium.Extensions.Execution.Internal
 {
-    public class StageExecutor
+    internal class StageExecutor : IStageExecutor
     {
-        private IList<ValueTuple<Delegate, Delegate, bool>> _stages =
-            new List<ValueTuple<Delegate, Delegate, bool>>();
+        private readonly List<ValueTuple<Delegate, Delegate, bool>> _stages = new();
 
-        internal StageExecutor()
-        {
-        }
-
-        public StageExecutor Stage(Action commit, Action rollback, bool rollbackFailed = false) =>
+        public IStageExecutor Stage(Action commit, Action rollback, bool rollbackFailed = false) =>
             StageInternal(commit, rollback, rollbackFailed);
 
-        public StageExecutor Stage(Action commit, Func<Task> rollback, bool rollbackFailed = false) =>
+        public IStageExecutor Stage(Action commit, Func<Task> rollback, bool rollbackFailed = false) =>
             StageInternal(commit, rollback, rollbackFailed);
 
-        public StageExecutor Stage(Func<Task> commit, Action rollback, bool rollbackFailed = false) =>
+        public IStageExecutor Stage(Func<Task> commit, Action rollback, bool rollbackFailed = false) =>
             StageInternal(commit, rollback, rollbackFailed);
 
-        public StageExecutor Stage(Func<Task> commit, Func<Task> rollback, bool rollbackFailed = false) =>
+        public IStageExecutor Stage(Func<Task> commit, Func<Task> rollback, bool rollbackFailed = false) =>
             StageInternal(commit, rollback, rollbackFailed);
-
-        private StageExecutor StageInternal(Delegate commit, Delegate rollback, bool rollbackFailed)
-        {
-            _stages.Add((commit, rollback, rollbackFailed));
-
-            return this;
-        }
 
         public async Task RunAsync()
         {
@@ -79,6 +67,13 @@ namespace Annium.Extensions.Execution
             }
 
             throw new AggregateException(exceptions);
+        }
+
+        private StageExecutor StageInternal(Delegate commit, Delegate rollback, bool rollbackFailed)
+        {
+            _stages.Add((commit, rollback, rollbackFailed));
+
+            return this;
         }
     }
 }
