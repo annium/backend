@@ -70,6 +70,12 @@ namespace Annium.Core.Primitives
         protected readonly List<Action> SyncDisposes = new();
         private readonly object _locker = new();
 
+        public void EnsureNotDisposed()
+        {
+            if (IsDisposed)
+                throw new ObjectDisposedException(typeof(TBox).Name);
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected TBox Add<T>(List<T> entries, T item)
         {
@@ -141,12 +147,6 @@ namespace Annium.Core.Primitives
             if (SyncDisposes.Count > 0)
                 foreach (var entry in Pull(SyncDisposes))
                     entry();
-        }
-
-        private void EnsureNotDisposed()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException(typeof(TBox).Name);
         }
     }
 }
