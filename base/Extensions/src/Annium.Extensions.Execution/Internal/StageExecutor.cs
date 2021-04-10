@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Data.Operations;
 
 namespace Annium.Extensions.Execution.Internal
 {
@@ -21,10 +22,10 @@ namespace Annium.Extensions.Execution.Internal
         public IStageExecutor Stage(Func<Task> commit, Func<Task> rollback, bool rollbackFailed = false) =>
             StageInternal(commit, rollback, rollbackFailed);
 
-        public async Task RunAsync()
+        public async Task<IResult> RunAsync()
         {
             var i = 0;
-            var exceptions = new List<Exception>();
+            var result = Result.New();
 
             // run each stage
             foreach (var (commit, _, _) in _stages)
@@ -39,13 +40,13 @@ namespace Annium.Extensions.Execution.Internal
                 }
                 catch (Exception exception)
                 {
-                    exceptions.Add(exception);
+                    result.Error(exception.Message);
                 }
             }
 
             // if no exceptions - done
-            if (exceptions.Count == 0)
-                return;
+            if (result.IsOk)
+                return result;
 
             var j = 0;
             // exception caught, rollback
@@ -62,11 +63,11 @@ namespace Annium.Extensions.Execution.Internal
                 }
                 catch (Exception exception)
                 {
-                    exceptions.Add(exception);
+                    result.Error(exception.Message);
                 }
             }
 
-            throw new AggregateException(exceptions);
+            return result;
         }
 
         private StageExecutor StageInternal(Delegate commit, Delegate rollback, bool rollbackFailed)

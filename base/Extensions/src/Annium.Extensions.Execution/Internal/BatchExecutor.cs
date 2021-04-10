@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Annium.Data.Operations;
 
 namespace Annium.Extensions.Execution.Internal
 {
@@ -19,9 +20,9 @@ namespace Annium.Extensions.Execution.Internal
             return this;
         }
 
-        public async Task RunAsync()
+        public async Task<IResult> RunAsync()
         {
-            var exceptions = new List<Exception>();
+            var result = Result.New();
 
             // run each stage
             foreach (var handler in _handlers)
@@ -33,12 +34,11 @@ namespace Annium.Extensions.Execution.Internal
                 }
                 catch (Exception exception)
                 {
-                    exceptions.Add(exception);
+                    result.Error(exception.Message);
                 }
             }
 
-            if (exceptions.Count > 0)
-                throw new AggregateException(exceptions);
+            return result;
         }
     }
 }

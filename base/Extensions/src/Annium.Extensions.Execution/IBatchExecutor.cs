@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Data.Operations;
 
 namespace Annium.Extensions.Execution
 {
@@ -7,5 +8,6 @@ namespace Annium.Extensions.Execution
     {
         IBatchExecutor With(Action handler);
         IBatchExecutor With(Func<Task> handler);
+        Task<IResult> RunAsync();
     }
 }
