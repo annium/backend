@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
+using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -21,7 +22,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
-        private readonly WorkScheduler _scheduler;
         private readonly Connection _cn;
         private readonly TState _state;
 
@@ -30,7 +30,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
-            WorkScheduler scheduler,
             Func<Guid, TState> stateFactory,
             Connection cn
         )
@@ -39,7 +38,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _lifetime = lifetime;
             _mediator = mediator;
             _serializer = serializer;
-            _scheduler = scheduler;
             _cn = cn;
             _state = stateFactory(cn.Id);
         }
@@ -47,6 +45,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         public async Task HandleAsync()
         {
             await using var scope = _sp.CreateAsyncScope();
+            var executor = Executor.Background.Parallel();
             LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
             try
             {
@@ -60,7 +59,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 _cn.Socket
                     .Listen()
                     .Subscribe(
-                        x => _scheduler.Add(() => HandleMessage(x)),
+                        x => executor.Schedule(() => HandleMessage(x)),
                         x => tcs.SetException(x),
                         () => tcs.SetResult(new object()),
                         _lifetime.Stopping
@@ -70,13 +69,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 await lifeCycleCoordinator.HandleStartAsync(_state);
 
                 // start scheduler to process backlog and run upcomming work immediately
-                _scheduler.Start();
+                executor.Start(CancellationToken.None);
 
                 // wait until connection complete
                 await tcs.Task;
             }
             finally
             {
+                // all handlers must be complete before teardown lifecycle hook
+                await executor.DisposeAsync();
+
                 // process end hook
                 if (lifeCycleCoordinator is not null)
                     await lifeCycleCoordinator.HandleEndAsync(_state);

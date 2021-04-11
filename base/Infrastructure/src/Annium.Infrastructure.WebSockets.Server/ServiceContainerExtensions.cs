@@ -31,7 +31,6 @@ namespace Annium.Core.DependencyInjection
             container.Add<LifeCycleCoordinator<TState>>().AsSelf().Scoped();
             container.Add<Serializer>().AsSelf().Singleton();
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
-            container.Add<WorkScheduler>().AsSelf().Scoped();
 
             // internal - handlers
             container.Add(typeof(SubscriptionContextStore<,,>)).AsSelf().Singleton();

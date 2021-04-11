@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
@@ -34,7 +33,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 _lifetime,
                 _mediator,
                 _serializer,
-                sp.Resolve<WorkScheduler>(),
                 _stateFactory,
                 connection
             );
