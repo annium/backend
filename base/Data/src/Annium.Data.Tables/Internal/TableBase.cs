@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
@@ -56,24 +54,23 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IObservable<IChangeEvent<T>> CreateObservable() => Observable.Create(
-            async (IObserver<IChangeEvent<T>> observer, CancellationToken token) =>
+        private IObservable<IChangeEvent<T>> CreateObservable() => ObservableInstance.Create<IChangeEvent<T>>(ctx =>
+        {
+            while (!ctx.Token.IsCancellationRequested)
             {
-                while (!token.IsCancellationRequested)
+                try
                 {
-                    try
-                    {
-                        var e = await Task.Run(() => _events.Take(), token);
-                        observer.OnNext(e);
-                    }
-                    catch (Exception ex)
-                    {
-                        observer.OnError(ex);
-                    }
+                    var e = _events.Take();
+                    ctx.OnNext(e);
                 }
+                catch (Exception ex)
+                {
+                    ctx.OnError(ex);
+                }
+            }
 
-                return Task.FromResult<Action>(() => { });
-            }).Publish().RefCount();
+            return Task.CompletedTask;
+        });
 
         public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
 
