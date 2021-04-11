@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
+using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
@@ -24,11 +24,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public Guid ConnectionId { get; }
         public Guid SubscriptionId { get; }
         private readonly CancellationTokenSource _cts;
+        private readonly IMediator _mediator;
         private readonly TState _state;
-        private readonly BlockingCollection<object> _events = new();
         private bool _isInitiated;
         private Action _handleInit = () => { };
-        private readonly Task _eventSenderTask;
+        private readonly IBackgroundExecutor _executor = Executor.Background.Sequential();
 
         public SubscriptionContext(
             TInit request,
@@ -42,21 +42,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             ConnectionId = state.ConnectionId;
             SubscriptionId = subscriptionId;
             _cts = cts;
+            _mediator = mediator;
             _state = state;
-            _eventSenderTask = Task.Run(async () =>
-            {
-                while (!_cts.IsCancellationRequested)
-                {
-                    try
-                    {
-                        var msg = _events.Take(_cts.Token);
-                        await mediator.SendAsync<Unit>(msg, CancellationToken.None);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
-                }
-            }, CancellationToken.None);
+            _executor.Start(CancellationToken.None);
         }
 
         public void Handle(IStatusResult<OperationStatus> result)
@@ -73,10 +61,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             var responseResult = result.IsOk
                 ? Result.Status(result.Status, SubscriptionId)
                 : Result.Status(result.Status, Guid.Empty);
-            _events.Add(
-                PushMessage.New(_state.ConnectionId, Response.Result(Request.Rid, responseResult.Join(result))),
-                _cts.Token
-            );
+            SendInternal(Response.Result(Request.Rid, responseResult.Join(result)));
         }
 
         public void Send(TMessage message)
@@ -86,10 +71,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (_cts.IsCancellationRequested)
                 throw new InvalidOperationException("Can't send message from canceled subscription");
 
-            _events.Add(
-                PushMessage.New(_state.ConnectionId, new SubscriptionMessage<TMessage>(SubscriptionId, message)),
-                _cts.Token
-            );
+            SendInternal(new SubscriptionMessage<TMessage>(SubscriptionId, message));
         }
 
         public void Cancel()
@@ -119,7 +101,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public async ValueTask DisposeAsync()
         {
             _cts.Dispose();
-            await _eventSenderTask;
+            await _executor.DisposeAsync();
         }
+
+        private void SendInternal<T>(T msg) =>
+            _executor.Schedule(() => _mediator.SendAsync<Unit>(PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
     }
 }
