@@ -35,7 +35,7 @@ namespace Annium.Configuration.Abstractions.Internal
 
         private object Process(Type type)
         {
-            if (_mapper.HasMap(string.Empty, type))
+            if (type.IsEnum || _mapper.HasMap(string.Empty, type))
                 return ProcessValue(type);
             if (type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
