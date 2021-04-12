@@ -9,7 +9,7 @@ namespace Annium.Core.Mapper.Internal.Profiles
         public EnumProfile()
         {
             Map<T, string>(x => x.ToString());
-            Map<string, Enum>(x => x.ParseEnum<T>());
+            Map<string, T>(x => x.ParseEnum<T>());
         }
     }
 }

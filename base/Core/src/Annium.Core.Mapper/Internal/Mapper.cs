@@ -19,9 +19,6 @@ namespace Annium.Core.Mapper.Internal
             if (source is null || type is null)
                 return false;
 
-            if (type.IsEnum)
-                return true;
-
             if (type.IsInstanceOfType(source))
                 return true;
 
@@ -43,9 +40,6 @@ namespace Annium.Core.Mapper.Internal
 
             if (source is null)
                 return Activator.CreateInstance(type)!;
-
-            if (type.IsEnum)
-                return Enum.Parse(type, source.ToString()!, ignoreCase: true);
 
             if (type.IsInstanceOfType(source))
                 return source;
