@@ -4,7 +4,6 @@ using Annium.linq2db.Extensions;
 using Annium.linq2db.Testing.Sqlite;
 using FluentMigrator.Runner;
 using LinqToDB;
-using LinqToDB.Common;
 using LinqToDB.Mapping;
 using Microsoft.Extensions.DependencyInjection;
 

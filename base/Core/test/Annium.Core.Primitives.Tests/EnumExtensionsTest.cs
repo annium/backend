@@ -49,9 +49,9 @@ namespace Annium.Core.Primitives.Tests
             var invalid = "5, two";
 
             // assert
-            valid.ParseFlags<TestEnum>('|').IsEqual(TestEnum.One | TestEnum.Two);
-            string.Empty.ParseFlags<TestEnum>('|').IsEqual(TestEnum.None);
-            ((Func<TestEnum>) (() => invalid.ParseFlags<TestEnum>(','))).Throws<ArgumentException>();
+            valid.ParseFlags<TestEnum>("|").IsEqual(TestEnum.One | TestEnum.Two);
+            string.Empty.ParseFlags<TestEnum>("|").IsEqual(TestEnum.None);
+            ((Func<TestEnum>) (() => invalid.ParseFlags<TestEnum>(","))).Throws<ArgumentException>();
         }
 
         [Fact]
@@ -96,8 +96,8 @@ namespace Annium.Core.Primitives.Tests
             var invalid = "5, two";
 
             // assert
-            valid.ParseFlags('|', TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
-            invalid.ParseFlags(',', TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
+            valid.ParseFlags("|", TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
+            invalid.ParseFlags(",", TestEnum.One).IsEqual(TestEnum.One | TestEnum.Two);
         }
 
         [Flags]

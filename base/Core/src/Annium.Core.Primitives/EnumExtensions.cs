@@ -31,7 +31,7 @@ namespace Annium.Core.Primitives
             return value;
         }
 
-        public static T ParseFlags<T>(this string str, char separator)
+        public static T ParseFlags<T>(this string str, string separator)
             where T : struct, Enum
         {
             var values = str.Split(separator)
@@ -66,7 +66,7 @@ namespace Annium.Core.Primitives
             return succeed ? value : defaultValue;
         }
 
-        public static T ParseFlags<T>(this string str, char separator, T defaultValue)
+        public static T ParseFlags<T>(this string str, string separator, T defaultValue)
             where T : struct, Enum
         {
             var values = str.Split(separator)

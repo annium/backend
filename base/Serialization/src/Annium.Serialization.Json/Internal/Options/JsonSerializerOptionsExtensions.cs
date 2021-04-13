@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Text.Json;
 using Annium.Core.Reflection;
 
-namespace Annium.Serialization.Json.Internal
+namespace Annium.Serialization.Json.Internal.Options
 {
     internal static class JsonSerializerOptionsExtensions
     {

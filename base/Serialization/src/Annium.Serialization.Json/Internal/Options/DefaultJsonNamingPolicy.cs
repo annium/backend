@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Annium.Serialization.Json.Internal
+namespace Annium.Serialization.Json.Internal.Options
 {
     internal class DefaultJsonNamingPolicy : JsonNamingPolicy
     {

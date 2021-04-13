@@ -3,7 +3,6 @@ using System.Reflection;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.PostgreSql;
 using LinqToDB;
-using LinqToDB.Common;
 using LinqToDB.Mapping;
 
 namespace Annium.Core.DependencyInjection
