@@ -61,7 +61,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         [Fact]
-        public void Switch_Works()
+        public void Ternary_Works()
         {
             // act
             var result = Repack<string, string>(v =>
