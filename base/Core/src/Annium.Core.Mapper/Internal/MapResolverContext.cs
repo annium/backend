@@ -4,14 +4,17 @@ namespace Annium.Core.Mapper.Internal
 {
     internal class MapResolverContext : IMapResolverContext
     {
+        public Lazy<IMapContext> MapContext { get; }
         private readonly Func<Type, Type, Delegate> _getMap;
         private readonly Func<Type, Type, Mapping> _resolveMapping;
 
         public MapResolverContext(
             Func<Type, Type, Delegate> getMap,
-            Func<Type, Type, Mapping> resolveMapping
+            Func<Type, Type, Mapping> resolveMapping,
+            Lazy<IMapContext> mapContext
         )
         {
+            MapContext = mapContext;
             _getMap = getMap;
             _resolveMapping = resolveMapping;
         }

@@ -31,7 +31,7 @@ namespace Annium.Core.Mapper.Internal
             _mapResolvers = mapResolvers;
             _repacker = repacker;
             _mapContext = mapContext;
-            _context = new MapResolverContext(GetMap, ResolveMapping);
+            _context = new MapResolverContext(GetMap, ResolveMapping, mapContext);
 
             foreach (var profile in _knownProfiles)
                 AddEntriesFromProfile(profile);
@@ -131,11 +131,8 @@ namespace Annium.Core.Mapper.Internal
                 var entry = GetEntry(key);
                 if (!entry.HasConfiguration)
                     entry.SetConfiguration(cfg);
-                if (!entry.HasMapping)
-                    if (cfg.ContextualMapWith is not null)
-                        entry.SetMapping(() => _repacker.Repack(cfg.ContextualMapWith(_mapContext.Value).Body));
-                    else if (cfg.MapWith is not null)
-                        entry.SetMapping(() => _repacker.Repack(cfg.MapWith.Body));
+                if (!entry.HasMapping && cfg.MapWith is not null)
+                    entry.SetMapping(() => _repacker.Repack(cfg.MapWith(_mapContext.Value).Body));
             }
         }
 

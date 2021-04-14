@@ -13,6 +13,11 @@ namespace Annium.Core.Mapper
             Expression<Func<TS, TF>> map
         );
 
+        IMapConfigurationBuilder<TS, TD> For<TF>(
+            Expression<Func<TD, object>> members,
+            Func<IMapContext, Expression<Func<TS, TF>>> map
+        );
+
         IMapConfigurationBuilder<TS, TD> Ignore(
             Expression<Func<TD, object>> members
         );

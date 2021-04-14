@@ -4,22 +4,22 @@ using Annium.Core.Reflection;
 
 namespace Annium.Core.Mapper.Internal
 {
-    internal class MapConfigurationBuilder<TS, T> : IMapConfigurationBuilder<TS, T>
+    internal class MapConfigurationBuilder<TS, TD> : IMapConfigurationBuilder<TS, TD>
     {
         public IMapConfiguration Result => _result;
         private readonly MapConfiguration _result = new();
 
-        public void With(Expression<Func<TS, T>> map)
+        public void With(Expression<Func<TS, TD>> map)
         {
             _result.SetMapWith(map);
         }
 
-        public void With(Func<IMapContext, Expression<Func<TS, T>>> map)
+        public void With(Func<IMapContext, Expression<Func<TS, TD>>> map)
         {
             _result.SetMapWith(map);
         }
 
-        public IMapConfigurationBuilder<TS, T> For<TF>(Expression<Func<T, object>> members, Expression<Func<TS, TF>> map)
+        public IMapConfigurationBuilder<TS, TD> For<TF>(Expression<Func<TD, object>> members, Expression<Func<TS, TF>> map)
         {
             var properties = TypeHelper.ResolveProperties(members);
 
@@ -28,7 +28,16 @@ namespace Annium.Core.Mapper.Internal
             return this;
         }
 
-        public IMapConfigurationBuilder<TS, T> Ignore(Expression<Func<T, object>> members)
+        public IMapConfigurationBuilder<TS, TD> For<TF>(Expression<Func<TD, object>> members, Func<IMapContext, Expression<Func<TS, TF>>> map)
+        {
+            var properties = TypeHelper.ResolveProperties(members);
+
+            _result.AddMapWithFor(properties, map);
+
+            return this;
+        }
+
+        public IMapConfigurationBuilder<TS, TD> Ignore(Expression<Func<TD, object>> members)
         {
             var properties = TypeHelper.ResolveProperties(members);
 

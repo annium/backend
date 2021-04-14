@@ -35,7 +35,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var mappedMemberVars = new Dictionary<string, ParameterExpression>();
             foreach (var group in cfg.MemberMaps.GroupBy(x => x.Value))
             {
-                var map = group.Key;
+                var map = group.Key(ctx.MapContext.Value);
                 var members = group.Select(x => x.Key).ToArray();
 
                 if (members.Length == 1)
