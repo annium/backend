@@ -14,7 +14,7 @@ namespace Annium.Configuration.Abstractions.Internal
         private readonly ITypeManager _typeManager;
         private readonly IMapper _mapper;
         private readonly IReadOnlyDictionary<string[], string> _config;
-        private readonly Stack<string> _context = new Stack<string>();
+        private readonly Stack<string> _context = new();
         private string[] Path => _context.Reverse().ToArray();
 
         public ConfigurationProcessor(

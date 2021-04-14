@@ -15,10 +15,10 @@ namespace Annium.Net.Http.Internal
             content.ReadAsStringAsync();
 
         public static async Task<ReadOnlyMemory<byte>> Memory(IHttpRequest request, HttpContent content) =>
-            new ReadOnlyMemory<byte>(await content.ReadAsByteArrayAsync());
+            new(await content.ReadAsByteArrayAsync());
 
         public static async Task<ReadOnlyMemory<byte>> Memory(IHttpRequest request, HttpContent content, ReadOnlyMemory<byte> _) =>
-            new ReadOnlyMemory<byte>(await content.ReadAsByteArrayAsync());
+            new(await content.ReadAsByteArrayAsync());
 
         public static Task<Stream> Stream(IHttpRequest request, HttpContent content) =>
             content.ReadAsStreamAsync();

@@ -18,7 +18,7 @@ namespace Annium.Data.Models.Tests.Extensions
             {
                 Nullable = true,
                 Uris = new[] { new Uri("http://localhost") },
-                Samples = new List<Sample> { new Sample { Date = now, Point = new Point(1, 2) } },
+                Samples = new List<Sample> { new() { Date = now, Point = new Point(1, 2) } },
                 Points = new HashSet<Point>(new[] { new Point(1, 2) }),
                 Dictionary = new Dictionary<Point, Sample> { { new Point(1, 2), new Sample { Date = now, Point = new Point(2, 1) } } },
                 ReadOnlyDictionary = new Dictionary<Point, Sample> { { new Point(1, 2), new Sample { Date = now, Point = new Point(2, 1) } } },
@@ -27,7 +27,7 @@ namespace Annium.Data.Models.Tests.Extensions
             {
                 Nullable = true,
                 Uris = new[] { new Uri("http://localhost") },
-                Samples = new List<Sample> { new Sample { Date = now, Point = new Point(1, 2) } },
+                Samples = new List<Sample> { new() { Date = now, Point = new Point(1, 2) } },
                 Points = new HashSet<Point>(new[] { new Point(1, 2) }),
                 Dictionary = new Dictionary<Point, Sample> { { new Point(1, 2), new Sample { Date = now, Point = new Point(2, 1) } } },
                 ReadOnlyDictionary = new Dictionary<Point, Sample> { { new Point(1, 2), new Sample { Date = now, Point = new Point(2, 1) } } },
@@ -60,9 +60,9 @@ namespace Annium.Data.Models.Tests.Extensions
         {
             // arrange
             var now = DateTimeOffset.Now;
-            Sample[] a = { new Sample { Date = now, Point = new Point(2, 1) } };
-            Sample[] b = { new Sample { Date = now, Point = new Point(2, 1) } };
-            Sample[] c = { new Sample { Date = now + TimeSpan.FromSeconds(1), Point = new Point(2, 1) } };
+            Sample[] a = { new() { Date = now, Point = new Point(2, 1) } };
+            Sample[] b = { new() { Date = now, Point = new Point(2, 1) } };
+            Sample[] c = { new() { Date = now + TimeSpan.FromSeconds(1), Point = new Point(2, 1) } };
             Sample[] d = { default };
             Sample[] e = a;
 
@@ -78,9 +78,9 @@ namespace Annium.Data.Models.Tests.Extensions
         {
             // arrange
             var now = DateTimeOffset.Now;
-            IList<Sample> a = new List<Sample> { new Sample { Date = now, Point = new Point(2, 1) } };
-            IList<Sample> b = new List<Sample> { new Sample { Date = now, Point = new Point(2, 1) } };
-            IList<Sample> c = new List<Sample> { new Sample { Date = now + TimeSpan.FromSeconds(1), Point = new Point(2, 1) } };
+            IList<Sample> a = new List<Sample> { new() { Date = now, Point = new Point(2, 1) } };
+            IList<Sample> b = new List<Sample> { new() { Date = now, Point = new Point(2, 1) } };
+            IList<Sample> c = new List<Sample> { new() { Date = now + TimeSpan.FromSeconds(1), Point = new Point(2, 1) } };
             IList<Sample> d = new List<Sample> { default };
             IList<Sample> e = a;
 
@@ -142,7 +142,7 @@ namespace Annium.Data.Models.Tests.Extensions
         public void IsShallowEqual_ToNull_Works()
         {
             // arrange
-            Exception a = new Exception("x");
+            Exception a = new("x");
             Exception b = default!;
 
             // assert
@@ -158,9 +158,9 @@ namespace Annium.Data.Models.Tests.Extensions
             public bool? Nullable { get; set; }
 
             public IEnumerable<Uri> Uris { get; set; } = Array.Empty<Uri>();
-            public List<Sample> Samples { get; set; } = new List<Sample>();
+            public List<Sample> Samples { get; set; } = new();
 
-            public HashSet<Point> Points { get; set; } = new HashSet<Point>();
+            public HashSet<Point> Points { get; set; } = new();
             public IDictionary<Point, Sample> Dictionary { get; set; } = new Dictionary<Point, Sample>();
             public IReadOnlyDictionary<Point, Sample> ReadOnlyDictionary { get; set; } = new Dictionary<Point, Sample>();
         }

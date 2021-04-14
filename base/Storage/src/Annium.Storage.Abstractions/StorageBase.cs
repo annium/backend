@@ -8,7 +8,7 @@ namespace Annium.Storage.Abstractions
 {
     public abstract class StorageBase : IStorage
     {
-        private static readonly Regex NameRe = new Regex(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+        private static readonly Regex NameRe = new(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
         private readonly ILogger _logger;
 

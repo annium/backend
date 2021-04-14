@@ -32,7 +32,7 @@ namespace Annium.Serialization.Json.Internal.Converters
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            writer.WriteNumberValue(long.Parse(value.ToString()));
+            writer.WriteNumberValue((long) Convert.ChangeType(value, typeof(long)));
         }
     }
 

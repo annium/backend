@@ -75,7 +75,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         {
             _disposable.Dispose();
 
-            return new(Task.CompletedTask);
+            return new ValueTask(Task.CompletedTask);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace Annium.Core.DependencyInjection.Tests
         public void ContainsFactory_Works()
         {
             // arrange
-            static B factory(IServiceProvider _) => new B();
+            static B factory(IServiceProvider _) => new();
             _container.Add(factory).AsSelf().Singleton();
 
             // assert

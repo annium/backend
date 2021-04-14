@@ -88,7 +88,7 @@ namespace Annium.Net.Base
         /// <returns>The <see cref="QueryString"/>.</returns>
         public QueryString ToQueryString()
         {
-            return new QueryString(ToString());
+            return new(ToString());
         }
 
         /// <inheritdoc/>

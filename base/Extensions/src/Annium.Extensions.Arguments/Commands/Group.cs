@@ -9,7 +9,7 @@ namespace Annium.Extensions.Arguments
 {
     public abstract class Group : CommandBase
     {
-        private readonly List<Type> _commands = new List<Type>();
+        private readonly List<Type> _commands = new();
 
         public Group Add<T>()
             where T : CommandBase

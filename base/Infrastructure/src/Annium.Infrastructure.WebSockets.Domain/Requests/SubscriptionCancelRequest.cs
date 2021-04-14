@@ -4,7 +4,7 @@ namespace Annium.Infrastructure.WebSockets.Domain.Requests
 {
     public sealed class SubscriptionCancelRequest : RequestBase
     {
-        public static SubscriptionCancelRequest New(Guid subscriptionId) => new SubscriptionCancelRequest
+        public static SubscriptionCancelRequest New(Guid subscriptionId) => new()
         {
             SubscriptionId = subscriptionId
         };

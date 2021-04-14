@@ -21,6 +21,6 @@ namespace Annium.Core.Primitives.Tests
             GetDir(Path.Combine(root, "xx")).IsAt(Path.Combine(root, "xx")).IsFalse();
         }
 
-        private DirectoryInfo GetDir(string path) => new DirectoryInfo(path);
+        private DirectoryInfo GetDir(string path) => new(path);
     }
 }

@@ -7,7 +7,7 @@ namespace Annium.Logging.InMemory
     {
         public IReadOnlyList<LogMessage> Logs => _logs;
 
-        private readonly List<LogMessage> _logs = new List<LogMessage>();
+        private readonly List<LogMessage> _logs = new();
 
         public void Handle(LogMessage message) => _logs.Add(message);
     }

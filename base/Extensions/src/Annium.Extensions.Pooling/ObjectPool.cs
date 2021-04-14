@@ -7,7 +7,7 @@ namespace Annium.Extensions.Pooling
 {
     public class ObjectPool<T> : IObjectPool<T>, IDisposable
     {
-        private readonly object _poolLocker = new object();
+        private readonly object _poolLocker = new();
         private readonly ILoader<T> _loader;
         private readonly IStorage<T> _storage;
         private readonly Semaphore _semaphore;

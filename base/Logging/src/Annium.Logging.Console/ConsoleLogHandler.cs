@@ -8,7 +8,7 @@ namespace Annium.Logging.Console
     internal class ConsoleLogHandler : ILogHandler
     {
         public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-        private static readonly object ConsoleLock = new object();
+        private static readonly object ConsoleLock = new();
         private static readonly IReadOnlyDictionary<LogLevel, ConsoleColor> LevelColors;
 
         static ConsoleLogHandler()

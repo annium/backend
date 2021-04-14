@@ -5,7 +5,7 @@ namespace Annium.Diagnostics.Debug
 {
     public static class IdExtensions
     {
-        private static ConditionalWeakTable<object, string> _ids = new ConditionalWeakTable<object, string>();
+        private static ConditionalWeakTable<object, string> _ids = new();
 
         public static string GetId<T>(this T obj) where T : class =>
             _ids.GetValue(obj, e => Guid.NewGuid().ToString());

@@ -8,7 +8,7 @@ namespace Annium.Net.Mail
     public class TestEmailService : IEmailService
     {
         public IReadOnlyCollection<TestEmail> Emails => _emails;
-        private readonly List<TestEmail> _emails = new List<TestEmail>();
+        private readonly List<TestEmail> _emails = new();
 
         public Task<IBooleanResult> SendAsync<T>(MailMessage message, string template, T data)
             where T : notnull

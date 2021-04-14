@@ -10,7 +10,7 @@ namespace Annium.linq2db.Extensions
             Assembly configurationsAssembly
         )
         {
-            return new MappingBuilder(configurationsAssembly, mappingSchema);
+            return new(configurationsAssembly, mappingSchema);
         }
     }
 }

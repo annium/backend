@@ -40,7 +40,7 @@ namespace Demo.Core.Mediator
             - response handler (mutates response)
              */
 
-            Request<TRequest> Encode<TRequest>(TRequest e) => new Request<TRequest>(JsonSerializer.Serialize(e, options));
+            Request<TRequest> Encode<TRequest>(TRequest e) => new(JsonSerializer.Serialize(e, options));
 
             TResponse Decode<TResponse>(Response<TResponse> e) => JsonSerializer.Deserialize<TResponse>(e.Value, options)!;
         }

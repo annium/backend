@@ -9,7 +9,7 @@ namespace Annium.Testing.Elements
 
         public Exception? Failure { get; set; }
 
-        public Stopwatch Watch { get; } = new Stopwatch();
+        public Stopwatch Watch { get; } = new();
 
         public DateTimeOffset ExecutionStart { get; set; }
 

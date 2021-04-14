@@ -8,10 +8,10 @@ namespace Annium.Data.Models.Extensions
 {
     public static partial class IsShallowEqualExtensions
     {
-        private static readonly object Locker = new object();
+        private static readonly object Locker = new();
 
         private static readonly HashSet<Type> ComparersInProgress =
-            new HashSet<Type>();
+            new();
 
         private static readonly IDictionary<Type, Delegate> Comparers =
             new Dictionary<Type, Delegate>();

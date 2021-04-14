@@ -11,8 +11,8 @@ namespace Annium.Core.Mapper.Internal
         public LambdaExpression? MapWith { get; private set; }
         public IReadOnlyDictionary<PropertyInfo, LambdaExpression> MemberMaps => _memberMaps;
         public IReadOnlyCollection<PropertyInfo> IgnoredMembers => _ignoredMembers;
-        private readonly Dictionary<PropertyInfo, LambdaExpression> _memberMaps = new Dictionary<PropertyInfo, LambdaExpression>();
-        private readonly HashSet<PropertyInfo> _ignoredMembers = new HashSet<PropertyInfo>();
+        private readonly Dictionary<PropertyInfo, LambdaExpression> _memberMaps = new();
+        private readonly HashSet<PropertyInfo> _ignoredMembers = new();
 
         public void SetMapWith(LambdaExpression mapWith)
         {

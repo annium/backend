@@ -14,7 +14,7 @@ namespace Annium.Net.Base
         /// <summary>
         /// Represents the empty query string. This field is read-only.
         /// </summary>
-        public static readonly QueryString Empty = new QueryString(string.Empty);
+        public static readonly QueryString Empty = new(string.Empty);
 
         /// <summary>
         /// Initialize the query string with a given value. This value must be in escaped and delimited format with

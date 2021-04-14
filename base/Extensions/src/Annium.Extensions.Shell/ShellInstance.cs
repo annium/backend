@@ -11,7 +11,7 @@ namespace Annium.Extensions.Shell
 {
     internal class ShellInstance : IShellInstance
     {
-        private readonly object _consoleLock = new object();
+        private readonly object _consoleLock = new();
         private readonly string _cmd;
         private readonly ILogger<Shell> _logger;
         private ProcessStartInfo _startInfo;

@@ -7,7 +7,7 @@ namespace Annium.Core.Mapper.Internal
     internal class MapConfigurationBuilder<TS, T> : IMapConfigurationBuilder<TS, T>
     {
         public IMapConfiguration Result => _result;
-        private readonly MapConfiguration _result = new MapConfiguration();
+        private readonly MapConfiguration _result = new();
 
 
         public void With(Expression<Func<TS, T>> map)

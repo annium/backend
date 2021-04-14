@@ -12,7 +12,7 @@ namespace Annium.Net.Base
     {
         public static UriQuery New()
         {
-            return new UriQuery(new Dictionary<string, StringValues>());
+            return new(new Dictionary<string, StringValues>());
         }
 
         public static UriQuery Parse(string query)

@@ -7,15 +7,15 @@ namespace Annium.Logging.Console.Tests
 {
     internal class ConsoleCapture : IDisposable
     {
-        private static readonly object Locker = new object();
+        private static readonly object Locker = new();
 
-        public static ConsoleCapture Start() => new ConsoleCapture();
+        public static ConsoleCapture Start() => new();
 
         public string Output => _writer.ToString();
 
         private TextWriter _stdout;
 
-        private StringWriter _writer = new StringWriter();
+        private StringWriter _writer = new();
 
         private ConsoleCapture()
         {

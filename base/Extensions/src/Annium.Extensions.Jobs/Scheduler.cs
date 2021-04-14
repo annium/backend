@@ -13,7 +13,7 @@ namespace Annium.Extensions.Jobs
     {
         private readonly ITimeProvider _timeProvider;
         private readonly IIntervalResolver _intervalResolver;
-        private readonly CancellationTokenSource _cts = new CancellationTokenSource();
+        private readonly CancellationTokenSource _cts = new();
         private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers = new Dictionary<Func<Task>, Func<Instant, bool>>();
 
         public Scheduler(

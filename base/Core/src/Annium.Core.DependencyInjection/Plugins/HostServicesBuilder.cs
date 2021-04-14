@@ -12,7 +12,7 @@ namespace Annium.Core.DependencyInjection
     {
         public HostServicesProvider Build()
         {
-            ServiceProviderBuilder builder = new ServiceProviderBuilder();
+            ServiceProviderBuilder builder = new();
             builder.UseServicePack<TServicePack>();
 
             return new HostServicesProvider(builder.Build());

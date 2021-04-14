@@ -40,7 +40,7 @@ namespace Annium.Net.Mail
 
         private SmtpClient GetClient()
         {
-            return new SmtpClient(_cfg.Host, _cfg.Port)
+            return new(_cfg.Host, _cfg.Port)
             {
                 EnableSsl = _cfg.UseSsl,
                 UseDefaultCredentials = false,

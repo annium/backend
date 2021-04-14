@@ -17,6 +17,6 @@ namespace Annium.Core.Primitives.Tests
             GetFile(Path.Combine(root, "xx", "..", "x.txt")).IsAt(Path.Combine(root, "xxx")).IsFalse();
         }
 
-        private FileInfo GetFile(string path) => new FileInfo(path);
+        private FileInfo GetFile(string path) => new(path);
     }
 }

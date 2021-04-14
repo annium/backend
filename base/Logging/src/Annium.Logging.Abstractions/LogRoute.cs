@@ -17,7 +17,7 @@ namespace Annium.Logging.Abstractions
             registerRoute(this);
         }
 
-        public LogRoute For(Func<LogMessage, bool> filter) => new LogRoute(_registerRoute) { Filter = filter };
+        public LogRoute For(Func<LogMessage, bool> filter) => new(_registerRoute) { Filter = filter };
 
         public LogRoute Use(IServiceDescriptor descriptor)
         {

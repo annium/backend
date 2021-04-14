@@ -8,10 +8,10 @@ namespace Annium.Configuration.Tests
         public bool Flag { get; set; }
         public int Plain { get; set; }
         public int[] Array { get; set; } = System.Array.Empty<int>();
-        public List<int[]> Matrix { get; set; } = new List<int[]>();
-        public List<Val> List { get; set; } = new List<Val>();
-        public Dictionary<string, Val> Dictionary { get; set; } = new Dictionary<string, Val>();
-        public Val Nested { get; set; } = new Val();
+        public List<int[]> Matrix { get; set; } = new();
+        public List<Val> List { get; set; } = new();
+        public Dictionary<string, Val> Dictionary { get; set; } = new();
+        public Val Nested { get; set; } = new();
 
         public SomeConfig Abstract { get; set; } = new ConfigOne();
         public SomeEnum Enum { get; set; }

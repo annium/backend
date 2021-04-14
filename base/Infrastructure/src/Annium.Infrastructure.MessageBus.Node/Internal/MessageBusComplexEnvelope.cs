@@ -7,22 +7,22 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
     internal static class MessageBusComplexEnvelope
     {
         public static MessageBusComplexEnvelope<T> Single<T>(T data) =>
-            new MessageBusComplexEnvelope<T>(Guid.NewGuid(), EnvelopeType.Data | EnvelopeType.Final, data, string.Empty);
+            new(Guid.NewGuid(), EnvelopeType.Data | EnvelopeType.Final, data, string.Empty);
 
         public static MessageBusComplexEnvelope<T> Single<T>(string error) =>
-            new MessageBusComplexEnvelope<T>(Guid.NewGuid(), EnvelopeType.Error | EnvelopeType.Final, default!, error);
+            new(Guid.NewGuid(), EnvelopeType.Error | EnvelopeType.Final, default!, error);
 
         public static MessageBusComplexEnvelope<T> Chunk<T>(Guid id, T data) =>
-            new MessageBusComplexEnvelope<T>(id, EnvelopeType.Data, data, string.Empty);
+            new(id, EnvelopeType.Data, data, string.Empty);
 
         public static MessageBusComplexEnvelope<T> Chunk<T>(Guid id, string error) =>
-            new MessageBusComplexEnvelope<T>(id, EnvelopeType.Error, default!, error);
+            new(id, EnvelopeType.Error, default!, error);
 
         public static MessageBusComplexEnvelope<T> End<T>(Guid id, T data) =>
-            new MessageBusComplexEnvelope<T>(id, EnvelopeType.Data | EnvelopeType.Final, data, string.Empty);
+            new(id, EnvelopeType.Data | EnvelopeType.Final, data, string.Empty);
 
         public static MessageBusComplexEnvelope<T> End<T>(Guid id, string error) =>
-            new MessageBusComplexEnvelope<T>(id, EnvelopeType.Data | EnvelopeType.Final, default!, error);
+            new(id, EnvelopeType.Data | EnvelopeType.Final, default!, error);
     }
 
     internal class MessageBusComplexEnvelope<T>

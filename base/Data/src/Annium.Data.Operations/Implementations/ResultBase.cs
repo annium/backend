@@ -15,9 +15,9 @@ namespace Annium.Data.Operations.Implementations
 
         public bool IsOk => _plainErrors.Count == 0 && _labeledErrors.Count == 0;
         public bool HasErrors => _plainErrors.Count > 0 || _labeledErrors.Count > 0;
-        private readonly object _locker = new object();
-        private readonly HashSet<string> _plainErrors = new HashSet<string>();
-        private readonly Dictionary<string, HashSet<string>> _labeledErrors = new Dictionary<string, HashSet<string>>();
+        private readonly object _locker = new();
+        private readonly HashSet<string> _plainErrors = new();
+        private readonly Dictionary<string, HashSet<string>> _labeledErrors = new();
 
         public abstract T Copy();
 

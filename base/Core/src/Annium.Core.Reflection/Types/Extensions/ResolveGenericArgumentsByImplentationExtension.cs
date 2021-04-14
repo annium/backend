@@ -424,6 +424,6 @@ namespace Annium.Core.Reflection
         }
 
         private static NotImplementedException GetException(Type type, Type target) =>
-            new NotImplementedException($"Can't resolve {type.Name} generic arguments by implementation {target.Name}");
+            new($"Can't resolve {type.Name} generic arguments by implementation {target.Name}");
     }
 }

@@ -20,7 +20,7 @@ namespace Annium.Core.Mapper
         internal IReadOnlyDictionary<ValueTuple<Type, Type>, IMapConfiguration> MapConfigurations => _mapConfigurations;
 
         private readonly Dictionary<ValueTuple<Type, Type>, IMapConfiguration> _mapConfigurations =
-            new Dictionary<ValueTuple<Type, Type>, IMapConfiguration>();
+            new();
 
         public void Map<TSource, TTarget>(Expression<Func<TSource, TTarget>> mapping)
         {

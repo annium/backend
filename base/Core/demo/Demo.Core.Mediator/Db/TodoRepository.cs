@@ -8,7 +8,7 @@ namespace Demo.Core.Mediator.Db
     {
         private int _nextId = 1;
 
-        private readonly List<Todo> _data = new List<Todo>();
+        private readonly List<Todo> _data = new();
 
         public int Add(Todo model)
         {

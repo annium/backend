@@ -3,7 +3,7 @@ namespace Annium.Core.DependencyInjection.Tests
 {
     public class TestBase
     {
-        protected readonly ServiceContainer _container = new ServiceContainer();
+        protected readonly ServiceContainer _container = new();
         private IServiceProvider _provider = default!;
 
         protected void Build()

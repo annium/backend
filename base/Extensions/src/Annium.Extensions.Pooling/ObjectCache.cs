@@ -163,7 +163,7 @@ namespace Annium.Extensions.Pooling
             public TValue Value { get; private set; } = default!;
             public bool HasReferences => _references != 0;
 
-            private readonly AutoResetEvent _gate = new AutoResetEvent(initialState: false);
+            private readonly AutoResetEvent _gate = new(initialState: false);
             private uint _references;
 
             public void Wait() => _gate.WaitOne();
