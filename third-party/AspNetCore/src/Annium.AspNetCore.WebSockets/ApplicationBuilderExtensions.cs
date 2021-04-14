@@ -1,7 +1,11 @@
 using System;
+using Annium.Architecture.Http.Profiles;
 using Annium.AspNetCore.WebSockets.Internal.Middleware;
+using Annium.Core.Runtime;
 using Annium.Infrastructure.WebSockets.Server;
 using Microsoft.AspNetCore.Builder;
+
+[assembly: ReferTypeAssembly(typeof(HttpStatusCodeProfile))]
 
 namespace Annium.Core.DependencyInjection
 {

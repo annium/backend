@@ -1,5 +1,9 @@
+using Annium.Architecture.Http.Profiles;
 using Annium.AspNetCore.Extensions.Internal.Middlewares;
+using Annium.Core.Runtime;
 using Microsoft.AspNetCore.Builder;
+
+[assembly: ReferTypeAssembly(typeof(HttpStatusCodeProfile))]
 
 namespace Annium.Core.DependencyInjection
 {
@@ -9,11 +13,5 @@ namespace Annium.Core.DependencyInjection
         {
             return builder.UseMiddleware<ExceptionMiddleware>();
         }
-        //
-        // public static IApplicationBuilder UseWebSocketsMiddleware(this IApplicationBuilder builder, string url = "/ws")
-        // {
-        //     builder.UseWebSockets();
-        //     return builder.Map(url, x => x.UseMiddleware<WebSocketsMiddleware>());
-        // }
     }
 }
