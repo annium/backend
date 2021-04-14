@@ -73,7 +73,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         )
             where TNotification : NotificationBase
         {
-            var subscription = _responseObservable.OfType<TNotification>().Subscribe(handle);
+            var subscription = _responseObservable.OfType<TNotification>().SubscribeAsync(handle);
 
             return () => subscription.Dispose();
         }

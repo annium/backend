@@ -7,14 +7,14 @@ namespace System
 {
     public static class ObservableSubscribeAsyncExtensions
     {
-        public static void Subscribe<T>(
+        public static void SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             CancellationToken ct
         )
             => source.Subscribe(x => onNext(x).Await(), Stubs.Throw, Stubs.Noop, ct);
 
-        public static void Subscribe<T>(
+        public static void SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Exception, Task> onError,
@@ -22,7 +22,7 @@ namespace System
         )
             => source.Subscribe(x => onNext(x).Await(), x => onError(x).Await(), Stubs.Noop, ct);
 
-        public static void Subscribe<T>(
+        public static void SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Task> onCompleted,
@@ -30,7 +30,7 @@ namespace System
         )
             => source.Subscribe(x => onNext(x).Await(), Stubs.Throw, () => onCompleted().Await(), ct);
 
-        public static void Subscribe<T>(
+        public static void SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Exception, Task> onError,
@@ -39,27 +39,27 @@ namespace System
         )
             => source.Subscribe(x => onNext(x).Await(), x => onError(x).Await(), () => onCompleted().Await(), ct);
 
-        public static IDisposable Subscribe<T>(
+        public static IDisposable SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext
         )
             => source.Subscribe(x => onNext(x).Await(), Stubs.Throw, Stubs.Noop);
 
-        public static IDisposable Subscribe<T>(
+        public static IDisposable SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Exception, Task> onError
         )
             => source.Subscribe(x => onNext(x).Await(), x => onError(x).Await(), Stubs.Noop);
 
-        public static IDisposable Subscribe<T>(
+        public static IDisposable SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Task> onCompleted
         )
             => source.Subscribe(x => onNext(x).Await(), Stubs.Throw, () => onCompleted().Await());
 
-        public static IDisposable Subscribe<T>(
+        public static IDisposable SubscribeAsync<T>(
             this IObservable<T> source,
             Func<T, Task> onNext,
             Func<Exception, Task> onError,
