@@ -20,7 +20,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return tgt.IsAbstract || tgt.IsInterface;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx) => source =>
         {
             var vars = new List<ParameterExpression>();
             var expressions = new List<Expression>();
@@ -62,7 +62,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             var mapVar = Expression.Variable(typeof(Delegate));
             vars.Add(mapVar);
 
-            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap))!;
+            var getMap = typeof(IMapResolverContext).GetMethod(nameof(IMapResolverContext.GetMap))!;
             var getTypeEx = Expression.Call(source, typeof(object).GetMethod(nameof(GetType))!);
             expressions.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, typeVar)));
 

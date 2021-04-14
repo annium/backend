@@ -14,7 +14,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return src.GetEnumerableElementType() != null && tgt.GetEnumerableElementType() != null;
         }
 
-        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx) => source =>
         {
             var srcEl = src.GetEnumerableElementType()!;
             var tgtEl = tgt.GetEnumerableElementType()!;
@@ -54,7 +54,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             return Expression.New(constructor, selection);
         };
 
-        private LambdaExpression BuildSelectLambda(Type srcEl, Type tgtEl, IMappingContext ctx)
+        private LambdaExpression BuildSelectLambda(Type srcEl, Type tgtEl, IMapResolverContext ctx)
         {
             var param = Expression.Parameter(srcEl);
             var vars = new List<ParameterExpression>();
@@ -71,7 +71,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
             // get map for element type
             var mapVar = Expression.Variable(typeof(Delegate));
             vars.Add(mapVar);
-            var getMap = typeof(IMappingContext).GetMethod(nameof(IMappingContext.GetMap))!;
+            var getMap = typeof(IMapResolverContext).GetMethod(nameof(IMapResolverContext.GetMap))!;
             var getTypeEx = Expression.Call(param, typeof(object).GetMethod(nameof(GetType))!);
             body.Add(Expression.Assign(mapVar, Expression.Call(Expression.Constant(ctx), getMap, getTypeEx, Expression.Constant(tgtEl))));
 

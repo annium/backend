@@ -15,7 +15,7 @@ namespace Annium.Core.Mapper.Internal
         private readonly IEnumerable<IMapResolver> _mapResolvers;
         private readonly IRepacker _repacker;
         private readonly IDictionary<ValueTuple<Type, Type>, Entry> _entries = new Dictionary<ValueTuple<Type, Type>, Entry>();
-        private readonly IMappingContext _context;
+        private readonly IMapResolverContext _context;
 
         public MapBuilder(
             IEnumerable<Profile> profiles,
@@ -28,7 +28,7 @@ namespace Annium.Core.Mapper.Internal
             _typeResolver = typeResolver;
             _mapResolvers = mapResolvers;
             _repacker = repacker;
-            _context = new MappingContext(GetMap, ResolveMapping);
+            _context = new MapResolverContext(GetMap, ResolveMapping);
 
             foreach (var profile in _knownProfiles)
                 AddEntriesFromProfile(profile);

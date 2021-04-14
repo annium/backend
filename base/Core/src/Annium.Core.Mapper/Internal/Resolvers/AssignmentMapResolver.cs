@@ -18,7 +18,7 @@ namespace Annium.Core.Mapper.Internal.Resolvers
 
         public bool CanResolveMap(Type src, Type tgt) => tgt.GetConstructor(Type.EmptyTypes) is not null;
 
-        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMappingContext ctx) => source =>
+        public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx) => source =>
         {
             // defined instance and create initial assignment expression
             var variables = new List<ParameterExpression>();

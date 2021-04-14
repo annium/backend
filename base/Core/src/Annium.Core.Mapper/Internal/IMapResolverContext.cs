@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Mapper.Internal
 {
-    public interface IMappingContext
+    public interface IMapResolverContext
     {
         Delegate GetMap(Type src, Type tgt);
 
