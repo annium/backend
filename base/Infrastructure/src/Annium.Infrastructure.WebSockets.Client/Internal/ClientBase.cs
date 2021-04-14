@@ -266,17 +266,27 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             where TResponse : ResponseBase
         {
             var tcs = new TaskCompletionSource<ResponseBase>();
-            var cts = new CancellationTokenSource();
+            var cts = new CancellationTokenSource(_configuration.Timeout.ToTimeSpan());
+            // external token - operation canceled
             ct.Register(() =>
             {
-                if (!cts.IsCancellationRequested)
+                // if not arrived and not expired - cancel
+                if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
                 {
                     cts.Cancel();
                     tcs.SetException(new OperationCanceledException(ct));
                 }
             });
+            cts.Token.Register(() =>
+            {
+                // if not arrived and not canceled - expire
+                if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
+                {
+                    tcs.SetException(new TimeoutException());
+                }
+            });
 
-            _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseLifetime);
+            _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.Timeout);
             await SendInternal(request);
             var response = (TResponse) await tcs.Task;
             var data = getData(response);
@@ -313,16 +323,12 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private void CompleteResponse(ResponseBase response)
         {
             if (
-                !_requestFutures.Remove(response.Rid, out var future) ||
-                future.CancellationSource.IsCancellationRequested
+                _requestFutures.Remove(response.Rid, out var future) &&
+                !future.CancellationSource.IsCancellationRequested
             )
-                return;
-
-            future.CancellationSource.Cancel();
-            future.TaskSource.SetResult(response);
+                future.TaskSource.SetResult(response);
         }
 
-        private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource,
-            CancellationTokenSource CancellationSource);
+        private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
     }
 }

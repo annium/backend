@@ -10,7 +10,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         public SerializationFormat Format { get; private set; }
         public bool AutoConnect { get; private set; }
         public bool AutoReconnect { get; private set; }
-        public Duration ResponseLifetime { get; private set; } = Duration.FromMinutes(1);
+        public Duration Timeout { get; private set; } = Duration.FromMinutes(1);
 
         public ClientConfiguration ConnectTo(Uri uri)
         {
@@ -47,9 +47,9 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration WithResponseLifetime(Duration responseLifetime)
+        public ClientConfiguration WithTimeout(Duration responseLifetime)
         {
-            ResponseLifetime = responseLifetime;
+            Timeout = responseLifetime;
             return this;
         }
     }

@@ -8,6 +8,7 @@ using Annium.Logging.Abstractions;
 using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
 using Demo.Infrastructure.WebSockets.Domain.Responses.User;
+using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands
 {
@@ -29,7 +30,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
         {
-            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithAutoReconnect();
+            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithAutoReconnect().WithTimeout(Duration.FromSeconds(5));
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () => _logger.Debug("connection lost");
             client.ConnectionRestored += () => _logger.Debug("connection restored");
