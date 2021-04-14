@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper.Internal
 {
     public interface IMappingContext
     {

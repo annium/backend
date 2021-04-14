@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.Mapper.Internal;
 
 namespace Annium.Core.Mapper
 {
