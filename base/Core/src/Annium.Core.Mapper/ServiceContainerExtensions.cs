@@ -21,6 +21,10 @@ namespace Annium.Core.DependencyInjection
             container.Add<IRepacker, Repacker>().Singleton();
             container.Add<IMapBuilder, MapBuilder>().Singleton();
             container.Add<IMapper, Mapper.Internal.Mapper>().Singleton();
+            container.Add(sp => new Lazy<IMapContext>(
+                () => new MapContext(sp.Resolve<IMapper>()),
+                true
+            )).AsSelf().Singleton();
 
             // register resolvers
             container.AddAll(typeof(IMapResolver).Assembly, false)

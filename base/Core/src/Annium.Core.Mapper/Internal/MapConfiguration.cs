@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -8,6 +9,7 @@ namespace Annium.Core.Mapper.Internal
     {
         public static IMapConfiguration Empty { get; } = new MapConfiguration();
 
+        public Func<IMapContext, LambdaExpression>? ContextualMapWith { get; private set; }
         public LambdaExpression? MapWith { get; private set; }
         public IReadOnlyDictionary<PropertyInfo, LambdaExpression> MemberMaps => _memberMaps;
         public IReadOnlyCollection<PropertyInfo> IgnoredMembers => _ignoredMembers;
@@ -17,6 +19,11 @@ namespace Annium.Core.Mapper.Internal
         public void SetMapWith(LambdaExpression mapWith)
         {
             MapWith = mapWith;
+        }
+
+        public void SetMapWith(Func<IMapContext, LambdaExpression> mapWith)
+        {
+            ContextualMapWith = mapWith;
         }
 
         public void AddMapWithFor(IReadOnlyCollection<PropertyInfo> properties, LambdaExpression mapWith)

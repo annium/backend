@@ -14,6 +14,7 @@ namespace Annium.Core.Mapper.Internal
         private readonly ITypeResolver _typeResolver;
         private readonly IEnumerable<IMapResolver> _mapResolvers;
         private readonly IRepacker _repacker;
+        private readonly Lazy<IMapContext> _mapContext;
         private readonly IDictionary<ValueTuple<Type, Type>, Entry> _entries = new Dictionary<ValueTuple<Type, Type>, Entry>();
         private readonly IMapResolverContext _context;
 
@@ -21,13 +22,15 @@ namespace Annium.Core.Mapper.Internal
             IEnumerable<Profile> profiles,
             ITypeResolver typeResolver,
             IEnumerable<IMapResolver> mapResolvers,
-            IRepacker repacker
+            IRepacker repacker,
+            Lazy<IMapContext> mapContext
         )
         {
             _knownProfiles = profiles.ToArray();
             _typeResolver = typeResolver;
             _mapResolvers = mapResolvers;
             _repacker = repacker;
+            _mapContext = mapContext;
             _context = new MapResolverContext(GetMap, ResolveMapping);
 
             foreach (var profile in _knownProfiles)
@@ -89,7 +92,7 @@ namespace Annium.Core.Mapper.Internal
                 if (entry.HasMapping)
                     return entry.Mapping;
 
-                entry.SetMapping(BuildMapping(src, tgt, entry.HasConfiguration ? entry.Configuration : MapConfiguration.Empty));
+                entry.SetMapping(() => BuildMapping(src, tgt, entry.HasConfiguration ? entry.Configuration : MapConfiguration.Empty));
             }
 
             return entry.Mapping;
@@ -98,7 +101,7 @@ namespace Annium.Core.Mapper.Internal
         private Mapping BuildMapping(Type src, Type tgt, IMapConfiguration cfg)
         {
             var mapResolver = _mapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
-            if (mapResolver != null)
+            if (mapResolver is not null)
                 return mapResolver.ResolveMap(src, tgt, cfg, _context);
 
             throw new MappingException(src, tgt, "No map found.");
@@ -113,7 +116,7 @@ namespace Annium.Core.Mapper.Internal
             foreach (var type in types)
             {
                 var profile = _knownProfiles.SingleOrDefault(x => x.GetType() == type)
-                              ?? (Profile) Activator.CreateInstance(type)!;
+                    ?? (Profile) Activator.CreateInstance(type)!;
 
                 AddEntriesFromProfile(profile);
             }
@@ -128,8 +131,11 @@ namespace Annium.Core.Mapper.Internal
                 var entry = GetEntry(key);
                 if (!entry.HasConfiguration)
                     entry.SetConfiguration(cfg);
-                if (!entry.HasMapping && cfg.MapWith != null)
-                    entry.SetMapping(_repacker.Repack(cfg.MapWith.Body));
+                if (!entry.HasMapping)
+                    if (cfg.ContextualMapWith is not null)
+                        entry.SetMapping(() => _repacker.Repack(cfg.ContextualMapWith(_mapContext.Value).Body));
+                    else if (cfg.MapWith is not null)
+                        entry.SetMapping(() => _repacker.Repack(cfg.MapWith.Body));
             }
         }
 
@@ -151,11 +157,12 @@ namespace Annium.Core.Mapper.Internal
             public bool HasConfiguration => Configuration is not null!;
             public IMapConfiguration Configuration { get; private set; } = default!;
             public object MappingLock = new();
-            public bool HasMapping => Mapping is not null!;
-            public Mapping Mapping { get; private set; } = default!;
+            public bool HasMapping => _mapping is not null!;
+            public Mapping Mapping => _mapping.Value;
             public object MapLock = new();
             public bool HasMap => Map is not null!;
             public Delegate Map { get; private set; } = default!;
+            private Lazy<Mapping> _mapping = default!;
 
             private Entry()
             {
@@ -169,12 +176,12 @@ namespace Annium.Core.Mapper.Internal
                 Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             }
 
-            public void SetMapping(Mapping mapping)
+            public void SetMapping(Func<Mapping> mapping)
             {
                 if (HasMapping)
                     throw new InvalidOperationException("Mapping already set");
 
-                Mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
+                _mapping = new Lazy<Mapping>(mapping, true);
             }
 
             public void SetMap(Delegate map)

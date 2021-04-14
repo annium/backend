@@ -9,8 +9,12 @@ namespace Annium.Core.Mapper.Internal
         public IMapConfiguration Result => _result;
         private readonly MapConfiguration _result = new();
 
-
         public void With(Expression<Func<TS, T>> map)
+        {
+            _result.SetMapWith(map);
+        }
+
+        public void With(Func<IMapContext, Expression<Func<TS, T>>> map)
         {
             _result.SetMapWith(map);
         }

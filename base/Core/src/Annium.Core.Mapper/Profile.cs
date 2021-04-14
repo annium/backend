@@ -29,6 +29,13 @@ namespace Annium.Core.Mapper
             map.With(mapping);
         }
 
+        public void Map<TSource, TTarget>(Func<IMapContext, Expression<Func<TSource, TTarget>>> mapping)
+        {
+            var map = Map<TSource, TTarget>();
+
+            map.With(mapping);
+        }
+
         public IMapConfigurationBuilder<TSource, TTarget> Map<TSource, TTarget>()
         {
             var map = new MapConfigurationBuilder<TSource, TTarget>();
