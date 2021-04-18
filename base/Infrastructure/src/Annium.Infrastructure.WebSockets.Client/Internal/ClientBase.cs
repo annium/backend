@@ -40,11 +40,9 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
             var options = new ClientWebSocketOptions();
             if (_configuration.AutoReconnect)
-            {
                 options.ReconnectOnFailure = true;
-                options.OnConnectionLost = OnConnectionLost;
-                options.OnConnectionRestored = OnConnectionRestored;
-            }
+            options.OnConnectionLost = OnConnectionLost;
+            options.OnConnectionRestored = OnConnectionRestored;
 
             _socket = new ClientWebSocket(options);
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
@@ -52,11 +50,17 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);
         }
 
-        public Task ConnectAsync(CancellationToken ct = default) =>
-            _socket.ConnectAsync(_configuration.Uri, ct);
+        public async Task ConnectAsync(CancellationToken ct = default)
+        {
+            await _socket.ConnectAsync(_configuration.Uri, ct);
+            ConnectionRestored.Invoke();
+        }
 
-        public Task DisconnectAsync(CancellationToken ct = default) =>
-            _socket.DisconnectAsync(ct);
+        public async Task DisconnectAsync(CancellationToken ct = default)
+        {
+            await _socket.DisconnectAsync(ct);
+            ConnectionLost.Invoke();
+        }
 
         public Action Listen<TNotification>(
             Action<TNotification> handle
