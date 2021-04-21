@@ -240,7 +240,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         {
             await _disposable.DisposeAsync();
             await _socket.DisconnectAsync(CancellationToken.None);
-            _socket.Dispose();
+            await _socket.DisposeAsync();
         }
 
         private async Task OnConnectionLost()

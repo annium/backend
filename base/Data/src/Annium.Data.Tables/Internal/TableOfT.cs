@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using static Annium.Data.Tables.Internal.TableHelper;
 
@@ -126,9 +127,11 @@ namespace Annium.Data.Tables.Internal
             AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
         }
 
-        public override void Dispose()
+        public override async ValueTask DisposeAsync()
         {
-            _table.Clear();
+            await base.DisposeAsync();
+            lock (DataLocker)
+                _table.Clear();
         }
     }
 }

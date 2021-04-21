@@ -20,7 +20,7 @@ namespace Annium.Net.WebSockets
 
         protected TNativeSocket Socket { get; set; }
         private readonly UTF8Encoding _encoding = new();
-        private readonly IObservable<SocketMessage> _socketObservable;
+        private readonly IObservableInstance<SocketMessage> _socketObservable;
 
         internal WebSocketBase(
             TNativeSocket socket
@@ -65,8 +65,8 @@ namespace Annium.Net.WebSockets
             return Unit.Default;
         });
 
-        private IObservable<SocketMessage> CreateSocketObservable() =>
-            ObservableInstance.Create<SocketMessage>(async ctx =>
+        private IObservableInstance<SocketMessage> CreateSocketObservable() =>
+            ObservableInstance.Static<SocketMessage>(async ctx =>
             {
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
@@ -75,9 +75,12 @@ namespace Annium.Net.WebSockets
                 {
                     // Debug($"INTERNAL: Resume in {Socket.State} state");
 
+                    // initial spin, until connected
+                    SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
+
                     while (!ctx.Token.IsCancellationRequested)
                     {
-                        SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
+                        // keep receiving until closed
                         if (await ReceiveAsync(ctx, buffer) == Status.Closed)
                             break;
                     }
@@ -88,6 +91,7 @@ namespace Annium.Net.WebSockets
                 finally
                 {
                     pool.Return(buffer);
+                    ctx.OnCompleted();
 
                     // Debug($"INTERNAL: Suspend in {Socket.State} state");
                 }
@@ -105,7 +109,7 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     // Debug($"INTERNAL: Receive in State {Socket.State}");
-                    result = await Socket.ReceiveAsync(buffer, CancellationToken.None);
+                    result = await Socket.ReceiveAsync(buffer, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
                     // Debug($"INTERNAL: Received {result.MessageType} in State {Socket.State}");
                 }
                 //  remote party closed connection w/o handshake
@@ -115,12 +119,10 @@ namespace Annium.Net.WebSockets
                     if (await HandleDisconnect() == Status.Closed)
                         return Status.Closed;
                 }
-                // token was canceled, or connection was aborted during Receive operation
+                // token was canceled, no message received - will retry
                 catch (OperationCanceledException)
                 {
-                    // Debug($"INTERNAL: OperationCanceledException {e}");
-                    ctx.OnCompleted();
-                    return Status.Closed;
+                    return Status.Opened;
                 }
                 catch (Exception e)
                 {
@@ -150,7 +152,6 @@ namespace Annium.Net.WebSockets
                     State == WebSocketState.Aborted
                 )
                 {
-                    ctx.OnCompleted();
                     return Status.Closed;
                 }
 
@@ -158,9 +159,10 @@ namespace Annium.Net.WebSockets
             }
         }
 
-        public void Dispose()
+        public ValueTask DisposeAsync()
         {
             Socket.Dispose();
+            return _socketObservable.DisposeAsync();
         }
 
         // private void Debug(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");

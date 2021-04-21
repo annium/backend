@@ -13,7 +13,7 @@ namespace Annium.Data.Tables.Internal
         public abstract int Count { get; }
         protected readonly object DataLocker = new();
         private readonly object _notificationLocker = new();
-        private readonly IObservable<IChangeEvent<T>> _observable;
+        private readonly IObservableInstance<IChangeEvent<T>> _observable;
         private readonly TablePermission _permissions;
         private readonly BlockingCollection<IChangeEvent<T>> _events;
 
@@ -54,7 +54,7 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IObservable<IChangeEvent<T>> CreateObservable() => ObservableInstance.Create<IChangeEvent<T>>(ctx =>
+        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.Static<IChangeEvent<T>>(ctx =>
         {
             while (!ctx.Token.IsCancellationRequested)
             {
@@ -76,6 +76,9 @@ namespace Annium.Data.Tables.Internal
 
         IEnumerator IEnumerable.GetEnumerator() => Get().GetEnumerator();
 
-        public abstract void Dispose();
+        public virtual ValueTask DisposeAsync()
+        {
+            return _observable.DisposeAsync();
+        }
     }
 }
