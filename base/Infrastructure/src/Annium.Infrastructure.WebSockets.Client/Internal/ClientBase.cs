@@ -19,8 +19,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
     internal class ClientBase : IClientBase, IAsyncDisposable
     {
         public bool IsConnected => _socket.State == WebSocketState.Open;
-        public event Action ConnectionLost = delegate { };
-        public event Action ConnectionRestored = delegate { };
+        public event Func<Task> ConnectionLost = () => Task.CompletedTask;
+        public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
         private readonly ClientConfiguration _configuration;
         private readonly Serializer _serializer;
         private readonly ClientWebSocket _socket;
@@ -53,13 +53,13 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public async Task ConnectAsync(CancellationToken ct = default)
         {
             await _socket.ConnectAsync(_configuration.Uri, ct);
-            ConnectionRestored.Invoke();
+            await ConnectionRestored.Invoke();
         }
 
         public async Task DisconnectAsync(CancellationToken ct = default)
         {
             await _socket.DisconnectAsync(ct);
-            ConnectionLost.Invoke();
+            await ConnectionLost.Invoke();
         }
 
         public Action Listen<TNotification>(
@@ -243,16 +243,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _socket.Dispose();
         }
 
-        private Task OnConnectionLost()
+        private async Task OnConnectionLost()
         {
-            ConnectionLost.Invoke();
-            return Task.CompletedTask;
+            await ConnectionLost.Invoke();
         }
 
-        private Task OnConnectionRestored()
+        private async Task OnConnectionRestored()
         {
-            ConnectionRestored.Invoke();
-            return Task.CompletedTask;
+            await ConnectionRestored.Invoke();
         }
 
         private async Task SendInternal<T>(T data)
