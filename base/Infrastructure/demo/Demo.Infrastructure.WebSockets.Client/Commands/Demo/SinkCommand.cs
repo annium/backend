@@ -29,20 +29,17 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 
         public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken token)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions
+            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectOnFailure = true });
+            ws.ConnectionLost += () =>
             {
-                ReconnectOnFailure = true,
-                OnConnectionLost = () =>
-                {
-                    _logger.Debug("connection lost");
-                    return Task.CompletedTask;
-                },
-                OnConnectionRestored = () =>
-                {
-                    _logger.Debug("connection restored");
-                    return Task.CompletedTask;
-                },
-            });
+                _logger.Debug("connection lost");
+                return Task.CompletedTask;
+            };
+            ws.ConnectionRestored += () =>
+            {
+                _logger.Debug("connection restored");
+                return Task.CompletedTask;
+            };
 
             _logger.Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, token);

@@ -8,6 +8,8 @@ namespace Annium.Net.WebSockets
 {
     public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket
     {
+        public event Func<Task> ConnectionLost = () => Task.CompletedTask;
+        public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
         private readonly ClientWebSocketOptions _options;
         private Uri? _uri;
 
@@ -68,14 +70,12 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnDisconnectAsync()
         {
-            if (_options.OnConnectionLost is not null)
-                await _options.OnConnectionLost();
+            await ConnectionLost.Invoke();
             if (_options.ReconnectOnFailure)
             {
                 await Task.Delay(10);
                 await ConnectAsync(_uri!, CancellationToken.None);
-                if (_options.OnConnectionRestored is not null)
-                    await _options.OnConnectionRestored();
+                await ConnectionRestored.Invoke();
             }
         }
     }

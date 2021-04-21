@@ -29,8 +29,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         {
             var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithAutoReconnect();
             var client = _clientFactory.Create(configuration);
-            client.ConnectionLost += () => _logger.Debug("connection lost");
-            client.ConnectionRestored += () => _logger.Debug("connection restored");
+            client.ConnectionLost += () =>
+            {
+                _logger.Debug("connection lost");
+                return Task.CompletedTask;
+            };
+            client.ConnectionRestored += () =>
+            {
+                _logger.Debug("connection restored");
+                return Task.CompletedTask;
+            };
 
             _logger.Debug($"Connecting to {cfg.Server}");
             await client.ConnectAsync(token);

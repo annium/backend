@@ -12,6 +12,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
     internal interface IServerLifetimeManager
     {
+        CancellationToken Stopping { get; }
         void Stop();
     }
 

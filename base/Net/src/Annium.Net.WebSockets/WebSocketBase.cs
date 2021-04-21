@@ -78,7 +78,8 @@ namespace Annium.Net.WebSockets
                     while (!ctx.Token.IsCancellationRequested)
                     {
                         SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
-                        await ReceiveAsync(ctx, buffer);
+                        if (await ReceiveAsync(ctx, buffer) == Status.Closed)
+                            break;
                     }
                 }
                 catch (OperationCanceledException)
@@ -92,7 +93,7 @@ namespace Annium.Net.WebSockets
                 }
             });
 
-        private async ValueTask ReceiveAsync(
+        private async ValueTask<Status> ReceiveAsync(
             ObserverContext<SocketMessage> ctx,
             Memory<byte> buffer
         )
@@ -111,15 +112,15 @@ namespace Annium.Net.WebSockets
                 catch (WebSocketException)
                 {
                     // Debug($"INTERNAL: WebSocketException {e}");
-                    if (!await HandleDisconnect())
-                        return;
+                    if (await HandleDisconnect() == Status.Closed)
+                        return Status.Closed;
                 }
                 // token was canceled, or connection was aborted during Receive operation
                 catch (OperationCanceledException)
                 {
                     // Debug($"INTERNAL: OperationCanceledException {e}");
                     ctx.OnCompleted();
-                    return;
+                    return Status.Closed;
                 }
                 catch (Exception e)
                 {
@@ -128,15 +129,17 @@ namespace Annium.Net.WebSockets
                 }
 
                 // if closing - handle disconnect
-                if (result.MessageType == WebSocketMessageType.Close && !await HandleDisconnect())
-                    return;
+                if (result.MessageType == WebSocketMessageType.Close && await HandleDisconnect() == Status.Closed)
+                    return Status.Closed;
 
                 stream.Write(buffer.Slice(0, result.Count).Span);
             } while (!result.EndOfMessage);
 
             ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
 
-            async Task<bool> HandleDisconnect()
+            return Status.Opened;
+
+            async Task<Status> HandleDisconnect()
             {
                 await OnDisconnectAsync().ConfigureAwait(false);
 
@@ -148,10 +151,10 @@ namespace Annium.Net.WebSockets
                 )
                 {
                     ctx.OnCompleted();
-                    return false;
+                    return Status.Closed;
                 }
 
-                return true;
+                return Status.Opened;
             }
         }
 
@@ -161,5 +164,11 @@ namespace Annium.Net.WebSockets
         }
 
         // private void Debug(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");
+
+        private enum Status
+        {
+            Opened,
+            Closed
+        }
     }
 }

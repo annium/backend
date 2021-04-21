@@ -41,10 +41,10 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             var options = new ClientWebSocketOptions();
             if (_configuration.AutoReconnect)
                 options.ReconnectOnFailure = true;
-            options.OnConnectionLost = OnConnectionLost;
-            options.OnConnectionRestored = OnConnectionRestored;
 
             _socket = new ClientWebSocket(options);
+            _socket.ConnectionLost += OnConnectionLost;
+            _socket.ConnectionRestored += OnConnectionRestored;
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
             _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);

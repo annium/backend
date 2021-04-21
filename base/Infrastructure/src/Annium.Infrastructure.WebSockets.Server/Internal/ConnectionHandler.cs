@@ -19,7 +19,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         where TState : ConnectionStateBase
     {
         private readonly IServiceProvider _sp;
-        private readonly IServerLifetime _lifetime;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
         private readonly Connection _cn;
@@ -27,7 +26,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public ConnectionHandler(
             IServiceProvider sp,
-            IServerLifetime lifetime,
             IMediator mediator,
             Serializer serializer,
             Func<Guid, TState> stateFactory,
@@ -35,14 +33,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         )
         {
             _sp = sp;
-            _lifetime = lifetime;
             _mediator = mediator;
             _serializer = serializer;
             _cn = cn;
             _state = stateFactory(cn.Id);
         }
 
-        public async Task HandleAsync()
+        public async Task HandleAsync(CancellationToken ct)
         {
             await using var scope = _sp.CreateAsyncScope();
             var executor = Executor.Background.Parallel();
@@ -52,27 +49,29 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
                 var tcs = new TaskCompletionSource<object>();
 
-                // immediately subscribe to stopping event
-                _lifetime.Stopping.Register(() => tcs.TrySetResult(new object()));
+                // immediately subscribe to cancellation
+                ct.Register(() => tcs.TrySetResult(new object()));
 
                 // start listening to messages and adding them to scheduler
-                _cn.Socket
+                var subscription = _cn.Socket
                     .Listen()
                     .Subscribe(
                         x => executor.Schedule(() => HandleMessage(x)),
                         x => tcs.SetException(x),
-                        () => tcs.SetResult(new object()),
-                        _lifetime.Stopping
+                        () => tcs.SetResult(new object())
                     );
 
                 // process start hook
                 await lifeCycleCoordinator.HandleStartAsync(_state);
 
-                // start scheduler to process backlog and run upcomming work immediately
+                // start scheduler to process backlog and run upcoming work immediately
                 executor.Start(CancellationToken.None);
 
                 // wait until connection complete
                 await tcs.Task;
+
+                // dispose messages subscription
+                subscription.Dispose();
             }
             finally
             {

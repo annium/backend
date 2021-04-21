@@ -1,3 +1,4 @@
+using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -7,6 +8,8 @@ namespace Annium.Net.WebSockets
 {
     public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     {
+        public event Func<Task> ConnectionLost = () => Task.CompletedTask;
+
         public WebSocket(
             NativeWebSocket socket
         ) : base(
@@ -34,9 +37,9 @@ namespace Annium.Net.WebSockets
             }
         }
 
-        protected override Task OnDisconnectAsync()
+        protected override async Task OnDisconnectAsync()
         {
-            return Task.CompletedTask;
+            await ConnectionLost.Invoke();
         }
     }
 }

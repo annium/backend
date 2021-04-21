@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.WebSockets.Domain.Models;
@@ -36,7 +37,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             await using var scope = _sp.CreateAsyncScope();
             try
             {
-                await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync();
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
+                socket.ConnectionLost += () =>
+                {
+                    cts.Cancel();
+                    return Task.CompletedTask;
+                };
+                await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync(cts.Token);
             }
             finally
             {
