@@ -7,6 +7,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
@@ -54,6 +55,7 @@ namespace Annium.Net.WebSockets
             CancellationToken ct
         ) => Observable.FromAsync(async () =>
         {
+            this.Trace(() => $"send");
             // TODO: implement chunking, if needed
             await Socket.SendAsync(
                 buffer: data,
@@ -68,32 +70,35 @@ namespace Annium.Net.WebSockets
         private IObservableInstance<SocketMessage> CreateSocketObservable() =>
             ObservableInstance.Static<SocketMessage>(async ctx =>
             {
+                this.Trace(() => "start, rent buffer");
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
                 try
                 {
-                    // Debug($"INTERNAL: Resume in {Socket.State} state");
-
                     // initial spin, until connected
+                    Log.Trace(() => "spin until connected");
                     SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
 
                     while (!ctx.Token.IsCancellationRequested)
                     {
                         // keep receiving until closed
                         if (await ReceiveAsync(ctx, buffer) == Status.Closed)
+                        {
+                            this.Trace(() => "Receive ended with Status.Closed - break receive cycle");
                             break;
+                        }
                     }
                 }
                 catch (OperationCanceledException)
                 {
+                    this.Trace(() => "Receive canceled");
                 }
                 finally
                 {
+                    this.Trace(() => "end, return buffer, send OnCompleted");
                     pool.Return(buffer);
                     ctx.OnCompleted();
-
-                    // Debug($"INTERNAL: Suspend in {Socket.State} state");
                 }
             });
 
@@ -108,33 +113,41 @@ namespace Annium.Net.WebSockets
             {
                 try
                 {
-                    // Debug($"INTERNAL: Receive in State {Socket.State}");
+                    this.Trace(() => $"Try receive in State {Socket.State}");
                     result = await Socket.ReceiveAsync(buffer, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
-                    // Debug($"INTERNAL: Received {result.MessageType} in State {Socket.State}");
+                    var messageType = result.MessageType;
+                    this.Trace(() => $"Received {messageType} in State {Socket.State}");
                 }
                 //  remote party closed connection w/o handshake
-                catch (WebSocketException)
+                catch (WebSocketException e)
                 {
-                    // Debug($"INTERNAL: WebSocketException {e}");
+                    this.Trace(() => $"WebSocketException {e}");
                     if (await HandleDisconnect() == Status.Closed)
+                    {
+                        this.Trace(() => "HandleDisconnect returned Status.Closed");
                         return Status.Closed;
+                    }
                 }
                 // token was canceled, no message received - will retry
                 catch (OperationCanceledException)
                 {
+                    this.Trace(() => "Operation canceled - return Status.Opened");
                     return Status.Opened;
                 }
                 catch (Exception e)
                 {
-                    // Debug($"INTERNAL: Exception {e}");
+                    this.Trace(() => $"Exception {e}");
                     ctx.OnError(e);
                 }
 
                 // if closing - handle disconnect
                 if (result.MessageType == WebSocketMessageType.Close && await HandleDisconnect() == Status.Closed)
+                {
+                    this.Trace(() => "Received close message and HandleDisconnect returned Status.Closed");
                     return Status.Closed;
+                }
 
-                stream.Write(buffer.Slice(0, result.Count).Span);
+                stream.Write(buffer[..result.Count].Span);
             } while (!result.EndOfMessage);
 
             ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
@@ -143,7 +156,9 @@ namespace Annium.Net.WebSockets
 
             async Task<Status> HandleDisconnect()
             {
+                this.Trace(() => "OnDisconnectAsync - start");
                 await OnDisconnectAsync().ConfigureAwait(false);
+                this.Trace(() => "OnDisconnectAsync - complete");
 
                 // if after disconnect handling not connected - set completed and break
                 if (
@@ -161,11 +176,10 @@ namespace Annium.Net.WebSockets
 
         public ValueTask DisposeAsync()
         {
+            this.Trace(() => "DisposeAsync");
             Socket.Dispose();
             return _socketObservable.DisposeAsync();
         }
-
-        // private void Debug(string msg) => Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");
 
         private enum Status
         {

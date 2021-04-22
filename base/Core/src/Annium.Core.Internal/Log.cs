@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 
 namespace Annium.Core.Internal
 {
-    public static class Framework
+    public static class Log
     {
         private static LogLevel Mode { get; } = LogLevel.Release;
         private const string ModeVar = "ANNIUM_MODE";
 
-        static Framework()
+        static Log()
         {
             var modeValue = Environment.GetEnvironmentVariable(ModeVar);
             if (modeValue is not null && Enum.TryParse(modeValue, true, out LogLevel mode))

@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Models;
@@ -41,6 +42,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(CancellationToken ct)
         {
+            this.Trace(() => "Start");
             await using var scope = _sp.CreateAsyncScope();
             var executor = Executor.Background.Parallel();
             LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
@@ -53,6 +55,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 ct.Register(() => tcs.TrySetResult(new object()));
 
                 // start listening to messages and adding them to scheduler
+                this.Trace(() => "Init subscription");
                 var subscription = _cn.Socket
                     .Listen()
                     .Subscribe(
@@ -65,9 +68,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 await lifeCycleCoordinator.HandleStartAsync(_state);
 
                 // start scheduler to process backlog and run upcoming work immediately
+                this.Trace(() => "Start executor");
                 executor.Start(CancellationToken.None);
 
                 // wait until connection complete
+                this.Trace(() => "Wait until connection complete");
                 await tcs.Task;
 
                 // dispose messages subscription
@@ -76,6 +81,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             finally
             {
                 // all handlers must be complete before teardown lifecycle hook
+                this.Trace(() => "Dispose executor");
                 await executor.DisposeAsync();
 
                 // process end hook

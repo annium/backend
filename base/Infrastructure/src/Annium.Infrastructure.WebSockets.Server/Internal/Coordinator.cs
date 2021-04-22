@@ -2,6 +2,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Internal;
+using Annium.Diagnostics.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Net.WebSockets;
 
@@ -32,14 +34,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(WebSocket socket)
         {
+            this.Trace(() => $"Start for socket {socket.GetId()}");
             await using var cn = new Connection(Guid.NewGuid(), socket);
             _connectionTracker.Track(cn);
             await using var scope = _sp.CreateAsyncScope();
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
             {
-                using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
                 socket.ConnectionLost += () =>
                 {
+                    this.Trace(() => $"Handle lost connection on socket {socket.GetId()}");
                     cts.Cancel();
                     return Task.CompletedTask;
                 };
@@ -49,6 +53,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 _connectionTracker.Release(cn);
             }
+            this.Trace(() => $"End for socket {socket.GetId()}");
         }
 
         public void Shutdown()

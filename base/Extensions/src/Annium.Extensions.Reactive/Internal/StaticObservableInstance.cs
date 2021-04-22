@@ -19,7 +19,7 @@ namespace Annium.Extensions.Reactive.Internal
             Func<ObserverContext<T>, Task> factory
         )
         {
-            _factoryTask = factory(new ObserverContext<T>(OnNext, OnError, OnCompleted, _cts.Token));
+            _factoryTask = Task.Run(() => factory(new ObserverContext<T>(OnNext, OnError, OnCompleted, _cts.Token)));
         }
 
         public IDisposable Subscribe(IObserver<T> observer)

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Internal;
+using Annium.Diagnostics.Debug;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
@@ -13,7 +15,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Track(Connection cn)
         {
+            this.Trace(() => $"Track connection {cn.GetId()}");
             _connections.TryAdd(cn.Id, cn);
+            this.Trace(() => $"Invoke OnTrack for connection {cn.GetId()}");
             OnTrack.Invoke(cn.Id);
         }
 
@@ -24,8 +28,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Release(Connection cn)
         {
+            this.Trace(() => $"Try release connection {cn.GetId()}");
             if (_connections.TryRemove(cn.Id, out _))
+            {
+                this.Trace(() => $"Invoke OnRelease for connection {cn.GetId()}");
                 OnRelease.Invoke(cn.Id);
+            }
         }
 
         public IReadOnlyCollection<Connection> Slice()

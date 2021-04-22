@@ -1,19 +1,20 @@
-using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace Annium.Diagnostics.Debug
 {
     public static class IdExtensions
     {
-        private static ConditionalWeakTable<object, string> _ids = new();
+        public static string GetId<T>(this T obj) where T : class => IdTable<T>.GetId(obj);
 
-        public static string GetId<T>(this T obj) where T : class =>
-            _ids.GetValue(obj, e => Guid.NewGuid().ToString());
+        private class IdTable<T>
+            where T : class
+        {
+            private static long Id;
+            private static readonly ConditionalWeakTable<T, string> Ids = new();
 
-        public static void Trace<T>(this T obj, string message, bool withTrace = false) where T : class =>
-            Console.WriteLine(
-                $"{obj.GetType().Name}[{obj.GetId()}]{message}" +
-                (withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)
-            );
+            public static string GetId(T obj) =>
+                Ids.GetValue(obj, _ => Interlocked.Increment(ref Id).ToString("000"));
+        }
     }
 }
