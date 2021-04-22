@@ -1,8 +1,9 @@
 namespace Annium.Core.Internal
 {
-    public enum SetupMode
+    internal enum LogLevel
     {
-        Debug,
         Release,
+        Debug,
+        Trace,
     }
 }
