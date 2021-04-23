@@ -98,13 +98,17 @@ namespace Annium.Net.WebSockets
                     // initial spin, until connected
                     Log.Trace(() => "spin until connected");
                     SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
-                    var cts = CancellationTokenSource.CreateLinkedTokenSource(ctx.Token);
 
+                    // start keepAlive monitor
+                    var cts = CancellationTokenSource.CreateLinkedTokenSource(ctx.Token);
+                    var ct = cts.Token;
                     await using var keepAliveMonitor = _keepAliveMonitorFactory(this, cts.Cancel);
-                    while (!ctx.Token.IsCancellationRequested)
+
+                    // run polling
+                    while (!ct.IsCancellationRequested)
                     {
                         // keep receiving until closed
-                        if (await ReceiveAsync(ctx, buffer) == Status.Closed)
+                        if (await ReceiveAsync(ctx, buffer, ct) == Status.Closed)
                         {
                             this.Trace(() => "Receive ended with Status.Closed - break receive cycle");
                             break;
@@ -125,7 +129,8 @@ namespace Annium.Net.WebSockets
 
         private async ValueTask<Status> ReceiveAsync(
             ObserverContext<SocketMessage> ctx,
-            Memory<byte> buffer
+            Memory<byte> buffer,
+            CancellationToken ct
         )
         {
             await using var stream = new MemoryStream();
@@ -135,7 +140,7 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     this.Trace(() => $"Try receive in State {Socket.State}");
-                    result = await Socket.ReceiveAsync(buffer, ctx.Token);
+                    result = await Socket.ReceiveAsync(buffer, ct);
                     var messageType = result.MessageType;
                     this.Trace(() => $"Received {messageType} in State {Socket.State}");
                 }

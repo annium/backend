@@ -12,12 +12,12 @@ namespace Annium.Net.WebSockets
     {
         public static ActiveKeepAlive Create(
             string pingFrame = "ping",
-            int pingInterval = 1,
+            int pingInterval = 30,
             string pongFrame = "pong"
         ) => new()
         {
             PingFrame = pingFrame,
-            PingInterval = Duration.FromMinutes(pingInterval),
+            PingInterval = Duration.FromSeconds(pingInterval),
             PongFrame = pongFrame,
         };
 
@@ -32,7 +32,7 @@ namespace Annium.Net.WebSockets
             PongFrame = pongFrame,
         };
 
-        public string PingFrame { get; init; }
-        public string PongFrame { get; init; }
+        public string PingFrame { get; init; } = string.Empty;
+        public string PongFrame { get; init; } = string.Empty;
     }
 }

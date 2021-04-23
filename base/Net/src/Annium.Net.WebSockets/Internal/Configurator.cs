@@ -5,6 +5,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 
 namespace Annium.Net.WebSockets.Internal
@@ -26,20 +27,26 @@ namespace Annium.Net.WebSockets.Internal
             // if active - send pings/count pongs via monitor
             if (options.ActiveKeepAlive is not null)
             {
+                var opts = options.ActiveKeepAlive;
                 keepAliveMonitorFactory =
-                    (socket, signal) => new KeepAliveMonitor(socket, encoding,options.ActiveKeepAlive, signal);
-                keepAliveMessages.Add(options.ActiveKeepAlive.PongFrame);
+                    (socket, signal) => new KeepAliveMonitor(socket, encoding, opts, signal);
+                keepAliveMessages.Add(opts.PongFrame);
             }
 
             // if passive - listen pings, respond with pongs
             if (options.PassiveKeepAlive is not null)
             {
+                var opts = options.PassiveKeepAlive;
                 disposable += observable
                     .Where(x => x.Type == WebSocketMessageType.Text)
                     .Select(x => encoding.GetString(x.Data.Span))
-                    .Where(x => x == options.PassiveKeepAlive.PingFrame)
-                    .SubscribeAsync(async _ => await send(options.PassiveKeepAlive.PongFrame));
-                keepAliveMessages.Add(options.PassiveKeepAlive.PingFrame);
+                    .Where(x => x == opts.PingFrame)
+                    .SubscribeAsync(async _ =>
+                    {
+                        observable.Trace(() => $"KeepAlive: {opts.PingFrame} -> {opts.PongFrame}");
+                        await send(opts.PongFrame);
+                    });
+                keepAliveMessages.Add(opts.PingFrame);
             }
 
             // configure binaryObservable (just for symmetry)
