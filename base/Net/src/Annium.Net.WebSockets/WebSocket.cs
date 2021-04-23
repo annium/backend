@@ -12,8 +12,19 @@ namespace Annium.Net.WebSockets
 
         public WebSocket(
             NativeWebSocket socket
+        ) : this(
+            socket,
+            new WebSocketOptions()
+        )
+        {
+        }
+
+        public WebSocket(
+            NativeWebSocket socket,
+            WebSocketOptions options
         ) : base(
-            socket
+            socket,
+            options
         )
         {
         }

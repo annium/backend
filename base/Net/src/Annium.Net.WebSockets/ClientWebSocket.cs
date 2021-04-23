@@ -14,16 +14,25 @@ namespace Annium.Net.WebSockets
         private Uri? _uri;
 
         public ClientWebSocket(
-            ClientWebSocketOptions? options = null
+            ClientWebSocketOptions options
         ) : base(
-            new NativeClientWebSocket()
+            new NativeClientWebSocket(),
+            options
         )
         {
-            _options = options ?? new ClientWebSocketOptions
+            _options = options;
+        }
+
+        public ClientWebSocket(
+        ) : this(
+            new ClientWebSocketOptions
             {
                 ReconnectOnFailure = true,
-            };
+            }
+        )
+        {
         }
+
 
         public async Task ConnectAsync(Uri uri, CancellationToken token)
         {

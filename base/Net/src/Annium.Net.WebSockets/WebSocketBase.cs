@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
+using Annium.Core.Primitives;
+using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
@@ -21,14 +23,35 @@ namespace Annium.Net.WebSockets
 
         protected TNativeSocket Socket { get; set; }
         private readonly UTF8Encoding _encoding = new();
-        private readonly IObservableInstance<SocketMessage> _socketObservable;
+        private readonly IObservable<SocketMessage> _observable;
+        private readonly IObservable<string> _textObservable;
+        private readonly IObservable<ReadOnlyMemory<byte>> _binaryObservable;
+        private readonly Func<ISendingReceivingWebSocket, Action, IAsyncDisposable> _keepAliveMonitorFactory;
+        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         internal WebSocketBase(
-            TNativeSocket socket
+            TNativeSocket socket,
+            WebSocketBaseOptions options
         )
         {
             Socket = socket;
-            _socketObservable = CreateSocketObservable();
+
+            // start socket observable
+            var observable = CreateSocketObservable();
+            _observable = observable;
+            _disposable += observable;
+
+            // resolve components from configuration
+            var cfg = Configurator.GetConfiguration(
+                observable,
+                _encoding,
+                x => Send(x, CancellationToken.None),
+                options
+            );
+            _binaryObservable = cfg.BinaryObservable;
+            _textObservable = cfg.TextObservable;
+            _keepAliveMonitorFactory = cfg.KeepAliveMonitorFactory;
+            _disposable += cfg.Disposable;
         }
 
         public IObservable<Unit> Send(string data, CancellationToken token) =>
@@ -37,15 +60,11 @@ namespace Annium.Net.WebSockets
         public IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token) =>
             Send(data, WebSocketMessageType.Binary, token);
 
-        public IObservable<SocketMessage> Listen() => _socketObservable;
+        public IObservable<SocketMessage> Listen() => _observable;
 
-        public IObservable<string> ListenText() => _socketObservable
-            .Where(x => x.Type == WebSocketMessageType.Text)
-            .Select(x => _encoding.GetString(x.Data.Span));
+        public IObservable<string> ListenText() => _textObservable;
 
-        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => _socketObservable
-            .Where(x => x.Type == WebSocketMessageType.Binary)
-            .Select(x => x.Data);
+        public IObservable<ReadOnlyMemory<byte>> ListenBinary() => _binaryObservable;
 
         protected abstract Task OnDisconnectAsync();
 
@@ -55,7 +74,7 @@ namespace Annium.Net.WebSockets
             CancellationToken ct
         ) => Observable.FromAsync(async () =>
         {
-            this.Trace(() => $"send");
+            this.Trace(() => "send");
             // TODO: implement chunking, if needed
             await Socket.SendAsync(
                 buffer: data,
@@ -79,7 +98,9 @@ namespace Annium.Net.WebSockets
                     // initial spin, until connected
                     Log.Trace(() => "spin until connected");
                     SpinWait.SpinUntil(() => State == WebSocketState.Open || State == WebSocketState.CloseSent);
+                    var cts = CancellationTokenSource.CreateLinkedTokenSource(ctx.Token);
 
+                    await using var keepAliveMonitor = _keepAliveMonitorFactory(this, cts.Cancel);
                     while (!ctx.Token.IsCancellationRequested)
                     {
                         // keep receiving until closed
@@ -114,7 +135,7 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     this.Trace(() => $"Try receive in State {Socket.State}");
-                    result = await Socket.ReceiveAsync(buffer, new CancellationTokenSource(TimeSpan.FromSeconds(10)).Token);
+                    result = await Socket.ReceiveAsync(buffer, ctx.Token);
                     var messageType = result.MessageType;
                     this.Trace(() => $"Received {messageType} in State {Socket.State}");
                 }
@@ -178,7 +199,7 @@ namespace Annium.Net.WebSockets
         {
             this.Trace(() => "DisposeAsync");
             Socket.Dispose();
-            return _socketObservable.DisposeAsync();
+            return _disposable.DisposeAsync();
         }
 
         private enum Status
