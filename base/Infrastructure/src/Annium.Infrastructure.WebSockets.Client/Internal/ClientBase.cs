@@ -11,6 +11,7 @@ using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Net.WebSockets;
 using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
 using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
@@ -38,7 +39,11 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _serializer = serializer;
             _configuration = configuration;
 
-            var options = new ClientWebSocketOptions();
+            var options = new ClientWebSocketOptions()
+            {
+                ActiveKeepAlive = ActiveKeepAlive.Create(),
+                PassiveKeepAlive = PassiveKeepAlive.Create()
+            };
             if (_configuration.AutoReconnect)
                 options.ReconnectOnFailure = true;
 

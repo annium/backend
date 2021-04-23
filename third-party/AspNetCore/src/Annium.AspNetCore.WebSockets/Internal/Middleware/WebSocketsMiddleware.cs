@@ -15,6 +15,12 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 {
     internal class WebSocketsMiddleware
     {
+        private static readonly WebSocketOptions WebSocketOptions = new()
+        {
+            ActiveKeepAlive = ActiveKeepAlive.Create(),
+            PassiveKeepAlive = PassiveKeepAlive.Create()
+        };
+
         private readonly ICoordinator _coordinator;
         private readonly ILogger<WebSocketsMiddleware> _logger;
         private readonly Helper _helper;
@@ -47,7 +53,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync());
+                var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), WebSocketOptions);
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)
