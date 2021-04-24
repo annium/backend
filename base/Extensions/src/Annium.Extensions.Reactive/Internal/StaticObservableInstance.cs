@@ -19,7 +19,7 @@ namespace Annium.Extensions.Reactive.Internal
             Func<ObserverContext<T>, Task> factory
         )
         {
-            _factoryTask = Task.Run(() => factory(new ObserverContext<T>(OnNext, OnError, OnCompleted, _cts.Token)));
+            _factoryTask = Task.Run(() => factory(new ObserverContext<T>(OnNext, OnError, _cts.Token)));
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -36,11 +36,10 @@ namespace Annium.Extensions.Reactive.Internal
 
         public async ValueTask DisposeAsync()
         {
-            if (_isDisposed)
-                return;
+            EnsureNotDisposed();
+            OnCompleted();
             _isDisposed = true;
 
-            OnCompleted();
             _cts.Cancel();
             await _factoryTask;
         }

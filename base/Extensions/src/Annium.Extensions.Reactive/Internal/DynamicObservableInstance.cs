@@ -36,7 +36,7 @@ namespace Annium.Extensions.Reactive.Internal
                     _factoryTask = Task.Run(async () =>
                     {
                         await factoryTask;
-                        await _factory(new ObserverContext<T>(OnNext, OnError, OnCompleted, _factoryCts.Token));
+                        await _factory(new ObserverContext<T>(OnNext, OnError, _factoryCts.Token));
                     });
                 }
             }
@@ -56,11 +56,10 @@ namespace Annium.Extensions.Reactive.Internal
 
         public async ValueTask DisposeAsync()
         {
-            if (_isDisposed)
-                return;
+            EnsureNotDisposed();
+            OnCompleted();
             _isDisposed = true;
 
-            OnCompleted();
             _factoryCts.Cancel();
             Task factoryTask;
             lock (_lock) factoryTask = _factoryTask;
