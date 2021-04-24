@@ -36,7 +36,8 @@ namespace Annium.Extensions.Reactive.Internal
 
         public async ValueTask DisposeAsync()
         {
-            EnsureNotDisposed();
+            if (_isDisposed)
+                return;
             _isDisposed = true;
 
             OnCompleted();
