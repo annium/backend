@@ -11,8 +11,8 @@ namespace Annium.Net.WebSockets
 
     public interface ISendingWebSocket : IWebSocketBase, IAsyncDisposable
     {
-        IObservable<Unit> Send(string data, CancellationToken token);
-        IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token);
+        IObservable<Unit> Send(string data, CancellationToken token = default);
+        IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token = default);
     }
 
     public interface IReceivingWebSocket : IWebSocketBase, IAsyncDisposable

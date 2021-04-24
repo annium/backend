@@ -1,7 +1,7 @@
 using System;
 using System.Net.WebSockets;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
@@ -10,71 +10,92 @@ using NodaTime;
 
 namespace Annium.Net.WebSockets.Internal
 {
-    internal class KeepAliveMonitor : IAsyncDisposable
+    internal class KeepAliveMonitor : IKeepAliveMonitor
     {
-        private readonly ISendingReceivingWebSocket _socket;
+        public CancellationToken Token => _cts.Token;
+        private readonly IObservable<SocketMessage> _observable;
+        private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
         private readonly ActiveKeepAlive _options;
-        private readonly Action _signal;
-        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
+        private AsyncDisposableBox _disposable = Disposable.AsyncBox();
+        private CancellationTokenSource _cts = new();
         private Instant _lastPongTime;
 
         public KeepAliveMonitor(
-            ISendingReceivingWebSocket socket,
-            Encoding encoding,
-            ActiveKeepAlive options,
-            Action signal
+            IObservable<SocketMessage> observable,
+            Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
+            ActiveKeepAlive options
         )
         {
-            _socket = socket;
+            _observable = observable;
+            _send = send;
             _options = options;
-            _signal = signal;
+        }
 
-            // send initial ping immediately
-            SendPing();
+        public void Resume()
+        {
+            _disposable = Disposable.AsyncBox();
+
+            _disposable += _cts = new();
+
+            var timerInterval = _options.PingInterval.ToTimeSpan();
+
+            // send initial ping within half of interval
+            Task.Run(async () =>
+            {
+                await Task.Delay(timerInterval / 2, CancellationToken.None);
+                if (!Token.IsCancellationRequested)
+                    SendPing();
+            }, CancellationToken.None);
 
             // run send pings & check pongs on timer
-            var timerInterval = options.PingInterval.ToTimeSpan();
             _disposable += new Timer(SendPingCheckPong, null, timerInterval, timerInterval) as IAsyncDisposable;
 
             // track pongs
-            _disposable += socket.Listen()
-                .Where(x => x.Type == WebSocketMessageType.Text)
-                .Select(x => encoding.GetString(x.Data.Span))
-                .Where(x => x == options.PongFrame)
+            _disposable += _observable
+                .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
                 .Subscribe(TrackPong);
         }
 
-        public ValueTask DisposeAsync()
+        public void Pause()
         {
-            throw new NotImplementedException();
+            _disposable.DisposeAsync().Await();
         }
 
         private void SendPingCheckPong(object? _)
         {
+            // if already canceled - no action
+            if (Token.IsCancellationRequested)
+                return;
+
             SendPing();
 
             // if any ping not responded - signal connection lost
             var now = GetNow();
             if (now - _lastPongTime > _options.PingInterval)
             {
-                _socket.Trace(() => $"KeepAlive: missed {_options.PingFrame} - signal connection lost");
-                _signal();
+                this.Trace(() => "Missed ping - signal connection lost");
+                _cts.Cancel();
             }
         }
 
         private void SendPing()
         {
             // send ping every time
-            _socket.Trace(() => $"KeepAlive: send {_options.PingFrame}");
-            _socket.Send(_options.PingFrame, CancellationToken.None).Subscribe();
+            this.Trace(() => "Send ping");
+            _send(_options.PingFrame).Subscribe();
         }
 
-        private void TrackPong(string _)
+        private void TrackPong(SocketMessage _)
         {
-            _socket.Trace(() => $"KeepAlive: received {_options.PongFrame}");
+            this.Trace(() => "Received pong");
             _lastPongTime = GetNow();
         }
 
         private Instant GetNow() => SystemClock.Instance.GetCurrentInstant();
+
+        public ValueTask DisposeAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

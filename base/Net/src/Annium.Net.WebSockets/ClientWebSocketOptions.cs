@@ -1,6 +1,6 @@
 namespace Annium.Net.WebSockets
 {
-    public class ClientWebSocketOptions : WebSocketBaseOptions
+    public record ClientWebSocketOptions : WebSocketBaseOptions
     {
         public bool ReconnectOnFailure { get; set; }
     }

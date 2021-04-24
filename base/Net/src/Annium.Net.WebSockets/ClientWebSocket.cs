@@ -66,7 +66,7 @@ namespace Annium.Net.WebSockets
                     Socket.State == WebSocketState.Connecting ||
                     Socket.State == WebSocketState.Open
                 )
-                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, token);
+                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", token);
             }
             catch (WebSocketException)
             {

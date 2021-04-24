@@ -1,38 +1,32 @@
+using System;
+using Annium.Net.WebSockets.Internal;
 using NodaTime;
 
 namespace Annium.Net.WebSockets
 {
-    public class WebSocketBaseOptions
+    public record WebSocketBaseOptions
     {
         public ActiveKeepAlive? ActiveKeepAlive { get; init; }
         public PassiveKeepAlive? PassiveKeepAlive { get; init; }
     }
 
-    public class ActiveKeepAlive : PassiveKeepAlive
+    public record ActiveKeepAlive : PassiveKeepAlive
     {
         public static ActiveKeepAlive Create(
-            string pingFrame = "ping",
-            int pingInterval = 30,
-            string pongFrame = "pong"
+            int pingInterval = 3
         ) => new()
         {
-            PingFrame = pingFrame,
             PingInterval = Duration.FromSeconds(pingInterval),
-            PongFrame = pongFrame,
         };
 
         public Duration PingInterval { get; init; }
     }
 
-    public class PassiveKeepAlive
+    public record PassiveKeepAlive
     {
-        public static PassiveKeepAlive Create(string pingFrame = "ping", string pongFrame = "pong") => new()
-        {
-            PingFrame = pingFrame,
-            PongFrame = pongFrame,
-        };
+        public static PassiveKeepAlive Create() => new();
 
-        public string PingFrame { get; init; } = string.Empty;
-        public string PongFrame { get; init; } = string.Empty;
+        public ReadOnlyMemory<byte> PingFrame { get; } = Constants.PingFrame;
+        public ReadOnlyMemory<byte> PongFrame { get; } = Constants.PongFrame;
     }
 }

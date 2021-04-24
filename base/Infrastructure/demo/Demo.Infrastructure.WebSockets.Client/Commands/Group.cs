@@ -8,6 +8,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         public Group()
         {
             Add<Demo.Group>();
+            Add<KeepAliveCommand>();
             Add<ListenCommand>();
             Add<RequestResponseCommand>();
             Add<RequestVoidCommand>();
