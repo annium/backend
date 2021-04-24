@@ -14,8 +14,7 @@ namespace Annium.Core.Primitives
         public static T ParseEnum<T>(this string str)
             where T : struct, Enum
         {
-            var (succeed, value) = str.TryParseEnum<T>();
-            if (!succeed)
+            if (!str.TryParseEnum<T>(out var value))
                 throw new ArgumentException($"'{str}' is not a {typeof(T).Name} value");
 
             return value;
@@ -24,8 +23,7 @@ namespace Annium.Core.Primitives
         public static T ParseEnum<T>(this ValueType raw)
             where T : struct, Enum
         {
-            var (succeed, value) = raw.TryParseEnum<T>();
-            if (!succeed)
+            if (!raw.TryParseEnum<T>(out var value))
                 throw new ArgumentException($"'{raw}' is not a {typeof(T).Name} value");
 
             return value;
@@ -53,17 +51,19 @@ namespace Annium.Core.Primitives
         public static T ParseEnum<T>(this string str, T defaultValue)
             where T : struct, Enum
         {
-            var (succeed, value) = str.TryParseEnum<T>();
+            if (str.TryParseEnum<T>(out var value))
+                return value;
 
-            return succeed ? value : defaultValue;
+            return defaultValue;
         }
 
         public static T ParseEnum<T>(this ValueType raw, T defaultValue)
             where T : struct, Enum
         {
-            var (succeed, value) = raw.TryParseEnum<T>();
+            if (raw.TryParseEnum<T>(out var value))
+                return value;
 
-            return succeed ? value : defaultValue;
+            return defaultValue;
         }
 
         public static T ParseFlags<T>(this string str, string separator, T defaultValue)
@@ -85,15 +85,19 @@ namespace Annium.Core.Primitives
 
         #region try parse by label
 
-        public static (bool succeed, T value) TryParseEnum<T>(this string label)
+        public static bool TryParseEnum<T>(this string label, out T value)
             where T : struct, Enum
         {
             var map = ParseLabelsCache.GetOrAdd(typeof(T), ParseLabels);
 
-            if (map.TryGetValue(label.ToLowerInvariant(), out var value))
-                return (true, (T) value);
+            if (map.TryGetValue(label.ToLowerInvariant(), out var val))
+            {
+                value = (T) val;
+                return true;
+            }
 
-            return (false, default);
+            value = default;
+            return false;
         }
 
         private static readonly ConcurrentDictionary<Type, IReadOnlyDictionary<string, ValueType>> ParseLabelsCache =
@@ -124,16 +128,20 @@ namespace Annium.Core.Primitives
 
         #region try parse by value
 
-        public static (bool succeed, T value) TryParseEnum<T>(this ValueType raw)
+        public static bool TryParseEnum<T>(this ValueType raw, out T value)
             where T : struct, Enum
         {
             var values = ParseValuesCache.GetOrAdd(typeof(T), ParseValues);
 
-            var value = (ValueType) Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)))!;
-            if (values.Contains(value))
-                return (true, (T) value);
+            var val = (ValueType) Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)))!;
+            if (values.Contains(val))
+            {
+                value = (T) val;
+                return true;
+            }
 
-            return (false, default);
+            value = default;
+            return false;
         }
 
         private static readonly ConcurrentDictionary<Type, HashSet<ValueType>> ParseValuesCache =

@@ -200,7 +200,8 @@ namespace Annium.Extensions.Validation
             string message = ""
         ) => rule.Add((context, value) =>
         {
-            var re = new Regex(regex, RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
+            var re = new Regex(regex,
+                RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
             if (value != null && !re.IsMatch(value))
                 context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
         });
@@ -263,7 +264,7 @@ namespace Annium.Extensions.Validation
         {
             return rule.Add((context, value) =>
             {
-                if (!value.TryParseEnum<TField>().succeed)
+                if (!value.TryParseEnum<TField>(out _))
                     context.Error(string.IsNullOrEmpty(message) ? "Value is not in expected range" : message);
             });
         }
