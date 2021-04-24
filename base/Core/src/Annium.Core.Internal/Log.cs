@@ -70,7 +70,7 @@ namespace Annium.Core.Internal
         )
         {
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
-            if (LogFilters.Any(caller.Contains))
+            if (LogFilters.Count > 0 && LogFilters.Any(caller.Contains))
                 Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ADBG:{Mode} {caller}.{member}{message}");
         }
     }
