@@ -9,7 +9,7 @@ namespace Annium.Core.Internal
     public static class Log
     {
         private const string ModeVar = "ANNIUM_MODE";
-        private const string LogVar = "ANNIUM_Log";
+        private const string LogVar = "ANNIUM_LOG";
         private static LogLevel Mode { get; } = LogLevel.Release;
         private static List<string> LogFilters { get; } = new();
 
