@@ -1,19 +1,27 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Annium.Core.Internal
 {
     public static class Log
     {
-        private static LogLevel Mode { get; } = LogLevel.Release;
         private const string ModeVar = "ANNIUM_MODE";
+        private const string LogVar = "ANNIUM_Log";
+        private static LogLevel Mode { get; } = LogLevel.Release;
+        private static List<string> LogFilters { get; } = new();
 
         static Log()
         {
             var modeValue = Environment.GetEnvironmentVariable(ModeVar);
             if (modeValue is not null && Enum.TryParse(modeValue, true, out LogLevel mode))
                 Mode = mode;
+
+            var logValue = Environment.GetEnvironmentVariable(LogVar);
+            if (logValue is not null)
+                LogFilters = logValue.Split(',').ToList();
         }
 
         public static void Debug(
@@ -62,7 +70,8 @@ namespace Annium.Core.Internal
         )
         {
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
-            Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ADBG:{Mode} {caller}.{member}{message}");
+            if (LogFilters.Any(caller.Contains))
+                Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] ADBG:{Mode} {caller}.{member}{message}");
         }
     }
 }
