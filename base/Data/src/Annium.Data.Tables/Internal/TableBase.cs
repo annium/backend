@@ -69,6 +69,8 @@ namespace Annium.Data.Tables.Internal
                 }
             }
 
+            ctx.OnCompleted();
+
             return Task.CompletedTask;
         });
 

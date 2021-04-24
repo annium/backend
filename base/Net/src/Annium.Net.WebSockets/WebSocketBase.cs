@@ -127,11 +127,10 @@ namespace Annium.Net.WebSockets
                 {
                     this.Trace(() => $"Exception {e}");
                 }
-                finally
-                {
-                    this.Trace(() => "End, return buffer, send OnCompleted");
-                    pool.Return(buffer);
-                }
+
+                this.Trace(() => "End, return buffer, send OnCompleted");
+                pool.Return(buffer);
+                ctx.OnCompleted();
             });
 
         private async ValueTask<Status> ReceiveAsync(
