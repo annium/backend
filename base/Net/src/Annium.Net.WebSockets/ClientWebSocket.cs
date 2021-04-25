@@ -13,6 +13,7 @@ namespace Annium.Net.WebSockets
         public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
         private readonly ClientWebSocketOptions _options;
         private Uri? _uri;
+        private bool _isManuallyDisconnected;
 
         public ClientWebSocket(
             ClientWebSocketOptions options
@@ -63,10 +64,12 @@ namespace Annium.Net.WebSockets
             );
 
             this.Trace(() => "Connected");
+            _isManuallyDisconnected = false;
         }
 
         public async Task DisconnectAsync(CancellationToken token)
         {
+            _isManuallyDisconnected = true;
             try
             {
                 if (
@@ -95,6 +98,13 @@ namespace Annium.Net.WebSockets
         {
             this.Trace(() => "Invoke ConnectionLost");
             await ConnectionLost.Invoke();
+
+            if (_isManuallyDisconnected)
+            {
+                this.Trace(() => "Manually disconnected, no reconnect");
+                return;
+            }
+
             if (_options.ReconnectOnFailure)
             {
                 this.Trace(() => "Try reconnect");
