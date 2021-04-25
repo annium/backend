@@ -144,7 +144,6 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     result = await Socket.ReceiveAsync(buffer, _keepAliveMonitor.Token);
-                    var messageType = result.MessageType;
                 }
                 //  remote party closed connection w/o handshake
                 catch (WebSocketException e)

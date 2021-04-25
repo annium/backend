@@ -15,28 +15,28 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 {
     internal class WebSocketsMiddleware
     {
-        private static readonly WebSocketOptions WebSocketOptions = new()
-        {
-            ActiveKeepAlive = ActiveKeepAlive.Create(),
-            PassiveKeepAlive = PassiveKeepAlive.Create()
-        };
-
         private readonly ICoordinator _coordinator;
+        private readonly ServerConfiguration _cfg;
         private readonly ILogger<WebSocketsMiddleware> _logger;
         private readonly Helper _helper;
 
         public WebSocketsMiddleware(
             RequestDelegate next,
             ICoordinator coordinator,
+            ServerConfiguration cfg,
             IHostApplicationLifetime applicationLifetime,
             IIndex<SerializerKey, ISerializer<string>> serializers,
             ILogger<WebSocketsMiddleware> logger
         )
         {
             _coordinator = coordinator;
+            _cfg = cfg;
             applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
             _logger = logger;
-            _helper = new Helper(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)], MediaTypeNames.Application.Json);
+            _helper = new Helper(
+                serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
+                MediaTypeNames.Application.Json
+            );
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -53,7 +53,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), WebSocketOptions);
+                var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _cfg.WebSocketOptions);
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)

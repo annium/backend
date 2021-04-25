@@ -71,9 +71,17 @@ namespace Annium.Net.WebSockets.Internal
 
             // if any ping not responded - signal connection lost
             var now = GetNow();
-            if (now - _lastPongTime > _options.PingInterval)
+            var silenceDuration = now - _lastPongTime;
+
+            // no action, if silence duration is in expected range
+            if (silenceDuration <= _options.PingInterval)
+                return;
+
+            this.Trace(() =>
+                $"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+            if (silenceDuration > _options.PingInterval * _options.Retries)
             {
-                this.Trace(() => "Missed ping - signal connection lost");
+                this.Trace(() => "Missed all pings - signal connection lost");
                 _cts.Cancel();
             }
         }

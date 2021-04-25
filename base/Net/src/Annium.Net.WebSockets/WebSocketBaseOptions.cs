@@ -13,13 +13,16 @@ namespace Annium.Net.WebSockets
     public record ActiveKeepAlive : PassiveKeepAlive
     {
         public static ActiveKeepAlive Create(
-            int pingInterval = 3
+            uint pingInterval = 60,
+            uint retries = 3
         ) => new()
         {
             PingInterval = Duration.FromSeconds(pingInterval),
+            Retries = retries,
         };
 
         public Duration PingInterval { get; init; }
+        public uint Retries { get; init; }
     }
 
     public record PassiveKeepAlive

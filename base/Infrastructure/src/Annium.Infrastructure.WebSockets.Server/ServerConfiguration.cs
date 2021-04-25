@@ -1,4 +1,5 @@
 using Annium.Infrastructure.WebSockets.Domain;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server
 {
@@ -6,6 +7,12 @@ namespace Annium.Infrastructure.WebSockets.Server
     {
         public string Endpoint { get; private set; } = "/ws";
         public SerializationFormat Format { get; private set; }
+
+        public WebSocketOptions WebSocketOptions { get; private set; } = new()
+        {
+            ActiveKeepAlive = ActiveKeepAlive.Create(),
+            PassiveKeepAlive = PassiveKeepAlive.Create()
+        };
 
         public ServerConfiguration ListenAt(string endpoint)
         {
@@ -17,6 +24,13 @@ namespace Annium.Infrastructure.WebSockets.Server
         public ServerConfiguration UseFormat(SerializationFormat format)
         {
             Format = format;
+
+            return this;
+        }
+
+        public ServerConfiguration UseWebSocketConfiguration(WebSocketOptions webSocketOptions)
+        {
+            WebSocketOptions = webSocketOptions;
 
             return this;
         }
