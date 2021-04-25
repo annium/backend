@@ -77,7 +77,6 @@ namespace Annium.Net.WebSockets
             CancellationToken ct
         ) => Observable.FromAsync(async () =>
         {
-            this.Trace(() => "send");
             // TODO: implement chunking, if needed
             await Socket.SendAsync(
                 buffer: data,
@@ -144,10 +143,8 @@ namespace Annium.Net.WebSockets
             {
                 try
                 {
-                    this.Trace(() => $"Try receive in State {Socket.State}");
                     result = await Socket.ReceiveAsync(buffer, _keepAliveMonitor.Token);
                     var messageType = result.MessageType;
-                    this.Trace(() => $"Received {messageType} in State {Socket.State}");
                 }
                 //  remote party closed connection w/o handshake
                 catch (WebSocketException e)
