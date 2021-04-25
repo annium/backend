@@ -13,6 +13,7 @@ namespace Annium.Infrastructure.WebSockets.Client
 
         public ClientWebSocketOptions WebSocketOptions { get; private set; } = new()
         {
+            ReconnectOnFailure = true,
             ActiveKeepAlive = ActiveKeepAlive.Create(),
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
@@ -47,9 +48,9 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration UseWebSocketConfiguration(ClientWebSocketOptions webSocketOptions)
+        public ClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 3)
         {
-            WebSocketOptions = webSocketOptions;
+            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
 
             return this;
         }

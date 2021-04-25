@@ -6,8 +6,8 @@ namespace Annium.Net.WebSockets
 {
     public record WebSocketBaseOptions
     {
-        public ActiveKeepAlive? ActiveKeepAlive { get; init; }
-        public PassiveKeepAlive? PassiveKeepAlive { get; init; }
+        public ActiveKeepAlive? ActiveKeepAlive { get; set; }
+        public PassiveKeepAlive? PassiveKeepAlive { get; set; }
     }
 
     public record ActiveKeepAlive : PassiveKeepAlive

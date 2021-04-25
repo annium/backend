@@ -5,7 +5,6 @@ namespace Annium.Infrastructure.WebSockets.Server
 {
     public class ServerConfiguration
     {
-        public string Endpoint { get; private set; } = "/ws";
         public SerializationFormat Format { get; private set; }
 
         public WebSocketOptions WebSocketOptions { get; private set; } = new()
@@ -14,13 +13,6 @@ namespace Annium.Infrastructure.WebSockets.Server
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
 
-        public ServerConfiguration ListenAt(string endpoint)
-        {
-            Endpoint = endpoint;
-
-            return this;
-        }
-
         public ServerConfiguration UseFormat(SerializationFormat format)
         {
             Format = format;
@@ -28,9 +20,9 @@ namespace Annium.Infrastructure.WebSockets.Server
             return this;
         }
 
-        public ServerConfiguration UseWebSocketConfiguration(WebSocketOptions webSocketOptions)
+        public ServerConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 3)
         {
-            WebSocketOptions = webSocketOptions;
+            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
 
             return this;
         }

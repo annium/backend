@@ -30,7 +30,10 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
         {
-            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithAutoReconnect().WithTimeout(Duration.FromSeconds(5));
+            var configuration = new ClientConfiguration()
+                .ConnectTo(cfg.Server)
+                .WithActiveKeepAlive(5, 5)
+                .WithTimeout(Duration.FromSeconds(5));
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
@@ -46,7 +49,8 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(token);
 
             _logger.Debug("Init subscription");
-            var result = await client.SubscribeAsync(new UserBalanceSubscriptionInit(), (Action<UserBalanceMessage>) Log, token);
+            var result = await client.SubscribeAsync(new UserBalanceSubscriptionInit(),
+                (Action<UserBalanceMessage>) Log, token);
             _logger.Debug("Subscription initiated");
 
             await Task.Delay(3000);

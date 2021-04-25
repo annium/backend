@@ -32,7 +32,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
         {
-            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithAutoReconnect();
+            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(5, 5);
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
