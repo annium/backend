@@ -3,60 +3,22 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using System.Text;
+using Annium.Core.Internal.Internal;
 using Annium.Core.Primitives;
 
 namespace Annium.Core.Internal
 {
     public static class Log
     {
-        private const string LevelVar = "ANNIUM_LOG_LEVEL";
-        private const string DeviceVar = "ANNIUM_LOG_DEVICE";
-        private const string DeviceAddressVar = "ANNIUM_LOG_DEVICE_ADDRESS";
-        private const string FilterVar = "ANNIUM_LOG_FILTER";
-        private static LogLevel Level { get; } = LogLevel.Release;
-        private static Action<string> Write { get; set; } = Console.WriteLine;
-        private static List<string> Filter { get; } = new();
+        private const string LogVar = "ANNIUM_LOG";
+        private static LogLevel Level { get; }
+        private static Action<string> Write { get; set; }
+        private static List<string> Filter { get; }
 
         static Log()
         {
-            var levelValue = Environment.GetEnvironmentVariable(LevelVar);
-            if (levelValue is not null && levelValue.TryParseEnum<LogLevel>(out var level))
-                Level = level;
-
-            var deviceValue = Environment.GetEnvironmentVariable(DeviceVar);
-            if (deviceValue is not null && deviceValue.TryParseEnum<LogDevice>(out var device))
-                Write = ResolveWrite(device);
-
-            var filterValue = Environment.GetEnvironmentVariable(FilterVar);
-            if (filterValue is not null)
-                Filter = filterValue.Split(',').ToList();
-
-            Action<string> ResolveWrite(LogDevice dev)
-            {
-                switch (dev)
-                {
-                    case LogDevice.Console:
-                        return Console.WriteLine;
-                    case LogDevice.Tcp:
-                        var address = Environment.GetEnvironmentVariable(DeviceAddressVar) ??
-                                      throw new ArgumentNullException(
-                                          $"To use {dev}, specify {nameof(IPEndPoint)} in {DeviceAddressVar} env variable");
-                        var endpoint = IPEndPointExt.Parse(address);
-                        var client = new TcpClient();
-                        client.Connect(endpoint);
-                        var ns = client.GetStream();
-                        return entry =>
-                        {
-                            var msg = Encoding.UTF8.GetBytes($"{entry}{Environment.NewLine}");
-                            ns.Write(msg);
-                        };
-                    default:
-                        throw new NotSupportedException($"Device {dev} support is not implemented yet");
-                }
-            }
+            (Level, Write, Filter) = Configure();
         }
 
         public static void Debug(
@@ -108,5 +70,50 @@ namespace Annium.Core.Internal
             if (Filter.Count == 0 || Filter.Any(caller.Contains))
                 Write($"[{DateTime.Now:HH:mm:ss.fff}] ADBG:{Level} {caller}.{member}{message}");
         }
+
+        private static Config Configure()
+        {
+            var raw = Environment.GetEnvironmentVariable(LogVar);
+            if (string.IsNullOrWhiteSpace(raw))
+                return new(LogLevel.Release, Console.WriteLine, new());
+
+            // convert to cfg dictionary
+            var cfg = raw.Split(';').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
+
+            // resolve level
+            if (!cfg.TryGetValue("lvl", out var rawLevel) || !rawLevel.TryParseEnum<LogLevel>(out var level))
+                level = LogLevel.Release;
+
+            // resolve device
+            if (!cfg.TryGetValue("dev", out var rawDevice) || !rawDevice.TryParseEnum<LogDevice>(out var device))
+                device = LogDevice.Console;
+            var write = ResolveWrite(device, cfg.TryGetValue("addr", out var address) ? address : string.Empty);
+
+            // resolve filter
+            var filter = cfg.TryGetValue("filter", out var rawFilter)
+                ? rawFilter.Split(',').ToList()
+                : new List<string>();
+
+            return new(level, write, filter);
+        }
+
+        private static Action<string> ResolveWrite(LogDevice dev, string address)
+        {
+            switch (dev)
+            {
+                case LogDevice.Console:
+                    return Console.WriteLine;
+                case LogDevice.Tcp:
+                    if (string.IsNullOrWhiteSpace(address))
+                        throw new ArgumentNullException(
+                            $"To use {dev}, specify {nameof(IPEndPoint)} in {nameof(address)}  variable");
+                    Console.WriteLine($"Send logs to {address}");
+                    return new TcpLogger(address).Write;
+                default:
+                    throw new NotSupportedException($"Device {dev} support is not implemented yet");
+            }
+        }
+
+        private record Config(LogLevel Level, Action<string> Write, List<string> Filter);
     }
 }
