@@ -13,6 +13,7 @@ namespace Annium.Extensions.Execution.Internal
         private int _isRunning;
         private readonly BlockingCollection<Delegate> _tasks = new();
         private Task _runTask = Task.CompletedTask;
+        private readonly CancellationTokenSource _cts = new();
 
         public void Schedule(Action work) => ScheduleWork(work);
         public void Schedule(Func<Task> work) => ScheduleWork(work);
@@ -36,19 +37,30 @@ namespace Annium.Extensions.Execution.Internal
             Stop();
             await _runTask;
             _tasks.Dispose();
+            _cts.Dispose();
         }
 
         private async Task Run()
         {
             while (Volatile.Read(ref _isAvailable) == 1 || _tasks.Count > 0)
             {
-                var task = _tasks.Take();
-                if (task is Action syncTask)
-                    syncTask();
-                else if (task is Func<Task> asyncTask)
-                    await asyncTask();
-                else
-                    throw new NotSupportedException();
+                // var task = _tasks.Take();
+                try
+                {
+                    var task = _tasks.Take(_cts.Token);
+                    // if (!_tasks.TryTake(out var task, -1, _cts.Token))
+                    //     continue;
+                    if (task is Action syncTask)
+                        syncTask();
+                    else if (task is Func<Task> asyncTask)
+                        await asyncTask();
+                    else
+                        throw new NotSupportedException();
+                }
+                catch (OperationCanceledException)
+                {
+
+                }
             }
         }
 
@@ -65,6 +77,7 @@ namespace Annium.Extensions.Execution.Internal
             Volatile.Write(ref _isAvailable, 0);
             Volatile.Write(ref _isRunning, 0);
             _tasks.CompleteAdding();
+            _cts.Cancel();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
