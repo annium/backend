@@ -26,7 +26,7 @@ namespace Annium.Extensions.Execution.Internal
         public void Schedule(Action work) => ScheduleWork(work);
         public void Schedule(Func<Task> work) => ScheduleWork(work);
 
-        public void Start(CancellationToken ct)
+        public void Start(CancellationToken ct = default)
         {
             EnsureAvailable();
 
