@@ -65,16 +65,18 @@ namespace Annium.Net.WebSockets
             }
         }
 
-        protected override async Task OnDisconnectAsync()
+        protected override Task OnDisconnectAsync()
         {
             if (_isManuallyDisconnected)
             {
                 this.Trace(() => "Manually disconnected, no reconnect");
-                return;
+                return Task.CompletedTask;
             }
 
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
+
+            return Task.CompletedTask;
         }
     }
 }

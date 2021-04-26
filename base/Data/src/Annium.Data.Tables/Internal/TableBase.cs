@@ -60,8 +60,17 @@ namespace Annium.Data.Tables.Internal
             {
                 try
                 {
-                    var e = _events.Take();
-                    ctx.OnNext(e);
+                    IChangeEvent<T>? e = null;
+                    try
+                    {
+                        e = _events.Take(ctx.Token);
+                    }
+                    catch (OperationCanceledException)
+                    {
+                    }
+
+                    if (e is not null)
+                        ctx.OnNext(e);
                 }
                 catch (Exception ex)
                 {
