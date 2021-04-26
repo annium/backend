@@ -37,17 +37,10 @@ namespace Annium.Net.WebSockets.Internal
 
             _disposable += _cts = new();
 
-            var timerInterval = _options.PingInterval.ToTimeSpan();
-
-            // send initial ping within half of interval
-            Task.Run(async () =>
-            {
-                await Task.Delay(timerInterval / 2, CancellationToken.None);
-                if (!Token.IsCancellationRequested)
-                    SendPing();
-            }, CancellationToken.None);
+            _lastPongTime = GetNow();
 
             // run send pings & check pongs on timer
+            var timerInterval = _options.PingInterval.ToTimeSpan();
             _disposable += new Timer(SendPingCheckPong, null, timerInterval, timerInterval) as IAsyncDisposable;
 
             // track pongs
@@ -103,7 +96,7 @@ namespace Annium.Net.WebSockets.Internal
 
         public ValueTask DisposeAsync()
         {
-            throw new NotImplementedException();
+            return _disposable.DisposeAsync();
         }
     }
 }

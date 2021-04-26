@@ -65,11 +65,18 @@ namespace Annium.Net.WebSockets
 
             this.Trace(() => "Connected");
             _isManuallyDisconnected = false;
+
+            this.Trace(() => "Invoke ConnectionRestored");
+            await ConnectionRestored.Invoke();
         }
 
         public async Task DisconnectAsync(CancellationToken token)
         {
             _isManuallyDisconnected = true;
+
+            this.Trace(() => "Invoke ConnectionLost");
+            await ConnectionLost.Invoke();
+
             try
             {
                 if (
@@ -96,21 +103,20 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnDisconnectAsync()
         {
-            this.Trace(() => "Invoke ConnectionLost");
-            await ConnectionLost.Invoke();
-
             if (_isManuallyDisconnected)
             {
                 this.Trace(() => "Manually disconnected, no reconnect");
                 return;
             }
 
+            this.Trace(() => "Invoke ConnectionLost");
+            await ConnectionLost.Invoke();
+
             if (_options.ReconnectOnFailure)
             {
                 this.Trace(() => "Try reconnect");
                 await Task.Delay(100);
                 await ConnectAsync(_uri!, CancellationToken.None);
-                await ConnectionRestored.Invoke();
             }
             else
                 this.Trace(() => "No reconnect");
