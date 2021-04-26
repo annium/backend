@@ -25,6 +25,7 @@ namespace Annium.Net.WebSockets
 
         protected TNativeSocket Socket { get; set; }
         protected IBackgroundExecutor Executor { get; } = Extensions.Execution.Executor.Background.Sequential();
+        protected CancellationTokenSource ReceiveCts { get; private set; } = new();
         private readonly UTF8Encoding _encoding = new();
         private readonly IObservable<SocketMessage> _observable;
         private readonly IObservable<string> _textObservable;
@@ -105,6 +106,7 @@ namespace Annium.Net.WebSockets
                     Log.Trace(() => "Spin until connected and keepAlive monitor up");
                     SpinWait.SpinUntil(() => _keepAliveMonitor is not null! && IsConnected());
                     _keepAliveMonitor.Resume();
+                    ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
                     // run polling
                     while (!ctx.Token.IsCancellationRequested)
@@ -145,7 +147,7 @@ namespace Annium.Net.WebSockets
             {
                 try
                 {
-                    result = await Socket.ReceiveAsync(buffer, _keepAliveMonitor.Token);
+                    result = await Socket.ReceiveAsync(buffer, ReceiveCts.Token);
                 }
                 //  remote party closed connection w/o handshake
                 catch (WebSocketException e)
@@ -203,16 +205,19 @@ namespace Annium.Net.WebSockets
             }
 
             _keepAliveMonitor.Resume();
+            ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
+
             this.Trace(() => "Opened");
             return Status.Opened;
         }
 
         private bool IsConnected() => State == WebSocketState.Open || State == WebSocketState.CloseSent;
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            this.Trace(() => "DisposeAsync");
-            return _disposable.DisposeAsync();
+            this.Trace(() => "start");
+            await _disposable.DisposeAsync();
+            this.Trace(() => "done");
         }
 
         private enum Status

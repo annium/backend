@@ -10,6 +10,7 @@ namespace Annium.Net.WebSockets
     public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     {
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
+        private bool _isManuallyDisconnected;
 
         public WebSocket(
             NativeWebSocket socket
@@ -32,6 +33,14 @@ namespace Annium.Net.WebSockets
 
         public async Task DisconnectAsync(CancellationToken token)
         {
+            _isManuallyDisconnected = true;
+
+            // cancel receive, if pending
+            ReceiveCts.Cancel();
+
+            this.Trace(() => "Invoke ConnectionLost");
+            Executor.Schedule(() => ConnectionLost.Invoke());
+
             try
             {
                 if (
@@ -58,6 +67,12 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnDisconnectAsync()
         {
+            if (_isManuallyDisconnected)
+            {
+                this.Trace(() => "Manually disconnected, no reconnect");
+                return;
+            }
+
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
         }

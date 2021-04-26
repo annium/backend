@@ -37,6 +37,9 @@ namespace Annium.Net.WebSockets
         {
             _isManuallyDisconnected = true;
 
+            // cancel receive, if pending
+            ReceiveCts.Cancel();
+
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
