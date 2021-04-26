@@ -37,7 +37,7 @@ namespace Annium.Net.WebSockets.Internal
 
             _disposable += _cts = new();
 
-            _lastPongTime = GetNow();
+            _lastPongTime = GetNow() + _options.PingInterval / 2;
 
             // run send pings & check pongs on timer
             var timerInterval = _options.PingInterval.ToTimeSpan();
