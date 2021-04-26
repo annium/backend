@@ -26,49 +26,12 @@ namespace Annium.Net.WebSockets
         }
 
         public ClientWebSocket(
-        ) : this(
-            new ClientWebSocketOptions
-            {
-                ReconnectOnFailure = true,
-            }
-        )
+        ) : this(new ClientWebSocketOptions())
         {
         }
 
-
-        public async Task ConnectAsync(Uri uri, CancellationToken token)
-        {
-            this.Trace(() => $"Connect to {uri}");
-
-            _uri = uri;
-            do
-            {
-                try
-                {
-                    Socket = new NativeClientWebSocket();
-                    this.Trace(() => "Try connect");
-                    await Socket.ConnectAsync(uri, token);
-                }
-                catch (WebSocketException)
-                {
-                    this.Trace(() => "Connection failed");
-                    Socket.Dispose();
-                    await Task.Delay(100, token);
-                }
-            } while (
-                !token.IsCancellationRequested &&
-                !(
-                    Socket.State == WebSocketState.Open ||
-                    Socket.State == WebSocketState.CloseSent
-                )
-            );
-
-            this.Trace(() => "Connected");
-            _isManuallyDisconnected = false;
-
-            this.Trace(() => "Invoke ConnectionRestored");
-            Executor.Schedule(() => ConnectionRestored.Invoke());
-        }
+        public Task ConnectAsync(Uri uri, CancellationToken token) =>
+            ConnectAsync(uri, _options.ConnectTimeout, token);
 
         public async Task DisconnectAsync(CancellationToken token)
         {
@@ -112,14 +75,48 @@ namespace Annium.Net.WebSockets
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
-            if (_options.ReconnectOnFailure)
+            if (_options.ReconnectTimeout != TimeSpan.MaxValue)
             {
                 this.Trace(() => "Try reconnect");
-                await Task.Delay(100);
-                await ConnectAsync(_uri!, CancellationToken.None);
+                await Task.Delay(_options.ReconnectTimeout);
+                await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
             }
             else
                 this.Trace(() => "No reconnect");
+        }
+
+        private async Task ConnectAsync(Uri uri, TimeSpan timeout, CancellationToken token)
+        {
+            this.Trace(() => $"Connect to {uri}");
+
+            _uri = uri;
+            do
+            {
+                try
+                {
+                    Socket = new NativeClientWebSocket();
+                    this.Trace(() => "Try connect");
+                    await Socket.ConnectAsync(uri, token);
+                }
+                catch (WebSocketException)
+                {
+                    this.Trace(() => "Connection failed");
+                    Socket.Dispose();
+                    await Task.Delay(timeout, token);
+                }
+            } while (
+                !token.IsCancellationRequested &&
+                !(
+                    Socket.State == WebSocketState.Open ||
+                    Socket.State == WebSocketState.CloseSent
+                )
+            );
+
+            this.Trace(() => "Connected");
+            _isManuallyDisconnected = false;
+
+            this.Trace(() => "Invoke ConnectionRestored");
+            Executor.Schedule(() => ConnectionRestored.Invoke());
         }
     }
 }

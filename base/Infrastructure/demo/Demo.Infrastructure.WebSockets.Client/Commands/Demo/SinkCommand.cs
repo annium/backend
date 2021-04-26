@@ -29,7 +29,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 
         public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken token)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectOnFailure = true });
+            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = TimeSpan.FromSeconds(1) });
             ws.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");

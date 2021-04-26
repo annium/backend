@@ -13,7 +13,7 @@ namespace Annium.Infrastructure.WebSockets.Client
 
         public ClientWebSocketOptions WebSocketOptions { get; private set; } = new()
         {
-            ReconnectOnFailure = true,
+            ReconnectTimeout = TimeSpan.FromSeconds(5),
             ActiveKeepAlive = ActiveKeepAlive.Create(),
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
@@ -44,6 +44,13 @@ namespace Annium.Infrastructure.WebSockets.Client
         public ClientConfiguration WithAutoConnect()
         {
             AutoConnect = true;
+
+            return this;
+        }
+
+        public ClientConfiguration WithReconnectTimeout(TimeSpan timeout)
+        {
+            WebSocketOptions.ReconnectTimeout = timeout;
 
             return this;
         }
