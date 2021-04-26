@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Extensions.Execution;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
@@ -23,6 +24,7 @@ namespace Annium.Net.WebSockets
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
+        protected IBackgroundExecutor Executor { get; } = Extensions.Execution.Executor.Background.Sequential();
         private readonly UTF8Encoding _encoding = new();
         private readonly IObservable<SocketMessage> _observable;
         private readonly IObservable<string> _textObservable;

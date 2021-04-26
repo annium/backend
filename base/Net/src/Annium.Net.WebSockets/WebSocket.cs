@@ -59,7 +59,7 @@ namespace Annium.Net.WebSockets
         protected override async Task OnDisconnectAsync()
         {
             this.Trace(() => "Invoke ConnectionLost");
-            await ConnectionLost.Invoke();
+            Executor.Schedule(() => ConnectionLost.Invoke());
         }
     }
 }

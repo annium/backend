@@ -67,7 +67,7 @@ namespace Annium.Net.WebSockets
             _isManuallyDisconnected = false;
 
             this.Trace(() => "Invoke ConnectionRestored");
-            await ConnectionRestored.Invoke();
+            Executor.Schedule(() => ConnectionRestored.Invoke());
         }
 
         public async Task DisconnectAsync(CancellationToken token)
@@ -75,7 +75,7 @@ namespace Annium.Net.WebSockets
             _isManuallyDisconnected = true;
 
             this.Trace(() => "Invoke ConnectionLost");
-            await ConnectionLost.Invoke();
+            Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
             {
@@ -110,7 +110,7 @@ namespace Annium.Net.WebSockets
             }
 
             this.Trace(() => "Invoke ConnectionLost");
-            await ConnectionLost.Invoke();
+            Executor.Schedule(() => ConnectionLost.Invoke());
 
             if (_options.ReconnectOnFailure)
             {
