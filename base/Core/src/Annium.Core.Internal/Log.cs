@@ -13,7 +13,7 @@ namespace Annium.Core.Internal
     {
         private const string LogVar = "ANNIUM_LOG";
         private static LogLevel Level { get; }
-        private static Action<string> Write { get; set; }
+        public static Action<string> Write { get; set; }
         private static List<string> Filter { get; }
 
         static Log()
@@ -68,7 +68,7 @@ namespace Annium.Core.Internal
         {
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
             if (Filter.Count == 0 || Filter.Any(caller.Contains))
-                Write($"[{DateTime.Now:HH:mm:ss.fff}] ADBG:{Level} {caller}.{member}{message}");
+                Write($"[{DateTime.Now:HH:mm:ss.fff}] ADBG {caller}.{member}{message}");
         }
 
         private static Config Configure()
