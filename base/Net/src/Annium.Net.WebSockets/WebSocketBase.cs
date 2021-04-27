@@ -40,13 +40,16 @@ namespace Annium.Net.WebSockets
         {
             Socket = socket;
             _disposable += Socket;
-            this.Trace(options.ToString);
+
+            Executor.Start(CancellationToken.None);
+            _disposable += Executor;
 
             // start socket observable
             var observableInstance = CreateSocketObservable();
             _disposable += observableInstance;
 
             // resolve components from configuration
+            this.Trace(options.ToString);
             var cfg = Configurator.GetConfiguration(
                 observableInstance,
                 _encoding,
