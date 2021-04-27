@@ -44,12 +44,9 @@ namespace Annium.Extensions.Execution.Internal
         {
             while (Volatile.Read(ref _isAvailable) == 1 || _tasks.Count > 0)
             {
-                // var task = _tasks.Take();
                 try
                 {
                     var task = _tasks.Take(_cts.Token);
-                    // if (!_tasks.TryTake(out var task, -1, _cts.Token))
-                    //     continue;
                     if (task is Action syncTask)
                         syncTask();
                     else if (task is Func<Task> asyncTask)
