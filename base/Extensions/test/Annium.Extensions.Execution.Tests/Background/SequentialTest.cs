@@ -27,7 +27,7 @@ namespace Annium.Extensions.Execution.Tests.Background
                 });
             queue.Count.Is(0);
             // run executor
-            executor.Start(CancellationToken.None);
+            executor.Start();
             // schedule another batch of work
             foreach (var i in Enumerable.Range(20, 20))
                 executor.Schedule(async () =>

@@ -24,7 +24,7 @@ namespace Annium.Extensions.Execution.Tests.Background
             }));
             counter.Is(0);
             // run executor
-            executor.Start(CancellationToken.None);
+            executor.Start();
             // schedule another batch of work
             Parallel.For(0, 100, _ => executor.Schedule(async () =>
             {
@@ -67,7 +67,7 @@ namespace Annium.Extensions.Execution.Tests.Background
             successes.Is(0);
             failures.Is(0);
             // run executor
-            executor.Start(CancellationToken.None);
+            executor.Start();
             // schedule another batch of work
             Parallel.For(1, 100, i => executor.Schedule(async () =>
             {
