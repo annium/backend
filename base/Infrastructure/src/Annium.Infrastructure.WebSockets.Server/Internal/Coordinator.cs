@@ -34,9 +34,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(WebSocket socket)
         {
-            await using var cn = new Connection(Guid.NewGuid(), socket);
+            var cn = _connectionTracker.Track(socket);
             this.Trace(() => $"Start for connection {cn.GetId()}");
-            _connectionTracker.Track(cn);
             await using var scope = _sp.CreateAsyncScope();
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
@@ -55,7 +54,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 if (!cts.IsCancellationRequested)
                 {
-                    this.Trace(() => $"Release lost connection {cn.GetId()}");
+                    this.Trace(() => $"Release complete connection {cn.GetId()}");
                     _connectionTracker.Release(cn);
                 }
             }

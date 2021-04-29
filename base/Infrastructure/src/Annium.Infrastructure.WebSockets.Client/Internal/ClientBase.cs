@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
@@ -38,24 +39,26 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _configuration = configuration;
 
             _socket = new ClientWebSocket(_configuration.WebSocketOptions);
-            _socket.ConnectionLost += OnConnectionLost;
-            _socket.ConnectionRestored += OnConnectionRestored;
+            _socket.ConnectionLost += () =>
+            {
+                this.Trace(() => "CONNECTION lost");
+                return ConnectionLost.Invoke();
+            };
+            _socket.ConnectionRestored += () =>
+            {
+                this.Trace(() => "CONNECTION restored");
+                return ConnectionRestored.Invoke();
+            };
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
             _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);
         }
 
-        public async Task ConnectAsync(CancellationToken ct = default)
-        {
-            await _socket.ConnectAsync(_configuration.Uri, ct);
-            await ConnectionRestored.Invoke();
-        }
+        public Task ConnectAsync(CancellationToken ct = default) =>
+            _socket.ConnectAsync(_configuration.Uri, ct);
 
-        public async Task DisconnectAsync(CancellationToken ct = default)
-        {
-            await _socket.DisconnectAsync(ct);
-            await ConnectionLost.Invoke();
-        }
+        public Task DisconnectAsync(CancellationToken ct = default) =>
+            _socket.DisconnectAsync(ct);
 
         public Action Listen<TNotification>(
             Action<TNotification> handle
@@ -236,16 +239,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             await _disposable.DisposeAsync();
             await _socket.DisconnectAsync(CancellationToken.None);
             await _socket.DisposeAsync();
-        }
-
-        private async Task OnConnectionLost()
-        {
-            await ConnectionLost.Invoke();
-        }
-
-        private async Task OnConnectionRestored()
-        {
-            await ConnectionRestored.Invoke();
         }
 
         private async Task SendInternal<T>(T data)

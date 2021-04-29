@@ -19,6 +19,7 @@ namespace Annium.Net.WebSockets.Internal
         private AsyncDisposableBox _disposable = Disposable.AsyncBox();
         private CancellationTokenSource _cts = new();
         private Instant _lastPongTime;
+        private bool _pingStep = true;
 
         public KeepAliveMonitor(
             IObservable<SocketMessage> observable,
@@ -37,10 +38,10 @@ namespace Annium.Net.WebSockets.Internal
 
             _disposable += _cts = new();
 
-            _lastPongTime = GetNow() + _options.PingInterval / 2;
+            _lastPongTime = GetNow();
 
             // run send pings & check pongs on timer
-            var timerInterval = _options.PingInterval.ToTimeSpan();
+            var timerInterval = _options.PingInterval.ToTimeSpan() / 2;
             _disposable += new Timer(SendPingCheckPong, null, timerInterval, timerInterval) as IAsyncDisposable;
 
             // track pongs
@@ -60,8 +61,24 @@ namespace Annium.Net.WebSockets.Internal
             if (Token.IsCancellationRequested)
                 return;
 
-            SendPing();
+            if (_pingStep)
+                SendPing();
+            else
+                CheckPong();
 
+            // switch step
+            _pingStep = !_pingStep;
+        }
+
+        private void SendPing()
+        {
+            // send ping every time
+            this.Trace(() => "Send ping");
+            _send(_options.PingFrame).Subscribe();
+        }
+
+        private void CheckPong()
+        {
             // if any ping not responded - signal connection lost
             var now = GetNow();
             var silenceDuration = now - _lastPongTime;
@@ -77,13 +94,6 @@ namespace Annium.Net.WebSockets.Internal
                 this.Trace(() => "Missed all pings - signal connection lost");
                 _cts.Cancel();
             }
-        }
-
-        private void SendPing()
-        {
-            // send ping every time
-            this.Trace(() => "Send ping");
-            _send(_options.PingFrame).Subscribe();
         }
 
         private void TrackPong(SocketMessage _)

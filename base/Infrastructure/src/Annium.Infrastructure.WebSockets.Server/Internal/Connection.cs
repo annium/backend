@@ -32,6 +32,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 await _socket.DisconnectAsync(CancellationToken.None);
             }
+
+            await _socket.DisposeAsync();
         }
     }
 }

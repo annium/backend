@@ -15,7 +15,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static IServiceContainer AddWebSocketServer<TState>(
             this IServiceContainer container,
-            Action<ServerConfiguration> configure,
+            Action<IServiceProvider, ServerConfiguration> configure,
             Func<Guid, TState> stateFactory
         )
             where TState : ConnectionStateBase
@@ -23,9 +23,12 @@ namespace Annium.Core.DependencyInjection
             // public
             container.Add<ICoordinator, Coordinator<TState>>().Singleton();
             container.Add(stateFactory).AsSelf().Singleton();
-            var cfg = new ServerConfiguration();
-            configure(cfg);
-            container.Add(cfg).AsSelf().Singleton();
+            container.Add(sp =>
+            {
+                var cfg = new ServerConfiguration();
+                configure(sp, cfg);
+                return cfg;
+            }).AsSelf().Singleton();
 
             // internal
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
