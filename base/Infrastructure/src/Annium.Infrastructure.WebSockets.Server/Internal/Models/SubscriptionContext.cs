@@ -44,7 +44,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             _cts = cts;
             _mediator = mediator;
             _state = state;
-            _executor.Start(CancellationToken.None);
+            _executor.Start();
         }
 
         public void Handle(IStatusResult<OperationStatus> result)

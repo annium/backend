@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
+using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
@@ -21,9 +22,10 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public bool IsConnected => _socket.State == WebSocketState.Open;
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
         public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
-        private readonly ClientConfiguration _configuration;
         private readonly Serializer _serializer;
+        private readonly ClientConfiguration _configuration;
         private readonly ClientWebSocket _socket;
+        private readonly IBackgroundExecutor _executor = Executor.Background.Sequential();
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
@@ -39,16 +41,12 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _configuration = configuration;
 
             _socket = new ClientWebSocket(_configuration.WebSocketOptions);
-            _socket.ConnectionLost += () =>
-            {
-                this.Trace(() => "CONNECTION lost");
-                return ConnectionLost.Invoke();
-            };
-            _socket.ConnectionRestored += () =>
-            {
-                this.Trace(() => "CONNECTION restored");
-                return ConnectionRestored.Invoke();
-            };
+            _socket.ConnectionLost += () => ConnectionLost.Invoke();
+            _socket.ConnectionRestored += () => ConnectionRestored.Invoke();
+
+            _disposable += _executor;
+            _executor.Start();
+
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
             _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);
@@ -225,17 +223,22 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             return SubscribeInternal<TInit, TMessage>(request, o => o.Subscribe(x => handle(x.Message)), ct);
         }
 
-        public Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
+        public async Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
             SubscriptionCancelRequest request,
             CancellationToken ct = default
         )
         {
-            return FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(request, ct,
-                x => x.Result);
+            if (!_subscriptions.TryRemove(request.SubscriptionId, out var subscription))
+                return Result.Status(OperationStatus.NotFound);
+
+            subscription.Dispose();
+
+            return await FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(request, ct, x => x.Result);
         }
 
         public async ValueTask DisposeAsync()
         {
+            await Task.WhenAll(_subscriptions.Select(async x => await x.Value.DisposeAsync().ConfigureAwait(false)));
             await _disposable.DisposeAsync();
             await _socket.DisconnectAsync(CancellationToken.None);
             await _socket.DisposeAsync();
@@ -291,9 +294,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         )
             where TInit : SubscriptionInitRequestBase
         {
-            var response =
-                await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct,
-                    x => x.Result);
+            var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct, x => x.Result);
             if (response.HasErrors)
                 return Result.Status(response.Status, Guid.Empty).Join(response);
 
@@ -316,7 +317,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 _requestFutures.Remove(response.Rid, out var future) &&
                 !future.CancellationSource.IsCancellationRequested
             )
-                future.TaskSource.SetResult(response);
+                _executor.Schedule(() => future.TaskSource.SetResult(response));
         }
 
         private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);

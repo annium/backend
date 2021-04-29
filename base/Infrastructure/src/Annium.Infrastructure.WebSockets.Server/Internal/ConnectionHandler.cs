@@ -126,7 +126,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 return _serializer.Deserialize<AbstractRequestBase>(msg.Data);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 this.Trace(e.ToString);
                 return default;
