@@ -26,6 +26,7 @@ namespace Annium.Net.WebSockets
         protected TNativeSocket Socket { get; set; }
         protected IBackgroundExecutor Executor { get; } = Extensions.Execution.Executor.Background.Sequential();
         protected CancellationTokenSource ReceiveCts { get; private set; } = new();
+        private bool IsConnected => State is WebSocketState.Open or WebSocketState.CloseSent;
         private readonly UTF8Encoding _encoding = new();
         private readonly IObservable<SocketMessage> _observable;
         private readonly IObservable<string> _textObservable;
@@ -50,12 +51,7 @@ namespace Annium.Net.WebSockets
 
             // resolve components from configuration
             this.Trace(options.ToString);
-            var cfg = Configurator.GetConfiguration(
-                observableInstance,
-                _encoding,
-                x => IsConnected() ? Send(x) : Observable.Empty<Unit>(),
-                options
-            );
+            var cfg = Configurator.GetConfiguration(observableInstance, _encoding, TrySend, options);
             _keepAliveMonitor = cfg.KeepAliveMonitor;
             _observable = cfg.MessageObservable;
             _binaryObservable = cfg.BinaryObservable;
@@ -107,7 +103,7 @@ namespace Annium.Net.WebSockets
 
                     // initial spin, until connected
                     Log.Trace(() => "Spin until connected and keepAlive monitor up");
-                    SpinWait.SpinUntil(() => _keepAliveMonitor is not null! && IsConnected());
+                    SpinWait.SpinUntil(() => _keepAliveMonitor is not null! && IsConnected);
                     _keepAliveMonitor.Resume();
                     ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
@@ -214,7 +210,8 @@ namespace Annium.Net.WebSockets
             return Status.Opened;
         }
 
-        private bool IsConnected() => State == WebSocketState.Open || State == WebSocketState.CloseSent;
+        private IObservable<Unit> TrySend(ReadOnlyMemory<byte> data)
+            => IsConnected ? Send(data) : Observable.Empty<Unit>();
 
         public async ValueTask DisposeAsync()
         {
