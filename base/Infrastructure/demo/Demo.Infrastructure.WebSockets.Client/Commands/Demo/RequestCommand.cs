@@ -12,6 +12,7 @@ using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
+using NodaTime;
 using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
 using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
@@ -35,7 +36,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 
         public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken token)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = TimeSpan.FromSeconds(1) });
+            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
             ws.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");

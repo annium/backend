@@ -42,7 +42,7 @@ namespace Annium.Net.WebSockets
             Socket = socket;
             _disposable += Socket;
 
-            Executor.Start(CancellationToken.None);
+            Executor.Start();
             _disposable += Executor;
 
             // start socket observable
@@ -188,16 +188,12 @@ namespace Annium.Net.WebSockets
         private async Task<Status> HandleDisconnect()
         {
             _keepAliveMonitor.Pause();
-            this.Trace(() => "OnDisconnectAsync - start");
+            this.Trace(() => $"OnDisconnectAsync - start in {State} state");
             await OnDisconnectAsync().ConfigureAwait(false);
             this.Trace(() => "OnDisconnectAsync - complete");
 
             // if after disconnect handling not connected - set completed and break
-            if (
-                State == WebSocketState.CloseReceived ||
-                State == WebSocketState.Closed ||
-                State == WebSocketState.Aborted
-            )
+            if (State is WebSocketState.CloseReceived or WebSocketState.Closed or WebSocketState.Aborted)
             {
                 this.Trace(() => "Closed");
                 return Status.Closed;

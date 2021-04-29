@@ -259,7 +259,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             where TResponse : ResponseBase
         {
             var tcs = new TaskCompletionSource<ResponseBase>();
-            var cts = new CancellationTokenSource(_configuration.Timeout.ToTimeSpan());
+            var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
             // external token - operation canceled
             ct.Register(() =>
             {
@@ -279,7 +279,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 }
             });
 
-            _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.Timeout);
+            _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
             await SendInternal(request);
             var response = (TResponse) await tcs.Task;
             var data = getData(response);

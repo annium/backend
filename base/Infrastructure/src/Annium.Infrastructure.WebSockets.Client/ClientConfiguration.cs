@@ -13,12 +13,12 @@ namespace Annium.Infrastructure.WebSockets.Client
 
         public ClientWebSocketOptions WebSocketOptions { get; private set; } = new()
         {
-            ReconnectTimeout = TimeSpan.FromSeconds(5),
+            ReconnectTimeout = Duration.FromSeconds(5),
             ActiveKeepAlive = ActiveKeepAlive.Create(),
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
 
-        public Duration Timeout { get; private set; } = Duration.FromMinutes(1);
+        public Duration ResponseTimeout { get; private set; } = Duration.FromMinutes(1);
 
         public ClientConfiguration ConnectTo(Uri uri)
         {
@@ -48,9 +48,16 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration WithReconnectTimeout(TimeSpan timeout)
+        public ClientConfiguration WithConnectTimeout(uint timeout)
         {
-            WebSocketOptions.ReconnectTimeout = timeout;
+            WebSocketOptions.ConnectTimeout = Duration.FromSeconds(timeout);
+
+            return this;
+        }
+
+        public ClientConfiguration WithReconnectTimeout(uint timeout)
+        {
+            WebSocketOptions.ReconnectTimeout = Duration.FromSeconds(timeout);
 
             return this;
         }
@@ -62,9 +69,9 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration WithTimeout(Duration responseLifetime)
+        public ClientConfiguration WithResponseTimeout(uint timeout)
         {
-            Timeout = responseLifetime;
+            ResponseTimeout = Duration.FromSeconds(timeout);
             return this;
         }
     }

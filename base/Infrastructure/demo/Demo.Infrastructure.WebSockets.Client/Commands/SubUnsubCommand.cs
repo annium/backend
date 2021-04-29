@@ -8,7 +8,6 @@ using Annium.Logging.Abstractions;
 using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
 using Demo.Infrastructure.WebSockets.Domain.Responses.User;
-using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands
 {
@@ -33,7 +32,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var configuration = new ClientConfiguration()
                 .ConnectTo(cfg.Server)
                 .WithActiveKeepAlive(5, 5)
-                .WithTimeout(Duration.FromSeconds(5));
+                .WithResponseTimeout(5);
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {

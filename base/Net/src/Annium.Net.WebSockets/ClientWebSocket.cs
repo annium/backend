@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
+using NodaTime;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets
@@ -78,17 +79,17 @@ namespace Annium.Net.WebSockets
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
-            if (_options.ReconnectTimeout != TimeSpan.MaxValue)
+            if (_options.ReconnectTimeout != Duration.MaxValue)
             {
                 this.Trace(() => "Try reconnect");
-                await Task.Delay(_options.ReconnectTimeout);
+                await Task.Delay(_options.ReconnectTimeout.ToTimeSpan());
                 await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
             }
             else
                 this.Trace(() => "No reconnect");
         }
 
-        private async Task ConnectAsync(Uri uri, TimeSpan timeout, CancellationToken token)
+        private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken token)
         {
             this.Trace(() => $"Connect to {uri}");
 
@@ -105,7 +106,7 @@ namespace Annium.Net.WebSockets
                 {
                     this.Trace(() => "Connection failed");
                     Socket.Dispose();
-                    await Task.Delay(timeout, token);
+                    await Task.Delay(timeout.ToTimeSpan(), token);
                 }
             } while (
                 !token.IsCancellationRequested &&
