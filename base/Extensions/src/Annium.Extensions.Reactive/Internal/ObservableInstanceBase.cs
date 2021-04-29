@@ -31,7 +31,8 @@ namespace Annium.Extensions.Reactive.Internal
         {
             EnsureNotDisposed();
 
-            foreach (var observer in GetSubscribersSlice())
+            var subscribers = GetSubscribersSlice();
+            foreach (var observer in subscribers)
                 observer.OnNext(value);
         }
 
@@ -39,7 +40,8 @@ namespace Annium.Extensions.Reactive.Internal
         {
             EnsureNotDisposed();
 
-            foreach (var observer in GetSubscribersSlice())
+            var subscribers = GetSubscribersSlice();
+            foreach (var observer in subscribers)
                 observer.OnError(exception);
         }
 
@@ -49,7 +51,8 @@ namespace Annium.Extensions.Reactive.Internal
                 throw new InvalidOperationException("Observable already completed");
             _isCompleted = true;
 
-            foreach (var observer in GetSubscribersSlice())
+            var subscribers = GetSubscribersSlice();
+            foreach (var observer in subscribers)
                 observer.OnCompleted();
         }
 
