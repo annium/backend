@@ -48,9 +48,9 @@ namespace Annium.Extensions.Execution.Internal
                 {
                     var task = _tasks.Take(_cts.Token);
                     if (task is Action syncTask)
-                        syncTask();
+                        await Task.Run(syncTask);
                     else if (task is Func<Task> asyncTask)
-                        await asyncTask();
+                        await asyncTask().ConfigureAwait(false);
                     else
                         throw new NotSupportedException();
                 }
