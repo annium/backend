@@ -25,7 +25,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private readonly Serializer _serializer;
         private readonly ClientConfiguration _configuration;
         private readonly ClientWebSocket _socket;
-        private readonly IBackgroundExecutor _executor = Executor.Background.Sequential();
+        private readonly IBackgroundExecutor _executor = Executor.Background.Parallel();
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
@@ -299,14 +299,12 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 return Result.Status(response.Status, Guid.Empty).Join(response);
 
             var subscriptionId = response.Data;
-            _subscriptions.TryAdd(
-                subscriptionId,
-                subscribe(
-                    _responseObservable
-                        .OfType<SubscriptionMessage<TMessage>>()
-                        .Where(x => x.SubscriptionId == subscriptionId)
-                )
+            var subscription = subscribe(
+                _responseObservable
+                    .OfType<SubscriptionMessage<TMessage>>()
+                    .Where(x => x.SubscriptionId == subscriptionId)
             );
+            _subscriptions.TryAdd(subscriptionId, subscription);
 
             return Result.Status(response.Status, subscriptionId);
         }
