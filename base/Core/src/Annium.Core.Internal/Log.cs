@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using Annium.Core.Internal.Internal;
 using Annium.Core.Primitives;
 
@@ -24,51 +25,58 @@ namespace Annium.Core.Internal
         public static void Debug(
             Func<string> getMessage,
             [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = ""
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         )
         {
             if (Level >= LogLevel.Debug)
-                LogInternal(callerFilePath, member, $": {getMessage()}");
+                LogInternal(callerFilePath, member, line, $": {getMessage()}");
         }
 
         public static void Debug(
             [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = ""
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         )
         {
             if (Level >= LogLevel.Debug)
-                LogInternal(callerFilePath, member);
+                LogInternal(callerFilePath, member, line);
         }
 
         public static void Trace(
             Func<string> getMessage,
             [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = ""
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         )
         {
             if (Level >= LogLevel.Trace)
-                LogInternal(callerFilePath, member, $": {getMessage()}");
+                LogInternal(callerFilePath, member, line, $": {getMessage()}");
         }
 
         public static void Trace(
             [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = ""
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         )
         {
             if (Level >= LogLevel.Trace)
-                LogInternal(callerFilePath, member);
+                LogInternal(callerFilePath, member, line);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void LogInternal(
             string callerFilePath,
             string member,
+            int line,
             string message = ""
         )
         {
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
             if (Filter.Count == 0 || Filter.Any(caller.Contains))
-                Write($"[{DateTime.Now:HH:mm:ss.fff}] ADBG {caller}.{member}{message}");
+                Write(
+                    $"[{DateTime.Now:HH:mm:ss.fff}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}{message}"
+                );
         }
 
         private static Config Configure()
