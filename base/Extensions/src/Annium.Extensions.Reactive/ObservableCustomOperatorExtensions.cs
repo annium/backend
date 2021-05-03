@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reactive;
 using System.Reactive.Linq;
 using NodaTime;
 
@@ -40,5 +41,9 @@ namespace System
                 }, observer.OnError, observer.OnCompleted);
             });
         }
+
+        public static IObservable<Unit> Unit<TSource>(
+            this IObservable<TSource> source
+        ) => source.Select(_ => Reactive.Unit.Default);
     }
 }
