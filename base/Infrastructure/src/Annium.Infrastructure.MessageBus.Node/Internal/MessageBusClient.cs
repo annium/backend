@@ -22,18 +22,18 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
             var id = Guid.NewGuid();
 
             var tcs = new TaskCompletionSource<IResult<T>>();
-            ct.Register(tcs.SetCanceled);
+            ct.Register(() => tcs.TrySetCanceled());
             _node.Listen<MessageBusEnvelope<T>>()
                 .Where(x => x.Id == id)
                 .Subscribe(
                     x =>
                     {
                         if (x.IsSuccess)
-                            tcs.SetResult(Result.New(x.Data));
+                            tcs.TrySetResult(Result.New(x.Data));
                         else
-                            tcs.SetException(new Exception(x.Error));
+                            tcs.TrySetException(new Exception(x.Error));
                     },
-                    tcs.SetException,
+                    e => tcs.TrySetException(e),
                     ct
                 );
 

@@ -267,7 +267,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
                 {
                     cts.Cancel();
-                    tcs.SetException(new OperationCanceledException(ct));
+                    tcs.TrySetException(new OperationCanceledException(ct));
                 }
             });
             cts.Token.Register(() =>
@@ -275,7 +275,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 // if not arrived and not canceled - expire
                 if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
                 {
-                    tcs.SetException(new TimeoutException());
+                    tcs.TrySetException(new TimeoutException());
                 }
             });
 
@@ -315,7 +315,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 _requestFutures.Remove(response.Rid, out var future) &&
                 !future.CancellationSource.IsCancellationRequested
             )
-                _executor.Schedule(() => future.TaskSource.SetResult(response));
+                _executor.Schedule(() => future.TaskSource.TrySetResult(response));
         }
 
         private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);

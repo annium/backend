@@ -60,8 +60,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                     .Listen()
                     .Subscribe(
                         x => executor.Schedule(() => HandleMessage(x)),
-                        x => tcs.SetException(x),
-                        () => tcs.SetResult(new object())
+                        x => tcs.TrySetException(x),
+                        () => tcs.TrySetResult(new object())
                     );
 
                 // process start hook

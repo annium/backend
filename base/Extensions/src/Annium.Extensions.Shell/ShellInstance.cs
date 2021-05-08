@@ -148,9 +148,9 @@ namespace Annium.Extensions.Shell
                 exitHandled = true;
 
                 if (killed)
-                    tcs!.SetCanceled();
+                    tcs!.TrySetCanceled();
                 else
-                    tcs!.SetResult(GetResult(process));
+                    tcs!.TrySetResult(GetResult(process));
                 try
                 {
                     process.Dispose();

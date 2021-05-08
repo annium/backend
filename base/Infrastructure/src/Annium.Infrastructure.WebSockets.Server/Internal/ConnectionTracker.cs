@@ -79,7 +79,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             this.Trace(() => $"Unreleased connections: {_connections.Count}");
             if (_connections.IsEmpty)
-                _disposeTcs.SetResult(new object());
+                _disposeTcs.TrySetResult(new object());
         }
 
         private void EnsureNotDisposed()

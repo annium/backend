@@ -31,7 +31,7 @@ namespace Demo.Net.WebSockets.Client
             token.Register(() =>
             {
                 Console.WriteLine("Process terminated");
-                tcs.SetResult(new object());
+                tcs.TrySetResult(new object());
             });
 
             var s1 = socket.ListenText().Subscribe(x => Console.WriteLine($"In: '{x}'"));

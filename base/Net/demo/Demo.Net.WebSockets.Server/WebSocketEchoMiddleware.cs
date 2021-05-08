@@ -59,7 +59,7 @@ namespace Demo.Net.WebSockets.Server
                     Console.WriteLine("Close");
                     await ws.DisconnectAsync(CancellationToken.None);
                     Console.WriteLine("Closed");
-                    tcs.SetResult(new object());
+                    tcs.TrySetResult(new object());
                 }
             );
 

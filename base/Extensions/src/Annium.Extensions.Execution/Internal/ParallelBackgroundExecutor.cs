@@ -78,7 +78,7 @@ namespace Annium.Extensions.Execution.Internal
         private void TryFinish()
         {
             if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _workCounter) == 0)
-                _tcs.SetResult(new object());
+                _tcs.TrySetResult(new object());
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
