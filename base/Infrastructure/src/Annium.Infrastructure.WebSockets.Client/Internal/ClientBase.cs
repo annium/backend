@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.WebSockets;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -49,7 +50,9 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
-            _disposable += _responseObservable.OfType<ResponseBase>().Subscribe(CompleteResponse);
+            _disposable += _responseObservable.OfType<ResponseBase>()
+                .ObserveOn(TaskPoolScheduler.Default)
+                .Subscribe(CompleteResponse);
         }
 
         public Task ConnectAsync(CancellationToken ct = default) =>
@@ -294,16 +297,22 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         )
             where TInit : SubscriptionInitRequestBase
         {
-            var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct, x => x.Result);
-            if (response.HasErrors)
-                return Result.Status(response.Status, Guid.Empty).Join(response);
-
-            var subscriptionId = response.Data;
+            var subscriptionId = Guid.Empty;
             var subscription = subscribe(
                 _responseObservable
                     .OfType<SubscriptionMessage<TMessage>>()
                     .Where(x => x.SubscriptionId == subscriptionId)
+                    .ObserveOn(TaskPoolScheduler.Default)
             );
+
+            var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct, x => x.Result);
+            if (response.HasErrors)
+            {
+                subscription.Dispose();
+                return Result.Status(response.Status, Guid.Empty).Join(response);
+            }
+
+            subscriptionId = response.Data;
             _subscriptions.TryAdd(subscriptionId, subscription);
 
             return Result.Status(response.Status, subscriptionId);
