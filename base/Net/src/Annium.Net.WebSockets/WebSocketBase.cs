@@ -3,6 +3,7 @@ using System.Buffers;
 using System.IO;
 using System.Net.WebSockets;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
@@ -51,7 +52,7 @@ namespace Annium.Net.WebSockets
 
             // resolve components from configuration
             this.Trace(options.ToString);
-            var cfg = Configurator.GetConfiguration(observableInstance, _encoding, TrySend, options);
+            var cfg = Configurator.GetConfiguration(observableInstance.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options);
             _keepAliveMonitor = cfg.KeepAliveMonitor;
             _observable = cfg.MessageObservable;
             _binaryObservable = cfg.BinaryObservable;

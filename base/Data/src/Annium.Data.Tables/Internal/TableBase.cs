@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
@@ -13,15 +15,18 @@ namespace Annium.Data.Tables.Internal
         public abstract int Count { get; }
         protected readonly object DataLocker = new();
         private readonly object _notificationLocker = new();
-        private readonly IObservableInstance<IChangeEvent<T>> _observable;
+        private readonly IObservable<IChangeEvent<T>> _observable;
         private readonly TablePermission _permissions;
         private readonly BlockingCollection<IChangeEvent<T>> _events;
+        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         protected TableBase(TablePermission permissions)
         {
             _permissions = permissions;
             _events = new BlockingCollection<IChangeEvent<T>>(new ConcurrentQueue<IChangeEvent<T>>());
-            _observable = CreateObservable();
+            var observable = CreateObservable();
+            _disposable += observable;
+            _observable = observable.ObserveOn(TaskPoolScheduler.Default);
         }
 
         public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer)
@@ -89,7 +94,7 @@ namespace Annium.Data.Tables.Internal
 
         public virtual ValueTask DisposeAsync()
         {
-            return _observable.DisposeAsync();
+            return _disposable.DisposeAsync();
         }
     }
 }
