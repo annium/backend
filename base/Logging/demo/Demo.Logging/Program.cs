@@ -11,7 +11,7 @@ namespace Demo.Logging
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var logger = provider.Resolve<ILogger<Program>>();

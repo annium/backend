@@ -7,29 +7,29 @@ namespace Annium.Core.Entrypoint
     {
         public ManualResetEventSlim Gate { get; }
 
-        public CancellationToken Token { get; }
+        public CancellationToken Ct { get; }
 
         public IServiceProvider Provider { get; }
 
         public RunPack(
             ManualResetEventSlim gate,
-            CancellationToken token,
+            CancellationToken ct,
             IServiceProvider provider
         )
         {
             Gate = gate;
-            Token = token;
+            Ct = ct;
             Provider = provider;
         }
 
         public void Deconstruct(
             out ManualResetEventSlim gate,
-            out CancellationToken token,
+            out CancellationToken ct,
             out IServiceProvider provider
         )
         {
             gate = Gate;
-            token = Token;
+            ct = Ct;
             provider = Provider;
         }
     }

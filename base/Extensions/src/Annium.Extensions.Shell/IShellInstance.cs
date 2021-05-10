@@ -13,8 +13,8 @@ namespace Annium.Extensions.Shell
 
         Task<ShellResult> RunAsync(TimeSpan timeout);
 
-        Task<ShellResult> RunAsync(CancellationToken token = default);
+        Task<ShellResult> RunAsync(CancellationToken ct = default);
 
-        ShellAsyncResult Start(CancellationToken token = default);
+        ShellAsyncResult Start(CancellationToken ct = default);
     }
 }

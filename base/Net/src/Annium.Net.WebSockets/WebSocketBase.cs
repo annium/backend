@@ -60,11 +60,11 @@ namespace Annium.Net.WebSockets
             _disposable += cfg.Disposable;
         }
 
-        public IObservable<Unit> Send(string data, CancellationToken token = default) =>
-            Send(_encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, token);
+        public IObservable<Unit> Send(string data, CancellationToken ct = default) =>
+            Send(_encoding.GetBytes(data).AsMemory(), WebSocketMessageType.Text, ct);
 
-        public IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken token = default) =>
-            Send(data, WebSocketMessageType.Binary, token);
+        public IObservable<Unit> Send(ReadOnlyMemory<byte> data, CancellationToken ct = default) =>
+            Send(data, WebSocketMessageType.Binary, ct);
 
         public IObservable<SocketMessage> Listen() => _observable;
 
@@ -109,7 +109,7 @@ namespace Annium.Net.WebSockets
                     ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
                     // run polling
-                    while (!ctx.Token.IsCancellationRequested)
+                    while (!ctx.Ct.IsCancellationRequested)
                     {
                         // keep receiving until closed
                         if (await ReceiveAsync(ctx, buffer) == Status.Closed)
@@ -120,7 +120,7 @@ namespace Annium.Net.WebSockets
                     }
 
                     // either ct canceled or cycle break due to socket closed
-                    this.Trace(() => $"Cycle end: {(ctx.Token.IsCancellationRequested ? "canceled" : "closed")}");
+                    this.Trace(() => $"Cycle end: {(ctx.Ct.IsCancellationRequested ? "canceled" : "closed")}");
                 }
                 catch (OperationCanceledException)
                 {

@@ -14,7 +14,7 @@ namespace Demo.NodaTime.Serialization
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var converters = new[] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };

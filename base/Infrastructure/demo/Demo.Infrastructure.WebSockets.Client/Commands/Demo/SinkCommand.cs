@@ -28,7 +28,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             _logger = logger;
         }
 
-        public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken ct)
         {
             var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
             ws.ConnectionLost += () =>
@@ -43,7 +43,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             };
 
             _logger.Debug($"Connecting to {cfg.Server}");
-            await ws.ConnectAsync(cfg.Server, token);
+            await ws.ConnectAsync(cfg.Server, ct);
             var count = 0;
             ws.ListenBinary().Select(_serializer.Deserialize<NotificationBase>).Subscribe(x =>
             {
@@ -58,7 +58,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             _logger.Debug("Demo start");
             try
             {
-                await Task.Delay(-1, token);
+                await Task.Delay(-1, ct);
             }
             catch
             {

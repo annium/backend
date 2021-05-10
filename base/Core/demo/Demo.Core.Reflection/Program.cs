@@ -15,7 +15,7 @@ namespace Demo.Core.Reflection
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);

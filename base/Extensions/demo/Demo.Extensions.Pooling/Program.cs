@@ -19,7 +19,7 @@ namespace Demo.Extensions.Pooling
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var cache = CreateCache();

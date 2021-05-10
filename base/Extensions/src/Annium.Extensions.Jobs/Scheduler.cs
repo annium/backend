@@ -34,9 +34,9 @@ namespace Annium.Extensions.Jobs
             return () => _handlers.Remove(handler);
         }
 
-        private async Task Run(CancellationToken token)
+        private async Task Run(CancellationToken ct)
         {
-            while (!token.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 // wait till next minute start
                 var time = _timeProvider.Now.InUtc();

@@ -31,10 +31,10 @@ namespace Annium.Net.WebSockets
         {
         }
 
-        public Task ConnectAsync(Uri uri, CancellationToken token) =>
-            ConnectAsync(uri, _options.ConnectTimeout, token);
+        public Task ConnectAsync(Uri uri, CancellationToken ct) =>
+            ConnectAsync(uri, _options.ConnectTimeout, ct);
 
-        public async Task DisconnectAsync(CancellationToken token)
+        public async Task DisconnectAsync(CancellationToken ct)
         {
             _isManuallyDisconnected = true;
 
@@ -52,7 +52,7 @@ namespace Annium.Net.WebSockets
                 )
                 {
                     this.Trace(() => "Disconnect");
-                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", token);
+                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", ct);
                 }
                 else
                     this.Trace(() => "Already disconnected");
@@ -89,7 +89,7 @@ namespace Annium.Net.WebSockets
                 this.Trace(() => "No reconnect");
         }
 
-        private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken token)
+        private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
         {
             this.Trace(() => $"Connect to {uri}");
 
@@ -100,16 +100,16 @@ namespace Annium.Net.WebSockets
                 {
                     Socket = new NativeClientWebSocket();
                     this.Trace(() => "Try connect");
-                    await Socket.ConnectAsync(uri, token);
+                    await Socket.ConnectAsync(uri, ct);
                 }
                 catch (WebSocketException)
                 {
                     this.Trace(() => "Connection failed");
                     Socket.Dispose();
-                    await Task.Delay(timeout.ToTimeSpan(), token);
+                    await Task.Delay(timeout.ToTimeSpan(), ct);
                 }
             } while (
-                !token.IsCancellationRequested &&
+                !ct.IsCancellationRequested &&
                 !(
                     Socket.State == WebSocketState.Open ||
                     Socket.State == WebSocketState.CloseSent

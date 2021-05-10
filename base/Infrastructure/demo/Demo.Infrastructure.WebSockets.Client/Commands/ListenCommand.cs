@@ -25,7 +25,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             _logger = logger;
         }
 
-        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
         {
             var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(5, 5);
             var client = _clientFactory.Create(configuration);
@@ -41,14 +41,14 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             };
 
             _logger.Debug($"Connecting to {cfg.Server}");
-            await client.ConnectAsync(token);
+            await client.ConnectAsync(ct);
             _logger.Debug($"Connected to {cfg.Server}");
 
-            token.Register(client.Listen<DiagnosticsNotification>(
+            ct.Register(client.Listen<DiagnosticsNotification>(
                 x => _logger.Debug($"<<< diagnostics: {x}")
             ));
 
-            await token;
+            await ct;
             _logger.Debug("Disconnecting");
             if (client.IsConnected)
                 await client.DisconnectAsync(CancellationToken.None);

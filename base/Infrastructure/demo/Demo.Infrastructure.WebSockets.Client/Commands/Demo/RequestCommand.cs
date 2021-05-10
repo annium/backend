@@ -34,7 +34,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             _logger = logger;
         }
 
-        public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
         {
             var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
             ws.ConnectionLost += () =>
@@ -49,7 +49,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             };
 
             _logger.Debug($"Connecting to {cfg.Server}");
-            await ws.ConnectAsync(cfg.Server, token);
+            await ws.ConnectAsync(cfg.Server, ct);
             var counter = 0;
             ws.ListenBinary()
                 .Select(x =>

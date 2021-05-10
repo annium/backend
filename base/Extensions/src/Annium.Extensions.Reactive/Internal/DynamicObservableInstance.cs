@@ -67,7 +67,7 @@ namespace Annium.Extensions.Reactive.Internal
         ) => async ctx =>
         {
             _factoryCts = new CancellationTokenSource();
-            await factory(ctx with { Token = _factoryCts.Token });
+            await factory(ctx with { Ct = _factoryCts.Token });
         };
     }
 }

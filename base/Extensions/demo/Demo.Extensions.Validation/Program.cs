@@ -12,7 +12,7 @@ namespace Demo.Extensions.Validation
         private static async Task RunAsync(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var validator = provider.Resolve<IValidator<User>>();

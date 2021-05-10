@@ -16,7 +16,7 @@ namespace Demo.Core.Mediator
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var mediator = provider.Resolve<IMediator>();
@@ -26,7 +26,7 @@ namespace Demo.Core.Mediator
 
             var request = new CreateTodoRequest("wake up");
             var payload = Encode(request);
-            var result = await mediator.SendAsync<Response<IBooleanResult<int>>>(payload, token);
+            var result = await mediator.SendAsync<Response<IBooleanResult<int>>>(payload, ct);
             _ = Decode(result);
 
             /*

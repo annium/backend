@@ -13,7 +13,7 @@ namespace Demo.Extensions.Jobs
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var resolver = provider.Resolve<IIntervalResolver>();

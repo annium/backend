@@ -27,7 +27,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             _logger = logger;
         }
 
-        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
         {
             var configuration = new ClientConfiguration()
                 .ConnectTo(cfg.Server)
@@ -45,24 +45,24 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
                 return Task.CompletedTask;
             };
 
-            await client.ConnectAsync(token);
+            await client.ConnectAsync(ct);
 
             _logger.Debug("Init subscription");
             var result = await client.SubscribeAsync(new UserBalanceSubscriptionInit(),
-                (Action<UserBalanceMessage>) Log, token);
+                (Action<UserBalanceMessage>) Log, ct);
             _logger.Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
             _logger.Debug("Cancel subscription");
-            await client.UnsubscribeAsync(SubscriptionCancelRequest.New(result.Data), token);
+            await client.UnsubscribeAsync(SubscriptionCancelRequest.New(result.Data), ct);
             _logger.Debug("Subscription canceled");
 
             // _logger.Debug("Cancel subscription");
             // await client.UnsubscribeAsync(SubscriptionCancelRequest.New(Guid.NewGuid()), token);
             // _logger.Debug("Subscription canceled");
 
-            await client.DisconnectAsync(token);
+            await client.DisconnectAsync(ct);
 
             void Log(UserBalanceMessage msg) => _logger.Debug($"<<< {msg}");
         }

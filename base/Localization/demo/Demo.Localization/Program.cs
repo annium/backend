@@ -12,7 +12,7 @@ namespace Demo.Localization
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var localizer = provider.Resolve<ILocalizer<Program>>();

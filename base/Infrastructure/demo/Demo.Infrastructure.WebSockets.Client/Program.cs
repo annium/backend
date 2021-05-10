@@ -10,10 +10,10 @@ namespace Demo.Infrastructure.WebSockets.Client
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
-            new Commander(provider).Run<Commands.Group>(args, token);
+            new Commander(provider).Run<Commands.Group>(args, ct);
         }
 
         internal static int Main(string[] args) => new Entrypoint()

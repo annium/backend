@@ -6,7 +6,7 @@ namespace Annium.Net.WebSockets
 {
     public interface IClientWebSocket : ISendingReceivingWebSocket
     {
-        Task ConnectAsync(Uri uri, CancellationToken token);
-        Task DisconnectAsync(CancellationToken token);
+        Task ConnectAsync(Uri uri, CancellationToken ct);
+        Task DisconnectAsync(CancellationToken ct);
     }
 }

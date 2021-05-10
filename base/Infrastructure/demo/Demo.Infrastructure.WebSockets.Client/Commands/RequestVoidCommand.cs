@@ -24,12 +24,12 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             _logger = logger;
         }
 
-        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
         {
             var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(5, 5);
             var client = _clientFactory.Create(configuration);
 
-            await client.ConnectAsync(token);
+            await client.ConnectAsync(ct);
 
             var request = new DeleteOrderRequest();
             _logger.Debug($">>> {request}");

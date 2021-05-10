@@ -31,7 +31,7 @@ namespace Annium.Net.WebSockets
         {
         }
 
-        public async Task DisconnectAsync(CancellationToken token)
+        public async Task DisconnectAsync(CancellationToken ct)
         {
             _isManuallyDisconnected = true;
 
@@ -49,7 +49,7 @@ namespace Annium.Net.WebSockets
                 )
                 {
                     this.Trace(() => "Disconnect");
-                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", token);
+                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", ct);
                 }
                 else
                     this.Trace(() => "Already disconnected");

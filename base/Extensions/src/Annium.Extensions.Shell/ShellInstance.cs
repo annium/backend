@@ -51,18 +51,18 @@ namespace Annium.Extensions.Shell
             return await RunAsync(cts.Token);
         }
 
-        public async Task<ShellResult> RunAsync(CancellationToken token = default)
+        public async Task<ShellResult> RunAsync(CancellationToken ct = default)
         {
             using var process = GetProcess();
 
-            return await StartProcess(process, token).Task;
+            return await StartProcess(process, ct).Task;
         }
 
-        public ShellAsyncResult Start(CancellationToken token = default)
+        public ShellAsyncResult Start(CancellationToken ct = default)
         {
             var process = GetProcess();
 
-            var result = StartProcess(process, token).Task;
+            var result = StartProcess(process, ct).Task;
 
             return new ShellAsyncResult(
                 process.StandardInput,
@@ -91,7 +91,7 @@ namespace Annium.Extensions.Shell
             return process;
         }
 
-        private TaskCompletionSource<ShellResult> StartProcess(Process process, CancellationToken token)
+        private TaskCompletionSource<ShellResult> StartProcess(Process process, CancellationToken ct)
         {
             var tcs = new TaskCompletionSource<ShellResult>();
 
@@ -102,7 +102,7 @@ namespace Annium.Extensions.Shell
             var exitHandled = false;
 
             // track token cancellation and kill process if requested
-            var registration = token.Register(() =>
+            var registration = ct.Register(() =>
             {
                 killed = true;
                 _logger.Trace($"Kill process {GetCommand(process)} due token cancellation");

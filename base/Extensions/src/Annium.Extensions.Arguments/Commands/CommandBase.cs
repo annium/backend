@@ -10,7 +10,7 @@ namespace Annium.Extensions.Arguments
 
         internal Root? Root { get; private set; }
 
-        public abstract void Process(string command, string[] args, CancellationToken token);
+        public abstract void Process(string command, string[] args, CancellationToken ct);
 
         internal void SetRoot(Root root)
         {

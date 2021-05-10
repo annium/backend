@@ -32,7 +32,7 @@ namespace Demo.Core.Cli
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var pluginsSet = new Dictionary<string, string>

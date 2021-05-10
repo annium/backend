@@ -24,7 +24,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             _logger = logger;
         }
 
-        public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken token)
+        public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
         {
             var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
             ws.ConnectionLost += () =>
@@ -39,7 +39,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             };
 
             _logger.Debug($"Connecting to {cfg.Server}");
-            await ws.ConnectAsync(cfg.Server, token);
+            await ws.ConnectAsync(cfg.Server, ct);
             _logger.Debug($"Connected to {cfg.Server}");
 
             _logger.Debug("Start echo loop");
@@ -49,13 +49,13 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 
             var value = 1;
             if (cfg.Delay > 0)
-                while (!token.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
                     await Send(value++);
-                    await Task.Delay(cfg.Delay, token);
+                    await Task.Delay(cfg.Delay, ct);
                 }
             else
-                while (!token.IsCancellationRequested)
+                while (!ct.IsCancellationRequested)
                 {
                     await Send(value++);
                 }

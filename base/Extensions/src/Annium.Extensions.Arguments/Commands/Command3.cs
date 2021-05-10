@@ -9,9 +9,9 @@ namespace Annium.Extensions.Arguments
         where T2 : new()
         where T3 : new()
     {
-        public abstract void Handle(T1 cfg1, T2 cfg2, T3 cfg3, CancellationToken token);
+        public abstract void Handle(T1 cfg1, T2 cfg2, T3 cfg3, CancellationToken ct);
 
-        public override void Process(string command, string[] args, CancellationToken token)
+        public override void Process(string command, string[] args, CancellationToken ct)
         {
             var root = Root!;
             if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
@@ -24,7 +24,7 @@ namespace Annium.Extensions.Arguments
             var cfg2 = root.ConfigurationBuilder.Build<T2>(args);
             var cfg3 = root.ConfigurationBuilder.Build<T3>(args);
 
-            Handle(cfg1, cfg2, cfg3, token);
+            Handle(cfg1, cfg2, cfg3, ct);
         }
     }
 }

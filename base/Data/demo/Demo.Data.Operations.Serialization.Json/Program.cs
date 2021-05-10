@@ -15,7 +15,7 @@ namespace Demo.Data.Operations.Serialization.Json
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var result = Result.New()

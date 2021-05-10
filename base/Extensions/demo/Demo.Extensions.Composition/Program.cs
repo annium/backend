@@ -12,7 +12,7 @@ namespace Demo.Extensions.Composition
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var composer = provider.Resolve<IComposer<User>>();

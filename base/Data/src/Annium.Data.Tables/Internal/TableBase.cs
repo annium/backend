@@ -61,14 +61,14 @@ namespace Annium.Data.Tables.Internal
 
         private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.Static<IChangeEvent<T>>(ctx =>
         {
-            while (!ctx.Token.IsCancellationRequested)
+            while (!ctx.Ct.IsCancellationRequested)
             {
                 try
                 {
                     IChangeEvent<T>? e = null;
                     try
                     {
-                        e = _events.Take(ctx.Token);
+                        e = _events.Take(ctx.Ct);
                     }
                     catch (OperationCanceledException)
                     {

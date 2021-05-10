@@ -13,14 +13,14 @@ namespace Demo.Extensions.Shell
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var shell = provider.Resolve<IShell>();
             var ls = await shell
                 .Cmd("ls")
                 .Configure(new ProcessStartInfo { WorkingDirectory = "/" })
-                .RunAsync(token);
+                .RunAsync(ct);
 
             Console.WriteLine(ls.IsSuccess);
             Console.WriteLine(ls.Code);

@@ -9,9 +9,9 @@ namespace Annium.Extensions.Arguments
     public abstract class AsyncCommand<T> : CommandBase
         where T : new()
     {
-        public abstract Task HandleAsync(T cfg, CancellationToken token);
+        public abstract Task HandleAsync(T cfg, CancellationToken ct);
 
-        public override void Process(string command, string[] args, CancellationToken token)
+        public override void Process(string command, string[] args, CancellationToken ct)
         {
             var root = Root!;
             if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
@@ -22,7 +22,7 @@ namespace Annium.Extensions.Arguments
 
             var cfg = root.ConfigurationBuilder.Build<T>(args);
 
-            HandleAsync(cfg, token).Await();
+            HandleAsync(cfg, ct).Await();
         }
     }
 }

@@ -13,12 +13,12 @@ namespace Annium.Extensions.Arguments
             _provider = provider;
         }
 
-        public void Run<TGroup>(string[] args, CancellationToken token = default)
+        public void Run<TGroup>(string[] args, CancellationToken ct = default)
             where TGroup : Group
         {
             var group = _provider.Resolve<TGroup>();
             group.SetRoot(_provider.Resolve<Root>());
-            group.Process(group.Id, args, token);
+            group.Process(group.Id, args, ct);
         }
     }
 }

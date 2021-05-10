@@ -16,7 +16,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var logger = provider.Resolve<ILogger<Program>>();
@@ -28,7 +28,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
 
             socket.Subscribe(x => logger.Info($"<<<{x}"));
 
-            while (!token.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
                 await Task.Delay(500);
                 var msg = timeProvider.Now.ToString(null, null);
@@ -36,7 +36,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
                 await socket.Send(msg);
             }
 
-            await token;
+            await ct;
         }
 
         internal static Task<int> Main(string[] args) => new Entrypoint()

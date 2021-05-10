@@ -7,9 +7,9 @@ namespace Annium.Extensions.Arguments
     public abstract class Command<T> : CommandBase
         where T : new()
     {
-        public abstract void Handle(T cfg, CancellationToken token);
+        public abstract void Handle(T cfg, CancellationToken ct);
 
-        public override void Process(string command, string[] args, CancellationToken token)
+        public override void Process(string command, string[] args, CancellationToken ct)
         {
             var root = Root!;
             if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
@@ -20,7 +20,7 @@ namespace Annium.Extensions.Arguments
 
             var cfg = root.ConfigurationBuilder.Build<T>(args);
 
-            Handle(cfg, token);
+            Handle(cfg, ct);
         }
     }
 }

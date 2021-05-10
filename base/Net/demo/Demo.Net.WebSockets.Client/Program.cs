@@ -11,14 +11,14 @@ namespace Demo.Net.WebSockets.Client
         private static async Task Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var socket = new ClientWebSocket();
 
-            await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), token);
+            await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
 
-            if (token.IsCancellationRequested)
+            if (ct.IsCancellationRequested)
             {
                 Console.WriteLine("Connection terminated");
                 return;
@@ -28,7 +28,7 @@ namespace Demo.Net.WebSockets.Client
 
             var tcs = new TaskCompletionSource<object>();
 
-            token.Register(() =>
+            ct.Register(() =>
             {
                 Console.WriteLine("Process terminated");
                 tcs.TrySetResult(new object());

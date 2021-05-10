@@ -11,7 +11,7 @@ namespace Demo.Extensions.Mapping
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             var mapper = provider.Resolve<IMapper>();

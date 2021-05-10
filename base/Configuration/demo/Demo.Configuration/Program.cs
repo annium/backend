@@ -17,7 +17,7 @@ namespace Demo.Configuration
         private static void Run(
             IServiceProvider provider,
             string[] args,
-            CancellationToken token
+            CancellationToken ct
         )
         {
             // TestBuilder();

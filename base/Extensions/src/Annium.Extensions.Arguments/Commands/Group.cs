@@ -19,7 +19,7 @@ namespace Annium.Extensions.Arguments
             return this;
         }
 
-        public override void Process(string command, string[] args, CancellationToken token)
+        public override void Process(string command, string[] args, CancellationToken ct)
         {
             var root = Root!;
             var commands = _commands.Select(root.Provider.Resolve).OfType<CommandBase>().ToArray();
@@ -34,7 +34,7 @@ namespace Annium.Extensions.Arguments
                 if (cmd != null)
                 {
                     cmd.SetRoot(root);
-                    cmd.Process($"{command} {id}".Trim(), args.Skip(1).ToArray(), token);
+                    cmd.Process($"{command} {id}".Trim(), args.Skip(1).ToArray(), ct);
                     return;
                 }
             }
@@ -44,7 +44,7 @@ namespace Annium.Extensions.Arguments
             if (cmd != null)
             {
                 cmd.SetRoot(root);
-                cmd.Process(command, args, token);
+                cmd.Process(command, args, ct);
                 return;
             }
 
