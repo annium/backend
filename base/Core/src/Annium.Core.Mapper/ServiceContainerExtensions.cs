@@ -5,6 +5,7 @@ using Annium.Core.Mapper;
 using Annium.Core.Mapper.Internal;
 using Annium.Core.Mapper.Internal.DependencyInjection;
 using Annium.Core.Mapper.Internal.Profiles;
+using Annium.Core.Mapper.Internal.Resolvers;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
@@ -27,10 +28,12 @@ namespace Annium.Core.DependencyInjection
             )).AsSelf().Singleton();
 
             // register resolvers
-            container.AddAll(typeof(IMapResolver).Assembly, false)
-                .AssignableTo<IMapResolver>()
-                .As<IMapResolver>()
-                .Singleton();
+            container.Add<IMapResolver, AssignmentMapResolver>().Singleton();
+            container.Add<IMapResolver, ConstructorMapResolver>().Singleton();
+            container.Add<IMapResolver, DictionaryAssignmentMapResolver>().Singleton();
+            container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();
+            container.Add<IMapResolver, EnumerableMapResolver>().Singleton();
+            container.Add<IMapResolver, ResolutionMapResolver>().Singleton();
 
             // add default profile
             container.AddProfileInstance(new EmptyProfile());
