@@ -7,6 +7,7 @@ namespace Annium.Core.Primitives
     {
         public static int Combine<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> seq)
             where TKey : notnull
+            where TValue : notnull
         {
             unchecked
             {
