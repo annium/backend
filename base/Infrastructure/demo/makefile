@@ -23,16 +23,16 @@ ws-drop:
 	$(call kill,net5.0/Demo.Infrastructure.WebSockets.Client,-9)
 
 ws-listen:
-	$(call cli,listen,localhost:5000)
+	$(call cli,listen,ws://localhost:5000)
 
 ws-request-void:
-	$(call cli,request-void,localhost:5000)
+	$(call cli,request-void,ws://localhost:5000)
 
 ws-request-response:
-	$(call cli,request-response,localhost:5000)
+	$(call cli,request-response,ws://localhost:5000)
 
 ws-sub-unsub:
-	$(call cli,sub-unsub,localhost:5000)
+	$(call cli,sub-unsub,ws://localhost:5000)
 
 ws-keep-alive:
 	$(call cli,keep-alive,$(s))
@@ -40,7 +40,7 @@ ws-keep-alive:
 define cli
 	@$(eval command := $(1))
 	@$(eval server := $(2))
-	dotnet run -p Demo.Infrastructure.WebSockets.Client/Demo.Infrastructure.WebSockets.Client.csproj $(command) -s ws://$(server)/ws
+	dotnet run -p Demo.Infrastructure.WebSockets.Client/Demo.Infrastructure.WebSockets.Client.csproj $(command) -s $(server)
 endef
 
 define kill
