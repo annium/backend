@@ -250,7 +250,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintSuccess_ReturnsType()
         {
             // arrange
-            var typeManager = TypeManager.GetInstance(GetType().Assembly, false);
+            var typeManager = TypeManager.GetInstance(GetType().Assembly, false, Array.Empty<string>());
 
             //assert
             typeManager.GetImplementations(typeof(MemberExpression))[0]

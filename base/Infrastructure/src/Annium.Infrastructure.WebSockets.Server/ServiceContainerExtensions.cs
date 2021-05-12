@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
@@ -40,7 +39,7 @@ namespace Annium.Core.DependencyInjection
 
             // internal - handlers
             container.Add(typeof(SubscriptionContextStore<,,>)).AsSelf().Singleton();
-            container.AddAll(Assembly.GetCallingAssembly(), true)
+            container.AddAll()
                 .AssignableTo<ILifeCycleHandler<TState>>()
                 .AsInterfaces()
                 .Scoped();

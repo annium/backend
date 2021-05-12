@@ -32,11 +32,11 @@ namespace Annium.linq2db.Extensions
             foreach (var (configurationType, entityType) in _configurations.Value)
             {
                 var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                    .Invoke(Map, new object?[] { null })!;
+                    .Invoke(Map, new object?[] {null})!;
                 var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
                     .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
                 var configuration = Activator.CreateInstance(configurationType)!;
-                configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
+                configureMethod.Invoke(configuration, new[] {entityMappingBuilder});
             }
 
             this.IncludeAssociationKeysAsColumns();
@@ -58,7 +58,7 @@ namespace Annium.linq2db.Extensions
         {
             var configurationType = typeof(IEntityConfiguration<>);
 
-            var allTypes = TypeManager.GetInstance(_configurationsAssembly, false).Types;
+            var allTypes = TypeManager.GetInstance(_configurationsAssembly, false, Array.Empty<string>()).Types;
             var concreteClasses = allTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType).ToArray();
 
             var configurationTypes = concreteClasses

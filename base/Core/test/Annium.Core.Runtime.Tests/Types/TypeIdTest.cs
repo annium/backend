@@ -41,6 +41,6 @@ namespace Annium.Core.Runtime.Tests.Types
             parsed!.Type.Is(type);
         }
 
-        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false);
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false, Array.Empty<string>());
     }
 }

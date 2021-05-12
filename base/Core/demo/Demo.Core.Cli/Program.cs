@@ -37,7 +37,7 @@ namespace Demo.Core.Cli
         {
             var pluginsSet = new Dictionary<string, string>
             {
-                { "Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/net5.0/Demo.Core.Cli.PluginHello.dll" }
+                {"Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/net5.0/Demo.Core.Cli.PluginHello.dll"}
             };
 
             Console.WriteLine("---BEFORE---");
@@ -76,7 +76,7 @@ namespace Demo.Core.Cli
                 Console.WriteLine("---TYPES---");
                 foreach (var (name, plugin) in plugins)
                 {
-                    Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin, false).Types.Count}");
+                    Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin, false, Array.Empty<string>()).Types.Count}");
                     TypeManager.Release(plugin);
                 }
 

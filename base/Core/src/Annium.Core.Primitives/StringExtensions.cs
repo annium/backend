@@ -195,7 +195,7 @@ namespace Annium.Core.Primitives
         /// <param name="str">The string.</param>
         /// <param name="pattern">The pattern to match, where "*" means any sequence of characters, and "?" means any single character.</param>
         /// <returns><c>true</c> if the string matches the given pattern; otherwise <c>false</c>.</returns>
-        public static bool Like(this string str, string pattern)
+        public static bool IsLike(this string str, string pattern)
         {
             var rePattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$";
             return new Regex(rePattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).IsMatch(str);

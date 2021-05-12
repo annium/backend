@@ -18,11 +18,11 @@ namespace Demo.Core.Reflection
             CancellationToken ct
         )
         {
-            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false);
+            var typeManager = TypeManager.GetInstance(typeof(Program).Assembly, false, Array.Empty<string>());
             var canResolveEnumerable = typeManager.HasImplementations(typeof(IList<>));
             var enumerable = typeManager.Types.Where(x => x == typeof(IEnumerable<>)).ToArray();
 
-            var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.InnerTwo });
+            var properties = TypeHelper.ResolveProperties<B>(x => new {x.InnerOne.One, x.InnerTwo});
 
             var impl = typeManager.GetImplementations(typeof(MemberExpression));
             var result = typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplementation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>));

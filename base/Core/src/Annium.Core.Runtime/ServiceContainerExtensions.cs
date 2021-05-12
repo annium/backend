@@ -14,10 +14,11 @@ namespace Annium.Core.DependencyInjection
         public static IServiceContainer AddRuntimeTools(
             this IServiceContainer container,
             Assembly assembly,
-            bool tryLoadReferences
+            bool tryLoadReferences,
+            params string[] patterns
         )
         {
-            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>().Singleton();
+            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences, patterns)).As<ITypeManager>().Singleton();
             container.Add<ITypeResolver, TypeResolver>().Singleton();
 
             return container;
@@ -60,9 +61,6 @@ namespace Annium.Core.DependencyInjection
 
         public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container)
             => container.Add(container.GetTypeManager().Types.AsEnumerable());
-
-        public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container, Assembly assembly, bool tryLoadReferences)
-            => container.Add(TypeManager.GetInstance(assembly, tryLoadReferences).Types.AsEnumerable());
 
         public static IBulkRegistrationBuilderBase AddAll(this IServiceContainer container, Assembly assembly)
             => container.Add(assembly.GetTypes().AsEnumerable());
