@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Annium.Core.Primitives
 {
     public static class StringExtensions
     {
-        private static readonly IReadOnlyDictionary<char, byte> HexLookup = CreateHexLookup();
-
         public static bool IsNullOrEmpty(this string? value) => string.IsNullOrEmpty(value);
 
         public static bool IsNullOrWhiteSpace(this string? value) => string.IsNullOrWhiteSpace(value);
@@ -133,6 +132,10 @@ namespace Annium.Core.Primitives
             }
         }
 
+        #region HexString
+
+        private static readonly IReadOnlyDictionary<char, byte> HexLookup = CreateHexLookup();
+
         public static byte[] FromHexStringToByteArray(this string str)
         {
             if (str.Length % 2 != 0)
@@ -181,6 +184,24 @@ namespace Annium.Core.Primitives
 
             return true;
         }
+
+        #endregion
+
+        #region Like
+
+        /// <summary>
+        /// Compares the string against a given pattern.
+        /// </summary>
+        /// <param name="str">The string.</param>
+        /// <param name="pattern">The pattern to match, where "*" means any sequence of characters, and "?" means any single character.</param>
+        /// <returns><c>true</c> if the string matches the given pattern; otherwise <c>false</c>.</returns>
+        public static bool Like(this string str, string pattern)
+        {
+            var rePattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*").Replace(@"\?", ".") + "$";
+            return new Regex(rePattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).IsMatch(str);
+        }
+
+        #endregion
 
         private static string Compound(string value, Func<string, string, string> callback)
         {
