@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
@@ -18,7 +19,7 @@ namespace Annium.Core.Runtime.Tests.Types
             manager.HasImplementations(typeof(A)).IsTrue();
             manager.HasImplementations(typeof(B)).IsFalse();
             manager.HasImplementations(typeof(C)).IsFalse();
-            manager.HasImplementations(typeof(IEnumerable<>)).IsTrue();
+            manager.HasImplementations(typeof(IEnumerable<>)).IsFalse();
         }
 
         [Fact]
@@ -70,7 +71,7 @@ namespace Annium.Core.Runtime.Tests.Types
         {
             // arrange
             var manager = GetTypeManager();
-            var value = new {ForB = 5};
+            var value = new { ForB = 5 };
 
             // act
             var result = manager.Resolve(value, typeof(A));
@@ -86,7 +87,7 @@ namespace Annium.Core.Runtime.Tests.Types
             var manager = GetTypeManager();
 
             // act
-            var result = manager.ResolveBySignature(new[] {nameof(B.ForB)}, typeof(A), true);
+            var result = manager.ResolveBySignature(new[] { nameof(B.ForB) }, typeof(A), true);
 
             // assert
             result.IsEqual(typeof(B));
@@ -133,7 +134,7 @@ namespace Annium.Core.Runtime.Tests.Types
         {
             // arrange
             var manager = GetTypeManager();
-            var source = new L {Type = typeof(K).GetIdString()};
+            var source = new L { Type = typeof(K).GetIdString() };
 
             // act
             var result = manager.Resolve(source, typeof(H));
@@ -170,7 +171,13 @@ namespace Annium.Core.Runtime.Tests.Types
             result.IsEqual(typeof(B));
         }
 
-        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false, Array.Empty<string>());
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance(
+            GetType().Assembly,
+            false,
+            new[]
+            {
+                GetType().Assembly.ShortName()
+            });
 
         private class A
         {
@@ -188,7 +195,8 @@ namespace Annium.Core.Runtime.Tests.Types
 
         private class D
         {
-            [ResolutionKey] public string Type { get; }
+            [ResolutionKey]
+            public string Type { get; }
 
             protected D(string type)
             {
@@ -222,7 +230,8 @@ namespace Annium.Core.Runtime.Tests.Types
 
         private class H
         {
-            [ResolutionId] public string Type => GetType().GetIdString();
+            [ResolutionId]
+            public string Type => GetType().GetIdString();
         }
 
         private class J : H
@@ -235,7 +244,8 @@ namespace Annium.Core.Runtime.Tests.Types
 
         private record L
         {
-            [ResolutionId] public string Type { get; set; } = string.Empty;
+            [ResolutionId]
+            public string Type { get; set; } = string.Empty;
         }
 
         private interface IGenericInterface<T1, T2>

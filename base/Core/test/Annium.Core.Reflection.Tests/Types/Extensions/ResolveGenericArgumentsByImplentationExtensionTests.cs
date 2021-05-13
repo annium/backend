@@ -86,8 +86,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IBase<,,,>).GetGenericArguments()[3]
-                    .ResolveGenericArgumentsByImplementation(
-                        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
+                .ResolveGenericArgumentsByImplementation(
+                    typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
                 .IsEqual(new[] { typeof(IBase<,,,>).GetGenericArguments()[3] });
         }
 
@@ -123,7 +123,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterClassConstraint<>).GetGenericArguments()[0]
-                    .ResolveGenericArgumentsByImplementation(typeof(Expression)) !
+                .ResolveGenericArgumentsByImplementation(typeof(ClassBase)) !
                 .IsEqual(new[] { typeof(IParameterClassConstraint<>).GetGenericArguments()[0] });
         }
 
@@ -169,7 +169,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
-                    .ResolveGenericArgumentsByImplementation(typeof(ValueTuple)) !
+                .ResolveGenericArgumentsByImplementation(typeof(ValueTuple)) !
                 .IsEqual(new[] { typeof(IParameterStructConstraint<>).GetGenericArguments()[0] });
         }
 
@@ -215,7 +215,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
-                    .ResolveGenericArgumentsByImplementation(typeof(IEnumerable)) !
+                .ResolveGenericArgumentsByImplementation(typeof(IEnumerable)) !
                 .IsEqual(new[] { typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0] });
         }
 
@@ -241,7 +241,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintFailure_ReturnsNull()
         {
             //assert
-            typeof(ClassParametrized<>)
+            typeof(CustomDictionary<,>)
                 .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])
                 .IsDefault();
         }
@@ -249,14 +249,9 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         [Fact]
         public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintSuccess_ReturnsType()
         {
-            // arrange
-            var typeManager = TypeManager.GetInstance(GetType().Assembly, false, Array.Empty<string>());
-
             //assert
-            typeManager.GetImplementations(typeof(MemberExpression))[0]
-                        .ResolveGenericArgumentsByImplementation(
-                            typeof(IParameterClassConstraint<>).GetGenericArguments()[0])
-                    !
+            typeof(ClassSimple)
+                .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])!
                 .IsEqual(Type.EmptyTypes);
         }
 
@@ -357,8 +352,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(StructEnumerable)
-                    .ResolveGenericArgumentsByImplementation(
-                        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
+                .ResolveGenericArgumentsByImplementation(
+                    typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
                 .IsEqual(Type.EmptyTypes);
         }
 
@@ -437,8 +432,8 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions
         {
             //assert
             typeof(IEnumerable<>)
-                    .ResolveGenericArgumentsByImplementation(
-                        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
+                .ResolveGenericArgumentsByImplementation(
+                    typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]) !
                 .IsEqual(new[] { typeof(IEnumerable<>).GetGenericArguments()[0] });
         }
 

@@ -2,6 +2,8 @@ using System;
 using System.Reflection;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
+
 namespace Annium.Configuration.Tests
 {
     public static class Helper
@@ -12,7 +14,7 @@ namespace Annium.Configuration.Tests
             where T : class, new()
         {
             var container = new ServiceContainer();
-            container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+            container.AddRuntimeTools(Assembly.GetCallingAssembly(), false, typeof(Helper).Assembly.ShortName());
             container.AddMapper();
             container.AddConfiguration<T>(configure);
 

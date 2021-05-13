@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Tests
@@ -8,7 +10,7 @@ namespace Annium.Serialization.Json.Tests
         protected ISerializer<string> GetSerializer()
         {
             var container = new ServiceContainer();
-            container.AddRuntimeTools(GetType().Assembly, false);
+            container.AddRuntimeTools(GetType().Assembly, false, GetType().Assembly.ShortName(), typeof(IEnumerable<>).Assembly.ShortName());
             container.AddJsonSerializers()
                 .Configure(opts => opts.UseCamelCaseNamingPolicy())
                 .SetDefault();

@@ -1,5 +1,6 @@
 using AgileObjects.NetStandardPolyfills;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;
@@ -69,7 +70,7 @@ namespace Annium.Data.Tables.Tests
         private ISerializer<string> GetSerializer()
         {
             var container = new ServiceContainer();
-            container.AddRuntimeTools(GetType().GetAssembly(), true);
+            container.AddRuntimeTools(GetType().GetAssembly(), true, "Annium.Data.Tables", typeof(object).Assembly.ShortName());
             container.AddJsonSerializers().SetDefault();
 
             var sp = container.BuildServiceProvider();

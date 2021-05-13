@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Resources;
 
 namespace Annium.Core.Runtime.Internal.Resources
@@ -13,7 +14,7 @@ namespace Annium.Core.Runtime.Internal.Resources
 
         public IReadOnlyCollection<IResource> Load(string prefix, Assembly assembly)
         {
-            prefix = $"{assembly.GetName().Name}.{prefix}.";
+            prefix = $"{assembly.ShortName()}.{prefix}.";
 
             var names = assembly.GetManifestResourceNames();
 

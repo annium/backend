@@ -1,7 +1,7 @@
 using System;
-using System.Collections;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Testing;
 using Xunit;
 
@@ -34,7 +34,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper(Type profileType) => new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false, Assembly.GetCallingAssembly().ShortName())
             .AddMapper(autoload: false)
             .AddProfile(profileType)
             .BuildServiceProvider()
@@ -42,7 +42,7 @@ namespace Annium.Core.Mapper.Tests
 
         private class ValidProfile<T, TZ> : Profile
             where T : A
-            where TZ : IEnumerable
+            where TZ : D
         {
             public ValidProfile()
             {

@@ -28,7 +28,7 @@ namespace Annium.Core.Runtime.Internal.Types
         {
             this.Trace(() => "start");
             _assembly = assembly;
-            this.Trace(() => $"collect types in: {patterns.Join(". ")}");
+            this.Trace(() => $"collect types in: {patterns.Join(", ")}");
             var types = new TypesCollector(assembly, tryLoadReferences, patterns).CollectTypes();
             this.Trace(() => "build hierarchy");
             _hierarchy = new HierarchyBuilder().BuildHierarchy(types);

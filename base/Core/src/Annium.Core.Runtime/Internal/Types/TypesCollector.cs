@@ -33,7 +33,9 @@ namespace Annium.Core.Runtime.Internal.Types
             foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             {
                 if (domainAssembly.FullName != null! && !_assemblies.ContainsKey(domainAssembly.FullName) && IsMatch(domainAssembly.GetName()))
+                {
                     _assemblies[domainAssembly.FullName] = domainAssembly;
+                }
             }
 
             // list of processed assemblies
@@ -43,12 +45,13 @@ namespace Annium.Core.Runtime.Internal.Types
             var types = new HashSet<Type>();
 
             var resolveAssembly = _tryLoadReferences ? (Func<AssemblyName, Assembly?>) LoadAssembly : GetAssembly;
-            CollectTypes(
-                _assembly.GetName(),
-                resolveAssembly,
-                processedAssemblies.Add,
-                type => types.Add(type)
-            );
+            foreach (var assembly in _assemblies.Values.ToArray())
+                CollectTypes(
+                    assembly.GetName(),
+                    resolveAssembly,
+                    processedAssemblies.Add,
+                    type => types.Add(type)
+                );
 
             this.Trace(() => "done");
             return types;
@@ -71,16 +74,19 @@ namespace Annium.Core.Runtime.Internal.Types
 
             if (!registerAssembly(assembly))
             {
-                this.Trace(() => $"assembly {name.Name} already registered");
+                this.Trace(() => $"assembly {name.Name} already processed");
                 return;
             }
 
-            var types = assembly.GetTypes();
-            this.Trace(() => $"register {types.Length} type(s) from assembly {name.Name}");
-            foreach (var type in assembly.GetTypes())
-                registerType(type);
+            if (IsMatch(name))
+            {
+                var types = assembly.GetTypes();
+                this.Trace(() => $"register {types.Length} type(s) from assembly {name.Name}");
+                foreach (var type in assembly.GetTypes())
+                    registerType(type);
+            }
 
-            foreach (var assemblyName in assembly.GetReferencedAssemblies().Where(IsMatch))
+            foreach (var assemblyName in assembly.GetReferencedAssemblies())
                 CollectTypes(assemblyName, resolveAssembly, registerAssembly, registerType);
         }
 

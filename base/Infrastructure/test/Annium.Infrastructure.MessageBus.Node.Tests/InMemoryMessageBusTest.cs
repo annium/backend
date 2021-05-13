@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;
@@ -51,7 +52,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Tests
         private IServiceProvider GetProvider()
         {
             var container = new ServiceContainer();
-            container.AddRuntimeTools(GetType().Assembly, true);
+            container.AddRuntimeTools(GetType().Assembly, true, "*MessageBus*", GetType().Assembly.ShortName());
             container.AddJsonSerializers().SetDefault();
             container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
 

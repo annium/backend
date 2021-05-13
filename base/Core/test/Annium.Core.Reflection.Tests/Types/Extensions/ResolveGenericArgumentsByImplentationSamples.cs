@@ -39,6 +39,10 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsB
         }
     }
 
+    public class ClassSimple : ClassBase
+    {
+    }
+
     public class ClassBase
     {
     }
@@ -113,7 +117,7 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsB
     {
     }
 
-    public interface IParameterClassConstraint<T> where T : MemberExpression
+    public interface IParameterClassConstraint<T> where T : ClassBase
     {
     }
 

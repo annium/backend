@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
@@ -41,6 +42,15 @@ namespace Annium.Core.Runtime.Tests.Types
             parsed!.Type.Is(type);
         }
 
-        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false, Array.Empty<string>());
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance(
+            GetType().Assembly,
+            false,
+            new[]
+            {
+                GetType().Assembly.ShortName(),
+                typeof(int).Assembly.ShortName(),
+                typeof(Dictionary<,>).Assembly.ShortName(),
+            }
+        );
     }
 }

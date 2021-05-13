@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using Annium.Core.Primitives;
 using Annium.Localization.Abstractions;
 using YamlDotNet.Serialization;
 
@@ -21,7 +22,7 @@ namespace Annium.Localization.Yaml
             var assembly = target.GetTypeInfo().Assembly;
             var location = Path.GetDirectoryName(assembly.Location);
 
-            var assemblyNamePath = Path.Combine(assembly.GetName().Name!.Split('.'));
+            var assemblyNamePath = Path.Combine(assembly.ShortName().Split('.'));
             var targetNamespacePath = Path.Combine(target.Namespace?.Split('.') ?? Array.Empty<string>());
             var localeRelativePath = Path.GetRelativePath(assemblyNamePath, targetNamespacePath);
 

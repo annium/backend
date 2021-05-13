@@ -28,9 +28,9 @@ namespace Annium.Testing
                 );
         }
 
-        public static void IsEqual<T, TD>(this T value, TD data, string message = "")
+        public static void IsEqual<T, TD>(this T value, TD data, string message = "", IMapper? mapper = default)
         {
-            if (!value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
+            if (!value.IsShallowEqual(data, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is not equal to {JsonSerializer.Serialize(data)}"
@@ -38,9 +38,9 @@ namespace Annium.Testing
                 );
         }
 
-        public static void IsNotEqual<T, TD>(this T value, TD data, string message = "")
+        public static void IsNotEqual<T, TD>(this T value, TD data, string message = "", IMapper? mapper = default)
         {
-            if (value.IsShallowEqual(data, Mapper.GetFor(Assembly.GetCallingAssembly())))
+            if (value.IsShallowEqual(data, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is equal to {JsonSerializer.Serialize(data)}"
@@ -62,9 +62,9 @@ namespace Annium.Testing
             return (T) value!;
         }
 
-        public static T IsDefault<T>(this T value, string message = "")
+        public static T IsDefault<T>(this T value, string message = "", IMapper? mapper = default)
         {
-            if (!value.IsShallowEqual(default(T)!, Mapper.GetFor(Assembly.GetCallingAssembly())))
+            if (!value.IsShallowEqual(default(T)!, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is not default"
@@ -74,9 +74,9 @@ namespace Annium.Testing
             return value;
         }
 
-        public static T IsNotDefault<T>(this T value, string message = "")
+        public static T IsNotDefault<T>(this T value, string message = "", IMapper? mapper = default)
         {
-            if (value.IsShallowEqual(default(T)!, Mapper.GetFor(Assembly.GetCallingAssembly())))
+            if (value.IsShallowEqual(default(T)!, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
                 throw new AssertionFailedException(
                     string.IsNullOrEmpty(message)
                         ? $"{JsonSerializer.Serialize(value)} is default"
