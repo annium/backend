@@ -31,8 +31,8 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         {
             var configuration = new ClientConfiguration()
                 .ConnectTo(cfg.Server)
-                .WithActiveKeepAlive(5, 5)
-                .WithResponseTimeout(5);
+                .WithActiveKeepAlive(600, 600)
+                .WithResponseTimeout(600);
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {

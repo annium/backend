@@ -62,7 +62,7 @@ namespace Annium.Infrastructure.WebSockets.Client
             return this;
         }
 
-        public ClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 3)
+        public ClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
         {
             WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
 

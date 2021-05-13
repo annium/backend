@@ -26,7 +26,10 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
         {
-            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(5, 5);
+            var configuration = new ClientConfiguration()
+                .ConnectTo(cfg.Server)
+                .WithActiveKeepAlive(600)
+                .WithResponseTimeout(600);
             var client = _clientFactory.Create(configuration);
 
             await client.ConnectAsync(ct);

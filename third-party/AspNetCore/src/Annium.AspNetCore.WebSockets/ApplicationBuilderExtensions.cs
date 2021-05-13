@@ -7,7 +7,7 @@ namespace Annium.Core.DependencyInjection
     {
         public static IApplicationBuilder UseWebSocketsServer(
             this IApplicationBuilder builder,
-            string endpoint = "/ws"
+            string endpoint = ""
         )
         {
             builder.UseWebSockets();
