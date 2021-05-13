@@ -23,8 +23,8 @@ namespace Annium.Extensions.Execution.Internal
         private readonly ConcurrentBag<Delegate> _backlog = new();
         private readonly TaskCompletionSource<object> _tcs = new();
 
-        public void Schedule(Action work) => ScheduleWork(work);
-        public void Schedule(Func<Task> work) => ScheduleWork(work);
+        public void Schedule(Action task) => ScheduleWork(task);
+        public void Schedule(Func<Task> task) => ScheduleWork(task);
 
         public void Start(CancellationToken ct = default)
         {

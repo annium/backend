@@ -7,8 +7,8 @@ namespace Annium.Extensions.Execution
     public interface IBackgroundExecutor : IAsyncDisposable
     {
         bool IsAvailable { get; }
-        void Schedule(Action work);
-        void Schedule(Func<Task> work);
+        void Schedule(Action task);
+        void Schedule(Func<Task> task);
         void Start(CancellationToken ct = default);
     }
 }

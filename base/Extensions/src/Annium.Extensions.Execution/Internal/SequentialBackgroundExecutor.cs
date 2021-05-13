@@ -3,6 +3,8 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
+using Annium.Diagnostics.Debug;
 
 namespace Annium.Extensions.Execution.Internal
 {
@@ -10,19 +12,19 @@ namespace Annium.Extensions.Execution.Internal
     {
         public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
         private int _isAvailable = 1;
-        private int _isRunning;
+        private int _isStarted;
         private readonly BlockingCollection<Delegate> _tasks = new();
         private Task _runTask = Task.CompletedTask;
         private readonly CancellationTokenSource _cts = new();
 
-        public void Schedule(Action work) => ScheduleWork(work);
-        public void Schedule(Func<Task> work) => ScheduleWork(work);
+        public void Schedule(Action task) => ScheduleTask(task);
+        public void Schedule(Func<Task> task) => ScheduleTask(task);
 
         public void Start(CancellationToken ct = default)
         {
             EnsureAvailable();
 
-            if (Interlocked.CompareExchange(ref _isRunning, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _isStarted, 1, 0) != 0)
                 throw new InvalidOperationException("Executor is already running");
 
             // change to state to unavailable
@@ -42,37 +44,57 @@ namespace Annium.Extensions.Execution.Internal
 
         private async Task Run()
         {
-            while (Volatile.Read(ref _isAvailable) == 1 || _tasks.Count > 0)
+            // normal mode - runs task immediately or waits for one
+            while (Volatile.Read(ref _isAvailable) == 1)
             {
                 try
                 {
+                    this.Trace(() => "wait for task");
                     var task = _tasks.Take(_cts.Token);
-                    if (task is Action syncTask)
-                        await Task.Run(syncTask);
-                    else if (task is Func<Task> asyncTask)
-                        await asyncTask().ConfigureAwait(false);
-                    else
-                        throw new NotSupportedException();
+                    await RunTask(task);
                 }
                 catch (OperationCanceledException)
                 {
+                    this.Trace(() => "cancelled");
+                    break;
                 }
+            }
+
+            // shutdown mode - runs only left tasks
+            _tasks.CompleteAdding();
+            while (_tasks.Count > 0)
+            {
+                this.Trace(() => "get task");
+                var task = _tasks.Take();
+                await RunTask(task);
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ScheduleWork(Delegate work)
+        private void ScheduleTask(Delegate task)
         {
             EnsureAvailable();
-            _tasks.Add(work);
+            _tasks.Add(task);
+            this.Trace(() => $"added {task}, {_tasks.Count} tasks left");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private async Task RunTask(Delegate task)
+        {
+            this.Trace(() => $"task {task.GetId()}: start, {_tasks.Count} tasks left");
+            if (task is Action syncTask)
+                await Task.Run(syncTask);
+            else if (task is Func<Task> asyncTask)
+                await asyncTask().ConfigureAwait(false);
+            else
+                throw new NotSupportedException();
+            this.Trace(() => $"task {task.GetId()}: complete");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Stop()
         {
             Volatile.Write(ref _isAvailable, 0);
-            Volatile.Write(ref _isRunning, 0);
-            _tasks.CompleteAdding();
             _cts.Cancel();
         }
 
