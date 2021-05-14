@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using Annium.Extensions.Arguments.Internal;
 using Annium.Core.DependencyInjection;
+using Annium.Extensions.Arguments.Internal;
 
 namespace Annium.Extensions.Arguments
 {

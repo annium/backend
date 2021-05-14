@@ -9,7 +9,7 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public bool IsInitiated => _isInitiated;
         public int Count => _registrations.Count;
         private readonly List<IRegistration> _registrations = new();
-        private bool _isInitiated = false;
+        private bool _isInitiated;
 
         public void Init() => _isInitiated = true;
 

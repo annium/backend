@@ -1,4 +1,5 @@
 using System;
+
 namespace Annium.Core.DependencyInjection.Tests
 {
     public class TestBase

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Arguments;
+using Group = Demo.Infrastructure.WebSockets.Client.Commands.Group;
 
 namespace Demo.Infrastructure.WebSockets.Client
 {
@@ -13,7 +14,7 @@ namespace Demo.Infrastructure.WebSockets.Client
             CancellationToken ct
         )
         {
-            new Commander(provider).Run<Commands.Group>(args, ct);
+            new Commander(provider).Run<Group>(args, ct);
         }
 
         internal static int Main(string[] args) => new Entrypoint()

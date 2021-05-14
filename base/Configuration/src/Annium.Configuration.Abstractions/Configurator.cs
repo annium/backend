@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+
 namespace Annium.Configuration.Abstractions
 {
     public static class Configurator

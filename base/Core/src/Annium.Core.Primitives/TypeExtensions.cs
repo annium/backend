@@ -9,7 +9,7 @@ namespace Annium.Core.Primitives
 {
     public static class TypeExtensions
     {
-        private static readonly ConcurrentDictionary<Type, string> TypeNames = new(new Dictionary<Type, string>()
+        private static readonly ConcurrentDictionary<Type, string> TypeNames = new(new Dictionary<Type, string>
             {
                 { typeof(int), "int" },
                 { typeof(uint), "uint" },

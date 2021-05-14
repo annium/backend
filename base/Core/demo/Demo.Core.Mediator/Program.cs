@@ -9,6 +9,7 @@ using Annium.Data.Operations;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Requests;
 using Demo.Core.Mediator.ViewModels;
+
 namespace Demo.Core.Mediator
 {
     public class Program

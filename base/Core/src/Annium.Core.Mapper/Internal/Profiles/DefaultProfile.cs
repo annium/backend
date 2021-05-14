@@ -60,15 +60,15 @@ namespace Annium.Core.Mapper.Internal.Profiles
             //from
             Map<byte, sbyte>(x => (sbyte) x);
             Map<byte, char>(x => (char) x);
-            Map<byte, decimal>(x => (decimal) x);
-            Map<byte, double>(x => (double) x);
-            Map<byte, float>(x => (float) x);
-            Map<byte, int>(x => (int) x);
-            Map<byte, uint>(x => (uint) x);
-            Map<byte, long>(x => (long) x);
-            Map<byte, ulong>(x => (ulong) x);
-            Map<byte, short>(x => (short) x);
-            Map<byte, ushort>(x => (ushort) x);
+            Map<byte, decimal>(x => x);
+            Map<byte, double>(x => x);
+            Map<byte, float>(x => x);
+            Map<byte, int>(x => x);
+            Map<byte, uint>(x => x);
+            Map<byte, long>(x => x);
+            Map<byte, ulong>(x => x);
+            Map<byte, short>(x => x);
+            Map<byte, ushort>(x => x);
 
             //to
             Map<sbyte, byte>(x => (byte) x);
@@ -89,14 +89,14 @@ namespace Annium.Core.Mapper.Internal.Profiles
             //from
             Map<sbyte, byte>(x => (byte) x);
             Map<sbyte, char>(x => (char) x);
-            Map<sbyte, decimal>(x => (decimal) x);
-            Map<sbyte, double>(x => (double) x);
-            Map<sbyte, float>(x => (float) x);
-            Map<sbyte, int>(x => (int) x);
+            Map<sbyte, decimal>(x => x);
+            Map<sbyte, double>(x => x);
+            Map<sbyte, float>(x => x);
+            Map<sbyte, int>(x => x);
             Map<sbyte, uint>(x => (uint) x);
-            Map<sbyte, long>(x => (long) x);
+            Map<sbyte, long>(x => x);
             Map<sbyte, ulong>(x => (ulong) x);
-            Map<sbyte, short>(x => (short) x);
+            Map<sbyte, short>(x => x);
             Map<sbyte, ushort>(x => (ushort) x);
 
             //to
@@ -118,15 +118,15 @@ namespace Annium.Core.Mapper.Internal.Profiles
             //from
             Map<char, byte>(x => (byte) x);
             Map<char, sbyte>(x => (sbyte) x);
-            Map<char, decimal>(x => (decimal) x);
-            Map<char, double>(x => (double) x);
-            Map<char, float>(x => (float) x);
-            Map<char, int>(x => (int) x);
-            Map<char, uint>(x => (uint) x);
-            Map<char, long>(x => (long) x);
-            Map<char, ulong>(x => (ulong) x);
+            Map<char, decimal>(x => x);
+            Map<char, double>(x => x);
+            Map<char, float>(x => x);
+            Map<char, int>(x => x);
+            Map<char, uint>(x => x);
+            Map<char, long>(x => x);
+            Map<char, ulong>(x => x);
             Map<char, short>(x => (short) x);
-            Map<char, ushort>(x => (ushort) x);
+            Map<char, ushort>(x => x);
 
             //to
             Map<byte, char>(x => (char) x);
@@ -158,17 +158,17 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<decimal, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, decimal>(x => (decimal) x);
-            Map<sbyte, decimal>(x => (decimal) x);
-            Map<char, decimal>(x => (decimal) x);
+            Map<byte, decimal>(x => x);
+            Map<sbyte, decimal>(x => x);
+            Map<char, decimal>(x => x);
             Map<double, decimal>(x => (decimal) x);
             Map<float, decimal>(x => (decimal) x);
-            Map<int, decimal>(x => (decimal) x);
-            Map<uint, decimal>(x => (decimal) x);
-            Map<long, decimal>(x => (decimal) x);
-            Map<ulong, decimal>(x => (decimal) x);
-            Map<short, decimal>(x => (decimal) x);
-            Map<ushort, decimal>(x => (decimal) x);
+            Map<int, decimal>(x => x);
+            Map<uint, decimal>(x => x);
+            Map<long, decimal>(x => x);
+            Map<ulong, decimal>(x => x);
+            Map<short, decimal>(x => x);
+            Map<ushort, decimal>(x => x);
         }
 
         private void RegisterDouble()
@@ -187,17 +187,17 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<double, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, double>(x => (double) x);
-            Map<sbyte, double>(x => (double) x);
-            Map<char, double>(x => (double) x);
+            Map<byte, double>(x => x);
+            Map<sbyte, double>(x => x);
+            Map<char, double>(x => x);
             Map<decimal, double>(x => (double) x);
-            Map<float, double>(x => (double) x);
-            Map<int, double>(x => (double) x);
-            Map<uint, double>(x => (double) x);
-            Map<long, double>(x => (double) x);
-            Map<ulong, double>(x => (double) x);
-            Map<short, double>(x => (double) x);
-            Map<ushort, double>(x => (double) x);
+            Map<float, double>(x => x);
+            Map<int, double>(x => x);
+            Map<uint, double>(x => x);
+            Map<long, double>(x => x);
+            Map<ulong, double>(x => x);
+            Map<short, double>(x => x);
+            Map<ushort, double>(x => x);
         }
 
         private void RegisterFloat()
@@ -207,7 +207,7 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<float, sbyte>(x => (sbyte) x);
             Map<float, char>(x => (char) x);
             Map<float, decimal>(x => (decimal) x);
-            Map<float, double>(x => (double) x);
+            Map<float, double>(x => x);
             Map<float, int>(x => (int) x);
             Map<float, uint>(x => (uint) x);
             Map<float, long>(x => (long) x);
@@ -216,17 +216,17 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<float, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, float>(x => (float) x);
-            Map<sbyte, float>(x => (float) x);
-            Map<char, float>(x => (float) x);
+            Map<byte, float>(x => x);
+            Map<sbyte, float>(x => x);
+            Map<char, float>(x => x);
             Map<decimal, float>(x => (float) x);
             Map<double, float>(x => (float) x);
-            Map<int, float>(x => (float) x);
-            Map<uint, float>(x => (float) x);
-            Map<long, float>(x => (float) x);
-            Map<ulong, float>(x => (float) x);
-            Map<short, float>(x => (float) x);
-            Map<ushort, float>(x => (float) x);
+            Map<int, float>(x => x);
+            Map<uint, float>(x => x);
+            Map<long, float>(x => x);
+            Map<ulong, float>(x => x);
+            Map<short, float>(x => x);
+            Map<ushort, float>(x => x);
         }
 
         private void RegisterInt()
@@ -235,27 +235,27 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<int, byte>(x => (byte) x);
             Map<int, sbyte>(x => (sbyte) x);
             Map<int, char>(x => (char) x);
-            Map<int, decimal>(x => (decimal) x);
-            Map<int, double>(x => (double) x);
-            Map<int, float>(x => (float) x);
+            Map<int, decimal>(x => x);
+            Map<int, double>(x => x);
+            Map<int, float>(x => x);
             Map<int, uint>(x => (uint) x);
-            Map<int, long>(x => (long) x);
+            Map<int, long>(x => x);
             Map<int, ulong>(x => (ulong) x);
             Map<int, short>(x => (short) x);
             Map<int, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, int>(x => (int) x);
-            Map<sbyte, int>(x => (int) x);
-            Map<char, int>(x => (int) x);
+            Map<byte, int>(x => x);
+            Map<sbyte, int>(x => x);
+            Map<char, int>(x => x);
             Map<decimal, int>(x => (int) x);
             Map<double, int>(x => (int) x);
             Map<float, int>(x => (int) x);
             Map<uint, int>(x => (int) x);
             Map<long, int>(x => (int) x);
             Map<ulong, int>(x => (int) x);
-            Map<short, int>(x => (int) x);
-            Map<ushort, int>(x => (int) x);
+            Map<short, int>(x => x);
+            Map<ushort, int>(x => x);
         }
 
         private void RegisterUint()
@@ -264,19 +264,19 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<uint, byte>(x => (byte) x);
             Map<uint, sbyte>(x => (sbyte) x);
             Map<uint, char>(x => (char) x);
-            Map<uint, decimal>(x => (decimal) x);
-            Map<uint, double>(x => (double) x);
-            Map<uint, float>(x => (float) x);
+            Map<uint, decimal>(x => x);
+            Map<uint, double>(x => x);
+            Map<uint, float>(x => x);
             Map<uint, int>(x => (int) x);
-            Map<uint, long>(x => (long) x);
-            Map<uint, ulong>(x => (ulong) x);
+            Map<uint, long>(x => x);
+            Map<uint, ulong>(x => x);
             Map<uint, short>(x => (short) x);
             Map<uint, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, uint>(x => (uint) x);
+            Map<byte, uint>(x => x);
             Map<sbyte, uint>(x => (uint) x);
-            Map<char, uint>(x => (uint) x);
+            Map<char, uint>(x => x);
             Map<decimal, uint>(x => (uint) x);
             Map<double, uint>(x => (uint) x);
             Map<float, uint>(x => (uint) x);
@@ -284,7 +284,7 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<long, uint>(x => (uint) x);
             Map<ulong, uint>(x => (uint) x);
             Map<short, uint>(x => (uint) x);
-            Map<ushort, uint>(x => (uint) x);
+            Map<ushort, uint>(x => x);
         }
 
         private void RegisterLong()
@@ -293,9 +293,9 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<long, byte>(x => (byte) x);
             Map<long, sbyte>(x => (sbyte) x);
             Map<long, char>(x => (char) x);
-            Map<long, decimal>(x => (decimal) x);
-            Map<long, double>(x => (double) x);
-            Map<long, float>(x => (float) x);
+            Map<long, decimal>(x => x);
+            Map<long, double>(x => x);
+            Map<long, float>(x => x);
             Map<long, int>(x => (int) x);
             Map<long, uint>(x => (uint) x);
             Map<long, ulong>(x => (ulong) x);
@@ -303,17 +303,17 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<long, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, long>(x => (long) x);
-            Map<sbyte, long>(x => (long) x);
-            Map<char, long>(x => (long) x);
+            Map<byte, long>(x => x);
+            Map<sbyte, long>(x => x);
+            Map<char, long>(x => x);
             Map<decimal, long>(x => (long) x);
             Map<double, long>(x => (long) x);
             Map<float, long>(x => (long) x);
-            Map<int, long>(x => (long) x);
-            Map<uint, long>(x => (long) x);
+            Map<int, long>(x => x);
+            Map<uint, long>(x => x);
             Map<ulong, long>(x => (long) x);
-            Map<short, long>(x => (long) x);
-            Map<ushort, long>(x => (long) x);
+            Map<short, long>(x => x);
+            Map<ushort, long>(x => x);
         }
 
         private void RegisterUlong()
@@ -322,9 +322,9 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<ulong, byte>(x => (byte) x);
             Map<ulong, sbyte>(x => (sbyte) x);
             Map<ulong, char>(x => (char) x);
-            Map<ulong, decimal>(x => (decimal) x);
-            Map<ulong, double>(x => (double) x);
-            Map<ulong, float>(x => (float) x);
+            Map<ulong, decimal>(x => x);
+            Map<ulong, double>(x => x);
+            Map<ulong, float>(x => x);
             Map<ulong, int>(x => (int) x);
             Map<ulong, uint>(x => (uint) x);
             Map<ulong, long>(x => (long) x);
@@ -332,17 +332,17 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<ulong, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, ulong>(x => (ulong) x);
+            Map<byte, ulong>(x => x);
             Map<sbyte, ulong>(x => (ulong) x);
-            Map<char, ulong>(x => (ulong) x);
+            Map<char, ulong>(x => x);
             Map<decimal, ulong>(x => (ulong) x);
             Map<double, ulong>(x => (ulong) x);
             Map<float, ulong>(x => (ulong) x);
             Map<int, ulong>(x => (ulong) x);
-            Map<uint, ulong>(x => (ulong) x);
+            Map<uint, ulong>(x => x);
             Map<long, ulong>(x => (ulong) x);
             Map<short, ulong>(x => (ulong) x);
-            Map<ushort, ulong>(x => (ulong) x);
+            Map<ushort, ulong>(x => x);
         }
 
         private void RegisterShort()
@@ -351,18 +351,18 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<short, byte>(x => (byte) x);
             Map<short, sbyte>(x => (sbyte) x);
             Map<short, char>(x => (char) x);
-            Map<short, decimal>(x => (decimal) x);
-            Map<short, double>(x => (double) x);
-            Map<short, float>(x => (float) x);
-            Map<short, int>(x => (int) x);
+            Map<short, decimal>(x => x);
+            Map<short, double>(x => x);
+            Map<short, float>(x => x);
+            Map<short, int>(x => x);
             Map<short, uint>(x => (uint) x);
-            Map<short, long>(x => (long) x);
+            Map<short, long>(x => x);
             Map<short, ulong>(x => (ulong) x);
             Map<short, ushort>(x => (ushort) x);
 
             //to
-            Map<byte, short>(x => (short) x);
-            Map<sbyte, short>(x => (short) x);
+            Map<byte, short>(x => x);
+            Map<sbyte, short>(x => x);
             Map<char, short>(x => (short) x);
             Map<decimal, short>(x => (short) x);
             Map<double, short>(x => (short) x);
@@ -380,19 +380,19 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<ushort, byte>(x => (byte) x);
             Map<ushort, sbyte>(x => (sbyte) x);
             Map<ushort, char>(x => (char) x);
-            Map<ushort, decimal>(x => (decimal) x);
-            Map<ushort, double>(x => (double) x);
-            Map<ushort, float>(x => (float) x);
-            Map<ushort, int>(x => (int) x);
-            Map<ushort, uint>(x => (uint) x);
-            Map<ushort, long>(x => (long) x);
-            Map<ushort, ulong>(x => (ulong) x);
+            Map<ushort, decimal>(x => x);
+            Map<ushort, double>(x => x);
+            Map<ushort, float>(x => x);
+            Map<ushort, int>(x => x);
+            Map<ushort, uint>(x => x);
+            Map<ushort, long>(x => x);
+            Map<ushort, ulong>(x => x);
             Map<ushort, short>(x => (short) x);
 
             //to
-            Map<byte, ushort>(x => (ushort) x);
+            Map<byte, ushort>(x => x);
             Map<sbyte, ushort>(x => (ushort) x);
-            Map<char, ushort>(x => (ushort) x);
+            Map<char, ushort>(x => x);
             Map<decimal, ushort>(x => (ushort) x);
             Map<double, ushort>(x => (ushort) x);
             Map<float, ushort>(x => (ushort) x);

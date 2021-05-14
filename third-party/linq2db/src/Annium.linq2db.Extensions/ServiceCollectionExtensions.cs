@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Annium.linq2db.Extensions;
 using Annium.Logging.Abstractions;
 using LinqToDB.Data;
+
 namespace Annium.Core.DependencyInjection
 {
     public static class ServiceProviderExtensions

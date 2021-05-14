@@ -35,7 +35,7 @@ namespace Annium.Net.Base
                 else if (values.Count == 1)
                 {
                     // Second value for this key
-                    _accumulator[key] = new string[] {values[0], value};
+                    _accumulator[key] = new[] {values[0], value};
                 }
                 else
                 {
