@@ -5,11 +5,11 @@ using System.Reflection;
 namespace Annium.Core.Runtime.Types
 {
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class AutoScannedAssemblyAttribute : Attribute
+    public class AutoScannedAttribute : Attribute
     {
         public Assembly[] Dependencies { get; }
 
-        public AutoScannedAssemblyAttribute(params Type[] dependencies)
+        public AutoScannedAttribute(params Type[] dependencies)
         {
             Dependencies = dependencies.Select(x => x.Assembly).Distinct().ToArray();
         }

@@ -1,3 +1,3 @@
 using Annium.Core.Runtime.Types;
 
-[assembly: AutoScannedAssembly]
+[assembly: AutoScanned]

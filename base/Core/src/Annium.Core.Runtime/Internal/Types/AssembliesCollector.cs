@@ -54,7 +54,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (!registerAssembly(assembly))
                 return;
 
-            var autoScanned = assembly.GetCustomAttribute<AutoScannedAssemblyAttribute>();
+            var autoScanned = assembly.GetCustomAttribute<AutoScannedAttribute>();
             if (autoScanned != null)
             {
                 Log.Trace(() => $"{name.Name} - matched");
