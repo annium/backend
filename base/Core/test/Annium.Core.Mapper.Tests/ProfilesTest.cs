@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Testing;
 using NodaTime;
 using Xunit;
@@ -32,7 +31,7 @@ namespace Annium.Core.Mapper.Tests
         }
 
         private IMapper GetMapper() => new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false, Assembly.GetCallingAssembly().ShortName())
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
             .AddMapper(autoload: false)
             .AddProfile(ConfigureProfile)
             .BuildServiceProvider()

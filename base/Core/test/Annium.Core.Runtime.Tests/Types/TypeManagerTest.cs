@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
@@ -19,7 +18,7 @@ namespace Annium.Core.Runtime.Tests.Types
             manager.HasImplementations(typeof(A)).IsTrue();
             manager.HasImplementations(typeof(B)).IsFalse();
             manager.HasImplementations(typeof(C)).IsFalse();
-            manager.HasImplementations(typeof(IEnumerable<>)).IsFalse();
+            manager.HasImplementations(typeof(IEnumerable<>)).IsTrue();
         }
 
         [Fact]
@@ -171,13 +170,7 @@ namespace Annium.Core.Runtime.Tests.Types
             result.IsEqual(typeof(B));
         }
 
-        private ITypeManager GetTypeManager() => TypeManager.GetInstance(
-            GetType().Assembly,
-            false,
-            new[]
-            {
-                GetType().Assembly.ShortName()
-            });
+        private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false);
 
         private class A
         {

@@ -1,6 +1,4 @@
 using System.Collections.Generic;
-using Annium.Core.Mapper;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
 using Xunit;
@@ -111,8 +109,7 @@ namespace Annium.Serialization.Json.Tests.Converters
             var result = serializer.Deserialize<IReadOnlyCollection<IX>>(str);
 
             // assert
-            var mapper = Mapper.GetFor(GetType().Assembly, GetType().Assembly.ShortName(), typeof(IEnumerable<>).Assembly.ShortName());
-            result.IsEqual(x, "not equal", mapper);
+            result.IsEqual(x, "not equal");
         }
 
         [Fact]

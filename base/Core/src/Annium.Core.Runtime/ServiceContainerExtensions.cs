@@ -14,11 +14,10 @@ namespace Annium.Core.DependencyInjection
         public static IServiceContainer AddRuntimeTools(
             this IServiceContainer container,
             Assembly assembly,
-            bool tryLoadReferences,
-            params string[] patterns
+            bool tryLoadReferences
         )
         {
-            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences, patterns)).As<ITypeManager>().Singleton();
+            container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>().Singleton();
             container.Add<ITypeResolver, TypeResolver>().Singleton();
 
             return container;

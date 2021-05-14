@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.Runtime.Internal.Types
@@ -22,16 +21,17 @@ namespace Annium.Core.Runtime.Internal.Types
 
         public TypeManagerInstance(
             Assembly assembly,
-            bool tryLoadReferences,
-            IReadOnlyCollection<string> patterns
+            bool tryLoadReferences
         )
         {
             this.Trace(() => "start");
             _assembly = assembly;
-            this.Trace(() => $"collect types in: {patterns.Join(", ")}");
-            var types = new TypesCollector(assembly, tryLoadReferences, patterns).CollectTypes();
+            this.Trace(() => "collect assemblies");
+            var assemblies = AssembliesCollector.Collect(assembly, tryLoadReferences);
+            this.Trace(() => "collect types");
+            var types = TypesCollector.Collect(assemblies);
             this.Trace(() => "build hierarchy");
-            _hierarchy = new HierarchyBuilder().BuildHierarchy(types);
+            _hierarchy = HierarchyBuilder.BuildHierarchy(types);
             this.Trace(() => $"register {types.Count} ids");
             var ids = new Dictionary<TypeId, Type>();
             foreach (var type in types)

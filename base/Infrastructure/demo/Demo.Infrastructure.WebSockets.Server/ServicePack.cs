@@ -2,7 +2,6 @@ using System;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Types;
 using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Infrastructure.WebSockets.Server;
@@ -24,15 +23,7 @@ namespace Demo.Infrastructure.WebSockets.Server
 
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddRuntimeTools(
-                GetType().Assembly,
-                true,
-                typeof(Guid).Assembly.ShortName(),
-                "Demo.Infrastructure.WebSockets.Domain",
-                "Demo.Infrastructure.WebSockets.Server",
-                "Annium.Infrastructure.WebSockets.Domain",
-                "Annium.Infrastructure.WebSockets.Server"
-            );
+            container.AddRuntimeTools(GetType().Assembly, true);
             container.AddTimeProvider();
             container.AddJsonSerializers()
                 .Configure(opts => opts

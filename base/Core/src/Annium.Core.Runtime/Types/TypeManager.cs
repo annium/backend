@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Internal.Types;
 
 namespace Annium.Core.Runtime.Types
@@ -15,12 +13,11 @@ namespace Annium.Core.Runtime.Types
 
         public static ITypeManager GetInstance(
             Assembly assembly,
-            bool tryLoadReferences,
-            string[] patterns
+            bool tryLoadReferences
         )
         {
-            var key = new CacheKey(assembly, tryLoadReferences, patterns);
-            return Instances.GetOrAdd(key, key => new TypeManagerInstance(key.Assembly, key.TryLoadReferences, key.Patterns));
+            var key = new CacheKey(assembly, tryLoadReferences);
+            return Instances.GetOrAdd(key, key => new TypeManagerInstance(key.Assembly, key.TryLoadReferences));
         }
 
         public static void Release(Assembly assembly)
@@ -33,26 +30,19 @@ namespace Annium.Core.Runtime.Types
         {
             public Assembly Assembly { get; }
             public bool TryLoadReferences { get; }
-            public IReadOnlyCollection<string> Patterns { get; }
 
             public CacheKey(
                 Assembly assembly,
-                bool tryLoadReferences,
-                IReadOnlyCollection<string> patterns
+                bool tryLoadReferences
             )
             {
                 Assembly = assembly;
                 TryLoadReferences = tryLoadReferences;
-                Patterns = patterns;
             }
 
             public virtual bool Equals(CacheKey? other) => GetHashCode() == other?.GetHashCode();
 
-            public override int GetHashCode() => HashCode.Combine(
-                Assembly,
-                TryLoadReferences,
-                HashCodeSeq.Combine(Patterns)
-            );
+            public override int GetHashCode() => HashCode.Combine(Assembly, TryLoadReferences);
         }
     }
 }

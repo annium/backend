@@ -58,7 +58,7 @@ namespace Annium.linq2db.Extensions
         {
             var configurationType = typeof(IEntityConfiguration<>);
 
-            var allTypes = TypeManager.GetInstance(_configurationsAssembly, false, Array.Empty<string>()).Types;
+            var allTypes = TypeManager.GetInstance(_configurationsAssembly, false).Types;
             var concreteClasses = allTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType).ToArray();
 
             var configurationTypes = concreteClasses

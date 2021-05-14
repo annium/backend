@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Annium.Core.Runtime.Internal.Types
 {
-    internal class HierarchyBuilder
+    internal static class HierarchyBuilder
     {
         private delegate void RegisterAncestor(Type type, Type ancestor);
 
-        public IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> BuildHierarchy(HashSet<Type> types)
+        public static IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> BuildHierarchy(IReadOnlyCollection<Type> types)
         {
             var result = new Dictionary<Type, HashSet<Type>>();
             var descendantsRegistry = new Dictionary<Type, Descendant>();
@@ -45,7 +45,7 @@ namespace Annium.Core.Runtime.Internal.Types
             }
         }
 
-        private void CollectClassAncestors(Type type, RegisterAncestor register)
+        private static void CollectClassAncestors(Type type, RegisterAncestor register)
         {
             foreach (var ancestor in type.GetInterfaces())
                 register(ancestor, type);
@@ -58,7 +58,7 @@ namespace Annium.Core.Runtime.Internal.Types
             }
         }
 
-        private void CollectInterfaceAncestors(Type type, RegisterAncestor register)
+        private static void CollectInterfaceAncestors(Type type, RegisterAncestor register)
         {
             foreach (var ancestor in type.GetInterfaces())
                 register(ancestor, type);
