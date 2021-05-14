@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Mapper.Attributes;
 using Annium.Testing;
 using Xunit;
 
@@ -12,7 +13,7 @@ namespace Annium.Core.Mapper.Tests
         public void GenericProfiles_Work()
         {
             // arrange
-            var mapper = GetMapper(typeof(ValidProfile<,>));
+            var mapper = GetMapper(typeof(ValidProfile<>));
             var b = new B { Name = "Mike", Age = 5 };
             var c = new C { Name = "Donny", IsAlive = true };
 
@@ -39,9 +40,8 @@ namespace Annium.Core.Mapper.Tests
             .BuildServiceProvider()
             .Resolve<IMapper>();
 
-        private class ValidProfile<T, TZ> : Profile
+        private class ValidProfile<T> : Profile
             where T : A
-            where TZ : D
         {
             public ValidProfile()
             {
@@ -62,11 +62,13 @@ namespace Annium.Core.Mapper.Tests
             public string Name { get; set; } = string.Empty;
         }
 
+        [AutoMapped]
         private class B : A
         {
             public int Age { get; set; }
         }
 
+        [AutoMapped]
         private class C : A
         {
             public bool IsAlive { get; set; }

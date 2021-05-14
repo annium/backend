@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Annium.Core.Internal;
 using Annium.Core.Mapper;
+using Annium.Core.Mapper.Attributes;
 using Annium.Core.Mapper.Internal;
 using Annium.Core.Mapper.Internal.DependencyInjection;
 using Annium.Core.Mapper.Internal.Profiles;
 using Annium.Core.Mapper.Internal.Resolvers;
+using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
@@ -118,18 +122,32 @@ namespace Annium.Core.DependencyInjection
             IServiceProvider sp
         )
         {
+            Log.Trace(() => "resolve instances");
             var baseInstances = sp.Resolve<IEnumerable<ProfileInstance>>()
                 .Select(x => x.Instance)
                 .ToArray();
+            Log.Trace(() => $"resolved {baseInstances.Length} manual profile instances");
 
             var typeResolver = sp.Resolve<ITypeResolver>();
-            var types = sp.Resolve<IEnumerable<ProfileType>>()
+            var profileTypes = sp.Resolve<IEnumerable<ProfileType>>().ToArray();
+            Log.Trace(() => $"resolved {profileTypes.Length} raw profile types");
+
+            var types = profileTypes
                 .SelectMany(x => typeResolver.ResolveType(x.Type))
+                .Where(x =>
+                    !x.IsGenericType ||
+                    x.GetGenericArguments().All(a => a.GetCustomAttribute<AutoMappedAttribute>() is not null)
+                )
                 .ToArray();
+            Log.Trace(() => $"resolved {types.Length} concrete profile types");
+            foreach (var type in types)
+                Log.Trace(() => $"resolved {type.FriendlyName()} concrete profile type");
+
             var typeInstances = types
                 .Select(sp.Resolve)
                 .OfType<Profile>()
                 .ToArray();
+            Log.Trace(() => $"resolved {typeInstances.Length} profile types' instances");
 
             return baseInstances.Concat(typeInstances).ToArray();
         }

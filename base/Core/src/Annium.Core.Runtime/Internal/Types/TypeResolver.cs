@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Internal;
+using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
@@ -20,6 +22,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (!type.IsGenericType)
                 return new[] { type };
 
+            this.Trace(() => $"{type.FriendlyName()} - start");
             var sets = new List<Type[]>();
             foreach (var argument in type.GetGenericArguments())
             {
@@ -38,6 +41,8 @@ namespace Annium.Core.Runtime.Internal.Types
             var types = combinations
                 .Select(type.MakeGenericType)
                 .ToArray();
+
+            this.Trace(() => $"{type.FriendlyName()} - end");
 
             return types;
         }

@@ -1,5 +1,6 @@
 using System.Reflection;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Mapper.Attributes;
 using Annium.Testing;
 using Xunit;
 
@@ -24,6 +25,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
             .BuildServiceProvider()
             .Resolve<IMapper>();
 
+        [AutoMapped]
         private enum Sex
         {
             Male,
