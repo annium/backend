@@ -11,10 +11,14 @@ namespace Annium.Extensions.Reactive.Internal
         private readonly CancellationTokenSource _cts = new();
 
         internal StaticObservableInstance(
-            Func<ObserverContext<T>, Task> factory
+            Func<ObserverContext<T>, Task<Func<Task>>> factory
         )
         {
-            _factoryTask = Task.Run(() => factory(GetObserverContext(_cts.Token)));
+            _factoryTask = Task.Run(async () =>
+            {
+                var disposeAsync = await factory(GetObserverContext(_cts.Token));
+                await disposeAsync();
+            });
         }
 
         public IDisposable Subscribe(IObserver<T> observer)

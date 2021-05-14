@@ -134,6 +134,8 @@ namespace Annium.Net.WebSockets
                 this.Trace(() => "End, return buffer, send OnCompleted");
                 pool.Return(buffer);
                 ctx.OnCompleted();
+
+                return () => Task.CompletedTask;
             });
 
         private async ValueTask<Status> ReceiveAsync(

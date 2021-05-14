@@ -7,12 +7,12 @@ namespace Annium.Extensions.Reactive.Internal
 {
     internal class DynamicObservableInstance<T> : ObservableInstanceBase<T>, IObservableInstance<T>
     {
-        private readonly Func<ObserverContext<T>, Task> _factory;
+        private readonly Func<ObserverContext<T>, Task<Func<Task>>> _factory;
         private Task _factoryTask = Task.CompletedTask;
         private CancellationTokenSource _factoryCts = new();
 
         internal DynamicObservableInstance(
-            Func<ObserverContext<T>, Task> factory
+            Func<ObserverContext<T>, Task<Func<Task>>> factory
         )
         {
             _factory = WrapFactory(factory);
@@ -31,7 +31,8 @@ namespace Annium.Extensions.Reactive.Internal
                     _factoryTask = Task.Run(async () =>
                     {
                         await factoryTask;
-                        await _factory(GetObserverContext(_factoryCts.Token));
+                        var disposeAsync = await _factory(GetObserverContext(_factoryCts.Token));
+                        await disposeAsync();
                     });
                 }
             }
@@ -62,12 +63,12 @@ namespace Annium.Extensions.Reactive.Internal
             AfterDispose();
         }
 
-        private Func<ObserverContext<T>, Task> WrapFactory(
-            Func<ObserverContext<T>, Task> factory
+        private Func<ObserverContext<T>, Task<Func<Task>>> WrapFactory(
+            Func<ObserverContext<T>, Task<Func<Task>>> factory
         ) => async ctx =>
         {
             _factoryCts = new CancellationTokenSource();
-            await factory(ctx with { Ct = _factoryCts.Token });
+            return await factory(ctx with { Ct = _factoryCts.Token });
         };
     }
 }

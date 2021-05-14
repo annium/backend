@@ -85,7 +85,7 @@ namespace Annium.Data.Tables.Internal
 
             ctx.OnCompleted();
 
-            return Task.CompletedTask;
+            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
         });
 
         public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
