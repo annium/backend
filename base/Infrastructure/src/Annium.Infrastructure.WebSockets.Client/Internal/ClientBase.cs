@@ -61,24 +61,10 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public Task DisconnectAsync(CancellationToken ct = default) =>
             _socket.DisconnectAsync(ct);
 
-        public Action Listen<TNotification>(
-            Action<TNotification> handle
-        )
+        public IObservable<TNotification> Listen<TNotification>()
             where TNotification : NotificationBase
         {
-            var subscription = _responseObservable.OfType<TNotification>().Subscribe(handle);
-
-            return () => subscription.Dispose();
-        }
-
-        public Action Listen<TNotification>(
-            Func<TNotification, Task> handle
-        )
-            where TNotification : NotificationBase
-        {
-            var subscription = _responseObservable.OfType<TNotification>().SubscribeAsync(handle);
-
-            return () => subscription.Dispose();
+            return _responseObservable.OfType<TNotification>();
         }
 
         public void Notify<TEvent>(
@@ -301,6 +287,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             var subscription = subscribe(
                 _responseObservable
                     .OfType<SubscriptionMessage<TMessage>>()
+                    // ReSharper disable once AccessToModifiedClosure
                     .Where(x => x.SubscriptionId == subscriptionId)
                     .ObserveOn(TaskPoolScheduler.Default)
             );

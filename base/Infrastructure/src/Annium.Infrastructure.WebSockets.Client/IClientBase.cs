@@ -18,18 +18,9 @@ namespace Annium.Infrastructure.WebSockets.Client
         Task DisconnectAsync(CancellationToken ct = default);
 
         // broadcast
-        Action Listen<TNotification>(
-            Action<TNotification> handle
-        )
+        IObservable<TNotification> Listen<TNotification>()
             where TNotification : NotificationBase;
 
-        // broadcast
-        Action Listen<TNotification>(
-            Func<TNotification, Task> handle
-        )
-            where TNotification : NotificationBase;
-
-        // event
         void Notify<TEvent>(
             TEvent ev
         )

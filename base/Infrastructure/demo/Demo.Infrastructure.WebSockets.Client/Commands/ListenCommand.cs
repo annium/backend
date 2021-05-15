@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
@@ -47,9 +48,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(ct);
             _logger.Debug($"Connected to {cfg.Server}");
 
-            ct.Register(client.Listen<DiagnosticsNotification>(
-                x => _logger.Debug($"<<< diagnostics: {x}")
-            ));
+            using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => _logger.Debug($"<<< diagnostics: {x}"));
 
             await ct;
             _logger.Debug("Disconnecting");
