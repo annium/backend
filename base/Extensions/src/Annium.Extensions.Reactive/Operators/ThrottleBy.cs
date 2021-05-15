@@ -1,11 +1,10 @@
 using System.Collections.Generic;
-using System.Reactive;
 using System.Reactive.Linq;
 using NodaTime;
 
 namespace System
 {
-    public static class ObservableCustomOperatorExtensions
+    public static class ThrottleByOperatorExtensions
     {
         public static IObservable<TSource> ThrottleBy<TSource, TKey>(
             this IObservable<TSource> source,
@@ -41,9 +40,5 @@ namespace System
                 }, observer.OnError, observer.OnCompleted);
             });
         }
-
-        public static IObservable<Unit> Unit<TSource>(
-            this IObservable<TSource> source
-        ) => source.Select(_ => Reactive.Unit.Default);
     }
 }

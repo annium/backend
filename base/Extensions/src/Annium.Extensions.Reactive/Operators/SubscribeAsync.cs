@@ -5,7 +5,7 @@ using Annium.Core.Primitives;
 
 namespace System
 {
-    public static class ObservableSubscribeAsyncExtensions
+    public static class SubscribeAsyncOperatorExtensions
     {
         public static void SubscribeAsync<T>(
             this IObservable<T> source,
