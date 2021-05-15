@@ -42,11 +42,12 @@ namespace Annium.Net.WebSockets.Internal
                         x.Data.Length == 1 &&
                         x.Data.Span.SequenceEqual(opts.PingFrame.Span)
                     )
-                    .SubscribeAsync(async _ =>
+                    .DoParallelAsync(async _ =>
                     {
                         observable.Trace(() => "KeepAlive: ping -> pong");
                         await send(opts.PongFrame);
-                    });
+                    })
+                    .Subscribe();
             }
 
             // configure messageObservable
