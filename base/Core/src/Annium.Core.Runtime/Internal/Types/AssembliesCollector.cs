@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
@@ -9,6 +10,8 @@ namespace Annium.Core.Runtime.Internal.Types
 {
     internal static class AssembliesCollector
     {
+        private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetId();
+
         public static IReadOnlyCollection<Assembly> Collect(
             Assembly assembly,
             bool tryLoadReferences
@@ -54,12 +57,16 @@ namespace Annium.Core.Runtime.Internal.Types
             if (!registerAssembly(assembly))
                 return;
 
-            var autoScanned = assembly.GetCustomAttribute<AutoScannedAttribute>();
+            var autoScanned = assembly.GetCustomAttributes()
+                .SingleOrDefault(x => x.GetType().GetId() == AutoScannedTypeId);
             if (autoScanned != null)
             {
                 Log.Trace(() => $"{name.Name} - matched");
                 addMatchedAssembly(assembly);
-                foreach (var dependency in autoScanned.Dependencies)
+                var dependencies = (Assembly[]) autoScanned.GetType()
+                    .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
+                    .GetValue(autoScanned);
+                foreach (var dependency in dependencies)
                 {
                     Log.Trace(() => $"{name.Name} - add dependency {dependency.ShortName()}");
                     addMatchedAssembly(dependency);

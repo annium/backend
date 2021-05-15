@@ -15,7 +15,6 @@ namespace Annium.Core.Runtime.Internal.Types
         /// </summary>
         public IReadOnlyCollection<Type> Types { get; }
 
-        private readonly Assembly _assembly;
         private readonly IReadOnlyDictionary<Ancestor, IReadOnlyCollection<Descendant>> _hierarchy;
         private readonly IReadOnlyDictionary<TypeId, Type> _ids;
 
@@ -24,8 +23,7 @@ namespace Annium.Core.Runtime.Internal.Types
             bool tryLoadReferences
         )
         {
-            this.Trace(() => "start");
-            _assembly = assembly;
+            this.Trace(() => $"start for {assembly}");
             this.Trace(() => "collect assemblies");
             var assemblies = AssembliesCollector.Collect(assembly, tryLoadReferences);
             this.Trace(() => "collect types");
