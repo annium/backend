@@ -34,19 +34,18 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(WebSocket socket)
         {
-            var cn = _connectionTracker.Track(socket);
+            var cn = await _connectionTracker.Track(socket);
             this.Trace(() => $"Start for connection {cn.GetId()}");
             await using var scope = _sp.CreateAsyncScope();
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
             {
-                socket.ConnectionLost += () =>
+                socket.ConnectionLost += async () =>
                 {
                     this.Trace(() => $"Notify lost connection {cn.GetId()}");
                     cts.Cancel();
                     this.Trace(() => $"Release lost connection {cn.GetId()}");
-                    _connectionTracker.Release(cn);
-                    return Task.CompletedTask;
+                    await _connectionTracker.Release(cn);
                 };
                 await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync(cts.Token);
             }
@@ -55,7 +54,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 if (!cts.IsCancellationRequested)
                 {
                     this.Trace(() => $"Release complete connection {cn.GetId()}");
-                    _connectionTracker.Release(cn);
+                    await _connectionTracker.Release(cn);
                 }
             }
 

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
@@ -22,24 +23,26 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             _connectionTracker.OnRelease += Cleanup;
         }
 
-        public void Save(SubscriptionContext<TInit, TMessage, TState> ctx)
+        public void Save(SubscriptionContext<TInit, TMessage, TState> context)
         {
-            lock (_contexts) _contexts.Add(ctx);
+            lock (_contexts) _contexts.Add(context);
         }
 
-        public bool TryRemove(Guid subscriptionId)
+        public async Task<bool> TryRemove(Guid subscriptionId)
         {
+            SubscriptionContext<TInit, TMessage, TState> context;
             lock (_contexts)
             {
-                var ctx = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
-                if (ctx is null!)
+                context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
+                if (context is null!)
                     return false;
 
-                _contexts.Remove(ctx);
-                ctx.Cancel();
-
-                return true;
+                _contexts.Remove(context);
             }
+
+            await context.DisposeAsync();
+
+            return true;
         }
 
         public void Dispose()
@@ -47,19 +50,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             _connectionTracker.OnRelease -= Cleanup;
         }
 
-        private void Cleanup(Guid connectionId)
+        private async Task Cleanup(Guid connectionId)
         {
+            var contexts = new List<SubscriptionContext<TInit, TMessage, TState>>();
             lock (_contexts)
             {
-                var contexts = _contexts
-                    .Where(x => x.ConnectionId == connectionId)
-                    .ToArray();
-                foreach (var context in contexts)
-                {
-                    _contexts.Remove(context);
-                    context.Cancel();
-                }
+                foreach (var context in _contexts.ToArray())
+                    if (context.ConnectionId == connectionId)
+                    {
+                        contexts.Add(context);
+                        _contexts.Remove(context);
+                    }
             }
+
+            await Task.WhenAll(contexts.Select(async x => await x.DisposeAsync()));
         }
     }
 }

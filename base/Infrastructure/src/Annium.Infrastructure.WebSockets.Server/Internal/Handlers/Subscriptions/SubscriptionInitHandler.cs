@@ -49,7 +49,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             await next(context, cts.Token);
 
             // remove subscription to prevent memory leak (if finished on server, but not canceled by client)
-            _subscriptionContextStore.TryRemove(subscriptionId);
+            await _subscriptionContextStore.TryRemove(subscriptionId);
 
             return Response.Void<TMessage>();
         }

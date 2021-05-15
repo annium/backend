@@ -74,16 +74,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             SendInternal(new SubscriptionMessage<TMessage>(SubscriptionId, message));
         }
 
-        public void Cancel()
-        {
-            if (!_isInitiated)
-                throw new InvalidOperationException("Can't cancel not initiated subscription");
-            if (_cts.IsCancellationRequested)
-                throw new InvalidOperationException("Can't cancel subscription more than once");
-
-            _cts.Cancel();
-        }
-
         public void OnInit(Action handle)
         {
             _handleInit = handle;
@@ -100,6 +90,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         public async ValueTask DisposeAsync()
         {
+            if (!_isInitiated)
+                throw new InvalidOperationException("Can't cancel not initiated subscription");
+            if (_cts.IsCancellationRequested)
+                throw new InvalidOperationException("Can't cancel subscription more than once");
+
+            _cts.Cancel();
             _cts.Dispose();
             await _executor.DisposeAsync();
         }

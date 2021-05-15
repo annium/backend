@@ -12,8 +12,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
     internal class ConnectionTracker : IAsyncDisposable
     {
         private readonly IServerLifetime _lifetime;
-        public event Action<Guid> OnTrack = delegate { };
-        public event Action<Guid> OnRelease = delegate { };
+        public event Func<Guid, Task> OnTrack = delegate { return Task.CompletedTask; };
+        public event Func<Guid, Task> OnRelease = delegate { return Task.CompletedTask; };
         private readonly ConcurrentDictionary<Guid, Connection> _connections = new();
         private readonly TaskCompletionSource<object> _disposeTcs = new();
         private bool _isDisposed;
@@ -24,7 +24,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _lifetime.Stopping.Register(TryStop);
         }
 
-        public Connection Track(WebSocket socket)
+        public async Task<Connection> Track(WebSocket socket)
         {
             EnsureNotDisposed();
 
@@ -33,7 +33,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _connections.TryAdd(cn.Id, cn);
 
             this.Trace(() => $"Invoke OnTrack for connection {cn.GetId()}");
-            OnTrack.Invoke(cn.Id);
+            await OnTrack.Invoke(cn.Id);
 
             return cn;
         }
@@ -45,7 +45,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             return _connections.TryGetValue(id, out cn!);
         }
 
-        public void Release(Connection cn)
+        public async Task Release(Connection cn)
         {
             EnsureNotDisposed();
 
@@ -54,7 +54,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 return;
 
             this.Trace(() => $"Invoke OnRelease for connection {cn.GetId()}");
-            OnRelease.Invoke(cn.Id);
+            await OnRelease.Invoke(cn.Id);
 
             if (_lifetime.Stopping.IsCancellationRequested)
                 TryStop();
