@@ -35,11 +35,13 @@ namespace Annium.Extensions.Execution.Internal
 
         public async ValueTask DisposeAsync()
         {
+            this.Trace(() => "start");
             EnsureAvailable();
             Stop();
             await _runTask;
             _tasks.Dispose();
             _cts.Dispose();
+            this.Trace(() => "done");
         }
 
         private async Task Run()
