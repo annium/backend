@@ -10,5 +10,6 @@ namespace Annium.Core.Primitives
         public static AsyncDisposableBox AsyncBox() => new();
         public static IAsyncDisposable Create(Func<Task> handle) => new AsyncDisposer(handle);
         public static IDisposable Create(Action handle) => new Disposer(handle);
+        public static IDisposable Empty() => new Disposer(() => { });
     }
 }
