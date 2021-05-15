@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Logging.Abstractions;
 using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
@@ -33,7 +32,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
                 .ConnectTo(cfg.Server)
                 .WithActiveKeepAlive(600, 600)
                 .WithResponseTimeout(600);
-            var client = _clientFactory.Create(configuration);
+            await using var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");
@@ -48,19 +47,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(ct);
 
             _logger.Debug("Init subscription");
-            var result = await client.SubscribeAsync(new UserBalanceSubscriptionInit(),
-                (Action<UserBalanceMessage>) Log, ct);
+            var subscription = client.Listen<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct).Subscribe(Log);
             _logger.Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
             _logger.Debug("Cancel subscription");
-            await client.UnsubscribeAsync(SubscriptionCancelRequest.New(result.Data), ct);
+            subscription.Dispose();
             _logger.Debug("Subscription canceled");
 
-            // _logger.Debug("Cancel subscription");
-            // await client.UnsubscribeAsync(SubscriptionCancelRequest.New(Guid.NewGuid()), token);
-            // _logger.Debug("Subscription canceled");
+            await Task.Delay(100);
 
             await client.DisconnectAsync(ct);
 

@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
@@ -18,7 +19,7 @@ using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    internal class ClientBase : IClientBase, IAsyncDisposable
+    internal class ClientBase : IClientBase
     {
         public bool IsConnected => _socket.State == WebSocketState.Open;
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
@@ -192,25 +193,52 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
 
-        public Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
+        public IObservable<TMessage> Listen<TInit, TMessage>(
             TInit request,
-            Action<TMessage> handle,
             CancellationToken ct = default
         )
             where TInit : SubscriptionInitRequestBase
-        {
-            return SubscribeInternal<TInit, TMessage>(request, o => o.Subscribe(x => handle(x.Message)), ct);
-        }
+            => Observable.Create<TMessage>(async (observer, observeToken) =>
+            {
+                var token = CancellationTokenSource.CreateLinkedTokenSource(observeToken, ct).Token;
+                var subscriptionId = Guid.Empty;
+                var subscription = _responseObservable
+                    .OfType<SubscriptionMessage<TMessage>>()
+                    // ReSharper disable once AccessToModifiedClosure
+                    .Where(x => x.SubscriptionId == subscriptionId)
+                    .ObserveOn(TaskPoolScheduler.Default)
+                    .Select(x => x.Message)
+                    .Subscribe(observer);
 
-        public Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
-            TInit request,
-            Func<TMessage, Task> handle,
-            CancellationToken ct = default
-        )
-            where TInit : SubscriptionInitRequestBase
-        {
-            return SubscribeInternal<TInit, TMessage>(request, o => o.Subscribe(x => handle(x.Message)), ct);
-        }
+                var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, token, x => x.Result);
+                if (response.HasErrors)
+                {
+                    subscription.Dispose();
+                    observer.OnError(new WebSocketClientException(response));
+                    return Disposable.Empty();
+                }
+
+                subscriptionId = response.Data;
+                _subscriptions.TryAdd(subscriptionId, subscription);
+
+                await token;
+
+                return Disposable.Create(() =>
+                {
+                    this.Trace(() => "Dispose subscription");
+                    subscription.Dispose();
+                    if (!_subscriptions.TryRemove(subscriptionId, out _))
+                        return;
+
+                    this.Trace(() => "Init unsubscription on server");
+                    FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(
+                            SubscriptionCancelRequest.New(subscriptionId),
+                            CancellationToken.None,
+                            x => x.Result
+                        )
+                        .ContinueWith(_ => this.Trace(() => "Unsubscribed on server side"), CancellationToken.None);
+                });
+            }).SubscribeOn(TaskPoolScheduler.Default);
 
         public async Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
             SubscriptionCancelRequest request,
@@ -227,10 +255,15 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
         public async ValueTask DisposeAsync()
         {
-            await Task.WhenAll(_subscriptions.Select(async x => await x.Value.DisposeAsync().ConfigureAwait(false)));
+            this.Trace(() => "start, dispose subscriptions");
+            Parallel.ForEach(_subscriptions.Values, x => x.Dispose());
+            this.Trace(() => "dispose disposable box");
             await _disposable.DisposeAsync();
+            this.Trace(() => "disconnect socket");
             await _socket.DisconnectAsync(CancellationToken.None);
+            this.Trace(() => "dispose socket");
             await _socket.DisposeAsync();
+            this.Trace(() => "done");
         }
 
         private async Task SendInternal<T>(T data)

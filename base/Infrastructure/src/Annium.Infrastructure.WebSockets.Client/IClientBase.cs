@@ -8,7 +8,7 @@ using Annium.Infrastructure.WebSockets.Domain.Responses;
 
 namespace Annium.Infrastructure.WebSockets.Client
 {
-    public interface IClientBase
+    public interface IClientBase : IAsyncDisposable
     {
         // management
         bool IsConnected { get; }
@@ -117,24 +117,10 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
 
         // init subscription
-        Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
+        IObservable<TMessage> Listen<TInit, TMessage>(
             TInit request,
-            Action<TMessage> handle,
             CancellationToken ct = default
         )
             where TInit : SubscriptionInitRequestBase;
-
-        Task<IStatusResult<OperationStatus, Guid>> SubscribeAsync<TInit, TMessage>(
-            TInit request,
-            Func<TMessage, Task> handle,
-            CancellationToken ct = default
-        )
-            where TInit : SubscriptionInitRequestBase;
-
-        // cancel subscription
-        Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
-            SubscriptionCancelRequest request,
-            CancellationToken ct = default
-        );
     }
 }
