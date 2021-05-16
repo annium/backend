@@ -53,6 +53,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             if (!_connections.TryRemove(cn.Id, out _))
                 return;
 
+            this.Trace(() => $"Dispose connection {cn.GetId()}");
+            await cn.DisposeAsync();
+
             this.Trace(() => $"Invoke OnRelease for connection {cn.GetId()}");
             await OnRelease.Invoke(cn.Id);
 

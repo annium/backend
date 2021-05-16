@@ -40,22 +40,23 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
             {
-                socket.ConnectionLost += async () =>
+                socket.ConnectionLost += () =>
                 {
                     this.Trace(() => $"Notify lost connection {cn.GetId()}");
                     cts.Cancel();
-                    this.Trace(() => $"Release lost connection {cn.GetId()}");
-                    await _connectionTracker.Release(cn);
+
+                    return Task.CompletedTask;
                 };
-                await _handlerFactory.Create(scope.ServiceProvider, cn).HandleAsync(cts.Token);
+                await using var handler = _handlerFactory.Create(scope.ServiceProvider, cn);
+                await handler.HandleAsync(cts.Token);
             }
             finally
             {
-                if (!cts.IsCancellationRequested)
-                {
-                    this.Trace(() => $"Release complete connection {cn.GetId()}");
-                    await _connectionTracker.Release(cn);
-                }
+                // if (!cts.IsCancellationRequested)
+                // {
+                this.Trace(() => $"Release complete connection {cn.GetId()}");
+                await _connectionTracker.Release(cn);
+                // }
             }
 
             this.Trace(() => $"End for connection {cn.GetId()}");

@@ -16,7 +16,7 @@ using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class ConnectionHandler<TState>
+    internal class ConnectionHandler<TState> : IAsyncDisposable
         where TState : ConnectionStateBase
     {
         private readonly IServiceProvider _sp;
@@ -56,12 +56,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
                 // start listening to messages and adding them to scheduler
                 this.Trace(() => "Init subscription");
-                var subscription = _cn.Socket
+                _cn.Socket
                     .Listen()
                     .Subscribe(
                         x => executor.Schedule(() => HandleMessage(x)),
                         x => tcs.TrySetException(x),
-                        () => tcs.TrySetResult(new object())
+                        () => tcs.TrySetResult(new object()),
+                        ct
                     );
 
                 // process start hook
@@ -74,9 +75,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 // wait until connection complete
                 this.Trace(() => "Wait until connection complete");
                 await tcs.Task;
-
-                // dispose messages subscription
-                subscription.Dispose();
             }
             finally
             {
@@ -90,6 +88,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
         }
 
+        public async ValueTask DisposeAsync()
+        {
+            await _state.DisposeAsync();
+        }
 
         private async Task HandleMessage(SocketMessage msg)
         {
