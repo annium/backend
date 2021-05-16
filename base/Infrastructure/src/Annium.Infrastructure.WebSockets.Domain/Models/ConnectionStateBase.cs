@@ -8,6 +8,9 @@ namespace Annium.Infrastructure.WebSockets.Domain.Models
     public abstract class ConnectionStateBase : IAsyncDisposable
     {
         public Guid ConnectionId { get; }
+
+        protected AsyncDisposableBox Disposable = Core.Primitives.Disposable.AsyncBox();
+
         private readonly ManualResetEventSlim _gate = new(true);
 
         protected ConnectionStateBase(Guid connectionId)
@@ -18,7 +21,7 @@ namespace Annium.Infrastructure.WebSockets.Domain.Models
         public IDisposable Lock()
         {
             _gate.Wait();
-            return Disposable.Create(_gate.Set);
+            return Core.Primitives.Disposable.Create(_gate.Set);
         }
 
         public async ValueTask DisposeAsync()
