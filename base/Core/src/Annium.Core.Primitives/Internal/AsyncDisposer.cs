@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Annium.Core.Primitives.Internal
 {
-    internal struct AsyncDisposer : IAsyncDisposable
+    internal class AsyncDisposer : IAsyncDisposable
     {
         private readonly Func<Task> _handle;
 

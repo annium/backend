@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Primitives.Internal
 {
-    internal struct Disposer : IDisposable
+    internal class Disposer : IDisposable
     {
         private readonly Action _handle;
 

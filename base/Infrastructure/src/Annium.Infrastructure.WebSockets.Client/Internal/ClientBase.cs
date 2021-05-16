@@ -215,7 +215,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 {
                     subscription.Dispose();
                     observer.OnError(new WebSocketClientException(response));
-                    return Disposable.Empty();
+                    return Disposable.Empty;
                 }
 
                 subscriptionId = response.Data;
