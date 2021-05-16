@@ -38,6 +38,7 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace(() => "start");
             EnsureAvailable();
             Stop();
+            this.Trace(() => $"wait for {_tasks.Count} task(s) to finish");
             await _runTask;
             _tasks.Dispose();
             _cts.Dispose();

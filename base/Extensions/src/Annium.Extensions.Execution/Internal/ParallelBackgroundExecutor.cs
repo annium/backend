@@ -3,13 +3,14 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 
 namespace Annium.Extensions.Execution.Internal
 {
     internal class ParallelBackgroundExecutor : IBackgroundExecutor
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static Task RunWork(Delegate work) => work switch
+        private static Task RunTask(Delegate task) => task switch
         {
             Action execute     => Task.Run(execute),
             Func<Task> execute => Task.Run(execute),
@@ -18,51 +19,54 @@ namespace Annium.Extensions.Execution.Internal
 
         public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
         private int _isAvailable = 1;
-        private int _isRunning;
-        private int _workCounter;
+        private int _isStarted;
+        private int _taskCounter;
         private readonly ConcurrentBag<Delegate> _backlog = new();
         private readonly TaskCompletionSource<object> _tcs = new();
 
-        public void Schedule(Action task) => ScheduleWork(task);
-        public void Schedule(Func<Task> task) => ScheduleWork(task);
+        public void Schedule(Action task) => ScheduleTask(task);
+        public void Schedule(Func<Task> task) => ScheduleTask(task);
 
         public void Start(CancellationToken ct = default)
         {
             EnsureAvailable();
 
-            if (Interlocked.CompareExchange(ref _isRunning, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _isStarted, 1, 0) != 0)
                 throw new InvalidOperationException("Executor is already running");
 
             // change to state to unavailable
             ct.Register(Stop);
 
-            while (_backlog.TryTake(out var work)) ScheduleWork(work);
+            while (_backlog.TryTake(out var task)) ScheduleTask(task);
         }
 
         public async ValueTask DisposeAsync()
         {
+            this.Trace(() => "start");
             EnsureAvailable();
             Stop();
+            this.Trace(() => $"wait for {_taskCounter} task(s) to finish");
             await _tcs.Task;
+            this.Trace(() => "done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void ScheduleWork(Delegate work)
+        private void ScheduleTask(Delegate task)
         {
             EnsureAvailable();
-            if (Volatile.Read(ref _isRunning) == 1)
+            if (Volatile.Read(ref _isStarted) == 1)
             {
-                Interlocked.Increment(ref _workCounter);
-                RunWork(work).ContinueWith(CompleteWork);
+                Interlocked.Increment(ref _taskCounter);
+                RunTask(task).ContinueWith(CompleteTask);
             }
             else
-                _backlog.Add(work);
+                _backlog.Add(task);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CompleteWork(Task _)
+        private void CompleteTask(Task _)
         {
-            Interlocked.Decrement(ref _workCounter);
+            Interlocked.Decrement(ref _taskCounter);
             TryFinish();
         }
 
@@ -70,14 +74,14 @@ namespace Annium.Extensions.Execution.Internal
         private void Stop()
         {
             Volatile.Write(ref _isAvailable, 0);
-            Volatile.Write(ref _isRunning, 0);
+            this.Trace(()=>$"isAvailable: {_isAvailable}, tasks: {_taskCounter}");
             TryFinish();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryFinish()
         {
-            if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _workCounter) == 0)
+            if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _taskCounter) == 0)
                 _tcs.TrySetResult(new object());
         }
 
