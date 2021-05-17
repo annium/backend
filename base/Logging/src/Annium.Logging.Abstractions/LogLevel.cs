@@ -1,5 +1,8 @@
+using Annium.Core.Mapper.Attributes;
+
 namespace Annium.Logging.Abstractions
 {
+    [AutoMapped]
     public enum LogLevel
     {
         Trace = 0,
