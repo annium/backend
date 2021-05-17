@@ -43,10 +43,13 @@ namespace Annium.Core.Primitives.Tests
             });
 
             // act
+            var initialByCallback = 0;
+            container.OnReady += x => initialByCallback = x;
             var initial = await container;
 
             // assert
             initial.Is(5);
+            initialByCallback.Is(5);
             val.Is(5);
             container.Value.Is(5);
         }
@@ -84,10 +87,13 @@ namespace Annium.Core.Primitives.Tests
             });
 
             // act
+            var initialByCallback = 0;
+            container.OnReady += x => initialByCallback = x;
             var initial = await container;
 
             // assert
             initial.Is(5);
+            initialByCallback.Is(5);
             container.Value.Is(5);
         }
 

@@ -15,6 +15,8 @@ namespace Annium.Core.Primitives
             }
         }
 
+        public event Action<T> OnReady = delegate { };
+
         private AsyncLazy<T>? _initiator;
 
         // private
@@ -43,6 +45,7 @@ namespace Annium.Core.Primitives
             {
                 var value = await init();
                 _set(value);
+                OnReady.Invoke(value);
 
                 return value;
             });
