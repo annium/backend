@@ -72,7 +72,6 @@ namespace Annium.Core.Primitives.Tests
 
             // assert
             container.Value.Is(3);
-            ((int) container).Is(3);
         }
 
         [Fact]
@@ -114,7 +113,6 @@ namespace Annium.Core.Primitives.Tests
 
             // assert
             container.Value.Is(3);
-            ((int) container).Is(3);
         }
     }
 }

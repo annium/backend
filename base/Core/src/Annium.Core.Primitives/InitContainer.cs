@@ -78,7 +78,5 @@ namespace Annium.Core.Primitives
             if (_initiator is null)
                 throw new InvalidOperationException("Container initiator is not set");
         }
-
-        public static implicit operator T(InitContainer<T> container) => container.Value;
     }
 }
