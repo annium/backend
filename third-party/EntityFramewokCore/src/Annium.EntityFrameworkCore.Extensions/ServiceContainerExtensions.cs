@@ -1,4 +1,5 @@
 using System;
+using Annium.Sqlite.Extensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,7 +22,7 @@ namespace Annium.Core.DependencyInjection
         )
             where TContext : DbContext
         {
-            return container.AddEntityFrameworkSqliteInMemory<TContext>(new SqliteConnection("Data Source=:memory:"));
+            return container.AddEntityFrameworkSqliteInMemory<TContext>(new SqliteConnection().InMemory());
         }
 
         private static IServiceContainer AddEntityFrameworkSqliteInMemory<TContext>(
