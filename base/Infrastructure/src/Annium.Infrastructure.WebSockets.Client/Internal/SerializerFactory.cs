@@ -20,7 +20,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _textSerializer = textSerializers[key];
         }
 
-        public Serializer Create(ClientConfiguration configuration)
+        public Serializer Create(IClientConfigurationBase configuration)
         {
             return new(_binarySerializer, _textSerializer, configuration);
         }

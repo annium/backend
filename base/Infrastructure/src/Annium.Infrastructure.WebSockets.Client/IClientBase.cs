@@ -12,10 +12,6 @@ namespace Annium.Infrastructure.WebSockets.Client
     {
         // management
         bool IsConnected { get; }
-        event Func<Task> ConnectionLost;
-        event Func<Task> ConnectionRestored;
-        Task ConnectAsync(CancellationToken ct = default);
-        Task DisconnectAsync(CancellationToken ct = default);
 
         // broadcast
         IObservable<TNotification> Listen<TNotification>()

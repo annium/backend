@@ -5,38 +5,22 @@ using NodaTime;
 
 namespace Annium.Infrastructure.WebSockets.Client
 {
-    public class ClientConfiguration
+    public class ClientConfiguration : ClientConfigurationBase<ClientConfiguration>, IClientConfiguration
     {
         public Uri Uri { get; private set; } = default!;
-        public SerializationFormat Format { get; private set; }
+
         public bool AutoConnect { get; private set; }
 
-        public ClientWebSocketOptions WebSocketOptions { get; private set; } = new()
+        public ClientWebSocketOptions WebSocketOptions { get; } = new()
         {
             ReconnectTimeout = Duration.FromSeconds(5),
             ActiveKeepAlive = ActiveKeepAlive.Create(),
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
 
-        public Duration ResponseTimeout { get; private set; } = Duration.FromMinutes(1);
-
         public ClientConfiguration ConnectTo(Uri uri)
         {
             Uri = uri;
-
-            return this;
-        }
-
-        public ClientConfiguration UseBinaryFormat()
-        {
-            Format = SerializationFormat.Binary;
-
-            return this;
-        }
-
-        public ClientConfiguration UseTextFormat()
-        {
-            Format = SerializationFormat.Text;
 
             return this;
         }
@@ -68,11 +52,50 @@ namespace Annium.Infrastructure.WebSockets.Client
 
             return this;
         }
+    }
 
-        public ClientConfiguration WithResponseTimeout(uint timeout)
+    public class TestClientConfiguration : ClientConfigurationBase<TestClientConfiguration>, ITestClientConfiguration
+    {
+        public WebSocketOptions WebSocketOptions { get; } = new()
+        {
+            ActiveKeepAlive = ActiveKeepAlive.Create(),
+            PassiveKeepAlive = PassiveKeepAlive.Create()
+        };
+
+        public TestClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
+        {
+            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
+
+            return this;
+        }
+    }
+
+    public abstract class ClientConfigurationBase<TConfiguration> : IClientConfigurationBase
+        where TConfiguration : ClientConfigurationBase<TConfiguration>
+    {
+        public SerializationFormat Format { get; private set; }
+
+        public Duration ResponseTimeout { get; private set; } = Duration.FromMinutes(1);
+
+        public TConfiguration UseBinaryFormat()
+        {
+            Format = SerializationFormat.Binary;
+
+            return (TConfiguration) this;
+        }
+
+        public TConfiguration UseTextFormat()
+        {
+            Format = SerializationFormat.Text;
+
+            return (TConfiguration) this;
+        }
+
+        public TConfiguration WithResponseTimeout(uint timeout)
         {
             ResponseTimeout = Duration.FromSeconds(timeout);
-            return this;
+
+            return (TConfiguration) this;
         }
     }
 }

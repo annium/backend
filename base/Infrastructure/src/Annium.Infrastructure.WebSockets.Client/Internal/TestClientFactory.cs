@@ -1,13 +1,14 @@
 using Annium.Core.Runtime.Time;
+using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    internal class ClientFactory : IClientFactory
+    internal class TestClientFactory : ITestClientFactory
     {
         private readonly ITimeProvider _timeProvider;
         private readonly SerializerFactory _serializerFactory;
 
-        public ClientFactory(
+        public TestClientFactory(
             ITimeProvider timeProvider,
             SerializerFactory serializerFactory
         )
@@ -16,11 +17,11 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             _serializerFactory = serializerFactory;
         }
 
-        public IClient Create(IClientConfiguration configuration)
+        public ITestClient Create(NativeWebSocket socket, ITestClientConfiguration configuration)
         {
             var serializer = _serializerFactory.Create(configuration);
 
-            return new Client(_timeProvider, serializer, configuration);
+            return new TestClient(socket, _timeProvider, serializer, configuration);
         }
     }
 }

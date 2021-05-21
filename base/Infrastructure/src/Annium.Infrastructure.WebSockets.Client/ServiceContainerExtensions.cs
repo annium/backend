@@ -9,6 +9,7 @@ namespace Annium.Core.DependencyInjection
         {
             // public
             container.Add<IClientFactory, ClientFactory>().Singleton();
+            container.Add<ITestClientFactory, TestClientFactory>().Singleton();
 
             // internal
             container.Add<SerializerFactory>().AsSelf().Transient();

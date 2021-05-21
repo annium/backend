@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -15,52 +14,44 @@ using Annium.Data.Operations;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
-using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
+using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    internal class ClientBase : IClientBase
+    internal abstract class ClientBase<TSocket, TNativeSocket> : IClientBase
+        where TSocket : Annium.Net.WebSockets.WebSocketBase<TNativeSocket>
+        where TNativeSocket : NativeWebSocket
     {
-        public bool IsConnected => _socket.State == WebSocketState.Open;
-        public event Func<Task> ConnectionLost = () => Task.CompletedTask;
-        public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
+        public bool IsConnected => Socket.State == WebSocketState.Open;
+        protected TSocket Socket { get; }
         private readonly Serializer _serializer;
-        private readonly ClientConfiguration _configuration;
-        private readonly ClientWebSocket _socket;
+        private readonly IClientConfigurationBase _configuration;
         private readonly IBackgroundExecutor _executor = Executor.Background.Parallel();
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
-        public ClientBase(
+        protected ClientBase(
+            TSocket socket,
             ITimeProvider timeProvider,
             Serializer serializer,
-            ClientConfiguration configuration
+            IClientConfigurationBase configuration
         )
         {
+            Socket = socket;
             _serializer = serializer;
             _configuration = configuration;
-
-            _socket = new ClientWebSocket(_configuration.WebSocketOptions);
-            _socket.ConnectionLost += () => ConnectionLost.Invoke();
-            _socket.ConnectionRestored += () => ConnectionRestored.Invoke();
 
             _disposable += _executor;
             _executor.Start();
 
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-            _responseObservable = _socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
+            _responseObservable = Socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
             _disposable += _responseObservable.OfType<ResponseBase>()
                 .ObserveOn(TaskPoolScheduler.Default)
                 .Subscribe(CompleteResponse);
         }
-
-        public Task ConnectAsync(CancellationToken ct = default) =>
-            _socket.ConnectAsync(_configuration.Uri, ct);
-
-        public Task DisconnectAsync(CancellationToken ct = default) =>
-            _socket.DisconnectAsync(ct);
 
         public IObservable<TNotification> Listen<TNotification>()
             where TNotification : NotificationBase
@@ -240,36 +231,19 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 });
             }).SubscribeOn(TaskPoolScheduler.Default);
 
-        public async Task<IStatusResult<OperationStatus>> UnsubscribeAsync(
-            SubscriptionCancelRequest request,
-            CancellationToken ct = default
-        )
-        {
-            if (!_subscriptions.TryRemove(request.SubscriptionId, out var subscription))
-                return Result.Status(OperationStatus.NotFound);
-
-            subscription.Dispose();
-
-            return await FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(request, ct, x => x.Result);
-        }
-
-        public async ValueTask DisposeAsync()
+        public virtual async ValueTask DisposeAsync()
         {
             this.Trace(() => "start, dispose subscriptions");
             Parallel.ForEach(_subscriptions.Values, x => x.Dispose());
             this.Trace(() => "dispose disposable box");
             await _disposable.DisposeAsync();
-            this.Trace(() => "disconnect socket");
-            await _socket.DisconnectAsync(CancellationToken.None);
-            this.Trace(() => "dispose socket");
-            await _socket.DisposeAsync();
             this.Trace(() => "done");
         }
 
         private async Task SendInternal<T>(T data)
             where T : notnull
         {
-            await _socket.SendWith(data, _serializer, CancellationToken.None);
+            await Socket.SendWith(data, _serializer, CancellationToken.None);
         }
 
         private async Task<TResponseData> FetchInternal<TRequest, TResponse, TResponseData>(
@@ -307,35 +281,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             var data = getData(response);
 
             return data;
-        }
-
-        private async Task<IStatusResult<OperationStatus, Guid>> SubscribeInternal<TInit, TMessage>(
-            TInit request,
-            Func<IObservable<SubscriptionMessage<TMessage>>, IDisposable> subscribe,
-            CancellationToken ct
-        )
-            where TInit : SubscriptionInitRequestBase
-        {
-            var subscriptionId = Guid.Empty;
-            var subscription = subscribe(
-                _responseObservable
-                    .OfType<SubscriptionMessage<TMessage>>()
-                    // ReSharper disable once AccessToModifiedClosure
-                    .Where(x => x.SubscriptionId == subscriptionId)
-                    .ObserveOn(TaskPoolScheduler.Default)
-            );
-
-            var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, ct, x => x.Result);
-            if (response.HasErrors)
-            {
-                subscription.Dispose();
-                return Result.Status(response.Status, Guid.Empty).Join(response);
-            }
-
-            subscriptionId = response.Data;
-            _subscriptions.TryAdd(subscriptionId, subscription);
-
-            return Result.Status(response.Status, subscriptionId);
         }
 
         private void CompleteResponse(ResponseBase response)

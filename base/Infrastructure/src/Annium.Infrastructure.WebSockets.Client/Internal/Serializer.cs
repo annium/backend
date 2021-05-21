@@ -13,7 +13,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public Serializer(
             ISerializer<ReadOnlyMemory<byte>> binarySerializer,
             ISerializer<string> textSerializer,
-            ClientConfiguration configuration
+            IClientConfigurationBase configuration
         )
         {
             Instance = configuration.Format switch
