@@ -14,9 +14,9 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Extensions.Reactive/Annium.Extensions.Reactive.csproj" />
+        <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />
         <PackageReference Include="coverlet.collector" Version="3.0.3" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
         <PackageReference Include="xunit" Version="2.4.1" />
