@@ -32,12 +32,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 throw new InvalidOperationException("Server is already stopping");
 
             var cn = new Connection(Guid.NewGuid(), socket);
-            this.Trace(() => $"Track connection {cn.GetId()}");
+            this.Trace(() => $"connection {cn.GetId()} - start");
             _connections.TryAdd(cn.Id, cn);
 
-            this.Trace(() => $"Invoke OnTrack for connection {cn.GetId()}");
+            this.Trace(() => $"connection {cn.GetId()} - invoke OnTrack");
             await OnTrack.Invoke(cn.Id);
 
+            this.Trace(() => $"connection {cn.GetId()} - done");
             return cn;
         }
 
@@ -52,18 +53,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             EnsureNotDisposed();
 
-            this.Trace(() => $"Try release connection {cn.GetId()}");
+            this.Trace(() => $"connection {cn.GetId()} - start");
             if (!_connections.TryRemove(cn.Id, out _))
+            {
+                this.Trace(() => $"connection {cn.GetId()} - not found");
                 return;
+            }
 
-            this.Trace(() => $"Dispose connection {cn.GetId()}");
+            this.Trace(() => $"connection {cn.GetId()} - dispose");
             await cn.DisposeAsync();
 
-            this.Trace(() => $"Invoke OnRelease for connection {cn.GetId()}");
+            this.Trace(() => $"connection {cn.GetId()} - invoke OnRelease");
             await OnRelease.Invoke(cn.Id);
 
             if (_lifetime.Stopping.IsCancellationRequested)
                 TryStop();
+            this.Trace(() => $"connection {cn.GetId()} - done");
         }
 
         public IReadOnlyCollection<Connection> Slice()

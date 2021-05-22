@@ -63,11 +63,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Shutdown()
         {
+            this.Trace();
             _lifetimeManager.Stop();
         }
 
         public void Dispose()
         {
+            this.Trace();
             Shutdown();
         }
     }
