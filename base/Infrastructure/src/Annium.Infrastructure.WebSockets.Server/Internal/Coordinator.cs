@@ -43,7 +43,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 socket.ConnectionLost += () =>
                 {
                     this.Trace(() => $"Notify lost connection {cn.GetId()}");
-                    cts.Cancel();
+                    // for case, when server stops, thus cancellation occurs before connection is lost
+                    if (!cts.IsCancellationRequested)
+                        cts.Cancel();
 
                     return Task.CompletedTask;
                 };
