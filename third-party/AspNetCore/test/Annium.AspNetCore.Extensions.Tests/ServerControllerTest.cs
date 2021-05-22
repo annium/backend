@@ -14,7 +14,7 @@ namespace Annium.AspNetCore.Extensions.Tests
 {
     public class ServerControllerTest : IntegrationTest
     {
-        private IHttpRequest Http => GetRequest<Startup>(
+        private IHttpRequest Http => GetHttpRequest<Startup>(
             builder => builder.UseServicePack<ServicePack>()
         );
 

@@ -7,9 +7,9 @@ using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
-    public class SampleTest : IntegrationTest
+    public class HttpTest : IntegrationTest
     {
-        private IHttpRequest Http => GetRequest<Startup>(
+        private IHttpRequest Http => GetHttpRequest<Startup>(
             builder => builder.UseServicePack<ServicePack>()
         );
 
