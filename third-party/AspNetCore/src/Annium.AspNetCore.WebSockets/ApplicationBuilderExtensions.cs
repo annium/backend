@@ -6,13 +6,13 @@ namespace Annium.Core.DependencyInjection
     public static class ApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseWebSocketsServer(
-            this IApplicationBuilder builder,
-            string endpoint = ""
+            this IApplicationBuilder builder
         )
         {
             builder.UseWebSockets();
+            builder.UseMiddleware<WebSocketsMiddleware>();
 
-            return builder.Map(endpoint, x => x.UseMiddleware<WebSocketsMiddleware>());
+            return builder;
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Annium.AspNetCore.TestServer
         public void Configure(IApplicationBuilder app)
         {
             app.UseExceptionMiddleware();
-            // app.UseWebSocketsMiddleware();
+            app.UseWebSocketsServer();
             app.UseRouting();
             app.UseCors(builder => builder
                 .SetIsOriginAllowed(_ => true)

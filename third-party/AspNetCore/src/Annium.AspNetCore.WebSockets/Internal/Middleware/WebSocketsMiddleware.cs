@@ -15,6 +15,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 {
     internal class WebSocketsMiddleware
     {
+        private readonly RequestDelegate _next;
         private readonly ICoordinator _coordinator;
         private readonly ServerConfiguration _cfg;
         private readonly ILogger<WebSocketsMiddleware> _logger;
@@ -29,6 +30,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
             ILogger<WebSocketsMiddleware> logger
         )
         {
+            _next = next;
             _coordinator = coordinator;
             _cfg = cfg;
             applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
@@ -41,6 +43,12 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
+            if (!context.Request.Path.StartsWithSegments(_cfg.PathMatch))
+            {
+                await _next(context);
+                return;
+            }
+
             if (!context.WebSockets.IsWebSocketRequest)
             {
                 await _helper.WriteResponse(

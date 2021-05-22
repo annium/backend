@@ -74,19 +74,21 @@ namespace Annium.AspNetCore.IntegrationTesting
         #region SocketClient
 
         protected TWebSocketClient GetWebSocketClient<TStartup, TWebSocketClient>(
-            Action<IServiceProviderBuilder> configureBuilder
+            Action<IServiceProviderBuilder> configureBuilder,
+            string endpoint = ""
         )
             where TStartup : class
             where TWebSocketClient : class
-            => GetWebSocketClientBase<TStartup, TWebSocketClient>(ConfigureHost(configureBuilder));
+            => GetWebSocketClientBase<TStartup, TWebSocketClient>(ConfigureHost(configureBuilder), endpoint);
 
         protected TWebSocketClient GetWebSocketClient<TStartup, TWebSocketClient>(
             Action<IServiceProviderBuilder> configureBuilder,
-            Action<IServiceContainer> configureServices
+            Action<IServiceContainer> configureServices,
+            string endpoint = ""
         )
             where TStartup : class
             where TWebSocketClient : class
-            => GetWebSocketClientBase<TStartup, TWebSocketClient>(ConfigureHost(configureBuilder, configureServices));
+            => GetWebSocketClientBase<TStartup, TWebSocketClient>(ConfigureHost(configureBuilder, configureServices), endpoint);
 
         #endregion
 
@@ -106,7 +108,8 @@ namespace Annium.AspNetCore.IntegrationTesting
             }, configureHost).Clone();
 
         private TWebSocketClient GetWebSocketClientBase<TStartup, TWebSocketClient>(
-            Action<IHostBuilder> configureHost
+            Action<IHostBuilder> configureHost,
+            string endpoint
         )
             where TStartup : class
             where TWebSocketClient : class
@@ -114,7 +117,7 @@ namespace Annium.AspNetCore.IntegrationTesting
             {
                 var appFactory = GetAppFactory<TStartup>(configure);
 
-                var wsUri = new UriBuilder(appFactory.Server.BaseAddress) { Scheme = "ws" }.Uri;
+                var wsUri = new UriBuilder(appFactory.Server.BaseAddress) { Scheme = "ws", Path = endpoint }.Uri;
                 var ws = appFactory.Server.CreateWebSocketClient().ConnectAsync(wsUri, CancellationToken.None).Await();
 
                 var client = appFactory.Services.Resolve<Func<WebSocket, TWebSocketClient>>()(ws)!;

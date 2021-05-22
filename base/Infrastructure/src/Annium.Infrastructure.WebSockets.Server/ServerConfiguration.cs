@@ -5,6 +5,7 @@ namespace Annium.Infrastructure.WebSockets.Server
 {
     public class ServerConfiguration
     {
+        public string PathMatch { get; private set; } = string.Empty;
         public SerializationFormat Format { get; private set; }
 
         public WebSocketOptions WebSocketOptions { get; private set; } = new()
@@ -12,6 +13,13 @@ namespace Annium.Infrastructure.WebSockets.Server
             ActiveKeepAlive = ActiveKeepAlive.Create(),
             PassiveKeepAlive = PassiveKeepAlive.Create()
         };
+
+        public ServerConfiguration ListenOn(string pathMatch)
+        {
+            PathMatch = pathMatch;
+
+            return this;
+        }
 
         public ServerConfiguration UseFormat(SerializationFormat format)
         {
