@@ -16,6 +16,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         public event Func<Guid, Task> OnRelease = delegate { return Task.CompletedTask; };
         private readonly ConcurrentDictionary<Guid, Connection> _connections = new();
         private readonly TaskCompletionSource<object> _disposeTcs = new();
+        private bool _isDisposing;
         private bool _isDisposed;
 
         public ConnectionTracker(IServerLifetime lifetime)
@@ -26,7 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task<Connection> Track(WebSocket socket)
         {
-            EnsureNotDisposed();
+            EnsureNotDisposing();
 
             if (_lifetime.Stopping.IsCancellationRequested)
                 throw new InvalidOperationException("Server is already stopping");
@@ -44,13 +45,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public bool TryGet(Guid id, out Connection cn)
         {
-            EnsureNotDisposed();
+            EnsureNotDisposing();
 
             return _connections.TryGetValue(id, out cn!);
         }
 
         public async Task Release(Connection cn)
         {
+            // can be called after disposing starts, but invalid, if already disposed
             EnsureNotDisposed();
 
             this.Trace(() => $"connection {cn.GetId()} - start");
@@ -78,12 +80,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async ValueTask DisposeAsync()
         {
-            EnsureNotDisposed();
-            _isDisposed = true;
+            // not ensuring single call, because for some reason is invoked twice from integration tests
+            _isDisposing = true;
 
             this.Trace(() => "start");
             await _disposeTcs.Task;
             this.Trace(() => "done");
+
+            _isDisposed = true;
         }
 
         private void TryStop()
@@ -91,6 +95,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             this.Trace(() => $"Unreleased connections: {_connections.Count}");
             if (_connections.IsEmpty)
                 _disposeTcs.TrySetResult(new object());
+        }
+
+        private void EnsureNotDisposing()
+        {
+            if (_isDisposing)
+                throw new ObjectDisposedException(nameof(ConnectionTracker));
         }
 
         private void EnsureNotDisposed()
