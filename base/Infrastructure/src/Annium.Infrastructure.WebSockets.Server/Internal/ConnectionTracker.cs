@@ -28,6 +28,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             EnsureNotDisposed();
 
+            if (_lifetime.Stopping.IsCancellationRequested)
+                throw new InvalidOperationException("Server is already stopping");
+
             var cn = new Connection(Guid.NewGuid(), socket);
             this.Trace(() => $"Track connection {cn.GetId()}");
             _connections.TryAdd(cn.Id, cn);

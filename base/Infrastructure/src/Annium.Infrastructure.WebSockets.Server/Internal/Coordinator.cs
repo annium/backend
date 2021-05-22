@@ -9,7 +9,7 @@ using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class Coordinator<TState> : ICoordinator
+    internal class Coordinator<TState> : ICoordinator, IDisposable
         where TState : ConnectionStateBase
     {
         private readonly IServiceProvider _sp;
@@ -54,11 +54,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             finally
             {
-                // if (!cts.IsCancellationRequested)
-                // {
                 this.Trace(() => $"Release complete connection {cn.GetId()}");
                 await _connectionTracker.Release(cn);
-                // }
             }
 
             this.Trace(() => $"End for connection {cn.GetId()}");
@@ -67,6 +64,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         public void Shutdown()
         {
             _lifetimeManager.Stop();
+        }
+
+        public void Dispose()
+        {
+            Shutdown();
         }
     }
 }
