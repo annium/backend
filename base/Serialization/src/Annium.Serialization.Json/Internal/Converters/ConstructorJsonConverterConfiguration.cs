@@ -9,23 +9,17 @@ namespace Annium.Serialization.Json.Internal.Converters
     {
         public ConstructorInfo Constructor { get; }
         public List<ParameterItem> Parameters { get; }
+        public IReadOnlyCollection<PropertyInfo> Properties { get; }
 
         public ConstructorJsonConverterConfiguration(
             ConstructorInfo constructor,
-            List<ParameterItem> parameters
+            List<ParameterItem> parameters,
+            IReadOnlyCollection<PropertyInfo> properties
         )
         {
             Constructor = constructor;
             Parameters = parameters;
-        }
-
-        public void Deconstruct(
-            out ConstructorInfo constructor,
-            out List<ParameterItem> parameters
-        )
-        {
-            constructor = Constructor;
-            parameters = Parameters;
+            Properties = properties;
         }
 
         internal class ParameterItem

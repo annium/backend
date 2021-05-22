@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
@@ -98,6 +99,21 @@ namespace Annium.Serialization.Json.Tests.Converters
         }
 
         [Fact]
+        public void Deserialization_Extra_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var x = new Extra(5);
+            var str = serializer.Serialize(x);
+
+            // act
+            var result = serializer.Deserialize<Extra>(str);
+
+            // assert
+            result.IsEqual(x);
+        }
+
+        [Fact]
         public void Deserialization_Collection_Works()
         {
             // arrange
@@ -157,6 +173,17 @@ namespace Annium.Serialization.Json.Tests.Converters
             public int Value { get; }
 
             public Narrow(int value)
+            {
+                Value = value;
+            }
+        }
+
+        public class Extra
+        {
+            public Guid Id { get; private set; } = Guid.NewGuid();
+            public int Value { get; }
+
+            public Extra(int value)
             {
                 Value = value;
             }

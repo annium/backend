@@ -14,12 +14,17 @@ namespace Annium.Serialization.Json.Internal.Converters
     {
         private readonly ConstructorInfo _constructor;
         private readonly List<ConstructorJsonConverterConfiguration.ParameterItem> _parameters;
+        private readonly IReadOnlyCollection<PropertyInfo> _properties;
 
         public ConstructorJsonConverter(
-            ConstructorJsonConverterConfiguration configuration
+            ConstructorInfo constructor,
+            List<ConstructorJsonConverterConfiguration.ParameterItem> parameters,
+            IReadOnlyCollection<PropertyInfo> properties
         )
         {
-            (_constructor, _parameters) = configuration;
+            _constructor = constructor;
+            _parameters = parameters;
+            _properties = properties;
         }
 
         public override T Read(
@@ -34,6 +39,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                 throw new JsonException();
 
             var parameters = new object?[_parameters.Count];
+            var properties = new Dictionary<PropertyInfo, object?>();
 
             foreach (var prop in root.EnumerateObject())
             {
@@ -41,13 +47,21 @@ namespace Annium.Serialization.Json.Internal.Converters
                 // because it's possible, but really weird case to have parameters, differing only by case
                 var index = _parameters.FindIndex(x => x.Name.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
 
-                // for now - no special handling for extra properties, just skip them
-                if (index < 0)
+                // constructor parameter
+                if (index >= 0)
+                {
+                    var parameter = _parameters[index];
+                    var value = prop.Value.Deserialize(parameter.Type, options);
+                    parameters[index] = value;
+                    continue;
+                }
+
+                // try find property
+                var property = _properties.SingleOrDefault(x => x.Name.Equals(prop.Name, StringComparison.OrdinalIgnoreCase));
+                if (property is null)
                     continue;
 
-                var parameter = _parameters[index];
-                var value = prop.Value.Deserialize(parameter.Type, options);
-                parameters[index] = value;
+                properties[property] = prop.Value.Deserialize(property.PropertyType, options);
             }
 
             var args = parameters
@@ -65,6 +79,8 @@ namespace Annium.Serialization.Json.Internal.Converters
                 })
                 .ToArray();
             var result = _constructor.Invoke(args);
+            foreach (var (property, val) in properties)
+                property.SetValue(result, val);
 
             return (T) result;
         }
