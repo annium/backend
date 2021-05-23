@@ -2,18 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Domain.Models;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionContextStore<TInit, TMessage, TState> : IDisposable
-        where TInit : SubscriptionInitRequestBase
-        where TState : ConnectionStateBase
+    internal class SubscriptionContextStore : IDisposable
     {
         private readonly ConnectionTracker _connectionTracker;
-        private readonly List<SubscriptionContext<TInit, TMessage, TState>> _contexts = new();
+        private readonly List<ISubscriptionContext> _contexts = new();
 
         public SubscriptionContextStore(
             ConnectionTracker connectionTracker
@@ -23,14 +19,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             _connectionTracker.OnRelease += Cleanup;
         }
 
-        public void Save(SubscriptionContext<TInit, TMessage, TState> context)
+        public void Save(ISubscriptionContext context)
         {
             lock (_contexts) _contexts.Add(context);
         }
 
         public async Task<bool> TryRemove(Guid subscriptionId)
         {
-            SubscriptionContext<TInit, TMessage, TState> context;
+            ISubscriptionContext context;
             lock (_contexts)
             {
                 context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
@@ -52,7 +48,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
         private async Task Cleanup(Guid connectionId)
         {
-            var contexts = new List<SubscriptionContext<TInit, TMessage, TState>>();
+            var contexts = new List<ISubscriptionContext>();
             lock (_contexts)
             {
                 foreach (var context in _contexts.ToArray())

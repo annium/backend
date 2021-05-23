@@ -15,7 +15,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
     internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         ISubscriptionContext<TInit, TMessage, TState>,
-        IAsyncDisposable
+        ISubscriptionContext
         where TInit : SubscriptionInitRequestBase
         where TState : ConnectionStateBase
     {
@@ -102,5 +102,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         private void SendInternal<T>(T msg) =>
             _executor.Schedule(() => _mediator.SendAsync<Unit>(PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
+    }
+
+    internal interface ISubscriptionContext : IAsyncDisposable
+    {
+        public Guid ConnectionId { get; }
+        public Guid SubscriptionId { get; }
     }
 }

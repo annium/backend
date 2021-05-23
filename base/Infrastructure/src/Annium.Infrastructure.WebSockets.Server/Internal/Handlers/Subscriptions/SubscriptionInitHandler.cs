@@ -20,11 +20,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         where TInit : SubscriptionInitRequestBase
         where TState : ConnectionStateBase
     {
-        private readonly SubscriptionContextStore<TInit, TMessage, TState> _subscriptionContextStore;
+        private readonly SubscriptionContextStore _subscriptionContextStore;
         private readonly IMediator _mediator;
 
         public SubscriptionInitHandler(
-            SubscriptionContextStore<TInit, TMessage, TState> subscriptionContextStore,
+            SubscriptionContextStore subscriptionContextStore,
             IMediator mediator
         )
         {

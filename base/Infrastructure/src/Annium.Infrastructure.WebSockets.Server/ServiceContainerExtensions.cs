@@ -38,7 +38,7 @@ namespace Annium.Core.DependencyInjection
             container.Add<ServerLifetime>().AsInterfaces().Singleton();
 
             // internal - handlers
-            container.Add(typeof(SubscriptionContextStore<,,>)).AsSelf().Singleton();
+            container.Add<SubscriptionContextStore>().AsSelf().Singleton();
             container.AddAll()
                 .AssignableTo<ILifeCycleHandler<TState>>()
                 .AsInterfaces()
