@@ -5,6 +5,7 @@ using Annium.Architecture.Base;
 using Annium.Architecture.CQRS.Commands;
 using Annium.Architecture.CQRS.Queries;
 using Annium.AspNetCore.Extensions;
+using Annium.AspNetCore.TestServer.Components;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
@@ -14,14 +15,21 @@ namespace Annium.AspNetCore.TestServer.Controllers
     [Route("/")]
     public class IndexController : ServerController
     {
-        public IndexController(IMediator mediator, IServiceProvider sp) : base(mediator, sp)
+        private readonly SharedDataContainer _sharedDataContainer;
+
+        public IndexController(
+            SharedDataContainer sharedDataContainer,
+            IMediator mediator,
+            IServiceProvider sp
+        ) : base(mediator, sp)
         {
+            _sharedDataContainer = sharedDataContainer;
         }
 
         [HttpGet]
-        public IResult Base()
+        public IResult<string> Base()
         {
-            return Result.New();
+            return Result.New(_sharedDataContainer.Value);
         }
 
         [HttpPost("command")]

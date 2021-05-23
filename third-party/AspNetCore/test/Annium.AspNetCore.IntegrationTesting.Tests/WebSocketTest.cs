@@ -11,11 +11,10 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class WebSocketTest : IntegrationTest
     {
-        private TestServerTestClient Client => GetWebSocketClient<Startup, TestServerTestClient>(
+        private TestServerTestClient Client => GetAppFactory<Startup>(
             builder => builder.UseServicePack<ServicePack>(),
-            container => container.AddTestServerTestClient(x => x.WithActiveKeepAlive(600)),
-            "/ws"
-        );
+            container => container.AddTestServerTestClient(x => x.WithActiveKeepAlive(600))
+        ).GetWebSocketClient<TestServerTestClient>("/ws");
 
         [Fact]
         public async Task RequestResponse_Works()

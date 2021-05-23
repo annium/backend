@@ -1,4 +1,5 @@
 using System;
+using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Handlers;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
@@ -32,6 +33,7 @@ namespace Annium.AspNetCore.TestServer
                     .WithActiveKeepAlive(600),
                 connectionId => new ConnectionState(connectionId)
             );
+            container.Add<SharedDataContainer>().AsSelf().Singleton();
         }
 
         private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)
