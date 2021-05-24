@@ -91,7 +91,27 @@ namespace Annium.Core.Mediator
                     $"Resolved type {resolvedType.FriendlyName()} must be assignable to expected type {expectedType.FriendlyName()}"
                 );
 
-            _matches.Add(new Match(requestType, expectedType, resolvedType));
+            var match = new Match(requestType, expectedType, resolvedType);
+            var duplicates = _matches
+                .Where(x =>
+                    x.RequestedType == match.RequestedType &&
+                    x.ExpectedType == match.ExpectedType
+                )
+                .ToArray();
+
+            if (duplicates.Length == 0)
+                _matches.Add(match);
+
+            // if duplicates - throw or skip if same
+            else
+            {
+                var ambiguities = duplicates
+                    .Where(x => x.ResolvedType != match.ResolvedType)
+                    .Select(x => x.ResolvedType.FriendlyName())
+                    .ToArray();
+                if (ambiguities.Length > 0)
+                    throw new InvalidOperationException($"Match {match} is also resolved in: {ambiguities.Join(", ")}");
+            }
 
             return this;
         }
