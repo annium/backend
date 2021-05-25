@@ -2,6 +2,7 @@ using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
@@ -12,17 +13,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
     internal class PushMessageHandler<T> :
         IFinalRequestHandler<PushMessage<T>, Unit>
     {
-        private readonly IServerLifetime _lifetime;
         private readonly ConnectionTracker _connectionTracker;
         private readonly Serializer _serializer;
 
         public PushMessageHandler(
-            IServerLifetime lifetime,
             ConnectionTracker connectionTracker,
             Serializer serializer
         )
         {
-            _lifetime = lifetime;
             _connectionTracker = connectionTracker;
             _serializer = serializer;
         }
@@ -32,22 +30,33 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             CancellationToken ct
         )
         {
-            if (_lifetime.Stopping.IsCancellationRequested)
-                return Unit.Default;
-
-            if (!_connectionTracker.TryGet(request.ConnectionId, out var cn))
-                return Unit.Default;
-
-            if (cn.Socket.State == WebSocketState.Open)
+            this.Trace(() => $"cn {request.ConnectionId} - start");
+            if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
             {
-                try
+                this.Trace(() => $"cn {request.ConnectionId} - not found");
+                return Unit.Default;
+            }
+
+            try
+            {
+                if (cnRef.Value.Socket.State != WebSocketState.Open)
                 {
-                    await cn.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
+                    this.Trace(() => $"cn {request.ConnectionId} - socket not opened");
+                    return Unit.Default;
                 }
-                // socket can get closed/aborted in a moment
-                catch (WebSocketException)
-                {
-                }
+
+                this.Trace(() => $"cn {request.ConnectionId} - start send");
+                await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
+                this.Trace(() => $"cn {request.ConnectionId} - send complete");
+            }
+            // socket can get closed/aborted in a moment
+            catch (WebSocketException)
+            {
+            }
+            finally
+            {
+                this.Trace(() => $"cn {request.ConnectionId} - dispose ref");
+                await cnRef.DisposeAsync();
             }
 
             return Unit.Default;

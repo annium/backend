@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
+using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
@@ -67,7 +68,8 @@ namespace Annium.Infrastructure.WebSockets.Server
                 tm,
                 typeof(ISubscriptionHandler<,,>),
                 args => Arr(
-                    (Context(args[0], args[2]), Generic(typeof(VoidResponse<>), args[1]))
+                    (Context(args[0], args[2]), Generic(typeof(VoidResponse<>), args[1])),
+                    (Context(typeof(SubscriptionCancelRequest), args[2]), typeof(ResultResponse))
                 )
             );
         }

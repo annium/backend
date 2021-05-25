@@ -55,7 +55,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             finally
             {
                 this.Trace(() => $"Release complete connection {cn.GetId()}");
-                await _connectionTracker.Release(cn);
+                await _connectionTracker.Release(cn.Id);
             }
 
             this.Trace(() => $"End for connection {cn.GetId()}");
