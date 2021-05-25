@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Annium.AspNetCore.TestServer;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.Net.Http;
 using Annium.Testing;
@@ -7,12 +6,8 @@ using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
-    public class HttpTest : IntegrationTest
+    public class HttpTest : IntegrationTestBase
     {
-        private IWebApplicationFactory AppFactory => GetAppFactory<Startup>(
-            builder => builder.UseServicePack<ServicePack>()
-        );
-
         private IHttpRequest Http => AppFactory.GetHttpRequest();
 
         [Fact]
