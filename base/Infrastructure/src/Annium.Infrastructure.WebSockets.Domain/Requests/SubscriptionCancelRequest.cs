@@ -1,14 +1,16 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace Annium.Infrastructure.WebSockets.Domain.Requests
 {
-    public sealed class SubscriptionCancelRequest : RequestBase
+    public sealed class SubscriptionCancelRequest : AbstractRequestBase
     {
         public static SubscriptionCancelRequest New(Guid subscriptionId) => new()
         {
             SubscriptionId = subscriptionId
         };
 
-        public Guid SubscriptionId { get; set; }
+        [JsonInclude]
+        public Guid SubscriptionId { get; private set; }
     }
 }
