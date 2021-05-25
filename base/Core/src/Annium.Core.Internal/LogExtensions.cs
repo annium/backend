@@ -1,5 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
+using Annium.Core.Primitives;
 using Annium.Diagnostics.Debug;
 
 namespace Annium.Core.Internal
@@ -17,7 +18,7 @@ namespace Annium.Core.Internal
         {
             Log.Debug(
                 () =>
-                    $"{obj.GetType().Name}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
+                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
                 callerFilePath,
                 member,
                 line
@@ -34,7 +35,7 @@ namespace Annium.Core.Internal
         {
             Log.Debug(
                 () =>
-                    $"{obj.GetType().Name}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
+                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
                 callerFilePath,
                 member,
                 line
@@ -52,7 +53,7 @@ namespace Annium.Core.Internal
         {
             Log.Trace(
                 () =>
-                    $"{obj.GetType().Name}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
+                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
                 callerFilePath,
                 member,
                 line
@@ -69,7 +70,7 @@ namespace Annium.Core.Internal
         {
             Log.Trace(
                 () =>
-                    $"{obj.GetType().Name}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
+                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
                 callerFilePath,
                 member,
                 line
