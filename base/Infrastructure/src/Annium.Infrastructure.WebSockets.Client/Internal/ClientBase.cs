@@ -191,43 +191,51 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             where TInit : SubscriptionInitRequestBase
             => Observable.Create<TMessage>(async (observer, observeToken) =>
             {
+                this.Trace(() => $"{typeof(TInit).FriendlyName()} - start");
                 var token = CancellationTokenSource.CreateLinkedTokenSource(observeToken, ct).Token;
-                var subscriptionId = Guid.Empty;
+                request.SetId();
+                var subscriptionId = request.SubscriptionId;
                 var subscription = _responseObservable
                     .OfType<SubscriptionMessage<TMessage>>()
-                    // ReSharper disable once AccessToModifiedClosure
                     .Where(x => x.SubscriptionId == subscriptionId)
+                    .SubscribeOn(TaskPoolScheduler.Default)
                     .ObserveOn(TaskPoolScheduler.Default)
                     .Select(x => x.Message)
                     .Subscribe(observer);
 
+                this.Trace(() => $"{typeof(TInit).FriendlyName()} - init");
                 var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, token, x => x.Result);
                 if (response.HasErrors)
                 {
+                    this.Trace(() => $"{typeof(TInit).FriendlyName()} - failed: {response}");
                     subscription.Dispose();
                     observer.OnError(new WebSocketClientException(response));
                     return Disposable.Empty;
                 }
 
-                subscriptionId = response.Data;
+                this.Trace(() => $"{typeof(TInit).FriendlyName()} - subscribed, sid {subscriptionId}");
                 _subscriptions.TryAdd(subscriptionId, subscription);
 
                 await token;
 
+                this.Trace(() => $"{typeof(TInit).FriendlyName()} - unsubscribing");
                 return Disposable.Create(() =>
                 {
-                    this.Trace(() => "Dispose subscription");
+                    this.Trace(() => $"{typeof(TInit).FriendlyName()} - dispose subscription");
                     subscription.Dispose();
                     if (!_subscriptions.TryRemove(subscriptionId, out _))
                         return;
 
-                    this.Trace(() => "Init unsubscription on server");
+                    this.Trace(() => $"{typeof(TInit).FriendlyName()} - init unsubscribe on server");
                     FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(
                             SubscriptionCancelRequest.New(subscriptionId),
                             CancellationToken.None,
                             x => x.Result
                         )
-                        .ContinueWith(_ => this.Trace(() => "Unsubscribed on server side"), CancellationToken.None);
+                        .ContinueWith(
+                            _ => this.Trace(() => $"{typeof(TInit).FriendlyName()} - unsubscribed on server"),
+                            CancellationToken.None
+                        );
                 });
             }).SubscribeOn(TaskPoolScheduler.Default);
 
@@ -251,7 +259,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             CancellationToken ct,
             Func<TResponse, TResponseData> getData
         )
-            where TRequest : RequestBase
+            where TRequest : AbstractRequestBase // because Subscription controls also go here
             where TResponse : ResponseBase
         {
             var tcs = new TaskCompletionSource<ResponseBase>();
