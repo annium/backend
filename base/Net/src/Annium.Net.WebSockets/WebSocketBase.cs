@@ -104,7 +104,7 @@ namespace Annium.Net.WebSockets
 
                     // initial spin, until connected
                     Log.Trace(() => "Spin until connected and keepAlive monitor up");
-                    SpinWait.SpinUntil(() => _keepAliveMonitor is not null! && IsConnected);
+                    await Wait.UntilAsync(() => _keepAliveMonitor is not null! && IsConnected);
                     _keepAliveMonitor.Resume();
                     ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
