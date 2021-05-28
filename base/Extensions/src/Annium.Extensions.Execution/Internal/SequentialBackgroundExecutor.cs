@@ -20,6 +20,9 @@ namespace Annium.Extensions.Execution.Internal
         public void Schedule(Action task) => ScheduleTask(task);
         public void Schedule(Func<Task> task) => ScheduleTask(task);
 
+        public void TrySchedule(Action task) => TryScheduleTask(task);
+        public void TrySchedule(Func<Task> task) => TryScheduleTask(task);
+
         public void Start(CancellationToken ct = default)
         {
             EnsureAvailable();
@@ -38,7 +41,8 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace(() => "start");
             EnsureAvailable();
             Stop();
-            this.Trace(() => $"wait for {_tasks.Count} task(s) to finish");
+            var tasksCount = _tasks.Count;
+            this.Trace(() => $"wait for {tasksCount} task(s) to finish");
             await _runTask;
             _tasks.Dispose();
             _cts.Dispose();
@@ -77,6 +81,19 @@ namespace Annium.Extensions.Execution.Internal
         private void ScheduleTask(Delegate task)
         {
             EnsureAvailable();
+            ScheduleTaskCore(task);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void TryScheduleTask(Delegate task)
+        {
+            if (IsAvailable)
+                ScheduleTaskCore(task);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ScheduleTaskCore(Delegate task)
+        {
             _tasks.Add(task);
             this.Trace(() => $"added {task}, {_tasks.Count} tasks left");
         }

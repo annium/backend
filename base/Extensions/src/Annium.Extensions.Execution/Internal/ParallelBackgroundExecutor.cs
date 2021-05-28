@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
+using Annium.Diagnostics.Debug;
 
 namespace Annium.Extensions.Execution.Internal
 {
@@ -26,6 +27,8 @@ namespace Annium.Extensions.Execution.Internal
 
         public void Schedule(Action task) => ScheduleTask(task);
         public void Schedule(Func<Task> task) => ScheduleTask(task);
+        public void TrySchedule(Action task) => TryScheduleTask(task);
+        public void TrySchedule(Func<Task> task) => TryScheduleTask(task);
 
         public void Start(CancellationToken ct = default)
         {
@@ -54,19 +57,37 @@ namespace Annium.Extensions.Execution.Internal
         private void ScheduleTask(Delegate task)
         {
             EnsureAvailable();
-            if (Volatile.Read(ref _isStarted) == 1)
-            {
-                Interlocked.Increment(ref _taskCounter);
-                RunTask(task).ContinueWith(CompleteTask);
-            }
-            else
-                _backlog.Add(task);
+            ScheduleTaskCore(task);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void CompleteTask(Task _)
+        private void TryScheduleTask(Delegate task)
+        {
+            if (IsAvailable)
+                ScheduleTaskCore(task);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void ScheduleTaskCore(Delegate task)
+        {
+            if (Volatile.Read(ref _isStarted) == 1)
+            {
+                Interlocked.Increment(ref _taskCounter);
+                this.Trace(() => $"run task {task.GetId()}; counter: {_taskCounter}");
+                RunTask(task).ContinueWith(CompleteTask);
+            }
+            else
+            {
+                this.Trace(() => $"schedule task {task.GetId()}; counter: {_taskCounter}");
+                _backlog.Add(task);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void CompleteTask(Task task)
         {
             Interlocked.Decrement(ref _taskCounter);
+            this.Trace(() => $"task {task.GetId()}; counter: {_taskCounter}");
             TryFinish();
         }
 
@@ -74,13 +95,14 @@ namespace Annium.Extensions.Execution.Internal
         private void Stop()
         {
             Volatile.Write(ref _isAvailable, 0);
-            this.Trace(()=>$"isAvailable: {_isAvailable}, tasks: {_taskCounter}");
+            this.Trace(() => $"isAvailable: {_isAvailable}, tasks: {_taskCounter}");
             TryFinish();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryFinish()
         {
+            this.Trace(() => $"isAvailable: {_isAvailable}; counter: {_taskCounter}");
             if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _taskCounter) == 0)
                 _tcs.TrySetResult(new object());
         }
