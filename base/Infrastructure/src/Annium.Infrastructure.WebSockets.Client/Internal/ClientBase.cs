@@ -284,6 +284,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             });
 
             _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
+            this.Trace(() => $"Send request {request.Tid}#{request.Rid}");
             await SendInternal(request);
             var response = (TResponse) await tcs.Task;
             var data = getData(response);
@@ -297,7 +298,10 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 _requestFutures.Remove(response.Rid, out var future) &&
                 !future.CancellationSource.IsCancellationRequested
             )
+            {
+                this.Trace(() => $"Complete response {response.Tid}#{response.Rid}");
                 _executor.Schedule(() => future.TaskSource.TrySetResult(response));
+            }
         }
 
         private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);

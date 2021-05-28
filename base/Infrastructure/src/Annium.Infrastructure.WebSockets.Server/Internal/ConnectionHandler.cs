@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +24,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServiceProvider _sp;
         private readonly IMediator _mediator;
         private readonly Serializer _serializer;
+        private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
         private readonly Connection _cn;
         private readonly TState _state;
 
@@ -30,19 +33,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             IMediator mediator,
             Serializer serializer,
             Func<Guid, TState> stateFactory,
+            IEnumerable<IConnectionBoundStore> connectionBoundStores,
             Connection cn
         )
         {
             _sp = sp;
             _mediator = mediator;
             _serializer = serializer;
+            _connectionBoundStores = connectionBoundStores;
             _cn = cn;
             _state = stateFactory(cn.Id);
         }
 
         public async Task HandleAsync(CancellationToken ct)
         {
-            this.Trace(() => "Start");
+            var cnId = _cn.Id;
+            this.Trace(() => $"cn {cnId} - start");
             await using var scope = _sp.CreateAsyncScope();
             var executor = Executor.Background.Parallel();
             LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
@@ -55,36 +61,50 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 ct.Register(() => tcs.TrySetResult(new object()));
 
                 // start listening to messages and adding them to scheduler
-                this.Trace(() => "Init subscription");
+                this.Trace(() => $"cn {cnId} - init subscription");
                 _cn.Socket
                     .Listen()
                     .Subscribe(
-                        x => executor.Schedule(() => HandleMessage(x)),
+                        x =>
+                        {
+                            this.Trace(() => $"cn {cnId} - schedule HandleMessage");
+                            executor.TrySchedule(() => HandleMessage(x));
+                        },
                         x => tcs.TrySetException(x),
                         () => tcs.TrySetResult(new object()),
                         ct
                     );
 
                 // process start hook
+                this.Trace(() => $"cn {cnId} - handle lifecycle start - start");
                 await lifeCycleCoordinator.HandleStartAsync(_state);
+                this.Trace(() => $"cn {cnId} - handle lifecycle start - done");
 
                 // start scheduler to process backlog and run upcoming work immediately
-                this.Trace(() => "Start executor");
+                this.Trace(() => $"cn {cnId} - start executor");
                 executor.Start(CancellationToken.None);
 
                 // wait until connection complete
-                this.Trace(() => "Wait until connection complete");
+                this.Trace(() => $"cn {cnId} - wait until connection complete");
                 await tcs.Task;
+                this.Trace(() => $"cn {cnId} - cleanup connection-bound stores - start");
+                await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
+                this.Trace(() => $"cn {cnId} - cleanup connection-bound stores - done");
             }
             finally
             {
                 // all handlers must be complete before teardown lifecycle hook
-                this.Trace(() => "Dispose executor");
+                this.Trace(() => $"cn {cnId} - dispose executor - start");
                 await executor.DisposeAsync();
+                this.Trace(() => $"cn {cnId} - dispose executor - done");
 
                 // process end hook
                 if (lifeCycleCoordinator is not null)
+                {
+                    this.Trace(() => $"cn {cnId} - handle lifecycle end - start");
                     await lifeCycleCoordinator.HandleEndAsync(_state);
+                    this.Trace(() => $"cn {cnId} - handle lifecycle end - done");
+                }
             }
         }
 
@@ -137,6 +157,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task<AbstractResponseBase> ProcessRequest(AbstractRequestBase request)
         {
+            this.Trace(() => $"Process request {request.Tid}#{request.Rid}");
             var context = RequestContext.CreateDynamic(request, _state);
             return await _mediator.SendAsync<AbstractResponseBase>(context);
         }
@@ -158,6 +179,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task SendInternal(AbstractResponseBase response)
         {
+            this.Trace(() => $"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
             await _cn.Socket.SendWith(response, _serializer, CancellationToken.None);
         }
     }

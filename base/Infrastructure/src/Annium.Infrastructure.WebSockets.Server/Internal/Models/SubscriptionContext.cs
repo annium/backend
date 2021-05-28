@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Execution;
@@ -95,9 +96,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (_cts.IsCancellationRequested)
                 throw new InvalidOperationException("Can't cancel subscription more than once");
 
+            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - start");
             _cts.Cancel();
             _cts.Dispose();
+            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
             await _executor.DisposeAsync();
+            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - done");
         }
 
         private void SendInternal<T>(T msg) =>

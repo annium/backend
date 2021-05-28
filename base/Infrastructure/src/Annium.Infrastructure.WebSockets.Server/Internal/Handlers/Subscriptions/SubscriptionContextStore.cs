@@ -2,22 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionContextStore : IDisposable
+    internal class SubscriptionContextStore : IConnectionBoundStore
     {
-        private readonly ConnectionTracker _connectionTracker;
         private readonly List<ISubscriptionContext> _contexts = new();
-
-        public SubscriptionContextStore(
-            ConnectionTracker connectionTracker
-        )
-        {
-            _connectionTracker = connectionTracker;
-            _connectionTracker.OnRelease += Cleanup;
-        }
 
         public void Save(ISubscriptionContext context)
         {
@@ -26,27 +18,28 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
         public async Task<bool> TryRemove(Guid subscriptionId)
         {
+            this.Trace(() => $"subscription {subscriptionId} - init");
             ISubscriptionContext context;
             lock (_contexts)
             {
                 context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
                 if (context is null!)
+                {
+                    this.Trace(() => $"subscription {subscriptionId} - context missing");
                     return false;
+                }
 
                 _contexts.Remove(context);
             }
 
+            this.Trace(() => $"subscription {subscriptionId} - dispose context - start");
             await context.DisposeAsync();
+            this.Trace(() => $"subscription {subscriptionId} - dispose context - done");
 
             return true;
         }
 
-        public void Dispose()
-        {
-            _connectionTracker.OnRelease -= Cleanup;
-        }
-
-        private async Task Cleanup(Guid connectionId)
+        public async Task Cleanup(Guid connectionId)
         {
             var contexts = new List<ISubscriptionContext>();
             lock (_contexts)

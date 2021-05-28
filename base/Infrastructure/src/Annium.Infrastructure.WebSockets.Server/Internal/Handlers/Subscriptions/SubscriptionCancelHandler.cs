@@ -1,6 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Models;
@@ -31,9 +32,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             CancellationToken ct
         )
         {
-            var status = await _subscriptionContextStore.TryRemove(ctx.Request.SubscriptionId)
+            var subscriptionId = ctx.Request.SubscriptionId;
+            this.Trace(() => $"subscription {subscriptionId} - init");
+            var status = await _subscriptionContextStore.TryRemove(subscriptionId)
                 ? OperationStatus.Ok
                 : OperationStatus.NotFound;
+            this.Trace(() => $"subscription {subscriptionId} - result: {status}");
             var response = Response.Result(ctx.Request.Rid, Result.Status(status));
 
             return response;
