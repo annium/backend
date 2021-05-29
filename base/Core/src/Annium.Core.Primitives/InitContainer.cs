@@ -62,6 +62,9 @@ namespace Annium.Core.Primitives
         {
             EnsureInitiatorSet();
 
+            if (_initiator!.IsValueCreated)
+                return Task.FromResult(_get()).GetAwaiter();
+
             return _initiator!.GetAwaiter();
         }
 

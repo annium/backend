@@ -97,6 +97,29 @@ namespace Annium.Core.Primitives.Tests
         }
 
         [Fact]
+        public async Task Unmanaged_InitAfterSet_ReturnsValidResult()
+        {
+            // arrange
+            var first = new object();
+            var container = new InitContainer<object>();
+            container.SetInit(() => Task.FromResult(first));
+
+            // act
+            var initialByCallback = new object();
+            container.OnReady += x => initialByCallback = x;
+            var initial = await container;
+            var second = new object();
+            container.Set(second);
+            var reacquired = await container;
+
+            // assert
+            initial.Is(first);
+            initialByCallback.Is(first);
+            reacquired.Is(second);
+            container.Value.Is(second);
+        }
+
+        [Fact]
         public async Task Unmanaged_Set_Works()
         {
             // arrange
