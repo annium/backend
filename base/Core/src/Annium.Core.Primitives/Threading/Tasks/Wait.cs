@@ -23,16 +23,8 @@ namespace Annium.Core.Primitives
         /// </returns>
         public static async Task WhileAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
         {
-            try
-            {
-                while (condition())
-                    await Task.Delay(pollDelay, ct).ConfigureAwait(true);
-            }
-            catch (TaskCanceledException)
-            {
-                // ignore: Task.Delay throws this exception when ct.IsCancellationRequested = true
-                // In this case, we only want to stop polling and finish this async Task.
-            }
+            while (condition() && !ct.IsCancellationRequested)
+                await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
         }
 
         /// <summary>
@@ -52,16 +44,8 @@ namespace Annium.Core.Primitives
         /// </returns>
         public static async Task UntilAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
         {
-            try
-            {
-                while (!condition())
-                    await Task.Delay(pollDelay, ct).ConfigureAwait(true);
-            }
-            catch (TaskCanceledException)
-            {
-                // ignore: Task.Delay throws this exception when ct.IsCancellationRequested = true
-                // In this case, we only want to stop polling and finish this async Task.
-            }
+            while (!condition() && !ct.IsCancellationRequested)
+                await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
         }
     }
 }
