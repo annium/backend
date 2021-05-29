@@ -9,6 +9,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
     {
         private readonly IMessageBusSocket _socket;
         private readonly ISerializer<string> _serializer;
+        private readonly IObservable<Message> _observable;
 
         public MessageBusNode(
             IConfiguration cfg,
@@ -17,6 +18,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         {
             _socket = socket;
             _serializer = cfg.Serializer;
+            _observable = _socket.Select(x => _serializer.Deserialize<Message>(x)).Publish().RefCount();
         }
 
         public IObservable<Unit> Send<T>(T data)
@@ -29,8 +31,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
 
         public IObservable<object> Listen() => Listen<object>();
 
-        public IObservable<T> Listen<T>() => _socket
-            .Select(_serializer.Deserialize<Message>)
+        public IObservable<T> Listen<T>() => _observable
             .OfType<IMessage<T>>()
             .Select(x => x.Content);
 
