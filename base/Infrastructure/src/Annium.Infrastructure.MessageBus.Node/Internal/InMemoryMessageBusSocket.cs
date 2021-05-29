@@ -13,13 +13,18 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         private readonly IObservable<string> _observable;
         private readonly ManualResetEventSlim _gate = new(false);
         private readonly Queue<string> _messages = new();
-        private readonly DisposableBox _disposable = Disposable.Box();
+        private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public InMemoryMessageBusSocket(
             InMemoryConfiguration cfg
         )
         {
-            _observable = Observable.Create<string>(CreateObservable).Publish().RefCount();
+            var observable = ObservableInstance.Static<string>(CreateObservable);
+            _observable = observable;
+            _disposable += observable;
+
+            _disposable += _gate;
+
             if (cfg.MessageBox is not null)
                 _disposable += _observable.Subscribe(cfg.MessageBox.Add);
         }
@@ -37,16 +42,13 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
 
         public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-        private Task CreateObservable(
-            IObserver<string> observer,
-            CancellationToken ct
-        ) => Task.Run(() =>
+        private Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
         {
             try
             {
-                while (!ct.IsCancellationRequested)
+                while (!ctx.Ct.IsCancellationRequested)
                 {
-                    _gate.Wait(ct);
+                    _gate.Wait(ctx.Ct);
                     _gate.Reset();
 
                     var messages = new List<string>();
@@ -57,25 +59,25 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
                     }
 
                     foreach (var item in messages)
-                        observer.OnNext(item);
+                        ctx.OnNext(item);
                 }
             }
             // token was canceled
             catch (OperationCanceledException)
             {
-                observer.OnCompleted();
+                ctx.OnCompleted();
             }
             catch (Exception e)
             {
-                observer.OnError(e);
+                ctx.OnError(e);
             }
-        }, ct);
+
+            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
+        }
 
         public ValueTask DisposeAsync()
         {
-            _disposable.Dispose();
-
-            return new ValueTask(Task.CompletedTask);
+            return _disposable.DisposeAsync();
         }
     }
 }
