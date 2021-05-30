@@ -96,21 +96,22 @@ namespace Annium.Net.WebSockets
         private IObservableInstance<SocketMessage> CreateSocketObservable() =>
             ObservableInstance.Static<SocketMessage>(async ctx =>
             {
-                this.Trace(() => "Start, rent buffer");
+                this.Trace(() => "start, rent buffer");
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
                 try
                 {
-                    this.Trace(() => "Cycle start");
+                    this.Trace(() => "cycle start");
 
                     // initial spin, until connected
-                    this.Trace(() => "Spin until connected and keepAlive monitor up");
+                    this.Trace(() => "spin until connected and keepAlive monitor up");
                     await Wait.UntilAsync(() => _keepAliveMonitor is not null! && IsConnected);
                     _keepAliveMonitor.Resume();
                     ReceiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
                     // run polling
+                    this.Trace(() => "start polling");
                     while (!ctx.Ct.IsCancellationRequested)
                     {
                         // keep receiving until closed
