@@ -13,7 +13,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         public async Task SequentialExecutor_Works()
         {
             // arrange
-            var executor = Executor.Background.Sequential();
+            var executor = Executor.Background.Sequential<SequentialTest>();
             var queue = new ConcurrentQueue<int>();
 
             // act

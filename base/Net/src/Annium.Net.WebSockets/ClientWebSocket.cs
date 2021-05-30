@@ -20,7 +20,8 @@ namespace Annium.Net.WebSockets
             ClientWebSocketOptions options
         ) : base(
             new NativeClientWebSocket(),
-            options
+            options,
+            Extensions.Execution.Executor.Background.Sequential<ClientWebSocket>()
         )
         {
             _options = options;

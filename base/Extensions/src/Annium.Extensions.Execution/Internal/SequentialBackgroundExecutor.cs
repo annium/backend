@@ -8,7 +8,8 @@ using Annium.Diagnostics.Debug;
 
 namespace Annium.Extensions.Execution.Internal
 {
-    internal class SequentialBackgroundExecutor : IBackgroundExecutor
+    // ReSharper disable once UnusedTypeParameter
+    internal class SequentialBackgroundExecutor<T> : IBackgroundExecutor
     {
         public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
         private int _isAvailable = 1;

@@ -8,7 +8,8 @@ using Annium.Diagnostics.Debug;
 
 namespace Annium.Extensions.Execution.Internal
 {
-    internal class ParallelBackgroundExecutor : IBackgroundExecutor
+    // ReSharper disable once UnusedTypeParameter
+    internal class ParallelBackgroundExecutor<T> : IBackgroundExecutor
     {
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task RunTask(Delegate task) => task switch

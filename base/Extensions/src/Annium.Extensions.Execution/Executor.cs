@@ -9,8 +9,8 @@ namespace Annium.Extensions.Execution
 
         public static class Background
         {
-            public static IBackgroundExecutor Parallel() => new ParallelBackgroundExecutor();
-            public static IBackgroundExecutor Sequential() => new SequentialBackgroundExecutor();
+            public static IBackgroundExecutor Parallel<T>() => new ParallelBackgroundExecutor<T>();
+            public static IBackgroundExecutor Sequential<T>() => new SequentialBackgroundExecutor<T>();
         }
     }
 }

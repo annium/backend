@@ -25,7 +25,7 @@ namespace Annium.Net.WebSockets
         public WebSocketState State => Socket.State;
 
         protected TNativeSocket Socket { get; set; }
-        protected IBackgroundExecutor Executor { get; } = Extensions.Execution.Executor.Background.Sequential();
+        protected IBackgroundExecutor Executor { get; }
         protected CancellationTokenSource ReceiveCts { get; private set; } = new();
         private bool IsConnected => State is WebSocketState.Open or WebSocketState.CloseSent;
         private readonly UTF8Encoding _encoding = new();
@@ -37,12 +37,14 @@ namespace Annium.Net.WebSockets
 
         internal WebSocketBase(
             TNativeSocket socket,
-            WebSocketBaseOptions options
+            WebSocketBaseOptions options,
+            IBackgroundExecutor executor
         )
         {
             Socket = socket;
             _disposable += Socket;
 
+            Executor = executor;
             Executor.Start();
             _disposable += Executor;
 

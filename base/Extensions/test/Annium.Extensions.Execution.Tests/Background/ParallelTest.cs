@@ -12,7 +12,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         public async Task ParallelExecutor_Works()
         {
             // arrange
-            var executor = Executor.Background.Parallel();
+            var executor = Executor.Background.Parallel<ParallelTest>();
             var counter = 0;
 
             // act
@@ -47,7 +47,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         public async Task ParallelExecutor_CompletesOnFailure()
         {
             // arrange
-            var executor = Executor.Background.Parallel();
+            var executor = Executor.Background.Parallel<ParallelTest>();
             var successes = 0;
             var failures = 0;
 

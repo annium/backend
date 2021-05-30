@@ -50,11 +50,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             var cnId = _cn.Id;
             this.Trace(() => $"cn {cnId} - start");
             await using var scope = _sp.CreateAsyncScope();
-            var executor = Executor.Background.Parallel();
-            LifeCycleCoordinator<TState>? lifeCycleCoordinator = null;
+            var executor = Executor.Background.Parallel<ConnectionHandler<TState>>();
+            var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
             try
             {
-                lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
                 var tcs = new TaskCompletionSource<object>();
 
                 // immediately subscribe to cancellation
@@ -99,12 +98,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 this.Trace(() => $"cn {cnId} - dispose executor - done");
 
                 // process end hook
-                if (lifeCycleCoordinator is not null)
-                {
-                    this.Trace(() => $"cn {cnId} - handle lifecycle end - start");
-                    await lifeCycleCoordinator.HandleEndAsync(_state);
-                    this.Trace(() => $"cn {cnId} - handle lifecycle end - done");
-                }
+                this.Trace(() => $"cn {cnId} - handle lifecycle end - start");
+                await lifeCycleCoordinator.HandleEndAsync(_state);
+                this.Trace(() => $"cn {cnId} - handle lifecycle end - done");
             }
         }
 
