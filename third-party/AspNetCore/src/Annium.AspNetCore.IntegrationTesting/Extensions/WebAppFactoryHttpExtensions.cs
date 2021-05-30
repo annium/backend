@@ -1,4 +1,4 @@
-using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Annium.Core.DependencyInjection;
 using Annium.Net.Http;
 
@@ -6,12 +6,12 @@ namespace Annium.AspNetCore.IntegrationTesting
 {
     public static class WebAppFactoryHttpExtensions
     {
-        private static readonly ConcurrentDictionary<IWebApplicationFactory, IHttpRequest> Cache = new();
+        private static readonly ConditionalWeakTable<IWebApplicationFactory, IHttpRequest> Cache = new();
 
         public static IHttpRequest GetHttpRequest(
             this IWebApplicationFactory appFactory
         ) =>
-            Cache.GetOrAdd(appFactory, factory =>
+            Cache.GetValue(appFactory, factory =>
             {
                 var httpClient = factory.CreateClient();
                 var httpRequestFactory = factory.ServiceProvider.Resolve<IHttpRequestFactory>();
