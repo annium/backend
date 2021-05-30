@@ -11,22 +11,21 @@ using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Data.Operations;
-using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Net.WebSockets;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
     internal abstract class ClientBase<TSocket, TNativeSocket> : IClientBase
-        where TSocket : Annium.Net.WebSockets.WebSocketBase<TNativeSocket>
+        where TSocket : WebSocketBase<TNativeSocket>
         where TNativeSocket : NativeWebSocket
     {
         public bool IsConnected => Socket.State == WebSocketState.Open;
         protected TSocket Socket { get; }
         private readonly Serializer _serializer;
         private readonly IClientConfigurationBase _configuration;
-        private readonly IBackgroundExecutor _executor = Executor.Background.Parallel();
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
         private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
@@ -42,9 +41,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             Socket = socket;
             _serializer = serializer;
             _configuration = configuration;
-
-            _disposable += _executor;
-            _executor.Start();
 
             _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
             _responseObservable = Socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
@@ -300,7 +296,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             )
             {
                 this.Trace(() => $"Complete response {response.Tid}#{response.Rid}");
-                _executor.Schedule(() => future.TaskSource.TrySetResult(response));
+                future.TaskSource.TrySetResult(response);
             }
         }
 
