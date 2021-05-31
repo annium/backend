@@ -14,13 +14,11 @@ using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Net.WebSockets;
-using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    internal abstract class ClientBase<TSocket, TNativeSocket> : IClientBase
-        where TSocket : WebSocketBase<TNativeSocket>
-        where TNativeSocket : NativeWebSocket
+    internal abstract class ClientBase<TSocket> : IClientBase
+        where TSocket : ISendingReceivingWebSocket
     {
         public bool IsConnected => Socket.State == WebSocketState.Open;
         protected TSocket Socket { get; }

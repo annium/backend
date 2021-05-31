@@ -4,11 +4,10 @@ using System.Threading.Tasks;
 using Annium.Core.Internal;
 using Annium.Core.Runtime.Time;
 using Annium.Net.WebSockets;
-using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
-    internal class Client : ClientBase<ClientWebSocket, NativeClientWebSocket>, IClient
+    internal class Client : ClientBase<ClientWebSocket>, IClient
     {
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
         public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
