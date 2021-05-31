@@ -30,12 +30,13 @@ namespace Annium.Core.DependencyInjection
             }).AsSelf().Singleton();
 
             // internal
+            container.Add<ServerLifetime>().AsInterfaces().Singleton();
+            container.Add<ConnectionTracker>().AsSelf().Singleton();
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
             container.Add<ConnectionHandlerFactory<TState>>().AsSelf().Singleton();
-            container.Add<ConnectionTracker>().AsSelf().Singleton();
+            container.Add(typeof(MessageHandler<>)).AsSelf().Transient();
             container.Add<LifeCycleCoordinator<TState>>().AsSelf().Scoped();
             container.Add<Serializer>().AsSelf().Singleton();
-            container.Add<ServerLifetime>().AsInterfaces().Singleton();
 
             // internal - handlers
             container.Add<SubscriptionContextStore>().AsSelf().AsInterfaces().Singleton();
