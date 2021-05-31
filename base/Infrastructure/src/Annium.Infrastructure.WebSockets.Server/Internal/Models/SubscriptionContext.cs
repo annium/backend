@@ -26,6 +26,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public Guid SubscriptionId { get; }
         private readonly CancellationTokenSource _cts;
         private readonly IMediator _mediator;
+        private readonly IServiceProvider _sp;
         private readonly TState _state;
         private bool _isInitiated;
         private Action _handleInit = () => { };
@@ -36,7 +37,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             TState state,
             Guid subscriptionId,
             CancellationTokenSource cts,
-            IMediator mediator
+            IMediator mediator,
+            IServiceProvider sp
         )
         {
             Request = request;
@@ -44,6 +46,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             SubscriptionId = subscriptionId;
             _cts = cts;
             _mediator = mediator;
+            _sp = sp;
             _state = state;
             _executor.Start();
         }
@@ -105,7 +108,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         }
 
         private void SendInternal<T>(T msg) =>
-            _executor.Schedule(() => _mediator.SendAsync<Unit>(PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
+            _executor.Schedule(() => _mediator.SendAsync<Unit>(_sp, PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
     }
 
     internal interface ISubscriptionContext : IAsyncDisposable

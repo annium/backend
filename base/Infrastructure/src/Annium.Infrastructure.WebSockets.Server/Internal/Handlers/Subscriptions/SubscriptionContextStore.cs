@@ -32,9 +32,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
                 _contexts.Remove(context);
             }
 
-            this.Trace(() => $"subscription {subscriptionId} - dispose context - start");
             await context.DisposeAsync();
-            this.Trace(() => $"subscription {subscriptionId} - dispose context - done");
 
             return true;
         }

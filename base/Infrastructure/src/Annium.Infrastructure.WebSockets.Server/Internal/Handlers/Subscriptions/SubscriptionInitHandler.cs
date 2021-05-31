@@ -23,14 +23,17 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
     {
         private readonly SubscriptionContextStore _subscriptionContextStore;
         private readonly IMediator _mediator;
+        private readonly IServiceProvider _sp;
 
         public SubscriptionInitHandler(
             SubscriptionContextStore subscriptionContextStore,
-            IMediator mediator
+            IMediator mediator,
+            IServiceProvider sp
         )
         {
             _subscriptionContextStore = subscriptionContextStore;
             _mediator = mediator;
+            _sp = sp;
         }
 
         public async Task<VoidResponse<TMessage>> HandleAsync(
@@ -42,7 +45,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             var subscriptionId = ctx.Request.SubscriptionId;
             this.Trace(() => $"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator);
+            var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator, _sp);
 
             // when reporting successful init - save to subscription store
             context.OnInit(() =>
