@@ -45,7 +45,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             var subscriptionId = ctx.Request.SubscriptionId;
             this.Trace(() => $"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator, _sp);
+            await using var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator, _sp);
 
             // when reporting successful init - save to subscription store
             context.OnInit(() =>
@@ -56,11 +56,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
             // run subscription
             await next(context, cts.Token);
-
-            // remove subscription to prevent memory leak (if finished on server, but not canceled by client)
-            this.Trace(() => $"subscription {subscriptionId} - try remove");
-            var result = await _subscriptionContextStore.TryRemove(subscriptionId);
-            this.Trace(() => $"subscription {subscriptionId} - removed: {result}");
 
             return Response.Void<TMessage>();
         }

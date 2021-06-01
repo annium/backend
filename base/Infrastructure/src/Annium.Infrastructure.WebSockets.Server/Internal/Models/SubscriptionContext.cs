@@ -92,6 +92,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             state = State;
         }
 
+        public void Cancel()
+        {
+            _cts.Cancel();
+        }
+
         public async ValueTask DisposeAsync()
         {
             if (!_isInitiated)
@@ -100,7 +105,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
                 throw new InvalidOperationException("Can't cancel subscription more than once");
 
             this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - start");
-            _cts.Cancel();
             _cts.Dispose();
             this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
             await _executor.DisposeAsync();
@@ -113,7 +117,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
     internal interface ISubscriptionContext : IAsyncDisposable
     {
-        public Guid ConnectionId { get; }
-        public Guid SubscriptionId { get; }
+        Guid ConnectionId { get; }
+        Guid SubscriptionId { get; }
+        void Cancel();
     }
 }

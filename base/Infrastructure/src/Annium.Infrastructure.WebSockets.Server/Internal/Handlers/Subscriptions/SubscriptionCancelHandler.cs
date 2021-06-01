@@ -27,20 +27,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             _subscriptionContextStore = subscriptionContextStore;
         }
 
-        public async Task<ResultResponse> HandleAsync(
+        public Task<ResultResponse> HandleAsync(
             IRequestContext<SubscriptionCancelRequest, TState> ctx,
             CancellationToken ct
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
             this.Trace(() => $"subscription {subscriptionId} - init");
-            var status = await _subscriptionContextStore.TryRemove(subscriptionId)
+            var status = _subscriptionContextStore.TryCancel(subscriptionId)
                 ? OperationStatus.Ok
                 : OperationStatus.NotFound;
             this.Trace(() => $"subscription {subscriptionId} - result: {status}");
             var response = Response.Result(ctx.Request.Rid, Result.Status(status));
 
-            return response;
+            return Task.FromResult(response);
         }
     }
 }

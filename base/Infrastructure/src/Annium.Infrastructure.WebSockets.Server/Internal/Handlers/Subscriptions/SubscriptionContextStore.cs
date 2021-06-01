@@ -16,41 +16,36 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             lock (_contexts) _contexts.Add(context);
         }
 
-        public async Task<bool> TryRemove(Guid subscriptionId)
+        public bool TryCancel(Guid subscriptionId)
         {
             this.Trace(() => $"subscription {subscriptionId} - init");
-            ISubscriptionContext context;
             lock (_contexts)
             {
-                context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
+                var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
                 if (context is null!)
                 {
                     this.Trace(() => $"subscription {subscriptionId} - context missing");
                     return false;
                 }
 
+                this.Trace(() => $"subscription {subscriptionId} - cancel context");
                 _contexts.Remove(context);
+                context.Cancel();
+
+                return true;
             }
-
-            await context.DisposeAsync();
-
-            return true;
         }
 
-        public async Task Cleanup(Guid connectionId)
+        public Task Cleanup(Guid connectionId)
         {
-            var contexts = new List<ISubscriptionContext>();
             lock (_contexts)
-            {
-                foreach (var context in _contexts.ToArray())
-                    if (context.ConnectionId == connectionId)
-                    {
-                        contexts.Add(context);
-                        _contexts.Remove(context);
-                    }
-            }
+                foreach (var context in _contexts.Where(x => x.ConnectionId == connectionId).ToArray())
+                {
+                    _contexts.Remove(context);
+                    context.Cancel();
+                }
 
-            await Task.WhenAll(contexts.Select(async x => await x.DisposeAsync()));
+            return Task.CompletedTask;
         }
     }
 }
