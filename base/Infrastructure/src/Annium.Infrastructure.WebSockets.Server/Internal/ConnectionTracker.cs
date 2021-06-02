@@ -161,7 +161,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 var count = Interlocked.Decrement(ref _refCount);
                 this.Trace(() => $"cn {Connection.Id}: {count} ({tryDispose})");
                 if (count == 0 && tryDispose)
-                    _disposeTcs.SetResult(null);
+                    _disposeTcs.TrySetResult(null);
             }
 
             public void TryDispose()
@@ -169,7 +169,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 var count = Volatile.Read(ref _refCount);
                 this.Trace(() => $"cn {Connection.Id}: {count}");
                 if (count == 0)
-                    _disposeTcs.SetResult(null);
+                    _disposeTcs.TrySetResult(null);
             }
         }
     }
