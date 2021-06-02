@@ -44,7 +44,7 @@ namespace Annium.Net.WebSockets.Internal
                     )
                     .DoParallelAsync(async _ =>
                     {
-                        observable.Trace(() => "KeepAlive: ping -> pong");
+                        keepAliveMonitor.Trace(() => "KeepAlive: ping -> pong");
                         await send(opts.PongFrame);
                     })
                     .Subscribe();
