@@ -91,7 +91,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (assemblies.TryGetValue(name.FullName, out var asm))
                 return asm;
 
-            Log.Trace(() => $"load {name}");
+            // Log.Trace(() => $"load {name}");
             return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
         };
     }
