@@ -42,11 +42,9 @@ namespace Annium.Net.WebSockets
         )
         {
             Socket = socket;
-            _disposable += Socket;
 
             Executor = executor;
             Executor.Start();
-            _disposable += Executor;
 
             // start socket observable
             var observableInstance = CreateSocketObservable();
@@ -126,7 +124,7 @@ namespace Annium.Net.WebSockets
                     }
 
                     // either ct canceled or cycle break due to socket closed
-                    this.Trace(() => $"Cycle end: {(ctx.Ct.IsCancellationRequested ? "canceled" : "closed")}");
+                    this.Trace(() => $"cycle end: {(ctx.Ct.IsCancellationRequested ? "canceled" : "closed")}");
                 }
                 catch (OperationCanceledException)
                 {
@@ -196,7 +194,7 @@ namespace Annium.Net.WebSockets
 
         private async Task<Status> HandleDisconnect()
         {
-            _keepAliveMonitor.Pause();
+            await _keepAliveMonitor.PauseAsync();
             this.Trace(() => $"OnDisconnectAsync - start in {State} state");
             await OnDisconnectAsync().ConfigureAwait(false);
             this.Trace(() => "OnDisconnectAsync - complete");
@@ -222,6 +220,8 @@ namespace Annium.Net.WebSockets
         {
             this.Trace(() => "start");
             await _disposable.DisposeAsync();
+            await Socket.DisposeAsync();
+            await Executor.DisposeAsync();
             this.Trace(() => "done");
         }
 

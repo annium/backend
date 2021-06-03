@@ -50,9 +50,12 @@ namespace Annium.Net.WebSockets.Internal
                 .Subscribe(TrackPong);
         }
 
-        public void Pause()
+        public async Task PauseAsync()
         {
-            _disposable.DisposeAsync().Await();
+            this.Trace(() => "start");
+            _cts.Cancel();
+            await _disposable.DisposeAsync();
+            this.Trace(() => "done");
         }
 
         private void SendPingCheckPong(object? _)
@@ -104,9 +107,9 @@ namespace Annium.Net.WebSockets.Internal
 
         private Instant GetNow() => SystemClock.Instance.GetCurrentInstant();
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            return _disposable.DisposeAsync();
+            await PauseAsync();
         }
     }
 }

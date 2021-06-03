@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Annium.Net.WebSockets.Internal
 {
@@ -7,6 +8,6 @@ namespace Annium.Net.WebSockets.Internal
     {
         CancellationToken Token { get; }
         void Resume();
-        void Pause();
+        Task PauseAsync();
     }
 }

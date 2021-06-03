@@ -11,8 +11,9 @@ namespace Annium.Net.WebSockets.Internal
         {
         }
 
-        public void Pause()
+        public Task PauseAsync()
         {
+            return Task.CompletedTask;
         }
 
         public ValueTask DisposeAsync() => new(Task.CompletedTask);

@@ -75,7 +75,7 @@ namespace Annium.Net.WebSockets
             }
 
             this.Trace(() => "Invoke ConnectionLost");
-            Executor.Schedule(() => ConnectionLost.Invoke());
+            Executor.TrySchedule(() => ConnectionLost.Invoke());
 
             return Task.CompletedTask;
         }
