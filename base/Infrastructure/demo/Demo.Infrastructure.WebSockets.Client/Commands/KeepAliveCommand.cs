@@ -48,7 +48,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             if (client.IsConnected)
             {
                 _logger.Debug("Disconnecting");
-                await client.DisconnectAsync(CancellationToken.None);
+                await client.DisconnectAsync();
             }
 
             _logger.Debug("Disconnected");

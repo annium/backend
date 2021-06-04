@@ -71,7 +71,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             _logger.Debug($"Messages received: {count}. Rate: {Math.Floor((double) count / sw.ElapsedMilliseconds * 1000)}rps");
 
             _logger.Debug("Disconnecting");
-            await ws.DisconnectAsync(CancellationToken.None);
+            await ws.DisconnectAsync();
             _logger.Debug("Disconnected");
         }
     }

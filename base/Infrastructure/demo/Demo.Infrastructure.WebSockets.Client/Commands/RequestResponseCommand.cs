@@ -80,7 +80,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             _logger.Debug($"End: {sw.Elapsed}. Counter: {counter}");
 
             if (client.IsConnected)
-                await client.DisconnectAsync(CancellationToken.None);
+                await client.DisconnectAsync();
 
             async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken ct)
             {

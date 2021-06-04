@@ -1,6 +1,5 @@
 using System;
 using System.Net.WebSockets;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 using Annium.Net.WebSockets;
@@ -33,7 +32,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             )
             {
                 this.Trace(() => "disconnect socket");
-                await _socket.DisconnectAsync(CancellationToken.None);
+                await _socket.DisconnectAsync();
             }
 
             this.Trace(() => "dispose socket");

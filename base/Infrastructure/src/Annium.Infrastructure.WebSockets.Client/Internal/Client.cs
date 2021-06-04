@@ -32,8 +32,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public Task ConnectAsync(CancellationToken ct = default) =>
             Socket.ConnectAsync(_configuration.Uri, ct);
 
-        public Task DisconnectAsync(CancellationToken ct = default) =>
-            Socket.DisconnectAsync(ct);
+        public Task DisconnectAsync() =>
+            Socket.DisconnectAsync();
 
 
         public override async ValueTask DisposeAsync()
@@ -41,7 +41,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             this.Trace(() => "start");
             await base.DisposeAsync();
             this.Trace(() => "disconnect socket");
-            await Socket.DisconnectAsync(CancellationToken.None);
+            await Socket.DisconnectAsync();
             this.Trace(() => "dispose socket");
             await Socket.DisposeAsync();
             this.Trace(() => "done");

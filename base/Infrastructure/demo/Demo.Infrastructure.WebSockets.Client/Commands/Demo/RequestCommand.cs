@@ -83,7 +83,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 
             _logger.Debug("Disconnecting");
             if (ws.State == WebSocketState.Open)
-                await ws.DisconnectAsync(CancellationToken.None);
+                await ws.DisconnectAsync();
             _logger.Debug("Disconnected");
         }
 

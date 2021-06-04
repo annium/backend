@@ -9,6 +9,6 @@ namespace Annium.Infrastructure.WebSockets.Client
         event Func<Task> ConnectionLost;
         event Func<Task> ConnectionRestored;
         Task ConnectAsync(CancellationToken ct = default);
-        Task DisconnectAsync(CancellationToken ct = default);
+        Task DisconnectAsync();
     }
 }

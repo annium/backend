@@ -53,7 +53,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await ct;
             _logger.Debug("Disconnecting");
             if (client.IsConnected)
-                await client.DisconnectAsync(CancellationToken.None);
+                await client.DisconnectAsync();
             _logger.Debug("Disconnected");
         }
     }

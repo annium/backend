@@ -36,11 +36,11 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
             var request = new DeleteOrderRequest();
             _logger.Debug($">>> {request}");
-            var result = await client.SendAsync(request);
+            var result = await client.SendAsync(request, ct);
             _logger.Debug($"<<< {result}");
 
             if (client.IsConnected)
-                await client.DisconnectAsync(CancellationToken.None);
+                await client.DisconnectAsync();
         }
     }
 }

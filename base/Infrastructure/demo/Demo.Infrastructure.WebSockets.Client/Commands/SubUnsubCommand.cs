@@ -58,7 +58,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
             await Task.Delay(100);
 
-            await client.DisconnectAsync(ct);
+            await client.DisconnectAsync();
 
             void Log(UserBalanceMessage msg) => _logger.Debug($"<<< {msg}");
         }
