@@ -25,7 +25,6 @@ namespace Annium.AspNetCore.TestServer
             container.AddHttpRequestFactory().SetDefault();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();
-            container.AddLogging(route => route.UseInMemory());
             container.AddWebSocketServer(
                 (_, cfg) => cfg
                     .ListenOn("/ws")
