@@ -5,6 +5,6 @@ namespace Annium.Net.WebSockets
 {
     public interface IWebSocket : ISendingReceivingWebSocket
     {
-        Task DisconnectAsync(CancellationToken ct);
+        Task DisconnectAsync();
     }
 }

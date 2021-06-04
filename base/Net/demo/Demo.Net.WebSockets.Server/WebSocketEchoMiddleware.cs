@@ -57,7 +57,7 @@ namespace Demo.Net.WebSockets.Server
                 async () =>
                 {
                     Console.WriteLine("Close");
-                    await ws.DisconnectAsync(CancellationToken.None);
+                    await ws.DisconnectAsync();
                     Console.WriteLine("Closed");
                     tcs.TrySetResult(new object());
                 }

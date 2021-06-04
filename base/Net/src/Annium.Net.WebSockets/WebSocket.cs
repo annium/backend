@@ -10,7 +10,6 @@ namespace Annium.Net.WebSockets
     public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     {
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
-        private bool _isManuallyDisconnected;
 
         public WebSocket(
             NativeWebSocket socket
@@ -32,12 +31,10 @@ namespace Annium.Net.WebSockets
         {
         }
 
-        public async Task DisconnectAsync(CancellationToken ct)
+        public async Task DisconnectAsync()
         {
-            _isManuallyDisconnected = true;
-
             // cancel receive, if pending
-            ReceiveCts.Cancel();
+            CancelReceive();
 
             this.Trace(() => "Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
@@ -50,7 +47,7 @@ namespace Annium.Net.WebSockets
                 )
                 {
                     this.Trace(() => "Disconnect");
-                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", ct);
+                    await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
                 }
                 else
                     this.Trace(() => "Already disconnected");
@@ -59,25 +56,21 @@ namespace Annium.Net.WebSockets
             {
                 this.Trace(() => nameof(WebSocketException));
             }
-            finally
-            {
-                this.Trace(() => "Dispose socket");
-                Socket.Dispose();
-            }
         }
 
-        protected override Task OnDisconnectAsync()
+        protected override Task OnConnectionLostAsync()
         {
-            if (_isManuallyDisconnected)
-            {
-                this.Trace(() => "Manually disconnected, no reconnect");
-                return Task.CompletedTask;
-            }
-
             this.Trace(() => "Invoke ConnectionLost");
             Executor.TrySchedule(() => ConnectionLost.Invoke());
 
             return Task.CompletedTask;
+        }
+
+        public override async ValueTask DisposeAsync()
+        {
+            this.Trace(() => "Invoke ConnectionLost");
+            Executor.TrySchedule(() => ConnectionLost.Invoke());
+            await DisposeBaseAsync();
         }
     }
 }
