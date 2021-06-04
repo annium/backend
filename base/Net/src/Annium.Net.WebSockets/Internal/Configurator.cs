@@ -21,14 +21,14 @@ namespace Annium.Net.WebSockets.Internal
         {
             IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
             var keepAliveFrames = new List<ReadOnlyMemory<byte>>();
-            var disposable = Disposable.AsyncBox();
+            var disposable = Disposable.Box();
 
             // if active - send pings/count pongs via monitor
             if (options.ActiveKeepAlive is not null)
             {
                 var opts = options.ActiveKeepAlive;
                 keepAliveFrames.Add(opts.PongFrame);
-                disposable += keepAliveMonitor = new KeepAliveMonitor(observable, send, opts);
+                keepAliveMonitor = new KeepAliveMonitor(observable, send, opts);
             }
 
             // if passive - listen pings, respond with pongs
@@ -97,6 +97,6 @@ namespace Annium.Net.WebSockets.Internal
         IObservable<SocketMessage> MessageObservable,
         IObservable<ReadOnlyMemory<byte>> BinaryObservable,
         IObservable<string> TextObservable,
-        IAsyncDisposable Disposable
+        IDisposable Disposable
     );
 }
