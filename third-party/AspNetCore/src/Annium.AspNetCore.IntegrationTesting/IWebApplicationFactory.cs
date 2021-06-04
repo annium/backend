@@ -1,13 +1,16 @@
 using System;
-using System.Net.Http;
-using Microsoft.AspNetCore.TestHost;
+using System.Threading.Tasks;
+using Annium.Net.Http;
 
 namespace Annium.AspNetCore.IntegrationTesting
 {
-    public interface IWebApplicationFactory
+    public interface IWebApplicationFactory : IAsyncDisposable
     {
-        TestServer Server { get; }
-        IServiceProvider ServiceProvider { get; }
-        HttpClient CreateClient();
+        T Resolve<T>() where T : notnull;
+
+        IHttpRequest GetHttpRequest();
+
+        Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)
+            where TWebSocketClient : class, IAsyncDisposable;
     }
 }

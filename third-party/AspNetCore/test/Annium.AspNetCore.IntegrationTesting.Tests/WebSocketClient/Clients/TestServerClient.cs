@@ -5,7 +5,7 @@ using Annium.Infrastructure.WebSockets.Client;
 
 namespace Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients
 {
-    public class TestServerClient
+    public class TestServerClient: IAsyncDisposable
     {
         public DemoClient Demo { get; }
         public bool IsConnected => _client.IsConnected;
@@ -26,5 +26,7 @@ namespace Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients
 
         public Task DisconnectAsync() =>
             _client.DisconnectAsync();
+
+        public ValueTask DisposeAsync() => _client.DisposeAsync();
     }
 }
