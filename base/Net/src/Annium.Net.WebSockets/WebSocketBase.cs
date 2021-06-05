@@ -206,7 +206,7 @@ namespace Annium.Net.WebSockets
             _keepAliveMonitor.Pause();
             this.Trace(() => $"{nameof(OnConnectionLostAsync)} - start in {State} state");
             await OnConnectionLostAsync().ConfigureAwait(false);
-            this.Trace(() => "{nameof(OnConnectionLostAsync)} - complete");
+            this.Trace(() => $"{nameof(OnConnectionLostAsync)} - complete");
 
             // if after disconnect handling not connected - set completed and break
             if (State is WebSocketState.CloseReceived or WebSocketState.Closed or WebSocketState.Aborted)
