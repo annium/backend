@@ -30,6 +30,10 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         {
             this.Trace(() => "start");
             await base.DisposeAsync();
+            this.Trace(() => "disconnect socket");
+            await Socket.DisconnectAsync();
+            this.Trace(() => "dispose socket");
+            await Socket.DisposeAsync();
             this.Trace(() => "done");
         }
     }
