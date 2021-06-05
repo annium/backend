@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients;
@@ -14,13 +15,16 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
     public class WebSocketTest : IntegrationTestBase
     {
-        private TestServerTestClient Client => AppFactory.GetWebSocketClient<TestServerTestClient>("/ws");
+        private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
 
         [Fact]
         public async Task RequestResponse_Works()
         {
+            // arrange
+            var client = await GetClient();
+
             // act
-            var response = await Client.Demo.EchoAsync(new EchoRequest("Hi"));
+            var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));
 
             // assert
             response.Status.Is(OperationStatus.Ok);
@@ -31,14 +35,15 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         public async Task Subscription_Works()
         {
             // arrange
+            var client = await GetClient();
             var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
             var clientLog = new List<string>();
 
             // act
-            var s1 = Client.Demo
+            var s1 = client.Demo
                 .ListenFirst(new FirstSubscriptionInit { Param = "abc" })
                 .Subscribe(clientLog.Add);
-            var s2 = Client.Demo
+            var s2 = client.Demo
                 .ListenSecond(new SecondSubscriptionInit { Param = "def" })
                 .Subscribe(clientLog.Add);
             // wait for init and msg entries
@@ -75,5 +80,19 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             foreach (var entry in expectedClientLog)
                 clientLog.Contains(entry).IsTrue();
         }
+
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        // ReSharper disable once xUnit1026
+        public async Task PerformanceTest(object _)
+        {
+            this.Trace(() => "get client");
+            var client = await AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
+            this.Trace(() => "dispose client");
+            await client.DisposeAsync();
+            this.Trace(() => "done");
+        }
+
+        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
     }
 }

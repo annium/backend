@@ -8,7 +8,10 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         protected IWebApplicationFactory AppFactory => GetAppFactory<Startup>(
             builder => builder.UseServicePack<ServicePack>(),
             container => container
-                .AddTestServerTestClient(x => x.WithActiveKeepAlive(600).WithResponseTimeout(6000))
+                .AddTestServerTestClient(x => x
+                    .WithActiveKeepAlive(600)
+                    .WithResponseTimeout(6000)
+                )
         );
     }
 }

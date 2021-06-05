@@ -37,7 +37,6 @@ namespace Annium.AspNetCore.IntegrationTesting.Internal
             var wsUri = new UriBuilder(_appFactory.Server.BaseAddress) { Scheme = "ws", Path = endpoint }.Uri;
             var wsClient = _appFactory.Server.CreateWebSocketClient();
             var ws = await wsClient.ConnectAsync(wsUri, CancellationToken.None);
-            _disposable += ws;
 
             var clientFactory = Resolve<Func<WebSocket, TWebSocketClient>>();
             var client = clientFactory(ws);
