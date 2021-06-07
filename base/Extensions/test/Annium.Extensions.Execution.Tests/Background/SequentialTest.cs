@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -9,10 +11,13 @@ namespace Annium.Extensions.Execution.Tests.Background
 {
     public class SequentialTest
     {
-        [Fact]
-        public async Task SequentialExecutor_Works()
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        // ReSharper disable once xUnit1026
+        public async Task SequentialExecutor_Works(int index)
         {
             // arrange
+            this.Trace(() => $"Run {index}");
             var executor = Executor.Background.Sequential<SequentialTest>();
             var queue = new ConcurrentQueue<int>();
 
@@ -46,5 +51,7 @@ namespace Annium.Extensions.Execution.Tests.Background
             queue.Count.Is(40);
             queue.ToArray().IsEqual(Enumerable.Range(0, 40).ToArray());
         }
+
+        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
     }
 }

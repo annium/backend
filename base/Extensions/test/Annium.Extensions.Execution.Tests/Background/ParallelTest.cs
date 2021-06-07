@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -8,10 +11,13 @@ namespace Annium.Extensions.Execution.Tests.Background
 {
     public class ParallelTest
     {
-        [Fact]
-        public async Task ParallelExecutor_Works()
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        // ReSharper disable once xUnit1026
+        public async Task ParallelExecutor_Works(int index)
         {
             // arrange
+            this.Trace(() => $"Run {index}");
             var executor = Executor.Background.Parallel<ParallelTest>();
             var counter = 0;
 
@@ -42,6 +48,8 @@ namespace Annium.Extensions.Execution.Tests.Background
             await disposalTask;
             counter.Is(200);
         }
+
+        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
 
         [Fact]
         public async Task ParallelExecutor_CompletesOnFailure()
