@@ -1,8 +1,8 @@
 using System;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
-using NodaTime;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -16,7 +16,7 @@ namespace Annium.Core.DependencyInjection
         public static LogRoute UseTestConsole(
             this LogRoute route,
             bool color = false
-        ) => route.UseConsole(DefaultTestFormat(SystemClock.Instance.GetCurrentInstant()), color);
+        ) => route.UseConsole(DefaultTestFormat, color);
 
         public static LogRoute UseConsole(
             this LogRoute route,
@@ -32,7 +32,7 @@ namespace Annium.Core.DependencyInjection
         private static string DefaultFormat(LogMessage m, string message) =>
             $"[{m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] {m.Level} - {m.Source.FriendlyName()}: {message}";
 
-        private static Func<LogMessage, string, string> DefaultTestFormat(Instant since) => (m, message) =>
-            $"[{(m.Instant - since).ToString("HH:mm:ss.fff", null)}] {m.Level} - {m.Source.FriendlyName()}: {message}";
+        private static string DefaultTestFormat(LogMessage m, string message) =>
+            $"[{Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToDateTimeUnspecified()):hh\\:mm\\:ss\\.fff}] {m.Level} - {m.Source.FriendlyName()}: {message}";
     }
 }

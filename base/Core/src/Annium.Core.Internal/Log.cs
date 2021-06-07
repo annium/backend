@@ -26,11 +26,9 @@ namespace Annium.Core.Internal
             (Level, Write, Filter) = Configure();
         }
 
-        public static void SetTestMode()
-        {
-            Console.WriteLine(nameof(SetTestMode));
-            GetLogTime = GetRelativeLogTime;
-        }
+        public static void SetTestMode() => GetLogTime = GetRelativeLogTime;
+
+        public static TimeSpan ToRelativeLogTime(DateTime dt) => dt - Since;
 
         public static void Debug(
             Func<string> getMessage,
