@@ -7,18 +7,14 @@ namespace Annium.Extensions.Reactive.Internal
 {
     internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObservableInstance<T>
     {
-        private readonly Task _factoryTask;
+        private readonly Task<Func<Task>> _factoryTask;
         private readonly CancellationTokenSource _cts = new();
 
         internal StaticObservableInstance(
             Func<ObserverContext<T>, Task<Func<Task>>> factory
         )
         {
-            _factoryTask = Task.Run(async () =>
-            {
-                var disposeAsync = await factory(GetObserverContext(_cts.Token));
-                await disposeAsync();
-            });
+            _factoryTask = Task.Run(() => factory(GetObserverContext(_cts.Token)));
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -38,7 +34,8 @@ namespace Annium.Extensions.Reactive.Internal
             BeforeDispose();
 
             _cts.Cancel();
-            await _factoryTask;
+            var disposeAsync = await _factoryTask;
+            await disposeAsync();
 
             AfterDispose();
         }

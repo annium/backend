@@ -11,20 +11,23 @@ namespace Annium.Extensions.Reactive.Internal
         protected readonly HashSet<IObserver<T>> Subscribers = new();
         protected readonly object Lock = new();
         private bool _isCompleted;
+        private bool _isDisposing;
         private bool _isDisposed;
 
         protected ObserverContext<T> GetObserverContext(CancellationToken ct) => new(OnNext, OnError, OnCompleted, ct);
 
         protected void BeforeDispose()
         {
-            EnsureNotDisposed();
-            _isDisposed = true;
+            if (_isDisposing)
+                throw new ObjectDisposedException(GetType().FriendlyName());
+            _isDisposing = true;
         }
 
         protected void AfterDispose()
         {
             if (!_isCompleted)
                 throw new InvalidOperationException("Observable not completed");
+            _isDisposed = true;
         }
 
         private void OnNext(T value)
