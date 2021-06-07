@@ -86,6 +86,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         // ReSharper disable once xUnit1026
         public async Task PerformanceTest(object _)
         {
+            Log.SetTestMode();
             this.Trace(() => "get client");
             var client = await AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
             this.Trace(() => "dispose client");

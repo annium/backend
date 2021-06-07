@@ -16,10 +16,20 @@ namespace Annium.Core.Internal
         private static LogLevel Level { get; }
         public static Action<string> Write { get; set; }
         private static List<string> Filter { get; }
+        private static DateTime Since { get; }
+        private static Func<string> GetLogTime { get; set; }
 
         static Log()
         {
+            Since = DateTime.Now;
+            GetLogTime = GetAbsoluteLogTime;
             (Level, Write, Filter) = Configure();
+        }
+
+        public static void SetTestMode()
+        {
+            Console.WriteLine(nameof(SetTestMode));
+            GetLogTime = GetRelativeLogTime;
         }
 
         public static void Debug(
@@ -75,7 +85,7 @@ namespace Annium.Core.Internal
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
             if (Filter.Count == 0 || Filter.Any(caller.Contains))
                 Write(
-                    $"[{DateTime.Now:HH:mm:ss.fff}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}{message}"
+                    $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}{message}"
                 );
         }
 
@@ -123,5 +133,8 @@ namespace Annium.Core.Internal
         }
 
         private record Config(LogLevel Level, Action<string> Write, List<string> Filter);
+
+        private static string GetAbsoluteLogTime() => DateTime.Now.ToString("HH:mm:ss.fff");
+        private static string GetRelativeLogTime() => (DateTime.Now - Since).ToString(@"hh\:mm\:ss\.fff");
     }
 }
