@@ -26,7 +26,7 @@ namespace Annium.Net.WebSockets
         ) : base(
             socket,
             options,
-            Extensions.Execution.Executor.Background.Sequential<WebSocket>()
+            Extensions.Execution.Executor.Background.Parallel<WebSocket>()
         )
         {
         }

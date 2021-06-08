@@ -30,7 +30,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         private readonly TState _state;
         private bool _isInitiated;
         private Action _handleInit = () => { };
-        private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>();
+        private readonly IBackgroundExecutor _executor = Executor.Background.Parallel<SubscriptionContext<TInit, TMessage, TState>>();
 
         public SubscriptionContext(
             TInit request,
