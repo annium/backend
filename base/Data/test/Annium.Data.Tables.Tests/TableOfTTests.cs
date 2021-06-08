@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using Annium.Testing;
 using Xunit;
@@ -10,7 +11,7 @@ namespace Annium.Data.Tables.Tests
     public class TableOfTTests
     {
         [Fact]
-        public void Events_AreEmittedCorrectly()
+        public async Task Events_AreEmittedCorrectly()
         {
             // arrange
             var table = Table.New<Sample>()
@@ -31,7 +32,7 @@ namespace Annium.Data.Tables.Tests
             // init with some data
             var initValues = new[] { new Sample(1, true) };
             table.Init(initValues);
-            SpinWait.SpinUntil(() => log1.Count > 1);
+            await Wait.UntilAsync(() => log1.Count > 1);
             log1.Has(2);
             log1.At(1).IsEqual(ChangeEvent.Init(initValues));
             log2.At(1).Is(log1.At(1));

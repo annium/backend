@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;
@@ -29,11 +30,12 @@ namespace Annium.Infrastructure.MessageBus.Node.Tests
             foreach (var x in values)
                 await node.Send(x);
 
-            SpinWait.SpinUntil(() =>
+            await Wait.UntilAsync(
+                () =>
                     sink1.Count == 2 &&
                     sink2.Count == 2 &&
                     sink3.Count == 2,
-                3000
+                new CancellationTokenSource(3000).Token
             );
 
             // assert
