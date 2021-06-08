@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Internal;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Logging.Abstractions;
@@ -61,7 +62,11 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                var socket = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _cfg.WebSocketOptions);
+                this.Trace(() => "accept");
+                var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
+                this.Trace(() => "create socket");
+                var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions);
+                this.Trace(() => "handle");
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)
