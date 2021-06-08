@@ -21,7 +21,7 @@ namespace Annium.AspNetCore.TestServer
                     .ConfigureForOperations()
                     .ConfigureForNodaTime()
                 );
-            container.AddLogging(route => route.UseConsole());
+            container.AddLogging(route => route.UseTestConsole());
             container.AddHttpRequestFactory().SetDefault();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();
