@@ -17,9 +17,13 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
     {
         private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
 
-        [Fact]
-        public async Task RequestResponse_Works()
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        public async Task RequestResponse_Works(int index)
         {
+            Log.SetTestMode();
+            this.Trace(() => $"start {index}");
+
             // arrange
             var client = await GetClient();
 
@@ -29,11 +33,16 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             // assert
             response.Status.Is(OperationStatus.Ok);
             response.Data.Is("Hi");
+            this.Trace(() => $"done {index}");
         }
 
-        [Fact]
-        public async Task Subscription_Works()
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        public async Task Subscription_Works(int index)
         {
+            Log.SetTestMode();
+            this.Trace(() => $"start {index}");
+
             // arrange
             var client = await GetClient();
             var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
@@ -79,19 +88,23 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             };
             foreach (var entry in expectedClientLog)
                 clientLog.Contains(entry).IsTrue();
+
+            this.Trace(() => $"done {index}");
         }
 
         [Theory]
         [MemberData(nameof(GetRange))]
         // ReSharper disable once xUnit1026
-        public async Task PerformanceTest(int index)
+        public async Task Connection_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"Run {index}");
+
             this.Trace(() => "get client");
             var client = await AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
             this.Trace(() => "dispose client");
             await client.DisposeAsync();
+
             this.Trace(() => "done");
         }
 
