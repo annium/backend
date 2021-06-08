@@ -131,12 +131,11 @@ namespace Annium.Extensions.Shell
                 Task.Run(() =>
                 {
                     lock (_consoleLock) PipeOut(process.StandardOutput);
-                });
+                }).ConfigureAwait(false);
                 Task.Run(() =>
                 {
                     lock (_consoleLock) PipeOut(process.StandardError);
-                });
-                Task.Run(() => PipeOut(process.StandardError));
+                }).ConfigureAwait(false);
             }
 
             return tcs;

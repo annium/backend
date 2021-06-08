@@ -58,7 +58,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         )
             where TEvent : EventBase
         {
-            Task.Run(() => SendInternal(ev));
+            Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
         }
 
         public Task<IStatusResult<OperationStatus>> SendAsync(

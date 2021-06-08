@@ -31,7 +31,7 @@ namespace Annium.Core.Primitives
         /// <param name="factory">The delegate that is invoked on a background thread to produce the value when it is needed.</param>
         public AsyncLazy(Func<T> factory)
         {
-            _instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
+            _instance = new Lazy<Task<T>>(async () => await Task.Run(factory).ConfigureAwait(false), isThreadSafe: true);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Annium.Core.Primitives
         /// <param name="factory">The asynchronous delegate that is invoked on a background thread to produce the value when it is needed.</param>
         public AsyncLazy(Func<Task<T>> factory)
         {
-            _instance = new Lazy<Task<T>>(() => Task.Run(factory), isThreadSafe: true);
+            _instance = new Lazy<Task<T>>(async () => await Task.Run(factory).ConfigureAwait(false), isThreadSafe: true);
         }
 
         /// <summary>

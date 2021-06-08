@@ -15,7 +15,7 @@ namespace Annium.Extensions.Execution.Internal
         private int _isAvailable = 1;
         private int _isStarted;
         private readonly BlockingCollection<Delegate> _tasks = new();
-        private Task _runTask = Task.CompletedTask;
+        private ConfiguredTaskAwaitable _runTask = Task.CompletedTask.ConfigureAwait(false);
         private readonly CancellationTokenSource _cts = new();
 
         public void Schedule(Action task) => ScheduleTask(task);
@@ -34,7 +34,8 @@ namespace Annium.Extensions.Execution.Internal
             // change to state to unavailable
             ct.Register(Stop);
 
-            _runTask = Task.Run(Run, CancellationToken.None);
+            this.Trace(() => "run");
+            _runTask = Task.Run(Run, CancellationToken.None).ConfigureAwait(false);
         }
 
         public async ValueTask DisposeAsync()
@@ -52,6 +53,7 @@ namespace Annium.Extensions.Execution.Internal
 
         private async Task Run()
         {
+            this.Trace(() => "start");
             // normal mode - runs task immediately or waits for one
             while (Volatile.Read(ref _isAvailable) == 1)
             {
@@ -76,6 +78,8 @@ namespace Annium.Extensions.Execution.Internal
                 var task = _tasks.Take();
                 await RunTask(task);
             }
+
+            this.Trace(() => "done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
