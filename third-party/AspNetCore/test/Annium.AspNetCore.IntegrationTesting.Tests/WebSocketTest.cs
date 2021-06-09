@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Data.Operations;
 using Annium.Testing;
 using Xunit;
 
@@ -25,7 +27,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             this.Trace(() => $"start {index}");
 
             // arrange
-            var client = await GetClient();
+            await using var client = await GetClient();
 
             // act
             var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));
@@ -38,13 +40,40 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 
         [Theory]
         [MemberData(nameof(GetRange))]
+        public async Task RequestResponseBundle_Works(int index)
+        {
+            Log.SetTestMode();
+            this.Trace(() => $"start {index}");
+
+            // arrange
+            await using var client = await GetClient();
+            var responses = new ConcurrentBag<string>();
+
+            // act
+            await Task.WhenAll(
+                Enumerable.Range(0, 10000)
+                    .Select(async x =>
+                    {
+                        var response = await client.Demo.EchoAsync(new EchoRequest(x.ToString())).GetData();
+                        responses.Add(response);
+                    })
+            );
+
+            // assert
+            var set = new HashSet<string>(responses);
+            set.Has(10000);
+            this.Trace(() => $"done {index}");
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRange))]
         public async Task Subscription_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"start {index}");
 
             // arrange
-            var client = await GetClient();
+            await using var client = await GetClient();
             var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
             var clientLog = new List<string>();
 
@@ -108,6 +137,6 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             this.Trace(() => "done");
         }
 
-        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
+        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 1).Select(x => new object[] { x });
     }
 }
