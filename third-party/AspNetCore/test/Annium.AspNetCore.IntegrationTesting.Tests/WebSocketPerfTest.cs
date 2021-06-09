@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests
 {
-    public class WebSocketTest : IntegrationTestBase
+    public class WebSocketPerfTest : IntegrationTestBase
     {
         private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
 
@@ -48,20 +48,24 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             // arrange
             await using var client = await GetClient();
             var responses = new ConcurrentBag<string>();
+            var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
 
             // act
             await Task.WhenAll(
-                Enumerable.Range(0, 10000)
+                range
                     .Select(async x =>
                     {
-                        var response = await client.Demo.EchoAsync(new EchoRequest(x.ToString())).GetData();
+                        var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetData();
                         responses.Add(response);
                     })
             );
 
             // assert
             var set = new HashSet<string>(responses);
-            set.Has(10000);
+            set.Has(range.Length);
+            foreach (var x in range)
+                set.Contains(x);
+
             this.Trace(() => $"done {index}");
         }
 
@@ -137,6 +141,6 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             this.Trace(() => "done");
         }
 
-        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 1).Select(x => new object[] { x });
+        private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 100).Select(x => new object[] { x });
     }
 }
