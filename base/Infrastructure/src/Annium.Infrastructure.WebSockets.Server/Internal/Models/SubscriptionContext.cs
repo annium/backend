@@ -30,7 +30,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         private readonly TState _state;
         private bool _isInitiated;
         private Action _handleInit = () => { };
-        private readonly IBackgroundExecutor _executor = Executor.Background.Parallel<SubscriptionContext<TInit, TMessage, TState>>();
+        private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>();
 
         public SubscriptionContext(
             TInit request,
@@ -94,6 +94,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         public void Cancel()
         {
+            if (_cts.IsCancellationRequested)
+                throw new InvalidOperationException("Can't cancel subscription more than once");
             _cts.Cancel();
         }
 
@@ -101,8 +103,6 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         {
             if (!_isInitiated)
                 throw new InvalidOperationException("Can't cancel not initiated subscription");
-            if (_cts.IsCancellationRequested)
-                throw new InvalidOperationException("Can't cancel subscription more than once");
 
             this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - start");
             _cts.Dispose();
