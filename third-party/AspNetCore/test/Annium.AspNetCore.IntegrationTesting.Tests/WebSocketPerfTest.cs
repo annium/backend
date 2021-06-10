@@ -21,7 +21,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 
         [Theory]
         [MemberData(nameof(GetRange))]
-        public async Task RequestResponse_Works(int index)
+        public async Task PerfRequestResponse_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"start {index}");
@@ -40,7 +40,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 
         [Theory]
         [MemberData(nameof(GetRange))]
-        public async Task RequestResponseBundle_Works(int index)
+        public async Task PerRequestResponseBundle_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"start {index}");
@@ -71,7 +71,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 
         [Theory]
         [MemberData(nameof(GetRange))]
-        public async Task Subscription_Works(int index)
+        public async Task PerfSubscription_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"start {index}");
@@ -128,7 +128,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         [Theory]
         [MemberData(nameof(GetRange))]
         // ReSharper disable once xUnit1026
-        public async Task Connection_Works(int index)
+        public async Task PerfConnection_Works(int index)
         {
             Log.SetTestMode();
             this.Trace(() => $"Run {index}");
