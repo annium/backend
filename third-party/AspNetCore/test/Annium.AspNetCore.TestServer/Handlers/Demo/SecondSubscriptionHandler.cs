@@ -31,8 +31,11 @@ namespace Annium.AspNetCore.TestServer.Handlers.Demo
             _container.Log.Add($"second init: {ctx.Request.Param}");
             ctx.Handle(Result.Status(OperationStatus.Ok));
 
-            _container.Log.Add("second msg");
-            ctx.Send("second msg");
+            _container.Log.Add("second msg1");
+            ctx.Send("second msg1");
+
+            _container.Log.Add("second msg2");
+            ctx.Send("second msg2");
 
             await ct;
 

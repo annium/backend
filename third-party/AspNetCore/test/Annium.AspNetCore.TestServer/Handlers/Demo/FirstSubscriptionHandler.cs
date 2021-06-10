@@ -31,8 +31,11 @@ namespace Annium.AspNetCore.TestServer.Handlers.Demo
             _container.Log.Add($"first init: {ctx.Request.Param}");
             ctx.Handle(Result.Status(OperationStatus.Ok));
 
-            _container.Log.Add("first msg");
-            ctx.Send("first msg");
+            _container.Log.Add("first msg1");
+            ctx.Send("first msg1");
+
+            _container.Log.Add("first msg2");
+            ctx.Send("first msg2");
 
             await ct;
 

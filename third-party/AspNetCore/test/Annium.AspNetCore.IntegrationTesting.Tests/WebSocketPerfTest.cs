@@ -89,38 +89,50 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
                 .ListenSecond(new SecondSubscriptionInit { Param = "def" })
                 .Subscribe(clientLog.Add);
             // wait for init and msg entries
-            this.Trace(() => "Wait for 4 log entries");
-            await Wait.UntilAsync(() => serverLog.Count == 4 && clientLog.Count == 2);
+            this.Trace(() => "Wait for 6 log entries");
+            await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             s1.Dispose();
             s2.Dispose();
 
             // wait for cancellation entries
-            this.Trace(() => "Wait for 6 log entries");
-            await Wait.UntilAsync(() => serverLog.Count == 6);
+            this.Trace(() => "Wait for 8 log entries");
+            await Wait.UntilAsync(() => serverLog.Count == 8);
 
             // assert
-            serverLog.Has(6);
-            var expectedServerLog = new[]
+            serverLog.Has(8);
+            // filter server log and ensure messages order
+            var expectedServerFirstLog = new[]
             {
                 "first init: abc",
-                "second init: def",
-                "first msg",
-                "second msg",
+                "first msg1",
+                "first msg2",
                 "first canceled",
+            };
+            serverLog.Where(x => x.StartsWith("first")).ToArray().IsEqual(expectedServerFirstLog);
+            var expectedServerSecondLog = new[]
+            {
+                "second init: def",
+                "second msg1",
+                "second msg2",
                 "second canceled",
             };
-            foreach (var entry in expectedServerLog)
-                serverLog.Contains(entry).IsTrue();
+            serverLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedServerSecondLog);
 
-            clientLog.Has(2);
-            var expectedClientLog = new[]
+            clientLog.Has(4);
+            // filter server log and ensure messages order
+            var expectedClientFirstLog = new[]
             {
-                "first msg",
-                "second msg",
+                "first msg1",
+                "first msg2",
             };
-            foreach (var entry in expectedClientLog)
-                clientLog.Contains(entry).IsTrue();
+            clientLog.Where(x => x.StartsWith("first")).ToArray().IsEqual(expectedClientFirstLog);
+            var expectedClientSecondLog = new[]
+            {
+                "second msg1",
+                "second msg2",
+            };
+            clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
             this.Trace(() => $"done {index}");
         }
