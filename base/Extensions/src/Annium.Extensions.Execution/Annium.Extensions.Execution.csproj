@@ -16,6 +16,6 @@
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
     </ItemGroup>
     <ItemGroup>
-      <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
+        <PackageReference Include="System.Threading.Channels" Version="5.0.0" />
     </ItemGroup>
 </Project>
