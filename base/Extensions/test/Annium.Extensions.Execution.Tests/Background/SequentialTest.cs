@@ -14,10 +14,11 @@ namespace Annium.Extensions.Execution.Tests.Background
         [Theory]
         [MemberData(nameof(GetRange))]
         // ReSharper disable once xUnit1026
-        public async Task SequentialExecutor_Works(int index)
+        public async Task SequentialExecutor_NormalFlow_Works(int index)
         {
+            this.Trace(() => $"run {index}");
+
             // arrange
-            this.Trace(() => $"Run {index}");
             var executor = Executor.Background.Sequential<SequentialTest>();
             var queue = new ConcurrentQueue<int>();
 
@@ -50,6 +51,29 @@ namespace Annium.Extensions.Execution.Tests.Background
             await disposalTask;
             queue.Count.Is(40);
             queue.ToArray().IsEqual(Enumerable.Range(0, 40).ToArray());
+
+            this.Trace(() => $"done {index}");
+        }
+
+        [Theory]
+        [MemberData(nameof(GetRange))]
+        // ReSharper disable once xUnit1026
+        public async Task SequentialExecutor_Cancellation_Works(int index)
+        {
+            this.Trace(() => $"run {index}");
+
+            // arrange
+            var executor = Executor.Background.Sequential<SequentialTest>();
+
+            // act
+            // run executor
+            executor.Start();
+            // init disposal
+            var disposalTask = executor.DisposeAsync();
+            executor.IsAvailable.IsFalse();
+            await disposalTask;
+
+            this.Trace(() => $"done {index}");
         }
 
         private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });

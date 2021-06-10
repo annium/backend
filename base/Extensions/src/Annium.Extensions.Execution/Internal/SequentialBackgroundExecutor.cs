@@ -1,7 +1,7 @@
 using System;
-using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 using Annium.Diagnostics.Debug;
@@ -12,9 +12,11 @@ namespace Annium.Extensions.Execution.Internal
     internal class SequentialBackgroundExecutor<T> : IBackgroundExecutor
     {
         public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
+        private int Count => _taskReader.CanCount ? _taskReader.Count : -1;
         private int _isAvailable = 1;
         private int _isStarted;
-        private readonly BlockingCollection<Delegate> _tasks = new();
+        private readonly ChannelWriter<Delegate> _taskWriter;
+        private readonly ChannelReader<Delegate> _taskReader;
         private ConfiguredTaskAwaitable _runTask = Task.CompletedTask.ConfigureAwait(false);
         private readonly CancellationTokenSource _cts = new();
 
@@ -23,6 +25,17 @@ namespace Annium.Extensions.Execution.Internal
 
         public void TrySchedule(Action task) => TryScheduleTask(task);
         public void TrySchedule(Func<Task> task) => TryScheduleTask(task);
+
+        public SequentialBackgroundExecutor()
+        {
+            var taskChannel = Channel.CreateUnbounded<Delegate>(new UnboundedChannelOptions
+            {
+                AllowSynchronousContinuations = true,
+                SingleReader = true
+            });
+            _taskWriter = taskChannel.Writer;
+            _taskReader = taskChannel.Reader;
+        }
 
         public void Start(CancellationToken ct = default)
         {
@@ -43,10 +56,10 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace(() => "start");
             EnsureAvailable();
             Stop();
-            var tasksCount = _tasks.Count;
-            this.Trace(() => $"wait for {tasksCount} task(s) to finish");
+            this.Trace(() => $"wait for {Count} task(s) to finish");
             await _runTask;
-            _tasks.Dispose();
+            this.Trace(() => "wait for reader completion");
+            await _taskReader.Completion;
             _cts.Dispose();
             this.Trace(() => "done");
         }
@@ -60,7 +73,7 @@ namespace Annium.Extensions.Execution.Internal
                 try
                 {
                     this.Trace(() => "wait for task");
-                    var task = _tasks.Take(_cts.Token);
+                    var task = await _taskReader.ReadAsync(_cts.Token);
                     await RunTask(task);
                 }
                 catch (OperationCanceledException)
@@ -71,12 +84,14 @@ namespace Annium.Extensions.Execution.Internal
             }
 
             // shutdown mode - runs only left tasks
-            _tasks.CompleteAdding();
-            while (_tasks.Count > 0)
+            this.Trace(() => $"run {Count} tasks left");
+            while (true)
             {
                 this.Trace(() => "get task");
-                var task = _tasks.Take();
-                await RunTask(task);
+                if (_taskReader.TryRead(out var task))
+                    await RunTask(task);
+                else
+                    break;
             }
 
             this.Trace(() => "done");
@@ -94,19 +109,23 @@ namespace Annium.Extensions.Execution.Internal
         {
             if (IsAvailable)
                 ScheduleTaskCore(task);
+            else
+                this.Trace(() => "executor is not available, skipped");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ScheduleTaskCore(Delegate task)
         {
-            _tasks.Add(task);
-            this.Trace(() => $"added {task}, {_tasks.Count} tasks left");
+            if (!_taskWriter.TryWrite(task))
+                throw new InvalidOperationException("Task must have been scheduled");
+
+            this.Trace(() => $"added {task}, {Count} tasks left");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task RunTask(Delegate task)
+        private async ValueTask RunTask(Delegate task)
         {
-            this.Trace(() => $"task {task.GetId()}: start, {_tasks.Count} tasks left");
+            this.Trace(() => $"task {task.GetId()}: start, {Count} tasks left");
             if (task is Action syncTask)
                 await Task.Run(syncTask);
             else if (task is Func<Task> asyncTask)
@@ -119,8 +138,11 @@ namespace Annium.Extensions.Execution.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Stop()
         {
+            this.Trace(() => "start");
             Volatile.Write(ref _isAvailable, 0);
             _cts.Cancel();
+            _taskWriter.Complete();
+            this.Trace(() => "done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
