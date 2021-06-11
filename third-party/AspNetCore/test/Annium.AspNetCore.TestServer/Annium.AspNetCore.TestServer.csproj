@@ -19,6 +19,5 @@
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
         <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
-        <ProjectReference Include="../../../../base/Net/src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
     </ItemGroup>
 </Project>

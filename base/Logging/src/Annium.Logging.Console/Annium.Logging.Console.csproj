@@ -12,6 +12,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
+        <ProjectReference Include="../Annium.Logging.Shared/Annium.Logging.Shared.csproj" />
     </ItemGroup>
 </Project>

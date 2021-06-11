@@ -1,6 +1,7 @@
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.MessageBus.Node;
+using Annium.Logging.Shared;
 using Annium.Serialization.Abstractions;
 
 namespace Demo.Infrastructure.MessageBus.EchoServer

@@ -1,5 +1,6 @@
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
+using Annium.Logging.Shared;
 
 namespace Annium.Core.DependencyInjection
 {

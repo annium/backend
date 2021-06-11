@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
+using Annium.Logging.Shared;
 
 namespace Annium.Architecture.Mediator.Tests
 {

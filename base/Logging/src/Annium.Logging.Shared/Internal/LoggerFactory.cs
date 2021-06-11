@@ -1,7 +1,8 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Logging.Abstractions;
 
-namespace Annium.Logging.Abstractions.Internal
+namespace Annium.Logging.Shared.Internal
 {
     internal class LoggerFactory : ILoggerFactory
     {

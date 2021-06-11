@@ -1,6 +1,7 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
+using Annium.Logging.Shared;
 using Demo.Core.Mediator.Db;
 using Demo.Core.Mediator.Handlers;
 

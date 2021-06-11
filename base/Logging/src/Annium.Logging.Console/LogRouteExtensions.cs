@@ -3,6 +3,7 @@ using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Console;
+using Annium.Logging.Shared;
 
 namespace Annium.Core.DependencyInjection
 {

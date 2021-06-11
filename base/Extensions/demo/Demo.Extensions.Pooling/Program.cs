@@ -6,6 +6,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Pooling;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared;
 
 namespace Demo.Extensions.Pooling
 {

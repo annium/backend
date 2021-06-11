@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared;
 using NodaTime;
 
 namespace Annium.Logging.Console

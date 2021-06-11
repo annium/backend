@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
-using Annium.Logging.Abstractions.Internal;
+using Annium.Logging.Shared;
+using Annium.Logging.Shared.Internal;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -28,6 +30,11 @@ namespace Annium.Core.DependencyInjection
             container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).Scoped();
             container.Add<ILoggerFactory, LoggerFactory>().Scoped();
             container.Add<ILogRouter, LogRouter>().Scoped();
+            container.AddProfile(p =>
+            {
+                p.Map<LogLevel, string>(x => x.ToString());
+                p.Map<string, LogLevel>(x => x.ParseEnum<LogLevel>());
+            });
 
             return container;
         }

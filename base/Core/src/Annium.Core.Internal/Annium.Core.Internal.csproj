@@ -14,5 +14,6 @@
     <ItemGroup>
         <ProjectReference Include="../Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
         <ProjectReference Include="../../../Diagnostics/src/Annium.Diagnostics.Debug/Annium.Diagnostics.Debug.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
     </ItemGroup>
 </Project>

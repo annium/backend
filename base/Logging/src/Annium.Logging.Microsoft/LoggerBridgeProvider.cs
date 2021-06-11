@@ -1,6 +1,7 @@
 using System.Linq;
 using Annium.Core.Runtime.Types;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared;
 using Microsoft.Extensions.Logging;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 

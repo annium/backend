@@ -2,8 +2,9 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Time;
+using Annium.Logging.Abstractions;
 
-namespace Annium.Logging.Abstractions.Internal
+namespace Annium.Logging.Shared.Internal
 {
     internal class LogRouter : ILogRouter
     {

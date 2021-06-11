@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared;
 using Annium.Testing;
 using Xunit;
 

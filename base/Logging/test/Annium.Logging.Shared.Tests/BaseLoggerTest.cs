@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Time;
+using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Logging.Abstractions.Tests
+namespace Annium.Logging.Shared.Tests
 {
     public class BaseLoggerTest
     {

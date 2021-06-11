@@ -2,11 +2,11 @@ using System;
 using System.Linq;
 using Annium.Core.DependencyInjection;
 
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Shared
 {
     public class LogRoute
     {
-        internal Func<LogMessage, bool> Filter { get; private set; } = m => true;
+        internal Func<LogMessage, bool> Filter { get; private set; } = _ => true;
         internal IServiceDescriptor? Service { get; private set; }
         private readonly Action<LogRoute> _registerRoute;
 

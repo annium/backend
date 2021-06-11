@@ -8,6 +8,7 @@ using Annium.Core.Primitives;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;
+using Annium.Logging.Shared;
 using Annium.Testing;
 using Xunit;
 

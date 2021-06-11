@@ -1,7 +1,8 @@
 using System;
+using Annium.Logging.Abstractions;
 using NodaTime;
 
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Shared
 {
     public class LogMessage
     {

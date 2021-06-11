@@ -1,6 +1,7 @@
 using System;
+using Annium.Logging.Abstractions;
 
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Shared
 {
     public interface ILogRouter
     {

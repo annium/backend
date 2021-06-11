@@ -1,6 +1,7 @@
 using System;
+using Annium.Logging.Abstractions;
 
-namespace Annium.Logging.Abstractions.Internal
+namespace Annium.Logging.Shared.Internal
 {
     internal class Logger<T> : ILogger<T>
     {

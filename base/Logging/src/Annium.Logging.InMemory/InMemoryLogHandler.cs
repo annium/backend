@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared;
 
 namespace Annium.Logging.InMemory
 {

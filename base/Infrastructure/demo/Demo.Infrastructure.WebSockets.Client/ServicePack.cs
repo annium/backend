@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Logging.Shared;
 
 namespace Demo.Infrastructure.WebSockets.Client
 {
