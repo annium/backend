@@ -5,6 +5,17 @@ namespace Annium.Logging.Shared
 {
     public interface ILogRouter
     {
-        void Send(LogLevel level, Type source, string message, Exception? exception);
+        void Send(
+            LogLevel level,
+            string source,
+            string message,
+            Exception? exception,
+            object? subject,
+            object? data,
+            bool withTrace,
+            string file,
+            string member,
+            int line
+        );
     }
 }

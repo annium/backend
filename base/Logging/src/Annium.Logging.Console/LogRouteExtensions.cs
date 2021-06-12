@@ -1,7 +1,7 @@
 using System;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
-using Annium.Logging.Abstractions;
+using Annium.Diagnostics.Debug;
 using Annium.Logging.Console;
 using Annium.Logging.Shared;
 
@@ -30,10 +30,25 @@ namespace Annium.Core.DependencyInjection
             return route;
         }
 
-        private static string DefaultFormat(LogMessage m, string message) =>
-            $"[{m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null)}] {m.Level} - {m.Source.FriendlyName()}: {message}";
+        private static string DefaultFormat(LogMessage m, string message)
+        {
+            var time = m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null);
+            return DefaultFormatInternal(m, time, message);
+        }
 
-        private static string DefaultTestFormat(LogMessage m, string message) =>
-            $"[{Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToDateTimeUnspecified()):hh\\:mm\\:ss\\.fff}] {m.Level} - {m.Source.FriendlyName()}: {message}";
+        private static string DefaultTestFormat(LogMessage m, string message)
+        {
+            var time = Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler.Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("hh\\:mm\\:ss\\.fff");
+            return DefaultFormatInternal(m, time, message);
+        }
+
+        private static string DefaultFormatInternal(LogMessage m, string time, string message)
+        {
+            var caller = !string.IsNullOrWhiteSpace(m.Caller) ? $": {m.Caller}.{m.Member}#{m.Line}" : string.Empty;
+            var subject = m.Subject is not null ? $" - {m.Subject.GetType().FriendlyName()}#{m.Subject.GetId()}" : string.Empty;
+            var trace = m.WithTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
+
+            return $"[{time}] {m.Level} {m.Source} [{m.ThreadId:D3}]{caller}{subject} >> {message}{trace}";
+        }
     }
 }

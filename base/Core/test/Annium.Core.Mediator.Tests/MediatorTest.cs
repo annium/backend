@@ -113,7 +113,7 @@ namespace Annium.Core.Mediator.Tests
             container.AddTimeProvider();
             container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
             container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
-            container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest)).UseInMemory(logHandler));
+            container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));
             container.AddMediatorConfiguration(configure);
             container.AddMediator();
             var provider = container.BuildServiceProvider();

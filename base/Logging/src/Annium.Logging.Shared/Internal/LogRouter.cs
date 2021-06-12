@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Time;
 using Annium.Logging.Abstractions;
@@ -24,10 +26,34 @@ namespace Annium.Logging.Shared.Internal
             _timeProvider = timeProvider;
         }
 
-        public void Send(LogLevel level, Type source, string message, Exception? exception)
+        public void Send(
+            LogLevel level,
+            string source,
+            string message,
+            Exception? exception,
+            object? subject,
+            object? data,
+            bool withTrace,
+            string file,
+            string member,
+            int line
+        )
         {
             var instant = _timeProvider.Now;
-            var msg = new LogMessage(instant, level, source, message, exception);
+            var msg = new LogMessage(
+                instant,
+                level,
+                source,
+                Thread.CurrentThread.ManagedThreadId,
+                message,
+                exception,
+                subject,
+                data,
+                withTrace,
+                Path.GetFileNameWithoutExtension(file),
+                member,
+                line
+            );
 
             foreach (var route in _routes)
                 if (route.Filter(msg))
