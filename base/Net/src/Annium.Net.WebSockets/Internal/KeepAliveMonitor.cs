@@ -3,8 +3,8 @@ using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 using NodaTime;
 
 namespace Annium.Net.WebSockets.Internal
@@ -15,6 +15,7 @@ namespace Annium.Net.WebSockets.Internal
         private readonly IObservable<SocketMessage> _observable;
         private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
         private readonly ActiveKeepAlive _options;
+        private readonly ILogger _logger;
         private DisposableBox _disposable = Disposable.Box();
         private CancellationTokenSource _cts = new();
         private Instant _lastPongTime;
@@ -23,17 +24,19 @@ namespace Annium.Net.WebSockets.Internal
         public KeepAliveMonitor(
             IObservable<SocketMessage> observable,
             Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-            ActiveKeepAlive options
+            ActiveKeepAlive options,
+            ILogger logger
         )
         {
             _observable = observable;
             _send = send;
             _options = options;
+            _logger = logger;
         }
 
         public void Resume()
         {
-            this.Trace(() => "start");
+            _logger.Trace("start");
             _disposable = Disposable.Box();
 
             _disposable += _cts = new();
@@ -48,15 +51,15 @@ namespace Annium.Net.WebSockets.Internal
             _disposable += _observable
                 .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
                 .Subscribe(TrackPong);
-            this.Trace(() => "done");
+            _logger.Trace("done");
         }
 
         public void Pause()
         {
-            this.Trace(() => "start");
+            _logger.Trace("start");
             _cts.Cancel();
             _disposable.Dispose();
-            this.Trace(() => "done");
+            _logger.Trace("done");
         }
 
         private void SendPingCheckPong(object? _)
@@ -77,7 +80,7 @@ namespace Annium.Net.WebSockets.Internal
         private void SendPing()
         {
             // send ping every time
-            this.Trace(() => "Send ping");
+            _logger.Trace("Send ping");
             _send(_options.PingFrame).Subscribe();
         }
 
@@ -91,17 +94,17 @@ namespace Annium.Net.WebSockets.Internal
             if (silenceDuration <= _options.PingInterval)
                 return;
 
-            this.Trace(() => $"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+            _logger.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
             if (silenceDuration > _options.PingInterval * _options.Retries)
             {
-                this.Trace(() => "Missed all pings - signal connection lost");
+                _logger.Trace("Missed all pings - signal connection lost");
                 _cts.Cancel();
             }
         }
 
         private void TrackPong(SocketMessage _)
         {
-            this.Trace(() => "Received pong");
+            _logger.Trace("Received pong");
             _lastPongTime = GetNow();
         }
 

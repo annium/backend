@@ -5,8 +5,8 @@ using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Net.WebSockets.Internal
 {
@@ -16,7 +16,8 @@ namespace Annium.Net.WebSockets.Internal
             IObservable<SocketMessage> observable,
             Encoding encoding,
             Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-            WebSocketBaseOptions options
+            WebSocketBaseOptions options,
+            ILogger logger
         )
         {
             IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
@@ -28,7 +29,7 @@ namespace Annium.Net.WebSockets.Internal
             {
                 var opts = options.ActiveKeepAlive;
                 keepAliveFrames.Add(opts.PongFrame);
-                keepAliveMonitor = new KeepAliveMonitor(observable, send, opts);
+                keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, logger);
             }
 
             // if passive - listen pings, respond with pongs
@@ -44,7 +45,7 @@ namespace Annium.Net.WebSockets.Internal
                     )
                     .DoParallelAsync(async _ =>
                     {
-                        keepAliveMonitor.Trace(() => "KeepAlive: ping -> pong");
+                        logger.Trace("KeepAlive: ping -> pong");
                         await send(opts.PongFrame);
                     })
                     .Subscribe();

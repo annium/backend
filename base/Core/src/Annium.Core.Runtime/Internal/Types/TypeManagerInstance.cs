@@ -23,21 +23,21 @@ namespace Annium.Core.Runtime.Internal.Types
             bool tryLoadReferences
         )
         {
-            this.Trace(() => $"start for {assembly}");
-            this.Trace(() => "collect assemblies");
+            this.Trace($"start for {assembly}");
+            this.Trace("collect assemblies");
             var assemblies = AssembliesCollector.Collect(assembly, tryLoadReferences);
-            this.Trace(() => "collect types");
+            this.Trace("collect types");
             var types = TypesCollector.Collect(assemblies);
-            this.Trace(() => "build hierarchy");
+            this.Trace("build hierarchy");
             _hierarchy = HierarchyBuilder.BuildHierarchy(types);
-            this.Trace(() => $"register {types.Count} ids");
+            this.Trace($"register {types.Count} ids");
             var ids = new Dictionary<TypeId, Type>();
             foreach (var type in types)
                 ids[type.GetId()] = type;
 
             _ids = ids;
             Types = types;
-            this.Trace(() => "done");
+            this.Trace("done");
         }
 
         /// <summary>

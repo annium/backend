@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
@@ -12,24 +12,28 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         where TState : ConnectionStateBase
     {
         private readonly IEnumerable<ILifeCycleHandler<TState>> _handlers;
+        private readonly ILogger<LifeCycleCoordinator<TState>> _logger;
 
         public LifeCycleCoordinator(
-            IEnumerable<ILifeCycleHandler<TState>> handlers
+            IEnumerable<ILifeCycleHandler<TState>> handlers,
+            ILogger<LifeCycleCoordinator<TState>> logger
         )
         {
             _handlers = handlers;
+            _logger = logger;
         }
 
         public Task HandleStartAsync(TState state)
         {
-            this.Trace();
+            _logger.Trace("start");
 
             return HandleAsync(state, (x, s) => x.HandleStartAsync(s));
         }
 
         public Task HandleEndAsync(TState state)
         {
-            this.Trace();
+            _logger.Trace("start");
+
             return HandleAsync(state, (x, s) => x.HandleEndAsync(s));
         }
 

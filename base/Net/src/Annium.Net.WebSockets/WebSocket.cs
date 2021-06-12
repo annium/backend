@@ -2,7 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
+using Annium.Logging.Abstractions;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets
@@ -12,21 +12,25 @@ namespace Annium.Net.WebSockets
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
 
         public WebSocket(
-            NativeWebSocket socket
+            NativeWebSocket socket,
+            ILogger<WebSocket> logger
         ) : this(
             socket,
-            new WebSocketOptions()
+            new WebSocketOptions(),
+            logger
         )
         {
         }
 
         public WebSocket(
             NativeWebSocket socket,
-            WebSocketOptions options
+            WebSocketOptions options,
+            ILogger<WebSocket> logger
         ) : base(
             socket,
             options,
-            Extensions.Execution.Executor.Background.Parallel<WebSocket>()
+            Extensions.Execution.Executor.Background.Parallel<WebSocket>(),
+            logger
         )
         {
         }
@@ -36,7 +40,7 @@ namespace Annium.Net.WebSockets
             // cancel receive, if pending
             CancelReceive();
 
-            this.Trace(() => "Invoke ConnectionLost");
+            Logger.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
@@ -46,21 +50,21 @@ namespace Annium.Net.WebSockets
                     Socket.State == WebSocketState.Open
                 )
                 {
-                    this.Trace(() => "Disconnect");
+                    Logger.Trace("Disconnect");
                     await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
                 }
                 else
-                    this.Trace(() => "Already disconnected");
+                    Logger.Trace("Already disconnected");
             }
             catch (WebSocketException)
             {
-                this.Trace(() => nameof(WebSocketException));
+                Logger.Trace(nameof(WebSocketException));
             }
         }
 
         protected override Task OnConnectionLostAsync()
         {
-            this.Trace(() => "Invoke ConnectionLost");
+            Logger.Trace("Invoke ConnectionLost");
             Executor.TrySchedule(() => ConnectionLost.Invoke());
 
             return Task.CompletedTask;
@@ -68,7 +72,7 @@ namespace Annium.Net.WebSockets
 
         public override async ValueTask DisposeAsync()
         {
-            this.Trace(() => "Invoke ConnectionLost");
+            Logger.Trace("Invoke ConnectionLost");
             Executor.TrySchedule(() => ConnectionLost.Invoke());
             await DisposeBaseAsync();
         }

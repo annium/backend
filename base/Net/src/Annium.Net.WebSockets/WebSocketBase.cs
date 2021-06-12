@@ -8,9 +8,9 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Extensions.Execution;
+using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
@@ -26,6 +26,7 @@ namespace Annium.Net.WebSockets
 
         protected TNativeSocket Socket { get; set; }
         protected IBackgroundExecutor Executor { get; }
+        protected ILogger Logger { get; }
         private CancellationTokenSource _receiveCts = new();
         private bool IsConnected => State is WebSocketState.Open or WebSocketState.CloseSent;
         private readonly UTF8Encoding _encoding = new();
@@ -38,12 +39,14 @@ namespace Annium.Net.WebSockets
         internal WebSocketBase(
             TNativeSocket socket,
             WebSocketBaseOptions options,
-            IBackgroundExecutor executor
+            IBackgroundExecutor executor,
+            ILogger logger
         )
         {
             Socket = socket;
 
             Executor = executor;
+            Logger = logger;
             Executor.Start();
 
             // start socket observable
@@ -51,8 +54,8 @@ namespace Annium.Net.WebSockets
             _disposable += observableInstance;
 
             // resolve components from configuration
-            this.Trace(options.ToString);
-            var cfg = Configurator.GetConfiguration(observableInstance.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options);
+            Logger.Trace(options.ToString());
+            var cfg = Configurator.GetConfiguration(observableInstance.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, Logger);
             _keepAliveMonitor = cfg.KeepAliveMonitor;
             _observable = cfg.MessageObservable;
             _binaryObservable = cfg.BinaryObservable;
@@ -74,7 +77,7 @@ namespace Annium.Net.WebSockets
 
         protected void CancelReceive()
         {
-            this.Trace();
+            Logger.Trace("start");
             _receiveCts.Cancel();
         }
 
@@ -100,44 +103,44 @@ namespace Annium.Net.WebSockets
         private IObservableInstance<SocketMessage> CreateSocketObservable() =>
             ObservableInstance.Static<SocketMessage>(async ctx =>
             {
-                this.Trace(() => "start, rent buffer");
+                Logger.Trace("start, rent buffer");
                 var pool = ArrayPool<byte>.Shared;
                 var buffer = pool.Rent(BufferSize);
 
                 try
                 {
-                    this.Trace(() => "cycle start");
+                    Logger.Trace("cycle start");
 
                     // initial spin, until connected
-                    this.Trace(() => "spin until keepAlive monitor up and connected");
+                    Logger.Trace("spin until keepAlive monitor up and connected");
                     // TODO: connection state must be tracked externally
                     await Wait.UntilAsync(() => _keepAliveMonitor is not null! && IsConnected);
                     // await Wait.UntilAsync(() => _keepAliveMonitor is not null!);
-                    this.Trace(() => "resume keepAlive monitor");
+                    Logger.Trace("resume keepAlive monitor");
                     _keepAliveMonitor.Resume();
                     _receiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
                     // run polling
-                    this.Trace(() => "start polling");
+                    Logger.Trace("start polling");
                     while (!ctx.Ct.IsCancellationRequested)
                     {
                         // keep receiving until closed
                         if (await ReceiveAsync(ctx, buffer) == Status.Closed)
                         {
-                            this.Trace(() => "Receive ended with Status.Closed - break receive cycle");
+                            Logger.Trace("Receive ended with Status.Closed - break receive cycle");
                             break;
                         }
                     }
 
                     // either ct canceled or cycle break due to socket closed
-                    this.Trace(() => $"cycle end: {(ctx.Ct.IsCancellationRequested ? "disposed" : "disconnected")}");
+                    Logger.Trace($"cycle end: {(ctx.Ct.IsCancellationRequested ? "disposed" : "disconnected")}");
                 }
                 catch (Exception e)
                 {
-                    this.Trace(() => $"Exception {e}");
+                    Logger.Trace($"Exception {e}");
                 }
 
-                this.Trace(() => "End, return buffer, send OnCompleted");
+                Logger.Trace("End, return buffer, send OnCompleted");
                 pool.Return(buffer);
                 ctx.OnCompleted();
 
@@ -160,7 +163,7 @@ namespace Annium.Net.WebSockets
                 //  remote party closed connection w/o handshake
                 catch (WebSocketException e)
                 {
-                    this.Trace(() => $"{nameof(WebSocketException)} {e}");
+                    Logger.Trace($"{nameof(WebSocketException)} {e}");
                     if (await HandleConnectionLost() == Status.Closed)
                         return Status.Closed;
                 }
@@ -169,19 +172,19 @@ namespace Annium.Net.WebSockets
                 {
                     if (!_keepAliveMonitor.Token.IsCancellationRequested)
                     {
-                        this.Trace(() => $"{nameof(OperationCanceledException)} by disposal");
+                        Logger.Trace($"{nameof(OperationCanceledException)} by disposal");
                         HandleDisconnected();
 
                         return Status.Closed;
                     }
 
-                    this.Trace(() => $"{nameof(OperationCanceledException)} by keepAlive");
+                    Logger.Trace($"{nameof(OperationCanceledException)} by keepAlive");
                     if (await HandleConnectionLost() == Status.Closed)
                         return Status.Closed;
                 }
                 catch (Exception e)
                 {
-                    this.Trace(() => $"Exception {e}");
+                    Logger.Trace($"Exception {e}");
                     // unexpected case
                     throw;
                 }
@@ -189,7 +192,7 @@ namespace Annium.Net.WebSockets
                 // if closing - handle disconnect
                 if (result.MessageType == WebSocketMessageType.Close)
                 {
-                    this.Trace(() => "Received close message");
+                    Logger.Trace("Received close message");
                     if (await HandleConnectionLost() == Status.Closed)
                         return Status.Closed;
                 }
@@ -204,29 +207,29 @@ namespace Annium.Net.WebSockets
 
         private async Task<Status> HandleConnectionLost()
         {
-            this.Trace(() => "Pause keepAlive");
+            Logger.Trace("Pause keepAlive");
             _keepAliveMonitor.Pause();
-            this.Trace(() => $"{nameof(OnConnectionLostAsync)} - start in {State} state");
+            Logger.Trace($"{nameof(OnConnectionLostAsync)} - start in {State} state");
             await OnConnectionLostAsync().ConfigureAwait(false);
-            this.Trace(() => $"{nameof(OnConnectionLostAsync)} - complete");
+            Logger.Trace($"{nameof(OnConnectionLostAsync)} - complete");
 
             // if after disconnect handling not connected - set completed and break
             if (State is WebSocketState.CloseReceived or WebSocketState.Closed or WebSocketState.Aborted)
             {
-                this.Trace(() => "Closed");
+                Logger.Trace("Closed");
                 return Status.Closed;
             }
 
             _keepAliveMonitor.Resume();
             _receiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
-            this.Trace(() => "Opened");
+            Logger.Trace("Opened");
             return Status.Opened;
         }
 
         private void HandleDisconnected()
         {
-            this.Trace(() => "Pause keepAlive");
+            Logger.Trace("Pause keepAlive");
             _keepAliveMonitor.Pause();
         }
 
@@ -237,17 +240,17 @@ namespace Annium.Net.WebSockets
 
         protected async ValueTask DisposeBaseAsync()
         {
-            this.Trace(() => "start - cancel receive");
+            Logger.Trace("start - cancel receive");
             // stop receiving by socket
             _receiveCts.Cancel();
             _receiveCts.Dispose();
-            this.Trace(() => "dispose bundle");
+            Logger.Trace("dispose bundle");
             await _disposable.DisposeAsync();
-            this.Trace(() => "dispose executor");
+            Logger.Trace("dispose executor");
             await Executor.DisposeAsync();
-            this.Trace(() => "dispose socket");
+            Logger.Trace("dispose socket");
             await Socket.DisposeAsync();
-            this.Trace(() => "done");
+            Logger.Trace("done");
         }
 
         private enum Status

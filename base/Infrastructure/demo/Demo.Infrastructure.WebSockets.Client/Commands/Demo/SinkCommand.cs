@@ -16,21 +16,26 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
     {
         private readonly ILogger<SinkCommand> _logger;
         private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+        private readonly ILoggerFactory _loggerFactory;
         public override string Id { get; } = "sink";
         public override string Description { get; } = "socket sink (to listen broadcasts)";
 
         public SinkCommand(
             ISerializer<ReadOnlyMemory<byte>> serializer,
-            ILogger<SinkCommand> logger
+            ILoggerFactory loggerFactory
         )
         {
             _serializer = serializer;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.GetLogger<SinkCommand>();
         }
 
         public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken ct)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
+            var ws = new ClientWebSocket(
+                new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
+                _loggerFactory.GetLogger<ClientWebSocket>()
+            );
             ws.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");

@@ -7,74 +7,20 @@ namespace Annium.Core.Internal
 {
     public static class LogExtensions
     {
-        public static void Debug<T>(
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static void Trace<T>(
             this T obj,
-            Func<string> getMessage,
+            string message = "",
             bool withTrace = false,
             [CallerFilePath] string callerFilePath = "",
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0
         ) where T : class
         {
-            Log.Debug(
-                () =>
-                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
-                callerFilePath,
-                member,
-                line
-            );
-        }
-
-        public static void Debug<T>(
-            this T obj,
-            bool withTrace = false,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) where T : class
-        {
-            Log.Debug(
-                () =>
-                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
-                callerFilePath,
-                member,
-                line
-            );
-        }
-
-        public static void Trace<T>(
-            this T obj,
-            Func<string> getMessage,
-            bool withTrace = false,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) where T : class
-        {
-            Log.Trace(
-                () =>
-                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)} >> {getMessage()}",
-                callerFilePath,
-                member,
-                line
-            );
-        }
-
-        public static void Trace<T>(
-            this T obj,
-            bool withTrace = false,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) where T : class
-        {
-            Log.Trace(
-                () =>
-                    $"{obj.GetType().FriendlyName()}#{obj.GetId()}{(withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty)}",
-                callerFilePath,
-                member,
-                line
-            );
+            var subject = $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
+            var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
+            var msg = string.IsNullOrWhiteSpace(message) ? $" >> {message}" : string.Empty;
+            Log.Trace($"{subject}{trace}{msg}", callerFilePath, member, line);
         }
     }
 }

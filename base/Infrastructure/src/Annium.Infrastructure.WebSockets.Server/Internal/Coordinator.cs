@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Internal;
 using Annium.Diagnostics.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Models;
+using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
@@ -16,33 +16,36 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServerLifetimeManager _lifetimeManager;
         private readonly ConnectionTracker _connectionTracker;
         private readonly ConnectionHandlerFactory<TState> _handlerFactory;
+        private readonly ILogger<Coordinator<TState>> _logger;
 
         public Coordinator(
             IServiceProvider sp,
             IServerLifetimeManager lifetimeManager,
             ConnectionTracker connectionTracker,
             ConnectionHandlerFactory<TState> handlerFactory,
-            BroadcastCoordinator broadcastCoordinator
+            BroadcastCoordinator broadcastCoordinator,
+            ILogger<Coordinator<TState>> logger
         )
         {
             _sp = sp;
             _lifetimeManager = lifetimeManager;
             _connectionTracker = connectionTracker;
             _handlerFactory = handlerFactory;
+            _logger = logger;
             broadcastCoordinator.Start();
         }
 
         public async Task HandleAsync(WebSocket socket)
         {
             await using var cn = await _connectionTracker.Track(socket);
-            this.Trace(() => $"Start for connection {cn.GetId()}");
+            _logger.Trace($"Start for connection {cn.GetId()}");
             await using var scope = _sp.CreateAsyncScope();
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
             {
                 socket.ConnectionLost += () =>
                 {
-                    this.Trace(() => $"Notify lost connection {cn.GetId()}");
+                    _logger.Trace($"Notify lost connection {cn.GetId()}");
                     // for case, when server stops, thus cancellation occurs before connection is lost
                     if (!cts.IsCancellationRequested)
                         cts.Cancel();
@@ -54,22 +57,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             finally
             {
-                this.Trace(() => $"Release complete connection {cn.GetId()}");
+                _logger.Trace($"Release complete connection {cn.GetId()}");
                 await _connectionTracker.Release(cn.Id);
             }
 
-            this.Trace(() => $"End for connection {cn.GetId()}");
+            _logger.Trace($"End for connection {cn.GetId()}");
         }
 
         public void Shutdown()
         {
-            this.Trace();
+            _logger.Trace("start");
             _lifetimeManager.Stop();
         }
 
         public void Dispose()
         {
-            this.Trace();
+            _logger.Trace("start");
             Shutdown();
         }
     }

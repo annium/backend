@@ -17,7 +17,7 @@ namespace Annium.Core.Runtime.Internal.Types
             bool tryLoadReferences
         )
         {
-            Log.Trace(() => "start");
+            Log.Trace("start");
 
             // result parts
             var allAssemblies = new Dictionary<string, Assembly>();
@@ -38,7 +38,7 @@ namespace Annium.Core.Runtime.Internal.Types
                 asm => matchedAssemblies.Add(asm)
             );
 
-            Log.Trace(() => "done");
+            Log.Trace("done");
 
             return matchedAssemblies;
         }
@@ -61,14 +61,14 @@ namespace Annium.Core.Runtime.Internal.Types
                 .SingleOrDefault(x => x.GetType().GetId() == AutoScannedTypeId);
             if (autoScanned != null)
             {
-                Log.Trace(() => $"{name.Name} - matched");
+                Log.Trace($"{name.Name} - matched");
                 addMatchedAssembly(assembly);
                 var dependencies = (Assembly[]) autoScanned.GetType()
                     .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
                     .GetValue(autoScanned);
                 foreach (var dependency in dependencies)
                 {
-                    Log.Trace(() => $"{name.Name} - add dependency {dependency.ShortName()}");
+                    Log.Trace($"{name.Name} - add dependency {dependency.ShortName()}");
                     addMatchedAssembly(dependency);
                     Collect(dependency.GetName(), resolveAssembly, registerAssembly, addMatchedAssembly);
                 }
@@ -91,7 +91,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (assemblies.TryGetValue(name.FullName, out var asm))
                 return asm;
 
-            // Log.Trace(() => $"load {name}");
+            // Log.Trace($"load {name}");
             return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
         };
     }

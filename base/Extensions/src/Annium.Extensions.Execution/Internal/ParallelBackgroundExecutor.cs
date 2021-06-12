@@ -46,12 +46,12 @@ namespace Annium.Extensions.Execution.Internal
 
         public async ValueTask DisposeAsync()
         {
-            this.Trace(() => "start");
+            this.Trace("start");
             EnsureAvailable();
             Stop();
-            this.Trace(() => $"wait for {_taskCounter} task(s) to finish");
+            this.Trace($"wait for {_taskCounter} task(s) to finish");
             await _tcs.Task;
-            this.Trace(() => "done");
+            this.Trace("done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -74,12 +74,12 @@ namespace Annium.Extensions.Execution.Internal
             if (Volatile.Read(ref _isStarted) == 1)
             {
                 Interlocked.Increment(ref _taskCounter);
-                this.Trace(() => $"run task {task.GetId()}; counter: {_taskCounter}");
+                this.Trace($"run task {task.GetId()}; counter: {_taskCounter}");
                 RunTask(task).ContinueWith(CompleteTask);
             }
             else
             {
-                this.Trace(() => $"schedule task {task.GetId()}; counter: {_taskCounter}");
+                this.Trace($"schedule task {task.GetId()}; counter: {_taskCounter}");
                 _backlog.Add(task);
             }
         }
@@ -88,7 +88,7 @@ namespace Annium.Extensions.Execution.Internal
         private void CompleteTask(Task task)
         {
             Interlocked.Decrement(ref _taskCounter);
-            this.Trace(() => $"task {task.GetId()}; counter: {_taskCounter}");
+            this.Trace($"task {task.GetId()}; counter: {_taskCounter}");
             TryFinish();
         }
 
@@ -96,14 +96,14 @@ namespace Annium.Extensions.Execution.Internal
         private void Stop()
         {
             Volatile.Write(ref _isAvailable, 0);
-            this.Trace(() => $"isAvailable: {_isAvailable}, tasks: {_taskCounter}");
+            this.Trace($"isAvailable: {_isAvailable}, tasks: {_taskCounter}");
             TryFinish();
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryFinish()
         {
-            this.Trace(() => $"isAvailable: {_isAvailable}; counter: {_taskCounter}");
+            this.Trace($"isAvailable: {_isAvailable}; counter: {_taskCounter}");
             if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _taskCounter) == 0)
                 _tcs.TrySetResult(new object());
         }

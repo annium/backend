@@ -22,21 +22,26 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
     {
         private readonly ILogger<RequestCommand> _logger;
         private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+        private readonly ILoggerFactory _loggerFactory;
         public override string Id { get; } = "request";
         public override string Description { get; } = "test demo flow";
 
         public RequestCommand(
             ISerializer<ReadOnlyMemory<byte>> serializer,
-            ILogger<RequestCommand> logger
+            ILoggerFactory loggerFactory
         )
         {
             _serializer = serializer;
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.GetLogger<RequestCommand>();
         }
 
         public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
+            var ws = new ClientWebSocket(
+                new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
+                _loggerFactory.GetLogger<ClientWebSocket>()
+            );
             ws.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");

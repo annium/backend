@@ -22,7 +22,7 @@ namespace Annium.Core.Runtime.Internal.Types
             if (!type.IsGenericType)
                 return new[] { type };
 
-            this.Trace(() => $"{type.FriendlyName()} - start");
+            this.Trace($"{type.FriendlyName()} - start");
             var sets = new List<Type[]>();
             foreach (var argument in type.GetGenericArguments())
             {
@@ -42,7 +42,7 @@ namespace Annium.Core.Runtime.Internal.Types
                 .Select(type.MakeGenericType)
                 .ToArray();
 
-            this.Trace(() => $"{type.FriendlyName()} - end");
+            this.Trace($"{type.FriendlyName()} - end");
 
             return types;
         }

@@ -1,7 +1,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 
 namespace Demo.Net.WebSockets.Client
@@ -9,12 +11,12 @@ namespace Demo.Net.WebSockets.Client
     public class Program
     {
         private static async Task Run(
-            IServiceProvider provider,
+            IServiceProvider sp,
             string[] args,
             CancellationToken ct
         )
         {
-            var socket = new ClientWebSocket();
+            var socket = new ClientWebSocket(sp.Resolve<ILogger<ClientWebSocket>>());
 
             await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
 

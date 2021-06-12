@@ -2,14 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
     internal class SubscriptionContextStore : IConnectionBoundStore
     {
+        private readonly ILogger<SubscriptionContextStore> _logger;
         private readonly List<ISubscriptionContext> _contexts = new();
+
+        public SubscriptionContextStore(
+            ILogger<SubscriptionContextStore> logger
+        )
+        {
+            _logger = logger;
+        }
 
         public void Save(ISubscriptionContext context)
         {
@@ -18,17 +26,17 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
         public bool TryCancel(Guid subscriptionId)
         {
-            this.Trace(() => $"subscription {subscriptionId} - init");
+            _logger.Trace($"subscription {subscriptionId} - init");
             lock (_contexts)
             {
                 var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
                 if (context is null!)
                 {
-                    this.Trace(() => $"subscription {subscriptionId} - context missing");
+                    _logger.Trace($"subscription {subscriptionId} - context missing");
                     return false;
                 }
 
-                this.Trace(() => $"subscription {subscriptionId} - cancel context");
+                _logger.Trace($"subscription {subscriptionId} - cancel context");
                 _contexts.Remove(context);
                 context.Cancel();
 

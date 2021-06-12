@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Execution;
@@ -11,6 +10,7 @@ using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
@@ -26,6 +26,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public Guid SubscriptionId { get; }
         private readonly CancellationTokenSource _cts;
         private readonly IMediator _mediator;
+        private readonly ILogger<SubscriptionContext<TInit, TMessage, TState>> _logger;
         private readonly IServiceProvider _sp;
         private readonly TState _state;
         private bool _isInitiated;
@@ -38,6 +39,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             Guid subscriptionId,
             CancellationTokenSource cts,
             IMediator mediator,
+            ILogger<SubscriptionContext<TInit, TMessage, TState>> logger,
             IServiceProvider sp
         )
         {
@@ -46,6 +48,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             SubscriptionId = subscriptionId;
             _cts = cts;
             _mediator = mediator;
+            _logger = logger;
             _sp = sp;
             _state = state;
             _executor.Start();
@@ -104,11 +107,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (!_isInitiated)
                 throw new InvalidOperationException("Can't cancel not initiated subscription");
 
-            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - start");
+            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
             _cts.Dispose();
-            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
+            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
             await _executor.DisposeAsync();
-            this.Trace(() => $"connection {ConnectionId}, subscription {SubscriptionId} - done");
+            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
         }
 
         private void SendInternal<T>(T msg) =>

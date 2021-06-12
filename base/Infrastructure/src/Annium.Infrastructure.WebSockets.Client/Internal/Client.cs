@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Core.Runtime.Time;
+using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal
@@ -16,12 +16,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public Client(
             ITimeProvider timeProvider,
             Serializer serializer,
-            IClientConfiguration configuration
+            IClientConfiguration configuration,
+            ILoggerFactory loggerFactory
         ) : base(
-            new ClientWebSocket(configuration.WebSocketOptions),
+            new ClientWebSocket(configuration.WebSocketOptions, loggerFactory.GetLogger<ClientWebSocket>()),
             timeProvider,
             serializer,
-            configuration
+            configuration,
+            loggerFactory.GetLogger<Client>()
         )
         {
             _configuration = configuration;
@@ -38,13 +40,13 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
         public override async ValueTask DisposeAsync()
         {
-            this.Trace(() => "start");
+            Logger.Trace("start");
             await base.DisposeAsync();
-            this.Trace(() => "disconnect socket");
+            Logger.Trace("disconnect socket");
             await Socket.DisconnectAsync();
-            this.Trace(() => "dispose socket");
+            Logger.Trace("dispose socket");
             await Socket.DisposeAsync();
-            this.Trace(() => "done");
+            Logger.Trace("done");
         }
     }
 }

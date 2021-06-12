@@ -21,7 +21,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         public async Task DebugRequestResponse_Works()
         {
             Log.SetTestMode();
-            this.Trace(() => "start");
+            Console.WriteLine("start");
 
             // arrange
             await using var client = await GetClient();
@@ -32,14 +32,14 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             // assert
             response.Status.Is(OperationStatus.Ok);
             response.Data.Is("Hi");
-            this.Trace(() => "done");
+            Console.WriteLine("done");
         }
 
         [Fact]
         public async Task DebugSubscription_Works()
         {
             Log.SetTestMode();
-            this.Trace(() => "start");
+            Console.WriteLine("start");
 
             // arrange
             await using var client = await GetClient();
@@ -54,14 +54,14 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
                 .ListenSecond(new SecondSubscriptionInit { Param = "def" })
                 .Subscribe(clientLog.Add);
             // wait for init and msg entries
-            this.Trace(() => "Wait for 6 log entries");
+            Console.WriteLine("Wait for 6 log entries");
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             s1.Dispose();
             s2.Dispose();
 
             // wait for cancellation entries
-            this.Trace(() => "Wait for 8 log entries");
+            Console.WriteLine("Wait for 8 log entries");
             await Wait.UntilAsync(() => serverLog.Count == 8);
 
             // assert
@@ -99,7 +99,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             };
             clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
-            this.Trace(() => "done");
+            Console.WriteLine("done");
         }
     }
 }

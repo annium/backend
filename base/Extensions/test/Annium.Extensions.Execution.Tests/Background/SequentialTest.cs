@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -16,7 +15,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         // ReSharper disable once xUnit1026
         public async Task SequentialExecutor_NormalFlow_Works(int index)
         {
-            this.Trace(() => $"run {index}");
+            Console.WriteLine($"run {index}");
 
             // arrange
             var executor = Executor.Background.Sequential<SequentialTest>();
@@ -52,7 +51,7 @@ namespace Annium.Extensions.Execution.Tests.Background
             queue.Count.Is(40);
             queue.ToArray().IsEqual(Enumerable.Range(0, 40).ToArray());
 
-            this.Trace(() => $"done {index}");
+            Console.WriteLine($"done {index}");
         }
 
         [Theory]
@@ -60,7 +59,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         // ReSharper disable once xUnit1026
         public async Task SequentialExecutor_Cancellation_Works(int index)
         {
-            this.Trace(() => $"run {index}");
+            Console.WriteLine($"run {index}");
 
             // arrange
             var executor = Executor.Background.Sequential<SequentialTest>();
@@ -73,7 +72,7 @@ namespace Annium.Extensions.Execution.Tests.Background
             executor.IsAvailable.IsFalse();
             await disposalTask;
 
-            this.Trace(() => $"done {index}");
+            Console.WriteLine($"done {index}");
         }
 
         private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });

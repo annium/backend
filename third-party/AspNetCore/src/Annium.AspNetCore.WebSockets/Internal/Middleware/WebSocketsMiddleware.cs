@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Internal;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Logging.Abstractions;
@@ -19,6 +18,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
         private readonly RequestDelegate _next;
         private readonly ICoordinator _coordinator;
         private readonly ServerConfiguration _cfg;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<WebSocketsMiddleware> _logger;
         private readonly Helper _helper;
 
@@ -28,12 +28,14 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
             ServerConfiguration cfg,
             IHostApplicationLifetime applicationLifetime,
             IIndex<SerializerKey, ISerializer<string>> serializers,
+            ILoggerFactory loggerFactory,
             ILogger<WebSocketsMiddleware> logger
         )
         {
             _next = next;
             _coordinator = coordinator;
             _cfg = cfg;
+            _loggerFactory = loggerFactory;
             applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
             _logger = logger;
             _helper = new Helper(
@@ -62,11 +64,11 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                this.Trace(() => "accept");
+                _logger.Trace("accept");
                 var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
-                this.Trace(() => "create socket");
-                var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions);
-                this.Trace(() => "handle");
+                _logger.Trace("create socket");
+                var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory.GetLogger<WebSocket>());
+                _logger.Trace("handle");
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)

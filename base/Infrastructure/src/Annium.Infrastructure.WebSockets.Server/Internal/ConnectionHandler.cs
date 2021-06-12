@@ -4,10 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Internal;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
@@ -17,25 +17,28 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServiceProvider _sp;
         private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
         private readonly Connection _cn;
+        private readonly ILogger<ConnectionHandler<TState>> _logger;
         private readonly TState _state;
 
         public ConnectionHandler(
             IServiceProvider sp,
             Func<Guid, TState> stateFactory,
             IEnumerable<IConnectionBoundStore> connectionBoundStores,
-            Connection cn
+            Connection cn,
+            ILogger<ConnectionHandler<TState>> logger
         )
         {
             _sp = sp;
             _connectionBoundStores = connectionBoundStores;
             _cn = cn;
+            _logger = logger;
             _state = stateFactory(cn.Id);
         }
 
         public async Task HandleAsync(CancellationToken ct)
         {
             var cnId = _cn.Id;
-            this.Trace(() => $"cn {cnId} - start");
+            _logger.Trace($"cn {cnId} - start");
             await using var scope = _sp.CreateAsyncScope();
             var executor = Executor.Background.Parallel<ConnectionHandler<TState>>();
             var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
@@ -47,13 +50,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 ct.Register(() => tcs.TrySetResult(new object()));
 
                 // start listening to messages and adding them to scheduler
-                this.Trace(() => $"cn {cnId} - init subscription");
+                _logger.Trace($"cn {cnId} - init subscription");
                 _cn.Socket
                     .Listen()
                     .Subscribe(
                         x => executor.TrySchedule(async () =>
                         {
-                            this.Trace(() => $"cn {cnId} - HandleMessage");
+                            _logger.Trace($"cn {cnId} - HandleMessage");
                             await using var messageScope = _sp.CreateAsyncScope();
                             var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
                             await handler.HandleMessage(_cn.Socket, _state, x);
@@ -64,32 +67,32 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                     );
 
                 // process start hook
-                this.Trace(() => $"cn {cnId} - handle lifecycle start - start");
+                _logger.Trace($"cn {cnId} - handle lifecycle start - start");
                 await lifeCycleCoordinator.HandleStartAsync(_state);
-                this.Trace(() => $"cn {cnId} - handle lifecycle start - done");
+                _logger.Trace($"cn {cnId} - handle lifecycle start - done");
 
                 // start scheduler to process backlog and run upcoming work immediately
-                this.Trace(() => $"cn {cnId} - start executor");
+                _logger.Trace($"cn {cnId} - start executor");
                 executor.Start(CancellationToken.None);
 
                 // wait until connection complete
-                this.Trace(() => $"cn {cnId} - wait until connection complete");
+                _logger.Trace($"cn {cnId} - wait until connection complete");
                 await tcs.Task;
-                this.Trace(() => $"cn {cnId} - cleanup connection-bound stores - start");
+                _logger.Trace($"cn {cnId} - cleanup connection-bound stores - start");
                 await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
-                this.Trace(() => $"cn {cnId} - cleanup connection-bound stores - done");
+                _logger.Trace($"cn {cnId} - cleanup connection-bound stores - done");
             }
             finally
             {
                 // all handlers must be complete before teardown lifecycle hook
-                this.Trace(() => $"cn {cnId} - dispose executor - start");
+                _logger.Trace($"cn {cnId} - dispose executor - start");
                 await executor.DisposeAsync();
-                this.Trace(() => $"cn {cnId} - dispose executor - done");
+                _logger.Trace($"cn {cnId} - dispose executor - done");
 
                 // process end hook
-                this.Trace(() => $"cn {cnId} - handle lifecycle end - start");
+                _logger.Trace($"cn {cnId} - handle lifecycle end - start");
                 await lifeCycleCoordinator.HandleEndAsync(_state);
-                this.Trace(() => $"cn {cnId} - handle lifecycle end - done");
+                _logger.Trace($"cn {cnId} - handle lifecycle end - done");
             }
         }
 

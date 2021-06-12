@@ -1,13 +1,13 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Core.Mediator;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
@@ -23,16 +23,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
     {
         private readonly SubscriptionContextStore _subscriptionContextStore;
         private readonly IMediator _mediator;
+        private readonly ILogger<SubscriptionInitHandler<TInit, TMessage, TState>> _logger;
+        private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceProvider _sp;
 
         public SubscriptionInitHandler(
             SubscriptionContextStore subscriptionContextStore,
             IMediator mediator,
+            ILogger<SubscriptionInitHandler<TInit, TMessage, TState>> logger,
+            ILoggerFactory loggerFactory,
             IServiceProvider sp
         )
         {
             _subscriptionContextStore = subscriptionContextStore;
             _mediator = mediator;
+            _logger = logger;
+            _loggerFactory = loggerFactory;
             _sp = sp;
         }
 
@@ -43,14 +49,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
-            this.Trace(() => $"subscription {subscriptionId} - init");
+            _logger.Trace($"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            await using var context = new SubscriptionContext<TInit, TMessage, TState>(ctx.Request, ctx.State, subscriptionId, cts, _mediator, _sp);
+            await using var context = new SubscriptionContext<TInit, TMessage, TState>(
+                ctx.Request,
+                ctx.State,
+                subscriptionId,
+                cts,
+                _mediator,
+                _loggerFactory.GetLogger<SubscriptionContext<TInit, TMessage, TState>>(),
+                _sp
+            );
 
             // when reporting successful init - save to subscription store
             context.OnInit(() =>
             {
-                this.Trace(() => $"subscription {subscriptionId} - save to store");
+                _logger.Trace($"subscription {subscriptionId} - save to store");
                 _subscriptionContextStore.Save(context);
             });
 

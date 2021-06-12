@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
@@ -27,7 +28,7 @@ namespace Annium.Logging.Shared.Tests
             _messages.Has(1);
             _messages.At(0).Instant.IsEqual(timeProvider.Now);
             _messages.At(0).Level.IsEqual(LogLevel.Trace);
-            _messages.At(0).Source.IsEqual(typeof(BaseLoggerTest));
+            _messages.At(0).Source.IsEqual(typeof(BaseLoggerTest).FriendlyName());
             _messages.At(0).Message.IsEqual("sample");
         }
 

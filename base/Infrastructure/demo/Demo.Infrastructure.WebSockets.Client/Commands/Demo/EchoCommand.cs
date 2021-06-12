@@ -13,20 +13,25 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 {
     internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>
     {
+        private readonly ILoggerFactory _loggerFactory;
         private readonly ILogger<EchoCommand> _logger;
         public override string Id { get; } = "echo";
         public override string Description { get; } = "test echo flow";
 
         public EchoCommand(
-            ILogger<EchoCommand> logger
+            ILoggerFactory loggerFactory
         )
         {
-            _logger = logger;
+            _loggerFactory = loggerFactory;
+            _logger = loggerFactory.GetLogger<EchoCommand>();
         }
 
         public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
         {
-            var ws = new ClientWebSocket(new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) });
+            var ws = new ClientWebSocket(
+                new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
+                _loggerFactory.GetLogger<ClientWebSocket>()
+            );
             ws.ConnectionLost += () =>
             {
                 _logger.Debug("connection lost");

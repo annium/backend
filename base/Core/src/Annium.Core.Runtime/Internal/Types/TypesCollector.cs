@@ -10,7 +10,7 @@ namespace Annium.Core.Runtime.Internal.Types
     {
         public static IReadOnlyCollection<Type> Collect(IReadOnlyCollection<Assembly> assemblies)
         {
-            Log.Trace(() => "start");
+            Log.Trace("start");
 
             // list of collected types
             var types = new HashSet<Type>();
@@ -18,12 +18,12 @@ namespace Annium.Core.Runtime.Internal.Types
             foreach (var assembly in assemblies)
             {
                 var assemblyTypes = assembly.GetTypes();
-                Log.Trace(() => $"register {assemblyTypes.Length} type(s) from assembly {assembly.ShortName()}");
+                Log.Trace($"register {assemblyTypes.Length} type(s) from assembly {assembly.ShortName()}");
                 foreach (var type in assemblyTypes)
                     types.Add(type);
             }
 
-            Log.Trace(() => "done");
+            Log.Trace("done");
 
             return types;
         }

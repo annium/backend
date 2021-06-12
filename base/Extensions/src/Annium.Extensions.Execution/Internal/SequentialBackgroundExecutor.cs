@@ -47,54 +47,59 @@ namespace Annium.Extensions.Execution.Internal
             // change to state to unavailable
             ct.Register(Stop);
 
-            this.Trace(() => "run");
+            this.Trace("run");
             _runTask = Task.Run(Run, CancellationToken.None).ConfigureAwait(false);
         }
 
         public async ValueTask DisposeAsync()
         {
-            this.Trace(() => "start");
+            this.Trace("start");
             EnsureAvailable();
             Stop();
-            this.Trace(() => $"wait for {Count} task(s) to finish");
+            this.Trace($"wait for {Count} task(s) to finish");
             await _runTask;
-            this.Trace(() => "wait for reader completion");
+            this.Trace("wait for reader completion");
             await _taskReader.Completion;
             _cts.Dispose();
-            this.Trace(() => "done");
+            this.Trace("done");
         }
 
         private async Task Run()
         {
-            this.Trace(() => "start");
+            this.Trace("start");
             // normal mode - runs task immediately or waits for one
             while (Volatile.Read(ref _isAvailable) == 1)
             {
                 try
                 {
-                    this.Trace(() => "wait for task");
+                    this.Trace("wait for task");
                     var task = await _taskReader.ReadAsync(_cts.Token);
                     await RunTask(task);
                 }
+                catch (ChannelClosedException)
+                {
+                    this.Trace("cancelled");
+                    break;
+                }
                 catch (OperationCanceledException)
                 {
-                    this.Trace(() => "cancelled");
+                    this.Trace("cancelled");
                     break;
                 }
             }
 
             // shutdown mode - runs only left tasks
-            this.Trace(() => $"run {Count} tasks left");
+            this.Trace($"run {Count} tasks left");
             while (true)
             {
-                this.Trace(() => "get task");
+                this.Trace("get task");
                 if (_taskReader.TryRead(out var task))
                     await RunTask(task);
                 else
                     break;
             }
 
-            this.Trace(() => "done");
+            this.Trace("done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -110,7 +115,7 @@ namespace Annium.Extensions.Execution.Internal
             if (IsAvailable)
                 ScheduleTaskCore(task);
             else
-                this.Trace(() => "executor is not available, skipped");
+                this.Trace("executor is not available, skipped");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -119,30 +124,30 @@ namespace Annium.Extensions.Execution.Internal
             if (!_taskWriter.TryWrite(task))
                 throw new InvalidOperationException("Task must have been scheduled");
 
-            this.Trace(() => $"added {task}, {Count} tasks left");
+            this.Trace($"added {task}, {Count} tasks left");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private async ValueTask RunTask(Delegate task)
         {
-            this.Trace(() => $"task {task.GetId()}: start, {Count} tasks left");
+            this.Trace($"task {task.GetId()}: start, {Count} tasks left");
             if (task is Action syncTask)
                 await Task.Run(syncTask);
             else if (task is Func<Task> asyncTask)
                 await asyncTask().ConfigureAwait(false);
             else
                 throw new NotSupportedException();
-            this.Trace(() => $"task {task.GetId()}: complete");
+            this.Trace($"task {task.GetId()}: complete");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Stop()
         {
-            this.Trace(() => "start");
+            this.Trace("start");
             Volatile.Write(ref _isAvailable, 0);
             _cts.Cancel();
             _taskWriter.Complete();
-            this.Trace(() => "done");
+            this.Trace("done");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -13,7 +13,7 @@ namespace Annium.Core.Internal
     public static class Log
     {
         private const string LogVar = "ANNIUM_LOG";
-        private static LogLevel Level { get; }
+        private static bool Enabled { get; }
         public static Action<string> Write { get; set; }
         private static List<string> Filter { get; }
         private static DateTime Since { get; }
@@ -23,82 +23,43 @@ namespace Annium.Core.Internal
         {
             Since = DateTime.Now;
             GetLogTime = GetAbsoluteLogTime;
-            (Level, Write, Filter) = Configure();
+            (Enabled, Write, Filter) = Configure();
         }
 
         public static void SetTestMode() => GetLogTime = GetRelativeLogTime;
 
         public static TimeSpan ToRelativeLogTime(DateTime dt) => dt - Since;
 
-        public static void Debug(
-            Func<string> getMessage,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        )
-        {
-            if (Level >= LogLevel.Debug)
-                LogInternal(callerFilePath, member, line, $": {getMessage()}");
-        }
-
-        public static void Debug(
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        )
-        {
-            if (Level >= LogLevel.Debug)
-                LogInternal(callerFilePath, member, line);
-        }
-
-        public static void Trace(
-            Func<string> getMessage,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        )
-        {
-            if (Level >= LogLevel.Trace)
-                LogInternal(callerFilePath, member, line, $": {getMessage()}");
-        }
-
-        public static void Trace(
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        )
-        {
-            if (Level >= LogLevel.Trace)
-                LogInternal(callerFilePath, member, line);
-        }
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void LogInternal(
-            string callerFilePath,
-            string member,
-            int line,
-            string message = ""
+        internal static void Trace(
+            string message,
+            [CallerFilePath] string callerFilePath = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         )
         {
+            if (!Enabled)
+                return;
+
             var caller = Path.GetFileNameWithoutExtension(callerFilePath);
             if (Filter.Count == 0 || Filter.Any(caller.Contains))
                 Write(
-                    $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}{message}"
+                    $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}: {message}"
                 );
         }
 
         private static Config Configure()
         {
             var raw = Environment.GetEnvironmentVariable(LogVar);
-            if (string.IsNullOrWhiteSpace(raw))
-                return new(LogLevel.Release, Console.WriteLine, new());
+            if (raw is null)
+                return new(false, Console.WriteLine, new());
 
             // convert to cfg dictionary
-            var cfg = raw.Split(';').Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
-
-            // resolve level
-            if (!cfg.TryGetValue("lvl", out var rawLevel) || !rawLevel.TryParseEnum<LogLevel>(out var level))
-                level = LogLevel.Release;
+            var cfg = raw
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
+                .Where(x => x.Length == 2)
+                .ToDictionary(x => x[0], x => x[1]);
 
             // resolve device
             if (!cfg.TryGetValue("dev", out var rawDevice) || !rawDevice.TryParseEnum<LogDevice>(out var device))
@@ -110,7 +71,7 @@ namespace Annium.Core.Internal
                 ? rawFilter.Split(',').ToList()
                 : new List<string>();
 
-            return new(level, write, filter);
+            return new(true, write, filter);
         }
 
         private static Action<string> ResolveWrite(LogDevice dev, string address)
@@ -130,7 +91,7 @@ namespace Annium.Core.Internal
             }
         }
 
-        private record Config(LogLevel Level, Action<string> Write, List<string> Filter);
+        private record Config(bool Enabled, Action<string> Write, List<string> Filter);
 
         private static string GetAbsoluteLogTime() => DateTime.Now.ToString("HH:mm:ss.fff");
         private static string GetRelativeLogTime() => (DateTime.Now - Since).ToString(@"hh\:mm\:ss\.fff");

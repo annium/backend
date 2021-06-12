@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -17,7 +16,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         public async Task ParallelExecutor_Works(int index)
         {
             // arrange
-            this.Trace(() => $"Run {index}");
+            Console.WriteLine($"run {index}");
             var executor = Executor.Background.Parallel<ParallelTest>();
             var counter = 0;
 
@@ -47,6 +46,8 @@ namespace Annium.Extensions.Execution.Tests.Background
             ((Action) (() => executor.Schedule(() => { }))).Throws<InvalidOperationException>();
             await disposalTask;
             counter.Is(200);
+
+            Console.WriteLine($"done");
         }
 
         private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
