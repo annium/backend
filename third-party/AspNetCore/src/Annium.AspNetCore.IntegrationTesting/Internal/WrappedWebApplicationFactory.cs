@@ -29,6 +29,9 @@ namespace Annium.AspNetCore.IntegrationTesting.Internal
             where T : notnull
             => _appFactory.Services.Resolve<T>();
 
+        public object Resolve(Type type)
+            => _appFactory.Services.Resolve(type);
+
         public IHttpRequest GetHttpRequest() => _httpRequest.Value.Clone();
 
         public async Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)

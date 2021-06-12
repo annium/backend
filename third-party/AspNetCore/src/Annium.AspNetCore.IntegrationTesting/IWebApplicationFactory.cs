@@ -8,6 +8,8 @@ namespace Annium.AspNetCore.IntegrationTesting
     {
         T Resolve<T>() where T : notnull;
 
+        object Resolve(Type type);
+
         IHttpRequest GetHttpRequest();
 
         Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)
