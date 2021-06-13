@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Annium.Logging.Abstractions
 {
@@ -10,9 +11,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Trace(
@@ -20,9 +21,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Debug(
@@ -30,9 +31,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Info(
@@ -40,9 +41,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Warn(
@@ -50,9 +51,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Error(
@@ -60,9 +61,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
 
         void Error(
@@ -70,9 +71,9 @@ namespace Annium.Logging.Abstractions
             object? subject = default!,
             object? data = default!,
             bool withTrace = false,
-            string file = "",
-            string member = "",
-            int line = 0
+            [CallerFilePath] string file = "",
+            [CallerMemberName] string member = "",
+            [CallerLineNumber] int line = 0
         );
     }
 
