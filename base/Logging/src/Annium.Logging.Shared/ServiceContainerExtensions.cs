@@ -28,6 +28,7 @@ namespace Annium.Core.DependencyInjection
             }
 
             container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).Scoped();
+            container.Add(typeof(LogSubject<>)).As(typeof(ILogSubject<>)).Scoped();
             container.Add<ILoggerFactory, LoggerFactory>().Scoped();
             container.Add<ILogRouter, LogRouter>().Scoped();
             container.AddProfile(p =>

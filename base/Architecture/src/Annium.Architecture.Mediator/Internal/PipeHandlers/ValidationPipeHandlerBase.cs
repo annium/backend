@@ -7,10 +7,10 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
-    internal abstract class ValidationPipeHandlerBase<TRequest, TResponse>
+    internal abstract class ValidationPipeHandlerBase<TRequest, TResponse> : ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly IValidator<TRequest> _validator;
-        private readonly ILogger<ValidationPipeHandlerBase<TRequest, TResponse>> _logger;
 
         public ValidationPipeHandlerBase(
             IValidator<TRequest> validator,
@@ -18,7 +18,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
         )
         {
             _validator = validator;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -27,10 +27,10 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            _logger.Trace($"Validate {typeof(TRequest)}");
+            this.Trace($"Validate {typeof(TRequest)}");
             if (request is null)
             {
-                _logger.Trace($"Validation of {typeof(TRequest)} failed - request is null");
+                this.Trace($"Validation of {typeof(TRequest)} failed - request is null");
 
                 return GetResponse(Result.New().Error("Request is empty"));
             }
@@ -38,7 +38,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             var result = await _validator.ValidateAsync(request);
             if (result.HasErrors)
             {
-                _logger.Trace($"Validation of {typeof(TRequest)} failed");
+                this.Trace($"Validation of {typeof(TRequest)} failed");
 
                 return GetResponse(result);
             }

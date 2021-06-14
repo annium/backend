@@ -1,7 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
-using Annium.Logging.Shared;
 using Annium.Testing;
 using Xunit;
 
@@ -13,12 +12,12 @@ namespace Annium.Logging.Console.Tests
         public void LogMessage_WritesLogMessageToConsole()
         {
             // arrange
-            var logger = GetLogger();
+            var subject = GetSubject();
 
             using (var capture = ConsoleCapture.Start())
             {
                 // act
-                logger.Info("sample");
+                subject.Info("sample");
 
                 // assert
                 capture.Output.Contains("sample").IsTrue();
@@ -29,7 +28,7 @@ namespace Annium.Logging.Console.Tests
         public void LogAggregateException_WritesErrorsCountAndAllErrorsToConsole()
         {
             // arrange
-            var logger = GetLogger();
+            var subject = GetSubject();
 
             using (var capture = ConsoleCapture.Start())
             {
@@ -37,7 +36,7 @@ namespace Annium.Logging.Console.Tests
                 var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
 
                 // act
-                logger.Error(ex);
+                subject.Error(ex);
 
                 // assert
                 capture.Output.Contains("Errors (2):").IsTrue();
@@ -50,7 +49,7 @@ namespace Annium.Logging.Console.Tests
         public void LogException_WritesExceptionToConsole()
         {
             // arrange
-            var logger = GetLogger();
+            var subject = GetSubject();
 
             using (var capture = ConsoleCapture.Start())
             {
@@ -58,14 +57,14 @@ namespace Annium.Logging.Console.Tests
                 var ex = new Exception("xxx");
 
                 // act
-                logger.Error(ex);
+                subject.Error(ex);
 
                 // assert
                 capture.Output.Contains("xxx").IsTrue();
             }
         }
 
-        private ILogger GetLogger(LogLevel minLogLevel = LogLevel.Trace)
+        private ILogSubject GetSubject(LogLevel minLogLevel = LogLevel.Trace)
         {
             var container = new ServiceContainer();
 
@@ -75,7 +74,7 @@ namespace Annium.Logging.Console.Tests
                 .For(m => m.Level >= minLogLevel)
                 .UseConsole());
 
-            return container.BuildServiceProvider().Resolve<ILogger<ConsoleLoggerTest>>();
+            return container.BuildServiceProvider().Resolve<ILogSubject<ConsoleLoggerTest>>();
         }
     }
 }

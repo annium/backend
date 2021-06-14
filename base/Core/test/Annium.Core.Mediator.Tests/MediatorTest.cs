@@ -122,18 +122,19 @@ namespace Annium.Core.Mediator.Tests
         }
 
         internal class ConversionHandler<TRequest, TResponse> :
-            IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>
+            IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
+            ILogSubject
         {
             private static readonly JsonSerializerOptions
                 Options = new JsonSerializerOptions().ConfigureForOperations();
 
-            private readonly ILogger<MediatorTest> _logger;
+            public ILogger Logger { get; }
 
             public ConversionHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                _logger = logger;
+                Logger = logger;
             }
 
             public async Task<Response<TResponse>> HandleAsync(
@@ -142,12 +143,12 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
-                _logger.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
+                this.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
                 var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
 
                 var result = await next(payload, ct);
 
-                _logger.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
+                this.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
                 return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
             }
         }
@@ -181,10 +182,11 @@ namespace Annium.Core.Mediator.Tests
         }
 
         internal class ValidationHandler<TRequest, TResponse> :
-            IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
+            IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
+            ILogSubject
         {
+            public ILogger Logger { get; }
             private readonly Func<TRequest, bool> _validate;
-            private readonly ILogger<MediatorTest> _logger;
 
             public ValidationHandler(
                 Func<TRequest, bool> validate,
@@ -192,7 +194,7 @@ namespace Annium.Core.Mediator.Tests
             )
             {
                 _validate = validate;
-                _logger = logger;
+                Logger = logger;
             }
 
             public async Task<IBooleanResult<TResponse>> HandleAsync(
@@ -201,11 +203,11 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
-                _logger.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
+                this.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
                 var result = _validate(request)
                     ? Result.Success(default(TResponse) !)
                     : Result.Failure(default(TResponse) !).Error("Validation failed");
-                _logger.Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
+                this.Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
 
@@ -215,17 +217,17 @@ namespace Annium.Core.Mediator.Tests
             }
         }
 
-        private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>
+        private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>, ILogSubject
             where TRequest : TResponse
             where TResponse : Base, new()
         {
-            private readonly ILogger<MediatorTest> _logger;
+            public ILogger Logger { get; }
 
             public OpenFinalHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                _logger = logger;
+                Logger = logger;
             }
 
             public Task<TResponse> HandleAsync(
@@ -233,8 +235,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                _logger.Info(GetType().FriendlyName());
-                _logger.Info(request.GetHashCode().ToString());
+                this.Info(GetType().FriendlyName());
+                this.Info(request.GetHashCode().ToString());
 
                 var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
@@ -242,15 +244,15 @@ namespace Annium.Core.Mediator.Tests
             }
         }
 
-        private class ClosedFinalHandler : IFinalRequestHandler<Base, One>
+        private class ClosedFinalHandler : IFinalRequestHandler<Base, One>, ILogSubject
         {
-            private readonly ILogger<MediatorTest> _logger;
+            public ILogger Logger { get; }
 
             public ClosedFinalHandler(
                 ILogger<MediatorTest> logger
             )
             {
-                _logger = logger;
+                Logger = logger;
             }
 
             public Task<One> HandleAsync(
@@ -258,8 +260,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                _logger.Info(GetType().FullName!);
-                _logger.Info(request.GetHashCode().ToString());
+                this.Info(GetType().FullName!);
+                this.Info(request.GetHashCode().ToString());
 
                 return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
             }

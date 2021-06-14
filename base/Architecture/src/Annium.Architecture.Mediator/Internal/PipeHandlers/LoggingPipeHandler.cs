@@ -6,15 +6,15 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
-    internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>
+    internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>, ILogSubject
     {
-        private readonly ILogger<LoggingPipeHandler<TRequest, TResponse>> _logger;
+        public ILogger Logger { get; }
 
         public LoggingPipeHandler(
             ILogger<LoggingPipeHandler<TRequest, TResponse>> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -23,11 +23,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            _logger.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
+            this.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
 
             var result = await next(request, ct);
 
-            _logger.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
+            this.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
 
             return result;
         }

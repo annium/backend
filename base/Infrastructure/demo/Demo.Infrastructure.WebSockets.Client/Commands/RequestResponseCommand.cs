@@ -14,12 +14,12 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands
 {
-    internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
+    internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
     {
-        private readonly IClientFactory _clientFactory;
-        private readonly ILogger<RequestCommand> _logger;
         public override string Id { get; } = "request-response";
         public override string Description => $"test {Id} flow";
+        public ILogger Logger { get; }
+        private readonly IClientFactory _clientFactory;
 
         public RequestResponseCommand(
             IClientFactory clientFactory,
@@ -27,7 +27,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         )
         {
             _clientFactory = clientFactory;
-            _logger = logger;
+            Logger = logger;
         }
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
@@ -39,12 +39,12 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
-                _logger.Debug("connection lost");
+                this.Debug("connection lost");
                 return Task.CompletedTask;
             };
             client.ConnectionRestored += () =>
             {
-                _logger.Debug("connection restored");
+                this.Debug("connection restored");
                 return Task.CompletedTask;
             };
 
@@ -53,7 +53,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var counter = 0;
             var sw = new Stopwatch();
 
-            _logger.Debug("Parallel");
+            this.Debug("Parallel");
             sw.Start();
             await Task.WhenAll(
                 Enumerable.Range(0, 20000)
@@ -66,7 +66,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             );
             sw.Stop();
 
-            _logger.Debug("Sequential");
+            this.Debug("Sequential");
             sw.Start();
             foreach (var _ in Enumerable.Range(0, 5000))
             {
@@ -77,16 +77,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
             sw.Stop();
 
-            _logger.Debug($"End: {sw.Elapsed}. Counter: {counter}");
+            this.Debug($"End: {sw.Elapsed}. Counter: {counter}");
 
             if (client.IsConnected)
                 await client.DisconnectAsync();
 
             async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken ct)
             {
-                // _logger.Debug($">>> {request}");
+                // this.Debug($">>> {request}");
                 var result = await client!.FetchAsync<T>(request, ct);
-                // _logger.Debug($"<<< {result}");
+                // this.Debug($"<<< {result}");
                 return result;
             }
         }

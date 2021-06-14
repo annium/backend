@@ -13,13 +13,11 @@ namespace Annium.Testing.TestAdapter
     [FileExtension(Constants.FileExtensionDll)]
     [FileExtension(Constants.FileExtensionExe)]
     [DefaultExecutorUri(Constants.ExecutorUri)]
-    public class AdapterTestDiscoverer : ITestDiscoverer
+    public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
     {
+        public ILogger Logger { get; private set; } = default!;
         private readonly TestConverter _testConverter;
-
         private TestDiscoverer? _testDiscoverer;
-
-        private ILogger<AdapterTestDiscoverer>? _logger;
 
         public AdapterTestDiscoverer()
         {
@@ -38,9 +36,9 @@ namespace Annium.Testing.TestAdapter
         {
             var provider = AdapterServiceProviderBuilder.Build(discoveryContext);
             _testDiscoverer = provider.Resolve<TestDiscoverer>();
-            _logger = provider.Resolve<ILogger<AdapterTestDiscoverer>>();
+            Logger = provider.Resolve<ILogger<AdapterTestDiscoverer>>();
 
-            _logger.Debug("Start discovery.");
+            this.Debug("Start discovery.");
 
             DiscoverSourcesAsync(sources, discoverySink).Wait();
         }
@@ -52,7 +50,7 @@ namespace Annium.Testing.TestAdapter
         {
             var assembly = Source.Resolve(source);
 
-            _logger!.Debug($"Start discovery of {assembly.FullName}.");
+            this.Debug($"Start discovery of {assembly.FullName}.");
 
             return _testDiscoverer!.FindTestsAsync(
                 assembly,

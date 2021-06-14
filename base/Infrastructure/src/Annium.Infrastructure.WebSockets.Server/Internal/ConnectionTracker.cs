@@ -9,11 +9,11 @@ using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class ConnectionTracker : IAsyncDisposable
+    internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly IServerLifetime _lifetime;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly ILogger<ConnectionTracker> _logger;
         private readonly Dictionary<Guid, ConnectionRef> _connections = new();
         private readonly TaskCompletionSource<object> _disposeTcs = new();
         private bool _isDisposing;
@@ -27,7 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             _lifetime = lifetime;
             _loggerFactory = loggerFactory;
-            _logger = logger;
+            Logger = logger;
             _lifetime.Stopping.Register(TryStop);
         }
 
@@ -39,11 +39,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 throw new InvalidOperationException("Server is already stopping");
 
             var cn = new Connection(Guid.NewGuid(), socket, _loggerFactory.GetLogger<Connection>());
-            _logger.Trace($"connection {cn.Id} - start");
+            this.Trace($"connection {cn.Id} - start");
             lock (_connections)
-                _connections[cn.Id] = new ConnectionRef(cn, _logger);
+                _connections[cn.Id] = new ConnectionRef(cn, Logger);
 
-            _logger.Trace($"connection {cn.Id} - done");
+            this.Trace($"connection {cn.Id} - done");
             return Task.FromResult(cn);
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             // not available, if already disposing
             if (_isDisposing)
             {
-                _logger.Trace($"connection {id} - unavailable, is disposing");
+                this.Trace($"connection {id} - unavailable, is disposing");
                 cn = null!;
                 return false;
             }
@@ -61,7 +61,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             {
                 if (!_connections.TryGetValue(id, out var cnRef))
                 {
-                    _logger.Trace($"connection {id} - missing");
+                    this.Trace($"connection {id} - missing");
                     cn = null!;
                     return false;
                 }
@@ -82,13 +82,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             // can be called after disposing starts, but invalid, if already disposed
             EnsureNotDisposed();
 
-            _logger.Trace($"connection {id} - start");
+            this.Trace($"connection {id} - start");
             ConnectionRef cnRef;
             lock (_connections)
             {
                 if (!_connections.Remove(id, out cnRef))
                 {
-                    _logger.Trace($"connection {id} - not found");
+                    this.Trace($"connection {id} - not found");
                     return;
                 }
             }
@@ -96,14 +96,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             var cn = cnRef.Connection;
             cnRef.TryDispose();
 
-            _logger.Trace($"connection {cn.Id} - wait until can be released");
+            this.Trace($"connection {cn.Id} - wait until can be released");
             await cnRef.CanBeReleased;
 
-            _logger.Trace($"connection {cn.Id} - dispose");
+            this.Trace($"connection {cn.Id} - dispose");
 
             if (_lifetime.Stopping.IsCancellationRequested)
                 TryStop();
-            _logger.Trace($"connection {cn.Id} - done");
+            this.Trace($"connection {cn.Id} - done");
         }
 
         public IReadOnlyCollection<Connection> Slice()
@@ -117,9 +117,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             // not ensuring single call, because for some reason is invoked twice from integration tests
             _isDisposing = true;
 
-            _logger.Trace("start");
+            this.Trace("start");
             await _disposeTcs.Task;
-            _logger.Trace("done");
+            this.Trace("done");
 
             _isDisposed = true;
         }
@@ -128,7 +128,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             lock (_connections)
             {
-                _logger.Trace($"Unreleased connections: {_connections.Count}");
+                this.Trace($"Unreleased connections: {_connections.Count}");
                 if (_connections.Count == 0)
                     _disposeTcs.TrySetResult(new object());
             }
@@ -146,9 +146,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 throw new ObjectDisposedException(nameof(ConnectionTracker));
         }
 
-        private record ConnectionRef
+        private record ConnectionRef : ILogSubject
         {
-            private readonly ILogger _logger;
+            public ILogger Logger { get; }
             public Connection Connection { get; }
             public Task CanBeReleased => _disposeTcs.Task;
             private readonly TaskCompletionSource<object?> _disposeTcs = new();
@@ -159,20 +159,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 ILogger logger
             )
             {
-                _logger = logger;
+                Logger = logger;
                 Connection = connection;
             }
 
             public void Acquire()
             {
                 var count = Interlocked.Increment(ref _refCount);
-                _logger.Trace($"cn {Connection.Id}: {count}");
+                this.Trace($"cn {Connection.Id}: {count}");
             }
 
             public void Release(bool tryDispose)
             {
                 var count = Interlocked.Decrement(ref _refCount);
-                _logger.Trace($"cn {Connection.Id}: {count} ({tryDispose})");
+                this.Trace($"cn {Connection.Id}: {count} ({tryDispose})");
                 if (count == 0 && tryDispose)
                     _disposeTcs.TrySetResult(null);
             }
@@ -180,7 +180,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             public void TryDispose()
             {
                 var count = Volatile.Read(ref _refCount);
-                _logger.Trace($"cn {Connection.Id}: {count}");
+                this.Trace($"cn {Connection.Id}: {count}");
                 if (count == 0)
                     _disposeTcs.TrySetResult(null);
             }

@@ -16,7 +16,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
     internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         ISubscriptionContext<TInit, TMessage, TState>,
-        ISubscriptionContext
+        ISubscriptionContext,
+        ILogSubject
         where TInit : SubscriptionInitRequestBase
         where TState : ConnectionStateBase
     {
@@ -24,9 +25,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         public TState State => _state;
         public Guid ConnectionId { get; }
         public Guid SubscriptionId { get; }
+        public ILogger Logger { get; }
         private readonly CancellationTokenSource _cts;
         private readonly IMediator _mediator;
-        private readonly ILogger<SubscriptionContext<TInit, TMessage, TState>> _logger;
         private readonly IServiceProvider _sp;
         private readonly TState _state;
         private bool _isInitiated;
@@ -48,7 +49,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             SubscriptionId = subscriptionId;
             _cts = cts;
             _mediator = mediator;
-            _logger = logger;
+            Logger = logger;
             _sp = sp;
             _state = state;
             _executor.Start();
@@ -107,11 +108,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (!_isInitiated)
                 throw new InvalidOperationException("Can't cancel not initiated subscription");
 
-            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
+            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
             _cts.Dispose();
-            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
+            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
             await _executor.DisposeAsync();
-            _logger.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
+            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
         }
 
         private void SendInternal<T>(T msg) =>

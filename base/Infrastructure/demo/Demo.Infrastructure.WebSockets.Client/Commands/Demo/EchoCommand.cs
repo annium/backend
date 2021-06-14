@@ -11,19 +11,19 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 {
-    internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>
+    internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject
     {
-        private readonly ILoggerFactory _loggerFactory;
-        private readonly ILogger<EchoCommand> _logger;
         public override string Id { get; } = "echo";
         public override string Description { get; } = "test echo flow";
+        public ILogger Logger { get; }
+        private readonly ILoggerFactory _loggerFactory;
 
         public EchoCommand(
             ILoggerFactory loggerFactory
         )
         {
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory.GetLogger<EchoCommand>();
+            Logger = loggerFactory.GetLogger<EchoCommand>();
         }
 
         public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
@@ -34,20 +34,20 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             );
             ws.ConnectionLost += () =>
             {
-                _logger.Debug("connection lost");
+                this.Debug("connection lost");
                 return Task.CompletedTask;
             };
             ws.ConnectionRestored += () =>
             {
-                _logger.Debug("connection restored");
+                this.Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            _logger.Debug($"Connecting to {cfg.Server}");
+            this.Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, ct);
-            _logger.Debug($"Connected to {cfg.Server}");
+            this.Debug($"Connected to {cfg.Server}");
 
-            _logger.Debug("Start echo loop");
+            this.Debug("Start echo loop");
 
             var sw = new Stopwatch();
             sw.Start();
@@ -66,19 +66,19 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
                 }
 
             sw.Stop();
-            _logger.Debug($"Messages sent: {value}. Rate: {Math.Floor((double) value / sw.ElapsedMilliseconds * 1000)}rps");
+            this.Debug($"Messages sent: {value}. Rate: {Math.Floor((double) value / sw.ElapsedMilliseconds * 1000)}rps");
 
             if (!cfg.Kill)
             {
-                _logger.Debug("Disconnecting");
+                this.Debug("Disconnecting");
                 await ws.DisconnectAsync();
-                _logger.Debug("Disconnected");
+                this.Debug("Disconnected");
             }
 
             IObservable<Unit> Send(int val)
             {
                 if (val % 10000 == 0)
-                    _logger.Debug($">>> {val}");
+                    this.Debug($">>> {val}");
                 return ws.Send(val.ToString(), CancellationToken.None);
             }
         }

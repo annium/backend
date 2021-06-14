@@ -3,13 +3,11 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors
 {
-    public class BeforeExecutor : ITestExecutor
+    public class BeforeExecutor : ITestExecutor, ILogSubject
     {
+        public ILogger Logger { get; }
         public uint Order { get; } = 3;
-
         private readonly MethodExecutor _executor;
-
-        private readonly ILogger<BeforeExecutor> _logger;
 
         public BeforeExecutor(
             MethodExecutor executor,
@@ -17,7 +15,7 @@ namespace Annium.Testing.Executors
         )
         {
             _executor = executor;
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
@@ -26,7 +24,7 @@ namespace Annium.Testing.Executors
             if (test.Before == null)
                 return Task.CompletedTask;
 
-            _logger.Trace($"Execute Before of {target.Test.DisplayName}.");
+            this.Trace($"Execute Before of {target.Test.DisplayName}.");
 
             return _executor.ExecuteAsync(instance, test.Before, result);
         }

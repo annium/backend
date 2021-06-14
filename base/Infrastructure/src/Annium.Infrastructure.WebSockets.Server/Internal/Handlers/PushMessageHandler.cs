@@ -11,11 +11,12 @@ using Annium.Logging.Abstractions;
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
 {
     internal class PushMessageHandler<T> :
-        IFinalRequestHandler<PushMessage<T>, Unit>
+        IFinalRequestHandler<PushMessage<T>, Unit>,
+        ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly ConnectionTracker _connectionTracker;
         private readonly Serializer _serializer;
-        private readonly ILogger<PushMessageHandler<T>> _logger;
 
         public PushMessageHandler(
             ConnectionTracker connectionTracker,
@@ -25,7 +26,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
         {
             _connectionTracker = connectionTracker;
             _serializer = serializer;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<Unit> HandleAsync(
@@ -33,10 +34,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             CancellationToken ct
         )
         {
-            _logger.Trace($"cn {request.ConnectionId} - start");
+            this.Trace($"cn {request.ConnectionId} - start");
             if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
             {
-                _logger.Trace($"cn {request.ConnectionId} - not found");
+                this.Trace($"cn {request.ConnectionId} - not found");
                 return Unit.Default;
             }
 
@@ -44,13 +45,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             {
                 if (cnRef.Value.Socket.State != WebSocketState.Open)
                 {
-                    _logger.Trace($"cn {request.ConnectionId} - socket not opened");
+                    this.Trace($"cn {request.ConnectionId} - socket not opened");
                     return Unit.Default;
                 }
 
-                _logger.Trace($"cn {request.ConnectionId} - start send");
+                this.Trace($"cn {request.ConnectionId} - start send");
                 await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
-                _logger.Trace($"cn {request.ConnectionId} - send complete");
+                this.Trace($"cn {request.ConnectionId} - send complete");
             }
             // socket can get closed/aborted in a moment
             catch (WebSocketException)
@@ -58,7 +59,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             }
             finally
             {
-                _logger.Trace($"cn {request.ConnectionId} - dispose ref");
+                this.Trace($"cn {request.ConnectionId} - dispose ref");
                 await cnRef.DisposeAsync();
             }
 

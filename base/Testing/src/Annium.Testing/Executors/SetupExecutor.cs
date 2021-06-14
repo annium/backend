@@ -3,9 +3,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors
 {
-    public class SetupExecutor : ITestExecutor
+    public class SetupExecutor : ITestExecutor, ILogSubject
     {
-        private readonly ILogger<SetupExecutor> _logger;
+        public ILogger Logger { get; }
 
         public uint Order { get; } = 2;
 
@@ -13,12 +13,12 @@ namespace Annium.Testing.Executors
             ILogger<SetupExecutor> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
         {
-            _logger.Trace($"Setup {target.Test.DisplayName}.");
+            this.Trace($"Setup {target.Test.DisplayName}.");
 
             target.Init();
 

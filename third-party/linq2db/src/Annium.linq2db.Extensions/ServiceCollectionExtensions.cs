@@ -13,9 +13,8 @@ namespace Annium.Core.DependencyInjection
         )
             where TConnection : DataConnectionBase
         {
-            var logger = provider.Resolve<ILogger<TConnection>>();
             DataConnection.TurnTraceSwitchOn();
-            DataConnection.WriteTraceLine = (message, displayName, traceLevel) => logger.Log(MapTraceLevel(traceLevel), $"{message} {displayName}");
+            DataConnection.WriteTraceLine = (message, displayName, traceLevel) => Console.WriteLine($"{MapTraceLevel(traceLevel)} {message} {displayName}");
 
             return provider;
         }

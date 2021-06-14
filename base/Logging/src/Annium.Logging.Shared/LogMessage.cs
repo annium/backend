@@ -7,45 +7,48 @@ namespace Annium.Logging.Shared
     public class LogMessage
     {
         public Instant Instant { get; }
+        public string SubjectType { get; }
+        public string SubjectId { get; }
         public LogLevel Level { get; }
         public string Source { get; }
         public int ThreadId { get; }
         public string Message { get; }
         public Exception? Exception { get; }
-        public object? Subject { get; }
-        public object? Data { get; }
-        public bool WithTrace { get; }
-        public string Caller { get; }
+        public object[] Data { get; }
+        public string Type { get; }
         public string Member { get; }
         public int Line { get; }
+        public int Column { get; }
 
         internal LogMessage(
             Instant instant,
+            string subjectType,
+            string subjectId,
             LogLevel level,
             string source,
             int threadId,
             string message,
             Exception? exception,
-            object? subject,
-            object? data,
-            bool withTrace,
-            string caller,
+            object[] data,
+            string type,
             string member,
-            int line
+            int line,
+            int column
         )
         {
             Instant = instant;
+            SubjectType = subjectType;
+            SubjectId = subjectId;
             Level = level;
             Source = source;
             ThreadId = threadId;
             Message = message;
             Exception = exception;
-            Subject = subject;
             Data = data;
-            WithTrace = withTrace;
-            Caller = caller;
+            Type = type;
             Member = member;
             Line = line;
+            Column = column;
         }
     }
 }

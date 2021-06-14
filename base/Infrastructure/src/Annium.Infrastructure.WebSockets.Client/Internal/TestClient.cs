@@ -30,13 +30,13 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
         public override async ValueTask DisposeAsync()
         {
-            Logger.Trace("start");
+            this.Trace("start");
             await base.DisposeAsync();
-            Logger.Trace("disconnect socket");
+            this.Trace("disconnect socket");
             await Socket.DisconnectAsync();
-            Logger.Trace("dispose socket");
+            this.Trace("dispose socket");
             await Socket.DisposeAsync();
-            Logger.Trace("done");
+            this.Trace("done");
         }
     }
 }

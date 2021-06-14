@@ -6,7 +6,6 @@ using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
 using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Infrastructure.WebSockets.Server;
-using Annium.Logging.Shared;
 
 namespace Annium.AspNetCore.TestServer
 {

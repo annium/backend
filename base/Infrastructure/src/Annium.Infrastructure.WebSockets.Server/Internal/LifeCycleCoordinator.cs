@@ -8,11 +8,11 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class LifeCycleCoordinator<TState>
+    internal class LifeCycleCoordinator<TState> : ILogSubject
         where TState : ConnectionStateBase
     {
+        public ILogger Logger { get; }
         private readonly IEnumerable<ILifeCycleHandler<TState>> _handlers;
-        private readonly ILogger<LifeCycleCoordinator<TState>> _logger;
 
         public LifeCycleCoordinator(
             IEnumerable<ILifeCycleHandler<TState>> handlers,
@@ -20,19 +20,19 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         )
         {
             _handlers = handlers;
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task HandleStartAsync(TState state)
         {
-            _logger.Trace("start");
+            this.Trace("start");
 
             return HandleAsync(state, (x, s) => x.HandleStartAsync(s));
         }
 
         public Task HandleEndAsync(TState state)
         {
-            _logger.Trace("start");
+            this.Trace("start");
 
             return HandleAsync(state, (x, s) => x.HandleEndAsync(s));
         }

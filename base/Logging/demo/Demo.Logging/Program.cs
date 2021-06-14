@@ -14,9 +14,9 @@ namespace Demo.Logging
             CancellationToken ct
         )
         {
-            var logger = provider.Resolve<ILogger<Program>>();
-            logger.Debug("debug");
-            logger.Trace("trace");
+            var subject = provider.Resolve<ILogSubject<Program>>();
+            subject.Debug("debug");
+            subject.Trace("trace");
         }
 
         public static int Main(string[] args) => new Entrypoint()

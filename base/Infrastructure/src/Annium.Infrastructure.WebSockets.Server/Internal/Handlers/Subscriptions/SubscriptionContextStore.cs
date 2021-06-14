@@ -7,16 +7,16 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions
 {
-    internal class SubscriptionContextStore : IConnectionBoundStore
+    internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
     {
-        private readonly ILogger<SubscriptionContextStore> _logger;
+        public ILogger Logger { get; }
         private readonly List<ISubscriptionContext> _contexts = new();
 
         public SubscriptionContextStore(
             ILogger<SubscriptionContextStore> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public void Save(ISubscriptionContext context)
@@ -26,17 +26,17 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
         public bool TryCancel(Guid subscriptionId)
         {
-            _logger.Trace($"subscription {subscriptionId} - init");
+            this.Trace($"subscription {subscriptionId} - init");
             lock (_contexts)
             {
                 var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
                 if (context is null!)
                 {
-                    _logger.Trace($"subscription {subscriptionId} - context missing");
+                    this.Trace($"subscription {subscriptionId} - context missing");
                     return false;
                 }
 
-                _logger.Trace($"subscription {subscriptionId} - cancel context");
+                this.Trace($"subscription {subscriptionId} - cancel context");
                 _contexts.Remove(context);
                 context.Cancel();
 

@@ -13,13 +13,13 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 {
-    internal class WebSocketsMiddleware
+    internal class WebSocketsMiddleware : ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly RequestDelegate _next;
         private readonly ICoordinator _coordinator;
         private readonly ServerConfiguration _cfg;
         private readonly ILoggerFactory _loggerFactory;
-        private readonly ILogger<WebSocketsMiddleware> _logger;
         private readonly Helper _helper;
 
         public WebSocketsMiddleware(
@@ -37,7 +37,7 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
             _cfg = cfg;
             _loggerFactory = loggerFactory;
             applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
-            _logger = logger;
+            Logger = logger;
             _helper = new Helper(
                 serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
                 MediaTypeNames.Application.Json
@@ -64,16 +64,16 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                _logger.Trace("accept");
+                this.Trace("accept");
                 var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
-                _logger.Trace("create socket");
+                this.Trace("create socket");
                 var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory.GetLogger<WebSocket>());
-                _logger.Trace("handle");
+                this.Trace("handle");
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                this.Error(ex);
                 await _helper.WriteResponse(
                     context,
                     HttpStatusCode.InternalServerError,

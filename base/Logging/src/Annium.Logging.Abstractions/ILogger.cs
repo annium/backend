@@ -1,80 +1,16 @@
 using System;
-using System.Runtime.CompilerServices;
 
 namespace Annium.Logging.Abstractions
 {
     public interface ILogger
     {
-        void Log(
-            LogLevel level,
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Trace(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Debug(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Info(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Warn(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Error(
-            Exception exception,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
-
-        void Error(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        );
+        void Log(ILogSubject subject, LogLevel level, string message, object[] data);
+        void Trace(ILogSubject subject, string message, object[] data);
+        void Debug(ILogSubject subject, string message, object[] data);
+        void Info(ILogSubject subject, string message, object[] data);
+        void Warn(ILogSubject subject, string message, object[] data);
+        void Error(ILogSubject subject, Exception exception, object[] data);
+        void Error(ILogSubject subject, string message, object[] data);
     }
 
     public interface ILogger<out T> : ILogger

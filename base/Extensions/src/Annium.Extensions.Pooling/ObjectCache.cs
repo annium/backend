@@ -7,16 +7,16 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Extensions.Pooling
 {
-    public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>
+    public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
         where TKey : notnull
         where TValue : notnull
     {
+        public ILogger Logger { get; }
         private readonly IDictionary<TKey, CacheEntry> _entries = new Dictionary<TKey, CacheEntry>();
         private readonly Func<TKey, Task<TValue>>? _factory;
         private readonly Func<TKey, Task<ICacheReference<TValue>>>? _externalFactory;
         private readonly Func<TValue, Task> _suspend;
         private readonly Func<TValue, Task> _resume;
-        private readonly ILogger<ObjectCache<TKey, TValue>> _logger;
 
         public ObjectCache(
             Func<TKey, Task<TValue>> factory,
@@ -40,7 +40,7 @@ namespace Annium.Extensions.Pooling
             _factory = factory;
             _suspend = suspend;
             _resume = resume;
-            _logger = logger;
+            Logger = logger;
         }
 
         public ObjectCache(
@@ -65,7 +65,7 @@ namespace Annium.Extensions.Pooling
             _externalFactory = externalFactory;
             _suspend = suspend;
             _resume = resume;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<ICacheReference<TValue>> GetAsync(TKey key)
@@ -76,10 +76,10 @@ namespace Annium.Extensions.Pooling
             lock (_entries)
             {
                 if (_entries.TryGetValue(key, out entry!))
-                    _logger.Trace($"Get by {key}: entry already exists");
+                    this.Trace($"Get by {key}: entry already exists");
                 else
                 {
-                    _logger.Trace($"Get by {key}: entry missed, creating");
+                    this.Trace($"Get by {key}: entry missed, creating");
                     entry = _entries[key] = new CacheEntry();
                     isInitializing = true;
                 }
@@ -89,7 +89,7 @@ namespace Annium.Extensions.Pooling
             ICacheReference<TValue>? reference = null;
             if (isInitializing)
             {
-                _logger.Trace($"Get by {key}: initialize entry");
+                this.Trace($"Get by {key}: initialize entry");
                 if (_factory != null)
                     entry.SetValue(await _factory(key));
                 else if (_externalFactory != null)
@@ -100,19 +100,19 @@ namespace Annium.Extensions.Pooling
             }
             else
             {
-                _logger.Trace($"Get by {key}: wait entry");
+                this.Trace($"Get by {key}: wait entry");
                 entry.Wait();
             }
 
             // if not initializing and entry has no references - it is suspended, need to resume
             if (!isInitializing && !entry.HasReferences)
             {
-                _logger.Trace($"Get by {key}: resume entry");
+                this.Trace($"Get by {key}: resume entry");
                 await _resume(entry.Value);
             }
 
             // create reference, incrementing reference counter
-            _logger.Trace($"Get by {key}: add entry reference");
+            this.Trace($"Get by {key}: add entry reference");
             entry.AddReference();
             if (reference is null)
                 reference = new CacheReference<TValue>(entry.Value, () => Release(key, entry));
@@ -124,14 +124,14 @@ namespace Annium.Extensions.Pooling
 
         private async Task Release(TKey key, CacheEntry entry)
         {
-            _logger.Trace($"Release by {key}: wait entry");
+            this.Trace($"Release by {key}: wait entry");
             entry.Wait();
 
-            _logger.Trace($"Release by {key}: remove reference");
+            this.Trace($"Release by {key}: remove reference");
             entry.RemoveReference();
             if (!entry.HasReferences)
             {
-                _logger.Trace($"Release by {key}: suspend entry");
+                this.Trace($"Release by {key}: suspend entry");
                 await _suspend(entry.Value);
             }
 
@@ -147,7 +147,7 @@ namespace Annium.Extensions.Pooling
                 _entries.Clear();
             }
 
-            _logger.Trace($"Dispose cache: {cacheEntries.Length} entries");
+            this.Trace($"Dispose cache: {cacheEntries.Length} entries");
             foreach (var (_, entry) in cacheEntries)
                 await entry.DisposeAsync();
         }

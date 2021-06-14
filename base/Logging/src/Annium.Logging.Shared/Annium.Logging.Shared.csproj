@@ -14,4 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
+    </ItemGroup>
 </Project>

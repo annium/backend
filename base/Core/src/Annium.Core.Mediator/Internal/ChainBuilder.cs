@@ -7,11 +7,11 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Core.Mediator.Internal
 {
-    internal class ChainBuilder
+    internal class ChainBuilder : ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly MediatorConfiguration _configuration;
         private readonly NextBuilder _nextBuilder;
-        private readonly ILogger<ChainBuilder> _logger;
 
         public ChainBuilder(
             IEnumerable<MediatorConfiguration> configurations,
@@ -21,7 +21,7 @@ namespace Annium.Core.Mediator.Internal
         {
             _configuration = MediatorConfiguration.Merge(configurations.ToArray());
             _nextBuilder = nextBuilder;
-            _logger = logger;
+            Logger = logger;
         }
 
         public IReadOnlyList<ChainElement> BuildExecutionChain(Type input, Type output)
@@ -30,14 +30,14 @@ namespace Annium.Core.Mediator.Internal
 
             output = ResolveOutput(input, output);
 
-            _logger.Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
+            this.Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
 
             var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
             {
-                _logger.Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
+                this.Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
 
                 Type? service = null;
 
@@ -45,7 +45,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     service = ResolveHandler(input, output, handler);
 
-                    _logger.Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
+                    this.Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
 
                     if (service is null)
                         continue;
@@ -56,11 +56,11 @@ namespace Annium.Core.Mediator.Internal
 
                 if (service is null)
                 {
-                    _logger.Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
+                    this.Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
                     break;
                 }
 
-                _logger.Trace($"Add {service.FriendlyName()} to chain");
+                this.Trace($"Add {service.FriendlyName()} to chain");
 
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
@@ -68,7 +68,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     chain.Add(new ChainElement(service));
                     isFinalized = true;
-                    _logger.Trace("Resolved handler is final");
+                    this.Trace("Resolved handler is final");
                     break;
                 }
 
@@ -107,7 +107,7 @@ namespace Annium.Core.Mediator.Internal
             var service = handler.Implementation.ResolveByImplementation(handlerInput);
             if (service is null)
             {
-                _logger.Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
+                this.Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
                 return null;
             }
 
@@ -116,9 +116,9 @@ namespace Annium.Core.Mediator.Internal
 
         private void TraceChain(IReadOnlyCollection<ChainElement> chain)
         {
-            _logger.Trace($"Composed chain with {chain.Count} handler(s):");
+            this.Trace($"Composed chain with {chain.Count} handler(s):");
             foreach (var element in chain)
-                _logger.Trace($"- {element.Handler}");
+                this.Trace($"- {element.Handler}");
         }
     }
 }

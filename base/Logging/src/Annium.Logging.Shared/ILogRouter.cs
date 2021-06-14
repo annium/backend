@@ -6,16 +6,12 @@ namespace Annium.Logging.Shared
     public interface ILogRouter
     {
         void Send(
+            ILogSubject subject,
             LogLevel level,
             string source,
             string message,
             Exception? exception,
-            object? subject,
-            object? data,
-            bool withTrace,
-            string file,
-            string member,
-            int line
+            object[] data
         );
     }
 }

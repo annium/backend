@@ -4,9 +4,9 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors
 {
-    public class SkippedExecutor : ITestExecutor
+    public class SkippedExecutor : ITestExecutor, ILogSubject
     {
-        private readonly ILogger<SkippedExecutor> _logger;
+        public ILogger Logger { get; }
 
         public uint Order { get; } = 1;
 
@@ -14,7 +14,7 @@ namespace Annium.Testing.Executors
             ILogger<SkippedExecutor> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task ExecuteAsync(Target target)
@@ -23,7 +23,7 @@ namespace Annium.Testing.Executors
             {
                 target.Result.Outcome = TestOutcome.Skipped;
 
-                _logger.Trace($"Skip {target.Test.DisplayName}.");
+                this.Trace($"Skip {target.Test.DisplayName}.");
             }
 
             return Task.CompletedTask;

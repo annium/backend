@@ -9,11 +9,11 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Extensions.Shell
 {
-    internal class ShellInstance : IShellInstance
+    internal class ShellInstance : IShellInstance, ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly object _consoleLock = new();
         private readonly string _cmd;
-        private readonly ILogger<Shell> _logger;
         private ProcessStartInfo _startInfo;
         private bool _pipe;
 
@@ -23,7 +23,7 @@ namespace Annium.Extensions.Shell
         )
         {
             _cmd = cmd;
-            _logger = logger;
+            Logger = logger;
             _startInfo = new ProcessStartInfo();
         }
 
@@ -86,7 +86,7 @@ namespace Annium.Extensions.Shell
             process.StartInfo.FileName = args[0];
             process.StartInfo.Arguments = string.Join(" ", args.Skip(1));
 
-            _logger.Trace($"shell: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+            this.Trace($"shell: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
 
             return process;
         }
@@ -105,20 +105,20 @@ namespace Annium.Extensions.Shell
             var registration = ct.Register(() =>
             {
                 killed = true;
-                _logger.Trace($"Kill process {GetCommand(process)} due token cancellation");
+                this.Trace($"Kill process {GetCommand(process)} due token cancellation");
                 try
                 {
                     process.Kill();
                 }
                 catch (Exception e)
                 {
-                    _logger.Warn($"Kill process {GetCommand(process)} failed: {e}");
+                    this.Warn($"Kill process {GetCommand(process)} failed: {e}");
                 }
 
                 HandleExit();
             });
 
-            process.Exited += (sender, e) =>
+            process.Exited += (_, _) =>
             {
                 registration.Dispose();
                 HandleExit();
@@ -156,7 +156,7 @@ namespace Annium.Extensions.Shell
                 }
                 catch (Exception e)
                 {
-                    _logger.Warn($"Process.Dispose() failed: {e}");
+                    this.Warn($"Process.Dispose() failed: {e}");
                 }
             }
 

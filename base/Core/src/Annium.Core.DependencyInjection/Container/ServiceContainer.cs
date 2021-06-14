@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders;
 using Annium.Core.DependencyInjection.Internal.Container;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 

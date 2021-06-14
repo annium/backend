@@ -8,12 +8,12 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands
 {
-    internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>
+    internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
     {
-        private readonly IClientFactory _clientFactory;
-        private readonly ILogger<RequestCommand> _logger;
         public override string Id { get; } = "request-void";
         public override string Description => $"test {Id} flow";
+        public ILogger Logger { get; }
+        private readonly IClientFactory _clientFactory;
 
         public RequestVoidCommand(
             IClientFactory clientFactory,
@@ -21,7 +21,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         )
         {
             _clientFactory = clientFactory;
-            _logger = logger;
+            Logger = logger;
         }
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
@@ -35,9 +35,9 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(ct);
 
             var request = new DeleteOrderRequest();
-            _logger.Debug($">>> {request}");
+            this.Debug($">>> {request}");
             var result = await client.SendAsync(request, ct);
-            _logger.Debug($"<<< {result}");
+            this.Debug($"<<< {result}");
 
             if (client.IsConnected)
                 await client.DisconnectAsync();

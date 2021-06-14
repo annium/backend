@@ -15,11 +15,12 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         IFinalRequestHandler<
             IRequestContext<SubscriptionCancelRequest, TState>,
             ResultResponse
-        >
+        >,
+        ILogSubject
         where TState : ConnectionStateBase
     {
+        public ILogger Logger { get; }
         private readonly SubscriptionContextStore _subscriptionContextStore;
-        private readonly ILogger<SubscriptionCancelHandler<TState>> _logger;
 
         public SubscriptionCancelHandler(
             SubscriptionContextStore subscriptionContextStore,
@@ -27,7 +28,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             _subscriptionContextStore = subscriptionContextStore;
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task<ResultResponse> HandleAsync(
@@ -36,11 +37,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
-            _logger.Trace($"subscription {subscriptionId} - init");
+            this.Trace($"subscription {subscriptionId} - init");
             var status = _subscriptionContextStore.TryCancel(subscriptionId)
                 ? OperationStatus.Ok
                 : OperationStatus.NotFound;
-            _logger.Trace($"subscription {subscriptionId} - result: {status}");
+            this.Trace($"subscription {subscriptionId} - result: {status}");
             var response = Response.Result(ctx.Request.Rid, Result.Status(status));
 
             return Task.FromResult(response);

@@ -19,7 +19,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
             CancellationToken ct
         )
         {
-            var logger = provider.Resolve<ILogger<Program>>();
+            var logger = provider.Resolve<ILogSubject<Program>>();
             var socket = provider.Resolve<IMessageBusSocket>();
             var timeProvider = provider.Resolve<ITimeProvider>();
 

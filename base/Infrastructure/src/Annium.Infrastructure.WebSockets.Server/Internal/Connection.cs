@@ -7,12 +7,12 @@ using WebSocket = Annium.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class Connection : IAsyncDisposable
+    internal class Connection : IAsyncDisposable, ILogSubject
     {
         public Guid Id { get; }
         public ISendingReceivingWebSocket Socket => _socket;
+        public ILogger Logger { get; }
         private readonly WebSocket _socket;
-        private readonly ILogger<Connection> _logger;
 
         public Connection(
             Guid id,
@@ -22,25 +22,25 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         {
             Id = id;
             _socket = socket;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async ValueTask DisposeAsync()
         {
-            _logger.Trace("start");
+            this.Trace("start");
             if (
                 _socket.State == WebSocketState.Connecting ||
                 _socket.State == WebSocketState.Open ||
                 _socket.State == WebSocketState.CloseReceived
             )
             {
-                _logger.Trace("disconnect socket");
+                this.Trace("disconnect socket");
                 await _socket.DisconnectAsync();
             }
 
-            _logger.Trace("dispose socket");
+            this.Trace("dispose socket");
             await _socket.DisposeAsync();
-            _logger.Trace("done");
+            this.Trace("done");
         }
     }
 }

@@ -37,6 +37,7 @@ namespace Annium.Net.WebSockets.Internal
             {
                 var opts = options.PassiveKeepAlive;
                 keepAliveFrames.Add(opts.PingFrame);
+                var logSubject = new PingPongSubject(logger);
                 disposable += observable
                     .Where(x =>
                         x.Type == WebSocketMessageType.Binary &&
@@ -45,7 +46,7 @@ namespace Annium.Net.WebSockets.Internal
                     )
                     .DoParallelAsync(async _ =>
                     {
-                        logger.Trace("KeepAlive: ping -> pong");
+                        logSubject.Trace("KeepAlive: ping -> pong");
                         await send(opts.PongFrame);
                     })
                     .Subscribe();
@@ -90,6 +91,16 @@ namespace Annium.Net.WebSockets.Internal
                 textObservable,
                 disposable
             );
+        }
+
+        private class PingPongSubject : ILogSubject
+        {
+            public ILogger Logger { get; }
+
+            public PingPongSubject(ILogger logger)
+            {
+                Logger = logger;
+            }
         }
     }
 

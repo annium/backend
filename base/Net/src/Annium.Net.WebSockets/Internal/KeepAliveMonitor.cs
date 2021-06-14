@@ -9,13 +9,13 @@ using NodaTime;
 
 namespace Annium.Net.WebSockets.Internal
 {
-    internal class KeepAliveMonitor : IKeepAliveMonitor
+    internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject
     {
         public CancellationToken Token => _cts.Token;
         private readonly IObservable<SocketMessage> _observable;
         private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
         private readonly ActiveKeepAlive _options;
-        private readonly ILogger _logger;
+        public ILogger Logger { get; }
         private DisposableBox _disposable = Disposable.Box();
         private CancellationTokenSource _cts = new();
         private Instant _lastPongTime;
@@ -31,12 +31,12 @@ namespace Annium.Net.WebSockets.Internal
             _observable = observable;
             _send = send;
             _options = options;
-            _logger = logger;
+            Logger = logger;
         }
 
         public void Resume()
         {
-            _logger.Trace("start");
+            this.Trace("start");
             _disposable = Disposable.Box();
 
             _disposable += _cts = new();
@@ -51,15 +51,15 @@ namespace Annium.Net.WebSockets.Internal
             _disposable += _observable
                 .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
                 .Subscribe(TrackPong);
-            _logger.Trace("done");
+            this.Trace("done");
         }
 
         public void Pause()
         {
-            _logger.Trace("start");
+            this.Trace("start");
             _cts.Cancel();
             _disposable.Dispose();
-            _logger.Trace("done");
+            this.Trace("done");
         }
 
         private void SendPingCheckPong(object? _)
@@ -80,7 +80,7 @@ namespace Annium.Net.WebSockets.Internal
         private void SendPing()
         {
             // send ping every time
-            _logger.Trace("Send ping");
+            this.Trace("Send ping");
             _send(_options.PingFrame).Subscribe();
         }
 
@@ -94,17 +94,17 @@ namespace Annium.Net.WebSockets.Internal
             if (silenceDuration <= _options.PingInterval)
                 return;
 
-            _logger.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+            this.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
             if (silenceDuration > _options.PingInterval * _options.Retries)
             {
-                _logger.Trace("Missed all pings - signal connection lost");
+                this.Trace("Missed all pings - signal connection lost");
                 _cts.Cancel();
             }
         }
 
         private void TrackPong(SocketMessage _)
         {
-            _logger.Trace("Received pong");
+            this.Trace("Received pong");
             _lastPongTime = GetNow();
         }
 

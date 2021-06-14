@@ -7,11 +7,10 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors
 {
-    public class PipelineExecutor
+    public class PipelineExecutor : ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly ITestExecutor[] _executors;
-
-        private readonly ILogger<PipelineExecutor> _logger;
 
         public PipelineExecutor(
             IEnumerable<ITestExecutor> executors,
@@ -19,12 +18,12 @@ namespace Annium.Testing.Executors
         )
         {
             _executors = executors.OrderBy(e => e.Order).ToArray();
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task ExecuteAsync(Target target)
         {
-            _logger.Trace($"Start pipeline of {target.Test.DisplayName}.");
+            this.Trace($"Start pipeline of {target.Test.DisplayName}.");
 
             var result = target.Result;
             result.ExecutionStart = DateTime.Now;
@@ -41,7 +40,7 @@ namespace Annium.Testing.Executors
 
             result.ExecutionEnd = DateTime.Now;
 
-            _logger.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
+            this.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
         }
     }
 }

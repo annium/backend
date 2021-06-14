@@ -6,17 +6,16 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Storage.Abstractions
 {
-    public abstract class StorageBase : IStorage
+    public abstract class StorageBase : IStorage, ILogSubject
     {
+        public ILogger Logger { get; }
         private static readonly Regex NameRe = new(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
-
-        private readonly ILogger _logger;
 
         public StorageBase(
             ILogger logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task SetupAsync() => SafeAsync("setup", DoSetupAsync);
@@ -43,15 +42,15 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                _logger.Debug($"{operation} start");
+                this.Debug($"{operation} start");
                 var result = await handleAsync();
-                _logger.Debug($"{operation} succeed");
+                this.Debug($"{operation} succeed");
 
                 return result;
             }
             catch
             {
-                _logger.Debug($"{operation} failed");
+                this.Debug($"{operation} failed");
                 throw;
             }
         }
@@ -60,13 +59,13 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                _logger.Debug($"{operation} start");
+                this.Debug($"{operation} start");
                 await handleAsync();
-                _logger.Debug($"{operation} succeed");
+                this.Debug($"{operation} succeed");
             }
             catch
             {
-                _logger.Debug($"{operation} failed");
+                this.Debug($"{operation} failed");
                 throw;
             }
         }

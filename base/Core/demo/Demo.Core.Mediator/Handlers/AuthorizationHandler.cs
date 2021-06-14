@@ -7,15 +7,17 @@ using Demo.Core.Mediator.Models;
 
 namespace Demo.Core.Mediator.Handlers
 {
-    internal class AuthorizationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, Authored<TRequest>, TResponse, TResponse>
+    internal class AuthorizationHandler<TRequest, TResponse> :
+        IPipeRequestHandler<TRequest, Authored<TRequest>, TResponse, TResponse>,
+        ILogSubject
     {
-        private readonly ILogger<AuthorizationHandler<TRequest, TResponse>> _logger;
+        public ILogger Logger { get; }
 
         public AuthorizationHandler(
             ILogger<AuthorizationHandler<TRequest, TResponse>> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -24,7 +26,7 @@ namespace Demo.Core.Mediator.Handlers
             Func<Authored<TRequest>, CancellationToken, Task<TResponse>> next
         )
         {
-            _logger.Trace($"Start {typeof(TRequest).Name} authorization");
+            this.Trace($"Start {typeof(TRequest).Name} authorization");
             var authoredRequest = new Authored<TRequest>(1, request);
 
             var response = await next(authoredRequest, ct);

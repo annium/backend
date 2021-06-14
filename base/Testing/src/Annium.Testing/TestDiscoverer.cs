@@ -7,13 +7,13 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing
 {
-    public class TestDiscoverer
+    public class TestDiscoverer : ILogSubject
     {
-        private readonly ILogger<TestDiscoverer> _logger;
+        public ILogger Logger { get; }
 
         public TestDiscoverer(ILogger<TestDiscoverer> logger)
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public Task FindTestsAsync(
@@ -33,11 +33,11 @@ namespace Annium.Testing
         {
             if (testClass.GetCustomAttribute<SkipAttribute>() != null)
             {
-                _logger.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
+                this.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
                 return;
             }
 
-            _logger.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
+            this.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
             foreach (var test in testClass.GetMethods().Where(IsTest).Select(method => new Test(method)))
                 handleTestFound(test);
         }

@@ -42,7 +42,7 @@ namespace Annium.Net.WebSockets
             // cancel receive, if pending
             CancelReceive();
 
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
@@ -52,36 +52,36 @@ namespace Annium.Net.WebSockets
                     Socket.State == WebSocketState.Open
                 )
                 {
-                    Logger.Trace("Disconnect");
+                    this.Trace("Disconnect");
                     await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
                 }
                 else
-                    Logger.Trace("Already disconnected");
+                    this.Trace("Already disconnected");
             }
             catch (WebSocketException)
             {
-                Logger.Trace(nameof(WebSocketException));
+                this.Trace(nameof(WebSocketException));
             }
         }
 
         protected override async Task OnConnectionLostAsync()
         {
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             if (_options.ReconnectTimeout != Duration.MaxValue)
             {
-                Logger.Trace("Try reconnect");
+                this.Trace("Try reconnect");
                 await Task.Delay(_options.ReconnectTimeout.ToTimeSpan());
                 await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
             }
             else
-                Logger.Trace("No reconnect");
+                this.Trace("No reconnect");
         }
 
         private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
         {
-            Logger.Trace($"Connect to {uri}");
+            this.Trace($"Connect to {uri}");
 
             _uri = uri;
             do
@@ -89,12 +89,12 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     Socket = new NativeClientWebSocket();
-                    Logger.Trace("Try connect");
+                    this.Trace("Try connect");
                     await Socket.ConnectAsync(uri, ct);
                 }
                 catch (WebSocketException)
                 {
-                    Logger.Trace("Connection failed");
+                    this.Trace("Connection failed");
                     Socket.Dispose();
                     await Task.Delay(timeout.ToTimeSpan(), ct);
                 }
@@ -106,15 +106,15 @@ namespace Annium.Net.WebSockets
                 )
             );
 
-            Logger.Trace("Connected");
+            this.Trace("Connected");
 
-            Logger.Trace("Invoke ConnectionRestored");
+            this.Trace("Invoke ConnectionRestored");
             Executor.Schedule(() => ConnectionRestored.Invoke());
         }
 
         public override async ValueTask DisposeAsync()
         {
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
             await DisposeBaseAsync();
         }

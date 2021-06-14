@@ -6,15 +6,15 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 {
-    internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse>
+    internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubject
     {
-        private readonly ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> _logger;
+        public ILogger Logger { get; }
 
         public ExceptionPipeHandlerBase(
             ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -41,7 +41,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         private TResponse Failure(Exception exception)
         {
-            _logger.Trace($"Failure of {typeof(TRequest)}: {exception}");
+            this.Trace($"Failure of {typeof(TRequest)}: {exception}");
 
             return GetFailure(exception);
         }

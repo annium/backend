@@ -7,15 +7,17 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Core.Mediator.Handlers
 {
-    internal class ExceptionHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, IBooleanResult<TResponse>, IBooleanResult<TResponse>>
+    internal class ExceptionHandler<TRequest, TResponse> :
+        IPipeRequestHandler<TRequest, TRequest, IBooleanResult<TResponse>, IBooleanResult<TResponse>>,
+        ILogSubject
     {
-        private readonly ILogger<LoggingHandler<TRequest, TResponse>> _logger;
+        public ILogger Logger { get; }
 
         public ExceptionHandler(
             ILogger<LoggingHandler<TRequest, TResponse>> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<IBooleanResult<TResponse>> HandleAsync(
@@ -27,13 +29,13 @@ namespace Demo.Core.Mediator.Handlers
             try
             {
                 var result = await next(request, ct);
-                _logger.Trace($"Request {typeof(TRequest).Name} complete without errors");
+                this.Trace($"Request {typeof(TRequest).Name} complete without errors");
 
                 return result;
             }
             catch (Exception exception)
             {
-                _logger.Trace($"Request {typeof(TRequest).Name} failed with {exception}");
+                this.Trace($"Request {typeof(TRequest).Name} failed with {exception}");
                 return Result.Failure(default(TResponse) !).Error(exception.Message);
             }
         }

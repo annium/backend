@@ -12,11 +12,11 @@ using Microsoft.AspNetCore.Http;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares
 {
-    internal class ExceptionMiddleware
+    internal class ExceptionMiddleware : ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly RequestDelegate _next;
         private readonly Helper _helper;
-        private readonly ILogger<ExceptionMiddleware> _logger;
 
         public ExceptionMiddleware(
             RequestDelegate next,
@@ -26,7 +26,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
         {
             _next = next;
             _helper = new Helper(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)], MediaTypeNames.Application.Json);
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -53,13 +53,13 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             }
             catch (ServerException e)
             {
-                _logger.Error(e);
+                this.Error(e);
 
                 await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
             }
             catch (Exception e)
             {
-                _logger.Error(e);
+                this.Error(e);
                 var result = Result.Status(OperationStatus.UncaughtException).Error(e.ToString());
                 await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
             }

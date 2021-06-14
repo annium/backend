@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Threading;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
+using Annium.Diagnostics.Debug;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal
@@ -27,32 +29,37 @@ namespace Annium.Logging.Shared.Internal
         }
 
         public void Send(
+            ILogSubject subject,
             LogLevel level,
             string source,
             string message,
             Exception? exception,
-            object? subject,
-            object? data,
-            bool withTrace,
-            string file,
-            string member,
-            int line
+            object[] data
         )
         {
             var instant = _timeProvider.Now;
+            var frame = EnhancedStackTrace.Current().GetFrame(3);
+            var method = frame.GetMethod();
+            var type = (method.ReflectedType ?? method.DeclaringType ?? throw new InvalidOperationException()).FriendlyName();
+            var member = method.IsSpecialName
+                ? method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) :
+                method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) : method.Name
+                : method.Name;
+
             var msg = new LogMessage(
                 instant,
+                subject.GetType().FriendlyName(),
+                subject.GetId(),
                 level,
                 source,
                 Thread.CurrentThread.ManagedThreadId,
                 message,
                 exception,
-                subject,
                 data,
-                withTrace,
-                Path.GetFileNameWithoutExtension(file),
+                type,
                 member,
-                line
+                frame.GetFileLineNumber(),
+                frame.GetFileColumnNumber()
             );
 
             foreach (var route in _routes)

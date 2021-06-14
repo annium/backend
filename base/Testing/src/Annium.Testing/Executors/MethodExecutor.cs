@@ -7,20 +7,20 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors
 {
-    public class MethodExecutor
+    public class MethodExecutor : ILogSubject
     {
-        private readonly ILogger<MethodExecutor> _logger;
+        public ILogger Logger { get; }
 
         public MethodExecutor(
             ILogger<MethodExecutor> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
         {
-            _logger.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+            this.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
             var watch = new Stopwatch();
             watch.Start();
@@ -43,7 +43,7 @@ namespace Annium.Testing.Executors
                 watch.Stop();
                 result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
 
-                _logger.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+                this.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Testing.Executors
             result.Outcome = TestOutcome.Failed;
             result.Failure = exception;
 
-            _logger.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+            this.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
         }
     }
 }

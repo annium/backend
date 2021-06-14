@@ -10,12 +10,12 @@ using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands
 {
-    internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>
+    internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
     {
-        private readonly IClientFactory _clientFactory;
-        private readonly ILogger<RequestCommand> _logger;
         public override string Id { get; } = "sub-unsub";
         public override string Description => $"test {Id} flow";
+        public ILogger Logger { get; }
+        private readonly IClientFactory _clientFactory;
 
         public SubUnsubCommand(
             IClientFactory clientFactory,
@@ -23,7 +23,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
         )
         {
             _clientFactory = clientFactory;
-            _logger = logger;
+            Logger = logger;
         }
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
@@ -35,32 +35,32 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await using var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
-                _logger.Debug("connection lost");
+                this.Debug("connection lost");
                 return Task.CompletedTask;
             };
             client.ConnectionRestored += () =>
             {
-                _logger.Debug("connection restored");
+                this.Debug("connection restored");
                 return Task.CompletedTask;
             };
 
             await client.ConnectAsync(ct);
 
-            _logger.Debug("Init subscription");
+            this.Debug("Init subscription");
             var subscription = client.Listen<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct).Subscribe(Log);
-            _logger.Debug("Subscription initiated");
+            this.Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
-            _logger.Debug("Cancel subscription");
+            this.Debug("Cancel subscription");
             subscription.Dispose();
-            _logger.Debug("Subscription canceled");
+            this.Debug("Subscription canceled");
 
             await Task.Delay(100);
 
             await client.DisconnectAsync();
 
-            void Log(UserBalanceMessage msg) => _logger.Debug($"<<< {msg}");
+            void Log(UserBalanceMessage msg) => this.Debug($"<<< {msg}");
         }
     }
 }

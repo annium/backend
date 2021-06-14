@@ -17,13 +17,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             ISubscriptionContext<TInit, TMessage, TState>,
             Unit,
             VoidResponse<TMessage>
-        >
+        >,
+        ILogSubject
         where TInit : SubscriptionInitRequestBase
         where TState : ConnectionStateBase
     {
+        public ILogger Logger { get; }
         private readonly SubscriptionContextStore _subscriptionContextStore;
         private readonly IMediator _mediator;
-        private readonly ILogger<SubscriptionInitHandler<TInit, TMessage, TState>> _logger;
         private readonly ILoggerFactory _loggerFactory;
         private readonly IServiceProvider _sp;
 
@@ -37,7 +38,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         {
             _subscriptionContextStore = subscriptionContextStore;
             _mediator = mediator;
-            _logger = logger;
+            Logger = logger;
             _loggerFactory = loggerFactory;
             _sp = sp;
         }
@@ -49,7 +50,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
-            _logger.Trace($"subscription {subscriptionId} - init");
+            this.Trace($"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             await using var context = new SubscriptionContext<TInit, TMessage, TState>(
                 ctx.Request,
@@ -64,7 +65,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             // when reporting successful init - save to subscription store
             context.OnInit(() =>
             {
-                _logger.Trace($"subscription {subscriptionId} - save to store");
+                this.Trace($"subscription {subscriptionId} - save to store");
                 _subscriptionContextStore.Save(context);
             });
 

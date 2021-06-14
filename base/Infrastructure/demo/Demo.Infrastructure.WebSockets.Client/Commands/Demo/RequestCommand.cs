@@ -18,13 +18,13 @@ using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
 {
-    internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>
+    internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogSubject
     {
-        private readonly ILogger<RequestCommand> _logger;
-        private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
-        private readonly ILoggerFactory _loggerFactory;
         public override string Id { get; } = "request";
         public override string Description { get; } = "test demo flow";
+        public ILogger Logger { get; }
+        private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+        private readonly ILoggerFactory _loggerFactory;
 
         public RequestCommand(
             ISerializer<ReadOnlyMemory<byte>> serializer,
@@ -33,7 +33,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
         {
             _serializer = serializer;
             _loggerFactory = loggerFactory;
-            _logger = loggerFactory.GetLogger<RequestCommand>();
+            Logger = loggerFactory.GetLogger<RequestCommand>();
         }
 
         public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
@@ -44,16 +44,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             );
             ws.ConnectionLost += () =>
             {
-                _logger.Debug("connection lost");
+                this.Debug("connection lost");
                 return Task.CompletedTask;
             };
             ws.ConnectionRestored += () =>
             {
-                _logger.Debug("connection restored");
+                this.Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            _logger.Debug($"Connecting to {cfg.Server}");
+            this.Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, ct);
             var counter = 0;
             ws.ListenBinary()
@@ -65,38 +65,38 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
                     }
                     catch (Exception e)
                     {
-                        _logger.Error($"Deserialize failed with: {e}");
+                        this.Error($"Deserialize failed with: {e}");
                         throw;
                     }
                 })
                 .Subscribe(x =>
                 {
                     Interlocked.Increment(ref counter);
-                    _logger.Debug($"<<< {x}");
+                    this.Debug($"<<< {x}");
                 });
-            _logger.Debug($"Connected to {cfg.Server}");
+            this.Debug($"Connected to {cfg.Server}");
 
-            _logger.Debug("Demo start");
+            this.Debug("Demo start");
             await Task.WhenAll(
                 SendRequests(ws)
                 // SendNotifications(ws),
             );
-            _logger.Debug("Demo end");
+            this.Debug("Demo end");
 
             await Task.Delay(50);
-            _logger.Debug($"Responses: {counter}");
+            this.Debug($"Responses: {counter}");
 
-            _logger.Debug("Disconnecting");
+            this.Debug("Disconnecting");
             if (ws.State == WebSocketState.Open)
                 await ws.DisconnectAsync();
-            _logger.Debug("Disconnected");
+            this.Debug("Disconnected");
         }
 
         private async Task Send<T>(ISendingWebSocket ws, T data)
             where T : notnull
         {
             var raw = _serializer.Serialize(data);
-            _logger.Debug($">>> {data.GetType().FriendlyName()}::{data}");
+            this.Debug($">>> {data.GetType().FriendlyName()}::{data}");
 
             await ws.Send(raw, CancellationToken.None);
         }
@@ -104,14 +104,14 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
         private async Task SendRequests(ISendingWebSocket ws)
         {
             await Task.WhenAll(Enumerable.Range(0, 10).Select(_ =>
-                Send(ws, new DeleteOrderRequest {Id = Guid.NewGuid()})
+                Send(ws, new DeleteOrderRequest { Id = Guid.NewGuid() })
             ));
         }
 
         private async Task SendNotifications(ISendingWebSocket ws)
         {
             for (var i = 0; i < 10; i++)
-                await Send(ws, new UserActionNotification {Data = $"Action {i}"});
+                await Send(ws, new UserActionNotification { Data = $"Action {i}" });
         }
     }
 

@@ -1,7 +1,5 @@
 using System;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
-using Annium.Diagnostics.Debug;
 using Annium.Logging.Console;
 using Annium.Logging.Shared;
 
@@ -44,11 +42,16 @@ namespace Annium.Core.DependencyInjection
 
         private static string DefaultFormatInternal(LogMessage m, string time, string message)
         {
-            var caller = !string.IsNullOrWhiteSpace(m.Caller) ? $": {m.Caller}.{m.Member}#{m.Line}" : string.Empty;
-            var subject = m.Subject is not null ? $" - {m.Subject.GetType().FriendlyName()}#{m.Subject.GetId()}" : string.Empty;
-            var trace = m.WithTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
+            var subjectType = m.SubjectType;
+            var caller = string.Empty;
+            var callerType = m.Type.Contains('_') ? subjectType : m.Type;
+            if (m.Line != 0)
+                caller = $" at {callerType}.{m.Member}#{m.Line}:{m.Column}";
 
-            return $"[{time}] {m.Level} {m.Source} [{m.ThreadId:D3}]{caller}{subject} >> {message}{trace}";
+            var source = m.Source == subjectType || m.Source == callerType ? string.Empty : $"{m.Source} - ";
+            var subject = $"{subjectType}#{m.SubjectId}";
+
+            return $"[{time}] {m.Level} [{m.ThreadId:D3}] {source}{subject}{caller} >> {message}";
         }
     }
 }

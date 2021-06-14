@@ -6,15 +6,17 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Core.Mediator.Handlers
 {
-    internal class LoggingHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>
+    internal class LoggingHandler<TRequest, TResponse> :
+        IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>,
+        ILogSubject
     {
-        private readonly ILogger<LoggingHandler<TRequest, TResponse>> _logger;
+        public ILogger Logger { get; }
 
         public LoggingHandler(
             ILogger<LoggingHandler<TRequest, TResponse>> logger
         )
         {
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<TResponse> HandleAsync(
@@ -23,9 +25,9 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            _logger.Trace($"Start {typeof(TRequest).Name} handle");
+            this.Trace($"Start {typeof(TRequest).Name} handle");
             var result = await next(request, ct);
-            _logger.Trace($"Complete {typeof(TRequest).Name} handle");
+            this.Trace($"Complete {typeof(TRequest).Name} handle");
 
             return result;
         }

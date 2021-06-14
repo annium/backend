@@ -40,7 +40,7 @@ namespace Annium.Net.WebSockets
             // cancel receive, if pending
             CancelReceive();
 
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
@@ -50,21 +50,21 @@ namespace Annium.Net.WebSockets
                     Socket.State == WebSocketState.Open
                 )
                 {
-                    Logger.Trace("Disconnect");
+                    this.Trace("Disconnect");
                     await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
                 }
                 else
-                    Logger.Trace("Already disconnected");
+                    this.Trace("Already disconnected");
             }
             catch (WebSocketException)
             {
-                Logger.Trace(nameof(WebSocketException));
+                this.Trace(nameof(WebSocketException));
             }
         }
 
         protected override Task OnConnectionLostAsync()
         {
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.TrySchedule(() => ConnectionLost.Invoke());
 
             return Task.CompletedTask;
@@ -72,7 +72,7 @@ namespace Annium.Net.WebSockets
 
         public override async ValueTask DisposeAsync()
         {
-            Logger.Trace("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.TrySchedule(() => ConnectionLost.Invoke());
             await DisposeBaseAsync();
         }

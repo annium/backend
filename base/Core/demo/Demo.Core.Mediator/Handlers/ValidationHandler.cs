@@ -10,10 +10,12 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Core.Mediator.Handlers
 {
-    internal class ValidationHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>
+    internal class ValidationHandler<TRequest, TResponse> :
+        IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
+        ILogSubject
     {
+        public ILogger Logger { get; }
         private readonly IEnumerable<IValidator<TRequest>> _validators;
-        private readonly ILogger<ValidationHandler<TRequest, TResponse>> _logger;
 
         public ValidationHandler(
             IEnumerable<IValidator<TRequest>> validators,
@@ -21,7 +23,7 @@ namespace Demo.Core.Mediator.Handlers
         )
         {
             _validators = validators;
-            _logger = logger;
+            Logger = logger;
         }
 
         public async Task<IBooleanResult<TResponse>> HandleAsync(
@@ -30,10 +32,10 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            _logger.Trace($"Start {typeof(TRequest).Name} validation");
+            this.Trace($"Start {typeof(TRequest).Name} validation");
             var result = Result.Failure(default(TResponse) !)
                 .Join(await Task.WhenAll(_validators.Select(v => v.ValidateAsync(request))));
-            _logger.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
+            this.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
             if (result.HasErrors)
                 return result;
 

@@ -18,11 +18,11 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
             var timeProvider = provider.Resolve<ITimeProvider>();
 
             // act
-            logger.Log(LogLevel.Trace, "sample");
+            subject.Log(LogLevel.Trace, "sample");
 
             // assert
             _messages.Has(1);
@@ -37,10 +37,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider(LogLevel.Debug);
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Log(LogLevel.Trace, "sample");
+            subject.Log(LogLevel.Trace, "sample");
 
             // assert
             _messages.IsEmpty();
@@ -51,10 +51,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Trace("sample");
+            subject.Trace("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Trace);
@@ -65,10 +65,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Debug("sample");
+            subject.Debug("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Debug);
@@ -79,10 +79,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Info("sample");
+            subject.Info("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Info);
@@ -93,10 +93,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Warn("sample");
+            subject.Warn("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Warn);
@@ -107,11 +107,11 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
             var exception = new Exception("sample");
 
             // act
-            logger.Error(exception);
+            subject.Error(exception);
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Error);
@@ -124,10 +124,10 @@ namespace Annium.Logging.Shared.Tests
         {
             // arrange
             var provider = GetProvider();
-            var logger = provider.Resolve<ILogger<BaseLoggerTest>>();
+            var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            logger.Error("sample");
+            subject.Error("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Error);
@@ -147,19 +147,19 @@ namespace Annium.Logging.Shared.Tests
 
             return container.BuildServiceProvider();
         }
-    }
 
-    public class LogHandler : ILogHandler
-    {
-        public IList<LogMessage> Messages { get; }
-
-        public LogHandler(
-            IList<LogMessage> messages
-        )
+        private class LogHandler : ILogHandler
         {
-            Messages = messages;
-        }
+            public IList<LogMessage> Messages { get; }
 
-        public void Handle(LogMessage message) => Messages.Add(message);
+            public LogHandler(
+                IList<LogMessage> messages
+            )
+            {
+                Messages = messages;
+            }
+
+            public void Handle(LogMessage message) => Messages.Add(message);
+        }
     }
 }

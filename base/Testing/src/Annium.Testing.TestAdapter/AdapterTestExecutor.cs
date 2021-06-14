@@ -14,15 +14,12 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 namespace Annium.Testing.TestAdapter
 {
     [ExtensionUri(Constants.ExecutorUri)]
-    public class AdapterTestExecutor : ITestExecutor
+    public class AdapterTestExecutor : ITestExecutor, ILogSubject
     {
+        public ILogger Logger { get; private set; } = default!;
         private readonly TestConverter _testConverter;
-
         private readonly TestResultConverter _testResultConverter;
-
         private IServiceProvider? _provider;
-
-        private ILogger<AdapterTestExecutor>? _logger;
 
         public AdapterTestExecutor()
         {
@@ -38,9 +35,9 @@ namespace Annium.Testing.TestAdapter
                 Debugger.Launch();
 
             _provider = AdapterServiceProviderBuilder.Build(runContext);
-            _logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
+            Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
 
-            _logger.Debug("Start execution.");
+            this.Debug("Start execution.");
 
             Task.WhenAll(sources.Select(source => RunAssemblyTestsAsync(Source.Resolve(source), frameworkHandle))).Wait();
         }
@@ -53,9 +50,9 @@ namespace Annium.Testing.TestAdapter
                 Debugger.Launch();
 
             _provider = AdapterServiceProviderBuilder.Build(runContext);
-            _logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
+            Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
 
-            _logger.Debug("Start execution.");
+            this.Debug("Start execution.");
 
             Task.WhenAll(testSet.Select(test => test.Source).Distinct().Select(
                 source => RunAssemblyTestsAsync(Source.Resolve(source), testSet.Where(test => test.Source == source), frameworkHandle)
@@ -68,7 +65,7 @@ namespace Annium.Testing.TestAdapter
 
         private async Task RunAssemblyTestsAsync(Assembly assembly, IFrameworkHandle frameworkHandle)
         {
-            _logger!.Debug($"Start execution of all tests in {assembly.FullName}.");
+            this.Debug($"Start execution of all tests in {assembly.FullName}.");
 
             var tests = new List<Test>();
             await _provider!.Resolve<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
@@ -80,7 +77,7 @@ namespace Annium.Testing.TestAdapter
         {
             var testCasesSet = testCases.ToArray();
 
-            _logger!.Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
+            this.Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
 
             var tests = testCasesSet.Select(testCase => _testConverter.Convert(assembly, testCase)).ToArray();
 
@@ -103,7 +100,7 @@ namespace Annium.Testing.TestAdapter
         {
             var testSet = tests.ToArray();
 
-            _logger!.Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
+            this.Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
 
             var container = AssemblyServicesCollector.Collect(assembly, testSet);
             container.Add(_provider!.Resolve<TestingConfiguration>()).Singleton();

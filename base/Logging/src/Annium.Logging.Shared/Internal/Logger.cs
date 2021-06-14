@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.CompilerServices;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 
@@ -16,75 +15,25 @@ namespace Annium.Logging.Shared.Internal
             _router = router;
         }
 
-        public void Log(
-            LogLevel level,
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(level, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Log(ILogSubject subject, LogLevel level, string message, object[] data) =>
+            _router.Send(subject, level, typeof(T).FriendlyName(), message, null, data);
 
-        public void Trace(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Trace, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Trace(ILogSubject subject, string message, object[] data) =>
+            _router.Send(subject, LogLevel.Trace, typeof(T).FriendlyName(), message, null, data);
 
-        public void Debug(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Debug, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Debug(ILogSubject subject, string message, object[] data) =>
+            _router.Send(subject, LogLevel.Debug, typeof(T).FriendlyName(), message, null, data);
 
-        public void Info(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Info, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Info(ILogSubject subject, string message, object[] data) =>
+            _router.Send(subject, LogLevel.Info, typeof(T).FriendlyName(), message, null, data);
 
-        public void Warn(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Warn, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Warn(ILogSubject subject, string message, object[] data) =>
+            _router.Send(subject, LogLevel.Warn, typeof(T).FriendlyName(), message, null, data);
 
-        public void Error(
-            Exception exception,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Error, typeof(T).FriendlyName(), exception.Message, exception, subject, data, withTrace, file, member, line);
+        public void Error(ILogSubject subject, Exception exception, object[] data) =>
+            _router.Send(subject, LogLevel.Error, typeof(T).FriendlyName(), exception.Message, exception, data);
 
-        public void Error(
-            string message,
-            object? subject = default!,
-            object? data = default!,
-            bool withTrace = false,
-            [CallerFilePath] string file = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        ) => _router.Send(LogLevel.Error, typeof(T).FriendlyName(), message, null, subject, data, withTrace, file, member, line);
+        public void Error(ILogSubject subject, string message, object[] data) =>
+            _router.Send(subject, LogLevel.Error, typeof(T).FriendlyName(), message, null, data);
     }
 }
