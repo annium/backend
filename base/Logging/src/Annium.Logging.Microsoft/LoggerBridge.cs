@@ -7,7 +7,7 @@ using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Annium.Logging.Microsoft
 {
-    internal class LoggerBridge : ILogSubject, ILogger
+    internal class LoggerBridge : ILogger
     {
         public Abstractions.ILogger Logger { get; }
 
@@ -37,7 +37,7 @@ namespace Annium.Logging.Microsoft
             Func<TState, Exception, string> formatter
         )
         {
-            _router.Send(this, Map(logLevel), _source, formatter(state, exception), exception, Array.Empty<object>());
+            _router.Send(null, Map(logLevel), _source, formatter(state, exception), exception, Array.Empty<object>());
         }
 
         private LogLevel Map(MicrosoftLogLevel level)

@@ -7,8 +7,8 @@ namespace Annium.Logging.Shared
     public class LogMessage
     {
         public Instant Instant { get; }
-        public string SubjectType { get; }
-        public string SubjectId { get; }
+        public string? SubjectType { get; }
+        public string? SubjectId { get; }
         public LogLevel Level { get; }
         public string Source { get; }
         public int ThreadId { get; }
@@ -22,8 +22,8 @@ namespace Annium.Logging.Shared
 
         internal LogMessage(
             Instant instant,
-            string subjectType,
-            string subjectId,
+            string? subjectType,
+            string? subjectId,
             LogLevel level,
             string source,
             int threadId,

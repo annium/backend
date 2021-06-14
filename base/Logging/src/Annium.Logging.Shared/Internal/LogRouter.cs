@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
@@ -29,7 +28,7 @@ namespace Annium.Logging.Shared.Internal
         }
 
         public void Send(
-            ILogSubject subject,
+            ILogSubject? subject,
             LogLevel level,
             string source,
             string message,
@@ -38,28 +37,28 @@ namespace Annium.Logging.Shared.Internal
         )
         {
             var instant = _timeProvider.Now;
-            var frame = EnhancedStackTrace.Current().GetFrame(3);
-            var method = frame.GetMethod();
-            var type = (method.ReflectedType ?? method.DeclaringType ?? throw new InvalidOperationException()).FriendlyName();
-            var member = method.IsSpecialName
-                ? method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) :
-                method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) : method.Name
-                : method.Name;
+            // var frame = EnhancedStackTrace.Current().GetFrame(3);
+            // var method = frame.GetMethod();
+            // var type = (method.ReflectedType ?? method.DeclaringType ?? throw new InvalidOperationException()).FriendlyName();
+            // var member = method.IsSpecialName
+            //     ? method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) :
+            //     method.Name.StartsWith("get_") ? method.Name.Replace("get_", string.Empty) : method.Name
+            //     : method.Name;
 
             var msg = new LogMessage(
                 instant,
-                subject.GetType().FriendlyName(),
-                subject.GetId(),
+                subject?.GetType().FriendlyName() ?? null,
+                subject?.GetId() ?? null,
                 level,
                 source,
                 Thread.CurrentThread.ManagedThreadId,
                 message,
                 exception,
                 data,
-                type,
-                member,
-                frame.GetFileLineNumber(),
-                frame.GetFileColumnNumber()
+                string.Empty,
+                string.Empty,
+                0,
+                0
             );
 
             foreach (var route in _routes)

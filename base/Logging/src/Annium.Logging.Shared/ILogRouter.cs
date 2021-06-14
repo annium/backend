@@ -6,7 +6,7 @@ namespace Annium.Logging.Shared
     public interface ILogRouter
     {
         void Send(
-            ILogSubject subject,
+            ILogSubject? subject,
             LogLevel level,
             string source,
             string message,
