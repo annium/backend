@@ -17,7 +17,7 @@ namespace Annium.Logging.Console.Tests
             using (var capture = ConsoleCapture.Start())
             {
                 // act
-                subject.Info("sample");
+                subject.Log().Info("sample");
 
                 // assert
                 capture.Output.Contains("sample").IsTrue();
@@ -36,7 +36,7 @@ namespace Annium.Logging.Console.Tests
                 var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
 
                 // act
-                subject.Error(ex);
+                subject.Log().Error(ex);
 
                 // assert
                 capture.Output.Contains("Errors (2):").IsTrue();
@@ -57,7 +57,7 @@ namespace Annium.Logging.Console.Tests
                 var ex = new Exception("xxx");
 
                 // act
-                subject.Error(ex);
+                subject.Log().Error(ex);
 
                 // assert
                 capture.Output.Contains("xxx").IsTrue();

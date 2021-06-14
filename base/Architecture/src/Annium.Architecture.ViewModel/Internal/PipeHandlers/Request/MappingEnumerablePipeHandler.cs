@@ -36,7 +36,7 @@ namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request
             Func<IEnumerable<TRequestOut>, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
+            this.Log().Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
             var mappedRequest = _mapper.Map<IEnumerable<TRequestOut>>(request);
 
             return next(mappedRequest, ct);

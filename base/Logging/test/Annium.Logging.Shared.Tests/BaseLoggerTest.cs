@@ -22,7 +22,7 @@ namespace Annium.Logging.Shared.Tests
             var timeProvider = provider.Resolve<ITimeProvider>();
 
             // act
-            subject.Log(LogLevel.Trace, "sample");
+            subject.Log().Trace("sample");
 
             // assert
             _messages.Has(1);
@@ -40,7 +40,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Log(LogLevel.Trace, "sample");
+            subject.Log().Trace("sample");
 
             // assert
             _messages.IsEmpty();
@@ -54,7 +54,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Trace("sample");
+            subject.Log().Trace("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Trace);
@@ -68,7 +68,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Debug("sample");
+            subject.Log().Debug("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Debug);
@@ -82,7 +82,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Info("sample");
+            subject.Log().Info("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Info);
@@ -96,7 +96,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Warn("sample");
+            subject.Log().Warn("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Warn);
@@ -111,7 +111,7 @@ namespace Annium.Logging.Shared.Tests
             var exception = new Exception("sample");
 
             // act
-            subject.Error(exception);
+            subject.Log().Error(exception);
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Error);
@@ -127,7 +127,7 @@ namespace Annium.Logging.Shared.Tests
             var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
             // act
-            subject.Error("sample");
+            subject.Log().Error("sample");
 
             // assert
             _messages.At(0).Level.IsEqual(LogLevel.Error);

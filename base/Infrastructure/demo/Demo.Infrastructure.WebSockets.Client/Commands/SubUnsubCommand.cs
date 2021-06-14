@@ -35,32 +35,32 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await using var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             client.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
             await client.ConnectAsync(ct);
 
-            this.Debug("Init subscription");
+            this.Log().Debug("Init subscription");
             var subscription = client.Listen<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct).Subscribe(Log);
-            this.Debug("Subscription initiated");
+            this.Log().Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
-            this.Debug("Cancel subscription");
+            this.Log().Debug("Cancel subscription");
             subscription.Dispose();
-            this.Debug("Subscription canceled");
+            this.Log().Debug("Subscription canceled");
 
             await Task.Delay(100);
 
             await client.DisconnectAsync();
 
-            void Log(UserBalanceMessage msg) => this.Debug($"<<< {msg}");
+            void Log(UserBalanceMessage msg) => this.Log().Debug($"<<< {msg}");
         }
     }
 }

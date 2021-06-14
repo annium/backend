@@ -80,12 +80,12 @@ namespace Annium.Core.DependencyInjection
         {
             if (Contains(item))
             {
-                // this.Trace($"skip {item.ToReadableString()}, is already registered");
+                // this.Log().Trace($"skip {item.ToReadableString()}, is already registered");
 
                 return;
             }
 
-            // this.Trace($"add  {item.ToReadableString()}");
+            // this.Log().Trace($"add  {item.ToReadableString()}");
             Collection.Add(item.ToMicrosoft());
         }
 

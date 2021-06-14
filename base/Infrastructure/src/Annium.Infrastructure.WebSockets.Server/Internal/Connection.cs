@@ -27,20 +27,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async ValueTask DisposeAsync()
         {
-            this.Trace("start");
+            this.Log().Trace("start");
             if (
                 _socket.State == WebSocketState.Connecting ||
                 _socket.State == WebSocketState.Open ||
                 _socket.State == WebSocketState.CloseReceived
             )
             {
-                this.Trace("disconnect socket");
+                this.Log().Trace("disconnect socket");
                 await _socket.DisconnectAsync();
             }
 
-            this.Trace("dispose socket");
+            this.Log().Trace("dispose socket");
             await _socket.DisposeAsync();
-            this.Trace("done");
+            this.Log().Trace("done");
         }
     }
 }

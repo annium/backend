@@ -20,7 +20,7 @@ namespace Annium.Testing.Executors
 
         public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
         {
-            this.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+            this.Log().Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
             var watch = new Stopwatch();
             watch.Start();
@@ -43,7 +43,7 @@ namespace Annium.Testing.Executors
                 watch.Stop();
                 result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
 
-                this.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+                this.Log().Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
             }
         }
 
@@ -52,7 +52,7 @@ namespace Annium.Testing.Executors
             result.Outcome = TestOutcome.Failed;
             result.Failure = exception;
 
-            this.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+            this.Log().Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
         }
     }
 }

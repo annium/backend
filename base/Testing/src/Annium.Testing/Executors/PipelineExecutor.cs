@@ -23,7 +23,7 @@ namespace Annium.Testing.Executors
 
         public async Task ExecuteAsync(Target target)
         {
-            this.Trace($"Start pipeline of {target.Test.DisplayName}.");
+            this.Log().Trace($"Start pipeline of {target.Test.DisplayName}.");
 
             var result = target.Result;
             result.ExecutionStart = DateTime.Now;
@@ -40,7 +40,7 @@ namespace Annium.Testing.Executors
 
             result.ExecutionEnd = DateTime.Now;
 
-            this.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
+            this.Log().Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
         }
     }
 }

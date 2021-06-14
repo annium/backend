@@ -23,7 +23,7 @@ namespace Annium.Testing.Executors
             {
                 target.Result.Outcome = TestOutcome.Skipped;
 
-                this.Trace($"Skip {target.Test.DisplayName}.");
+                this.Log().Trace($"Skip {target.Test.DisplayName}.");
             }
 
             return Task.CompletedTask;

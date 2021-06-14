@@ -50,7 +50,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
-            this.Trace($"subscription {subscriptionId} - init");
+            this.Log().Trace($"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             await using var context = new SubscriptionContext<TInit, TMessage, TState>(
                 ctx.Request,
@@ -65,7 +65,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             // when reporting successful init - save to subscription store
             context.OnInit(() =>
             {
-                this.Trace($"subscription {subscriptionId} - save to store");
+                this.Log().Trace($"subscription {subscriptionId} - save to store");
                 _subscriptionContextStore.Save(context);
             });
 

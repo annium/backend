@@ -46,7 +46,7 @@ namespace Annium.Net.WebSockets.Internal
                     )
                     .DoParallelAsync(async _ =>
                     {
-                        logSubject.Trace("KeepAlive: ping -> pong");
+                        logSubject.Log().Trace("KeepAlive: ping -> pong");
                         await send(opts.PongFrame);
                     })
                     .Subscribe();

@@ -27,10 +27,10 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Validate {typeof(TRequest)}");
+            this.Log().Trace($"Validate {typeof(TRequest)}");
             if (request is null)
             {
-                this.Trace($"Validation of {typeof(TRequest)} failed - request is null");
+                this.Log().Trace($"Validation of {typeof(TRequest)} failed - request is null");
 
                 return GetResponse(Result.New().Error("Request is empty"));
             }
@@ -38,7 +38,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             var result = await _validator.ValidateAsync(request);
             if (result.HasErrors)
             {
-                this.Trace($"Validation of {typeof(TRequest)} failed");
+                this.Log().Trace($"Validation of {typeof(TRequest)} failed");
 
                 return GetResponse(result);
             }

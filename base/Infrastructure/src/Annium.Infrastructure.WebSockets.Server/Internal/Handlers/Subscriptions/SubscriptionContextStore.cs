@@ -26,17 +26,17 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
 
         public bool TryCancel(Guid subscriptionId)
         {
-            this.Trace($"subscription {subscriptionId} - init");
+            this.Log().Trace($"subscription {subscriptionId} - init");
             lock (_contexts)
             {
                 var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
                 if (context is null!)
                 {
-                    this.Trace($"subscription {subscriptionId} - context missing");
+                    this.Log().Trace($"subscription {subscriptionId} - context missing");
                     return false;
                 }
 
-                this.Trace($"subscription {subscriptionId} - cancel context");
+                this.Log().Trace($"subscription {subscriptionId} - cancel context");
                 _contexts.Remove(context);
                 context.Cancel();
 

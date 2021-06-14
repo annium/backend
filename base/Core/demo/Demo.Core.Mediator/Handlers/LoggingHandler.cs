@@ -25,9 +25,9 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Start {typeof(TRequest).Name} handle");
+            this.Log().Trace($"Start {typeof(TRequest).Name} handle");
             var result = await next(request, ct);
-            this.Trace($"Complete {typeof(TRequest).Name} handle");
+            this.Log().Trace($"Complete {typeof(TRequest).Name} handle");
 
             return result;
         }

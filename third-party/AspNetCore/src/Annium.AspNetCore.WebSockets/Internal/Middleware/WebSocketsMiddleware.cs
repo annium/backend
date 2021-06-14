@@ -64,16 +64,16 @@ namespace Annium.AspNetCore.WebSockets.Internal.Middleware
 
             try
             {
-                this.Trace("accept");
+                this.Log().Trace("accept");
                 var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
-                this.Trace("create socket");
+                this.Log().Trace("create socket");
                 var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory.GetLogger<WebSocket>());
-                this.Trace("handle");
+                this.Log().Trace("handle");
                 await _coordinator.HandleAsync(socket);
             }
             catch (Exception ex)
             {
-                this.Error(ex);
+                this.Log().Error(ex);
                 await _helper.WriteResponse(
                     context,
                     HttpStatusCode.InternalServerError,

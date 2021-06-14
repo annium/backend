@@ -143,12 +143,12 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
-                this.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
+                this.Log().Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
                 var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
 
                 var result = await next(payload, ct);
 
-                this.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
+                this.Log().Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
                 return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
             }
         }
@@ -203,11 +203,11 @@ namespace Annium.Core.Mediator.Tests
                 Func<TRequest, CancellationToken, Task<TResponse>> next
             )
             {
-                this.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
+                this.Log().Trace($"Start {typeof(TRequest).FriendlyName()} validation");
                 var result = _validate(request)
                     ? Result.Success(default(TResponse) !)
                     : Result.Failure(default(TResponse) !).Error("Validation failed");
-                this.Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
+                this.Log().Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
                 if (result.HasErrors)
                     return result;
 
@@ -235,8 +235,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                this.Info(GetType().FriendlyName());
-                this.Info(request.GetHashCode().ToString());
+                this.Log().Info(GetType().FriendlyName());
+                this.Log().Trace(request.GetHashCode().ToString());
 
                 var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
@@ -260,8 +260,8 @@ namespace Annium.Core.Mediator.Tests
                 CancellationToken ct
             )
             {
-                this.Info(GetType().FullName!);
-                this.Info(request.GetHashCode().ToString());
+                this.Log().Trace(GetType().FullName!);
+                this.Log().Trace(request.GetHashCode().ToString());
 
                 return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
             }

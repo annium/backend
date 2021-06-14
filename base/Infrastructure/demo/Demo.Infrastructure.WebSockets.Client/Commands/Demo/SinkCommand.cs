@@ -38,29 +38,29 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             );
             ws.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             ws.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            this.Debug($"Connecting to {cfg.Server}");
+            this.Log().Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, ct);
             var count = 0;
             ws.ListenBinary().Select(_serializer.Deserialize<NotificationBase>).Subscribe(x =>
             {
-                this.Debug($"<<< {x}");
+                this.Log().Debug($"<<< {x}");
                 count++;
             });
-            this.Debug($"Connected to {cfg.Server}");
+            this.Log().Debug($"Connected to {cfg.Server}");
 
             var sw = new Stopwatch();
             sw.Start();
 
-            this.Debug("Demo start");
+            this.Log().Debug("Demo start");
             try
             {
                 await Task.Delay(-1, ct);
@@ -70,14 +70,14 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
                 // ignored
             }
 
-            this.Debug("Demo end");
+            this.Log().Debug("Demo end");
 
             sw.Stop();
-            this.Debug($"Messages received: {count}. Rate: {Math.Floor((double) count / sw.ElapsedMilliseconds * 1000)}rps");
+            this.Log().Debug($"Messages received: {count}. Rate: {Math.Floor((double) count / sw.ElapsedMilliseconds * 1000)}rps");
 
-            this.Debug("Disconnecting");
+            this.Log().Debug("Disconnecting");
             await ws.DisconnectAsync();
-            this.Debug("Disconnected");
+            this.Log().Debug("Disconnected");
         }
     }
 

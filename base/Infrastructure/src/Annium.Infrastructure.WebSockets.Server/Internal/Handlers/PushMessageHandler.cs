@@ -34,10 +34,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             CancellationToken ct
         )
         {
-            this.Trace($"cn {request.ConnectionId} - start");
+            this.Log().Trace($"cn {request.ConnectionId} - start");
             if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
             {
-                this.Trace($"cn {request.ConnectionId} - not found");
+                this.Log().Trace($"cn {request.ConnectionId} - not found");
                 return Unit.Default;
             }
 
@@ -45,13 +45,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             {
                 if (cnRef.Value.Socket.State != WebSocketState.Open)
                 {
-                    this.Trace($"cn {request.ConnectionId} - socket not opened");
+                    this.Log().Trace($"cn {request.ConnectionId} - socket not opened");
                     return Unit.Default;
                 }
 
-                this.Trace($"cn {request.ConnectionId} - start send");
+                this.Log().Trace($"cn {request.ConnectionId} - start send");
                 await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
-                this.Trace($"cn {request.ConnectionId} - send complete");
+                this.Log().Trace($"cn {request.ConnectionId} - send complete");
             }
             // socket can get closed/aborted in a moment
             catch (WebSocketException)
@@ -59,7 +59,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
             }
             finally
             {
-                this.Trace($"cn {request.ConnectionId} - dispose ref");
+                this.Log().Trace($"cn {request.ConnectionId} - dispose ref");
                 await cnRef.DisposeAsync();
             }
 

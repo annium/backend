@@ -29,13 +29,13 @@ namespace Demo.Core.Mediator.Handlers
             try
             {
                 var result = await next(request, ct);
-                this.Trace($"Request {typeof(TRequest).Name} complete without errors");
+                this.Log().Trace($"Request {typeof(TRequest).Name} complete without errors");
 
                 return result;
             }
             catch (Exception exception)
             {
-                this.Trace($"Request {typeof(TRequest).Name} failed with {exception}");
+                this.Log().Trace($"Request {typeof(TRequest).Name} failed with {exception}");
                 return Result.Failure(default(TResponse) !).Error(exception.Message);
             }
         }

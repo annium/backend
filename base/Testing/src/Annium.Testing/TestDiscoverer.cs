@@ -33,11 +33,11 @@ namespace Annium.Testing
         {
             if (testClass.GetCustomAttribute<SkipAttribute>() != null)
             {
-                this.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
+                this.Log().Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
                 return;
             }
 
-            this.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
+            this.Log().Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
             foreach (var test in testClass.GetMethods().Where(IsTest).Select(method => new Test(method)))
                 handleTestFound(test);
         }

@@ -72,14 +72,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             catch (Exception e)
             {
-                this.Trace(e.ToString());
+                this.Log().Trace(e.ToString());
                 return default;
             }
         }
 
         private async Task<AbstractResponseBase> ProcessRequest(TState state, AbstractRequestBase request)
         {
-            this.Trace($"Process request {request.Tid}#{request.Rid}");
+            this.Log().Trace($"Process request {request.Tid}#{request.Rid}");
             var context = RequestContext.CreateDynamic(request, state);
             return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
         }
@@ -101,7 +101,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task SendInternal(ISendingWebSocket socket, AbstractResponseBase response)
         {
-            this.Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
+            this.Log().Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
             await socket.SendWith(response, _serializer, CancellationToken.None);
         }
     }

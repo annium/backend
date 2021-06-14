@@ -29,11 +29,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Compose {typeof(TRequest)}");
+            this.Log().Trace($"Compose {typeof(TRequest)}");
             var result = await _composer.ComposeAsync(request);
             if (result.HasErrors)
             {
-                this.Trace($"Composition of {typeof(TRequest)} failed");
+                this.Log().Trace($"Composition of {typeof(TRequest)} failed");
 
                 return GetResponse(result);
             }

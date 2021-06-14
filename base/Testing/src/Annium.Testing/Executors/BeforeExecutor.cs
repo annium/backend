@@ -24,7 +24,7 @@ namespace Annium.Testing.Executors
             if (test.Before == null)
                 return Task.CompletedTask;
 
-            this.Trace($"Execute Before of {target.Test.DisplayName}.");
+            this.Log().Trace($"Execute Before of {target.Test.DisplayName}.");
 
             return _executor.ExecuteAsync(instance, test.Before, result);
         }

@@ -36,7 +36,7 @@ namespace Annium.Net.WebSockets.Internal
 
         public void Resume()
         {
-            this.Trace("start");
+            this.Log().Trace("start");
             _disposable = Disposable.Box();
 
             _disposable += _cts = new();
@@ -51,15 +51,15 @@ namespace Annium.Net.WebSockets.Internal
             _disposable += _observable
                 .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
                 .Subscribe(TrackPong);
-            this.Trace("done");
+            this.Log().Trace("done");
         }
 
         public void Pause()
         {
-            this.Trace("start");
+            this.Log().Trace("start");
             _cts.Cancel();
             _disposable.Dispose();
-            this.Trace("done");
+            this.Log().Trace("done");
         }
 
         private void SendPingCheckPong(object? _)
@@ -80,7 +80,7 @@ namespace Annium.Net.WebSockets.Internal
         private void SendPing()
         {
             // send ping every time
-            this.Trace("Send ping");
+            this.Log().Trace("Send ping");
             _send(_options.PingFrame).Subscribe();
         }
 
@@ -94,17 +94,17 @@ namespace Annium.Net.WebSockets.Internal
             if (silenceDuration <= _options.PingInterval)
                 return;
 
-            this.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+            this.Log().Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
             if (silenceDuration > _options.PingInterval * _options.Retries)
             {
-                this.Trace("Missed all pings - signal connection lost");
+                this.Log().Trace("Missed all pings - signal connection lost");
                 _cts.Cancel();
             }
         }
 
         private void TrackPong(SocketMessage _)
         {
-            this.Trace("Received pong");
+            this.Log().Trace("Received pong");
             _lastPongTime = GetNow();
         }
 

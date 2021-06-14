@@ -42,15 +42,15 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                this.Debug($"{operation} start");
+                this.Log().Debug($"{operation} start");
                 var result = await handleAsync();
-                this.Debug($"{operation} succeed");
+                this.Log().Debug($"{operation} succeed");
 
                 return result;
             }
             catch
             {
-                this.Debug($"{operation} failed");
+                this.Log().Debug($"{operation} failed");
                 throw;
             }
         }
@@ -59,13 +59,13 @@ namespace Annium.Storage.Abstractions
         {
             try
             {
-                this.Debug($"{operation} start");
+                this.Log().Debug($"{operation} start");
                 await handleAsync();
-                this.Debug($"{operation} succeed");
+                this.Log().Debug($"{operation} succeed");
             }
             catch
             {
-                this.Debug($"{operation} failed");
+                this.Log().Debug($"{operation} failed");
                 throw;
             }
         }

@@ -27,12 +27,12 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Deserialize Request to {typeof(TRequest).Name}");
+            this.Log().Trace($"Deserialize Request to {typeof(TRequest).Name}");
             var payload = JsonSerializer.Deserialize<TRequest>(request.Value)!;
 
             var result = await next(payload, ct);
 
-            this.Trace($"Serialize {typeof(TResponse).Name} to Response");
+            this.Log().Trace($"Serialize {typeof(TResponse).Name} to Response");
             return new Response<TResponse>(JsonSerializer.Serialize(result));
         }
     }

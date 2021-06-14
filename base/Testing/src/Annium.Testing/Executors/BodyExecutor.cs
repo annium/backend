@@ -24,7 +24,7 @@ namespace Annium.Testing.Executors
             if (test.Method == null)
                 return Task.CompletedTask;
 
-            this.Trace($"Execute Body of {target.Test.DisplayName}.");
+            this.Log().Trace($"Execute Body of {target.Test.DisplayName}.");
 
             return _executor.ExecuteAsync(instance, test.Method, result);
         }

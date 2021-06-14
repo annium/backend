@@ -44,16 +44,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             );
             ws.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             ws.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            this.Debug($"Connecting to {cfg.Server}");
+            this.Log().Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, ct);
             var counter = 0;
             ws.ListenBinary()
@@ -65,38 +65,38 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
                     }
                     catch (Exception e)
                     {
-                        this.Error($"Deserialize failed with: {e}");
+                        this.Log().Error($"Deserialize failed with: {e}");
                         throw;
                     }
                 })
                 .Subscribe(x =>
                 {
                     Interlocked.Increment(ref counter);
-                    this.Debug($"<<< {x}");
+                    this.Log().Debug($"<<< {x}");
                 });
-            this.Debug($"Connected to {cfg.Server}");
+            this.Log().Debug($"Connected to {cfg.Server}");
 
-            this.Debug("Demo start");
+            this.Log().Debug("Demo start");
             await Task.WhenAll(
                 SendRequests(ws)
                 // SendNotifications(ws),
             );
-            this.Debug("Demo end");
+            this.Log().Debug("Demo end");
 
             await Task.Delay(50);
-            this.Debug($"Responses: {counter}");
+            this.Log().Debug($"Responses: {counter}");
 
-            this.Debug("Disconnecting");
+            this.Log().Debug("Disconnecting");
             if (ws.State == WebSocketState.Open)
                 await ws.DisconnectAsync();
-            this.Debug("Disconnected");
+            this.Log().Debug("Disconnected");
         }
 
         private async Task Send<T>(ISendingWebSocket ws, T data)
             where T : notnull
         {
             var raw = _serializer.Serialize(data);
-            this.Debug($">>> {data.GetType().FriendlyName()}::{data}");
+            this.Log().Debug($">>> {data.GetType().FriendlyName()}::{data}");
 
             await ws.Send(raw, CancellationToken.None);
         }

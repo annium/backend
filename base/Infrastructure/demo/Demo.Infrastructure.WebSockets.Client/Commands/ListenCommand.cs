@@ -35,26 +35,26 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             client.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            this.Debug($"Connecting to {cfg.Server}");
+            this.Log().Debug($"Connecting to {cfg.Server}");
             await client.ConnectAsync(ct);
-            this.Debug($"Connected to {cfg.Server}");
+            this.Log().Debug($"Connected to {cfg.Server}");
 
-            using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Debug($"<<< diagnostics: {x}"));
+            using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Log().Debug($"<<< diagnostics: {x}"));
 
             await ct;
-            this.Debug("Disconnecting");
+            this.Log().Debug("Disconnecting");
             if (client.IsConnected)
                 await client.DisconnectAsync();
-            this.Debug("Disconnected");
+            this.Log().Debug("Disconnected");
         }
     }
 }

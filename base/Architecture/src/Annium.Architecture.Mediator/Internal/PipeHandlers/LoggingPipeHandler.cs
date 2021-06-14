@@ -23,11 +23,11 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
+            this.Log().Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
 
             var result = await next(request, ct);
 
-            this.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
+            this.Log().Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
 
             return result;
         }

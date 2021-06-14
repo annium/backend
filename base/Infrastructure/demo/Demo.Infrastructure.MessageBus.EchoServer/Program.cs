@@ -19,14 +19,14 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
             CancellationToken ct
         )
         {
-            var logger = provider.Resolve<ILogSubject<Program>>();
+            var subject = provider.Resolve<ILogSubject<Program>>();
             var socket = provider.Resolve<IMessageBusSocket>();
             var timeProvider = provider.Resolve<ITimeProvider>();
 
             var cfg = provider.Resolve<EndpointsConfiguration>();
             Console.WriteLine($"Start echo server with PUB {cfg.PubEndpoint} / SUB {cfg.SubEndpoint}");
 
-            socket.Subscribe(x => logger.Info($"<<<{x}"));
+            socket.Subscribe(x => subject.Log().Info($"<<<{x}"));
 
             while (!ct.IsCancellationRequested)
             {

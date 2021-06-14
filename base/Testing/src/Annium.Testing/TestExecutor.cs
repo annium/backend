@@ -32,7 +32,7 @@ namespace Annium.Testing
 
         public async Task RunTestsAsync(IEnumerable<Test> tests, Action<Test, TestResult> handleResult)
         {
-            this.Debug("Start tests execution");
+            this.Log().Debug("Start tests execution");
 
             var concurrency = Environment.ProcessorCount;
 
@@ -42,14 +42,14 @@ namespace Annium.Testing
                 try
                 {
                     semaphore.WaitOne();
-                    this.Debug($"Run test {test.DisplayName}");
+                    this.Log().Debug($"Run test {test.DisplayName}");
 
                     await using var scope = _provider.CreateAsyncScope();
                     var target = new Target(scope.ServiceProvider, test, new TestResult());
 
                     await _executor.ExecuteAsync(target);
 
-                    this.Debug($"Complete test {test.DisplayName}");
+                    this.Log().Debug($"Complete test {test.DisplayName}");
                     handleResult(target.Test, target.Result);
                 }
                 finally
@@ -58,7 +58,7 @@ namespace Annium.Testing
                 }
             }));
 
-            this.Debug("Complete tests execution");
+            this.Log().Debug("Complete tests execution");
         }
     }
 }

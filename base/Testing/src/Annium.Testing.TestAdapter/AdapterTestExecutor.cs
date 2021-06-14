@@ -37,7 +37,7 @@ namespace Annium.Testing.TestAdapter
             _provider = AdapterServiceProviderBuilder.Build(runContext);
             Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
 
-            this.Debug("Start execution.");
+            this.Log().Debug("Start execution.");
 
             Task.WhenAll(sources.Select(source => RunAssemblyTestsAsync(Source.Resolve(source), frameworkHandle))).Wait();
         }
@@ -52,7 +52,7 @@ namespace Annium.Testing.TestAdapter
             _provider = AdapterServiceProviderBuilder.Build(runContext);
             Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
 
-            this.Debug("Start execution.");
+            this.Log().Debug("Start execution.");
 
             Task.WhenAll(testSet.Select(test => test.Source).Distinct().Select(
                 source => RunAssemblyTestsAsync(Source.Resolve(source), testSet.Where(test => test.Source == source), frameworkHandle)
@@ -65,7 +65,7 @@ namespace Annium.Testing.TestAdapter
 
         private async Task RunAssemblyTestsAsync(Assembly assembly, IFrameworkHandle frameworkHandle)
         {
-            this.Debug($"Start execution of all tests in {assembly.FullName}.");
+            this.Log().Debug($"Start execution of all tests in {assembly.FullName}.");
 
             var tests = new List<Test>();
             await _provider!.Resolve<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
@@ -77,7 +77,7 @@ namespace Annium.Testing.TestAdapter
         {
             var testCasesSet = testCases.ToArray();
 
-            this.Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
+            this.Log().Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
 
             var tests = testCasesSet.Select(testCase => _testConverter.Convert(assembly, testCase)).ToArray();
 
@@ -100,7 +100,7 @@ namespace Annium.Testing.TestAdapter
         {
             var testSet = tests.ToArray();
 
-            this.Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
+            this.Log().Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
 
             var container = AssemblyServicesCollector.Collect(assembly, testSet);
             container.Add(_provider!.Resolve<TestingConfiguration>()).Singleton();

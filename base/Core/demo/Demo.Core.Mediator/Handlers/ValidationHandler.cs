@@ -32,10 +32,10 @@ namespace Demo.Core.Mediator.Handlers
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Start {typeof(TRequest).Name} validation");
+            this.Log().Trace($"Start {typeof(TRequest).Name} validation");
             var result = Result.Failure(default(TResponse) !)
                 .Join(await Task.WhenAll(_validators.Select(v => v.ValidateAsync(request))));
-            this.Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
+            this.Log().Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
             if (result.HasErrors)
                 return result;
 

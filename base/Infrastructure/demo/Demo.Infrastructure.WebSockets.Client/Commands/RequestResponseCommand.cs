@@ -39,12 +39,12 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             client.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
@@ -53,7 +53,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             var counter = 0;
             var sw = new Stopwatch();
 
-            this.Debug("Parallel");
+            this.Log().Debug("Parallel");
             sw.Start();
             await Task.WhenAll(
                 Enumerable.Range(0, 20000)
@@ -66,7 +66,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             );
             sw.Stop();
 
-            this.Debug("Sequential");
+            this.Log().Debug("Sequential");
             sw.Start();
             foreach (var _ in Enumerable.Range(0, 5000))
             {
@@ -77,16 +77,16 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
             sw.Stop();
 
-            this.Debug($"End: {sw.Elapsed}. Counter: {counter}");
+            this.Log().Debug($"End: {sw.Elapsed}. Counter: {counter}");
 
             if (client.IsConnected)
                 await client.DisconnectAsync();
 
             async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken ct)
             {
-                // this.Debug($">>> {request}");
+                // this.Log().Debug($">>> {request}");
                 var result = await client!.FetchAsync<T>(request, ct);
-                // this.Debug($"<<< {result}");
+                // this.Log().Debug($"<<< {result}");
                 return result;
             }
         }

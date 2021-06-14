@@ -38,14 +38,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         public async Task HandleAsync(WebSocket socket)
         {
             await using var cn = await _connectionTracker.Track(socket);
-            this.Trace($"Start for connection {cn.GetId()}");
+            this.Log().Trace($"Start for connection {cn.GetId()}");
             await using var scope = _sp.CreateAsyncScope();
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
             try
             {
                 socket.ConnectionLost += () =>
                 {
-                    this.Trace($"Notify lost connection {cn.GetId()}");
+                    this.Log().Trace($"Notify lost connection {cn.GetId()}");
                     // for case, when server stops, thus cancellation occurs before connection is lost
                     if (!cts.IsCancellationRequested)
                         cts.Cancel();
@@ -57,22 +57,22 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             finally
             {
-                this.Trace($"Release complete connection {cn.GetId()}");
+                this.Log().Trace($"Release complete connection {cn.GetId()}");
                 await _connectionTracker.Release(cn.Id);
             }
 
-            this.Trace($"End for connection {cn.GetId()}");
+            this.Log().Trace($"End for connection {cn.GetId()}");
         }
 
         public void Shutdown()
         {
-            this.Trace("start");
+            this.Log().Trace("start");
             _lifetimeManager.Stop();
         }
 
         public void Dispose()
         {
-            this.Trace("start");
+            this.Log().Trace("start");
             Shutdown();
         }
     }

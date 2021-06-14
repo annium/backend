@@ -26,7 +26,7 @@ namespace Demo.Core.Mediator.Handlers
             Func<Authored<TRequest>, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Start {typeof(TRequest).Name} authorization");
+            this.Log().Trace($"Start {typeof(TRequest).Name} authorization");
             var authoredRequest = new Authored<TRequest>(1, request);
 
             var response = await next(authoredRequest, ct);

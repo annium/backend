@@ -30,14 +30,14 @@ namespace Annium.Core.Mediator.Internal
 
             output = ResolveOutput(input, output);
 
-            this.Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
+            this.Log().Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
 
             var chain = new List<ChainElement>();
             var isFinalized = false;
 
             while (true)
             {
-                this.Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
+                this.Log().Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
 
                 Type? service = null;
 
@@ -45,7 +45,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     service = ResolveHandler(input, output, handler);
 
-                    this.Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
+                    this.Log().Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
 
                     if (service is null)
                         continue;
@@ -56,11 +56,11 @@ namespace Annium.Core.Mediator.Internal
 
                 if (service is null)
                 {
-                    this.Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
+                    this.Log().Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
                     break;
                 }
 
-                this.Trace($"Add {service.FriendlyName()} to chain");
+                this.Log().Trace($"Add {service.FriendlyName()} to chain");
 
                 var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
                 // if final handler - break
@@ -68,7 +68,7 @@ namespace Annium.Core.Mediator.Internal
                 {
                     chain.Add(new ChainElement(service));
                     isFinalized = true;
-                    this.Trace("Resolved handler is final");
+                    this.Log().Trace("Resolved handler is final");
                     break;
                 }
 
@@ -107,7 +107,7 @@ namespace Annium.Core.Mediator.Internal
             var service = handler.Implementation.ResolveByImplementation(handlerInput);
             if (service is null)
             {
-                this.Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
+                this.Log().Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
                 return null;
             }
 
@@ -116,9 +116,9 @@ namespace Annium.Core.Mediator.Internal
 
         private void TraceChain(IReadOnlyCollection<ChainElement> chain)
         {
-            this.Trace($"Composed chain with {chain.Count} handler(s):");
+            this.Log().Trace($"Composed chain with {chain.Count} handler(s):");
             foreach (var element in chain)
-                this.Trace($"- {element.Handler}");
+                this.Log().Trace($"- {element.Handler}");
         }
     }
 }

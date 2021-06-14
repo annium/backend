@@ -41,7 +41,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers
 
         private TResponse Failure(Exception exception)
         {
-            this.Trace($"Failure of {typeof(TRequest)}: {exception}");
+            this.Log().Trace($"Failure of {typeof(TRequest)}: {exception}");
 
             return GetFailure(exception);
         }

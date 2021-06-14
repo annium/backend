@@ -18,7 +18,7 @@ namespace Annium.Testing.Executors
 
         public Task ExecuteAsync(Target target)
         {
-            this.Trace($"Setup {target.Test.DisplayName}.");
+            this.Log().Trace($"Setup {target.Test.DisplayName}.");
 
             target.Init();
 

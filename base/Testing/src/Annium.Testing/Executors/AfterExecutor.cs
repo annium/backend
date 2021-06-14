@@ -24,7 +24,7 @@ namespace Annium.Testing.Executors
             if (test.After == null)
                 return Task.CompletedTask;
 
-            this.Trace($"Execute After of {target.Test.DisplayName}.");
+            this.Log().Trace($"Execute After of {target.Test.DisplayName}.");
 
             return _executor.ExecuteAsync(instance, test.After, result);
         }

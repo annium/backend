@@ -38,7 +38,7 @@ namespace Annium.Testing.TestAdapter
             _testDiscoverer = provider.Resolve<TestDiscoverer>();
             Logger = provider.Resolve<ILogger<AdapterTestDiscoverer>>();
 
-            this.Debug("Start discovery.");
+            this.Log().Debug("Start discovery.");
 
             DiscoverSourcesAsync(sources, discoverySink).Wait();
         }
@@ -50,7 +50,7 @@ namespace Annium.Testing.TestAdapter
         {
             var assembly = Source.Resolve(source);
 
-            this.Debug($"Start discovery of {assembly.FullName}.");
+            this.Log().Debug($"Start discovery of {assembly.FullName}.");
 
             return _testDiscoverer!.FindTestsAsync(
                 assembly,

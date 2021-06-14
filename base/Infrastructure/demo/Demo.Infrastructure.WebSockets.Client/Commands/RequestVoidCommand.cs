@@ -35,9 +35,9 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(ct);
 
             var request = new DeleteOrderRequest();
-            this.Debug($">>> {request}");
+            this.Log().Debug($">>> {request}");
             var result = await client.SendAsync(request, ct);
-            this.Debug($"<<< {result}");
+            this.Log().Debug($"<<< {result}");
 
             if (client.IsConnected)
                 await client.DisconnectAsync();

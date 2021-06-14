@@ -53,13 +53,13 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             }
             catch (ServerException e)
             {
-                this.Error(e);
+                this.Log().Error(e);
 
                 await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
             }
             catch (Exception e)
             {
-                this.Error(e);
+                this.Log().Error(e);
                 var result = Result.Status(OperationStatus.UncaughtException).Error(e.ToString());
                 await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
             }

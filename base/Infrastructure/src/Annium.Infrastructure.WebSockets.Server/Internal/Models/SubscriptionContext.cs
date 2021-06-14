@@ -108,11 +108,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (!_isInitiated)
                 throw new InvalidOperationException("Can't cancel not initiated subscription");
 
-            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
+            this.Log().Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
             _cts.Dispose();
-            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
+            this.Log().Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
             await _executor.DisposeAsync();
-            this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
+            this.Log().Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
         }
 
         private void SendInternal<T>(T msg) =>

@@ -37,11 +37,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
         )
         {
             var subscriptionId = ctx.Request.SubscriptionId;
-            this.Trace($"subscription {subscriptionId} - init");
+            this.Log().Trace($"subscription {subscriptionId} - init");
             var status = _subscriptionContextStore.TryCancel(subscriptionId)
                 ? OperationStatus.Ok
                 : OperationStatus.NotFound;
-            this.Trace($"subscription {subscriptionId} - result: {status}");
+            this.Log().Trace($"subscription {subscriptionId} - result: {status}");
             var response = Response.Result(ctx.Request.Rid, Result.Status(status));
 
             return Task.FromResult(response);

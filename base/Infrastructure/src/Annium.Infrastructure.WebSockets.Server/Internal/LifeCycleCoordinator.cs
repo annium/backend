@@ -25,14 +25,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public Task HandleStartAsync(TState state)
         {
-            this.Trace("start");
+            this.Log().Trace("start");
 
             return HandleAsync(state, (x, s) => x.HandleStartAsync(s));
         }
 
         public Task HandleEndAsync(TState state)
         {
-            this.Trace("start");
+            this.Log().Trace("start");
 
             return HandleAsync(state, (x, s) => x.HandleEndAsync(s));
         }

@@ -34,20 +34,20 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
             );
             ws.ConnectionLost += () =>
             {
-                this.Debug("connection lost");
+                this.Log().Debug("connection lost");
                 return Task.CompletedTask;
             };
             ws.ConnectionRestored += () =>
             {
-                this.Debug("connection restored");
+                this.Log().Debug("connection restored");
                 return Task.CompletedTask;
             };
 
-            this.Debug($"Connecting to {cfg.Server}");
+            this.Log().Debug($"Connecting to {cfg.Server}");
             await ws.ConnectAsync(cfg.Server, ct);
-            this.Debug($"Connected to {cfg.Server}");
+            this.Log().Debug($"Connected to {cfg.Server}");
 
-            this.Debug("Start echo loop");
+            this.Log().Debug("Start echo loop");
 
             var sw = new Stopwatch();
             sw.Start();
@@ -66,19 +66,19 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo
                 }
 
             sw.Stop();
-            this.Debug($"Messages sent: {value}. Rate: {Math.Floor((double) value / sw.ElapsedMilliseconds * 1000)}rps");
+            this.Log().Debug($"Messages sent: {value}. Rate: {Math.Floor((double) value / sw.ElapsedMilliseconds * 1000)}rps");
 
             if (!cfg.Kill)
             {
-                this.Debug("Disconnecting");
+                this.Log().Debug("Disconnecting");
                 await ws.DisconnectAsync();
-                this.Debug("Disconnected");
+                this.Log().Debug("Disconnected");
             }
 
             IObservable<Unit> Send(int val)
             {
                 if (val % 10000 == 0)
-                    this.Debug($">>> {val}");
+                    this.Log().Debug($">>> {val}");
                 return ws.Send(val.ToString(), CancellationToken.None);
             }
         }
