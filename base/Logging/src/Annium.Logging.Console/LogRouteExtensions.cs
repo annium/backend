@@ -48,7 +48,7 @@ namespace Annium.Core.DependencyInjection
             if (m.Line != 0)
                 sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
 
-            return $"[{time}] {m.Level} [{m.ThreadId:D3}]{sb} >> {message}";
+            return $"[{time}] {m.Level} [{m.ThreadId:D3}] {sb} >> {message}";
         }
     }
 }
