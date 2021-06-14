@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Annium.Core.DependencyInjection;
@@ -50,7 +51,7 @@ namespace Annium.Logging.Shared.Internal
                 source,
                 Thread.CurrentThread.ManagedThreadId,
                 message,
-                exception,
+                exception?.Demystify(),
                 data,
                 Path.GetFileNameWithoutExtension(file),
                 member,
