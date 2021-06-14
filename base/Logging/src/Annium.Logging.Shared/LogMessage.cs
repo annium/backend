@@ -18,7 +18,6 @@ namespace Annium.Logging.Shared
         public string Type { get; }
         public string Member { get; }
         public int Line { get; }
-        public int Column { get; }
 
         internal LogMessage(
             Instant instant,
@@ -32,8 +31,7 @@ namespace Annium.Logging.Shared
             object[] data,
             string type,
             string member,
-            int line,
-            int column
+            int line
         )
         {
             Instant = instant;
@@ -48,7 +46,6 @@ namespace Annium.Logging.Shared
             Type = type;
             Member = member;
             Line = line;
-            Column = column;
         }
     }
 }

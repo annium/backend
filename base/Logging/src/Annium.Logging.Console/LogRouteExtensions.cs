@@ -1,6 +1,6 @@
 using System;
+using System.Text;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
 using Annium.Logging.Console;
 using Annium.Logging.Shared;
 
@@ -43,18 +43,11 @@ namespace Annium.Core.DependencyInjection
 
         private static string DefaultFormatInternal(LogMessage m, string time, string message)
         {
-            var subjectType = m.SubjectType;
+            var sb = new StringBuilder();
+            sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
+            sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
 
-            var caller = string.Empty;
-            var callerType = m.Type.Contains('_') ? subjectType : m.Type;
-            if (m.Line != 0)
-                caller = $" at {callerType}.{m.Member}#{m.Line}:{m.Column}";
-
-            var source = m.Source == subjectType || m.Source == callerType ? string.Empty : $" {m.Source}";
-            var subject = subjectType is null ? $" {subjectType}#{m.SubjectId}" : string.Empty;
-            var sourceSubject = new[] { source, subject }.Join(" - ");
-
-            return $"[{time}] {m.Level} [{m.ThreadId:D3}]{sourceSubject}{caller} >> {message}";
+            return $"[{time}] {m.Level} [{m.ThreadId:D3}]{sb} >> {message}";
         }
     }
 }

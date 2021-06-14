@@ -57,7 +57,6 @@ namespace Annium.Logging.Shared.Internal
                 data,
                 string.Empty,
                 string.Empty,
-                0,
                 0
             );
 
