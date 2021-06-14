@@ -45,7 +45,8 @@ namespace Annium.Core.DependencyInjection
         {
             var sb = new StringBuilder();
             sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
-            sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
+            if (m.Line != 0)
+                sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
 
             return $"[{time}] {m.Level} [{m.ThreadId:D3}]{sb} >> {message}";
         }

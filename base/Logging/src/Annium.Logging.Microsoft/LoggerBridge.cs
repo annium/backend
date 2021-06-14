@@ -37,7 +37,17 @@ namespace Annium.Logging.Microsoft
             Func<TState, Exception, string> formatter
         )
         {
-            _router.Send(null, Map(logLevel), _source, formatter(state, exception), exception, Array.Empty<object>());
+            _router.Send(
+                null,
+                string.Empty,
+                string.Empty,
+                0,
+                Map(logLevel),
+                _source,
+                formatter(state, exception),
+                exception,
+                Array.Empty<object>()
+            );
         }
 
         private LogLevel Map(MicrosoftLogLevel level)

@@ -4,13 +4,8 @@ namespace Annium.Logging.Abstractions
 {
     public interface ILogger
     {
-        void Log(ILogSubject subject, LogLevel level, string message, object[] data);
-        void Trace(ILogSubject subject, string message, object[] data);
-        void Debug(ILogSubject subject, string message, object[] data);
-        void Info(ILogSubject subject, string message, object[] data);
-        void Warn(ILogSubject subject, string message, object[] data);
-        void Error(ILogSubject subject, Exception exception, object[] data);
-        void Error(ILogSubject subject, string message, object[] data);
+        void Log(ILogSubject? subject, string file, string member, int line, LogLevel level, string message, object[] data);
+        void Error(ILogSubject? subject, string file, string member, int line, Exception exception, object[] data);
     }
 
     public interface ILogger<out T> : ILogger

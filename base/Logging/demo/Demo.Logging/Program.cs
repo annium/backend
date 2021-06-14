@@ -15,8 +15,8 @@ namespace Demo.Logging
         )
         {
             var subject = provider.Resolve<ILogSubject<Program>>();
-            subject.Debug("debug");
-            subject.Trace("trace");
+            subject.Log().Debug("debug");
+            subject.Log().Trace("trace");
         }
 
         public static int Main(string[] args) => new Entrypoint()

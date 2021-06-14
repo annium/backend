@@ -7,6 +7,9 @@ namespace Annium.Logging.Shared
     {
         void Send(
             ILogSubject? subject,
+            string file,
+            string member,
+            int line,
             LogLevel level,
             string source,
             string message,
