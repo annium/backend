@@ -149,6 +149,59 @@ namespace Annium.Data.Models.Tests.Extensions
             a.IsShallowEqual(b).IsFalse();
             b.IsShallowEqual(a).IsFalse();
         }
+
+        [Fact]
+        // TODO: fix, not valid
+        public void IsShallowEqual_ToAnonymousObject_Works()
+        {
+            // arrange
+            var now = DateTimeOffset.Now;
+            var src = new Big
+            {
+                Samples = new[]
+                {
+                    new Sample
+                    {
+                        Date = now + TimeSpan.FromDays(1),
+                        Point = new Point(1, 2)
+                    },
+                    new Sample
+                    {
+                        Date = now + TimeSpan.FromHours(1),
+                        Point = new Point(4, 3)
+                    }
+                },
+                Keys = new Dictionary<string, Key>
+                {
+                    { "a", new Key(5, 3) },
+                    { "c", new Key(2, 4) },
+                }
+            };
+            var tgt = new
+            {
+                Samples = new[]
+                {
+                    new
+                    {
+                        Date = now + TimeSpan.FromDays(1),
+                        Point = new Point(1, 2)
+                    },
+                    new
+                    {
+                        Date = now + TimeSpan.FromHours(1),
+                        Point = new Point(4, 3)
+                    }
+                },
+                Keys = new Dictionary<string, Key>
+                {
+                    { "a", new Key(5, 3) },
+                    { "c", new Key(2, 4) },
+                }
+            };
+
+            // assert
+            src.IsShallowEqual(tgt).IsFalse();
+        }
     }
 
     namespace Internal
@@ -163,6 +216,12 @@ namespace Annium.Data.Models.Tests.Extensions
             public HashSet<Point> Points { get; set; } = new();
             public IDictionary<Point, Sample> Dictionary { get; set; } = new Dictionary<Point, Sample>();
             public IReadOnlyDictionary<Point, Sample> ReadOnlyDictionary { get; set; } = new Dictionary<Point, Sample>();
+        }
+
+        internal class Big
+        {
+            public IEnumerable<Sample> Samples { get; set; } = Array.Empty<Sample>();
+            public Dictionary<string, Key> Keys { get; set; } = new();
         }
 
         internal struct Sample
