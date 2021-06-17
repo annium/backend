@@ -239,7 +239,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public virtual async ValueTask DisposeAsync()
         {
             this.Log().Trace("start, dispose subscriptions");
-            Parallel.ForEach(_subscriptions.Values, x => x.Dispose());
+            foreach (var subscription in _subscriptions.Values)
+                subscription.Dispose();
             this.Log().Trace("dispose disposable box");
             await _disposable.DisposeAsync();
             this.Log().Trace("done");
