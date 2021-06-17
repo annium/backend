@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -5,16 +7,18 @@ namespace Annium.Diagnostics.Debug
 {
     public static class IdExtensions
     {
-        public static string GetId<T>(this T obj) where T : class => IdTable<T>.GetId(obj);
+        private static readonly ConcurrentDictionary<Type, IdTable> IdTables = new();
 
-        private class IdTable<T>
-            where T : class
+        public static string GetId<T>(this T obj) where T : class =>
+            IdTables.GetOrAdd(obj.GetType(), _ => new IdTable()).GetId(obj);
+
+        private class IdTable
         {
-            private static long Id;
-            private static readonly ConditionalWeakTable<T, string> Ids = new();
+            private long _id;
+            private readonly ConditionalWeakTable<object, string> _ids = new();
 
-            public static string GetId(T obj) =>
-                Ids.GetValue(obj, _ => Interlocked.Increment(ref Id).ToString("000"));
+            public string GetId(object obj) =>
+                _ids.GetValue(obj, _ => Interlocked.Increment(ref _id).ToString("000"));
         }
     }
 }
