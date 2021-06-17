@@ -29,8 +29,8 @@ namespace Annium.Logging.Shared.Internal
             _timeProvider = timeProvider;
         }
 
-        public void Send(
-            ILogSubject? subject,
+        public void Send<T>(
+            T? subject,
             string file,
             string member,
             int line,
@@ -40,6 +40,7 @@ namespace Annium.Logging.Shared.Internal
             Exception? exception,
             object[] data
         )
+            where T : class, ILogSubject
         {
             var instant = _timeProvider.Now;
 

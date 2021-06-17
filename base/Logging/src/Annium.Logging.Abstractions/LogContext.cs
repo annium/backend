@@ -2,15 +2,16 @@ using System;
 
 namespace Annium.Logging.Abstractions
 {
-    public readonly ref struct LogContext
+    public readonly ref struct LogContext<T>
+        where T : class, ILogSubject
     {
-        public ILogSubject Subject { get; }
+        public T Subject { get; }
         public string File { get; }
         public string Member { get; }
         public int Line { get; }
 
         public LogContext(
-            ILogSubject subject,
+            T subject,
             string file,
             string member,
             int line

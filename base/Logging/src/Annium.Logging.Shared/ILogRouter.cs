@@ -5,8 +5,8 @@ namespace Annium.Logging.Shared
 {
     public interface ILogRouter
     {
-        void Send(
-            ILogSubject? subject,
+        void Send<T>(
+            T? subject,
             string file,
             string member,
             int line,
@@ -15,6 +15,6 @@ namespace Annium.Logging.Shared
             string message,
             Exception? exception,
             object[] data
-        );
+        ) where T : class, ILogSubject;
     }
 }

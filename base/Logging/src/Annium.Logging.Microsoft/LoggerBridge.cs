@@ -9,18 +9,14 @@ namespace Annium.Logging.Microsoft
 {
     internal class LoggerBridge : ILogger
     {
-        public Abstractions.ILogger Logger { get; }
-
         private readonly ILogRouter _router;
         private readonly string _source;
 
         public LoggerBridge(
             ILogRouter router,
-            Abstractions.ILogger logger,
             string source
         )
         {
-            Logger = logger;
             _router = router;
             _source = source;
         }
@@ -37,7 +33,7 @@ namespace Annium.Logging.Microsoft
             Func<TState, Exception, string> formatter
         )
         {
-            _router.Send(
+            _router.Send<ILogSubject>(
                 null,
                 string.Empty,
                 string.Empty,
