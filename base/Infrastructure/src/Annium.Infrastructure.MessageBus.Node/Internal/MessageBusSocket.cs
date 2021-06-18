@@ -2,7 +2,6 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using NetMQ;
@@ -28,7 +27,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
             _subscriber.Connect(cfg.Endpoints.SubEndpoint);
             _subscriber.SubscribeToAnyTopic();
 
-            _observable = Observable.Create<string>(CreateObservable).Publish().RefCount();
+            _observable = ObservableInstance.Static<string>(CreateObservable);
         }
 
         public IObservable<Unit> Send(string message)
@@ -42,33 +41,32 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
 
         public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-        private Task CreateObservable(
-            IObserver<string> observer,
-            CancellationToken ct
-        ) => Task.Run(() =>
+        private Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
         {
             try
             {
-                while (!ct.IsCancellationRequested)
+                while (!ctx.Ct.IsCancellationRequested)
                 {
                     var msg = _subscriber.ReceiveMultipartStrings(Encoding.UTF8);
                     if (msg.Count == 0)
                         continue;
 
                     var message = string.Join(string.Empty, msg);
-                    observer.OnNext(message);
+                    ctx.OnNext(message);
                 }
             }
             // token was canceled
             catch (OperationCanceledException)
             {
-                observer.OnCompleted();
+                ctx.OnCompleted();
             }
             catch (Exception e)
             {
-                observer.OnError(e);
+                ctx.OnError(e);
             }
-        }, ct);
+
+            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
+        }
 
         #region IDisposable support
 
