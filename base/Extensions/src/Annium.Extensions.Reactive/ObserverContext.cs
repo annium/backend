@@ -2,12 +2,13 @@ using System.Threading;
 
 namespace System
 {
-    public sealed record ObserverContext<T>
+    public sealed record ObserverContext<T> : IObserver<T>
     {
-        public Action<T> OnNext { get; }
-        public Action<Exception> OnError { get; }
-        public Action OnCompleted { get; }
-        public CancellationToken Ct { get; init; }
+        private readonly Action<T> _onNext;
+        private readonly Action<Exception> _onError;
+        private readonly Action _onCompleted;
+
+        public CancellationToken Ct { get; }
 
         public ObserverContext(
             Action<T> onNext,
@@ -16,10 +17,16 @@ namespace System
             CancellationToken ct
         )
         {
-            OnNext = onNext;
-            OnError = onError;
-            OnCompleted = onCompleted;
+            _onNext = onNext;
+            _onError = onError;
+            _onCompleted = onCompleted;
             Ct = ct;
         }
+
+        public void OnCompleted() => _onCompleted();
+
+        public void OnError(Exception error) => _onError(error);
+
+        public void OnNext(T value) => _onNext(value);
     }
 }
