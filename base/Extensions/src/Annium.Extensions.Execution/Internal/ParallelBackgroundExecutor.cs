@@ -14,9 +14,9 @@ namespace Annium.Extensions.Execution.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static Task RunTask(Delegate task) => task switch
         {
-            Action execute     => Task.Run(execute),
-            Func<Task> execute => Task.Run(execute),
-            _                  => throw new NotSupportedException()
+            Action execute          => Task.Run(execute),
+            Func<ValueTask> execute => Task.Run(execute),
+            _                       => throw new NotSupportedException()
         };
 
         public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
@@ -27,9 +27,9 @@ namespace Annium.Extensions.Execution.Internal
         private readonly TaskCompletionSource<object> _tcs = new();
 
         public void Schedule(Action task) => ScheduleTask(task);
-        public void Schedule(Func<Task> task) => ScheduleTask(task);
+        public void Schedule(Func<ValueTask> task) => ScheduleTask(task);
         public void TrySchedule(Action task) => TryScheduleTask(task);
-        public void TrySchedule(Func<Task> task) => TryScheduleTask(task);
+        public void TrySchedule(Func<ValueTask> task) => TryScheduleTask(task);
 
         public void Start(CancellationToken ct = default)
         {

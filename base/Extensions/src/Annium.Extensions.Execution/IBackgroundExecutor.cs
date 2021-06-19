@@ -8,9 +8,9 @@ namespace Annium.Extensions.Execution
     {
         bool IsAvailable { get; }
         void Schedule(Action task);
-        void Schedule(Func<Task> task);
+        void Schedule(Func<ValueTask> task);
         void TrySchedule(Action task);
-        void TrySchedule(Func<Task> task);
+        void TrySchedule(Func<ValueTask> task);
         void Start(CancellationToken ct = default);
     }
 }

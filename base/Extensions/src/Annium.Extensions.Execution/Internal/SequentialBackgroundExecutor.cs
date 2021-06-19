@@ -21,10 +21,10 @@ namespace Annium.Extensions.Execution.Internal
         private readonly CancellationTokenSource _cts = new();
 
         public void Schedule(Action task) => ScheduleTask(task);
-        public void Schedule(Func<Task> task) => ScheduleTask(task);
+        public void Schedule(Func<ValueTask> task) => ScheduleTask(task);
 
         public void TrySchedule(Action task) => TryScheduleTask(task);
-        public void TrySchedule(Func<Task> task) => TryScheduleTask(task);
+        public void TrySchedule(Func<ValueTask> task) => TryScheduleTask(task);
 
         public SequentialBackgroundExecutor()
         {
@@ -133,8 +133,8 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace($"task {task.GetId()}: start, {Count} tasks left");
             if (task is Action syncTask)
                 await Task.Run(syncTask);
-            else if (task is Func<Task> asyncTask)
-                await asyncTask().ConfigureAwait(false);
+            else if (task is Func<ValueTask> asyncValueTask)
+                await asyncValueTask().ConfigureAwait(false);
             else
                 throw new NotSupportedException();
             this.Trace($"task {task.GetId()}: complete");
