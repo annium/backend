@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
@@ -159,7 +160,11 @@ namespace Annium.Logging.Shared.Tests
                 Messages = messages;
             }
 
-            public void Handle(LogMessage message) => Messages.Add(message);
+            public ValueTask Handle(LogMessage message)
+            {
+                Messages.Add(message);
+                return new ValueTask();
+            }
         }
     }
 }

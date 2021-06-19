@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Annium.Logging.Shared;
 
 namespace Annium.Logging.InMemory
@@ -9,6 +10,11 @@ namespace Annium.Logging.InMemory
 
         private readonly List<LogMessage> _logs = new();
 
-        public void Handle(LogMessage message) => _logs.Add(message);
+        public ValueTask Handle(LogMessage message)
+        {
+            _logs.Add(message);
+
+            return new ValueTask();
+        }
     }
 }

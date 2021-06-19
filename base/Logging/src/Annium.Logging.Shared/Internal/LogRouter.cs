@@ -2,21 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Diagnostics.Debug;
+using Annium.Extensions.Execution;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal
 {
     internal class LogRouter : ILogRouter
     {
-        private readonly IEnumerable<LogRoute> _routes;
-        private readonly IServiceProvider _provider;
         private readonly ITimeProvider _timeProvider;
-        private readonly IDictionary<LogRoute, ILogHandler> _handlers = new Dictionary<LogRoute, ILogHandler>();
+        private readonly Dictionary<LogRoute, (IBackgroundExecutor, ILogHandler)> _handlers;
 
         public LogRouter(
             ITimeProvider timeProvider,
@@ -24,9 +24,20 @@ namespace Annium.Logging.Shared.Internal
             IServiceProvider provider
         )
         {
-            _routes = routes;
-            _provider = provider;
             _timeProvider = timeProvider;
+            _handlers = routes.ToDictionary(
+                x => x,
+                x =>
+                {
+                    var executor = Executor.Background.Sequential<ILogHandler>();
+                    executor.Start();
+
+                    return (
+                        executor,
+                        (ILogHandler) provider.Resolve(x.Service!.ServiceType)
+                    );
+                }
+            );
         }
 
         public void Send<T>(
@@ -59,20 +70,9 @@ namespace Annium.Logging.Shared.Internal
                 line
             );
 
-            foreach (var route in _routes)
+            foreach (var (route, (executor, handler)) in _handlers)
                 if (route.Filter(msg))
-                    GetHandler(route).Handle(msg);
-        }
-
-        private ILogHandler GetHandler(LogRoute route)
-        {
-            lock (_handlers)
-            {
-                if (_handlers.TryGetValue(route, out var handler))
-                    return handler;
-
-                return _handlers[route] = (ILogHandler) _provider.Resolve(route.Service!.ServiceType);
-            }
+                    executor.Schedule(() => handler.Handle(msg));
         }
     }
 }

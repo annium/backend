@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace Annium.Logging.Shared
 {
     public interface ILogHandler
     {
-        void Handle(LogMessage message);
+        ValueTask Handle(LogMessage message);
     }
 }

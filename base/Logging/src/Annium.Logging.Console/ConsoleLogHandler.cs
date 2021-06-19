@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
 using NodaTime;
@@ -37,7 +38,7 @@ namespace Annium.Logging.Console
             _color = color;
         }
 
-        public void Handle(LogMessage msg)
+        public ValueTask Handle(LogMessage msg)
         {
             lock (ConsoleLock)
             {
@@ -66,6 +67,8 @@ namespace Annium.Logging.Console
                         System.Console.ForegroundColor = currentColor;
                 }
             }
+
+            return new ValueTask();
         }
 
         private void WriteLine(LogMessage msg, string message) => System.Console.WriteLine(_format(msg, message));
