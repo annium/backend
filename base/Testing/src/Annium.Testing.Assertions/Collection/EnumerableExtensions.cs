@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using Annium.Core.Mapper;
 
 namespace Annium.Testing
 {
@@ -18,7 +16,7 @@ namespace Annium.Testing
         public static IEnumerable<T> Has<T>(this IEnumerable<T> value, int count)
         {
             var total = value.Count();
-            total.IsEqual(count, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Enumerable expected to have `{count}` items, but has `{total}` items");
+            total.Is(count, $"Enumerable expected to have `{count}` items, but has `{total}` items");
 
             return value;
         }
@@ -26,7 +24,7 @@ namespace Annium.Testing
         public static IEnumerable<T> IsEmpty<T>(this IEnumerable<T> value)
         {
             var total = value.Count();
-            total.IsEqual(0, Mapper.GetFor(Assembly.GetCallingAssembly()), $"Enumerable expected to be empty, but has `{total}` items");
+            total.Is(0, $"Enumerable expected to be empty, but has `{total}` items");
 
             return value;
         }
