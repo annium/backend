@@ -47,13 +47,14 @@ namespace Annium.Logging.Shared.Internal
             int line,
             LogLevel level,
             string source,
-            string message,
+            string messageTemplate,
             Exception? exception,
-            object[] data
+            object[] dataItems
         )
             where T : class, ILogSubject
         {
             var instant = _timeProvider.Now;
+            var (message, data) = Helper.Process(messageTemplate, dataItems);
 
             var msg = new LogMessage(
                 instant,
@@ -64,6 +65,7 @@ namespace Annium.Logging.Shared.Internal
                 Thread.CurrentThread.ManagedThreadId,
                 message,
                 exception?.Demystify(),
+                messageTemplate,
                 data,
                 Path.GetFileNameWithoutExtension(file),
                 member,

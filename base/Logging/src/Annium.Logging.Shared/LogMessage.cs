@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Annium.Logging.Abstractions;
 using NodaTime;
 
@@ -14,7 +15,8 @@ namespace Annium.Logging.Shared
         public int ThreadId { get; }
         public string Message { get; }
         public Exception? Exception { get; }
-        public object[] Data { get; }
+        public string MessageTemplate { get; }
+        public IReadOnlyDictionary<string, object> Data { get; }
         public string Type { get; }
         public string Member { get; }
         public int Line { get; }
@@ -28,7 +30,8 @@ namespace Annium.Logging.Shared
             int threadId,
             string message,
             Exception? exception,
-            object[] data,
+            string messageTemplate,
+            IReadOnlyDictionary<string, object> data,
             string type,
             string member,
             int line
@@ -42,6 +45,7 @@ namespace Annium.Logging.Shared
             ThreadId = threadId;
             Message = message;
             Exception = exception;
+            MessageTemplate = messageTemplate;
             Data = data;
             Type = type;
             Member = member;
