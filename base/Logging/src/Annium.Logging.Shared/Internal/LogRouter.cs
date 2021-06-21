@@ -2,13 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Diagnostics.Debug;
-using Annium.Extensions.Execution;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal
@@ -16,28 +13,15 @@ namespace Annium.Logging.Shared.Internal
     internal class LogRouter : ILogRouter
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly Dictionary<LogRoute, (IBackgroundExecutor, ILogHandler)> _handlers;
+        private readonly IEnumerable<LogScheduler> _schedulers;
 
         public LogRouter(
             ITimeProvider timeProvider,
-            IEnumerable<LogRoute> routes,
-            IServiceProvider provider
+            IEnumerable<LogScheduler> schedulers
         )
         {
             _timeProvider = timeProvider;
-            _handlers = routes.ToDictionary(
-                x => x,
-                x =>
-                {
-                    var executor = Executor.Background.Sequential<ILogHandler>();
-                    executor.Start();
-
-                    return (
-                        executor,
-                        (ILogHandler) provider.Resolve(x.Service!.ServiceType)
-                    );
-                }
-            );
+            _schedulers = schedulers;
         }
 
         public void Send<T>(
@@ -72,9 +56,9 @@ namespace Annium.Logging.Shared.Internal
                 line
             );
 
-            foreach (var (route, (executor, handler)) in _handlers)
-                if (route.Filter(msg))
-                    executor.Schedule(() => handler.Handle(msg));
+            foreach (var scheduler in _schedulers)
+                if (scheduler.Filter(msg))
+                    scheduler.Handle(msg);
         }
     }
 }
