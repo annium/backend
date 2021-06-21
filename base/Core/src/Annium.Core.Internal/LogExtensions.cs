@@ -19,7 +19,7 @@ namespace Annium.Core.Internal
         {
             var subject = $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
             var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
-            var msg = string.IsNullOrWhiteSpace(message) ? $" >> {message}" : string.Empty;
+            var msg = string.IsNullOrWhiteSpace(message) ? string.Empty : $" >> {message}";
             Log.Trace($"{subject}{trace}{msg}", callerFilePath, member, line);
         }
     }

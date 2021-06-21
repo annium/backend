@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -55,6 +56,7 @@ namespace Annium.Extensions.Execution.Tests.Background
         [Fact]
         public async Task ParallelExecutor_CompletesOnFailure()
         {
+            Log.SetTestMode();
             // arrange
             var executor = Executor.Background.Parallel<ParallelTest>();
             var successes = 0;

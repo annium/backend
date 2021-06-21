@@ -15,7 +15,7 @@ namespace Annium.Extensions.Execution.Internal
         private static Task RunTask(Delegate task) => task switch
         {
             Action execute          => Task.Run(execute),
-            Func<ValueTask> execute => Task.Run(execute),
+            Func<ValueTask> execute => Task.Run(async () => await execute().ConfigureAwait(false)),
             _                       => throw new NotSupportedException()
         };
 
