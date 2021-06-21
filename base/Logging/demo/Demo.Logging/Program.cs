@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Logging.Abstractions;
+using Annium.Extensions.Arguments;
+using Group = Demo.Logging.Commands.Group;
 
 namespace Demo.Logging
 {
@@ -14,9 +14,7 @@ namespace Demo.Logging
             CancellationToken ct
         )
         {
-            var subject = provider.Resolve<ILogSubject<Program>>();
-            subject.Log().Debug("debug");
-            subject.Log().Trace("trace");
+            new Commander(provider).Run<Group>(args, ct);
         }
 
         public static int Main(string[] args) => new Entrypoint()
