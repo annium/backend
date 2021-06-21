@@ -8,6 +8,7 @@ namespace Annium.Logging.Shared.Internal
     {
         public static (string, IReadOnlyDictionary<string, object>) Process(string messageTemplate, object[] dataItems)
         {
+            var depth = 0;
             var keyIndex = -1;
             var itemIndex = -1;
             var sb = new StringBuilder();
@@ -20,13 +21,14 @@ namespace Annium.Logging.Shared.Internal
                 {
                     case '{':
                         // ensure not opening nested template var
-                        if (keyIndex != -1)
-                            throw new InvalidOperationException($"Nested template vars are not supported. Template: {messageTemplate}. Position: {i}.");
-                        keyIndex = i;
+                        if (keyIndex == -1)
+                            keyIndex = i;
+                        depth++;
                         break;
                     case '}':
-                        if (keyIndex == -1)
-                            throw new InvalidOperationException($"Template var already resolved. Template: {messageTemplate}. Position: {i}.");
+                        depth--;
+                        if (depth != 0)
+                            break;
 
                         var key = messageTemplate.AsSpan(keyIndex + 1, i - keyIndex - 1).ToString();
                         keyIndex = -1;
@@ -35,7 +37,12 @@ namespace Annium.Logging.Shared.Internal
                         if (dataItems.Length > itemIndex)
                             sb.Append(data[key] = dataItems[itemIndex]);
                         else
-                            throw new InvalidOperationException($"Missing data item #{itemIndex}. Template: {messageTemplate}. Position: {i}.");
+                        {
+                            sb.Append('{');
+                            sb.Append(key);
+                            sb.Append('}');
+                        }
+
                         break;
                     default:
                         // if not inside template var name - just add char
@@ -46,7 +53,7 @@ namespace Annium.Logging.Shared.Internal
             }
 
             var extra = dataItems.Length - itemIndex - 1;
-            if (extra != 0)
+            if (extra > 0)
                 throw new InvalidOperationException($"Unexpected {extra} data item(s). Template: {messageTemplate}.");
 
             return (sb.ToString(), data);

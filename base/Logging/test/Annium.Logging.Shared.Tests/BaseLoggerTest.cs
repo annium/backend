@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
@@ -143,7 +142,7 @@ namespace Annium.Logging.Shared.Tests
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
-                .Use(ServiceDescriptor.Instance(new LogHandler(_messages), ServiceLifetime.Singleton))
+                .UseInstance(new LogHandler(_messages), new LogRouteConfiguration(0))
             );
 
             return container.BuildServiceProvider();
@@ -160,10 +159,9 @@ namespace Annium.Logging.Shared.Tests
                 Messages = messages;
             }
 
-            public ValueTask Handle(LogMessage message)
+            public void Handle(LogMessage message)
             {
                 Messages.Add(message);
-                return new ValueTask();
             }
         }
     }

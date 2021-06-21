@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
 using Annium.Logging.Shared.Internal;
@@ -20,10 +21,23 @@ namespace Annium.Core.DependencyInjection
             routes = routes.Where(r => r.Service != null).ToList();
 
             foreach (var route in routes)
-                container.Add(sp => new LogScheduler(
-                    route.Filter,
-                    (ILogHandler) sp.Resolve(route.Service!.ServiceType)
-                )).AsSelf().Singleton();
+            {
+                var cfg = route.Configuration!;
+                var serviceType = route.Service!.ServiceType;
+                if (typeof(ILogHandler).IsAssignableFrom(serviceType))
+                    container.Add(sp => new ImmediateLogScheduler(
+                        route.Filter,
+                        (ILogHandler) sp.Resolve(route.Service!.ServiceType)
+                    )).AsInterfaces().Singleton();
+                else if (typeof(IAsyncLogHandler).IsAssignableFrom(serviceType))
+                    container.Add(sp => new BackgroundLogScheduler(
+                        route.Filter,
+                        (IAsyncLogHandler) sp.Resolve(route.Service!.ServiceType),
+                        cfg
+                    )).AsInterfaces().Singleton();
+                else
+                    throw new Exception($"Unsupported log handler service type: {serviceType.FriendlyName()}");
+            }
 
             foreach (var route in routes)
             {

@@ -24,7 +24,7 @@ namespace Annium.Core.DependencyInjection
             bool color = false
         )
         {
-            route.Use(ServiceDescriptor.Instance(new ConsoleLogHandler(format, color), ServiceLifetime.Singleton));
+            route.UseInstance(new ConsoleLogHandler(format, color), new LogRouteConfiguration(0));
 
             return route;
         }

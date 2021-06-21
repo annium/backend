@@ -4,19 +4,22 @@ using Annium.Extensions.Execution;
 
 namespace Annium.Logging.Shared.Internal
 {
-    internal class LogScheduler : IAsyncDisposable
+    internal class BackgroundLogScheduler : ILogScheduler, IAsyncDisposable
     {
         public Func<LogMessage, bool> Filter { get; }
-        private readonly ILogHandler _handler;
+        private readonly IAsyncLogHandler _handler;
+        private readonly LogRouteConfiguration _configuration;
         private readonly IBackgroundExecutor _executor;
 
-        public LogScheduler(
+        public BackgroundLogScheduler(
             Func<LogMessage, bool> filter,
-            ILogHandler handler
+            IAsyncLogHandler handler,
+            LogRouteConfiguration configuration
         )
         {
             Filter = filter;
             _handler = handler;
+            _configuration = configuration;
 
             _executor = Executor.Background.Sequential<ILogHandler>();
             _executor.Start();

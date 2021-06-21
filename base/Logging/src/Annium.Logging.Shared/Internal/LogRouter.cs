@@ -13,11 +13,11 @@ namespace Annium.Logging.Shared.Internal
     internal class LogRouter : ILogRouter
     {
         private readonly ITimeProvider _timeProvider;
-        private readonly IEnumerable<LogScheduler> _schedulers;
+        private readonly IEnumerable<ILogScheduler> _schedulers;
 
         public LogRouter(
             ITimeProvider timeProvider,
-            IEnumerable<LogScheduler> schedulers
+            IEnumerable<ILogScheduler> schedulers
         )
         {
             _timeProvider = timeProvider;

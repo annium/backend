@@ -10,11 +10,9 @@ namespace Annium.Logging.InMemory
 
         private readonly List<LogMessage> _logs = new();
 
-        public ValueTask Handle(LogMessage message)
+        public void Handle(LogMessage message)
         {
             _logs.Add(message);
-
-            return new ValueTask();
         }
     }
 }
