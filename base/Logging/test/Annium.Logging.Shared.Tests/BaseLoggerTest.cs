@@ -142,7 +142,7 @@ namespace Annium.Logging.Shared.Tests
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)
-                .UseInstance(new LogHandler(_messages), new LogRouteConfiguration(0))
+                .UseInstance(new LogHandler(_messages), new LogRouteConfiguration())
             );
 
             return container.BuildServiceProvider();

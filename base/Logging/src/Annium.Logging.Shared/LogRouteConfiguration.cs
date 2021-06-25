@@ -1,12 +1,22 @@
+using System;
+
 namespace Annium.Logging.Shared
 {
     public class LogRouteConfiguration
     {
-        public int SendDelay { get; }
+        public TimeSpan BufferTime { get; }
+        public int BufferCount { get; }
 
-        public LogRouteConfiguration(int sendDelay)
+        public LogRouteConfiguration(TimeSpan bufferTime, int bufferCount)
         {
-            SendDelay = sendDelay;
+            BufferTime = bufferTime;
+            BufferCount = bufferCount;
+        }
+
+        public LogRouteConfiguration()
+        {
+            BufferTime = TimeSpan.Zero;
+            BufferCount = 0;
         }
     }
 }

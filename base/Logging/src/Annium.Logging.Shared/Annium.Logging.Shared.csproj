@@ -13,7 +13,8 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
-        <ProjectReference Include="..\..\..\Extensions\src\Annium.Extensions.Execution\Annium.Extensions.Execution.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Execution/Annium.Extensions.Execution.csproj" />
+        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Reactive/Annium.Extensions.Reactive.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Ben.Demystifier" Version="0.4.1" />
