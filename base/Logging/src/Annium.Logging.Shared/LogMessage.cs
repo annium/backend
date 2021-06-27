@@ -5,7 +5,7 @@ using NodaTime;
 
 namespace Annium.Logging.Shared
 {
-    public class LogMessage
+    public record LogMessage
     {
         public Instant Instant { get; }
         public string? SubjectType { get; }

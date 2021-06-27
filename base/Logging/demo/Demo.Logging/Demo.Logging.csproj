@@ -16,5 +16,7 @@
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Arguments/Annium.Extensions.Arguments.csproj" />
         <ProjectReference Include="../../src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
         <ProjectReference Include="../../src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
+        <ProjectReference Include="../../src/Annium.Logging.Seq/Annium.Logging.Seq.csproj" />
+        <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
     </ItemGroup>
 </Project>

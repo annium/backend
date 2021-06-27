@@ -20,18 +20,28 @@ namespace Annium.Logging.Shared
         public LogRoute For(Func<LogMessage, bool> filter) => new(_registerRoute) { Filter = filter };
 
         public LogRoute UseType<T>(LogRouteConfiguration configuration)
-            where T : ILogHandler
+            where T : class, ILogHandler
             => Use(ServiceDescriptor.Type<T, T>(ServiceLifetime.Singleton), configuration);
 
-        public LogRoute UseInstance(ILogHandler instance, LogRouteConfiguration configuration)
+        public LogRoute UseInstance<T>(T instance, LogRouteConfiguration configuration)
+            where T : class, ILogHandler
             => Use(ServiceDescriptor.Instance(instance, ServiceLifetime.Singleton), configuration);
+
+        public LogRoute UseFactory<T>(Func<IServiceProvider, T> factory, LogRouteConfiguration configuration)
+            where T : class, ILogHandler
+            => Use(ServiceDescriptor.Factory(factory, ServiceLifetime.Singleton), configuration);
 
         public LogRoute UseAsyncType<T>(LogRouteConfiguration configuration)
-            where T : IAsyncLogHandler
+            where T : class, IAsyncLogHandler
             => Use(ServiceDescriptor.Type<T, T>(ServiceLifetime.Singleton), configuration);
 
-        public LogRoute UseAsyncInstance(IAsyncLogHandler instance, LogRouteConfiguration configuration)
+        public LogRoute UseAsyncInstance<T>(T instance, LogRouteConfiguration configuration)
+            where T : class, IAsyncLogHandler
             => Use(ServiceDescriptor.Instance(instance, ServiceLifetime.Singleton), configuration);
+
+        public LogRoute UseAsyncFactory<T>(Func<IServiceProvider,T> factory, LogRouteConfiguration configuration)
+            where T : class, IAsyncLogHandler
+            => Use(ServiceDescriptor.Factory(factory, ServiceLifetime.Singleton), configuration);
 
         private LogRoute Use(IServiceDescriptor service, LogRouteConfiguration configuration)
         {

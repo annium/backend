@@ -12,5 +12,10 @@ namespace Annium.Net.Http
 
             return request.Attach(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
         }
+
+        public static IHttpRequest StringContent(this IHttpRequest request, string data, string mimeType = "text/plain")
+        {
+            return request.Attach(new StringContent(data, Encoding.UTF8, mimeType));
+        }
     }
 }
