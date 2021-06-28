@@ -14,7 +14,7 @@ namespace Annium.Logging.Seq.Internal
         {
             var result = new Dictionary<string, string>
             {
-                ["@t"] = m.Instant.InZone(tz).LocalDateTime.ToString("HH:mm:ss.fff", null),
+                ["@t"] = m.Instant.InUtc().LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'", null),
                 ["@m"] = message,
                 ["@mt"] = m.MessageTemplate,
                 ["@l"] = m.Level.ToString(),
