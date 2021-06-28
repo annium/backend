@@ -13,6 +13,7 @@ namespace Annium.Core.DependencyInjection
     {
         public int Count => Collection.Count;
         public IServiceCollection Collection { get; }
+        public event Action<IServiceProvider> OnBuild = delegate { };
 
         public ServiceContainer() : this(new ServiceCollection())
         {
@@ -72,8 +73,13 @@ namespace Annium.Core.DependencyInjection
             };
         }
 
-        public ServiceProvider BuildServiceProvider() =>
-            Collection.BuildServiceProvider();
+        public ServiceProvider BuildServiceProvider()
+        {
+            var sp = Collection.BuildServiceProvider();
+            OnBuild.Invoke(sp);
+
+            return sp;
+        }
 
         public IEnumerator<IServiceDescriptor> GetEnumerator() => Collection.Select(ServiceDescriptor.From).GetEnumerator();
 
