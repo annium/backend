@@ -14,5 +14,6 @@ namespace Annium.Core.DependencyInjection
         IInstanceRegistrationBuilderBase Add<T>(T instance) where T : class;
         ISingleRegistrationBuilderBase Add(Type type);
         bool Contains(IServiceDescriptor descriptor);
+        ServiceProvider BuildServiceProvider();
     }
 }

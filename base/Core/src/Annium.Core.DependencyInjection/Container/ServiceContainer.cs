@@ -72,6 +72,9 @@ namespace Annium.Core.DependencyInjection
             };
         }
 
+        public ServiceProvider BuildServiceProvider() =>
+            Collection.BuildServiceProvider();
+
         public IEnumerator<IServiceDescriptor> GetEnumerator() => Collection.Select(ServiceDescriptor.From).GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Collection.GetEnumerator();

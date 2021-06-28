@@ -23,8 +23,5 @@ namespace Annium.Core.DependencyInjection
 
             return clone;
         }
-
-        public static ServiceProvider BuildServiceProvider(this IServiceContainer container) =>
-            container.Collection.BuildServiceProvider();
     }
 }
