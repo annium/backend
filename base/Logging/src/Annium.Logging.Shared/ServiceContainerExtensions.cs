@@ -45,15 +45,18 @@ namespace Annium.Core.DependencyInjection
                     container.Add(route.Service);
             }
 
-            container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).Scoped();
-            container.Add(typeof(LogSubject<>)).As(typeof(ILogSubject<>)).Scoped();
-            container.Add<ILoggerFactory, LoggerFactory>().Scoped();
-            container.Add<ILogRouter, LogRouter>().Scoped();
+            container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).Singleton();
+            container.Add(typeof(LogSubject<>)).As(typeof(ILogSubject<>)).Singleton();
+            container.Add<ILoggerFactory, LoggerFactory>().Singleton();
+            container.Add<LogRouter>().AsSelf().Singleton();
+            container.Add<ILogSentry, LogSentry>().AsSelf().Singleton();
             container.AddProfile(p =>
             {
                 p.Map<LogLevel, string>(x => x.ToString());
                 p.Map<string, LogLevel>(x => x.ParseEnum<LogLevel>());
             });
+
+            container.OnBuild += sp => sp.Resolve<LogRouter>();
 
             return container;
         }

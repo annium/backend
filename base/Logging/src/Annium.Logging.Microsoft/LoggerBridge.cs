@@ -9,15 +9,15 @@ namespace Annium.Logging.Microsoft
 {
     internal class LoggerBridge : ILogger
     {
-        private readonly ILogRouter _router;
+        private readonly ILogSentry _sentry;
         private readonly string _source;
 
         public LoggerBridge(
-            ILogRouter router,
+            ILogSentry sentry,
             string source
         )
         {
-            _router = router;
+            _sentry = sentry;
             _source = source;
         }
 
@@ -33,7 +33,7 @@ namespace Annium.Logging.Microsoft
             Func<TState, Exception, string> formatter
         )
         {
-            _router.Send<ILogSubject>(
+            _sentry.Register<ILogSubject>(
                 null,
                 string.Empty,
                 string.Empty,

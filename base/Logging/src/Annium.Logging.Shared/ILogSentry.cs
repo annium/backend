@@ -3,9 +3,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared
 {
-    public interface ILogRouter
+    public interface ILogSentry
     {
-        void Send<T>(
+        void Register<T>(
             T? subject,
             string file,
             string member,
@@ -16,5 +16,7 @@ namespace Annium.Logging.Shared
             Exception? exception,
             object[] data
         ) where T : class, ILogSubject;
+
+        void SetHandler(Action<LogMessage> handler);
     }
 }

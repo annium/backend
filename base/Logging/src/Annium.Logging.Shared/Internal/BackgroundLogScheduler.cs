@@ -24,6 +24,12 @@ namespace Annium.Logging.Shared.Internal
             LogRouteConfiguration configuration
         )
         {
+            if (configuration.BufferTime == TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException(nameof(configuration.BufferTime), "Buffer time is expected to be non-zero");
+
+            if (configuration.BufferCount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(configuration.BufferCount), "Buffer count is expected to be positive");
+
             Filter = filter;
 
             var channel = Channel.CreateUnbounded<LogMessage>(new UnboundedChannelOptions
@@ -36,6 +42,7 @@ namespace Annium.Logging.Shared.Internal
             _observable = ObservableInstance.Static<LogMessage>(Run);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
+                .Where(x => x.Count > 0)
                 .DoParallelAsync(async x => await handler.Handle(x.ToArray()))
                 .Subscribe();
         }

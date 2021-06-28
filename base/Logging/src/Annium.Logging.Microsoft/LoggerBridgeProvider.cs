@@ -5,18 +5,18 @@ namespace Annium.Logging.Microsoft
 {
     internal class LoggerBridgeProvider : ILoggerProvider
     {
-        private readonly ILogRouter _router;
+        private readonly ILogSentry _sentry;
 
         public LoggerBridgeProvider(
-            ILogRouter router
+            ILogSentry sentry
         )
         {
-            _router = router;
+            _sentry = sentry;
         }
 
         public ILogger CreateLogger(string categoryName)
         {
-            return new LoggerBridge(_router, categoryName);
+            return new LoggerBridge(_sentry, categoryName);
         }
 
         public void Dispose()
