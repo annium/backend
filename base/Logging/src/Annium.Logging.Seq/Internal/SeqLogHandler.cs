@@ -15,15 +15,17 @@ namespace Annium.Logging.Seq.Internal
         private readonly ISerializer<string> _serializer;
         private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
         private readonly IHttpRequest _request;
+        private readonly string _apiKey;
 
         public SeqLogHandler(
             IHttpRequestFactory httpRequestFactory,
             ISerializer<string> serializer,
-            Uri endpoint
+            SeqConfiguration cfg
         )
         {
             _serializer = serializer;
-            _request = httpRequestFactory.New(endpoint);
+            _request = httpRequestFactory.New(cfg.Endpoint);
+            _apiKey = cfg.ApiKey;
         }
 
         public async ValueTask Handle(IReadOnlyCollection<LogMessage> messages)
@@ -38,6 +40,7 @@ namespace Annium.Logging.Seq.Internal
             var response = await _request.Clone()
                 .Post("api/events/raw")
                 .Param("clef", string.Empty)
+                .Header("X-Seq-ApiKey", _apiKey)
                 .StringContent(data, "application/vnd.serilog.clef")
                 .RunAsync();
         }

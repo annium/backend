@@ -1,7 +1,7 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
-using Annium.Logging.Shared;
+using Annium.Logging.Seq;
 
 namespace Demo.Logging
 {
@@ -13,7 +13,7 @@ namespace Demo.Logging
             container.AddTimeProvider();
 
             container.AddLogging(route => route
-                .For(m => m.Level == LogLevel.Info).UseSeq(new Uri("http://localhost:5341"), new LogRouteConfiguration(TimeSpan.FromMilliseconds(50), 1))
+                .For(m => m.Level == LogLevel.Info).UseSeq(new SeqConfiguration(new Uri("http://localhost:5341"), "rtLlglmGD5ffTOujuROD", TimeSpan.FromMilliseconds(50), 1))
                 .For(m => m.Level == LogLevel.Debug).UseConsole()
                 .For(m => m.Level == LogLevel.Trace).UseInMemory());
             container.AddMapper();
