@@ -10,6 +10,7 @@ using Annium.Core.Mapper.Internal.Profiles;
 using Annium.Core.Mapper.Internal.Resolvers;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Core.DependencyInjection
 {
@@ -41,6 +42,9 @@ namespace Annium.Core.DependencyInjection
             container.AddProfileInstance(new EmptyProfile());
             container.AddProfileInstance(new DefaultProfile());
             container.AddProfileType(typeof(EnumProfile<>));
+
+            // special cases
+            container.AddProfileInstance(new EnumProfile<LogLevel>());
 
             // if autoload requested - discover and register profiles
             if (autoload)
