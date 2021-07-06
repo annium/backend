@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
@@ -24,8 +23,7 @@ namespace Annium.Core.Primitives.Tests
         public async Task SyncFactory_Concurrent_Works()
         {
             // arrange
-            var counter = 0;
-            var lazy = new AsyncLazy<int>(() => Interlocked.Increment(ref counter));
+            var lazy = new AsyncLazy<object>(() => new object());
 
             // act
             var values = await Task.WhenAll(
@@ -42,8 +40,9 @@ namespace Annium.Core.Primitives.Tests
             );
 
             // assert
-            values.IsEqual(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
-            counter.IsEqual(1);
+            var subject = values[0];
+            foreach (var value in values)
+                value.Is(subject);
         }
 
         [Fact]
@@ -67,11 +66,10 @@ namespace Annium.Core.Primitives.Tests
         public async Task AsyncFactory_Concurrent_Works()
         {
             // arrange
-            var counter = 0;
-            var lazy = new AsyncLazy<int>(async () =>
+            var lazy = new AsyncLazy<object>(async () =>
             {
-                await Task.Delay(5);
-                return Interlocked.Increment(ref counter);
+                await Task.Delay(25);
+                return new object();
             });
 
             // act
@@ -89,8 +87,9 @@ namespace Annium.Core.Primitives.Tests
             );
 
             // assert
-            values.IsEqual(new[] { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 });
-            counter.IsEqual(1);
+            var subject = values[0];
+            foreach (var value in values)
+                value.Is(subject);
         }
     }
 }

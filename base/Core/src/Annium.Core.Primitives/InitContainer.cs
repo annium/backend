@@ -60,26 +60,21 @@ namespace Annium.Core.Primitives
 
         public TaskAwaiter<T> GetAwaiter()
         {
-            EnsureInitiatorSet();
+            if (_initiator is null)
+                throw new InvalidOperationException("Container initiator is not set");
 
-            if (_initiator!.IsValueCreated)
-                return Task.FromResult(_get()).GetAwaiter();
-
-            return _initiator!.GetAwaiter();
+            return _initiator.IsValueCreated
+                ? Task.FromResult(_get()).GetAwaiter()
+                : _initiator.GetAwaiter();
         }
 
         private void EnsureInitiated()
         {
-            EnsureInitiatorSet();
-
-            if (!_initiator!.IsValueCreated)
-                throw new InvalidOperationException("Container is not initiated");
-        }
-
-        private void EnsureInitiatorSet()
-        {
             if (_initiator is null)
                 throw new InvalidOperationException("Container initiator is not set");
+
+            if (!_initiator.IsValueCreated)
+                throw new InvalidOperationException("Container is not initiated");
         }
     }
 }
