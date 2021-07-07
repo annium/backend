@@ -3,12 +3,14 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
+using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {
-    internal class ValueContainer<TValueLoader, TConfig, TValue> : ValueContainerBase<TValue>, IValueContainer<TConfig, TValue>
-        where TValueLoader : IValueLoader<TConfig, TValue>
+    internal class ValueContainer<TState, TValueLoader, TConfig, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TConfig, TValue>
+        where TState : ConnectionStateBase
+        where TValueLoader : IValueLoader<TState, TConfig, TValue>
     {
         private bool _isConfigured;
         private TConfig? _config;
@@ -35,14 +37,15 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             var config = _config!;
 
             var loader = scope.ServiceProvider.Resolve<TValueLoader>();
-            var value = await loader.LoadAsync(config);
+            var value = await loader.LoadAsync(State!, config);
 
             return value;
         }
     }
 
-    internal class ValueContainer<TValueLoader, TValue> : ValueContainerBase<TValue>, IValueContainer<TValue>
-        where TValueLoader : IValueLoader<TValue>
+    internal class ValueContainer<TState, TValueLoader, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TValue>
+        where TState : ConnectionStateBase
+        where TValueLoader : IValueLoader<TState, TValue>
     {
         public ValueContainer(
             IServiceProvider sp
@@ -53,19 +56,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         protected override async Task<TValue> LoadValueAsync(IAsyncServiceScope scope)
         {
             var loader = scope.ServiceProvider.Resolve<TValueLoader>();
-            var value = await loader.LoadAsync();
+            var value = await loader.LoadAsync(State!);
 
             return value;
         }
     }
 
-    internal abstract class ValueContainerBase<TValue>
+    internal abstract class ValueContainerBase<TState, TValue>
+        where TState : ConnectionStateBase
     {
         public TValue Value
         {
             get
             {
-                EnsureInitiated();
+                EnsureReady();
                 return _value;
             }
         }
@@ -74,6 +78,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         private readonly IServiceProvider _sp;
         private readonly AsyncLazy<TValue> _initiator;
+        protected TState? State;
         private TValue _value;
 
         protected ValueContainerBase(
@@ -85,9 +90,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             _value = default!;
         }
 
+        public void Bind(TState state)
+        {
+            if (State is not null)
+                throw new InvalidOperationException("Container is already bound to state");
+            State = state;
+        }
+
         public void Set(TValue value)
         {
-            EnsureInitiated();
+            EnsureReady();
 
             _value = value;
             OnChange.Invoke(value);
@@ -96,6 +108,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         public TaskAwaiter<TValue> GetAwaiter()
         {
+            EnsureBound();
+
             return _initiator.IsValueCreated
                 ? Task.FromResult(_value).GetAwaiter()
                 : _initiator.GetAwaiter();
@@ -115,10 +129,18 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             return value;
         }
 
-        private void EnsureInitiated()
+        private void EnsureReady()
         {
+            EnsureBound();
+
             if (!_initiator.IsValueCreated)
                 throw new InvalidOperationException("Container is not initiated");
+        }
+
+        private void EnsureBound()
+        {
+            if (State is null)
+                throw new InvalidOperationException("Container is not bound to state");
         }
     }
 }

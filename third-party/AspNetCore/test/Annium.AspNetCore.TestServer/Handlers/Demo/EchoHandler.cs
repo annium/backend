@@ -5,6 +5,7 @@ using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
+using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.AspNetCore.TestServer.Handlers.Demo
 {

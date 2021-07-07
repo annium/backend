@@ -3,13 +3,17 @@ using System.Runtime.CompilerServices;
 
 namespace Annium.Infrastructure.WebSockets.Server.Models
 {
-    public interface IValueContainer<TConfig, TValue> : IValueContainer<TValue>
+    public interface IValueContainer<TState, TConfig, TValue> : IValueContainer<TState, TValue>
+        where TState : ConnectionStateBase
     {
         void Configure(TConfig config);
     }
 
-    public interface IValueContainer<TValue>
+    public interface IValueContainer<TState, TValue>
+        where TState : ConnectionStateBase
     {
+        void Bind(TState state);
+
         TValue Value { get; }
         event Action<TValue> OnChange;
         void Set(TValue value);

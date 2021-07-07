@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Domain.Models;
+using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Handlers
 {

@@ -29,6 +29,7 @@ namespace Annium.Core.DependencyInjection
             {
                 var state = sp.Resolve<TState>();
                 state.SetConnectionId(cnId);
+                state.BindValues();
                 return state;
             }).AsSelf().Singleton();
             container.Add<TState>().AsSelf().Transient();
@@ -59,7 +60,7 @@ namespace Annium.Core.DependencyInjection
             container.AddBroadcasters();
 
             // models
-            container.AddValueLoaders();
+            container.AddValueLoaders<TState>();
 
             return container;
         }
@@ -79,38 +80,31 @@ namespace Annium.Core.DependencyInjection
             }
         }
 
-        private static void AddValueLoaders(this IServiceContainer container)
+        private static void AddValueLoaders<TState>(this IServiceContainer container)
         {
             var loaderInterfaces = new HashSet<Type>();
 
-            var configLoaderTypes = container.GetTypeManager().GetImplementations(typeof(IValueLoader<,>));
-            foreach (var loaderType in configLoaderTypes)
+            RegisterContainersAndLoaders(typeof(IValueLoader<,,>), typeof(ValueContainer<,,,>));
+            RegisterContainersAndLoaders(typeof(IValueLoader<,>), typeof(ValueContainer<,,>));
+
+            void RegisterContainersAndLoaders(Type valueLoader, Type valueContainer)
             {
-                var loaderInterface = loaderType.GetTargetImplementation(typeof(IValueLoader<,>))!;
-                if (!loaderInterfaces.Add(loaderInterface))
-                    throw new InvalidOperationException($"Loader {loaderInterface.FriendlyName()} is registered twice");
+                var loaderTypes = container.GetTypeManager().GetImplementations(valueLoader);
+                foreach (var loaderType in loaderTypes)
+                {
+                    var loaderInterface = loaderType.GetTargetImplementation(valueLoader)!;
+                    if (!loaderInterfaces.Add(loaderInterface))
+                        throw new InvalidOperationException($"Loader {loaderInterface.FriendlyName()} is registered twice");
 
-                var loaderArguments = loaderInterface.GetGenericArguments();
-                var valueContainerType = typeof(ValueContainer<,,>)
-                    .MakeGenericType(loaderType, loaderArguments[0], loaderArguments[1]);
+                    var loaderArguments = loaderInterface.GetGenericArguments();
+                    if (loaderArguments[0] != typeof(TState))
+                        continue;
+                    var valueContainerType = valueContainer
+                        .MakeGenericType(new[] { typeof(TState), loaderType }.Concat(loaderArguments.Skip(1)).ToArray());
 
-                container.Add(loaderType).AsInterfaces().Scoped();
-                container.Add(valueContainerType).AsInterfaces().Scoped();
-            }
-
-            var loaderTypes = container.GetTypeManager().GetImplementations(typeof(IValueLoader<>));
-            foreach (var loaderType in loaderTypes)
-            {
-                var loaderInterface = loaderType.GetTargetImplementation(typeof(IValueLoader<>))!;
-                if (!loaderInterfaces.Add(loaderInterface))
-                    throw new InvalidOperationException($"Loader {loaderInterface.FriendlyName()} is registered twice");
-
-                var loaderArguments = loaderInterface.GetGenericArguments();
-                var valueContainerType = typeof(ValueContainer<,>)
-                    .MakeGenericType(loaderType, loaderArguments[0]);
-
-                container.Add(loaderType).AsInterfaces().Scoped();
-                container.Add(valueContainerType).AsInterfaces().Scoped();
+                    container.Add(loaderType).AsInterfaces().Scoped();
+                    container.Add(valueContainerType).AsInterfaces().Scoped();
+                }
             }
         }
     }

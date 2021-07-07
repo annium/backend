@@ -1,7 +1,7 @@
 using System.Threading;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Models
+namespace Annium.Infrastructure.WebSockets.Server.Models
 {
     public interface IBroadcastContext<TMessage>
         where TMessage : NotificationBase

@@ -8,6 +8,7 @@ using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
+using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests
 {

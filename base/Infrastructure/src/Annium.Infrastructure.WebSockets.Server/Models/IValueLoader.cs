@@ -2,13 +2,15 @@ using System.Threading.Tasks;
 
 namespace Annium.Infrastructure.WebSockets.Server.Models
 {
-    public interface IValueLoader<TConfig, TValue>
+    public interface IValueLoader<TState, TConfig, TValue>
+        where TState : ConnectionStateBase
     {
-        ValueTask<TValue> LoadAsync(TConfig config);
+        ValueTask<TValue> LoadAsync(TState state, TConfig config);
     }
 
-    public interface IValueLoader<TValue>
+    public interface IValueLoader<TState, TValue>
+        where TState : ConnectionStateBase
     {
-        ValueTask<TValue> LoadAsync();
+        ValueTask<TValue> LoadAsync(TState state);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 {

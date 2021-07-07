@@ -1,4 +1,5 @@
 using Annium.Infrastructure.WebSockets.Domain.Models;
+using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.AspNetCore.TestServer.Handlers
 {

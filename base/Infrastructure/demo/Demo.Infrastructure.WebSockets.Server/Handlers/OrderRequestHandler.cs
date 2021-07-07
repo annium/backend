@@ -4,6 +4,7 @@ using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
+using Annium.Infrastructure.WebSockets.Server.Models;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Server.Handlers

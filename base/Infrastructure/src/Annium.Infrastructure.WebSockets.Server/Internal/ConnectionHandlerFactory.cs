@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
