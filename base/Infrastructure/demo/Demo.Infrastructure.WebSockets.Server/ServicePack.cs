@@ -35,11 +35,10 @@ namespace Demo.Infrastructure.WebSockets.Server
             container.AddMapper();
             container.AddMediator();
             container.AddMediatorConfiguration(ConfigureMediator);
-            container.AddWebSocketServer(
+            container.AddWebSocketServer<ConnectionState>(
                 (sp, cfg) => cfg
                     .UseFormat(sp.Resolve<Configuration>().UseText ? SerializationFormat.Text : SerializationFormat.Binary)
-                    .WithActiveKeepAlive(600),
-                connectionId => new ConnectionState(connectionId)
+                    .WithActiveKeepAlive(600)
             );
         }
 

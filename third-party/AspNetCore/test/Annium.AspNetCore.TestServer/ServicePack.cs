@@ -25,12 +25,11 @@ namespace Annium.AspNetCore.TestServer
             container.AddHttpRequestFactory().SetDefault();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();
-            container.AddWebSocketServer(
+            container.AddWebSocketServer<ConnectionState>(
                 (_, cfg) => cfg
                     .ListenOn("/ws")
                     .UseFormat(SerializationFormat.Text)
-                    .WithActiveKeepAlive(600),
-                connectionId => new ConnectionState(connectionId)
+                    .WithActiveKeepAlive(600)
             );
             container.Add<SharedDataContainer>().AsSelf().Singleton();
         }

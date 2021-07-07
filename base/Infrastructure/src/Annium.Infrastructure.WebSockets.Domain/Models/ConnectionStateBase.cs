@@ -7,14 +7,17 @@ namespace Annium.Infrastructure.WebSockets.Domain.Models
 {
     public abstract class ConnectionStateBase : IAsyncDisposable
     {
-        public Guid ConnectionId { get; }
+        public Guid ConnectionId { get; private set; }
 
         protected AsyncDisposableBox Disposable = Core.Primitives.Disposable.AsyncBox();
 
         private readonly ManualResetEventSlim _gate = new(true);
 
-        protected ConnectionStateBase(Guid connectionId)
+        public void SetConnectionId(Guid connectionId)
         {
+            if (ConnectionId != default)
+                throw new InvalidOperationException("ConnectionId is already set");
+
             ConnectionId = connectionId;
         }
 
