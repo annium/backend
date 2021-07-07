@@ -5,7 +5,6 @@ using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Execution;
-using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;

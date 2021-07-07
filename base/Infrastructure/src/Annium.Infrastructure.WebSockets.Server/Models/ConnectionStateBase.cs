@@ -19,6 +19,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Models
 
         private readonly ManualResetEventSlim _gate = new(true);
 
+        protected ConnectionStateBase()
+        {
+            Disposable += _gate;
+        }
+
         public void SetConnectionId(Guid connectionId)
         {
             if (ConnectionId != default)
@@ -35,7 +40,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Models
 
         public async ValueTask DisposeAsync()
         {
-            _gate.Dispose();
+            await Disposable.DisposeAsync();
             await DoDisposeAsync();
         }
 
@@ -55,8 +60,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Models
 
             foreach (var (property, bind) in bindableProperties)
             {
-                var container = property.GetValue(this);
+                var container = (IAsyncDisposable) property.GetValue(this);
                 bind.Invoke(container, new[] { this });
+                Disposable += container;
             }
         }
 

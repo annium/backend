@@ -3,7 +3,6 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
-using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
@@ -62,7 +61,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         }
     }
 
-    internal abstract class ValueContainerBase<TState, TValue>
+    internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
         where TState : ConnectionStateBase
     {
         public TValue Value
@@ -80,6 +79,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         private readonly AsyncLazy<TValue> _initiator;
         protected TState? State;
         private TValue _value;
+        private AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         protected ValueContainerBase(
             IServiceProvider sp
@@ -119,7 +119,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
 
         private async Task<TValue> LoadValueAsync()
         {
-            await using var scope = _sp.CreateAsyncScope();
+            var scope = _sp.CreateAsyncScope();
+            _disposable += scope;
 
             var value = await LoadValueAsync(scope);
 
@@ -141,6 +142,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         {
             if (State is null)
                 throw new InvalidOperationException("Container is not bound to state");
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            return _disposable.DisposeAsync();
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Models
         void Configure(TConfig config);
     }
 
-    public interface IValueContainer<TState, TValue>
+    public interface IValueContainer<TState, TValue> : IAsyncDisposable
         where TState : ConnectionStateBase
     {
         void Bind(TState state);

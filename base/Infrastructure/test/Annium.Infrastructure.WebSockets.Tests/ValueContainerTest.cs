@@ -89,6 +89,21 @@ namespace Annium.Infrastructure.WebSockets.Tests
             valueByCallback.Is(value);
         }
 
+        [Fact]
+        public async Task StateDispose_DisposesLoaders()
+        {
+            // arrange
+            var state = GetState();
+
+            // act
+            var value = await state.C;
+            value.IsDisposed.IsFalse();
+            await state.DisposeAsync();
+
+            // assert
+            value.IsDisposed.IsTrue();
+        }
+
         private ConnectionState GetState()
         {
             var container = new ServiceContainer();
@@ -121,19 +136,44 @@ namespace Annium.Infrastructure.WebSockets.Tests
             }
         }
 
+        private class DisposableValueLoader : IValueLoader<ConnectionState, DisposableValue>, IAsyncDisposable
+        {
+            private readonly DisposableValue _value = new();
+
+            public async ValueTask<DisposableValue> LoadAsync(ConnectionState state)
+            {
+                await Task.Delay(10);
+                return _value;
+            }
+
+            public ValueTask DisposeAsync()
+            {
+                _value.IsDisposed = true;
+                return new ValueTask();
+            }
+        }
+
         private class ConnectionState : ConnectionStateBase
         {
             public IValueContainer<ConnectionState, int> A { get; }
             public IValueContainer<ConnectionState, decimal> B { get; }
+            public IValueContainer<ConnectionState, DisposableValue> C { get; }
 
             public ConnectionState(
                 IValueContainer<ConnectionState, int> a,
-                IValueContainer<ConnectionState, decimal> b
+                IValueContainer<ConnectionState, decimal> b,
+                IValueContainer<ConnectionState, DisposableValue> c
             )
             {
                 A = a;
                 B = b;
+                C = c;
             }
+        }
+
+        private record DisposableValue
+        {
+            public bool IsDisposed { get; set; }
         }
     }
 }
