@@ -4,7 +4,6 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
-using Annium.Diagnostics.Debug;
 
 namespace Annium.Extensions.Execution.Internal
 {
@@ -74,12 +73,10 @@ namespace Annium.Extensions.Execution.Internal
             if (Volatile.Read(ref _isStarted) == 1)
             {
                 Interlocked.Increment(ref _taskCounter);
-                this.Trace($"run task {task.GetId()}; counter: {_taskCounter}");
                 RunTask(task).ContinueWith(CompleteTask);
             }
             else
             {
-                this.Trace($"schedule task {task.GetId()}; counter: {_taskCounter}");
                 _backlog.Add(task);
             }
         }
@@ -88,7 +85,6 @@ namespace Annium.Extensions.Execution.Internal
         private void CompleteTask(Task task)
         {
             Interlocked.Decrement(ref _taskCounter);
-            this.Trace($"task {task.GetId()}; counter: {_taskCounter}");
             TryFinish();
         }
 
@@ -103,7 +99,6 @@ namespace Annium.Extensions.Execution.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void TryFinish()
         {
-            this.Trace($"isAvailable: {_isAvailable}; counter: {_taskCounter}");
             if (Volatile.Read(ref _isAvailable) == 0 && Volatile.Read(ref _taskCounter) == 0)
                 _tcs.TrySetResult(new object());
         }

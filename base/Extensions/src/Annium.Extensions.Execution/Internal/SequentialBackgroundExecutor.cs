@@ -72,7 +72,6 @@ namespace Annium.Extensions.Execution.Internal
             {
                 try
                 {
-                    this.Trace("wait for task");
                     var task = await _taskReader.ReadAsync(_cts.Token);
                     await RunTask(task);
                 }
@@ -92,7 +91,6 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace($"run {Count} tasks left");
             while (true)
             {
-                this.Trace("get task");
                 if (_taskReader.TryRead(out var task))
                     await RunTask(task);
                 else
@@ -114,8 +112,6 @@ namespace Annium.Extensions.Execution.Internal
         {
             if (IsAvailable)
                 ScheduleTaskCore(task);
-            else
-                this.Trace("executor is not available, skipped");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -123,21 +119,17 @@ namespace Annium.Extensions.Execution.Internal
         {
             if (!_taskWriter.TryWrite(task))
                 throw new InvalidOperationException("Task must have been scheduled");
-
-            this.Trace($"added {task}, {Count} tasks left");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private async ValueTask RunTask(Delegate task)
         {
-            this.Trace($"task {task.GetId()}: start, {Count} tasks left");
             if (task is Action syncTask)
                 await Task.Run(syncTask);
             else if (task is Func<ValueTask> asyncValueTask)
                 await asyncValueTask().ConfigureAwait(false);
             else
                 throw new NotSupportedException();
-            this.Trace($"task {task.GetId()}: complete");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
