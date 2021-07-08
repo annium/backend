@@ -101,8 +101,8 @@ namespace Annium.Core.DependencyInjection
                     var valueContainerType = valueContainer
                         .MakeGenericType(new[] { typeof(TState), loaderType }.Concat(loaderArguments.Skip(1)).ToArray());
 
-                    container.Add(loaderType).AsInterfaces().Scoped();
-                    container.Add(valueContainerType).AsInterfaces().Scoped();
+                    container.Add(loaderType).AsInterfaces().Transient();
+                    container.Add(valueContainerType).AsInterfaces().Transient();
                 }
             }
         }
