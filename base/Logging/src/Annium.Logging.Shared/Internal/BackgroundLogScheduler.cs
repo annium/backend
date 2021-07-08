@@ -57,24 +57,20 @@ namespace Annium.Logging.Shared.Internal
 
         private async Task<Func<Task>> Run(ObserverContext<LogMessage> ctx)
         {
-            this.Trace("start");
             // normal mode - runs task immediately or waits for one
             while (!Volatile.Read(ref _isDisposed))
             {
                 try
                 {
-                    this.Trace("wait for msg");
                     var message = await _reader.ReadAsync(ctx.Ct);
                     ctx.OnNext(message);
                 }
                 catch (ChannelClosedException)
                 {
-                    this.Trace("cancelled");
                     break;
                 }
                 catch (OperationCanceledException)
                 {
-                    this.Trace("cancelled");
                     break;
                 }
             }
@@ -83,7 +79,6 @@ namespace Annium.Logging.Shared.Internal
             this.Trace($"handle {Count} messages left");
             while (true)
             {
-                this.Trace("get task");
                 if (_reader.TryRead(out var message))
                     ctx.OnNext(message);
                 else
