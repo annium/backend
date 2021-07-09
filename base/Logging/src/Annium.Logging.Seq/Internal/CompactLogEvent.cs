@@ -14,12 +14,13 @@ namespace Annium.Logging.Seq.Internal
             DateTimeZone tz
         )
         {
+            var prefix = BuildMessagePrefix(m);
             var result = new Dictionary<string, string>
             {
                 ["@p"] = project,
                 ["@t"] = m.Instant.InUtc().LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'", null),
-                ["@m"] = BuildMessage(m, message),
-                ["@mt"] = m.MessageTemplate,
+                ["@m"] = $"{prefix}{message}",
+                ["@mt"] = $"{prefix}{m.MessageTemplate}",
                 ["@l"] = m.Level.ToString(),
             };
             if (m.Exception is not null)
@@ -31,14 +32,14 @@ namespace Annium.Logging.Seq.Internal
             return result;
         }
 
-        private static string BuildMessage(LogMessage m, string message)
+        private static string BuildMessagePrefix(LogMessage m)
         {
             var sb = new StringBuilder();
             sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
             if (m.Line != 0)
                 sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
 
-            return $"[{m.ThreadId:D3}] {sb} >> {message}";
+            return $"[{m.ThreadId:D3}] {sb} >> ";
         }
     }
 }
