@@ -13,6 +13,7 @@ namespace Annium.Logging.Seq.Internal
     internal class SeqLogHandler : IAsyncLogHandler
     {
         private readonly ISerializer<string> _serializer;
+        private readonly string _project;
         private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
         private readonly IHttpRequest _request;
         private readonly string _apiKey;
@@ -20,10 +21,12 @@ namespace Annium.Logging.Seq.Internal
         public SeqLogHandler(
             IHttpRequestFactory httpRequestFactory,
             ISerializer<string> serializer,
+            string project,
             SeqConfiguration cfg
         )
         {
             _serializer = serializer;
+            _project = project;
             _request = httpRequestFactory.New(cfg.Endpoint);
             _apiKey = cfg.ApiKey;
         }
@@ -31,7 +34,7 @@ namespace Annium.Logging.Seq.Internal
         public async ValueTask Handle(IReadOnlyCollection<LogMessage> messages)
         {
             var events = new List<IReadOnlyDictionary<string, string>>();
-            void AddEvent(LogMessage msg, string message) => events.Add(CompactLogEvent.Format(msg, message, Tz));
+            void AddEvent(LogMessage msg, string message) => events.Add(CompactLogEvent.Format(_project, msg, message, Tz));
             foreach (var message in messages)
                 Process(message, AddEvent);
 
@@ -43,6 +46,8 @@ namespace Annium.Logging.Seq.Internal
                 .Header("X-Seq-ApiKey", _apiKey)
                 .StringContent(data, "application/vnd.serilog.clef")
                 .RunAsync();
+            if (response.IsFailure)
+                Console.WriteLine($"Failed to to write events to Seq at {_request.Uri}: {response.StatusCode} - {response.StatusText}");
         }
 
         private void Process(LogMessage msg, Action<LogMessage, string> addEvent)
