@@ -11,10 +11,10 @@ mbus-down:
 	docker-compose -f Demo.Infrastructure.MessageBus.EchoServer/docker-compose.yml down
 
 ws-start-binary:
-	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj &
+	ANNIUM_LOG=lvl=trace dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj &
 
 ws-start-text:
-	dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj --use-text &
+	ANNIUM_LOG=lvl=trace dotnet run -p Demo.Infrastructure.WebSockets.Server/Demo.Infrastructure.WebSockets.Server.csproj --use-text &
 
 ws-stop:
 	$(call kill,Demo.Infrastructure.WebSockets.Server.csproj)
@@ -40,7 +40,7 @@ ws-keep-alive:
 define cli
 	@$(eval command := $(1))
 	@$(eval server := $(2))
-	dotnet run -p Demo.Infrastructure.WebSockets.Client/Demo.Infrastructure.WebSockets.Client.csproj $(command) -s $(server)
+	ANNIUM_LOG=lvl=trace dotnet run -p Demo.Infrastructure.WebSockets.Client/Demo.Infrastructure.WebSockets.Client.csproj $(command) -s $(server)
 endef
 
 define kill

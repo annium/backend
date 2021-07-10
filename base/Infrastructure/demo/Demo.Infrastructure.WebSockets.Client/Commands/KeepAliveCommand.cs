@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
@@ -26,6 +27,9 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
 
         public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
         {
+            this.Log().Debug($"Interacting to {cfg.Server}");
+
+            this.Log().Debug("create client");
             var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);
             var client = _clientFactory.Create(configuration);
             client.ConnectionLost += () =>
@@ -39,11 +43,34 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
                 return Task.CompletedTask;
             };
 
-            this.Log().Debug($"Connecting to {cfg.Server}");
-            await client.ConnectAsync(ct);
-            this.Log().Debug($"Connected to {cfg.Server}");
+            while (true)
+            {
+                this.Log().Debug("press key");
+                var key = Console.ReadKey(true).Key;
 
-            await ct;
+                if (key == ConsoleKey.C)
+                {
+                    this.Log().Debug("connecting");
+                    await client.ConnectAsync(ct);
+                    this.Log().Debug("connected");
+                }
+
+                if (key == ConsoleKey.D)
+                {
+                    this.Log().Debug("disconnecting");
+                    await client.DisconnectAsync();
+                    this.Log().Debug("disconnected");
+                }
+
+                if (key == ConsoleKey.Escape)
+                {
+                    this.Log().Debug("break");
+                    break;
+                }
+
+                // await to avoid key pressing mess
+                await Task.Delay(100, CancellationToken.None);
+            }
 
             if (client.IsConnected)
             {
