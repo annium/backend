@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace Annium.AspNetCore.TestServer.Components
 {
     public class SharedDataContainer
     {
         public string Value { get; set; } = string.Empty;
-        public List<string> Log { get; } = new();
+        public ConcurrentQueue<string> Log { get; } = new();
     }
 }

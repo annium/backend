@@ -28,18 +28,18 @@ namespace Annium.AspNetCore.TestServer.Handlers.Demo
             CancellationToken ct
         )
         {
-            _container.Log.Add($"second init: {ctx.Request.Param}");
+            _container.Log.Enqueue($"second init: {ctx.Request.Param}");
             ctx.Handle(Result.Status(OperationStatus.Ok));
 
-            _container.Log.Add("second msg1");
+            _container.Log.Enqueue("second msg1");
             ctx.Send("second msg1");
 
-            _container.Log.Add("second msg2");
+            _container.Log.Enqueue("second msg2");
             ctx.Send("second msg2");
 
             await ct;
 
-            _container.Log.Add("second canceled");
+            _container.Log.Enqueue("second canceled");
 
             return Unit.Default;
         }
