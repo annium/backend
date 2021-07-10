@@ -74,7 +74,12 @@ namespace Annium.Net.WebSockets
 
         public IObservable<ReadOnlyMemory<byte>> ListenBinary() => _binaryObservable;
 
-        protected void CancelReceive()
+        protected void ResumeObservable()
+        {
+            this.Log().Trace("start");
+        }
+
+        protected void PauseObservable()
         {
             this.Log().Trace("start");
             _receiveCts.Cancel();
@@ -112,7 +117,7 @@ namespace Annium.Net.WebSockets
 
                     // initial spin, until connected
                     this.Log().Trace("spin until keepAlive monitor up and connected");
-                    // TODO: connection state must be tracked externally
+                    // TODO: connection state must be tracked externally (for example, via TCS)
                     await Wait.UntilAsync(() => _keepAliveMonitor is not null! && IsConnected);
                     // await Wait.UntilAsync(() => _keepAliveMonitor is not null!);
                     this.Log().Trace("resume keepAlive monitor");

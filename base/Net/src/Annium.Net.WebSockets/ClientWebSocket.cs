@@ -40,9 +40,9 @@ namespace Annium.Net.WebSockets
         public async Task DisconnectAsync()
         {
             // cancel receive, if pending
-            CancelReceive();
+            PauseObservable();
 
-            this.Log().Trace("Invoke ConnectionLost");
+            this.Log().Trace("invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
@@ -52,11 +52,11 @@ namespace Annium.Net.WebSockets
                     Socket.State == WebSocketState.Open
                 )
                 {
-                    this.Log().Trace("Disconnect");
+                    this.Log().Trace("disconnect");
                     await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
                 }
                 else
-                    this.Log().Trace("Already disconnected");
+                    this.Log().Trace("already disconnected");
             }
             catch (WebSocketException)
             {
@@ -66,22 +66,22 @@ namespace Annium.Net.WebSockets
 
         protected override async Task OnConnectionLostAsync()
         {
-            this.Log().Trace("Invoke ConnectionLost");
+            this.Log().Trace("invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             if (_options.ReconnectTimeout != Duration.MaxValue)
             {
-                this.Log().Trace("Try reconnect");
+                this.Log().Trace("try reconnect");
                 await Task.Delay(_options.ReconnectTimeout.ToTimeSpan());
                 await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
             }
             else
-                this.Log().Trace("No reconnect");
+                this.Log().Trace("no reconnect");
         }
 
         private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
         {
-            this.Log().Trace($"Connect to {uri}");
+            this.Log().Trace($"connect to {uri}");
 
             _uri = uri;
             do
@@ -89,33 +89,40 @@ namespace Annium.Net.WebSockets
                 try
                 {
                     Socket = new NativeClientWebSocket();
-                    this.Log().Trace("Try connect");
+                    this.Log().Trace("try connect");
                     await Socket.ConnectAsync(uri, ct);
                 }
                 catch (WebSocketException)
                 {
-                    this.Log().Trace("Connection failed");
+                    this.Log().Trace("connection failed");
                     Socket.Dispose();
                     await Task.Delay(timeout.ToTimeSpan(), ct);
                 }
             } while (
                 !ct.IsCancellationRequested &&
-                !(
-                    Socket.State == WebSocketState.Open ||
-                    Socket.State == WebSocketState.CloseSent
-                )
+                Socket.State is not (WebSocketState.Open or WebSocketState.CloseSent)
             );
 
-            this.Log().Trace("Connected");
+            if (Socket.State is WebSocketState.Open or WebSocketState.CloseSent)
+            {
+                this.Log().Trace("connected");
+                ResumeObservable();
 
-            this.Log().Trace("Invoke ConnectionRestored");
-            Executor.Schedule(() => ConnectionRestored.Invoke());
+                this.Log().Trace("invoke ConnectionRestored");
+                Executor.Schedule(() => ConnectionRestored.Invoke());
+            }
+            else
+                this.Log().Trace("connected");
         }
 
         public override async ValueTask DisposeAsync()
         {
-            this.Log().Trace("Invoke ConnectionLost");
-            Executor.Schedule(() => ConnectionLost.Invoke());
+            if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
+            {
+                this.Log().Trace("invoke ConnectionLost");
+                Executor.Schedule(() => ConnectionLost.Invoke());
+            }
+
             await DisposeBaseAsync();
         }
     }

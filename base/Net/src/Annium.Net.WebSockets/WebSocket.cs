@@ -33,12 +33,17 @@ namespace Annium.Net.WebSockets
             logger
         )
         {
+            // resume observable unconditionally, because this kind of socket is expected to be connected
+            if (Socket.State is not WebSocketState.Open)
+                throw new WebSocketException("Unmanaged Socket must be already connected");
+
+            ResumeObservable();
         }
 
         public async Task DisconnectAsync()
         {
             // cancel receive, if pending
-            CancelReceive();
+            PauseObservable();
 
             this.Log().Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
@@ -65,15 +70,19 @@ namespace Annium.Net.WebSockets
         protected override Task OnConnectionLostAsync()
         {
             this.Log().Trace("Invoke ConnectionLost");
-            Executor.TrySchedule(() => ConnectionLost.Invoke());
+            Executor.Schedule(() => ConnectionLost.Invoke());
 
             return Task.CompletedTask;
         }
 
         public override async ValueTask DisposeAsync()
         {
-            this.Log().Trace("Invoke ConnectionLost");
-            Executor.TrySchedule(() => ConnectionLost.Invoke());
+            if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
+            {
+                this.Log().Trace("Invoke ConnectionLost");
+                Executor.Schedule(() => ConnectionLost.Invoke());
+            }
+
             await DisposeBaseAsync();
         }
     }
