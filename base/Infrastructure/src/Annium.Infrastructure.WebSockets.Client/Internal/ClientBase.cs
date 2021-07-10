@@ -246,12 +246,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             this.Log().Trace("done");
         }
 
-        private async Task SendInternal<T>(T data)
-            where T : notnull
-        {
-            await Socket.SendWith(data, _serializer, CancellationToken.None);
-        }
-
         private async Task<TResponseData> FetchInternal<TRequest, TResponse, TResponseData>(
             TRequest request,
             CancellationToken ct,
@@ -282,7 +276,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             });
 
             _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
-            this.Log().Trace($"Send request {request.Tid}#{request.Rid}");
             await SendInternal(request);
             var response = (TResponse) await tcs.Task;
             var data = getData(response);
@@ -290,16 +283,27 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             return data;
         }
 
+        private async Task SendInternal<T>(T request)
+            where T : AbstractRequestBase
+        {
+            this.Log().Trace($"Send request {request.Tid}#{request.Rid}");
+            await Socket.SendWith(request, _serializer, CancellationToken.None);
+        }
+
         private void CompleteResponse(ResponseBase response)
         {
-            if (
-                _requestFutures.Remove(response.Rid, out var future) &&
-                !future.CancellationSource.IsCancellationRequested
-            )
+            if (_requestFutures.Remove(response.Rid, out var future))
             {
-                this.Log().Trace($"Complete response {response.Tid}#{response.Rid}");
-                future.TaskSource.TrySetResult(response);
+                if (!future.CancellationSource.IsCancellationRequested)
+                {
+                    this.Log().Trace($"Complete response {response.Tid}#{response.Rid}");
+                    future.TaskSource.TrySetResult(response);
+                }
+                else
+                    this.Log().Trace($"Dismiss cancelled response {response.Tid}#{response.Rid}");
             }
+            else
+                this.Log().Trace($"Dismiss unknown response {response.Tid}#{response.Rid}");
         }
 
         private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
