@@ -286,7 +286,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private async Task SendInternal<T>(T request)
             where T : AbstractRequestBase
         {
-            this.Log().Trace($"Send request {request.Tid}#{request.Rid}");
+            this.Log().Trace($"send request {request.Tid}#{request.Rid}");
             await Socket.SendWith(request, _serializer, CancellationToken.None);
         }
 
@@ -296,14 +296,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             {
                 if (!future.CancellationSource.IsCancellationRequested)
                 {
-                    this.Log().Trace($"Complete response {response.Tid}#{response.Rid}");
+                    this.Log().Trace($"complete response {response.Tid}#{response.Rid}");
                     future.TaskSource.TrySetResult(response);
                 }
                 else
-                    this.Log().Trace($"Dismiss cancelled response {response.Tid}#{response.Rid}");
+                    this.Log().Trace($"dismiss cancelled response {response.Tid}#{response.Rid}");
             }
             else
-                this.Log().Trace($"Dismiss unknown response {response.Tid}#{response.Rid}");
+                this.Log().Trace($"dismiss unknown response {response.Tid}#{response.Rid}");
         }
 
         private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
