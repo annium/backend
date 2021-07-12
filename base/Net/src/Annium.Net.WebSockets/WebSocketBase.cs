@@ -84,10 +84,15 @@ namespace Annium.Net.WebSockets
 
         protected void PauseObservable()
         {
-            this.Log().Trace("start");
-            _receiveCts.Cancel();
-            _receiveCts.Dispose();
-            this.Log().Trace("done");
+            if (_receiveCts.IsCancellationRequested)
+                this.Log().Trace("receive cts is already disposed");
+            else
+            {
+                this.Log().Trace("cancel and dispose receive cts");
+                _receiveCts.Cancel();
+                _receiveCts.Dispose();
+                this.Log().Trace("canceled and disposed receive cts");
+            }
         }
 
         protected abstract Task OnConnectionLostAsync();
@@ -286,14 +291,8 @@ namespace Annium.Net.WebSockets
 
         protected async ValueTask DisposeBaseAsync()
         {
-            if (!_receiveCts.IsCancellationRequested)
-            {
-                this.Log().Trace("pause observable");
-                PauseObservable();
-            }
-            else
-                this.Log().Trace("observable already paused");
-
+            this.Log().Trace("pause observable");
+            PauseObservable();
             this.Log().Trace("dispose bundle");
             await _disposable.DisposeAsync();
             this.Log().Trace("dispose executor");
