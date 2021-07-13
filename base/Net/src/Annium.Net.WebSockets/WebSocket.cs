@@ -45,7 +45,7 @@ namespace Annium.Net.WebSockets
             // cancel receive, if pending
             PauseObservable();
 
-            this.Log().Trace("Invoke ConnectionLost");
+            this.Log().Trace("invoke ConnectionLost in {state}", Socket.State);
             Executor.Schedule(() => ConnectionLost.Invoke());
 
             try
@@ -77,6 +77,7 @@ namespace Annium.Net.WebSockets
 
         public override async ValueTask DisposeAsync()
         {
+            this.Log().Trace("start in {state}", Socket.State);
             if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
             {
                 this.Log().Trace("Invoke ConnectionLost");
@@ -84,6 +85,8 @@ namespace Annium.Net.WebSockets
             }
 
             await DisposeBaseAsync();
+
+            this.Log().Trace("done");
         }
     }
 }
