@@ -1,4 +1,3 @@
-using Annium.Infrastructure.WebSockets.Domain.Models;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Demo.Infrastructure.WebSockets.Server.Handlers

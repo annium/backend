@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Primitives;
-using Annium.Core.Reflection;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
 using Annium.Logging.Shared.Internal;

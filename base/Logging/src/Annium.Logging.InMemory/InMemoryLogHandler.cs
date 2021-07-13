@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Annium.Logging.Shared;
 
 namespace Annium.Logging.InMemory
