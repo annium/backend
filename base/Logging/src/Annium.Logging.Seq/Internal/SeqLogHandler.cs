@@ -12,11 +12,12 @@ namespace Annium.Logging.Seq.Internal
 {
     internal class SeqLogHandler : IAsyncLogHandler
     {
+        private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+        private readonly Queue<IReadOnlyDictionary<string, string>> _eventsBuffer = new();
+        private readonly IHttpRequest _request;
         private readonly ISerializer<string> _serializer;
         private readonly string _project;
-        private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-        private readonly IHttpRequest _request;
-        private readonly string _apiKey;
+        private readonly SeqConfiguration _cfg;
 
         public SeqLogHandler(
             IHttpRequestFactory httpRequestFactory,
@@ -25,29 +26,75 @@ namespace Annium.Logging.Seq.Internal
             SeqConfiguration cfg
         )
         {
+            _request = httpRequestFactory.New(cfg.Endpoint);
             _serializer = serializer;
             _project = project;
-            _request = httpRequestFactory.New(cfg.Endpoint);
-            _apiKey = cfg.ApiKey;
+            _cfg = cfg;
         }
 
         public async ValueTask Handle(IReadOnlyCollection<LogMessage> messages)
         {
             var events = new List<IReadOnlyDictionary<string, string>>();
+
             void AddEvent(LogMessage msg, string message) => events.Add(CompactLogEvent.Format(_project, msg, message, Tz));
             foreach (var message in messages)
                 Process(message, AddEvent);
 
+            // if failed to send events - add them to buffer
+            if (!await SendEventsAsync(events))
+            {
+                BufferEvents(events);
+                return;
+            }
+
+            while (true)
+            {
+                // pick slice to send
+                lock (_eventsBuffer)
+                {
+                    if (_eventsBuffer.Count == 0)
+                        break;
+
+                    events.Clear();
+
+                    var count = Math.Min(_eventsBuffer.Count, _cfg.BufferCount);
+                    for (var i = 0; i < count; i++)
+                        events.Add(_eventsBuffer.Dequeue());
+                }
+
+                // if sent successfully - go to next slice
+                if (await SendEventsAsync(events))
+                    continue;
+
+                // if failed to send - move events back to buffer and break sending
+                BufferEvents(events);
+                break;
+            }
+        }
+
+        private async ValueTask<bool> SendEventsAsync(IReadOnlyCollection<IReadOnlyDictionary<string, string>> events)
+        {
             var data = events.Select(_serializer.Serialize).Join(Environment.NewLine);
 
-            var response = await _request.Clone()
-                .Post("api/events/raw")
-                .Param("clef", string.Empty)
-                .Header("X-Seq-ApiKey", _apiKey)
-                .StringContent(data, "application/vnd.serilog.clef")
-                .RunAsync();
-            if (response.IsFailure)
+            try
+            {
+                var response = await _request.Clone()
+                    .Post("api/events/raw")
+                    .Param("clef", string.Empty)
+                    .Header("X-Seq-ApiKey", _cfg.ApiKey)
+                    .StringContent(data, "application/vnd.serilog.clef")
+                    .RunAsync();
+                if (response.IsSuccess)
+                    return true;
+
                 Console.WriteLine($"Failed to to write events to Seq at {_request.Uri}: {response.StatusCode} - {response.StatusText}");
+                return false;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to to write events to Seq at {_request.Uri}: {e}");
+                return false;
+            }
         }
 
         private void Process(LogMessage msg, Action<LogMessage, string> addEvent)
@@ -67,5 +114,12 @@ namespace Annium.Logging.Seq.Internal
         }
 
         private string GetExceptionMessage(Exception e) => $"{e.Message}{e.StackTrace}";
+
+        private void BufferEvents(IReadOnlyCollection<IReadOnlyDictionary<string, string>> events)
+        {
+            lock (_eventsBuffer)
+                foreach (var e in events)
+                    _eventsBuffer.Enqueue(e);
+        }
     }
 }
