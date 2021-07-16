@@ -1,8 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
@@ -10,20 +9,24 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 {
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {
-        private readonly IObservable<string> _observable;
-        private readonly ManualResetEventSlim _gate = new(false);
-        private readonly Queue<string> _messages = new();
+        private readonly IObservableInstance<string> _observable;
+        private readonly ChannelWriter<string> _writer;
+        private readonly ChannelReader<string> _reader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public InMemoryMessageBusSocket(
             InMemoryConfiguration cfg
         )
         {
-            var observable = ObservableInstance.Static<string>(CreateObservable);
-            _observable = observable;
-            _disposable += observable;
+            var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
+            {
+                AllowSynchronousContinuations = true,
+                SingleReader = true
+            });
+            _writer = taskChannel.Writer;
+            _reader = taskChannel.Reader;
 
-            _disposable += _gate;
+            _disposable += _observable = ObservableInstance.Static<string>(CreateObservable);
 
             if (cfg.MessageBox is not null)
                 _disposable += _observable.Subscribe(cfg.MessageBox.Add);
@@ -31,39 +34,31 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 
         public IObservable<Unit> Send(string message)
         {
-            lock (_messages)
-                _messages.Enqueue(message);
-
-            // open gate to let messages be read
-            _gate.Set();
+            if (!_writer.TryWrite(message))
+                throw new InvalidOperationException("Message must have been written");
 
             return Observable.Return(Unit.Default);
         }
 
         public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-        private Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
+        private async Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
         {
             try
             {
                 while (!ctx.Ct.IsCancellationRequested)
                 {
-                    _gate.Wait(ctx.Ct);
-                    _gate.Reset();
+                    var message = await _reader.ReadAsync(ctx.Ct);
 
-                    var messages = new List<string>();
-                    lock (_messages)
-                    {
-                        while (_messages.Count > 0)
-                            messages.Add(_messages.Dequeue());
-                    }
-
-                    foreach (var item in messages)
-                        ctx.OnNext(item);
+                    ctx.OnNext(message);
                 }
             }
             // token was canceled
             catch (OperationCanceledException)
+            {
+                ctx.OnCompleted();
+            }
+            catch (ChannelClosedException)
             {
                 ctx.OnCompleted();
             }
@@ -72,7 +67,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
                 ctx.OnError(e);
             }
 
-            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
+            return () => Task.CompletedTask;
         }
 
         public ValueTask DisposeAsync()
