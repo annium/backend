@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal

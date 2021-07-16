@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
-namespace Annium.Infrastructure.MessageBus.Node.Internal
+namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 {
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {

@@ -15,7 +15,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
             container.AddJsonSerializers().SetDefault();
             container.AddMapper();
             container.AddConfiguration<EndpointsConfiguration>(x => x.AddYamlFile("cfg_local.yml"));
-            container.AddMessageBus((sp, opts) => opts
+            container.AddNetMQMessageBus((sp, opts) => opts
                 .WithSerializer(sp.Resolve<ISerializer<string>>())
                 .WithEndpoints(sp.Resolve<EndpointsConfiguration>())
             );

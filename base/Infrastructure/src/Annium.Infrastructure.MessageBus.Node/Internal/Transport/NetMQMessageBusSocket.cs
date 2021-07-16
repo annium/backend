@@ -7,16 +7,16 @@ using Annium.Core.Primitives;
 using NetMQ;
 using NetMQ.Sockets;
 
-namespace Annium.Infrastructure.MessageBus.Node.Internal
+namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 {
-    internal class MessageBusSocket : IMessageBusSocket
+    internal class NetMQMessageBusSocket : IMessageBusSocket
     {
         private readonly PublisherSocket _publisher;
         private readonly SubscriberSocket _subscriber;
         private readonly IObservable<string> _observable;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
-        public MessageBusSocket(
+        public NetMQMessageBusSocket(
             Configuration cfg
         )
         {
