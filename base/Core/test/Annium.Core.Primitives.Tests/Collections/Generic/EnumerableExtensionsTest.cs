@@ -1,5 +1,4 @@
 using System.Linq;
-using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
@@ -8,7 +7,7 @@ namespace Annium.Core.Primitives.Tests
     public class EnumerableExtensionsTest
     {
         [Fact]
-        public async Task Chunks_Works()
+        public void Chunks_Works()
         {
             // arrange
             var data = new[] { 1, 2, 3, 4, 5 };
