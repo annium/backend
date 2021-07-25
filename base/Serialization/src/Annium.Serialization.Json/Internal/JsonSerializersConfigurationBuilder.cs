@@ -2,6 +2,7 @@ using System;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
+using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal
@@ -16,20 +17,28 @@ namespace Annium.Serialization.Json.Internal
             _container = container;
             _fullKey = SerializerKey.Create(key, Constants.MediaType);
 
-            Func<IServiceProvider, T> OptionsResolvingFactory<T>(string shortKey, Func<OptionsContainer, T> factory)
+            Func<IServiceProvider, T> OptionsResolvingFactory<T>(string shortKey, Func<IServiceProvider, OptionsContainer, T> factory)
             {
                 return sp =>
                 {
                     var index = sp.Resolve<IIndex<string, OptionsContainer>>();
-                    return factory(index.TryGetValue(shortKey, out var opts) ? opts : sp.Resolve<OptionsContainer>());
+                    if (!index.TryGetValue(shortKey, out var opts))
+                        opts = sp.Resolve<OptionsContainer>();
+                    return factory(sp, opts);
                 };
             }
 
-            _container.Add<ISerializer<byte[]>>(OptionsResolvingFactory(key, opts => new ByteArraySerializer(opts)))
+            _container.Add<ISerializer<byte[]>>(OptionsResolvingFactory(key,
+                    (sp, opts) => new ByteArraySerializer(sp.Resolve<ILogger<ByteArraySerializer>>(), opts)
+                ))
                 .AsKeyed<ISerializer<byte[]>, SerializerKey>(_fullKey).Singleton();
-            _container.Add<ISerializer<ReadOnlyMemory<byte>>>(OptionsResolvingFactory(key, opts => new ReadOnlyMemoryByteSerializer(opts)))
+            _container.Add<ISerializer<ReadOnlyMemory<byte>>>(OptionsResolvingFactory(key,
+                    (sp, opts) => new ReadOnlyMemoryByteSerializer(sp.Resolve<ILogger<ReadOnlyMemoryByteSerializer>>(), opts)
+                ))
                 .AsKeyed<ISerializer<ReadOnlyMemory<byte>>, SerializerKey>(_fullKey).Singleton();
-            _container.Add<ISerializer<string>>(OptionsResolvingFactory(key, opts => new StringSerializer(opts)))
+            _container.Add<ISerializer<string>>(OptionsResolvingFactory(key,
+                    (sp, opts) => new StringSerializer(sp.Resolve<ILogger<StringSerializer>>(), opts)
+                ))
                 .AsKeyed<ISerializer<string>, SerializerKey>(_fullKey).Singleton();
 
             // default configuration
