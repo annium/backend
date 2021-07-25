@@ -1,9 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
@@ -14,16 +14,23 @@ namespace Annium.Data.Tables.Internal
     {
         public abstract int Count { get; }
         protected readonly object DataLocker = new();
-        private readonly object _notificationLocker = new();
         private readonly IObservable<IChangeEvent<T>> _observable;
         private readonly TablePermission _permissions;
-        private readonly BlockingCollection<IChangeEvent<T>> _events;
+        private readonly ChannelWriter<IChangeEvent<T>> _eventWriter;
+        private readonly ChannelReader<IChangeEvent<T>> _eventReader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         protected TableBase(TablePermission permissions)
         {
             _permissions = permissions;
-            _events = new BlockingCollection<IChangeEvent<T>>(new ConcurrentQueue<IChangeEvent<T>>());
+            var taskChannel = Channel.CreateUnbounded<IChangeEvent<T>>(new UnboundedChannelOptions
+            {
+                AllowSynchronousContinuations = true,
+                SingleReader = true
+            });
+            _eventWriter = taskChannel.Writer;
+            _eventReader = taskChannel.Reader;
+
             var observable = CreateObservable();
             _disposable += observable;
             _observable = observable.ObserveOn(TaskPoolScheduler.Default);
@@ -40,15 +47,15 @@ namespace Annium.Data.Tables.Internal
 
         protected void AddEvents(IReadOnlyCollection<IChangeEvent<T>> events)
         {
-            lock (_notificationLocker)
-                foreach (var item in events)
-                    _events.Add(item);
+            foreach (var @event in events)
+                if (!_eventWriter.TryWrite(@event))
+                    throw new InvalidOperationException("Event must have been send");
         }
 
         protected void AddEvent(IChangeEvent<T> @event)
         {
-            lock (_notificationLocker)
-                _events.Add(@event);
+            if (!_eventWriter.TryWrite(@event))
+                throw new InvalidOperationException("Event must have been send");
         }
 
         protected void EnsurePermission(TablePermission permission)
@@ -59,33 +66,39 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.Static<IChangeEvent<T>>(ctx =>
+        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.Static<IChangeEvent<T>>(async ctx =>
         {
             while (!ctx.Ct.IsCancellationRequested)
             {
                 try
                 {
-                    IChangeEvent<T>? e = null;
-                    try
+                    while (!ctx.Ct.IsCancellationRequested)
                     {
-                        e = _events.Take(ctx.Ct);
-                    }
-                    catch (OperationCanceledException)
-                    {
-                    }
+                        var message = await _eventReader.ReadAsync(ctx.Ct);
 
-                    if (e is not null)
-                        ctx.OnNext(e);
+                        ctx.OnNext(message);
+                    }
                 }
-                catch (Exception ex)
+                // token was canceled
+                catch (OperationCanceledException)
                 {
-                    ctx.OnError(ex);
+                    ctx.OnCompleted();
                 }
+                catch (ChannelClosedException)
+                {
+                    ctx.OnCompleted();
+                }
+                catch (Exception e)
+                {
+                    ctx.OnError(e);
+                }
+
+                return () => Task.CompletedTask;
             }
 
             ctx.OnCompleted();
 
-            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
+            return () => Task.CompletedTask;
         });
 
         public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
@@ -94,6 +107,7 @@ namespace Annium.Data.Tables.Internal
 
         public virtual ValueTask DisposeAsync()
         {
+            _eventWriter.Complete();
             return _disposable.DisposeAsync();
         }
     }
