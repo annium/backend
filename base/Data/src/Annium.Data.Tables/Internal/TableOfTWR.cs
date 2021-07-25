@@ -21,6 +21,14 @@ namespace Annium.Data.Tables.Internal
             }
         }
 
+        public IReadOnlyDictionary<int, TW> Source
+        {
+            get
+            {
+                lock (DataLocker) return _writeTable.ToDictionary();
+            }
+        }
+
         private readonly Dictionary<int, TW> _writeTable = new();
         private readonly Dictionary<int, TR> _readTable = new();
         private readonly Func<TW, int> _getKey;
@@ -40,6 +48,8 @@ namespace Annium.Data.Tables.Internal
             _isActive = isActive;
             _toRead = x => mapper.Map<TR>(x);
         }
+
+        public int GetKey(TW value) => _getKey(value);
 
         public void Init(IReadOnlyCollection<TW> entries)
         {
@@ -80,7 +90,7 @@ namespace Annium.Data.Tables.Internal
                 // exists and is inactive
                 else if (!_isActive(_writeTable[key]))
                 {
-                    EnsurePermission(TablePermission.Remove);
+                    EnsurePermission(TablePermission.Delete);
                     _writeTable.Remove(key);
                     _readTable.Remove(key, out var item);
                     AddEvent(ChangeEvent.Delete(item!));
@@ -102,7 +112,7 @@ namespace Annium.Data.Tables.Internal
 
         public void Delete(TW entry)
         {
-            EnsurePermission(TablePermission.Remove);
+            EnsurePermission(TablePermission.Delete);
             var key = _getKey(entry);
 
             lock (DataLocker)

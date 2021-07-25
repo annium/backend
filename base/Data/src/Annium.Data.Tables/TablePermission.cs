@@ -5,10 +5,10 @@ namespace Annium.Data.Tables
     [Flags]
     public enum TablePermission
     {
-        All = Init | Add | Update | Remove,
+        All = Init | Add | Update | Delete,
         Init = 1 << 0,
         Add = 1 << 1,
         Update = 1 << 2,
-        Remove = 1 << 3,
+        Delete = 1 << 3,
     }
 }

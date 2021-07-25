@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Primitives;
 
 namespace Annium.Data.Tables
 {
-    public static class TableExtensions
+    public static class TableSourceExtensions
     {
         public static IDisposable WriteTo<T>(
             this IObservable<IChangeEvent<T>> source,
@@ -65,6 +66,45 @@ namespace Annium.Data.Tables
                     target.Delete(delete.Value.Copy());
                     break;
             }
+        }
+
+        public static void SyncAddDelete<T>(
+            this ITableSource<T> target,
+            IReadOnlyCollection<T> values
+        )
+            where T : IEquatable<T>, ICopyable<T>
+        {
+            var source = target.Source;
+            var data = values.ToDictionary(target.GetKey, x => x);
+
+            // remove unexpected values
+            foreach (var (key, value) in source)
+                if (!data.ContainsKey(key))
+                    target.Delete(value);
+
+            // add missing values
+            foreach (var (key, value) in data)
+                if (!source.ContainsKey(key))
+                    target.Set(value);
+        }
+
+        public static void SyncAddUpdateDelete<T>(
+            this ITableSource<T> target,
+            IReadOnlyCollection<T> values
+        )
+            where T : IEquatable<T>, ICopyable<T>
+        {
+            var source = target.Source;
+            var data = values.ToDictionary(target.GetKey, x => x);
+
+            // remove unexpected values
+            foreach (var (key, value) in source)
+                if (!data.ContainsKey(key))
+                    target.Delete(value);
+
+            // add or update values
+            foreach (var value in values)
+                target.Set(value);
         }
     }
 }

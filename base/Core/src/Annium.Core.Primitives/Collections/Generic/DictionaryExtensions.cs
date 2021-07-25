@@ -6,6 +6,13 @@ namespace Annium.Core.Primitives
 {
     public static class DictionaryExtensions
     {
+        public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
+            this IEnumerable<KeyValuePair<TKey, TValue>> src
+        )
+        {
+            return src.ToDictionary(x => x.Key, x => x.Value);
+        }
+
         public static void RemoveAll<TKey, TValue>(
             this IDictionary<TKey, TValue> src,
             Func<TKey, bool> predicate
