@@ -14,7 +14,7 @@ namespace Demo.Logging
             CancellationToken ct
         )
         {
-            new Commander(provider).Run<Group>(args, ct);
+            Commander.Run<Group>(provider, args, ct);
         }
 
         public static int Main(string[] args) => new Entrypoint()

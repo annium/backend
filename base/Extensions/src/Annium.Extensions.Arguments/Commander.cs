@@ -4,20 +4,13 @@ using Annium.Core.DependencyInjection;
 
 namespace Annium.Extensions.Arguments
 {
-    public class Commander
+    public static class Commander
     {
-        private readonly IServiceProvider _provider;
-
-        public Commander(IServiceProvider provider)
-        {
-            _provider = provider;
-        }
-
-        public void Run<TGroup>(string[] args, CancellationToken ct = default)
+        public static void Run<TGroup>(IServiceProvider provider, string[] args, CancellationToken ct = default)
             where TGroup : Group
         {
-            var group = _provider.Resolve<TGroup>();
-            group.SetRoot(_provider.Resolve<Root>());
+            var group = provider.Resolve<TGroup>();
+            group.SetRoot(provider.Resolve<Root>());
             group.Process(group.Id, args, ct);
         }
     }

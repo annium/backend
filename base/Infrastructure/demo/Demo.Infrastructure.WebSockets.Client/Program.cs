@@ -14,7 +14,7 @@ namespace Demo.Infrastructure.WebSockets.Client
             CancellationToken ct
         )
         {
-            new Commander(provider).Run<Group>(args, ct);
+            Commander.Run<Group>(provider, args, ct);
         }
 
         internal static int Main(string[] args) => new Entrypoint()
