@@ -54,8 +54,10 @@ namespace Annium.Infrastructure.MessageBus.Node.Tests
         {
             var container = new ServiceContainer();
             container.AddRuntimeTools(GetType().Assembly, true);
+            container.AddTimeProvider();
             container.AddJsonSerializers().SetDefault();
             container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
+            container.AddLogging(x => x.UseInMemory());
 
             var provider = container.BuildServiceProvider();
 
