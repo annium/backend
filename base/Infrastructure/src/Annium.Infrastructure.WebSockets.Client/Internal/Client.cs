@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Runtime.Time;
@@ -12,6 +13,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
         public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
         private readonly IClientConfiguration _configuration;
+        private bool _isDisposed;
 
         public Client(
             ITimeProvider timeProvider,
@@ -40,6 +42,12 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
         public override async ValueTask DisposeAsync()
         {
+            if (_isDisposed)
+            {
+                this.Log().Trace("already disposed");
+                return;
+            }
+
             this.Log().Trace("start");
             await base.DisposeAsync();
             this.Log().Trace("disconnect socket");
@@ -47,6 +55,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             this.Log().Trace("dispose socket");
             await Socket.DisposeAsync();
             this.Log().Trace("done");
+
+            _isDisposed = true;
         }
     }
 }
