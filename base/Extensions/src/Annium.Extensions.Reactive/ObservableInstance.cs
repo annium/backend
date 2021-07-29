@@ -10,9 +10,14 @@ namespace System
         //     return new DynamicObservableInstance<T>(factory);
         // }
 
-        public static IObservableInstance<T> Static<T>(Func<ObserverContext<T>, Task<Func<Task>>> factory)
+        public static IObservableInstance<T> StaticAsync<T>(Func<ObserverContext<T>, Task<Func<Task>>> factory)
         {
-            return new StaticObservableInstance<T>(factory);
+            return new StaticObservableInstance<T>(factory, false);
+        }
+
+        public static IObservableInstance<T> StaticSync<T>(Func<ObserverContext<T>, Task<Func<Task>>> factory)
+        {
+            return new StaticObservableInstance<T>(factory, true);
         }
     }
 

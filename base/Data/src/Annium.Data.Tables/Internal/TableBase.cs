@@ -66,37 +66,30 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.Static<IChangeEvent<T>>(async ctx =>
+        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.StaticSync<IChangeEvent<T>>(async ctx =>
         {
-            while (!ctx.Ct.IsCancellationRequested)
+            try
             {
-                try
+                while (!ctx.Ct.IsCancellationRequested)
                 {
-                    while (!ctx.Ct.IsCancellationRequested)
-                    {
-                        var message = await _eventReader.ReadAsync(ctx.Ct);
+                    var message = await _eventReader.ReadAsync(ctx.Ct);
 
-                        ctx.OnNext(message);
-                    }
+                    ctx.OnNext(message);
                 }
-                // token was canceled
-                catch (OperationCanceledException)
-                {
-                    ctx.OnCompleted();
-                }
-                catch (ChannelClosedException)
-                {
-                    ctx.OnCompleted();
-                }
-                catch (Exception e)
-                {
-                    ctx.OnError(e);
-                }
-
-                return () => Task.CompletedTask;
             }
-
-            ctx.OnCompleted();
+            // token was canceled
+            catch (OperationCanceledException)
+            {
+                ctx.OnCompleted();
+            }
+            catch (ChannelClosedException)
+            {
+                ctx.OnCompleted();
+            }
+            catch (Exception e)
+            {
+                ctx.OnError(e);
+            }
 
             return () => Task.CompletedTask;
         });

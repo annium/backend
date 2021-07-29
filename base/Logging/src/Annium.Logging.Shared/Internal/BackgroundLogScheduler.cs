@@ -39,7 +39,7 @@ namespace Annium.Logging.Shared.Internal
             });
             _writer = channel.Writer;
             _reader = channel.Reader;
-            _observable = ObservableInstance.Static<LogMessage>(Run);
+            _observable = ObservableInstance.StaticSync<LogMessage>(Run);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
                 .Where(x => x.Count > 0)

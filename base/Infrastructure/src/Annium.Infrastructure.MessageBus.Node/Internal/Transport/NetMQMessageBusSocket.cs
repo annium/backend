@@ -27,7 +27,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _subscriber.Connect(cfg.Endpoints.SubEndpoint);
             _subscriber.SubscribeToAnyTopic();
 
-            _observable = ObservableInstance.Static<string>(CreateObservable);
+            _observable = ObservableInstance.StaticAsync<string>(CreateObservable);
         }
 
         public IObservable<Unit> Send(string message)
@@ -47,6 +47,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             {
                 while (!ctx.Ct.IsCancellationRequested)
                 {
+                    // TODO: use async method with receiving single message
                     var msg = _subscriber.ReceiveMultipartStrings(Encoding.UTF8);
                     if (msg.Count == 0)
                         continue;

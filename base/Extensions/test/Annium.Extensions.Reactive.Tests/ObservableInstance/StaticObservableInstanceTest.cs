@@ -20,7 +20,7 @@ namespace Annium.Extensions.Reactive.Tests.ObservableInstance
             var errors = new List<Exception>();
             var disposeCounter = 0;
             var instance = System.ObservableInstance
-                .Static<Sample>(async ctx =>
+                .StaticAsync<Sample>(async ctx =>
                 {
                     for (int i = 0; i < 5; i++)
                     {

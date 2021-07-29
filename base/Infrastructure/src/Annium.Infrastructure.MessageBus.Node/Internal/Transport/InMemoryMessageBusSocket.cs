@@ -26,7 +26,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _writer = taskChannel.Writer;
             _reader = taskChannel.Reader;
 
-            _disposable += _observable = ObservableInstance.Static<string>(CreateObservable);
+            _disposable += _observable = ObservableInstance.StaticSync<string>(CreateObservable);
 
             if (cfg.MessageBox is not null)
                 _disposable += _observable.Subscribe(cfg.MessageBox.Add);
