@@ -205,6 +205,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             var subscriptionId = request.Rid;
             this.Log().Trace($"{type}#{subscriptionId} - start");
 
+            this.Log().Trace($"{type}#{subscriptionId} - init");
+            var response = await FetchInternal(request, Guid.Empty, CancellationToken.None);
+            if (response.HasErrors)
+            {
+                this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
+                return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
+            }
+
             this.Log().Trace($"{type}#{subscriptionId} - create observable");
             var observable = ObservableInstance.StaticSync<TMessage>(async ctx =>
             {
@@ -239,24 +247,15 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
             this.Log().Trace($"{type}#{subscriptionId} - register observable disposal on token cancellation");
-            ct.Register(() => DisposeSubscription(subscriptionId));
+            ct.Register(() =>
+            {
+                if (!_subscriptions.TryRemove(subscriptionId, out var subscription))
+                    throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
 
-            this.Log().Trace($"{type}#{subscriptionId} - init");
-            var response = await FetchInternal(request, Guid.Empty, CancellationToken.None);
-            if (response.IsOk)
-                return Result.Status<OperationStatus, IObservable<TMessage>>(response.Status, observable);
+                subscription.DisposeAsync();
+            });
 
-            this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
-            DisposeSubscription(subscriptionId);
-            return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
-        }
-
-        private void DisposeSubscription(Guid subscriptionId)
-        {
-            if (!_subscriptions.TryRemove(subscriptionId, out var subscription))
-                throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
-
-            subscription.DisposeAsync();
+            return Result.Status<OperationStatus, IObservable<TMessage>>(response.Status, observable);
         }
 
         public virtual async ValueTask DisposeAsync()
