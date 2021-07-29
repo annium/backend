@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -6,8 +7,38 @@ using Annium.Core.Primitives;
 
 namespace Annium.Data.Operations.Serialization.Json.Internal
 {
-    internal abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase
+    internal abstract class ResultConverterBase<T> : JsonConverter<T>
+        where T : IResultBase<T>, IResultBase
     {
+        protected delegate void CycleAction(ref Utf8JsonReader reader);
+
+        protected (IReadOnlyCollection<string>, IReadOnlyDictionary<string, IReadOnlyCollection<string>>) ReadProperties(
+            ref Utf8JsonReader reader,
+            JsonSerializerOptions options,
+            CycleAction runCycle
+        )
+        {
+            IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
+            IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
+
+            var depth = reader.CurrentDepth + 1;
+            while (reader.Read())
+            {
+                if (reader.CurrentDepth > depth)
+                    continue;
+                if (reader.CurrentDepth < depth)
+                    break;
+
+                runCycle(ref reader);
+                if (reader.HasProperty(nameof(IResultBase.PlainErrors)))
+                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!;
+                else if (reader.HasProperty(nameof(IResultBase.LabeledErrors)))
+                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!;
+            }
+
+            return (plainErrors, labeledErrors);
+        }
+
         protected void WriteErrors(
             Utf8JsonWriter writer,
             T value,

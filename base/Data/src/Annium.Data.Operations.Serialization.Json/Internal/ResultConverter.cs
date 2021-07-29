@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using X = Annium.Data.Operations.IResult;
@@ -16,14 +15,10 @@ namespace Annium.Data.Operations.Serialization.Json.Internal
         {
             var value = Result.New();
 
-            var depth = reader.CurrentDepth;
-            while (reader.Read() && reader.CurrentDepth > depth)
-            {
-                if (reader.HasProperty(nameof(X.PlainErrors)))
-                    value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!);
-                else if (reader.HasProperty(nameof(X.LabeledErrors)))
-                    value.Errors(JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!);
-            }
+            var (plainErrors, labeledErrors) = ReadProperties(ref reader, options, (ref Utf8JsonReader _) => { });
+
+            value.Errors(plainErrors);
+            value.Errors(labeledErrors);
 
             return value;
         }

@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
@@ -16,21 +15,13 @@ namespace Annium.Data.Operations.Serialization.Json.Internal
         )
         {
             var isSuccess = false;
-            IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
-            IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
-
-            var depth = reader.CurrentDepth;
-            while (reader.Read() && reader.CurrentDepth > depth)
+            var (plainErrors,labeledErrors)=ReadProperties(ref reader,options,(ref Utf8JsonReader r) =>
             {
-                if (reader.HasProperty(nameof(X.IsSuccess)))
-                    isSuccess = JsonSerializer.Deserialize<bool>(ref reader, options)!;
-                else if (reader.HasProperty(nameof(X.IsFailure)))
-                    isSuccess = !JsonSerializer.Deserialize<bool>(ref reader, options);
-                else if (reader.HasProperty(nameof(X.PlainErrors)))
-                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!;
-                else if (reader.HasProperty(nameof(X.LabeledErrors)))
-                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!;
-            }
+                if (r.HasProperty(nameof(X.IsSuccess)))
+                    isSuccess = JsonSerializer.Deserialize<bool>(ref r, options);
+                else if (r.HasProperty(nameof(X.IsFailure)))
+                    isSuccess = !JsonSerializer.Deserialize<bool>(ref r, options);
+            });
 
             var value = isSuccess ? Result.Success() : Result.Failure();
             value.Errors(plainErrors);
