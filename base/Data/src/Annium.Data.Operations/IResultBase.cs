@@ -37,6 +37,7 @@ namespace Annium.Data.Operations
     public interface IResultBase
     {
         IReadOnlyCollection<string> PlainErrors { get; }
+        string PlainError { get; }
         IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors { get; }
         bool IsOk { get; }
         bool HasErrors { get; }

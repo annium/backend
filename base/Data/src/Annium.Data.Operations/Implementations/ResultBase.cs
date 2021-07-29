@@ -9,6 +9,7 @@ namespace Annium.Data.Operations.Implementations
         where T : class, IResultBase<T>
     {
         public IReadOnlyCollection<string> PlainErrors => _plainErrors;
+        public string PlainError => _plainErrors.Join("; ");
 
         public IReadOnlyDictionary<string, IReadOnlyCollection<string>> LabeledErrors =>
             _labeledErrors.ToDictionary(pair => pair.Key, pair => pair.Value as IReadOnlyCollection<string>);
