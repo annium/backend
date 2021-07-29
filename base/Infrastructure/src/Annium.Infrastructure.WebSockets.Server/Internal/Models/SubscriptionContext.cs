@@ -76,7 +76,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
             if (!_isInitiated)
                 throw new InvalidOperationException("Can't send message from not initiated subscription");
             if (_cts.IsCancellationRequested)
-                throw new InvalidOperationException("Can't send message from canceled subscription");
+                return;
 
             SendInternal(new SubscriptionMessage<TMessage>(SubscriptionId, message));
         }
