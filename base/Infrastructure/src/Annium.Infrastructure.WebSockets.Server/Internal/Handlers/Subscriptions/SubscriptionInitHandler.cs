@@ -48,7 +48,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             Func<ISubscriptionContext<TInit, TMessage, TState>, CancellationToken, Task<Unit>> next
         )
         {
-            var subscriptionId = ctx.Request.SubscriptionId;
+            var subscriptionId = ctx.Request.Rid;
             this.Log().Trace($"subscription {subscriptionId} - init");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             await using var context = new SubscriptionContext<TInit, TMessage, TState>(

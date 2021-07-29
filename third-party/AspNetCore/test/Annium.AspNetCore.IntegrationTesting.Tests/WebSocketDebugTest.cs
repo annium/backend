@@ -1,13 +1,15 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients;
+using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Data.Operations;
 using Annium.Testing;
 using Xunit;
 
@@ -47,19 +49,19 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             var clientLog = new ConcurrentQueue<string>();
 
             // act
-            var s1 = client.Demo
-                .ListenFirst(new FirstSubscriptionInit { Param = "abc" })
-                .Subscribe(clientLog.Enqueue);
-            var s2 = client.Demo
-                .ListenSecond(new SecondSubscriptionInit { Param = "def" })
-                .Subscribe(clientLog.Enqueue);
+            var cts = new CancellationTokenSource();
+            var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
+            o1.Subscribe(x => { clientLog.Enqueue(x); });
+            Console.WriteLine($"{nameof(DebugSubscription_Works)} - first subscribed");
+            var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
+            o2.Subscribe(x => { clientLog.Enqueue(x); });
+            Console.WriteLine($"{nameof(DebugSubscription_Works)} - second subscribed");
             // wait for init and msg entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for init and msg log entries");
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - dispose subscriptions");
-            s1.Dispose();
-            s2.Dispose();
+            cts.Cancel();
 
             // wait for cancellation entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for cancellation log entries");

@@ -47,16 +47,22 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             await client.ConnectAsync(ct);
 
             this.Log().Debug("Init subscription");
-            var subscription = client.Listen<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct).Subscribe(Log);
-            this.Log().Debug("Subscription initiated");
+            var result = await client.SubscribeAsync<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct);
+            if (result.IsOk)
+            {
+                var subscription = result.Data.Subscribe(Log);
+                this.Log().Debug("Subscription initiated");
 
-            await Task.Delay(3000);
+                await Task.Delay(3000);
 
-            this.Log().Debug("Cancel subscription");
-            subscription.Dispose();
-            this.Log().Debug("Subscription canceled");
+                this.Log().Debug("Cancel subscription");
+                subscription.Dispose();
+                this.Log().Debug("Subscription canceled");
 
-            await Task.Delay(100);
+                await Task.Delay(100);
+            }
+            else
+                this.Log().Error("Subscription failed: {error}", result.PlainError);
 
             await client.DisconnectAsync();
 

@@ -69,6 +69,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
                 ? Result.Status(result.Status, SubscriptionId)
                 : Result.Status(result.Status, Guid.Empty);
             SendInternal(Response.Result(Request.Rid, responseResult.Join(result)));
+            // technical pause before any other messages sent - is needed to let client subscribe to created Observable
+            _executor.Schedule(() => new ValueTask(Task.Delay(50)));
         }
 
         public void Send(TMessage message)

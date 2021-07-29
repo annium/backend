@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
@@ -18,7 +19,7 @@ using Annium.Net.WebSockets;
 namespace Annium.Infrastructure.WebSockets.Client.Internal
 {
     internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
-        where TSocket : ISendingReceivingWebSocket
+        where TSocket : class, ISendingReceivingWebSocket
     {
         public bool IsConnected => Socket.State == WebSocketState.Open;
         public ILogger Logger { get; }
@@ -26,7 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private readonly Serializer _serializer;
         private readonly IClientConfigurationBase _configuration;
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
-        private readonly ConcurrentDictionary<Guid, IDisposable> _subscriptions = new();
+        private readonly ConcurrentDictionary<Guid, IAsyncDisposable> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
@@ -50,12 +51,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 .Subscribe(CompleteResponse);
         }
 
+        // broadcast
         public IObservable<TNotification> Listen<TNotification>()
             where TNotification : NotificationBase
         {
             return _responseObservable.OfType<TNotification>();
         }
 
+        // event
         public void Notify<TEvent>(
             TEvent ev
         )
@@ -64,22 +67,32 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
         }
 
+        // request -> void
         public Task<IStatusResult<OperationStatus>> SendAsync(
             RequestBase request,
             CancellationToken ct = default
         )
         {
-            return FetchInternal<RequestBase, ResultResponse, IStatusResult<OperationStatus>>(request, ct,
-                x => x.Result);
+            return FetchInternal(request, ct);
         }
 
-        public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
+        // request -> response
+        public Task<IStatusResult<OperationStatus, TData>> FetchAsync<TData>(
             RequestBase request,
             CancellationToken ct = default
         )
         {
-            return FetchInternal<RequestBase, ResultResponse<TResponse>, IStatusResult<OperationStatus, TResponse>>(
-                request, ct, x => x.Result);
+            return FetchInternal(request, default(TData)!, ct);
+        }
+
+        // request -> response with default value
+        public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
+            RequestBase request,
+            TResponse defaultValue,
+            CancellationToken ct = default
+        )
+        {
+            return FetchInternal(request, defaultValue, ct);
         }
         //
         // public Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequest, TResponseChunk>(
@@ -181,75 +194,106 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         //     throw new NotImplementedException();
         // }
 
-        public IObservable<TMessage> Listen<TInit, TMessage>(
+        // init subscription
+        public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
             TInit request,
-            CancellationToken ct = default
+            CancellationToken ct
         )
             where TInit : SubscriptionInitRequestBase
-            => Observable.Create<TMessage>(async (observer, observeToken) =>
+        {
+            var type = typeof(TInit).FriendlyName();
+            var subscriptionId = request.Rid;
+            this.Log().Trace($"{type}#{subscriptionId} - start");
+
+            this.Log().Trace($"{type}#{subscriptionId} - create observable");
+            var observable = ObservableInstance.StaticSync<TMessage>(async ctx =>
             {
-                this.Log().Trace($"{typeof(TInit).FriendlyName()} - start");
-                var token = CancellationTokenSource.CreateLinkedTokenSource(observeToken, ct).Token;
-                request.SetId();
-                var subscriptionId = request.SubscriptionId;
+                this.Log().Trace($"{type}#{subscriptionId} - subscribe");
                 var subscription = _responseObservable
                     .OfType<SubscriptionMessage<TMessage>>()
                     .Where(x => x.SubscriptionId == subscriptionId)
                     .SubscribeOn(TaskPoolScheduler.Default)
                     .ObserveOn(TaskPoolScheduler.Default)
                     .Select(x => x.Message)
-                    .Subscribe(observer);
+                    .Subscribe(ctx);
 
-                this.Log().Trace($"{typeof(TInit).FriendlyName()} - init");
-                var response = await FetchInternal<TInit, ResultResponse<Guid>, IStatusResult<OperationStatus, Guid>>(request, token, x => x.Result);
-                if (response.HasErrors)
+                await ctx.Ct;
+
+                ctx.OnCompleted();
+
+                this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
+                return async () =>
                 {
-                    this.Log().Trace($"{typeof(TInit).FriendlyName()} - failed: {response}");
+                    this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
                     subscription.Dispose();
-                    observer.OnError(new WebSocketClientException(response));
-                    return Disposable.Empty;
-                }
 
-                this.Log().Trace($"{typeof(TInit).FriendlyName()} - subscribed, sid {subscriptionId}");
-                _subscriptions.TryAdd(subscriptionId, subscription);
+                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribe on server");
 
-                await token;
+                    await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
+                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
+                };
+            });
 
-                this.Log().Trace($"{typeof(TInit).FriendlyName()} - unsubscribing");
-                return Disposable.Create(() =>
-                {
-                    this.Log().Trace($"{typeof(TInit).FriendlyName()} - dispose subscription");
-                    subscription.Dispose();
-                    if (!_subscriptions.TryRemove(subscriptionId, out _))
-                        return;
+            this.Log().Trace($"{type}#{subscriptionId} - track observable");
+            if (!_subscriptions.TryAdd(subscriptionId, observable))
+                throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
-                    this.Log().Trace($"{typeof(TInit).FriendlyName()} - init unsubscribe on server");
-                    FetchInternal<SubscriptionCancelRequest, ResultResponse, IStatusResult<OperationStatus>>(
-                            SubscriptionCancelRequest.New(subscriptionId),
-                            CancellationToken.None,
-                            x => x.Result
-                        )
-                        .ContinueWith(
-                            _ => this.Log().Trace($"{typeof(TInit).FriendlyName()} - unsubscribed on server"),
-                            CancellationToken.None
-                        );
-                });
-            }).SubscribeOn(TaskPoolScheduler.Default);
+            this.Log().Trace($"{type}#{subscriptionId} - register observable disposal on token cancellation");
+            ct.Register(() => DisposeSubscription(subscriptionId));
+
+            this.Log().Trace($"{type}#{subscriptionId} - init");
+            var response = await FetchInternal(request, Guid.Empty, CancellationToken.None);
+            if (response.IsOk)
+                return Result.Status<OperationStatus, IObservable<TMessage>>(response.Status, observable);
+
+            this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
+            DisposeSubscription(subscriptionId);
+            return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
+        }
+
+        private void DisposeSubscription(Guid subscriptionId)
+        {
+            if (!_subscriptions.TryRemove(subscriptionId, out var subscription))
+                throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
+
+            subscription.DisposeAsync();
+        }
 
         public virtual async ValueTask DisposeAsync()
         {
             this.Log().Trace("start, dispose subscriptions");
-            foreach (var subscription in _subscriptions.Values)
-                subscription.Dispose();
+            await Task.WhenAll(_subscriptions.Values.Select(async x => await x.DisposeAsync()));
             this.Log().Trace("dispose disposable box");
             await _disposable.DisposeAsync();
             this.Log().Trace("done");
         }
 
-        private async Task<TResponseData> FetchInternal<TRequest, TResponse, TResponseData>(
+        private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
             TRequest request,
-            CancellationToken ct,
-            Func<TResponse, TResponseData> getData
+            CancellationToken ct
+        )
+            where TRequest : AbstractRequestBase // because Subscription controls also go here
+        {
+            var (result, response) = await FetchRaw<TRequest, ResultResponse>(request, ct);
+
+            return response?.Result ?? result;
+        }
+
+        private async Task<IStatusResult<OperationStatus, TData>> FetchInternal<TRequest, TData>(
+            TRequest request,
+            TData defaultValue,
+            CancellationToken ct
+        )
+            where TRequest : AbstractRequestBase // because Subscription controls also go here
+        {
+            var (result, response) = await FetchRaw<TRequest, ResultResponse<TData>>(request, ct);
+
+            return response?.Result ?? Result.Status(result.Status, defaultValue).Join(result);
+        }
+
+        private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TRequest, TResponse>(
+            TRequest request,
+            CancellationToken ct
         )
             where TRequest : AbstractRequestBase // because Subscription controls also go here
             where TResponse : ResponseBase
@@ -276,18 +320,43 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             });
 
             _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
-            await SendInternal(request);
-            var response = (TResponse) await tcs.Task;
-            var data = getData(response);
 
-            return data;
+            try
+            {
+                if (!await SendInternal(request))
+                    return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
+
+                var response = (TResponse) await tcs.Task;
+                return (Result.Status(OperationStatus.Ok), response);
+            }
+            catch (OperationCanceledException)
+            {
+                return (Result.Status(OperationStatus.Aborted), null);
+            }
+            catch (TimeoutException)
+            {
+                return (Result.Status(OperationStatus.Timeout).Error("Operation timed out"), null);
+            }
+            catch (Exception e)
+            {
+                return (Result.Status(OperationStatus.UncaughtError).Error(e.Message), null);
+            }
         }
 
-        private async Task SendInternal<T>(T request)
+        private async Task<bool> SendInternal<T>(T request)
             where T : AbstractRequestBase
         {
-            this.Log().Trace($"send request {request.Tid}#{request.Rid}");
-            await Socket.SendWith(request, _serializer, CancellationToken.None);
+            if (IsConnected)
+            {
+                this.Log().Trace($"send request {request.Tid}#{request.Rid}");
+                await Socket.SendWith(request, _serializer, CancellationToken.None);
+
+                return true;
+            }
+
+            this.Log().Trace($"send request {request.Tid}#{request.Rid} - skip, socket is disconnected");
+
+            return false;
         }
 
         private void CompleteResponse(ResponseBase response)

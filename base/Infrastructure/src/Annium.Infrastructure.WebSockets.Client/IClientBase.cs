@@ -17,6 +17,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         IObservable<TNotification> Listen<TNotification>()
             where TNotification : NotificationBase;
 
+        // event
         void Notify<TEvent>(
             TEvent ev
         )
@@ -31,6 +32,13 @@ namespace Annium.Infrastructure.WebSockets.Client
         // request -> response
         Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
             RequestBase request,
+            CancellationToken ct = default
+        );
+
+        // request -> response with default value
+        Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
+            RequestBase request,
+            TResponse defaultValue,
             CancellationToken ct = default
         );
 
@@ -113,9 +121,9 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
 
         // init subscription
-        IObservable<TMessage> Listen<TInit, TMessage>(
+        Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
             TInit request,
-            CancellationToken ct = default
+            CancellationToken ct
         )
             where TInit : SubscriptionInitRequestBase;
     }
