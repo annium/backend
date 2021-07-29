@@ -18,7 +18,7 @@ namespace Annium.Architecture.Http.Profiles
             HttpStatusCode.Forbidden  => OperationStatus.Forbidden,
             HttpStatusCode.NotFound   => OperationStatus.NotFound,
             HttpStatusCode.OK         => OperationStatus.Ok,
-            _                         => OperationStatus.UncaughtException,
+            _                         => OperationStatus.UncaughtError,
         };
     }
 }

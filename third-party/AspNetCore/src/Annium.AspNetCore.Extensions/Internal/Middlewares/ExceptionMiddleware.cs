@@ -60,7 +60,7 @@ namespace Annium.AspNetCore.Extensions.Internal.Middlewares
             catch (Exception e)
             {
                 this.Log().Error(e);
-                var result = Result.Status(OperationStatus.UncaughtException).Error(e.ToString());
+                var result = Result.Status(OperationStatus.UncaughtError).Error(e.ToString());
                 await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
             }
         }

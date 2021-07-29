@@ -7,6 +7,6 @@ namespace Annium.Architecture.Base
         Forbidden,
         NotFound,
         Ok,
-        UncaughtException,
+        UncaughtError,
     }
 }

@@ -36,7 +36,7 @@ namespace Annium.Architecture.Http.Internal.PipeHandlers
             if (status == OperationStatus.Conflict)
                 throw new ConflictException(result);
 
-            if (status == OperationStatus.UncaughtException)
+            if (status == OperationStatus.UncaughtError)
                 throw new ServerException(result);
 
             // if mapping fails - it's critical error

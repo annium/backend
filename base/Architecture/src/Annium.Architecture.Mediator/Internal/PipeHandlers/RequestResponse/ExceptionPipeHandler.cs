@@ -17,7 +17,7 @@ namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse
 
         protected override IStatusResult<OperationStatus, TResponse> GetFailure(Exception exception)
         {
-            return Result.Status(OperationStatus.UncaughtException, default(TResponse)!).Error(exception.Message);
+            return Result.Status(OperationStatus.UncaughtError, default(TResponse)!).Error(exception.Message);
         }
     }
 }
