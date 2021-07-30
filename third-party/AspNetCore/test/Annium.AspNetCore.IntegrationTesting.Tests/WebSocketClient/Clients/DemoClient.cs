@@ -6,7 +6,7 @@ using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Client;
 
-namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients
+namespace Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients
 {
     public class DemoClient
     {
@@ -17,13 +17,38 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients
             _client = client;
         }
 
-        public Task<IStatusResult<OperationStatus, string>> EchoAsync(EchoRequest request) =>
-            _client.FetchAsync<string>(request);
+        public Task<IStatusResult<OperationStatus, string>> EchoAsync(
+            EchoRequest request,
+            CancellationToken ct = default
+        ) => _client.FetchAsync<string>(request, ct);
 
-        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeFirstAsync(FirstSubscriptionInit init, CancellationToken ct) =>
+        public Task<IStatusResult<OperationStatus, string>> EchoAsync(
+            EchoRequest request,
+            string defaultValue,
+            CancellationToken ct = default
+        ) => _client.FetchAsync<string>(request, defaultValue, ct);
+
+
+        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeFirstAsync(
+            FirstSubscriptionInit init,
+            CancellationToken ct
+        ) =>
             _client.SubscribeAsync<FirstSubscriptionInit, string>(init, ct);
 
-        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeSecondAsync(SecondSubscriptionInit init, CancellationToken ct) =>
+        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeFirstAsync(
+            CancellationToken ct
+        ) =>
+            _client.SubscribeAsync<FirstSubscriptionInit, string>(new FirstSubscriptionInit(), ct);
+
+        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeSecondAsync(
+            SecondSubscriptionInit init,
+            CancellationToken ct
+        ) =>
             _client.SubscribeAsync<SecondSubscriptionInit, string>(init, ct);
+
+        public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeSecondAsync(
+            CancellationToken ct
+        ) =>
+            _client.SubscribeAsync<SecondSubscriptionInit, string>(new SecondSubscriptionInit(), ct);
     }
 }

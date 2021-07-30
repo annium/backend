@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Client;
 
-namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients
+namespace Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients
 {
     public class TestServerClient: IAsyncDisposable
     {

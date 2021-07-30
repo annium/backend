@@ -1,10 +1,10 @@
 using System;
 using System.Net.WebSockets;
-using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
+using Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.WebSockets.Client;
 
-namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient
+namespace Annium.AspNetCore.IntegrationTesting.WebSocketClient
 {
     public static class TestServerClientServiceContainerExtensions
     {
