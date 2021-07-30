@@ -114,8 +114,8 @@ namespace Annium.Net.WebSockets
             return Unit.Default;
         });
 
-        private IObservableInstance<SocketMessage> CreateSocketObservable() =>
-            ObservableInstance.StaticSync<SocketMessage>(async ctx =>
+        private IAsyncDisposableObservable<SocketMessage> CreateSocketObservable() =>
+            ObservableExt.StaticSyncInstance<SocketMessage>(async ctx =>
             {
                 this.Log().Trace("register socket tcs completion on observable disposal");
                 await using var ctRegistration = ctx.Ct.Register(() =>

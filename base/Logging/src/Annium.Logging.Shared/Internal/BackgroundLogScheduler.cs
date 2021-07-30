@@ -15,7 +15,7 @@ namespace Annium.Logging.Shared.Internal
         private bool _isDisposed;
         private readonly ChannelReader<LogMessage> _reader;
         private readonly ChannelWriter<LogMessage> _writer;
-        private readonly IObservableInstance<LogMessage> _observable;
+        private readonly IAsyncDisposableObservable<LogMessage> _observable;
         private readonly IDisposable _subscription;
 
         public BackgroundLogScheduler(
@@ -39,7 +39,7 @@ namespace Annium.Logging.Shared.Internal
             });
             _writer = channel.Writer;
             _reader = channel.Reader;
-            _observable = ObservableInstance.StaticSync<LogMessage>(Run);
+            _observable = ObservableExt.StaticSyncInstance<LogMessage>(Run);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
                 .Where(x => x.Count > 0)

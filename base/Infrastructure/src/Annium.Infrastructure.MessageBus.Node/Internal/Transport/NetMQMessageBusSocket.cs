@@ -27,7 +27,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _subscriber.Connect(cfg.Endpoints.SubEndpoint);
             _subscriber.SubscribeToAnyTopic();
 
-            _observable = ObservableInstance.StaticAsync<string>(CreateObservable);
+            _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable);
         }
 
         public IObservable<Unit> Send(string message)

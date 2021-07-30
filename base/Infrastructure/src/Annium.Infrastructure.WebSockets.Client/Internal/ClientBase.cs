@@ -195,9 +195,9 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         // }
 
         // init subscription
-        public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
+        public async Task<IStatusResult<OperationStatus, IAsyncDisposableObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
             TInit request,
-            CancellationToken ct
+            CancellationToken ct = default
         )
             where TInit : SubscriptionInitRequestBase
         {
@@ -206,15 +206,15 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             this.Log().Trace($"{type}#{subscriptionId} - start");
 
             this.Log().Trace($"{type}#{subscriptionId} - init");
-            var response = await FetchInternal(request, Guid.Empty, CancellationToken.None);
+            var response = await FetchInternal(request, Guid.Empty, ct);
             if (response.HasErrors)
             {
                 this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
-                return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
+                return Result.Status(response.Status, ObservableExt.EmptyAsyncDisposable<TMessage>()).Join(response);
             }
 
             this.Log().Trace($"{type}#{subscriptionId} - create observable");
-            var observable = ObservableInstance.StaticSync<TMessage>(async ctx =>
+            var observable = ObservableExt.StaticAsyncInstance<TMessage>(async ctx =>
             {
                 this.Log().Trace($"{type}#{subscriptionId} - subscribe");
                 var subscription = _responseObservable
@@ -232,6 +232,9 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
                 return async () =>
                 {
+                    if (!_subscriptions.TryRemove(subscriptionId, out _))
+                        throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
+
                     this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
                     subscription.Dispose();
 
@@ -246,16 +249,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             if (!_subscriptions.TryAdd(subscriptionId, observable))
                 throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
-            this.Log().Trace($"{type}#{subscriptionId} - register observable disposal on token cancellation");
-            ct.Register(() =>
-            {
-                if (!_subscriptions.TryRemove(subscriptionId, out var subscription))
-                    throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
-
-                subscription.DisposeAsync();
-            });
-
-            return Result.Status<OperationStatus, IObservable<TMessage>>(response.Status, observable);
+            return Result.Status(response.Status, observable);
         }
 
         public virtual async ValueTask DisposeAsync()

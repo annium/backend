@@ -66,7 +66,7 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IObservableInstance<IChangeEvent<T>> CreateObservable() => ObservableInstance.StaticSync<IChangeEvent<T>>(async ctx =>
+        private IAsyncDisposableObservable<IChangeEvent<T>> CreateObservable() => ObservableExt.StaticSyncInstance<IChangeEvent<T>>(async ctx =>
         {
             try
             {

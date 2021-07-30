@@ -9,7 +9,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 {
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {
-        private readonly IObservableInstance<string> _observable;
+        private readonly IAsyncDisposableObservable<string> _observable;
         private readonly ChannelWriter<string> _writer;
         private readonly ChannelReader<string> _reader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
@@ -26,7 +26,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _writer = taskChannel.Writer;
             _reader = taskChannel.Reader;
 
-            _disposable += _observable = ObservableInstance.StaticSync<string>(CreateObservable);
+            _disposable += _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable);
 
             if (cfg.MessageBox is not null)
                 _disposable += _observable.Subscribe(cfg.MessageBox.Add);

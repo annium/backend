@@ -1,11 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 
-namespace Annium.Extensions.Reactive.Internal
+namespace Annium.Extensions.Reactive.Internal.Creation.Instance
 {
-    internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObservableInstance<T>
+    internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IAsyncDisposableObservable<T>
     {
         private readonly Task<Func<Task>> _factoryTask;
         private readonly CancellationTokenSource _cts = new();
@@ -25,7 +24,7 @@ namespace Annium.Extensions.Reactive.Internal
             lock (Lock)
                 Subscribers.Add(observer);
 
-            return Disposable.Create(() =>
+            return Core.Primitives.Disposable.Create(() =>
             {
                 lock (Lock)
                     Subscribers.Remove(observer);

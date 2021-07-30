@@ -1,10 +1,9 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
+using Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Core.Internal;
@@ -49,11 +48,10 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             var clientLog = new ConcurrentQueue<string>();
 
             // act
-            var cts = new CancellationTokenSource();
-            var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
+            var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }).GetData();
             o1.Subscribe(x => { clientLog.Enqueue(x); });
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - first subscribed");
-            var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
+            var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }).GetData();
             o2.Subscribe(x => { clientLog.Enqueue(x); });
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - second subscribed");
             // wait for init and msg entries
@@ -61,7 +59,8 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - dispose subscriptions");
-            cts.Cancel();
+            await o1.DisposeAsync();
+            await o2.DisposeAsync();
 
             // wait for cancellation entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for cancellation log entries");

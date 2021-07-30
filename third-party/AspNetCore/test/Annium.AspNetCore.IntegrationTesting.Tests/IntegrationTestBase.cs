@@ -1,4 +1,4 @@
-using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient;
+using Annium.AspNetCore.IntegrationTesting.WebSocketClient;
 using Annium.AspNetCore.TestServer;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests

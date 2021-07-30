@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using Annium.Core.Primitives;
 
-namespace Annium.Extensions.Reactive.Internal
+namespace Annium.Extensions.Reactive.Internal.Creation.Instance
 {
     internal abstract class ObservableInstanceBase<T>
     {

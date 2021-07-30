@@ -3,7 +3,7 @@
 // using System.Threading.Tasks;
 // using Annium.Core.Primitives;
 //
-// namespace Annium.Extensions.Reactive.Internal
+// namespace Annium.Extensions.Reactive.Internal.Creation.Instance
 // {
 //     internal class DynamicObservableInstance<T> : ObservableInstanceBase<T>, IObservableInstance<T>
 //     {
