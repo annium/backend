@@ -72,16 +72,24 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             }
             catch (Exception e)
             {
-                this.Log().Trace(e.ToString());
+                this.Log().Warn(e.ToString());
                 return default;
             }
         }
 
         private async Task<AbstractResponseBase> ProcessRequest(TState state, AbstractRequestBase request)
         {
-            this.Log().Trace($"Process request {request.Tid}#{request.Rid}");
-            var context = RequestContext.CreateDynamic(request, state);
-            return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
+            try
+            {
+                this.Log().Trace($"Process request {request.Tid}#{request.Rid}");
+                var context = RequestContext.CreateDynamic(request, state);
+                return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
+            }
+            catch (Exception e)
+            {
+                this.Log().Error(e);
+                throw;
+            }
         }
 
         private async Task SendResponse(ISendingWebSocket socket, AbstractResponseBase response)
@@ -101,8 +109,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         private async Task SendInternal(ISendingWebSocket socket, AbstractResponseBase response)
         {
-            this.Log().Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
-            await socket.SendWith(response, _serializer, CancellationToken.None);
+            try
+            {
+                this.Log().Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
+                await socket.SendWith(response, _serializer, CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                this.Log().Error(e);
+                throw;
+            }
         }
     }
 }

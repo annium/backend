@@ -49,6 +49,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 // immediately subscribe to cancellation
                 ct.Register(() => tcs.TrySetResult(new object()));
 
+                // use derived cts for socket subscription
+                var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
                 // start listening to messages and adding them to scheduler
                 this.Log().Trace($"cn {cnId} - init subscription");
                 _cn.Socket
@@ -56,14 +59,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                     .Subscribe(
                         x => executor.TrySchedule(async () =>
                         {
-                            this.Log().Trace($"cn {cnId} - HandleMessage");
+                            this.Log().Trace($"cn {cnId} - handle message");
                             await using var messageScope = _sp.CreateAsyncScope();
                             var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
                             await handler.HandleMessage(_cn.Socket, _state, x);
                         }),
-                        x => tcs.TrySetException(x),
+                        e =>
+                        {
+                            this.Log().Trace($"cn {cnId} - handle error");
+                            cts.Cancel();
+                            this.Log().Error(e);
+                            tcs.TrySetResult(new object());
+                        },
                         () => tcs.TrySetResult(new object()),
-                        ct
+                        cts.Token
                     );
 
                 // process start hook
@@ -81,6 +90,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - start");
                 await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - done");
+            }
+            catch (Exception e)
+            {
+                this.Log().Error(e);
             }
             finally
             {
