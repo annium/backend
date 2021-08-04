@@ -129,7 +129,7 @@ namespace Annium.Net.WebSockets
                     }
                 });
                 this.Log().Trace("spin until keepAlive monitor is ready");
-                await Wait.UntilAsync(() => _keepAliveMonitor is not null!, pollDelay: 5);
+                await Wait.UntilAsync(() => _keepAliveMonitor is not null!, CancellationToken.None, pollDelay: 5);
 
                 while (true)
                 {
