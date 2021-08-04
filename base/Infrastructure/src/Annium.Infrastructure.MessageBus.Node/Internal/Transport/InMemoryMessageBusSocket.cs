@@ -14,9 +14,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
         private readonly ChannelReader<string> _reader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
-        public InMemoryMessageBusSocket(
-            InMemoryConfiguration cfg
-        )
+        public InMemoryMessageBusSocket()
         {
             var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
             {
@@ -27,9 +25,6 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _reader = taskChannel.Reader;
 
             _disposable += _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable);
-
-            if (cfg.AddMessage is not null)
-                _disposable += _observable.Subscribe(cfg.AddMessage);
         }
 
         public IObservable<Unit> Send(string message)
