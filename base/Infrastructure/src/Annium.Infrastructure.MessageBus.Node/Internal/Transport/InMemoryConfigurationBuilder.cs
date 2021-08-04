@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Annium.Infrastructure.MessageBus.Node.Transport;
 using Annium.Serialization.Abstractions;
 
@@ -8,7 +7,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
     internal class InMemoryConfigurationBuilder : IInMemoryConfigurationBuilder
     {
         private ISerializer<string>? _serializer;
-        private IList<string>? _messageBox;
+        private Action<string>? _addMessage;
 
         public IInMemoryConfigurationBuilder WithSerializer(ISerializer<string> serializer)
         {
@@ -17,9 +16,9 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             return this;
         }
 
-        public IInMemoryConfigurationBuilder WithMessageBox(IList<string> messageBox)
+        public IInMemoryConfigurationBuilder WithMessageBox(Action<string> addMessage)
         {
-            _messageBox = messageBox;
+            _addMessage = addMessage;
 
             return this;
         }
@@ -29,7 +28,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             if (_serializer is null)
                 throw new ArgumentException("MessageBus serializer is not configured");
 
-            return new InMemoryConfiguration(_serializer, _messageBox);
+            return new InMemoryConfiguration(_serializer, _addMessage);
         }
     }
 }

@@ -28,8 +28,8 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 
             _disposable += _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable);
 
-            if (cfg.MessageBox is not null)
-                _disposable += _observable.Subscribe(cfg.MessageBox.Add);
+            if (cfg.AddMessage is not null)
+                _disposable += _observable.Subscribe(cfg.AddMessage);
         }
 
         public IObservable<Unit> Send(string message)

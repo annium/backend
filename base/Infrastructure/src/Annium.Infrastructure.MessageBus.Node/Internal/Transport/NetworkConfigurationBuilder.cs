@@ -23,7 +23,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             return this;
         }
 
-        public Configuration Build()
+        public NetworkConfiguration Build()
         {
             if (_endpointsConfiguration is null)
                 throw new ArgumentException("MessageBus endpoints are not configured");
@@ -31,7 +31,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             if (_serializer is null)
                 throw new ArgumentException("MessageBus serializer is not configured");
 
-            return new Configuration(_endpointsConfiguration, _serializer);
+            return new NetworkConfiguration(_endpointsConfiguration, _serializer);
         }
     }
 }

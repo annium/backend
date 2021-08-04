@@ -17,7 +17,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public NetMQMessageBusSocket(
-            Configuration cfg
+            NetworkConfiguration cfg
         )
         {
             _disposable += _publisher = new PublisherSocket();
