@@ -27,6 +27,9 @@ namespace Annium.Core.Primitives
                 await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
         }
 
+        public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
+            => WhileAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
+
         /// <summary>
         ///     Blocks until condition is true or task is canceled.
         /// </summary>
@@ -47,5 +50,8 @@ namespace Annium.Core.Primitives
             while (!condition() && !ct.IsCancellationRequested)
                 await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
         }
+
+        public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
+            => UntilAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
     }
 }
