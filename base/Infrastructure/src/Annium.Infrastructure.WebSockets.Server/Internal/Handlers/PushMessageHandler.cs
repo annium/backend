@@ -54,8 +54,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
                 this.Log().Trace($"cn {request.ConnectionId} - send complete");
             }
             // socket can get closed/aborted in a moment
-            catch (WebSocketException)
+            catch (WebSocketException e)
             {
+                this.Log().Trace($"cn {request.ConnectionId} - send failed due to socket exception: {e}");
             }
             finally
             {
