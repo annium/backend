@@ -7,7 +7,7 @@ namespace Annium.Core.Primitives
     public static class Wait
     {
         /// <summary>
-        ///     Blocks while condition is true or task is canceled.
+        ///     Awaits while condition is true or task is canceled.
         /// </summary>
         /// <param name="condition">
         ///     The condition that will perpetuate the block.
@@ -37,7 +37,7 @@ namespace Annium.Core.Primitives
             => WhileAsync(condition, CancellationToken.None);
 
         /// <summary>
-        ///     Blocks until condition is true or task is canceled.
+        ///     Awaits until condition is true or task is canceled.
         /// </summary>
         /// <param name="condition">
         ///     The condition that will perpetuate the block.
