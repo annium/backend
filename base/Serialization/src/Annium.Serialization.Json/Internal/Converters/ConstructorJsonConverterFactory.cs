@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
@@ -41,6 +42,10 @@ namespace Annium.Serialization.Json.Internal.Converters
 
             // must be object-like
             if (typeof(IEnumerable).IsAssignableFrom(type))
+                return null;
+
+            // must not be Tuple
+            if (typeof(ITuple).IsAssignableFrom(type))
                 return null;
 
             // must not be nullable struct

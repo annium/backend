@@ -20,6 +20,7 @@ namespace Annium.Core.DependencyInjection
 
             options.Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
             options.UseDefaultNamingPolicy();
+            options.IncludeFields = true;
 
             return options;
         }

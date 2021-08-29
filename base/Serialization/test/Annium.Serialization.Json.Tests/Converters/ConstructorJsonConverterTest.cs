@@ -145,6 +145,23 @@ namespace Annium.Serialization.Json.Tests.Converters
             result.At(1).As<InfoMessage>().Message.IsEqual("info");
         }
 
+        [Fact]
+        public void Deserialization_Tuple_Works()
+        {
+            // arrange
+            var serializer = GetSerializer();
+            var x = new[] { ("a", 1), ("b", 2) };
+            var str = serializer.Serialize(x);
+
+            // act
+            var result = serializer.Deserialize<IReadOnlyCollection<ValueTuple<string, int>>>(str);
+
+            // assert
+            result.Has(2);
+            result.At(0).As<ValueTuple<string, int>>().IsEqual(("a", 1));
+            result.At(1).As<ValueTuple<string, int>>().IsEqual(("b", 2));
+        }
+
         public class A : IX
         {
             public int Value { get; }
