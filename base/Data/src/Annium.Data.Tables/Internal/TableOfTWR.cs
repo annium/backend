@@ -17,7 +17,8 @@ namespace Annium.Data.Tables.Internal
         {
             get
             {
-                lock (DataLocker) return _readTable.Count;
+                using var _ = DataLocker.Lock();
+                return _readTable.Count;
             }
         }
 
@@ -25,7 +26,8 @@ namespace Annium.Data.Tables.Internal
         {
             get
             {
-                lock (DataLocker) return _writeTable.ToDictionary();
+                using var _ = DataLocker.Lock();
+                return _writeTable.ToDictionary();
             }
         }
 
@@ -55,56 +57,51 @@ namespace Annium.Data.Tables.Internal
         {
             EnsurePermission(TablePermission.Init);
 
-            IReadOnlyCollection<TR> readView;
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            _writeTable.Clear();
+            _readTable.Clear();
+
+            foreach (var entry in entries.Where(_isActive))
             {
-                _writeTable.Clear();
-                _readTable.Clear();
-
-                foreach (var entry in entries.Where(_isActive))
-                {
-                    var key = _getKey(entry);
-                    _writeTable[key] = entry;
-                    _readTable[key] = _toRead(entry);
-                }
-
-                readView = _readTable.Values.ToArray();
+                var key = _getKey(entry);
+                _writeTable[key] = entry;
+                _readTable[key] = _toRead(entry);
             }
 
-            AddEvent(ChangeEvent.Init(readView));
+            AddEvent(ChangeEvent.Init(_readTable.Values.ToArray()));
         }
 
         public void Set(TW entry)
         {
             var key = _getKey(entry);
 
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            var exists = _writeTable.ContainsKey(key);
+            if (!exists)
             {
-                var exists = _writeTable.ContainsKey(key);
-                if (!exists)
-                {
-                    EnsurePermission(TablePermission.Add);
-                    var newValue = _readTable[key] = _toRead(_writeTable[key] = entry);
-                    AddEvent(ChangeEvent.Add(newValue));
-                }
-                // exists and is inactive
-                else if (!_isActive(_writeTable[key]))
-                {
-                    EnsurePermission(TablePermission.Delete);
-                    _writeTable.Remove(key);
-                    _readTable.Remove(key, out var item);
-                    AddEvent(ChangeEvent.Delete(item!));
-                }
-                // exists and is active
-                else
-                {
-                    EnsurePermission(TablePermission.Update);
-                    var oldValue = _readTable[key];
-                    _update(_writeTable[key], entry);
-                    var newValue = _readTable[key] = _toRead(_writeTable[key]);
-                    if (!newValue.Equals(oldValue))
-                        AddEvent(ChangeEvent.Update(oldValue, newValue));
-                }
+                EnsurePermission(TablePermission.Add);
+                var newValue = _readTable[key] = _toRead(_writeTable[key] = entry);
+                AddEvent(ChangeEvent.Add(newValue));
+            }
+            // exists and is inactive
+            else if (!_isActive(_writeTable[key]))
+            {
+                EnsurePermission(TablePermission.Delete);
+                _writeTable.Remove(key);
+                _readTable.Remove(key, out var item);
+                AddEvent(ChangeEvent.Delete(item!));
+            }
+            // exists and is active
+            else
+            {
+                EnsurePermission(TablePermission.Update);
+                var oldValue = _readTable[key];
+                _update(_writeTable[key], entry);
+                var newValue = _readTable[key] = _toRead(_writeTable[key]);
+                if (!newValue.Equals(oldValue))
+                    AddEvent(ChangeEvent.Update(oldValue, newValue));
             }
 
             Cleanup();
@@ -115,36 +112,38 @@ namespace Annium.Data.Tables.Internal
             EnsurePermission(TablePermission.Delete);
             var key = _getKey(entry);
 
-            lock (DataLocker)
-                if (_writeTable.Remove(key))
-                {
-                    _readTable.Remove(key, out var item);
-                    AddEvent(ChangeEvent.Delete(item!));
-                }
+            using var _ = DataLocker.Lock();
+
+            if (_writeTable.Remove(key))
+            {
+                _readTable.Remove(key, out var item);
+                AddEvent(ChangeEvent.Delete(item!));
+            }
 
             Cleanup();
         }
 
         protected override IReadOnlyCollection<TR> Get()
         {
-            lock (DataLocker)
-                return _readTable.Values.ToArray();
+            using var _ = DataLocker.Lock();
+
+            return _readTable.Values.ToArray();
         }
 
         private void Cleanup()
         {
             var removed = new List<TR>();
 
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            var entries = _writeTable.Values.Except(_writeTable.Values.Where(_isActive)).ToArray();
+
+            foreach (var entry in entries)
             {
-                var entries = _writeTable.Values.Except(_writeTable.Values.Where(_isActive)).ToArray();
-                foreach (var entry in entries)
-                {
-                    var key = _getKey(entry);
-                    _writeTable.Remove(key);
-                    _readTable.Remove(key, out var item);
-                    removed.Add(item!);
-                }
+                var key = _getKey(entry);
+                _writeTable.Remove(key);
+                _readTable.Remove(key, out var item);
+                removed.Add(item!);
             }
 
             AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
@@ -153,9 +152,10 @@ namespace Annium.Data.Tables.Internal
         public override async ValueTask DisposeAsync()
         {
             await base.DisposeAsync();
+            using var _ = DataLocker.Lock();
             _writeTable.Clear();
-            lock (DataLocker)
-                _readTable.Clear();
+
+            _readTable.Clear();
         }
     }
 }

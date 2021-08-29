@@ -32,7 +32,12 @@ namespace Annium.Core.Primitives
         public static Action SetTimeout(Action handle, TimeSpan timeout)
         {
             var execute = true;
-            Task.Delay(timeout).ContinueWith(_ => handle());
+            Task.Delay(timeout).ContinueWith(_ =>
+            {
+                if (execute)
+                    handle();
+            });
+
             return () => execute = false;
         }
 

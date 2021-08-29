@@ -15,7 +15,9 @@ namespace Annium.Data.Tables.Internal
         {
             get
             {
-                lock (DataLocker) return _table.Count;
+                using var _ = DataLocker.Lock();
+
+                return _table.Count;
             }
         }
 
@@ -23,7 +25,9 @@ namespace Annium.Data.Tables.Internal
         {
             get
             {
-                lock (DataLocker) return _table.ToDictionary();
+                using var _ = DataLocker.Lock();
+
+                return _table.ToDictionary();
             }
         }
 
@@ -49,53 +53,48 @@ namespace Annium.Data.Tables.Internal
         {
             EnsurePermission(TablePermission.Init);
 
-            IReadOnlyCollection<T> readView;
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            _table.Clear();
+
+            foreach (var entry in entries.Where(_isActive))
             {
-                _table.Clear();
-
-                foreach (var entry in entries.Where(_isActive))
-                {
-                    var key = _getKey(entry);
-                    _table[key] = entry;
-                }
-
-                readView = _table.Values.ToArray();
+                var key = _getKey(entry);
+                _table[key] = entry;
             }
 
-            AddEvent(ChangeEvent.Init(readView));
+            AddEvent(ChangeEvent.Init(_table.Values.ToArray()));
         }
 
         public void Set(T entry)
         {
             var key = _getKey(entry);
 
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            var exists = _table.ContainsKey(key);
+            if (!exists)
             {
-                var exists = _table.ContainsKey(key);
-                if (!exists)
-                {
-                    EnsurePermission(TablePermission.Add);
-                    var newValue = _table[key] = entry;
-                    AddEvent(ChangeEvent.Add(newValue));
-                }
-                // exists and is inactive
-                else if (!_isActive(_table[key]))
-                {
-                    EnsurePermission(TablePermission.Delete);
-                    _table.Remove(key, out var item);
-                    AddEvent(ChangeEvent.Delete(item!));
-                }
-                // exists and is active
-                else
-                {
-                    EnsurePermission(TablePermission.Update);
-                    var oldValue = _table[key].Copy();
-                    var newValue = _table[key];
-                    _update(newValue, entry);
-                    if (!newValue.Equals(oldValue))
-                        AddEvent(ChangeEvent.Update(oldValue, newValue));
-                }
+                EnsurePermission(TablePermission.Add);
+                var newValue = _table[key] = entry;
+                AddEvent(ChangeEvent.Add(newValue));
+            }
+            // exists and is inactive
+            else if (!_isActive(_table[key]))
+            {
+                EnsurePermission(TablePermission.Delete);
+                _table.Remove(key, out var item);
+                AddEvent(ChangeEvent.Delete(item!));
+            }
+            // exists and is active
+            else
+            {
+                EnsurePermission(TablePermission.Update);
+                var oldValue = _table[key].Copy();
+                var newValue = _table[key];
+                _update(newValue, entry);
+                if (!newValue.Equals(oldValue))
+                    AddEvent(ChangeEvent.Update(oldValue, newValue));
             }
 
             Cleanup();
@@ -106,32 +105,33 @@ namespace Annium.Data.Tables.Internal
             EnsurePermission(TablePermission.Delete);
             var key = _getKey(entry);
 
-            lock (DataLocker)
-                if (_table.Remove(key, out var item))
-                    AddEvent(ChangeEvent.Delete(item!));
+            using var _ = DataLocker.Lock();
+
+            if (_table.Remove(key, out var item))
+                AddEvent(ChangeEvent.Delete(item!));
 
             Cleanup();
         }
 
         protected override IReadOnlyCollection<T> Get()
         {
-            lock (DataLocker)
-                return _table.Values.ToArray();
+            using var _ = DataLocker.Lock();
+
+            return _table.Values.ToArray();
         }
 
         private void Cleanup()
         {
             var removed = new List<T>();
 
-            lock (DataLocker)
+            using var _ = DataLocker.Lock();
+
+            var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
+            foreach (var entry in entries)
             {
-                var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
-                foreach (var entry in entries)
-                {
-                    var key = _getKey(entry);
-                    _table.Remove(key, out var item);
-                    removed.Add(item!);
-                }
+                var key = _getKey(entry);
+                _table.Remove(key, out var item);
+                removed.Add(item!);
             }
 
             AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
@@ -140,8 +140,9 @@ namespace Annium.Data.Tables.Internal
         public override async ValueTask DisposeAsync()
         {
             await base.DisposeAsync();
-            lock (DataLocker)
-                _table.Clear();
+
+            using var _ = DataLocker.Lock();
+            _table.Clear();
         }
     }
 }
