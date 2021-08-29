@@ -11,10 +11,10 @@ namespace Annium.Logging.Shared.Internal
     internal class BackgroundLogScheduler : ILogScheduler, IAsyncDisposable
     {
         public Func<LogMessage, bool> Filter { get; }
-        private int Count => _reader.CanCount ? _reader.Count : -1;
+        private int Count => _messageReader.CanCount ? _messageReader.Count : -1;
         private bool _isDisposed;
-        private readonly ChannelReader<LogMessage> _reader;
-        private readonly ChannelWriter<LogMessage> _writer;
+        private readonly ChannelReader<LogMessage> _messageReader;
+        private readonly ChannelWriter<LogMessage> _messageWriter;
         private readonly IAsyncDisposableObservable<LogMessage> _observable;
         private readonly IDisposable _subscription;
 
@@ -35,10 +35,11 @@ namespace Annium.Logging.Shared.Internal
             var channel = Channel.CreateUnbounded<LogMessage>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleReader = true
+                SingleReader = true,
+                SingleWriter = true
             });
-            _writer = channel.Writer;
-            _reader = channel.Reader;
+            _messageWriter = channel.Writer;
+            _messageReader = channel.Reader;
             _observable = ObservableExt.StaticSyncInstance<LogMessage>(Run);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
@@ -51,8 +52,9 @@ namespace Annium.Logging.Shared.Internal
         {
             EnsureNotDisposed();
 
-            if (!_writer.TryWrite(message))
-                throw new InvalidOperationException("Message must have been written to channel");
+            lock (_messageWriter)
+                if (!_messageWriter.TryWrite(message))
+                    throw new InvalidOperationException("Message must have been written to channel");
         }
 
         private async Task<Func<Task>> Run(ObserverContext<LogMessage> ctx)
@@ -62,7 +64,7 @@ namespace Annium.Logging.Shared.Internal
             {
                 try
                 {
-                    var message = await _reader.ReadAsync(ctx.Ct);
+                    var message = await _messageReader.ReadAsync(ctx.Ct);
                     ctx.OnNext(message);
                 }
                 catch (ChannelClosedException)
@@ -79,7 +81,7 @@ namespace Annium.Logging.Shared.Internal
             this.Trace($"handle {Count} messages left");
             while (true)
             {
-                if (_reader.TryRead(out var message))
+                if (_messageReader.TryRead(out var message))
                     ctx.OnNext(message);
                 else
                     break;
@@ -95,9 +97,10 @@ namespace Annium.Logging.Shared.Internal
             this.Trace("start");
             EnsureNotDisposed();
             Volatile.Write(ref _isDisposed, true);
-            _writer.Complete();
+            lock (_messageWriter)
+                _messageWriter.Complete();
             this.Trace("wait for reader completion");
-            await _reader.Completion;
+            await _messageReader.Completion;
             this.Trace($"wait for {Count} messages(s) to finish");
             await _observable.DisposeAsync();
             _subscription.Dispose();
