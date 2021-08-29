@@ -10,8 +10,8 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {
         private readonly IAsyncDisposableObservable<string> _observable;
-        private readonly ChannelWriter<string> _writer;
-        private readonly ChannelReader<string> _reader;
+        private readonly ChannelWriter<string> _messageWriter;
+        private readonly ChannelReader<string> _messageReader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
         public InMemoryMessageBusSocket()
@@ -19,18 +19,20 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
+                SingleWriter = true,
                 SingleReader = true
             });
-            _writer = taskChannel.Writer;
-            _reader = taskChannel.Reader;
+            _messageWriter = taskChannel.Writer;
+            _messageReader = taskChannel.Reader;
 
             _disposable += _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable);
         }
 
         public IObservable<Unit> Send(string message)
         {
-            if (!_writer.TryWrite(message))
-                throw new InvalidOperationException("Message must have been written");
+            lock (_messageWriter)
+                if (!_messageWriter.TryWrite(message))
+                    throw new InvalidOperationException("Message must have been written");
 
             return Observable.Return(Unit.Default);
         }
@@ -43,7 +45,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             {
                 while (!ctx.Ct.IsCancellationRequested)
                 {
-                    var message = await _reader.ReadAsync(ctx.Ct);
+                    var message = await _messageReader.ReadAsync(ctx.Ct);
 
                     ctx.OnNext(message);
                 }
