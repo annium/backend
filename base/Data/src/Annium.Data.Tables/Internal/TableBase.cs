@@ -39,11 +39,10 @@ namespace Annium.Data.Tables.Internal
 
         public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer)
         {
-            var initEvent = ChangeEvent.Init(Get());
-            var subscription = _observable.Subscribe(observer);
-            observer.OnNext(initEvent);
+            var init = ChangeEvent.Init(Get());
+            observer.OnNext(init);
 
-            return subscription;
+            return _observable.Subscribe(observer);
         }
 
         protected void AddEvents(IReadOnlyCollection<IChangeEvent<T>> events)
