@@ -30,7 +30,8 @@ namespace Annium.Extensions.Execution.Internal
             var taskChannel = Channel.CreateUnbounded<Delegate>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleReader = true
+                SingleReader = true,
+                SingleWriter = true
             });
             _taskWriter = taskChannel.Writer;
             _taskReader = taskChannel.Reader;
@@ -116,8 +117,9 @@ namespace Annium.Extensions.Execution.Internal
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void ScheduleTaskCore(Delegate task)
         {
-            if (!_taskWriter.TryWrite(task))
-                throw new InvalidOperationException("Task must have been scheduled");
+            lock (_taskWriter)
+                if (!_taskWriter.TryWrite(task))
+                    throw new InvalidOperationException("Task must have been scheduled");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -137,7 +139,8 @@ namespace Annium.Extensions.Execution.Internal
             this.Trace("start");
             Volatile.Write(ref _isAvailable, 0);
             _cts.Cancel();
-            _taskWriter.Complete();
+            lock (_taskWriter)
+                _taskWriter.Complete();
             this.Trace("done");
         }
 
