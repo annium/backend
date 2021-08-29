@@ -49,13 +49,13 @@ namespace Annium.Data.Tables.Internal
         {
             foreach (var @event in events)
                 if (!_eventWriter.TryWrite(@event))
-                    throw new InvalidOperationException("Event must have been send");
+                    throw new InvalidOperationException("Event must have been sent.");
         }
 
         protected void AddEvent(IChangeEvent<T> @event)
         {
             if (!_eventWriter.TryWrite(@event))
-                throw new InvalidOperationException("Event must have been send");
+                throw new InvalidOperationException("Event must have been sent.");
         }
 
         protected void EnsurePermission(TablePermission permission)
