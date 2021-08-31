@@ -8,15 +8,18 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
     internal class BulkRegistrationBuilder : IBulkRegistrationBuilderBase
     {
         private readonly List<Type> _types;
+        private readonly IServiceContainer _container;
         private readonly Registrar _registrar;
         private readonly RegistrationsCollection _registrations = new();
 
         public BulkRegistrationBuilder(
+            IServiceContainer container,
             IEnumerable<Type> types,
             Registrar registrar
         )
         {
             _types = types.ToList();
+            _container = container;
             _registrar = registrar;
         }
 
@@ -54,15 +57,17 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IBulkRegistrationBuilderTarget AsKeyedFactory<TKey>(Type serviceType, Func<Type, TKey> getKey) where TKey : notnull =>
             WithRegistration(type => new TypeKeyedFactoryRegistration(serviceType, type, typeof(TKey), getKey(type)));
 
-        public void In(ServiceLifetime lifetime)
+        public IServiceContainer In(ServiceLifetime lifetime)
         {
             _registrations.AddRange(_types.Select(x => new TypeRegistration(x, x)));
             _registrar.Register(_registrations, lifetime);
+
+            return _container;
         }
 
-        public void Scoped() => In(ServiceLifetime.Scoped);
-        public void Singleton() => In(ServiceLifetime.Singleton);
-        public void Transient() => In(ServiceLifetime.Transient);
+        public IServiceContainer Scoped() => In(ServiceLifetime.Scoped);
+        public IServiceContainer Singleton() => In(ServiceLifetime.Singleton);
+        public IServiceContainer Transient() => In(ServiceLifetime.Transient);
 
         private IBulkRegistrationBuilderTarget WithRegistrations(Func<Type, IEnumerable<IRegistration>> createRegistrations)
         {

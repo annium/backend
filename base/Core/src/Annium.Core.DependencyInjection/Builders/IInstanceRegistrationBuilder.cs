@@ -13,6 +13,6 @@ namespace Annium.Core.DependencyInjection
         IInstanceRegistrationBuilderBase AsFactory(Type serviceType);
         IInstanceRegistrationBuilderBase AsKeyedSelfFactory<TKey>(TKey key) where TKey : notnull;
         IInstanceRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull;
-        public void Singleton();
+        public IServiceContainer Singleton();
     }
 }

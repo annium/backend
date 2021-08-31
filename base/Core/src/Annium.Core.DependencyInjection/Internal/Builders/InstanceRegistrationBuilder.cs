@@ -7,17 +7,20 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
 {
     internal class InstanceRegistrationBuilder : IInstanceRegistrationBuilderBase
     {
+        private readonly IServiceContainer _container;
         private readonly Type _type;
         private readonly object _instance;
         private readonly Registrar _registrar;
         private readonly RegistrationsCollection _registrations = new();
 
         public InstanceRegistrationBuilder(
+            IServiceContainer container,
             Type type,
             object instance,
             Registrar registrar
         )
         {
+            _container = container;
             _type = type;
             _instance = instance;
             _registrar = registrar;
@@ -50,7 +53,12 @@ namespace Annium.Core.DependencyInjection.Internal.Builders
         public IInstanceRegistrationBuilderBase AsKeyedFactory<TKey>(Type serviceType, TKey key) where TKey : notnull =>
             WithRegistration(new InstanceKeyedFactoryRegistration(serviceType, _instance, typeof(TKey), key));
 
-        public void Singleton() => _registrar.Register(_registrations, ServiceLifetime.Singleton);
+        public IServiceContainer Singleton()
+        {
+            _registrar.Register(_registrations, ServiceLifetime.Singleton);
+
+            return _container;
+        }
 
         private IInstanceRegistrationBuilderBase WithRegistrations(IEnumerable<IRegistration> registrations)
         {

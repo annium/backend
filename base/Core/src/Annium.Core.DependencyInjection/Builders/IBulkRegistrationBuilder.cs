@@ -22,9 +22,9 @@ namespace Annium.Core.DependencyInjection
 
     public interface IBulkRegistrationBuilderLifetime
     {
-        void In(ServiceLifetime lifetime);
-        void Scoped();
-        void Singleton();
-        void Transient();
+        IServiceContainer In(ServiceLifetime lifetime);
+        IServiceContainer Scoped();
+        IServiceContainer Singleton();
+        IServiceContainer Transient();
     }
 }
