@@ -7,6 +7,8 @@ namespace Annium.Core.DependencyInjection
         IServiceProviderBuilder UseServicePack<TServicePack>()
             where TServicePack : ServicePackBase, new();
 
+        IServiceProviderBuilder UseServicePack(ServicePackBase servicePack);
+
         ServiceProvider Build();
     }
 }

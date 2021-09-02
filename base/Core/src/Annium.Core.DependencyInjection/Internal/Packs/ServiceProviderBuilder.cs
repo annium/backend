@@ -32,6 +32,13 @@ namespace Annium.Core.DependencyInjection.Internal.Packs
             return this;
         }
 
+        public IServiceProviderBuilder UseServicePack(ServicePackBase servicePack)
+        {
+            _packs.Add(servicePack);
+
+            return this;
+        }
+
         public ServiceProvider Build()
         {
             if (_isAlreadyBuilt)
