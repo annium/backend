@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Threading
 {
     public interface IAwaiter<T> : ICriticalNotifyCompletion
     {

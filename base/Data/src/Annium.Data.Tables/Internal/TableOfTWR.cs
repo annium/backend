@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Annium.Core.Mapper;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Collections.Generic;
 using static Annium.Data.Tables.Internal.TableHelper;
 
 namespace Annium.Data.Tables.Internal

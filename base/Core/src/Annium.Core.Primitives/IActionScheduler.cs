@@ -1,7 +1,7 @@
 using System;
 using NodaTime;
 
-namespace Annium.Core.Runtime.Time
+namespace Annium.Core.Primitives
 {
     public interface IActionScheduler
     {

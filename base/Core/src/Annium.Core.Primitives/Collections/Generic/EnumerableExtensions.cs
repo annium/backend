@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Collections.Generic
 {
     public static class EnumerableExtensions
     {

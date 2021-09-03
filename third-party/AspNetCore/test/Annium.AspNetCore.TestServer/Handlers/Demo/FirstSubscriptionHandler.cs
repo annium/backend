@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
-using Annium.Core.Primitives;
+using Annium.Core.Primitives.Threading;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;

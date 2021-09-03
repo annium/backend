@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using Annium.Core.Primitives;
-using Annium.Core.Runtime.Time;
 using Annium.Diagnostics.Debug;
 using Annium.Logging.Abstractions;
 

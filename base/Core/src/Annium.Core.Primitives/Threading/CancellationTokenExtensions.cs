@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Threading;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Threading
 {
     public static class CancellationTokenExtensions
     {

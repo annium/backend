@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using Annium.Core.Runtime.Time;
+using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.Collections.Generic

@@ -4,6 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Net;
 
 namespace Annium.Core.Internal.Internal
 {

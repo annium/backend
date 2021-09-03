@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Net
 {
     // ReSharper disable once InconsistentNaming
     public static class IPEndPointExt

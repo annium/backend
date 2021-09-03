@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
-using Annium.Core.Runtime.Time;
+using Annium.Core.Primitives.Threading.Tasks;
 using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal

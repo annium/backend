@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;

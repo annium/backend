@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Annium.Core.Primitives.IO;
 using Annium.Testing;
 using Xunit;
 

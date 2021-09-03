@@ -1,4 +1,4 @@
-using Annium.Core.Runtime.Time;
+using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 

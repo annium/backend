@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Threading.Tasks
 {
     public static class AwaitableExtensions
     {

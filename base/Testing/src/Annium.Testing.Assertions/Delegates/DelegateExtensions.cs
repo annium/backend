@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Threading.Tasks;
 
 namespace Annium.Testing
 {

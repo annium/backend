@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Extensions.Execution;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Internal;

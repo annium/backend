@@ -1,6 +1,6 @@
 using System.Reflection;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.Reflection
 {
     public static class AssemblyNameExtensions
     {

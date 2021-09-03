@@ -1,5 +1,5 @@
 using System;
-using Annium.Core.Runtime.Time;
+using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.Core.Runtime.Internal.Time

@@ -11,4 +11,7 @@
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="NodaTime" Version="3.0.5" />
+    </ItemGroup>
 </Project>

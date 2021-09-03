@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Reflection;
 
 namespace Demo.Core.Cli
 {

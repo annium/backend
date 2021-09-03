@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives.IO
 {
     public static class FileInfoExtensions
     {
