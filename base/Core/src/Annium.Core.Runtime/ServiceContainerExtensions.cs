@@ -33,6 +33,7 @@ namespace Annium.Core.DependencyInjection
         public static IServiceContainer AddTimeProvider(this IServiceContainer container)
         {
             container.Add<TimeProvider>().AsInterfaces().Singleton();
+            container.Add<ActionScheduler>().AsInterfaces().Singleton();
 
             return container;
         }
@@ -40,6 +41,7 @@ namespace Annium.Core.DependencyInjection
         public static IServiceContainer AddTestTimeProvider(this IServiceContainer container)
         {
             container.Add<TestTimeProvider>().AsInterfaces().Singleton();
+            container.Add<TestActionScheduler>().AsInterfaces().Singleton();
 
             return container;
         }
