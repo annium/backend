@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using NodaTime;
 
-namespace Annium.Extensions.Jobs
+namespace Annium.Extensions.Jobs.Internal
 {
     internal class IntervalResolver : IIntervalResolver
     {

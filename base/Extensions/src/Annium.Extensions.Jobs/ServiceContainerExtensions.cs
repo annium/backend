@@ -1,4 +1,5 @@
 using Annium.Extensions.Jobs;
+using Annium.Extensions.Jobs.Internal;
 
 namespace Annium.Core.DependencyInjection
 {

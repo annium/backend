@@ -7,7 +7,7 @@ using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using NodaTime;
 
-namespace Annium.Extensions.Jobs
+namespace Annium.Extensions.Jobs.Internal
 {
     internal class Scheduler : IScheduler, IDisposable
     {
