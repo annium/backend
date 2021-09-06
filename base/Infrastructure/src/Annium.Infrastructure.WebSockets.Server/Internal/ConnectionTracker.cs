@@ -31,7 +31,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             _lifetime.Stopping.Register(TryStop);
         }
 
-        public Task<Connection> Track(WebSocket socket)
+        public Connection Track(WebSocket socket)
         {
             EnsureNotDisposing();
 
@@ -44,7 +44,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 _connections[cn.Id] = new ConnectionRef(cn, Logger);
 
             this.Log().Trace($"connection {cn.Id} - done");
-            return Task.FromResult(cn);
+            return cn;
         }
 
         public bool TryGet(Guid id, out ICacheReference<Connection> cn)

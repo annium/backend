@@ -37,7 +37,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public async Task HandleAsync(WebSocket socket)
         {
-            await using var cn = await _connectionTracker.Track(socket);
+            await using var cn = _connectionTracker.Track(socket);
             this.Log().Trace($"Start for connection {cn.GetId()}");
             await using var scope = _sp.CreateAsyncScope();
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
