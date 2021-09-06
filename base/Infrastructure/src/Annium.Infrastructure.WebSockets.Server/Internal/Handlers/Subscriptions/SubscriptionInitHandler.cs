@@ -69,7 +69,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             });
 
             // run subscription
-            await next(context, cts.Token);
+            try
+            {
+                await next(context, cts.Token);
+            }
+            catch (Exception e)
+            {
+                this.Log().Error(e);
+            }
 
             return Response.Void<TMessage>();
         }
