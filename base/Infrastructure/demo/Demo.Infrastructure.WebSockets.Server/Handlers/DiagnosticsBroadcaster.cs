@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
@@ -10,17 +11,17 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers
 {
     internal class DiagnosticsBroadcaster : IBroadcaster<DiagnosticsNotification>
     {
-        public async Task Run(IBroadcastContext<DiagnosticsNotification> context)
+        public async Task Run(IBroadcastContext<DiagnosticsNotification> ctx, CancellationToken ct)
         {
-            while (!context.Token.IsCancellationRequested)
+            while (!ct.IsCancellationRequested)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
                 using var process = Process.GetCurrentProcess();
-                context.Send(new DiagnosticsNotification
+                ctx.Send(new DiagnosticsNotification
                 {
                     StartTime = process.StartTime,
-                    Cpu = (long) Math.Floor(process.TotalProcessorTime.TotalMilliseconds),
+                    Cpu = (long)Math.Floor(process.TotalProcessorTime.TotalMilliseconds),
                     Memory = process.WorkingSet64.Bytes().Humanize("#.#"),
                 });
             }

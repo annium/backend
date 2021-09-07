@@ -21,9 +21,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
 
         public Task Run(Action<object> send, CancellationToken ct)
         {
-            var ctx = new BroadcastContext<TMessage>(send, ct);
+            var ctx = new BroadcastContext<TMessage>(send);
 
-            return _broadcaster.Run(ctx);
+            return _broadcaster.Run(ctx, ct);
         }
     }
 
