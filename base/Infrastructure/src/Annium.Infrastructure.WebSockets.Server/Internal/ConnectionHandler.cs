@@ -42,6 +42,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             await using var scope = _sp.CreateAsyncScope();
             var executor = Executor.Background.Parallel<ConnectionHandler<TState>>();
             var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
+            var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator<TState>>();
             try
             {
                 var tcs = new TaskCompletionSource<object>();
@@ -81,6 +82,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 this.Log().Trace($"cn {cnId} - handle lifecycle start - done");
 
                 // execute run hook
+                var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
                 this.Log().Trace($"cn {cnId} - push handlers start - start");
                 this.Log().Trace($"cn {cnId} - push handlers start - done");
 
@@ -90,7 +92,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
                 // wait until connection complete
                 this.Log().Trace($"cn {cnId} - wait until connection complete");
-                await Task.WhenAll(tcs.Task);
+                await Task.WhenAll(tcs.Task, pusherTask);
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - start");
                 await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - done");

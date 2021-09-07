@@ -49,6 +49,7 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands
             this.Log().Debug($"Connected to {cfg.Server}");
 
             using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Log().Debug($"<<< diagnostics: {x}"));
+            using var __ = client.Listen<SessionTimeNotification>().Subscribe(x => this.Log().Debug($"<<< session: {x}"));
 
             await ct;
             this.Log().Debug("Disconnecting");

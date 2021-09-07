@@ -21,14 +21,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         where TState : ConnectionStateBase
     {
         public TInit Request { get; }
-        public TState State => _state;
+        public TState State { get; }
         public Guid ConnectionId { get; }
         public Guid SubscriptionId { get; }
         public ILogger Logger { get; }
         private readonly CancellationTokenSource _cts;
         private readonly IMediator _mediator;
         private readonly IServiceProvider _sp;
-        private readonly TState _state;
         private bool _isInitiated;
         private Action _handleInit = () => { };
         private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>();
@@ -44,13 +43,13 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         )
         {
             Request = request;
+            State = state;
             ConnectionId = state.ConnectionId;
             SubscriptionId = subscriptionId;
             _cts = cts;
             _mediator = mediator;
             Logger = logger;
             _sp = sp;
-            _state = state;
             _executor.Start();
         }
 
@@ -117,7 +116,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
         }
 
         private void SendInternal<T>(T msg) =>
-            _executor.Schedule(() => _mediator.SendAsync<Unit>(_sp, PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
+            _executor.Schedule(() => _mediator.SendAsync<Unit>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None));
     }
 
     internal interface ISubscriptionContext : IAsyncDisposable

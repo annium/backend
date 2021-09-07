@@ -44,8 +44,9 @@ namespace Annium.Core.DependencyInjection
             container.Add<ConnectionTracker>().AsSelf().Singleton();
             container.Add<BroadcastCoordinator>().AsSelf().Singleton();
             container.Add<ConnectionHandlerFactory<TState>>().AsSelf().Singleton();
-            container.Add(typeof(MessageHandler<>)).AsSelf().Transient();
             container.Add<LifeCycleCoordinator<TState>>().AsSelf().Scoped();
+            container.Add(typeof(MessageHandler<>)).AsSelf().Transient();
+            container.Add<PusherCoordinator<TState>>().AsSelf().Singleton();
             container.Add<Serializer>().AsSelf().Singleton();
 
             // internal - handlers
@@ -57,6 +58,7 @@ namespace Annium.Core.DependencyInjection
 
             // handlers
             container.AddBroadcasters();
+            container.AddPushers<TState>();
 
             // models
             container.AddValueLoaders<TState>();
@@ -79,7 +81,24 @@ namespace Annium.Core.DependencyInjection
             }
         }
 
+        private static void AddPushers<TState>(this IServiceContainer container)
+            where TState : ConnectionStateBase
+        {
+            var types = container.GetTypeManager().GetImplementations(typeof(IPusher<,>));
+            foreach (var type in types)
+            {
+                var messageType = type.GetInterfaces()
+                    .Single(x => x.Name == typeof(IPusher<,>).Name)
+                    .GetGenericArguments()[0];
+                container.Add(type).AsInterfaces().Singleton();
+                container.Add(typeof(PusherRunner<,>).MakeGenericType(messageType, typeof(TState)))
+                    .As(typeof(IPusherRunner<TState>))
+                    .Singleton();
+            }
+        }
+
         private static void AddValueLoaders<TState>(this IServiceContainer container)
+            where TState : ConnectionStateBase
         {
             var loaderInterfaces = new HashSet<Type>();
 
