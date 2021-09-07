@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
@@ -12,10 +10,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         where TState : ConnectionStateBase
     {
         public ILogger Logger { get; }
-        private readonly IEnumerable<ILifeCycleHandler<TState>> _handlers;
+        private readonly IEnumerable<LifeCycleHandlerBase<TState>> _handlers;
 
         public LifeCycleCoordinator(
-            IEnumerable<ILifeCycleHandler<TState>> handlers,
+            IEnumerable<LifeCycleHandlerBase<TState>> handlers,
             ILogger<LifeCycleCoordinator<TState>> logger
         )
         {
@@ -23,24 +21,20 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             Logger = logger;
         }
 
-        public Task HandleStartAsync(TState state)
+        public async Task StartAsync(TState state)
         {
             this.Log().Trace("start");
 
-            return HandleAsync(state, (x, s) => x.HandleStartAsync(s));
+            foreach (var handler in _handlers)
+                await handler.StartAsync(state);
         }
 
-        public Task HandleEndAsync(TState state)
+        public async Task EndAsync(TState state)
         {
             this.Log().Trace("start");
 
-            return HandleAsync(state, (x, s) => x.HandleEndAsync(s));
-        }
-
-        private async Task HandleAsync(TState state, Func<ILifeCycleHandler<TState>, TState, Task> handleState)
-        {
-            foreach (var handler in _handlers.OrderBy(x => x.Order))
-                await handleState(handler, state);
+            foreach (var handler in _handlers)
+                await handler.EndAsync(state);
         }
     }
 }

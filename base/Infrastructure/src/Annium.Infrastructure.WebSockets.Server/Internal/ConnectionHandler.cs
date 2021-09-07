@@ -75,10 +75,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                         cts.Token
                     );
 
-                // process start hook
+                // execute start hook
                 this.Log().Trace($"cn {cnId} - handle lifecycle start - start");
-                await lifeCycleCoordinator.HandleStartAsync(_state);
+                await lifeCycleCoordinator.StartAsync(_state);
                 this.Log().Trace($"cn {cnId} - handle lifecycle start - done");
+
+                // execute run hook
+                this.Log().Trace($"cn {cnId} - push handlers start - start");
+                this.Log().Trace($"cn {cnId} - push handlers start - done");
 
                 // start scheduler to process backlog and run upcoming work immediately
                 this.Log().Trace($"cn {cnId} - start executor");
@@ -86,7 +90,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
                 // wait until connection complete
                 this.Log().Trace($"cn {cnId} - wait until connection complete");
-                await tcs.Task;
+                await Task.WhenAll(tcs.Task);
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - start");
                 await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
                 this.Log().Trace($"cn {cnId} - cleanup connection-bound stores - done");
@@ -102,9 +106,9 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 await executor.DisposeAsync();
                 this.Log().Trace($"cn {cnId} - dispose executor - done");
 
-                // process end hook
+                // execute end hook
                 this.Log().Trace($"cn {cnId} - handle lifecycle end - start");
-                await lifeCycleCoordinator.HandleEndAsync(_state);
+                await lifeCycleCoordinator.EndAsync(_state);
                 this.Log().Trace($"cn {cnId} - handle lifecycle end - done");
             }
         }

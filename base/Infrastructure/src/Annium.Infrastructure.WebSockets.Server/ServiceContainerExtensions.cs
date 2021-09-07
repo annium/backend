@@ -51,8 +51,8 @@ namespace Annium.Core.DependencyInjection
             // internal - handlers
             container.Add<SubscriptionContextStore>().AsSelf().AsInterfaces().Singleton();
             container.AddAll()
-                .AssignableTo<ILifeCycleHandler<TState>>()
-                .AsInterfaces()
+                .AssignableTo<LifeCycleHandlerBase<TState>>()
+                .As<LifeCycleHandlerBase<TState>>()
                 .Scoped();
 
             // handlers
