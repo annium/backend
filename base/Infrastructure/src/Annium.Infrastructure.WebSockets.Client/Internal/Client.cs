@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 
@@ -32,8 +33,13 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             Socket.ConnectionRestored += () => ConnectionRestored.Invoke();
         }
 
-        public Task ConnectAsync(CancellationToken ct = default) =>
-            Socket.ConnectAsync(_configuration.Uri, ct);
+        public async Task ConnectAsync(CancellationToken ct = default)
+        {
+            var readinessTcs = new TaskCompletionSource<object?>();
+            using var readinessSubscription = Listen<ConnectionReadyNotification>()
+                .Subscribe(_ => readinessTcs.SetResult(null));
+            await Task.WhenAll(Socket.ConnectAsync(_configuration.Uri, ct), readinessTcs.Task);
+        }
 
         public Task DisconnectAsync() =>
             Socket.DisconnectAsync();

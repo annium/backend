@@ -6,11 +6,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal
 {
-    internal class BroadcastCoordinator : IAsyncDisposable
+    internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
     {
+        public ILogger Logger { get; }
         private readonly ConnectionTracker _connectionTracker;
         private readonly IEnumerable<IBroadcasterRunner> _runners;
         private readonly Serializer _serializer;
@@ -20,9 +22,11 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         public BroadcastCoordinator(
             ConnectionTracker connectionTracker,
             IEnumerable<IBroadcasterRunner> runners,
-            Serializer serializer
+            Serializer serializer,
+            ILogger<BroadcastCoordinator> logger
         )
         {
+            Logger = logger;
             _connectionTracker = connectionTracker;
             _runners = runners;
             _serializer = serializer;
@@ -31,15 +35,34 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
 
         public void Start()
         {
-            _runnersTask = Task.WhenAll(_runners.Select(
-                x => x.Run(Broadcast, _lifetimeCts.Token)
-            ));
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await (_runnersTask = Task.WhenAll(_runners.Select(
+                        x => x.Run(Broadcast, _lifetimeCts.Token)
+                    )));
+                }
+                catch (Exception e)
+                {
+                    if (e is not TaskCanceledException)
+                        this.Log().Error(e);
+                }
+            });
         }
 
         public async ValueTask DisposeAsync()
         {
             _lifetimeCts.Cancel();
-            await _runnersTask;
+            try
+            {
+                await _runnersTask;
+            }
+            catch (Exception e)
+            {
+                if (e is not TaskCanceledException)
+                    this.Log().Error(e);
+            }
         }
 
         private void Broadcast(object message)

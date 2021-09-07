@@ -5,7 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Extensions.Execution;
+using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
 
@@ -18,6 +20,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
         private readonly IServiceProvider _sp;
         private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
         private readonly Connection _cn;
+        private readonly Serializer _serializer;
         private readonly TState _state;
 
         public ConnectionHandler(
@@ -25,12 +28,14 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             Func<Guid, TState> stateFactory,
             IEnumerable<IConnectionBoundStore> connectionBoundStores,
             Connection cn,
+            Serializer serializer,
             ILogger<ConnectionHandler<TState>> logger
         )
         {
             _sp = sp;
             _connectionBoundStores = connectionBoundStores;
             _cn = cn;
+            _serializer = serializer;
             Logger = logger;
             _state = stateFactory(cn.Id);
         }
@@ -80,6 +85,10 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
                 this.Log().Trace($"cn {cnId} - handle lifecycle start - start");
                 await lifeCycleCoordinator.StartAsync(_state);
                 this.Log().Trace($"cn {cnId} - handle lifecycle start - done");
+
+                // notify client, that connection is ready
+                this.Log().Trace($"cn {cnId} - notify connection ready");
+                _cn.Socket.SendWith(new ConnectionReadyNotification(), _serializer, cts.Token).Subscribe();
 
                 // execute run hook
                 var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
