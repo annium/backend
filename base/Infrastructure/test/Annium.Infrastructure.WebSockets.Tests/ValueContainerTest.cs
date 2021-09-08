@@ -16,7 +16,7 @@ namespace Annium.Infrastructure.WebSockets.Tests
             var state = GetState();
 
             // assert
-            ((Action) (() =>
+            ((Action)(() =>
             {
                 var _ = state.A.Value;
             })).Throws<InvalidOperationException>();
@@ -29,7 +29,7 @@ namespace Annium.Infrastructure.WebSockets.Tests
             var state = GetState();
 
             // assert
-            ((Action) (() => { state.A.Set(5); })).Throws<InvalidOperationException>();
+            ((Action)(() => { state.A.Set(5); })).Throws<InvalidOperationException>();
         }
 
         [Fact]

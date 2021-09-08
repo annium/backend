@@ -13,7 +13,9 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public event Func<Task> ConnectionLost = () => Task.CompletedTask;
         public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
         private readonly IClientConfiguration _configuration;
+        private readonly DisposableBox _disposable = Disposable.Box();
         private bool _isDisposed;
+        private TaskCompletionSource<object?> _connectionTcs = new();
 
         public Client(
             ITimeProvider timeProvider,
@@ -30,15 +32,25 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         {
             _configuration = configuration;
             Socket.ConnectionLost += () => ConnectionLost.Invoke();
-            Socket.ConnectionRestored += () => ConnectionRestored.Invoke();
+            Socket.ConnectionRestored += async () =>
+            {
+                this.Log().Trace("wait for ConnectionReadyNotification");
+                await WaitConnectionReadyAsync(CancellationToken.None);
+                this.Log().Trace("invoke ConnectionRestored");
+                await ConnectionRestored.Invoke();
+                this.Log().Trace("done ConnectionRestored");
+            };
+            _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
         }
 
         public async Task ConnectAsync(CancellationToken ct = default)
         {
-            var readinessTcs = new TaskCompletionSource<object?>();
-            using var readinessSubscription = Listen<ConnectionReadyNotification>()
-                .Subscribe(_ => readinessTcs.SetResult(null));
-            await Task.WhenAll(Socket.ConnectAsync(_configuration.Uri, ct), readinessTcs.Task);
+            this.Log().Trace("start");
+            await Task.WhenAll(
+                WaitConnectionReadyAsync(ct),
+                Socket.ConnectAsync(_configuration.Uri, ct)
+            );
+            this.Log().Trace("done");
         }
 
         public Task DisconnectAsync() =>
@@ -54,6 +66,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             }
 
             this.Log().Trace("start");
+            _disposable.Dispose();
+            this.Log().Trace("dispose base");
             await base.DisposeAsync();
             this.Log().Trace("disconnect socket");
             await Socket.DisconnectAsync();
@@ -62,6 +76,27 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             this.Log().Trace("done");
 
             _isDisposed = true;
+        }
+
+        private void HandleConnectionReady()
+        {
+            _connectionTcs.SetResult(null);
+            _connectionTcs = new();
+        }
+
+        private async Task WaitConnectionReadyAsync(CancellationToken ct)
+        {
+            this.Log().Trace("start");
+
+            try
+            {
+                await Task.Run(() => _connectionTcs.Task, ct);
+            }
+            catch (OperationCanceledException)
+            {
+            }
+
+            this.Log().Trace("done");
         }
     }
 }
