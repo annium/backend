@@ -2,6 +2,7 @@ using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using NetMQ;
@@ -13,6 +14,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
     {
         private readonly PublisherSocket _publisher;
         private readonly SubscriberSocket _subscriber;
+        private readonly CancellationTokenSource _observableCts = new();
         private readonly IObservable<string> _observable;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
@@ -27,7 +29,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _subscriber.Connect(cfg.Endpoints.SubEndpoint);
             _subscriber.SubscribeToAnyTopic();
 
-            _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable);
+            _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token);
         }
 
         public IObservable<Unit> Send(string message)
@@ -59,7 +61,6 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             // token was canceled
             catch (OperationCanceledException)
             {
-                ctx.OnCompleted();
             }
             catch (Exception e)
             {
@@ -73,6 +74,9 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 
         public async ValueTask DisposeAsync()
         {
+            _observableCts.Cancel();
+            await _observable.WhenCompleted();
+
             await _disposable.DisposeAsync();
         }
 

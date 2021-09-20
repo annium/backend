@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Primitives;
 using Annium.Core.Primitives.Reflection;
 using Annium.Core.Runtime.Resources;
 

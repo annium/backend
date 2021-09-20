@@ -23,10 +23,10 @@ namespace System
             Ct = ct;
         }
 
-        public void OnCompleted() => _onCompleted();
+        public void OnNext(T value) => _onNext(value);
 
         public void OnError(Exception error) => _onError(error);
 
-        public void OnNext(T value) => _onNext(value);
+        public void OnCompleted() => _onCompleted();
     }
 }

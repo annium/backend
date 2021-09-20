@@ -1,22 +1,22 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 
 namespace Annium.Extensions.Reactive.Internal.Creation.Instance
 {
-    internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IAsyncDisposableObservable<T>
+    internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObservable<T>
     {
-        private readonly Task<Func<Task>> _factoryTask;
-        private readonly CancellationTokenSource _cts = new();
-
         internal StaticObservableInstance(
             Func<ObserverContext<T>, Task<Func<Task>>> factory,
-            bool sync
+            bool isAsync,
+            CancellationToken ct
         )
         {
-            _factoryTask = sync
-                ? factory(GetObserverContext(_cts.Token))
-                : Task.Run(() => factory(GetObserverContext(_cts.Token)));
+            if (isAsync)
+                Task.Run(() => RunAsync(factory, ct));
+            else
+                RunAsync(factory, ct).GetAwaiter();
         }
 
         public IDisposable Subscribe(IObserver<T> observer)
@@ -31,15 +31,30 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
             });
         }
 
-        public async ValueTask DisposeAsync()
+        private async Task RunAsync(
+            Func<ObserverContext<T>, Task<Func<Task>>> factory,
+            CancellationToken ct
+        )
         {
-            BeforeDispose();
-
-            _cts.Cancel();
-            var disposeAsync = await _factoryTask;
-            await disposeAsync();
-
-            AfterDispose();
+            var ctx = GetObserverContext(ct);
+            try
+            {
+                this.Trace("start, run factory");
+                var disposeAsync = await factory(ctx);
+                this.Trace("init disposal");
+                InitDisposal();
+                this.Trace("dispose");
+                await disposeAsync();
+                // technical micro delay to force thread switching
+                await Task.Delay(1, CancellationToken.None);
+                this.Trace("invoke onCompleted");
+                ctx.OnCompleted();
+                this.Trace("done");
+            }
+            catch (Exception e)
+            {
+                ctx.OnError(e);
+            }
         }
     }
 }

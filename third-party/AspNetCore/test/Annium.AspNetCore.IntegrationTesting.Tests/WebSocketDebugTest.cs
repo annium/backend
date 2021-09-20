@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.AspNetCore.IntegrationTesting.WebSocketClient.Clients;
+using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Data.Operations;
 using Annium.Testing;
@@ -60,8 +60,8 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - dispose subscriptions");
-            await o1.DisposeAsync();
-            await o2.DisposeAsync();
+            await o1;
+            await o2;
 
             // wait for cancellation entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for cancellation log entries");

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
@@ -14,6 +15,7 @@ namespace Annium.Data.Tables.Internal
     {
         public abstract int Count { get; }
         protected readonly object DataLocker = new();
+        private readonly CancellationTokenSource _observableCts = new();
         private readonly IObservable<IChangeEvent<T>> _observable;
         private readonly TablePermission _permissions;
         private readonly ChannelWriter<IChangeEvent<T>> _eventWriter;
@@ -32,9 +34,7 @@ namespace Annium.Data.Tables.Internal
             _eventWriter = taskChannel.Writer;
             _eventReader = taskChannel.Reader;
 
-            var observable = CreateObservable();
-            _disposable += observable;
-            _observable = observable.ObserveOn(TaskPoolScheduler.Default);
+            _observable = CreateObservable(_observableCts.Token).ObserveOn(TaskPoolScheduler.Default);
         }
 
         public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer)
@@ -66,7 +66,7 @@ namespace Annium.Data.Tables.Internal
 
         protected abstract IReadOnlyCollection<T> Get();
 
-        private IAsyncDisposableObservable<IChangeEvent<T>> CreateObservable() => ObservableExt.StaticSyncInstance<IChangeEvent<T>>(async ctx =>
+        private IObservable<IChangeEvent<T>> CreateObservable(CancellationToken ct) => ObservableExt.StaticSyncInstance<IChangeEvent<T>>(async ctx =>
         {
             try
             {
@@ -80,11 +80,9 @@ namespace Annium.Data.Tables.Internal
             // token was canceled
             catch (OperationCanceledException)
             {
-                ctx.OnCompleted();
             }
             catch (ChannelClosedException)
             {
-                ctx.OnCompleted();
             }
             catch (Exception e)
             {
@@ -92,16 +90,18 @@ namespace Annium.Data.Tables.Internal
             }
 
             return () => Task.CompletedTask;
-        });
+        }, ct);
 
         public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => Get().GetEnumerator();
 
-        public virtual ValueTask DisposeAsync()
+        public virtual async ValueTask DisposeAsync()
         {
             _eventWriter.Complete();
-            return _disposable.DisposeAsync();
+            _observableCts.Cancel();
+            await _observable.WhenCompleted();
+            await _disposable.DisposeAsync();
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
@@ -9,7 +10,8 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
 {
     internal class InMemoryMessageBusSocket : IMessageBusSocket
     {
-        private readonly IAsyncDisposableObservable<string> _observable;
+        private readonly CancellationTokenSource _observableCts = new();
+        private readonly IObservable<string> _observable;
         private readonly ChannelWriter<string> _messageWriter;
         private readonly ChannelReader<string> _messageReader;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
@@ -25,7 +27,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             _messageWriter = taskChannel.Writer;
             _messageReader = taskChannel.Reader;
 
-            _disposable += _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable);
+            _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token);
         }
 
         public IObservable<Unit> Send(string message)
@@ -53,11 +55,9 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             // token was canceled
             catch (OperationCanceledException)
             {
-                ctx.OnCompleted();
             }
             catch (ChannelClosedException)
             {
-                ctx.OnCompleted();
             }
             catch (Exception e)
             {
@@ -67,9 +67,12 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             return () => Task.CompletedTask;
         }
 
-        public ValueTask DisposeAsync()
+        public async ValueTask DisposeAsync()
         {
-            return _disposable.DisposeAsync();
+            _observableCts.Cancel();
+            await _observable.WhenCompleted();
+
+            await _disposable.DisposeAsync();
         }
     }
 }

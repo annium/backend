@@ -42,7 +42,7 @@ namespace Annium.Net.WebSockets
 
         public async Task DisconnectAsync()
         {
-            // cancel receive, if pending
+            this.Log().Trace("cancel receive, if pending, in {state}", Socket.State);
             PauseObservable();
 
             this.Log().Trace("invoke ConnectionLost in {state}", Socket.State);

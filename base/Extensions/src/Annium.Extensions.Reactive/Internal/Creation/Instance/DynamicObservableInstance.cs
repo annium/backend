@@ -52,7 +52,7 @@
 //
 //         public async ValueTask DisposeAsync()
 //         {
-//             BeforeDispose();
+//             InitDisposal();
 //
 //             _factoryCts.Cancel();
 //             Task factoryTask;

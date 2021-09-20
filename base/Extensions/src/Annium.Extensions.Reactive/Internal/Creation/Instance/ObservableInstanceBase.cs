@@ -12,27 +12,19 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
         protected readonly object Lock = new();
         private bool _isCompleted;
         private bool _isDisposing;
-        private bool _isDisposed;
 
         protected ObserverContext<T> GetObserverContext(CancellationToken ct) => new(OnNext, OnError, OnCompleted, ct);
 
-        protected void BeforeDispose()
+        protected void InitDisposal()
         {
             if (_isDisposing)
                 throw new ObjectDisposedException(GetType().FriendlyName());
             _isDisposing = true;
         }
 
-        protected void AfterDispose()
-        {
-            if (!_isCompleted)
-                throw new InvalidOperationException("Observable not completed");
-            _isDisposed = true;
-        }
-
         private void OnNext(T value)
         {
-            EnsureNotDisposed();
+            EnsureNotDisposing();
 
             var subscribers = GetSubscribersSlice();
             foreach (var observer in subscribers)
@@ -41,7 +33,7 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
 
         private void OnError(Exception exception)
         {
-            EnsureNotDisposed();
+            EnsureNotDisposing();
 
             var subscribers = GetSubscribersSlice();
             foreach (var observer in subscribers)
@@ -59,9 +51,9 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
                 observer.OnCompleted();
         }
 
-        private void EnsureNotDisposed()
+        private void EnsureNotDisposing()
         {
-            if (_isDisposed)
+            if (_isDisposing)
                 throw new ObjectDisposedException(GetType().FriendlyName());
         }
 

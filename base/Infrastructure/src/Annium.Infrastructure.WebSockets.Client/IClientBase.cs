@@ -121,7 +121,7 @@ namespace Annium.Infrastructure.WebSockets.Client
         //     where TRequestChunk : StreamChunkRequestBase;
 
         // init subscription
-        Task<IStatusResult<OperationStatus, IAsyncDisposableObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
+        Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             CancellationToken ct = default
         )

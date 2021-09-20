@@ -27,7 +27,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         private readonly Serializer _serializer;
         private readonly IClientConfigurationBase _configuration;
         private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
-        private readonly ConcurrentDictionary<Guid, IAsyncDisposable> _subscriptions = new();
+        private readonly ConcurrentDictionary<Guid, ValueTuple<CancellationTokenSource, IObservable<object>>> _subscriptions = new();
         private readonly IObservable<AbstractResponseBase> _responseObservable;
         private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
@@ -195,7 +195,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         // }
 
         // init subscription
-        public async Task<IStatusResult<OperationStatus, IAsyncDisposableObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
+        public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
             TInit request,
             CancellationToken ct = default
         )
@@ -205,15 +205,8 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             var subscriptionId = request.Rid;
             this.Log().Trace($"{type}#{subscriptionId} - start");
 
-            this.Log().Trace($"{type}#{subscriptionId} - init");
-            var response = await FetchInternal(request, Guid.Empty, ct);
-            if (response.HasErrors)
-            {
-                this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
-                return Result.Status(response.Status, ObservableExt.EmptyAsyncDisposable<TMessage>()).Join(response);
-            }
-
             this.Log().Trace($"{type}#{subscriptionId} - create observable");
+            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
             var observable = ObservableExt.StaticAsyncInstance<TMessage>(async ctx =>
             {
                 this.Log().Trace($"{type}#{subscriptionId} - subscribe");
@@ -227,13 +220,14 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
                 await ctx.Ct;
 
-                ctx.OnCompleted();
-
                 this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
                 return async () =>
                 {
                     if (!_subscriptions.TryRemove(subscriptionId, out _))
-                        throw new InvalidOperationException($"Subscription {subscriptionId} is already disposed");
+                    {
+                        this.Log().Trace($"{type}#{subscriptionId} - skipped disposal of untracked subscription");
+                        return;
+                    }
 
                     this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
                     subscription.Dispose();
@@ -243,10 +237,20 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                     await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
                     this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
                 };
-            });
+            }, cts.Token);
+
+            this.Log().Trace($"{type}#{subscriptionId} - init");
+            var response = await FetchInternal(request, Guid.Empty, ct);
+            if (response.HasErrors)
+            {
+                this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
+                cts.Cancel();
+                await observable.WhenCompleted();
+                return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
+            }
 
             this.Log().Trace($"{type}#{subscriptionId} - track observable");
-            if (!_subscriptions.TryAdd(subscriptionId, observable))
+            if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>)observable)))
                 throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
             return Result.Status(response.Status, observable);
@@ -255,7 +259,11 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
         public virtual async ValueTask DisposeAsync()
         {
             this.Log().Trace("start, dispose subscriptions");
-            await Task.WhenAll(_subscriptions.Values.Select(async x => await x.DisposeAsync()));
+            await Task.WhenAll(_subscriptions.Values.Select(async x =>
+            {
+                x.Item1.Cancel();
+                await x.Item2;
+            }));
             this.Log().Trace("dispose disposable box");
             await _disposable.DisposeAsync();
             this.Log().Trace("done");
@@ -319,7 +327,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                 if (!await SendInternal(request))
                     return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
 
-                var response = (TResponse) await tcs.Task;
+                var response = (TResponse)await tcs.Task;
                 return (Result.Status(OperationStatus.Ok), response);
             }
             catch (OperationCanceledException)

@@ -1,7 +1,6 @@
 using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading.Tasks;
 
 namespace System

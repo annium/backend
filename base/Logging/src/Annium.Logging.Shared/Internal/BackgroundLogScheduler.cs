@@ -15,7 +15,8 @@ namespace Annium.Logging.Shared.Internal
         private bool _isDisposed;
         private readonly ChannelReader<LogMessage> _messageReader;
         private readonly ChannelWriter<LogMessage> _messageWriter;
-        private readonly IAsyncDisposableObservable<LogMessage> _observable;
+        private readonly CancellationTokenSource _observableCts = new();
+        private readonly IObservable<LogMessage> _observable;
         private readonly IDisposable _subscription;
 
         public BackgroundLogScheduler(
@@ -40,7 +41,7 @@ namespace Annium.Logging.Shared.Internal
             });
             _messageWriter = channel.Writer;
             _messageReader = channel.Reader;
-            _observable = ObservableExt.StaticSyncInstance<LogMessage>(Run);
+            _observable = ObservableExt.StaticSyncInstance<LogMessage>(Run, _observableCts.Token);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
                 .Where(x => x.Count > 0)
@@ -87,8 +88,6 @@ namespace Annium.Logging.Shared.Internal
                     break;
             }
 
-            ctx.OnCompleted();
-
             return () => Task.CompletedTask;
         }
 
@@ -102,7 +101,8 @@ namespace Annium.Logging.Shared.Internal
             this.Trace("wait for reader completion");
             await _messageReader.Completion;
             this.Trace($"wait for {Count} messages(s) to finish");
-            await _observable.DisposeAsync();
+            _observableCts.Cancel();
+            await _observable.WhenCompleted();
             _subscription.Dispose();
             this.Trace("done");
         }

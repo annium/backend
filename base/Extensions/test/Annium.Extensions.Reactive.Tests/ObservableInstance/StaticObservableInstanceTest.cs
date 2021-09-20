@@ -30,14 +30,12 @@ namespace Annium.Extensions.Reactive.Tests.ObservableInstance
                             ctx.OnError(new ArgumentOutOfRangeException(nameof(i)));
                     }
 
-                    ctx.OnCompleted();
-
                     return async () =>
                     {
                         await Task.Delay(5);
                         Interlocked.Increment(ref disposeCounter);
                     };
-                })
+                }, CancellationToken.None)
                 .Do(_ => { }, errors.Add)
                 .Retry()
                 .Catch(Observable.Empty<Sample>());
@@ -45,8 +43,6 @@ namespace Annium.Extensions.Reactive.Tests.ObservableInstance
             instance.Subscribe(log2.Add);
 
             await instance;
-
-            await Task.Delay(100);
 
             log1.Has(5);
             log2.Has(5);
@@ -56,6 +52,7 @@ namespace Annium.Extensions.Reactive.Tests.ObservableInstance
             var error = errors[0];
             foreach (var err in errors.Skip(1))
                 err.Is(error);
+            disposeCounter.Is(1);
         }
 
         private class Sample

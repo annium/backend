@@ -1,5 +1,5 @@
+using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Reactive.Internal.Creation.Disposable;
 using Annium.Extensions.Reactive.Internal.Creation.Instance;
 
 namespace System.Reactive.Linq
@@ -13,28 +13,20 @@ namespace System.Reactive.Linq
         //     return new DynamicObservableInstance<T>(factory);
         // }
 
-        public static IAsyncDisposableObservable<T> StaticAsyncInstance<T>(Func<ObserverContext<T>, Task<Func<Task>>> factory)
+        public static IObservable<T> StaticAsyncInstance<T>(
+            Func<ObserverContext<T>, Task<Func<Task>>> factory,
+            CancellationToken ct
+        )
         {
-            return new StaticObservableInstance<T>(factory, false);
+            return new StaticObservableInstance<T>(factory, true, ct);
         }
 
-        public static IAsyncDisposableObservable<T> StaticSyncInstance<T>(Func<ObserverContext<T>, Task<Func<Task>>> factory)
+        public static IObservable<T> StaticSyncInstance<T>(
+            Func<ObserverContext<T>, Task<Func<Task>>> factory,
+            CancellationToken ct
+        )
         {
-            return new StaticObservableInstance<T>(factory, true);
-        }
-
-        #endregion
-
-        #region Empty disposables
-
-        public static IDisposableObservable<T> EmptyDisposable<T>()
-        {
-            return new EmptyDisposable<T>();
-        }
-
-        public static IAsyncDisposableObservable<T> EmptyAsyncDisposable<T>()
-        {
-            return new EmptyAsyncDisposable<T>();
+            return new StaticObservableInstance<T>(factory, false, ct);
         }
 
         #endregion
