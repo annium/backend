@@ -262,7 +262,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
             await Task.WhenAll(_subscriptions.Values.Select(async x =>
             {
                 x.Item1.Cancel();
-                await x.Item2;
+                await x.Item2.WhenCompleted();
             }));
             this.Log().Trace("dispose disposable box");
             await _disposable.DisposeAsync();
