@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
@@ -48,20 +48,31 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
             var clientLog = new ConcurrentQueue<string>();
 
+            void ClientLog(string value)
+            {
+                Console.WriteLine($"client log: {value}");
+                clientLog.Enqueue(value);
+            }
+
+            var cts = new CancellationTokenSource();
+
             // act
-            var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }).GetData();
-            o1.Subscribe(x => { clientLog.Enqueue(x); });
+            var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
+            var os1 = o1.Subscribe(ClientLog);
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - first subscribed");
-            var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }).GetData();
-            o2.Subscribe(x => { clientLog.Enqueue(x); });
+            var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
+            var os2 = o2.Subscribe(ClientLog);
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - second subscribed");
             // wait for init and msg entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for init and msg log entries");
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - dispose subscriptions");
-            await o1;
-            await o2;
+            cts.Cancel();
+            os1.Dispose();
+            os2.Dispose();
+            await o1.WhenCompleted();
+            await o2.WhenCompleted();
 
             // wait for cancellation entries
             Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for cancellation log entries");

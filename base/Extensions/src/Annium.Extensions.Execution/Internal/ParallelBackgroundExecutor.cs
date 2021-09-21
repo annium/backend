@@ -34,7 +34,7 @@ namespace Annium.Extensions.Execution.Internal
         {
             EnsureAvailable();
 
-            if (Interlocked.CompareExchange(ref _isStarted, 1, 0) != 0)
+            if (Interlocked.CompareExchange(ref _isStarted, 1, 0) == 1)
                 throw new InvalidOperationException("Executor is already running");
 
             // change to state to unavailable

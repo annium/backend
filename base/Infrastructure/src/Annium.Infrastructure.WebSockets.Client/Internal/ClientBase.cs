@@ -237,7 +237,7 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
                     await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
                     this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
                 };
-            }, cts.Token);
+            }, cts.Token).BufferUntilSubscribed();
 
             this.Log().Trace($"{type}#{subscriptionId} - init");
             var response = await FetchInternal(request, Guid.Empty, ct);
