@@ -3,13 +3,14 @@ using Annium.Logging.Shared;
 
 namespace Annium.Logging.InMemory
 {
-    public class InMemoryLogHandler : ILogHandler
+    public class InMemoryLogHandler<TContext> : ILogHandler<TContext>
+        where TContext : class, ILogContext
     {
-        public IReadOnlyList<LogMessage> Logs => _logs;
+        public IReadOnlyList<LogMessage<TContext>> Logs => _logs;
 
-        private readonly List<LogMessage> _logs = new();
+        private readonly List<LogMessage<TContext>> _logs = new();
 
-        public void Handle(LogMessage message)
+        public void Handle(LogMessage<TContext> message)
         {
             _logs.Add(message);
         }

@@ -1,65 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading;
-using Annium.Core.Primitives;
-using Annium.Diagnostics.Debug;
-using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal
 {
-    internal class LogSentry : ILogSentry
+    internal class LogSentry<TContext> : ILogSentry<TContext>
+        where TContext : class, ILogContext
     {
-        private readonly ITimeProvider _timeProvider;
-        private readonly IList<LogMessage> _messagesBuffer = new List<LogMessage>();
-        private Action<LogMessage> _handler;
+        private readonly IList<LogMessage<TContext>> _messagesBuffer = new List<LogMessage<TContext>>();
+        private Action<LogMessage<TContext>> _handler;
         private bool _isHandlerSet;
 
         public LogSentry(
-            ITimeProvider timeProvider
         )
         {
-            _timeProvider = timeProvider;
             _handler = _messagesBuffer.Add;
         }
 
-        public void Register<T>(
-            T? subject,
-            string file,
-            string member,
-            int line,
-            LogLevel level,
-            string source,
-            string messageTemplate,
-            Exception? exception,
-            object[] dataItems
-        )
-            where T : class, ILogSubject
-        {
-            var instant = _timeProvider.Now;
-            var (message, data) = Helper.Process(messageTemplate, dataItems);
+        public void Register(LogMessage<TContext> message) => _handler(message);
 
-            var msg = new LogMessage(
-                instant,
-                subject?.GetType().FriendlyName() ?? null,
-                subject?.GetId() ?? null,
-                level,
-                source,
-                Thread.CurrentThread.ManagedThreadId,
-                message,
-                exception?.Demystify(),
-                messageTemplate,
-                data,
-                Path.GetFileNameWithoutExtension(file),
-                member,
-                line
-            );
-
-            _handler(msg);
-        }
-
-        public void SetHandler(Action<LogMessage> handler)
+        public void SetHandler(Action<LogMessage<TContext>> handler)
         {
             if (_isHandlerSet)
                 throw new InvalidOperationException("Handler is intended to be set once");

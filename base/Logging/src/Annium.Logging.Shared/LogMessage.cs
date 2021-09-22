@@ -5,8 +5,10 @@ using NodaTime;
 
 namespace Annium.Logging.Shared
 {
-    public record LogMessage
+    public record LogMessage<TContext>
+        where TContext : ILogContext
     {
+        public TContext Context { get; }
         public Instant Instant { get; }
         public string? SubjectType { get; }
         public string? SubjectId { get; }
@@ -22,6 +24,7 @@ namespace Annium.Logging.Shared
         public int Line { get; }
 
         internal LogMessage(
+            TContext context,
             Instant instant,
             string? subjectType,
             string? subjectId,
@@ -37,6 +40,7 @@ namespace Annium.Logging.Shared
             int line
         )
         {
+            Context = context;
             Instant = instant;
             SubjectType = subjectType;
             SubjectId = subjectId;

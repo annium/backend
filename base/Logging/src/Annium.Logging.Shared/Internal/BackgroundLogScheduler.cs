@@ -8,20 +8,21 @@ using Annium.Core.Internal;
 
 namespace Annium.Logging.Shared.Internal
 {
-    internal class BackgroundLogScheduler : ILogScheduler, IAsyncDisposable
+    internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyncDisposable
+        where TContext : class, ILogContext
     {
-        public Func<LogMessage, bool> Filter { get; }
+        public Func<LogMessage<TContext>, bool> Filter { get; }
         private int Count => _messageReader.CanCount ? _messageReader.Count : -1;
         private bool _isDisposed;
-        private readonly ChannelReader<LogMessage> _messageReader;
-        private readonly ChannelWriter<LogMessage> _messageWriter;
+        private readonly ChannelReader<LogMessage<TContext>> _messageReader;
+        private readonly ChannelWriter<LogMessage<TContext>> _messageWriter;
         private readonly CancellationTokenSource _observableCts = new();
-        private readonly IObservable<LogMessage> _observable;
+        private readonly IObservable<LogMessage<TContext>> _observable;
         private readonly IDisposable _subscription;
 
         public BackgroundLogScheduler(
-            Func<LogMessage, bool> filter,
-            IAsyncLogHandler handler,
+            Func<LogMessage<TContext>, bool> filter,
+            IAsyncLogHandler<TContext> handler,
             LogRouteConfiguration configuration
         )
         {
@@ -33,7 +34,7 @@ namespace Annium.Logging.Shared.Internal
 
             Filter = filter;
 
-            var channel = Channel.CreateUnbounded<LogMessage>(new UnboundedChannelOptions
+            var channel = Channel.CreateUnbounded<LogMessage<TContext>>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
                 SingleReader = true,
@@ -41,7 +42,7 @@ namespace Annium.Logging.Shared.Internal
             });
             _messageWriter = channel.Writer;
             _messageReader = channel.Reader;
-            _observable = ObservableExt.StaticSyncInstance<LogMessage>(Run, _observableCts.Token);
+            _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token);
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
                 .Where(x => x.Count > 0)
@@ -49,7 +50,7 @@ namespace Annium.Logging.Shared.Internal
                 .Subscribe();
         }
 
-        public void Handle(LogMessage message)
+        public void Handle(LogMessage<TContext> message)
         {
             EnsureNotDisposed();
 
@@ -58,7 +59,7 @@ namespace Annium.Logging.Shared.Internal
                     throw new InvalidOperationException("Message must have been written to channel");
         }
 
-        private async Task<Func<Task>> Run(ObserverContext<LogMessage> ctx)
+        private async Task<Func<Task>> Run(ObserverContext<LogMessage<TContext>> ctx)
         {
             // normal mode - runs task immediately or waits for one
             while (!Volatile.Read(ref _isDisposed))

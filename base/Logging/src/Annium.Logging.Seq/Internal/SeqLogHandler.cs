@@ -10,7 +10,8 @@ using NodaTime;
 
 namespace Annium.Logging.Seq.Internal
 {
-    internal class SeqLogHandler : IAsyncLogHandler
+    internal class SeqLogHandler<TContext> : IAsyncLogHandler<TContext>
+        where TContext : class, ILogContext
     {
         private static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
         private readonly Queue<IReadOnlyDictionary<string, string>> _eventsBuffer = new();
@@ -32,11 +33,13 @@ namespace Annium.Logging.Seq.Internal
             _cfg = cfg;
         }
 
-        public async ValueTask Handle(IReadOnlyCollection<LogMessage> messages)
+        public async ValueTask Handle(IReadOnlyCollection<LogMessage<TContext>> messages)
         {
             var events = new List<IReadOnlyDictionary<string, string>>();
 
-            void AddEvent(LogMessage msg, string message) => events.Add(CompactLogEvent.Format(_project, msg, message, Tz));
+            void AddEvent(LogMessage<TContext> msg, string message) => events
+                .Add(CompactLogEvent<TContext>.Format(_project, msg, message, Tz));
+
             foreach (var message in messages)
                 Process(message, AddEvent);
 
@@ -97,7 +100,7 @@ namespace Annium.Logging.Seq.Internal
             }
         }
 
-        private void Process(LogMessage msg, Action<LogMessage, string> addEvent)
+        private void Process(LogMessage<TContext> msg, Action<LogMessage<TContext>, string> addEvent)
         {
             if (msg.Exception is AggregateException aggregateException)
             {

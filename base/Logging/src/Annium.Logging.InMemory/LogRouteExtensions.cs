@@ -5,14 +5,16 @@ namespace Annium.Core.DependencyInjection
 {
     public static class LogRouteExtensions
     {
-        public static LogRoute UseInMemory(this LogRoute route)
+        public static LogRoute<TContext> UseInMemory<TContext>(this LogRoute<TContext> route)
+            where TContext : class, ILogContext
         {
-            route.UseType<InMemoryLogHandler>(new LogRouteConfiguration());
+            route.UseType<InMemoryLogHandler<TContext>>(new LogRouteConfiguration());
 
             return route;
         }
 
-        public static LogRoute UseInMemory(this LogRoute route, InMemoryLogHandler handler)
+        public static LogRoute<TContext> UseInMemory<TContext>(this LogRoute<TContext> route, InMemoryLogHandler<TContext> handler)
+            where TContext : class, ILogContext
         {
             route.UseInstance(handler, new LogRouteConfiguration());
 

@@ -6,7 +6,8 @@ using NodaTime;
 
 namespace Annium.Logging.Console
 {
-    internal class ConsoleLogHandler : ILogHandler
+    internal class ConsoleLogHandler<TContext> : ILogHandler<TContext>
+        where TContext : class, ILogContext
     {
         public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
         private static readonly object ConsoleLock = new();
@@ -25,11 +26,11 @@ namespace Annium.Logging.Console
             LevelColors = colors;
         }
 
-        private readonly Func<LogMessage, string, string> _format;
+        private readonly Func<LogMessage<TContext>, string, string> _format;
         private readonly bool _color;
 
         public ConsoleLogHandler(
-            Func<LogMessage, string, string> format,
+            Func<LogMessage<TContext>, string, string> format,
             bool color
         )
         {
@@ -37,7 +38,7 @@ namespace Annium.Logging.Console
             _color = color;
         }
 
-        public void Handle(LogMessage msg)
+        public void Handle(LogMessage<TContext> msg)
         {
             lock (ConsoleLock)
             {
@@ -68,7 +69,7 @@ namespace Annium.Logging.Console
             }
         }
 
-        private void WriteLine(LogMessage msg, string message) => System.Console.WriteLine(_format(msg, message));
+        private void WriteLine(LogMessage<TContext> msg, string message) => System.Console.WriteLine(_format(msg, message));
 
         private string GetExceptionMessage(Exception e) => $"{e.Message}{Environment.NewLine}{e.StackTrace}";
     }

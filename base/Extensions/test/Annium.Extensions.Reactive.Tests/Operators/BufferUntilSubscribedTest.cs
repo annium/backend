@@ -127,7 +127,7 @@ namespace Annium.Extensions.Reactive.Tests.Operators
             var (log, writeLog) = GetLog();
 
             var cts = new CancellationTokenSource();
-            var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+            var observable = ObservableExt.StaticAsyncInstance<string>(ctx =>
             {
                 var i = 0;
                 while (!ctx.Ct.IsCancellationRequested)
@@ -137,7 +137,7 @@ namespace Annium.Extensions.Reactive.Tests.Operators
                         ctx.OnError(new Exception(i.ToString()));
                 }
 
-                return () => Task.CompletedTask;
+                return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
             }, cts.Token).BufferUntilSubscribed();
 
             // act
@@ -153,7 +153,7 @@ namespace Annium.Extensions.Reactive.Tests.Operators
             var (log, writeLog) = GetLog();
 
             var cts = new CancellationTokenSource();
-            var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+            var observable = ObservableExt.StaticAsyncInstance<string>(ctx =>
             {
                 var i = 0;
                 while (!ctx.Ct.IsCancellationRequested)
@@ -163,7 +163,7 @@ namespace Annium.Extensions.Reactive.Tests.Operators
                         ctx.OnError(new Exception(i.ToString()));
                 }
 
-                return () => Task.CompletedTask;
+                return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
             }, cts.Token).BufferUntilSubscribed();
 
             // act

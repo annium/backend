@@ -105,9 +105,9 @@ namespace Annium.Core.Mediator.Tests
             logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
         }
 
-        private ValueTuple<IMediator, IReadOnlyList<LogMessage>> GetMediator(Action<MediatorConfiguration> configure)
+        private ValueTuple<IMediator, IReadOnlyList<LogMessage<DefaultLogContext>>> GetMediator(Action<MediatorConfiguration> configure)
         {
-            var logHandler = new InMemoryLogHandler();
+            var logHandler = new InMemoryLogHandler<DefaultLogContext>();
 
             var container = new ServiceContainer();
             container.AddTimeProvider();

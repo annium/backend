@@ -5,11 +5,12 @@ using NodaTime;
 
 namespace Annium.Logging.Seq.Internal
 {
-    internal static class CompactLogEvent
+    internal static class CompactLogEvent<TContext>
+        where TContext : class, ILogContext
     {
         public static IReadOnlyDictionary<string, string> Format(
             string project,
-            LogMessage m,
+            LogMessage<TContext> m,
             string message,
             DateTimeZone tz
         )
@@ -32,7 +33,7 @@ namespace Annium.Logging.Seq.Internal
             return result;
         }
 
-        private static string BuildMessagePrefix(LogMessage m)
+        private static string BuildMessagePrefix(LogMessage<TContext> m)
         {
             var sb = new StringBuilder();
             sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");

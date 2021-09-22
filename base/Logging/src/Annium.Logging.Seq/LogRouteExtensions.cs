@@ -8,17 +8,18 @@ namespace Annium.Core.DependencyInjection
 {
     public static class LogRouteExtensions
     {
-        public static LogRoute UseSeq(
-            this LogRoute route,
+        public static LogRoute<TContext> UseSeq<TContext>(
+            this LogRoute<TContext> route,
             string project,
             SeqConfiguration configuration
         )
+            where TContext : class, ILogContext
         {
             route.UseAsyncFactory(sp =>
             {
                 var httpRequestFactory = sp.Resolve<IHttpRequestFactory>();
                 var serializer = sp.Resolve<ISerializer<string>>();
-                return new SeqLogHandler(httpRequestFactory, serializer, project, configuration);
+                return new SeqLogHandler<TContext>(httpRequestFactory, serializer, project, configuration);
             }, configuration);
 
             return route;

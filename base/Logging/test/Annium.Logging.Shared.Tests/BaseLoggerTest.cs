@@ -10,7 +10,7 @@ namespace Annium.Logging.Shared.Tests
 {
     public class BaseLoggerTest
     {
-        private readonly IList<LogMessage> _messages = new List<LogMessage>();
+        private readonly IList<LogMessage<Context>> _messages = new List<LogMessage<Context>>();
 
         [Fact]
         public void Log_ValidLevel_WritesLogEntry()
@@ -139,7 +139,7 @@ namespace Annium.Logging.Shared.Tests
 
             container.AddTestTimeProvider();
 
-            container.AddLogging(route => route
+            container.AddLogging<Context>(route => route
                 .For(m => m.Level >= minLogLevel)
                 .UseInstance(new LogHandler(_messages), new LogRouteConfiguration())
             );
@@ -147,21 +147,25 @@ namespace Annium.Logging.Shared.Tests
             return container.BuildServiceProvider();
         }
 
-        private class LogHandler : ILogHandler
+        private class LogHandler : ILogHandler<Context>
         {
-            public IList<LogMessage> Messages { get; }
+            public IList<LogMessage<Context>> Messages { get; }
 
             public LogHandler(
-                IList<LogMessage> messages
+                IList<LogMessage<Context>> messages
             )
             {
                 Messages = messages;
             }
 
-            public void Handle(LogMessage message)
+            public void Handle(LogMessage<Context> message)
             {
                 Messages.Add(message);
             }
+        }
+
+        private class Context : ILogContext
+        {
         }
     }
 }

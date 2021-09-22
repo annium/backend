@@ -2,20 +2,21 @@ using System.Collections.Generic;
 
 namespace Annium.Logging.Shared.Internal
 {
-    internal class LogRouter
+    internal class LogRouter<TContext>
+        where TContext : class, ILogContext
     {
-        private readonly IEnumerable<ILogScheduler> _schedulers;
+        private readonly IEnumerable<ILogScheduler<TContext>> _schedulers;
 
         public LogRouter(
-            ILogSentry sentry,
-            IEnumerable<ILogScheduler> schedulers
+            ILogSentry<TContext> sentry,
+            IEnumerable<ILogScheduler<TContext>> schedulers
         )
         {
             sentry.SetHandler(Send);
             _schedulers = schedulers;
         }
 
-        private void Send(LogMessage msg)
+        private void Send(LogMessage<TContext> msg)
         {
             foreach (var scheduler in _schedulers)
                 if (scheduler.Filter(msg))

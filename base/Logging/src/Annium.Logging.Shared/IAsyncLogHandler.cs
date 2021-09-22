@@ -3,8 +3,9 @@ using System.Threading.Tasks;
 
 namespace Annium.Logging.Shared
 {
-    public interface IAsyncLogHandler
+    public interface IAsyncLogHandler<TContext>
+        where TContext : class, ILogContext
     {
-        ValueTask Handle(IReadOnlyCollection<LogMessage> messages);
+        ValueTask Handle(IReadOnlyCollection<LogMessage<TContext>> messages);
     }
 }
