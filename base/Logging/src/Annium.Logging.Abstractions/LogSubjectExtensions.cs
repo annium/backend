@@ -4,7 +4,7 @@ namespace Annium.Logging.Abstractions
 {
     public static class LogSubjectExtensions
     {
-        public static LogContext<T> Log<T>(
+        public static LogEntryContext<T> Log<T>(
             this T subject,
             [CallerFilePath] string file = "",
             [CallerMemberName] string member = "",

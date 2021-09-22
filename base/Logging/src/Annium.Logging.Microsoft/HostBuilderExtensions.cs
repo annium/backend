@@ -8,7 +8,7 @@ namespace Annium.Core.DependencyInjection
             this IHostBuilder builder
         )
         {
-            return builder.ConfigureLogging((ctx, logging) => logging.ConfigureLoggingBridge());
+            return builder.ConfigureLogging((_, logging) => logging.ConfigureLoggingBridge());
         }
     }
 }

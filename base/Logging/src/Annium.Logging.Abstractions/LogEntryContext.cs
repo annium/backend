@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Logging.Abstractions
 {
-    public readonly ref struct LogContext<T>
+    public readonly ref struct LogEntryContext<T>
         where T : class, ILogSubject
     {
         public T Subject { get; }
@@ -10,7 +10,7 @@ namespace Annium.Logging.Abstractions
         public string Member { get; }
         public int Line { get; }
 
-        public LogContext(
+        public LogEntryContext(
             T subject,
             string file,
             string member,
