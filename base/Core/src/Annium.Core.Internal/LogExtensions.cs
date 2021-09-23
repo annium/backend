@@ -15,7 +15,8 @@ namespace Annium.Core.Internal
             [CallerFilePath] string callerFilePath = "",
             [CallerMemberName] string member = "",
             [CallerLineNumber] int line = 0
-        ) where T : class
+        )
+            where T : class
         {
             var subject = $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
             var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;

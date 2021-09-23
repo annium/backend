@@ -20,7 +20,7 @@ namespace System
             source.Subscribe(x => Add(ctx, x, null), e => Add(ctx, default!, e), ctx.DataCt);
             source.Subscribe(delegate { }, () => Complete(ctx), ctx.CompletionCt);
 
-            ctx.Trace("init buffering");
+            // ctx.Trace("init buffering");
 
             return Observable.Create(CreateObservable(ctx));
         }
@@ -29,23 +29,24 @@ namespace System
         {
             lock (ctx)
             {
-                ctx.Trace($"subscribe {observer}#{observer.GetId()}");
+                var target = $"{observer}#{observer.GetId()}";
+                // ctx.Trace($"{target} - subscribe");
+
                 if (ctx.IsFlushed)
                 {
                     if (ctx.IsCompleted)
                     {
-                        ctx.Trace($"flushed, completed {observer}#{observer.GetId()}");
                         observer.OnCompleted();
+                        // ctx.Trace($"{target} - flushed, completed");
 
                         return Disposable.Empty;
                     }
 
-                    ctx.Trace($"flushed, attached {observer}#{observer.GetId()}");
-
-                    return ctx.Source.Subscribe(observer);
+                    // ctx.Trace($"{target} - flushed, attached");
+                    return ctx.Subscribe(observer);
                 }
 
-                ctx.Trace($"pipe to: {observer}#{observer.GetId()}");
+                // ctx.Trace($"{target} - pipe to");
 
                 while (ctx.Events.TryDequeue(out var e))
                     observer.Handle(e);
@@ -54,12 +55,15 @@ namespace System
 
                 if (ctx.IsCompleted)
                 {
-                    ctx.Trace($"piped, completed {observer}#{observer.GetId()}");
+                    // ctx.Trace($"{target} - piped, completed");
+
                     return Disposable.Empty;
                 }
 
-                ctx.Trace($"piped, attached {observer}#{observer.GetId()}");
+                // ctx.Trace($"{target} - piped, attached");
                 ctx.SetFirstObserver(observer);
+
+                // ctx.Trace($"{target} - done");
 
                 return Disposable.Create(ctx.DisposeFirstSubscription);
             }
@@ -70,21 +74,26 @@ namespace System
         {
             lock (ctx)
             {
+                // ctx.Trace("start");
+
                 if (ctx.IsCompleted)
                     throw new InvalidOperationException($"Can't add: {data} - {error}, ctx already completed");
 
                 var e = new ObservableEvent<T>(data, error, false);
                 if (ctx.FirstObserver is null)
                 {
-                    ctx.Trace($"enqueue: {data} - {error}");
+                    // ctx.Trace($"enqueue: {data} - {error}");
                     ctx.Events.Enqueue(e);
                 }
                 else
                 {
-                    ctx.Trace($"process: {data} - {error}");
+                    // ctx.Trace($"process: {data} - {error}");
                     ctx.FirstObserver.Handle(e);
-                    ctx.SubscribeFirstObserver();
+                    if (!e.IsCompleted)
+                        ctx.SetFirstSubscription(ctx.Subscribe(ctx.FirstObserver));
                 }
+
+                // ctx.Trace("done");
             }
         }
 
@@ -93,18 +102,20 @@ namespace System
         {
             lock (ctx)
             {
+                // ctx.Trace("start");
+
                 if (ctx.IsCompleted)
                     throw new InvalidOperationException("Can't complete, ctx already completed");
 
-                if (ctx.FirstObserver is not null)
-                    ctx.CompleteFirstObserver();
-                else if (!ctx.IsFlushed)
+                if (!ctx.IsFlushed)
                 {
-                    ctx.Trace("enqueue: completed");
+                    // ctx.Trace("enqueue: completed");
                     ctx.Events.Enqueue(new ObservableEvent<T>(default!, null, true));
                 }
 
                 ctx.Complete();
+
+                // ctx.Trace("done");
             }
         }
 
@@ -118,6 +129,7 @@ namespace System
             public IDisposable FirstSubscription { get; private set; } = Disposable.Empty;
             public CancellationToken DataCt => _dataCts.Token;
             public CancellationToken CompletionCt => _completionCts.Token;
+            private readonly List<IObserver<T>> _incompleteObservers = new();
             private readonly CancellationTokenSource _dataCts;
             private readonly CancellationTokenSource _completionCts = new();
 
@@ -131,49 +143,79 @@ namespace System
 
             public void Flush()
             {
+                // this.Trace("start");
+
                 if (IsFlushed)
                     throw new InvalidOperationException("source already flushed");
                 IsFlushed = true;
+
+                // this.Trace("done");
             }
 
             public void Complete()
             {
+                // this.Trace("start");
+
                 if (IsCompleted)
                     throw new InvalidOperationException("source already completed");
                 IsCompleted = true;
+
+                foreach (var observer in _incompleteObservers)
+                    observer.OnCompleted();
+                _incompleteObservers.Clear();
+
+                if (FirstObserver is not null)
+                    FirstObserver = null;
+
                 _completionCts.Cancel();
+
+                // this.Trace("done");
+            }
+
+            public IDisposable Subscribe(IObserver<T> observer)
+            {
+                // this.Trace("start");
+
+                _incompleteObservers.Add(observer);
+                var subscription = Source.Subscribe(observer.OnNext, observer.OnError);
+
+                // this.Trace("done");
+
+                return subscription;
             }
 
             public void SetFirstObserver(IObserver<T> observer)
             {
+                // this.Trace("start");
+
                 if (FirstObserver is not null)
                     throw new InvalidOperationException("first observer already subscribed");
                 FirstObserver = observer;
+
+                // this.Trace("done");
             }
 
-            public void SubscribeFirstObserver()
+            public void SetFirstSubscription(IDisposable subscription)
             {
-                if (FirstObserver is null)
-                    throw new InvalidOperationException("first observer not set");
+                // this.Trace("start");
 
-                FirstSubscription = Source.Subscribe(FirstObserver);
+                if (!ReferenceEquals(FirstSubscription, Disposable.Empty))
+                    throw new InvalidOperationException("first subscription already set");
+
+                FirstSubscription = subscription;
                 FirstObserver = null;
                 _dataCts.Cancel();
+
+                // this.Trace("done");
             }
 
             public void DisposeFirstSubscription()
             {
+                // this.Trace("start");
+
                 FirstSubscription.Dispose();
-            }
 
-            public void CompleteFirstObserver()
-            {
-                if (FirstObserver is null)
-                    throw new InvalidOperationException("first observer not set");
-
-                this.Trace("completed");
-                FirstObserver.OnCompleted();
-                FirstObserver = null;
+                // this.Trace("done");
             }
         }
     }
