@@ -2,9 +2,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
-using Annium.Diagnostics.Debug;
 using Annium.Extensions.Reactive.Internal;
 
 namespace System
@@ -29,7 +27,7 @@ namespace System
         {
             lock (ctx)
             {
-                var target = $"{observer}#{observer.GetId()}";
+                // var target = $"{observer}#{observer.GetId()}";
                 // ctx.Trace($"{target} - subscribe");
 
                 if (ctx.IsFlushed)
