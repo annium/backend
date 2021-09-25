@@ -34,7 +34,6 @@ namespace System
                 {
                     if (ctx.IsCompleted)
                     {
-                        observer.OnCompleted();
                         // ctx.Trace($"{target} - flushed, completed");
 
                         return Disposable.Empty;
@@ -158,10 +157,6 @@ namespace System
                     throw new InvalidOperationException("source already completed");
                 IsCompleted = true;
 
-                foreach (var observer in _incompleteObservers)
-                    observer.OnCompleted();
-                _incompleteObservers.Clear();
-
                 if (FirstObserver is not null)
                     FirstObserver = null;
 
@@ -174,8 +169,7 @@ namespace System
             {
                 // this.Trace("start");
 
-                _incompleteObservers.Add(observer);
-                var subscription = Source.Subscribe(observer.OnNext, observer.OnError);
+                var subscription = Source.Subscribe(observer);
 
                 // this.Trace("done");
 

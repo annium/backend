@@ -167,7 +167,7 @@ namespace Annium.Extensions.Reactive.Tests.Operators
             }, cts.Token).BufferUntilSubscribed();
 
             // act
-            await Task.Delay(1, CancellationToken.None);
+            await Task.Delay(10, CancellationToken.None);
             await Capture(observable, writeLog);
 
             log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
