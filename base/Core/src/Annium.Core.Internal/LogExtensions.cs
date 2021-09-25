@@ -18,7 +18,7 @@ namespace Annium.Core.Internal
         )
             where T : class
         {
-            var subject = $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
+            var subject = obj.GetFullId();
             var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
             var msg = string.IsNullOrWhiteSpace(message) ? string.Empty : $" >> {message}";
             Log.Trace($"{subject}{trace}{msg}", callerFilePath, member, line);
