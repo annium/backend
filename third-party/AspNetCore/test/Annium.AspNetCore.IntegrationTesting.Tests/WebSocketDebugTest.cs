@@ -41,7 +41,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
         public async Task DebugSubscription_Works()
         {
             Log.SetTestMode();
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - start");
+            Trace("start");
 
             // arrange
             await using var client = await GetClient();
@@ -50,7 +50,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
 
             void ClientLog(string value)
             {
-                Console.WriteLine($"client log: {value}");
+                Trace($"client log: {value}");
                 clientLog.Enqueue(value);
             }
 
@@ -59,23 +59,25 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             // act
             var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
             var os1 = o1.Subscribe(ClientLog);
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - first subscribed");
+            Trace("first subscribed");
             var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
             var os2 = o2.Subscribe(ClientLog);
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - second subscribed");
+            Trace("second subscribed");
             // wait for init and msg entries
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for init and msg log entries");
+            Trace("wait for init and msg log entries");
             await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - dispose subscriptions");
+            Trace("dispose subscriptions");
             cts.Cancel();
             os1.Dispose();
             os2.Dispose();
+            Trace("await subscription 1");
             await o1.WhenCompleted();
+            Trace("await subscription 2");
             await o2.WhenCompleted();
 
             // wait for cancellation entries
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - wait for cancellation log entries");
+            Trace("wait for cancellation log entries");
             await Wait.UntilAsync(() => serverLog.Count == 8);
 
             // assert
@@ -113,7 +115,12 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests
             };
             clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - done");
+            Trace("done");
+
+            void Trace(string value)
+            {
+                Console.WriteLine($"{nameof(DebugSubscription_Works)} - {value}");
+            }
         }
     }
 }

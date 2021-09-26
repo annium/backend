@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Extensions.Reactive.Internal;
 
@@ -13,201 +14,173 @@ namespace System
             this IObservable<T> source
         )
         {
-            var ctx = new Context<T>(source);
+            var ctx = new BufferContext<T>(source);
 
-            source.Subscribe(x => Add(ctx, x, null), e => Add(ctx, default!, e), ctx.DataCt);
-            source.Subscribe(delegate { }, () => Complete(ctx), ctx.CompletionCt);
+            source.Subscribe(x => ctx.Process(x, null), e => ctx.Process(default!, e), ctx.DataCt);
+            source.Subscribe(delegate { }, ctx.Complete, ctx.CompletionCt);
 
-            // ctx.Trace("init buffering");
+            ctx.Trace("create observable");
 
             return Observable.Create(CreateObservable(ctx));
         }
 
-        private static Func<IObserver<T>, IDisposable> CreateObservable<T>(Context<T> ctx) => observer =>
+        private static Func<IObserver<T>, IDisposable> CreateObservable<T>(BufferContext<T> ctx) => observer =>
+            ctx.IsFlushed ? ctx.Subscribe(observer) : ctx.SubscribeFirst(observer);
+
+        private class BufferContext<T>
         {
-            lock (ctx)
-            {
-                // var target = $"{observer}#{observer.GetId()}";
-                // ctx.Trace($"{target} - subscribe");
-
-                if (ctx.IsFlushed)
-                {
-                    if (ctx.IsCompleted)
-                    {
-                        // ctx.Trace($"{target} - flushed, completed");
-
-                        return Disposable.Empty;
-                    }
-
-                    // ctx.Trace($"{target} - flushed, attached");
-                    return ctx.Subscribe(observer);
-                }
-
-                // ctx.Trace($"{target} - pipe to");
-
-                while (ctx.Events.TryDequeue(out var e))
-                    observer.Handle(e);
-
-                ctx.Flush();
-
-                if (ctx.IsCompleted)
-                {
-                    // ctx.Trace($"{target} - piped, completed");
-
-                    return Disposable.Empty;
-                }
-
-                // ctx.Trace($"{target} - piped, attached");
-                ctx.SetFirstObserver(observer);
-
-                // ctx.Trace($"{target} - done");
-
-                return Disposable.Create(ctx.DisposeFirstSubscription);
-            }
-        };
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Add<T>(Context<T> ctx, T data, Exception? error)
-        {
-            lock (ctx)
-            {
-                // ctx.Trace("start");
-
-                if (ctx.IsCompleted)
-                    throw new InvalidOperationException($"Can't add: {data} - {error}, ctx already completed");
-
-                var e = new ObservableEvent<T>(data, error, false);
-                if (ctx.FirstObserver is null)
-                {
-                    // ctx.Trace($"enqueue: {data} - {error}");
-                    ctx.Events.Enqueue(e);
-                }
-                else
-                {
-                    // ctx.Trace($"process: {data} - {error}");
-                    ctx.FirstObserver.Handle(e);
-                    if (!e.IsCompleted)
-                        ctx.SetFirstSubscription(ctx.Subscribe(ctx.FirstObserver));
-                }
-
-                // ctx.Trace("done");
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Complete<T>(Context<T> ctx)
-        {
-            lock (ctx)
-            {
-                // ctx.Trace("start");
-
-                if (ctx.IsCompleted)
-                    throw new InvalidOperationException("Can't complete, ctx already completed");
-
-                if (!ctx.IsFlushed)
-                {
-                    // ctx.Trace("enqueue: completed");
-                    ctx.Events.Enqueue(new ObservableEvent<T>(default!, null, true));
-                }
-
-                ctx.Complete();
-
-                // ctx.Trace("done");
-            }
-        }
-
-        private class Context<T>
-        {
-            public IObservable<T> Source { get; }
-            public Queue<ObservableEvent<T>> Events { get; } = new();
             public bool IsFlushed { get; private set; }
-            public bool IsCompleted { get; private set; }
-            public IObserver<T>? FirstObserver { get; private set; }
-            public IDisposable FirstSubscription { get; private set; } = Disposable.Empty;
             public CancellationToken DataCt => _dataCts.Token;
             public CancellationToken CompletionCt => _completionCts.Token;
-            private readonly List<IObserver<T>> _incompleteObservers = new();
+            private readonly IObservable<T> _source;
+            private readonly Queue<ObservableEvent<T>> _events = new();
             private readonly CancellationTokenSource _dataCts;
             private readonly CancellationTokenSource _completionCts = new();
+            private bool _isCompleted;
+            private IObserver<T>? _firstObserver;
+            private IDisposable _firstSubscription = Disposable.Empty;
 
-            public Context(
+            public BufferContext(
                 IObservable<T> source
             )
             {
-                Source = source;
+                _source = source;
                 _dataCts = CancellationTokenSource.CreateLinkedTokenSource(_completionCts.Token);
             }
 
-            public void Flush()
+            public IDisposable SubscribeFirst(IObserver<T> observer)
             {
-                // this.Trace("start");
+                lock (this)
+                {
+                    var target = observer.GetFullId();
+                    Trace($"{target} - start");
 
-                if (IsFlushed)
-                    throw new InvalidOperationException("source already flushed");
-                IsFlushed = true;
+                    Flush(observer);
+                    SetFirstObserver(observer);
+                    var subscription = Disposable.Create(DisposeFirstSubscription);
 
-                // this.Trace("done");
-            }
+                    Trace($"{target} - done");
 
-            public void Complete()
-            {
-                // this.Trace("start");
-
-                if (IsCompleted)
-                    throw new InvalidOperationException("source already completed");
-                IsCompleted = true;
-
-                if (FirstObserver is not null)
-                    FirstObserver = null;
-
-                _completionCts.Cancel();
-
-                // this.Trace("done");
+                    return subscription;
+                }
             }
 
             public IDisposable Subscribe(IObserver<T> observer)
             {
-                // this.Trace("start");
+                lock (this)
+                {
+                    Trace("start");
+                    var subscription = _source.Subscribe(observer);
+                    Trace("done");
 
-                var subscription = Source.Subscribe(observer);
-
-                // this.Trace("done");
-
-                return subscription;
+                    return subscription;
+                }
             }
 
-            public void SetFirstObserver(IObserver<T> observer)
+            public void Process(T data, Exception? error)
             {
-                // this.Trace("start");
+                lock (this)
+                {
+                    Trace("start");
 
-                if (FirstObserver is not null)
+                    if (_isCompleted)
+                        throw new InvalidOperationException($"Can't add: {data} - {error}, ctx already completed");
+
+                    var e = new ObservableEvent<T>(data, error, false);
+                    if (_firstObserver is null)
+                    {
+                        Trace($"enqueue: {data} - {error}");
+                        _events.Enqueue(e);
+                    }
+                    else
+                    {
+                        Trace($"first - handle: {data} - {error}");
+                        _firstObserver.Handle(e);
+                        SetFirstSubscription(Subscribe(_firstObserver));
+                    }
+
+                    Trace("done");
+                }
+            }
+
+            public void Complete()
+            {
+                lock (this)
+                {
+                    Trace("start");
+
+                    if (_isCompleted)
+                        throw new InvalidOperationException("source already completed");
+
+                    if (!IsFlushed)
+                    {
+                        Trace("enqueue: completed");
+                        _events.Enqueue(new ObservableEvent<T>(default!, null, true));
+                    }
+
+                    _isCompleted = true;
+
+                    _firstObserver = null;
+                    _completionCts.Cancel();
+
+                    Trace("done");
+                }
+            }
+
+            private void Flush(IObserver<T> observer)
+            {
+                Trace("start");
+
+                IsFlushed = true;
+                while (_events.TryDequeue(out var e))
+                    observer.Handle(e);
+
+                Trace("done");
+            }
+
+            private void SetFirstObserver(IObserver<T> observer)
+            {
+                Trace("start");
+
+                if (_firstObserver is not null)
                     throw new InvalidOperationException("first observer already subscribed");
-                FirstObserver = observer;
+                _firstObserver = observer;
 
-                // this.Trace("done");
+                Trace("done");
             }
 
-            public void SetFirstSubscription(IDisposable subscription)
+            private void SetFirstSubscription(IDisposable subscription)
             {
-                // this.Trace("start");
+                Trace("start");
 
-                if (!ReferenceEquals(FirstSubscription, Disposable.Empty))
+                if (!ReferenceEquals(_firstSubscription, Disposable.Empty))
                     throw new InvalidOperationException("first subscription already set");
 
-                FirstSubscription = subscription;
-                FirstObserver = null;
+                _firstSubscription = subscription;
+                _firstObserver = null;
                 _dataCts.Cancel();
 
-                // this.Trace("done");
+                Trace("done");
             }
 
-            public void DisposeFirstSubscription()
+            private void DisposeFirstSubscription()
             {
-                // this.Trace("start");
+                Trace("start");
 
-                FirstSubscription.Dispose();
+                _firstSubscription.Dispose();
+                _firstSubscription = Disposable.Empty;
 
-                // this.Trace("done");
+                Trace("done");
+            }
+
+            public void Trace(
+                string msg,
+                [CallerFilePath] string callerFilePath = "",
+                [CallerMemberName] string member = "",
+                [CallerLineNumber] int line = 0
+            )
+            {
+                this.Trace(msg, false, callerFilePath, member, line);
             }
         }
     }

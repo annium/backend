@@ -53,7 +53,8 @@ namespace Annium.Net.WebSockets
             Executor.Start();
 
             // start socket observable
-            _observable = CreateSocketObservable(_observableCts.Token);
+            _observable = CreateSocketObservable(_observableCts.Token)
+                .TrackCompletion();
 
             // resolve components from configuration
             this.Log().Trace(options.ToString());
@@ -129,6 +130,7 @@ namespace Annium.Net.WebSockets
                     _socketTcs.SetResult(default!);
                 }
             });
+
             this.Log().Trace("spin until keepAlive monitor is ready");
             await Wait.UntilAsync(() => _keepAliveMonitor is not null!, CancellationToken.None, pollDelay: 5);
 
@@ -187,6 +189,8 @@ namespace Annium.Net.WebSockets
                 this.Log().Trace("refresh socket tcs");
                 _socketTcs = new TaskCompletionSource<object>();
             }
+
+            this.Log().Trace("done");
 
             return () => Task.CompletedTask;
         }, ct);

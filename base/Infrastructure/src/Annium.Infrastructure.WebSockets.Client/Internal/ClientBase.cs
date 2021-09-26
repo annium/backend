@@ -207,37 +207,40 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal
 
             this.Log().Trace($"{type}#{subscriptionId} - create observable");
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-            var observable = ObservableExt.StaticAsyncInstance<TMessage>(async ctx =>
-            {
-                this.Log().Trace($"{type}#{subscriptionId} - subscribe");
-                var subscription = _responseObservable
-                    .OfType<SubscriptionMessage<TMessage>>()
-                    .Where(x => x.SubscriptionId == subscriptionId)
-                    .SubscribeOn(TaskPoolScheduler.Default)
-                    .ObserveOn(TaskPoolScheduler.Default)
-                    .Select(x => x.Message)
-                    .Subscribe(ctx);
-
-                await ctx.Ct;
-
-                this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
-                return async () =>
+            var observable = ObservableExt
+                .StaticAsyncInstance<TMessage>(async ctx =>
                 {
-                    if (!_subscriptions.TryRemove(subscriptionId, out _))
+                    this.Log().Trace($"{type}#{subscriptionId} - subscribe");
+                    var subscription = _responseObservable
+                        .OfType<SubscriptionMessage<TMessage>>()
+                        .Where(x => x.SubscriptionId == subscriptionId)
+                        .SubscribeOn(TaskPoolScheduler.Default)
+                        .ObserveOn(TaskPoolScheduler.Default)
+                        .Select(x => x.Message)
+                        .Subscribe(ctx);
+
+                    await ctx.Ct;
+
+                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
+                    return async () =>
                     {
-                        this.Log().Trace($"{type}#{subscriptionId} - skipped disposal of untracked subscription");
-                        return;
-                    }
+                        if (!_subscriptions.TryRemove(subscriptionId, out _))
+                        {
+                            this.Log().Trace($"{type}#{subscriptionId} - skipped disposal of untracked subscription");
+                            return;
+                        }
 
-                    this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
-                    subscription.Dispose();
+                        this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
+                        subscription.Dispose();
 
-                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribe on server");
+                        this.Log().Trace($"{type}#{subscriptionId} - unsubscribe on server");
 
-                    await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
-                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
-                };
-            }, cts.Token).BufferUntilSubscribed();
+                        await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
+                        this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
+                    };
+                }, cts.Token)
+                .TrackCompletion()
+                .BufferUntilSubscribed();
 
             this.Log().Trace($"{type}#{subscriptionId} - init");
             var response = await FetchInternal(request, Guid.Empty, ct);

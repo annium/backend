@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 
 namespace System
 {
@@ -9,8 +10,16 @@ namespace System
         )
         {
             var tcs = new TaskCompletionSource<object?>();
-            using var _ = source.Subscribe(delegate { }, () => tcs.SetResult(null));
+            source.Trace("subscribe");
+            using var _ = source.Subscribe(delegate { }, () =>
+            {
+                source.Trace("set - start");
+                tcs.SetResult(null);
+                source.Trace("set - done");
+            });
+            source.Trace("wait");
             await tcs.Task;
+            source.Trace("done");
         }
     }
 }

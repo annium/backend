@@ -46,8 +46,6 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
                 InitDisposal();
                 this.Trace("dispose");
                 await disposeAsync();
-                // technical micro delay to force thread switching
-                await Task.Delay(1, CancellationToken.None);
                 this.Trace("invoke onCompleted");
                 ctx.OnCompleted();
                 this.Trace("done");

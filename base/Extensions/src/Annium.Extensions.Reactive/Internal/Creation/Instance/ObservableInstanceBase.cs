@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 
 namespace Annium.Extensions.Reactive.Internal.Creation.Instance
@@ -43,7 +44,11 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
         private void OnCompleted()
         {
             if (_isCompleted)
+            {
+                this.Trace("Observable already completed");
                 throw new InvalidOperationException("Observable already completed");
+            }
+
             _isCompleted = true;
 
             var subscribers = GetSubscribersSlice();
@@ -54,7 +59,10 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance
         private void EnsureNotDisposing()
         {
             if (_isDisposing)
+            {
+                this.Trace("Observable is already disposing");
                 throw new ObjectDisposedException(GetType().FriendlyName());
+            }
         }
 
         private IReadOnlyCollection<IObserver<T>> GetSubscribersSlice()
