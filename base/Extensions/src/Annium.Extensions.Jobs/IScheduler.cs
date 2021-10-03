@@ -5,6 +5,6 @@ namespace Annium.Extensions.Jobs
 {
     public interface IScheduler
     {
-        Action Schedule(Func<Task> handler, string interval);
+        IDisposable Schedule(Func<Task> handler, string interval);
     }
 }

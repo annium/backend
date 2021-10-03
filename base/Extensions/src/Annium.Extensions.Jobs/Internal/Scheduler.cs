@@ -26,12 +26,12 @@ namespace Annium.Extensions.Jobs.Internal
             Run(_cts.Token).Await();
         }
 
-        public Action Schedule(Func<Task> handler, string interval)
+        public IDisposable Schedule(Func<Task> handler, string interval)
         {
             var isMatch = _intervalResolver.GetMatcher(interval);
             _handlers.Add(handler, isMatch);
 
-            return () => _handlers.Remove(handler);
+            return Disposable.Create(() => _handlers.Remove(handler));
         }
 
         private async Task Run(CancellationToken ct)
