@@ -30,8 +30,8 @@ namespace Annium.Extensions.Execution.Internal
             var taskChannel = Channel.CreateUnbounded<Delegate>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleReader = true,
-                SingleWriter = true
+                SingleWriter = false,
+                SingleReader = true
             });
             _taskWriter = taskChannel.Writer;
             _taskReader = taskChannel.Reader;

@@ -37,8 +37,8 @@ namespace Annium.Logging.Shared.Internal
             var channel = Channel.CreateUnbounded<LogMessage<TContext>>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleReader = true,
-                SingleWriter = true
+                SingleWriter = false,
+                SingleReader = true
             });
             _messageWriter = channel.Writer;
             _messageReader = channel.Reader;

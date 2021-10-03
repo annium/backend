@@ -21,7 +21,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport
             var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleWriter = true,
+                SingleWriter = false,
                 SingleReader = true
             });
             _messageWriter = taskChannel.Writer;

@@ -28,8 +28,8 @@ namespace Annium.Data.Tables.Internal
             var taskChannel = Channel.CreateUnbounded<IChangeEvent<T>>(new UnboundedChannelOptions
             {
                 AllowSynchronousContinuations = true,
-                SingleReader = true,
-                SingleWriter = true
+                SingleWriter = false,
+                SingleReader = true
             });
             _eventWriter = taskChannel.Writer;
             _eventReader = taskChannel.Reader;
