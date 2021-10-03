@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
-using Annium.Core.Primitives.Threading.Tasks;
 using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal
@@ -23,7 +22,7 @@ namespace Annium.Extensions.Jobs.Internal
         {
             _timeProvider = timeProvider;
             _intervalResolver = intervalResolver;
-            Run(_cts.Token).Await();
+            Run(_cts.Token).GetAwaiter();
         }
 
         public IDisposable Schedule(Func<Task> handler, string interval)
@@ -43,7 +42,8 @@ namespace Annium.Extensions.Jobs.Internal
                 await Task.Delay(
                     TimeSpan.FromMinutes(1) -
                     TimeSpan.FromSeconds(time.Second) -
-                    TimeSpan.FromMilliseconds(time.Millisecond)
+                    TimeSpan.FromMilliseconds(time.Millisecond),
+                    CancellationToken.None
                 );
 
                 // run handlers
