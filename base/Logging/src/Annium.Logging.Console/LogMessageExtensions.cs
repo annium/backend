@@ -9,14 +9,14 @@ namespace Annium.Logging.Console
     {
         public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string message)
             where TContext : class, ILogContext
-            => DefaultFormatInternal(m, m.TimeFormat(), message);
+            => DefaultFormat(m, m.TimeFormat(), message);
 
         public static string DefaultTestFormat<TContext>(this LogMessage<TContext> m, string message)
             where TContext : class, ILogContext
-            => DefaultFormatInternal(m, m.TestTimeFormat(), message);
+            => DefaultFormat(m, m.TestTimeFormat(), message);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string DefaultFormatInternal<TContext>(this LogMessage<TContext> m, string time, string message)
+        public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string time, string message)
             where TContext : class, ILogContext
         {
             var sb = new StringBuilder();
@@ -28,22 +28,22 @@ namespace Annium.Logging.Console
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string Subject<TContext>(this LogMessage<TContext> m)
+        public static string Subject<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
             => string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string Location<TContext>(this LogMessage<TContext> m)
+        public static string Location<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
             => $" at {m.Type}.{m.Member}:{m.Line}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string TimeFormat<TContext>(this LogMessage<TContext> m)
+        public static string TimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
             => m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static string TestTimeFormat<TContext>(this LogMessage<TContext> m)
+        public static string TestTimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
             => Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("hh\\:mm\\:ss\\.fff");
     }
