@@ -38,9 +38,19 @@ namespace Annium.Logging.Console
             => $" at {m.Type}.{m.Member}:{m.Line}";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string DateTimeFormat<TContext>(this LogMessage<TContext> m)
+            where TContext : class, ILogContext
+            => m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToString("dd.MM.yy HH:mm:ss.fff", null);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
             => m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string TestDateTimeFormat<TContext>(this LogMessage<TContext> m)
+            where TContext : class, ILogContext
+            => Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("ddd\\.hh\\:mm\\:ss\\.fff");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TestTimeFormat<TContext>(this LogMessage<TContext> m)
