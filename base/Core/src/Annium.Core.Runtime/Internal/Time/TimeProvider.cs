@@ -8,5 +8,7 @@ namespace Annium.Core.Runtime.Internal.Time
     {
         public Instant Now => SystemClock.Instance.GetCurrentInstant();
         public DateTime DateTimeNow => Now.ToDateTimeUtc();
+        public long UnixMsNow => Now.ToUnixTimeMilliseconds();
+        public long UnixSecondsNow => Now.ToUnixTimeSeconds();
     }
 }

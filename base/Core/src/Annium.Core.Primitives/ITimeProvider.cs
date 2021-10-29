@@ -7,5 +7,7 @@ namespace Annium.Core.Primitives
     {
         Instant Now { get; }
         DateTime DateTimeNow { get; }
+        long UnixMsNow { get; }
+        long UnixSecondsNow { get; }
     }
 }
