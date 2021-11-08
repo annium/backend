@@ -1,5 +1,5 @@
 using System;
-using Annium.Logging.Console;
+using Annium.Logging.Console.Internal;
 using Annium.Logging.Shared;
 
 namespace Annium.Core.DependencyInjection

@@ -1,12 +1,14 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Annium.Core.Internal;
-using Annium.Logging.Shared;
+using NodaTime;
 
-namespace Annium.Logging.Console
+namespace Annium.Logging.Shared
 {
     public static class LogMessageExtensions
     {
+        public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
+
         public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string message)
             where TContext : class, ILogContext
             => DefaultFormat(m, m.TimeFormat(), message);
@@ -40,21 +42,21 @@ namespace Annium.Logging.Console
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string DateTimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
-            => m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToString("dd.MM.yy HH:mm:ss.fff", null);
+            => m.Instant.InZone(Tz).LocalDateTime.ToString("dd.MM.yy HH:mm:ss.fff", null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
-            => m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToString("HH:mm:ss.fff", null);
+            => m.Instant.InZone(Tz).LocalDateTime.ToString("HH:mm:ss.fff", null);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TestDateTimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
-            => Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("ddd\\.hh\\:mm\\:ss\\.fff");
+            => Log.ToRelativeLogTime(m.Instant.InZone(Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("ddd\\.hh\\:mm\\:ss\\.fff");
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static string TestTimeFormat<TContext>(this LogMessage<TContext> m)
             where TContext : class, ILogContext
-            => Log.ToRelativeLogTime(m.Instant.InZone(ConsoleLogHandler<TContext>.Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("hh\\:mm\\:ss\\.fff");
+            => Log.ToRelativeLogTime(m.Instant.InZone(Tz).LocalDateTime.ToDateTimeUnspecified()).ToString("hh\\:mm\\:ss\\.fff");
     }
 }

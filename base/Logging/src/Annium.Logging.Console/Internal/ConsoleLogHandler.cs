@@ -1,31 +1,11 @@
 using System;
-using System.Collections.Generic;
-using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
-using NodaTime;
 
-namespace Annium.Logging.Console
+namespace Annium.Logging.Console.Internal
 {
     internal class ConsoleLogHandler<TContext> : ILogHandler<TContext>
         where TContext : class, ILogContext
     {
-        public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
-        private static readonly object ConsoleLock = new();
-        private static readonly IReadOnlyDictionary<LogLevel, ConsoleColor> LevelColors;
-
-        static ConsoleLogHandler()
-        {
-            var colors = new Dictionary<LogLevel, ConsoleColor>
-            {
-                [LogLevel.Trace] = ConsoleColor.DarkGray,
-                [LogLevel.Debug] = ConsoleColor.Gray,
-                [LogLevel.Info] = ConsoleColor.White,
-                [LogLevel.Warn] = ConsoleColor.Yellow,
-                [LogLevel.Error] = ConsoleColor.Red
-            };
-            LevelColors = colors;
-        }
-
         private readonly Func<LogMessage<TContext>, string, string> _format;
         private readonly bool _color;
 
@@ -40,13 +20,13 @@ namespace Annium.Logging.Console
 
         public void Handle(LogMessage<TContext> msg)
         {
-            lock (ConsoleLock)
+            lock (StaticState.ConsoleLock)
             {
                 var currentColor = _color ? System.Console.ForegroundColor : default;
                 try
                 {
                     if (_color)
-                        System.Console.ForegroundColor = LevelColors[msg.Level];
+                        System.Console.ForegroundColor = StaticState.LevelColors[msg.Level];
 
                     if (msg.Exception is AggregateException aggregateException)
                     {
