@@ -37,8 +37,11 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<string, decimal>(x => decimal.Parse(x));
             Map<string, DateTime>(x => DateTime.Parse(x));
             Map<string, DateTimeOffset>(x => DateTimeOffset.Parse(x));
+            Map<string, TimeSpan>(x => TimeSpan.Parse(x));
             Map<string, Guid>(x => Guid.Parse(x));
             Map<string, Uri>(x => new Uri(x));
+            Map<string, Duration>(x => Duration.FromTimeSpan(TimeSpan.Parse(x)));
+            Map<string, Instant>(x => Instant.FromUnixTimeMilliseconds(long.Parse(x)));
 
             // to
             Map<bool, string>(x => x.ToString());
