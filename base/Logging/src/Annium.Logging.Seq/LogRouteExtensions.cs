@@ -10,7 +10,6 @@ namespace Annium.Core.DependencyInjection
     {
         public static LogRoute<TContext> UseSeq<TContext>(
             this LogRoute<TContext> route,
-            string project,
             SeqConfiguration configuration
         )
             where TContext : class, ILogContext
@@ -19,7 +18,7 @@ namespace Annium.Core.DependencyInjection
             {
                 var httpRequestFactory = sp.Resolve<IHttpRequestFactory>();
                 var serializer = sp.Resolve<ISerializer<string>>();
-                return new SeqLogHandler<TContext>(httpRequestFactory, serializer, project, configuration);
+                return new SeqLogHandler<TContext>(httpRequestFactory, serializer, configuration);
             }, configuration);
 
             return route;
