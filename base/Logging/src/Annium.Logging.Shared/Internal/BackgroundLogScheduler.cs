@@ -42,7 +42,7 @@ namespace Annium.Logging.Shared.Internal
             });
             _messageWriter = channel.Writer;
             _messageReader = channel.Reader;
-            _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token);
+            _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token).TrackCompletion();
             _subscription = _observable
                 .Buffer(configuration.BufferTime, configuration.BufferCount)
                 .Where(x => x.Count > 0)
@@ -61,6 +61,8 @@ namespace Annium.Logging.Shared.Internal
 
         private async Task<Func<Task>> Run(ObserverContext<LogMessage<TContext>> ctx)
         {
+            this.Trace("start");
+
             // normal mode - runs task immediately or waits for one
             while (!Volatile.Read(ref _isDisposed))
             {
@@ -89,6 +91,8 @@ namespace Annium.Logging.Shared.Internal
                     break;
             }
 
+            this.Trace("done");
+
             return () => Task.CompletedTask;
         }
 
@@ -101,9 +105,11 @@ namespace Annium.Logging.Shared.Internal
                 _messageWriter.Complete();
             this.Trace("wait for reader completion");
             await _messageReader.Completion;
-            this.Trace($"wait for {Count} messages(s) to finish");
+            this.Trace("cancel observable cts");
             _observableCts.Cancel();
+            this.Trace("await observable");
             await _observable.WhenCompleted();
+            this.Trace("dispose subscription");
             _subscription.Dispose();
             this.Trace("done");
         }
