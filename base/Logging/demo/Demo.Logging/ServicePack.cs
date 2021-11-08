@@ -14,7 +14,14 @@ namespace Demo.Logging
 
             container.AddLogging(route => route
                 .For(m => m.Level == LogLevel.Info).UseSeq(
-                    new SeqConfiguration(new Uri("http://localhost:5341"), "rtLlglmGD5ffTOujuROD", "logging-demo", TimeSpan.FromMilliseconds(50), 1)
+                    new SeqConfiguration
+                    {
+                        Endpoint = new Uri("http://localhost:5341"),
+                        ApiKey = "rtLlglmGD5ffTOujuROD",
+                        Project = "logging-demo",
+                        BufferTime = TimeSpan.FromMilliseconds(50),
+                        BufferCount = 1
+                    }
                 )
                 .For(m => m.Level == LogLevel.Debug).UseConsole()
                 .For(m => m.Level == LogLevel.Trace).UseInMemory());

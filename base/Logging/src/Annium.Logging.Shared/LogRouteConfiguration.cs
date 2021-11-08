@@ -4,19 +4,7 @@ namespace Annium.Logging.Shared
 {
     public record LogRouteConfiguration
     {
-        public TimeSpan BufferTime { get; }
-        public int BufferCount { get; }
-
-        public LogRouteConfiguration(TimeSpan bufferTime, int bufferCount)
-        {
-            BufferTime = bufferTime;
-            BufferCount = bufferCount;
-        }
-
-        public LogRouteConfiguration()
-        {
-            BufferTime = TimeSpan.Zero;
-            BufferCount = 0;
-        }
+        public TimeSpan BufferTime { get; init; } = TimeSpan.FromMinutes(1);
+        public int BufferCount { get; init; } = 100;
     }
 }

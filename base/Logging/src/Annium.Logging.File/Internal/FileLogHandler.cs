@@ -16,6 +16,7 @@ namespace Annium.Logging.File.Internal
         ) : base(format, cfg)
         {
             _cfg = cfg;
+            System.IO.File.WriteAllText(_cfg.File, string.Empty);
         }
 
         protected override async ValueTask<bool> SendEventsAsync(IReadOnlyCollection<string> events)
