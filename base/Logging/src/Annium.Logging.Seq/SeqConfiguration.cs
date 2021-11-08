@@ -3,7 +3,7 @@ using Annium.Logging.Shared;
 
 namespace Annium.Logging.Seq
 {
-    public class SeqConfiguration : LogRouteConfiguration
+    public record SeqConfiguration : LogRouteConfiguration
     {
         public Uri Endpoint { get; }
         public string ApiKey { get; }

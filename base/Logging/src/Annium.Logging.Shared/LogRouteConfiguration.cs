@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Logging.Shared
 {
-    public class LogRouteConfiguration
+    public record LogRouteConfiguration
     {
         public TimeSpan BufferTime { get; }
         public int BufferCount { get; }
