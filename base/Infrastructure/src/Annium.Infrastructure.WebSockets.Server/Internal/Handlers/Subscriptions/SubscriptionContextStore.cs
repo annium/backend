@@ -29,8 +29,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscription
             this.Log().Trace($"subscription {subscriptionId} - init");
             lock (_contexts)
             {
-                var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId)!;
-                if (context is null!)
+                var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId);
+                if (context is null)
                 {
                     this.Log().Trace($"subscription {subscriptionId} - context missing");
                     return false;

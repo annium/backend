@@ -151,13 +151,16 @@ namespace Annium.Core.Mapper.Internal
         {
             public static Entry Create() => new();
 
-            public bool HasConfiguration => Configuration is not null!;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            public bool HasConfiguration => Configuration is not null;
             public IMapConfiguration Configuration { get; private set; } = default!;
             public object MappingLock = new();
-            public bool HasMapping => _mapping is not null!;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            public bool HasMapping => _mapping is not null;
             public Mapping Mapping => _mapping.Value;
             public object MapLock = new();
-            public bool HasMap => Map is not null!;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            public bool HasMap => Map is not null;
             public Delegate Map { get; private set; } = default!;
             private Lazy<Mapping> _mapping = default!;
 
