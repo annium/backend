@@ -25,7 +25,7 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal
         public IObservable<Unit> Send<T>(T data)
             where T : notnull
         {
-            var message = Activator.CreateInstance(typeof(Message<>).MakeGenericType(data.GetType()), data);
+            var message = Activator.CreateInstance(typeof(Message<>).MakeGenericType(data.GetType()), data)!;
 
             return _socket.Send(_serializer.Serialize(message));
         }

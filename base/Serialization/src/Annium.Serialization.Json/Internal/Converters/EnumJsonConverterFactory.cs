@@ -20,12 +20,12 @@ namespace Annium.Serialization.Json.Internal.Converters
                 typeof(EnumJsonConverterConfiguration<>).MakeGenericType(typeToConvert),
                 parseAttribute?.Separator ?? " ",
                 parseAttribute?.DefaultValue
-            );
+            )!;
 
             var flagsAttribute = typeToConvert.GetTypeInfo().GetCustomAttribute<FlagsAttribute>();
             var converterType = flagsAttribute is null ? typeof(EnumJsonConverter<>) : typeof(FlagsEnumJsonConverter<>);
 
-            return (JsonConverter) Activator.CreateInstance(converterType.MakeGenericType(typeToConvert), configuration);
+            return (JsonConverter) Activator.CreateInstance(converterType.MakeGenericType(typeToConvert), configuration)!;
         }
     }
 }

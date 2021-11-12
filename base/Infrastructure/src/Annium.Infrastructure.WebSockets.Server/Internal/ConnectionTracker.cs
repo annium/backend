@@ -83,7 +83,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal
             EnsureNotDisposed();
 
             this.Log().Trace($"connection {id} - start");
-            ConnectionRef cnRef;
+            ConnectionRef? cnRef;
             lock (_connections)
             {
                 if (!_connections.Remove(id, out cnRef))

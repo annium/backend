@@ -70,7 +70,7 @@ namespace Annium.Serialization.Json.Internal.Converters
                     if (x is not null)
                         return x;
 
-                    if (options.IgnoreNullValues)
+                    if (options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
                         return _parameters[i].Type.DefaultValue();
 
                     throw new JsonException(

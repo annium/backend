@@ -9,6 +9,7 @@ namespace Annium.Core.Primitives.Collections.Generic
         public static Dictionary<TKey, TValue> ToDictionary<TKey, TValue>(
             this IEnumerable<KeyValuePair<TKey, TValue>> src
         )
+            where TKey : notnull
         {
             return src.ToDictionary(x => x.Key, x => x.Value);
         }
@@ -17,6 +18,7 @@ namespace Annium.Core.Primitives.Collections.Generic
             this IDictionary<TKey, TValue> src,
             Func<TKey, bool> predicate
         )
+            where TKey : notnull
         {
             foreach (var key in src.Keys.Where(predicate).ToArray())
                 src.Remove(key);

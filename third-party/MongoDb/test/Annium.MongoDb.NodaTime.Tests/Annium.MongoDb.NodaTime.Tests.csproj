@@ -3,10 +3,10 @@
         <PackageId>Annium.MongoDb.NodaTime.Tests</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.MongoDb.NodaTime.Tests</Description>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
-        <LangVersion>9.0</LangVersion>
+        <LangVersion>10.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>

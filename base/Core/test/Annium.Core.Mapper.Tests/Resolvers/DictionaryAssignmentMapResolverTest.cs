@@ -39,7 +39,7 @@ namespace Annium.Core.Mapper.Tests.Resolvers
                     x => new { x.Name, x.Age },
                     x => JsonSerializer.Deserialize<Info>(
                         x["Serialized"].ToString()!,
-                        default
+                        default(JsonSerializerOptions)
                     )
                 );
         }

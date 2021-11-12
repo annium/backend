@@ -25,7 +25,7 @@ namespace Annium.Logging.Seq.Internal
                 result["@x"] = $"{m.Exception.Message}{m.Exception.StackTrace}";
 
             foreach (var (key, value) in m.Data)
-                result[key] = value.ToString();
+                result[key] = value.ToString()!;
 
             return result;
         };

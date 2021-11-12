@@ -65,7 +65,7 @@ namespace Annium.Core.Runtime.Internal.Types
                 addMatchedAssembly(assembly);
                 var dependencies = (Assembly[]) autoScanned.GetType()
                     .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
-                    .GetValue(autoScanned);
+                    .GetValue(autoScanned)!;
                 foreach (var dependency in dependencies)
                 {
                     Log.Trace($"{name.Name} - add dependency {dependency.ShortName()}");

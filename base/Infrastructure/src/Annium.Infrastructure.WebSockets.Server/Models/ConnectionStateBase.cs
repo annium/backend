@@ -60,8 +60,8 @@ namespace Annium.Infrastructure.WebSockets.Server.Models
 
             foreach (var (property, bind) in bindableProperties)
             {
-                var container = (IAsyncDisposable) property.GetValue(this);
-                bind.Invoke(container, new[] { this });
+                var container = (IAsyncDisposable)property.GetValue(this)!;
+                bind.Invoke(container, new object[] { this });
                 Disposable += container;
             }
         }

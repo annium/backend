@@ -65,14 +65,14 @@ namespace Annium.Core.Mapper.Tests
         {
             p.Map<A, B>()
                 .Ignore(x => new { x.IgnoredA, x.IgnoredB })
-                .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default));
+                .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default(JsonSerializerOptions)));
             p.Map<B, A>()
-                .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, null));
+                .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
             p.Map<A, C>()
                 .Ignore(x => new { x.IgnoredA, x.IgnoredB })
-                .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default));
+                .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default(JsonSerializerOptions)));
             p.Map<C, A>()
-                .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, null));
+                .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
         }
 
         private class A
