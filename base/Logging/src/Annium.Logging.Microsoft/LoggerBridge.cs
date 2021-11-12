@@ -29,8 +29,8 @@ namespace Annium.Logging.Microsoft
             MicrosoftLogLevel logLevel,
             MicrosoftEventId eventId,
             TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter
+            Exception? exception,
+            Func<TState, Exception?, string> formatter
         )
         {
             _sentryBridge.Register<ILogSubject>(

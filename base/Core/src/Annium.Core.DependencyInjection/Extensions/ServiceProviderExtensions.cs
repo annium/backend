@@ -1,6 +1,6 @@
 using System;
-using Annium.Core.DependencyInjection.Internal.Container;
 using Microsoft.Extensions.DependencyInjection;
+using AsyncServiceScope = Annium.Core.DependencyInjection.Internal.Container.AsyncServiceScope;
 
 namespace Annium.Core.DependencyInjection
 {

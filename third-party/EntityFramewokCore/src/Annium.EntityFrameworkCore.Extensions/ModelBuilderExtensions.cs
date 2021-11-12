@@ -22,17 +22,17 @@ namespace Annium.Core.DependencyInjection
         {
             foreach (var entity in builder.Model.GetEntityTypes().Where(x => x.BaseType is null))
             {
-                var tableName = entity.GetTableName().SnakeCase();
+                var tableName = entity.GetTableName()?.SnakeCase();
                 entity.SetTableName(tableName);
 
                 foreach (var property in entity.GetProperties())
                     property.SetColumnName(property.GetColumnBaseName().SnakeCase());
 
                 foreach (var key in entity.GetKeys())
-                    key.SetName(key.GetName().SnakeCase());
+                    key.SetName(key.GetName()?.SnakeCase());
 
                 foreach (var key in entity.GetForeignKeys())
-                    key.SetConstraintName(key.GetConstraintName().SnakeCase());
+                    key.SetConstraintName(key.GetConstraintName()?.SnakeCase());
 
                 foreach (var key in entity.GetIndexes())
                     key.SetDatabaseName(key.GetDatabaseName().SnakeCase());

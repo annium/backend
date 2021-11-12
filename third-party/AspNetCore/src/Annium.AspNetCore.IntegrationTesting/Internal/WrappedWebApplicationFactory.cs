@@ -22,7 +22,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Internal
         {
             _appFactory = appFactory;
             _httpRequest = new Lazy<IHttpRequest>(InitHttpRequest, true);
-            _disposable += _appFactory;
+            _disposable += _appFactory as IAsyncDisposable;
         }
 
         public T Resolve<T>()
