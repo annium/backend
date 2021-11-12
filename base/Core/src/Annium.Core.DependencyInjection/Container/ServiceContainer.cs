@@ -44,6 +44,27 @@ namespace Annium.Core.DependencyInjection
         public ISingleRegistrationBuilderBase Add(Type type) =>
             new SingleRegistrationBuilder(this, type, new Registrar(Register));
 
+        public IFactoryRegistrationBuilderBase Add<T>(Func<IServiceProvider, T> factory)
+            where T : class
+            => Add(typeof(T), factory);
+
+        public ISingleRegistrationBuilderBase Add<TService, TImplementation>()
+            where TImplementation : TService
+            => Add(typeof(TImplementation)).As<TService>();
+
+        public ISingleRegistrationBuilderBase Add<TImplementationType>() =>
+            Add(typeof(TImplementationType));
+
+        public IServiceContainer Clone()
+        {
+            var clone = new ServiceContainer();
+
+            foreach (var descriptor in this)
+                clone.Add(descriptor);
+
+            return clone;
+        }
+
         public bool Contains(IServiceDescriptor descriptor)
         {
             var lifetime = (Microsoft.Extensions.DependencyInjection.ServiceLifetime)descriptor.Lifetime;
