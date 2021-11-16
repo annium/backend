@@ -37,11 +37,13 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<string, decimal>(x => decimal.Parse(x));
             Map<string, DateTime>(x => DateTime.Parse(x));
             Map<string, DateTimeOffset>(x => DateTimeOffset.Parse(x));
+            Map<string, DateOnly>(x => DateOnly.Parse(x));
             Map<string, TimeSpan>(x => TimeSpan.Parse(x));
+            Map<string, TimeOnly>(x => TimeOnly.Parse(x));
             Map<string, Guid>(x => Guid.Parse(x));
             Map<string, Uri>(x => new Uri(x));
-            Map<string, Duration>(x => Duration.FromTimeSpan(TimeSpan.Parse(x)));
             Map<string, Instant>(x => Instant.FromUnixTimeMilliseconds(long.Parse(x)));
+            Map<string, Duration>(x => Duration.FromTimeSpan(TimeSpan.Parse(x)));
 
             // to
             Map<bool, string>(x => x.ToString());
@@ -54,8 +56,12 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<decimal, string>(x => x.ToString(CultureInfo.CurrentUICulture));
             Map<DateTime, string>(x => x.ToString(CultureInfo.CurrentUICulture));
             Map<DateTimeOffset, string>(x => x.ToString());
+            Map<DateOnly, string>(x => x.ToString());
+            Map<TimeOnly, string>(x => x.ToString());
             Map<Guid, string>(x => x.ToString());
             Map<Uri, string>(x => x.ToString());
+            Map<Instant, string>(x => x.ToString());
+            Map<Duration, string>(x => x.ToString());
         }
 
         private void RegisterByte()
