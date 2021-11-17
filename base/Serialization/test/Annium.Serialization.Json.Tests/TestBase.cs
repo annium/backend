@@ -9,7 +9,7 @@ namespace Annium.Serialization.Json.Tests
         {
             var container = new ServiceContainer();
             container.AddRuntimeTools(GetType().Assembly, false);
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddJsonSerializers()
                 .Configure(opts => opts.UseCamelCaseNamingPolicy())
                 .SetDefault();

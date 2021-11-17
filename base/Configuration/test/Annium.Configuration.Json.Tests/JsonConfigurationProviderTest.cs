@@ -35,7 +35,7 @@ namespace Annium.Configuration.Json.Tests
                 jsonFile = Path.GetTempFileName();
                 var container = new ServiceContainer();
                 container.AddRuntimeTools(GetType().Assembly, false);
-                container.AddTimeProvider();
+                container.AddTime().WithRealTime().SetDefault();
                 container.AddJsonSerializers().SetDefault();
                 container.AddLogging(x => x.UseInMemory());
                 var serializer = container.BuildServiceProvider()

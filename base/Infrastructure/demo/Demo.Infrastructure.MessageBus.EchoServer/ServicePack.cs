@@ -10,7 +10,7 @@ namespace Demo.Infrastructure.MessageBus.EchoServer
         public override void Configure(IServiceContainer container)
         {
             container.AddRuntimeTools(GetType().Assembly, true);
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddLogging(route => route.UseConsole());
             container.AddJsonSerializers().SetDefault();
             container.AddMapper();

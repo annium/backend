@@ -15,7 +15,7 @@ namespace Annium.AspNetCore.TestServer
         {
             // register and setup services
             container.AddRuntimeTools(GetType().Assembly, true);
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddJsonSerializers()
                 .Configure(opts => opts
                     .ConfigureForOperations()

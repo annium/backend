@@ -67,7 +67,7 @@ namespace Annium.Extensions.Pooling.Tests
             var container = new ServiceContainer();
 
             var logger = container
-                .AddManagedTimeProvider()
+                .AddTime().WithManagedTime().SetDefault()
                 .AddLogging(route => route.UseInMemory())
                 // .AddLogging(route => route.UseConsole())
                 .BuildServiceProvider()

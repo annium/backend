@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Primitives;
 using Annium.Core.Runtime.Internal.Resources;
 using Annium.Core.Runtime.Internal.Time;
 using Annium.Core.Runtime.Internal.Types;
@@ -32,21 +31,8 @@ namespace Annium.Core.DependencyInjection
             return container;
         }
 
-        public static IServiceContainer AddTimeProvider(this IServiceContainer container)
-        {
-            container.Add<ITimeProvider, TimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Real).Singleton();
-            container.Add<IActionScheduler, ActionScheduler>().Singleton();
-
-            return container;
-        }
-
-        public static IServiceContainer AddManagedTimeProvider(this IServiceContainer container)
-        {
-            container.Add<ITimeProvider, ManagedTimeProvider>().As<IManagedTimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Managed).Singleton();
-            container.Add<IActionScheduler, ManagedActionScheduler>().Singleton();
-
-            return container;
-        }
+        public static ITimeConfigurationBuilder AddTime(this IServiceContainer container)
+            => new TimeConfigurationBuilder(container);
 
         public static ITypeManager GetTypeManager(this IServiceContainer container)
         {

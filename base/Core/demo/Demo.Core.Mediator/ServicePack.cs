@@ -10,7 +10,7 @@ namespace Demo.Core.Mediator
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddMediatorConfiguration(ConfigureMediator);
             container.AddMediator();
 

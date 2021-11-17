@@ -113,7 +113,7 @@ namespace Annium.Collections.Tests.Generic
         private IManagedTimeProvider GetTimeProvider()
         {
             var container = new ServiceContainer();
-            container.AddManagedTimeProvider();
+            container.AddTime().WithManagedTime().SetDefault();
             var provider = container.BuildServiceProvider();
 
             var timeProvider = provider.GetRequiredService<IManagedTimeProvider>();

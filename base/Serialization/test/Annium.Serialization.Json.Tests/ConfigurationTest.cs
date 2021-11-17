@@ -14,7 +14,7 @@ namespace Annium.Serialization.Json.Tests
             // arrange
             var container = new ServiceContainer();
             container.AddRuntimeTools(GetType().Assembly, false);
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddLogging(x => x.UseInMemory());
             // default
             container.AddJsonSerializers().SetDefault();

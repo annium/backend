@@ -68,7 +68,7 @@ namespace Annium.Logging.Console.Tests
         {
             var container = new ServiceContainer();
 
-            container.AddManagedTimeProvider();
+            container.AddTime().WithManagedTime().SetDefault();
 
             container.AddLogging(route => route
                 .For(m => m.Level >= minLogLevel)

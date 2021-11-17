@@ -8,7 +8,7 @@ namespace Annium.Testing
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
 
             // components
             container.Add<TestDiscoverer>().Singleton();

@@ -70,7 +70,7 @@ namespace Annium.Data.Tables.Tests
         {
             var container = new ServiceContainer();
             container.AddRuntimeTools(GetType().GetAssembly(), true);
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddJsonSerializers().SetDefault();
             container.AddLogging(x => x.UseInMemory());
 

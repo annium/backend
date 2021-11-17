@@ -110,7 +110,7 @@ namespace Annium.Core.Mediator.Tests
             var logHandler = new InMemoryLogHandler<DefaultLogContext>();
 
             var container = new ServiceContainer();
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
             container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
             container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));

@@ -136,7 +136,7 @@ namespace Annium.Storage.InMemory.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddInMemoryStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.AddManagedTimeProvider();
+            container.AddTime().WithManagedTime().SetDefault();
 
             var provider = container.BuildServiceProvider();
 

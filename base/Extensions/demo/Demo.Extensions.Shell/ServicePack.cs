@@ -12,7 +12,7 @@ namespace Demo.Extensions.Shell
 
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
             container.AddLogging(route => route.UseConsole());
             container.AddShell();
         }

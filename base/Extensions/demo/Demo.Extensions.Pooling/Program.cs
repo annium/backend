@@ -36,7 +36,7 @@ namespace Demo.Extensions.Pooling
         private static IObjectCache<uint, Item> CreateCache()
         {
             var container = new ServiceContainer();
-            container.AddTimeProvider();
+            container.AddTime().WithRealTime().SetDefault();
 
             var logger = container
                 .AddLogging(route => route.UseConsole())
