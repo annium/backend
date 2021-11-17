@@ -1,10 +1,12 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Internal.Resources;
 using Annium.Core.Runtime.Internal.Time;
 using Annium.Core.Runtime.Internal.Types;
 using Annium.Core.Runtime.Resources;
+using Annium.Core.Runtime.Time;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Core.DependencyInjection
@@ -32,16 +34,16 @@ namespace Annium.Core.DependencyInjection
 
         public static IServiceContainer AddTimeProvider(this IServiceContainer container)
         {
-            container.Add<TimeProvider>().AsInterfaces().Singleton();
-            container.Add<ActionScheduler>().AsInterfaces().Singleton();
+            container.Add<ITimeProvider, TimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Real).Singleton();
+            container.Add<IActionScheduler, ActionScheduler>().Singleton();
 
             return container;
         }
 
-        public static IServiceContainer AddTestTimeProvider(this IServiceContainer container)
+        public static IServiceContainer AddManagedTimeProvider(this IServiceContainer container)
         {
-            container.Add<TestTimeProvider>().AsInterfaces().Singleton();
-            container.Add<TestActionScheduler>().AsInterfaces().Singleton();
+            container.Add<ITimeProvider, ManagedTimeProvider>().As<IManagedTimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Managed).Singleton();
+            container.Add<IActionScheduler, ManagedActionScheduler>().Singleton();
 
             return container;
         }
@@ -55,7 +57,7 @@ namespace Annium.Core.DependencyInjection
 
             var descriptor = descriptors[0];
             if (descriptor is IInstanceServiceDescriptor instanceDescriptor)
-                return (ITypeManager) instanceDescriptor.ImplementationInstance;
+                return (ITypeManager)instanceDescriptor.ImplementationInstance;
 
             throw new InvalidOperationException($"{nameof(ITypeManager)} must be registered with instance.");
         }

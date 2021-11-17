@@ -5,11 +5,11 @@ using NodaTime;
 
 namespace Annium.Core.Runtime.Internal.Time
 {
-    internal class TestActionScheduler : IActionScheduler
+    internal class ManagedActionScheduler : IActionScheduler
     {
         private readonly IManagedTimeProvider _timeProvider;
 
-        public TestActionScheduler(
+        public ManagedActionScheduler(
             IManagedTimeProvider timeProvider
         )
         {

@@ -143,7 +143,7 @@ namespace Annium.Storage.FileSystem.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddFileSystemStorage();
             container.AddLogging(route => route.UseInMemory());
-            container.AddTestTimeProvider();
+            container.AddManagedTimeProvider();
 
             var provider = container.BuildServiceProvider();
 

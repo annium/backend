@@ -144,7 +144,7 @@ namespace Annium.Storage.S3.Tests
             var container = new ServiceContainer();
             container.AddStorage().AddS3Storage();
             container.AddLogging(route => route.UseInMemory());
-            container.AddTestTimeProvider();
+            container.AddManagedTimeProvider();
 
             var provider = container.BuildServiceProvider();
 
