@@ -73,7 +73,7 @@ namespace Annium.Core.Mapper.Internal
                 var mapping = ResolveMapping(src, tgt);
 
                 var result = Expression.Lambda(mapping(param), param);
-                var str = result.ToReadableString();
+                // var str = result.ToReadableString();
 
                 entry.SetMap(result.Compile());
             }
