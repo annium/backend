@@ -9,15 +9,17 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
         public void AsSelf_Works()
         {
             // arrange
-            var instance = new D(new A());
-            _container.Add(_ => instance).AsSelf().Singleton();
+            var a = new A();
+            _container.Add(_ => new D(a)).AsSelf().Singleton();
 
             // act
             Build();
 
             // assert
             _container.HasSingletonTypeFactory(typeof(D));
-            Get<D>().Is(instance);
+            var d = Get<D>();
+            d.A.Is(a);
+            Get<D>().Is(d);
         }
 
         [Fact]
@@ -87,8 +89,11 @@ namespace Annium.Core.DependencyInjection.Tests.Registrations
 
         private class C
         {
-            protected C(A _)
+            public A A { get; }
+
+            protected C(A a)
             {
+                A = a;
             }
         }
 
