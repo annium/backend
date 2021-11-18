@@ -45,10 +45,6 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<string, DateOnly>(x => DateOnly.Parse(x));
             Map<string, TimeSpan>(x => TimeSpan.Parse(x));
             Map<string, TimeOnly>(x => TimeOnly.Parse(x));
-            // nodatime types
-            Map<string, Instant>(x => Instant.FromUnixTimeMilliseconds(long.Parse(x)));
-            Map<string, Duration>(x => Duration.FromTimeSpan(TimeSpan.Parse(x)));
-            Map<string, IsoDayOfWeek>(x => x.ParseEnum<IsoDayOfWeek>());
 
             // to
             Map<bool, string>(x => x.ToString());
@@ -66,11 +62,8 @@ namespace Annium.Core.Mapper.Internal.Profiles
             Map<DateTime, string>(x => x.ToString(CultureInfo.CurrentUICulture));
             Map<DateTimeOffset, string>(x => x.ToString());
             Map<DateOnly, string>(x => x.ToString());
+            Map<TimeSpan, string>(x => x.ToString());
             Map<TimeOnly, string>(x => x.ToString());
-            // nodatime types
-            Map<Instant, string>(x => x.ToString());
-            Map<Duration, string>(x => x.ToString());
-            Map<IsoDayOfWeek, string>(x => x.ToString());
         }
 
         private void RegisterByte()
@@ -423,10 +416,33 @@ namespace Annium.Core.Mapper.Internal.Profiles
 
         private void RegisterNodaTime()
         {
+            // to noda time
+
+            // from string
+            Map<string, Instant>(x => Instant.FromUnixTimeMilliseconds(long.Parse(x)));
+            Map<string, Duration>(x => Duration.FromTimeSpan(TimeSpan.Parse(x)));
+            Map<string, IsoDayOfWeek>(x => x.ParseEnum<IsoDayOfWeek>());
+            Map<string, LocalDate>(ctx => x => ctx.Map<LocalDate>(DateOnly.Parse(x)));
+            Map<string, LocalTime>(ctx => x => ctx.Map<LocalTime>(TimeOnly.Parse(x)));
+            // from built-in date/time types
             Map<DateTime, Instant>(d => Instant.FromDateTimeUtc(d.ToUniversalTime()));
-            Map<Instant, DateTime>(i => i.ToDateTimeUtc());
             Map<DateTimeOffset, Instant>(d => Instant.FromDateTimeOffset(d));
+            Map<DateOnly, LocalDate>(x => new LocalDate(x.Year, x.Month, x.Day));
+            Map<TimeOnly, LocalTime>(x => new LocalTime(x.Hour, x.Minute, x.Second, x.Millisecond));
+
+            // from noda time
+
+            // to string
+            Map<Instant, string>(x => x.ToString());
+            Map<Duration, string>(x => x.ToString());
+            Map<IsoDayOfWeek, string>(x => x.ToString());
+            Map<LocalDate, string>(x => x.ToString());
+            Map<LocalTime, string>(x => x.ToString());
+            // to built-in date/time types
+            Map<Instant, DateTime>(i => i.ToDateTimeUtc());
             Map<Instant, DateTimeOffset>(i => i.ToDateTimeOffset());
+            Map<LocalDate, DateOnly>(x => new DateOnly(x.Year, x.Month, x.Day));
+            Map<LocalTime, TimeOnly>(x => new TimeOnly(x.Hour, x.Minute, x.Second, x.Millisecond));
         }
     }
 }
