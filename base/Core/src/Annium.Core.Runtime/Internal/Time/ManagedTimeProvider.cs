@@ -4,7 +4,7 @@ using NodaTime;
 
 namespace Annium.Core.Runtime.Internal.Time
 {
-    internal class ManagedTimeProvider : IManagedTimeProvider
+    internal class ManagedTimeProvider : ITimeManager, IInternalTimeProvider
     {
         public event Action<Duration> NowChanged = delegate { };
         public Instant Now { get; private set; }

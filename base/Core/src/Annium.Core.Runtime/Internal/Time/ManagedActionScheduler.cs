@@ -7,13 +7,13 @@ namespace Annium.Core.Runtime.Internal.Time
 {
     internal class ManagedActionScheduler : IActionScheduler
     {
-        private readonly IManagedTimeProvider _timeProvider;
+        private readonly ITimeManager _timeManager;
 
         public ManagedActionScheduler(
-            IManagedTimeProvider timeProvider
+            ITimeManager timeManager
         )
         {
-            _timeProvider = timeProvider;
+            _timeManager = timeManager;
         }
 
         public Action Delay(Action handle, int timeout)
@@ -23,18 +23,18 @@ namespace Annium.Core.Runtime.Internal.Time
         {
             var lasting = Duration.Zero;
 
-            _timeProvider.NowChanged += CheckTime;
+            _timeManager.NowChanged += CheckTime;
 
             void CheckTime(Duration duration)
             {
                 lasting += duration;
                 if (lasting < timeout)
                     return;
-                _timeProvider.NowChanged -= CheckTime;
+                _timeManager.NowChanged -= CheckTime;
                 handle();
             }
 
-            return () => _timeProvider.NowChanged -= CheckTime;
+            return () => _timeManager.NowChanged -= CheckTime;
         }
 
         public Action Interval(Action handle, int interval)
@@ -44,7 +44,7 @@ namespace Annium.Core.Runtime.Internal.Time
         {
             var lasting = Duration.Zero;
 
-            _timeProvider.NowChanged += CheckTime;
+            _timeManager.NowChanged += CheckTime;
 
             void CheckTime(Duration duration)
             {
@@ -56,7 +56,7 @@ namespace Annium.Core.Runtime.Internal.Time
                 handle();
             }
 
-            return () => _timeProvider.NowChanged -= CheckTime;
+            return () => _timeManager.NowChanged -= CheckTime;
         }
     }
 }

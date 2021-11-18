@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Collections.Generic;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +19,7 @@ namespace Annium.Collections.Tests.Generic
         public void Add_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (_, timeProvider) = GetTimeTools();
             var collection = new ExpiringDictionary<int, string>(timeProvider);
             var ttl = Duration.FromSeconds(5);
 
@@ -34,7 +35,7 @@ namespace Annium.Collections.Tests.Generic
         public void Get_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringDictionary<Guid, string>(timeProvider);
             var key = Guid.NewGuid();
             var value = "secret";
@@ -43,17 +44,17 @@ namespace Annium.Collections.Tests.Generic
 
             // assert
             collection.Get(key).Is(value);
-            timeProvider.SetNow(timeProvider.Now + ttl);
+            timeManager.SetNow(timeProvider.Now + ttl);
             collection.Get(key).Is(value);
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            ((Func<string>) (() => collection.Get(key))).Throws<KeyNotFoundException>();
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
         }
 
         [Fact]
         public void TryGet_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringDictionary<Guid, string>(timeProvider);
             var key = Guid.NewGuid();
             var value = "secret";
@@ -61,20 +62,19 @@ namespace Annium.Collections.Tests.Generic
             collection.Add(key, value, ttl);
 
             // assert
-            var val = string.Empty;
-            collection.TryGet(key, out val).IsTrue();
+            collection.TryGet(key, out var val).IsTrue();
             val.Is(value);
-            timeProvider.SetNow(timeProvider.Now + ttl);
+            timeManager.SetNow(timeProvider.Now + ttl);
             collection.Get(key).Is(value);
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            ((Func<string>) (() => collection.Get(key))).Throws<KeyNotFoundException>();
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
         }
 
         [Fact]
         public void ContainsKey_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringDictionary<Guid, string>(timeProvider);
             var key = Guid.NewGuid();
             var ttl = Duration.FromSeconds(5);
@@ -82,9 +82,9 @@ namespace Annium.Collections.Tests.Generic
 
             // assert
             collection.ContainsKey(key).IsTrue();
-            timeProvider.SetNow(timeProvider.Now + ttl);
+            timeManager.SetNow(timeProvider.Now + ttl);
             collection.ContainsKey(key).IsTrue();
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
             collection.ContainsKey(key).IsFalse();
         }
 
@@ -92,7 +92,7 @@ namespace Annium.Collections.Tests.Generic
         public void Remove_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringDictionary<Guid, string>(timeProvider);
             var key1 = Guid.NewGuid();
             var key2 = Guid.NewGuid();
@@ -104,22 +104,24 @@ namespace Annium.Collections.Tests.Generic
             collection.Remove(key2, out _).IsTrue();
             collection.ContainsKey(key1).IsTrue();
             collection.ContainsKey(key2).IsFalse();
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
             collection.Remove(key2, out _).IsFalse();
             collection.ContainsKey(key1).IsFalse();
             collection.ContainsKey(key2).IsFalse();
         }
 
-        private IManagedTimeProvider GetTimeProvider()
+        private (ITimeManager, ITimeProvider) GetTimeTools()
         {
             var container = new ServiceContainer();
             container.AddTime().WithManagedTime().SetDefault();
             var provider = container.BuildServiceProvider();
 
-            var timeProvider = provider.GetRequiredService<IManagedTimeProvider>();
-            timeProvider.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
+            var timeManager = provider.GetRequiredService<ITimeManager>();
+            timeManager.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
 
-            return timeProvider;
+            var timeProvider = provider.GetRequiredService<ITimeProvider>();
+
+            return (timeManager, timeProvider);
         }
     }
 }

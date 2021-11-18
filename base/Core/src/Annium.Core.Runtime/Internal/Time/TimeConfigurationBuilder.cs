@@ -17,7 +17,7 @@ internal class TimeConfigurationBuilder : ITimeConfigurationBuilder
 
     public ITimeConfigurationBuilder WithRealTime()
     {
-        _container.Add<TimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Real).Singleton();
+        _container.Add<RealTimeProvider>().AsKeyed(typeof(IInternalTimeProvider), TimeType.Real).Singleton();
         _container.Add<IActionScheduler, ActionScheduler>().Singleton();
         _type = TimeType.Real;
 
@@ -26,7 +26,7 @@ internal class TimeConfigurationBuilder : ITimeConfigurationBuilder
 
     public ITimeConfigurationBuilder WithManagedTime()
     {
-        _container.Add<IManagedTimeProvider, ManagedTimeProvider>().AsKeyed(typeof(ITimeProvider), TimeType.Managed).Singleton();
+        _container.Add<ITimeManager, ManagedTimeProvider>().AsKeyed(typeof(IInternalTimeProvider), TimeType.Managed).Singleton();
         _container.Add<IActionScheduler, ManagedActionScheduler>().Singleton();
         _type = TimeType.Managed;
 
@@ -39,8 +39,7 @@ internal class TimeConfigurationBuilder : ITimeConfigurationBuilder
             throw new InvalidOperationException("Can't set default time provider - no providers registered");
 
         _container.Add(_type).AsSelf().Singleton();
-        _container.Add<TimeProviderSwitcher>().AsInterfaces().Singleton();
-        _container.Add(sp => sp.Resolve<ITimeProviderResolver>().Resolve()).AsSelf().Singleton();
+        _container.Add<TimeProvider>().AsInterfaces().Singleton();
 
         return _container;
     }

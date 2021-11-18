@@ -1,12 +1,12 @@
 using System;
-using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.Core.Runtime.Time
 {
-    public interface IManagedTimeProvider : ITimeProvider
+    public interface ITimeManager
     {
         event Action<Duration> NowChanged;
+        Instant Now { get; }
         void SetNow(Instant now);
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Collections.Generic;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
 using Annium.Core.Runtime.Time;
 using Annium.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ namespace Annium.Collections.Tests.Generic
         public void Add_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (_, timeProvider) = GetTimeTools();
             var collection = new ExpiringCollection<int>(timeProvider);
             var ttl = Duration.FromSeconds(5);
 
@@ -33,7 +34,7 @@ namespace Annium.Collections.Tests.Generic
         public void Contains_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringCollection<Guid>(timeProvider);
             var value = Guid.NewGuid();
             var ttl = Duration.FromSeconds(5);
@@ -41,9 +42,9 @@ namespace Annium.Collections.Tests.Generic
 
             // assert
             collection.Contains(value).IsTrue();
-            timeProvider.SetNow(timeProvider.Now + ttl);
+            timeManager.SetNow(timeProvider.Now + ttl);
             collection.Contains(value).IsTrue();
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
             collection.Contains(value).IsFalse();
         }
 
@@ -51,7 +52,7 @@ namespace Annium.Collections.Tests.Generic
         public void Remove_Works()
         {
             // arrange
-            var timeProvider = GetTimeProvider();
+            var (timeManager, timeProvider) = GetTimeTools();
             var collection = new ExpiringCollection<Guid>(timeProvider);
             var value1 = Guid.NewGuid();
             var value2 = Guid.NewGuid();
@@ -63,22 +64,24 @@ namespace Annium.Collections.Tests.Generic
             collection.Remove(value2).IsTrue();
             collection.Contains(value1).IsTrue();
             collection.Contains(value2).IsFalse();
-            timeProvider.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
             collection.Remove(value2).IsFalse();
             collection.Contains(value1).IsFalse();
             collection.Contains(value2).IsFalse();
         }
 
-        private IManagedTimeProvider GetTimeProvider()
+        private (ITimeManager, ITimeProvider) GetTimeTools()
         {
             var container = new ServiceContainer();
             container.AddTime().WithManagedTime().SetDefault();
             var provider = container.BuildServiceProvider();
 
-            var timeProvider = provider.GetRequiredService<IManagedTimeProvider>();
-            timeProvider.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
+            var timeManager = provider.GetRequiredService<ITimeManager>();
+            timeManager.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
 
-            return timeProvider;
+            var timeProvider = provider.GetRequiredService<ITimeProvider>();
+
+            return (timeManager, timeProvider);
         }
     }
 }
