@@ -27,6 +27,7 @@ namespace Annium.Configuration.Json.Tests
                 Dictionary = new Dictionary<string, Val> { { "demo", new Val { Plain = 14, Array = new[] { 3m, 15m } } } },
                 Nested = new Val { Plain = 4, Array = new[] { 4m, 13m } },
                 Abstract = new ConfigTwo { Value = 10 },
+                Tuple = ("demo|", 11),
             };
 
             string jsonFile = string.Empty;

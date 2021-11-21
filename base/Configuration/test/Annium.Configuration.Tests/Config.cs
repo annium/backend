@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Annium.Core.Mapper.Attributes;
 using Annium.Core.Runtime.Types;
@@ -16,6 +17,7 @@ namespace Annium.Configuration.Tests
 
         public SomeConfig Abstract { get; set; } = new ConfigOne();
         public SomeEnum Enum { get; set; }
+        public ValueTuple<string, int> Tuple { get; set; }
     }
 
     public class Val
