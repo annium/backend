@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Testing;
 using Xunit;
 
@@ -15,6 +16,7 @@ public class SequentialTest
     // ReSharper disable once xUnit1026
     public async Task SequentialExecutor_NormalFlow_Works(int index)
     {
+        Log.SetTestMode();
         Console.WriteLine($"run {index}");
 
         // arrange
@@ -59,6 +61,7 @@ public class SequentialTest
     // ReSharper disable once xUnit1026
     public async Task SequentialExecutor_Cancellation_Works(int index)
     {
+        Log.SetTestMode();
         Console.WriteLine($"run {index}");
 
         // arrange

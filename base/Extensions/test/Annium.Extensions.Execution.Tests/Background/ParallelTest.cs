@@ -16,6 +16,7 @@ public class ParallelTest
     // ReSharper disable once xUnit1026
     public async Task ParallelExecutor_Works(int index)
     {
+        Log.SetTestMode();
         // arrange
         Console.WriteLine($"run {index}");
         var executor = Executor.Background.Parallel<ParallelTest>();
