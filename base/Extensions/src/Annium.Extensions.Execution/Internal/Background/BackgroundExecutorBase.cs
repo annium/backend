@@ -13,6 +13,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
     {
         Action execute          => Task.Run(execute),
         Func<ValueTask> execute => Task.Run(async () => await execute().ConfigureAwait(false)),
+        Func<Task> execute      => Task.Run(async () => await execute().ConfigureAwait(false)),
         _                       => throw new NotSupportedException()
     };
 
@@ -44,50 +45,158 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 
     public Task ExecuteAsync(Action task)
     {
-        ScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource();
+        ScheduleTask(() =>
+        {
+            try
+            {
+                task();
+                tcs.SetResult();
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return tcs.Task;
     }
 
     public Task<T> ExecuteAsync<T>(Func<T> task)
     {
-        ScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource<T>();
+        ScheduleTask(() =>
+        {
+            try
+            {
+                tcs.SetResult(task());
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return tcs.Task;
     }
 
     public Task ExecuteAsync(Func<ValueTask> task)
     {
-        ScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource();
+        ScheduleTask(async () =>
+        {
+            try
+            {
+                await task();
+                tcs.SetResult();
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return tcs.Task;
     }
 
     public Task<T> ExecuteAsync<T>(Func<ValueTask<T>> task)
     {
-        ScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource<T>();
+        ScheduleTask(async () =>
+        {
+            try
+            {
+                tcs.SetResult(await task());
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return tcs.Task;
     }
 
     public Task TryExecuteAsync(Action task)
     {
-        TryScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource();
+        var scheduled = TryScheduleTask(() =>
+        {
+            try
+            {
+                task();
+                tcs.SetResult();
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return tcs.Task;
     }
 
     public Task<T> TryExecuteAsync<T>(Func<T> task)
     {
-        TryScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource<T>();
+        var scheduled = TryScheduleTask(() =>
+        {
+            try
+            {
+                tcs.SetResult(task());
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return tcs.Task;
     }
 
     public Task TryExecuteAsync(Func<ValueTask> task)
     {
-        TryScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource();
+        var scheduled = TryScheduleTask(async () =>
+        {
+            try
+            {
+                await task();
+                tcs.SetResult();
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return tcs.Task;
     }
 
     public Task<T> TryExecuteAsync<T>(Func<ValueTask<T>> task)
     {
-        TryScheduleTask(task);
-        throw new NotImplementedException();
+        var tcs = new TaskCompletionSource<T>();
+        var scheduled = TryScheduleTask(async () =>
+        {
+            try
+            {
+                tcs.SetResult(await task());
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return tcs.Task;
     }
 
     public void Start(CancellationToken ct = default)
@@ -150,4 +259,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         HandleStop();
         this.Trace("done");
     }
+
+    private InvalidOperationException UnavailableException() =>
+        new("Executor is not available already");
 }
