@@ -6,31 +6,30 @@ using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Demo.Infrastructure.WebSockets.Domain.Responses.System;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers
+namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+
+internal class SessionTimePusher : IPusher<SessionTimeNotification, ConnectionState>
 {
-    internal class SessionTimePusher : IPusher<SessionTimeNotification, ConnectionState>
+    private readonly ITimeProvider _timeProvider;
+
+    public SessionTimePusher(
+        ITimeProvider timeProvider
+    )
     {
-        private readonly ITimeProvider _timeProvider;
+        _timeProvider = timeProvider;
+    }
 
-        public SessionTimePusher(
-            ITimeProvider timeProvider
-        )
+    public async Task RunAsync(
+        IPushContext<SessionTimeNotification, ConnectionState> ctx,
+        CancellationToken ct
+    )
+    {
+        var start = _timeProvider.Now;
+        while (!ct.IsCancellationRequested)
         {
-            _timeProvider = timeProvider;
-        }
+            await Task.Delay(TimeSpan.FromSeconds(1), ct);
 
-        public async Task RunAsync(
-            IPushContext<SessionTimeNotification, ConnectionState> ctx,
-            CancellationToken ct
-        )
-        {
-            var start = _timeProvider.Now;
-            while (!ct.IsCancellationRequested)
-            {
-                await Task.Delay(TimeSpan.FromSeconds(1), ct);
-
-                ctx.Send(new SessionTimeNotification { Duration = (_timeProvider.Now - start).ToTimeSpan() });
-            }
+            ctx.Send(new SessionTimeNotification { Duration = (_timeProvider.Now - start).ToTimeSpan() });
         }
     }
 }

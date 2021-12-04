@@ -3,19 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Testing.Elements;
 
-namespace Annium.Testing
+namespace Annium.Testing;
+
+public static class FilterExtensions
 {
-    public static class FilterExtensions
+    public static IEnumerable<Test> FilterMask(this IEnumerable<Test> tests, string mask)
     {
-        public static IEnumerable<Test> FilterMask(this IEnumerable<Test> tests, string mask)
-        {
-            if (string.IsNullOrWhiteSpace(mask))
-                return tests;
+        if (string.IsNullOrWhiteSpace(mask))
+            return tests;
 
-            var list = tests.ToList();
-            var comparison = StringComparison.CurrentCultureIgnoreCase;
+        var list = tests.ToList();
+        var comparison = StringComparison.CurrentCultureIgnoreCase;
 
-            return list.Where(t => t.DisplayName.Contains(mask, comparison)).ToArray();
-        }
+        return list.Where(t => t.DisplayName.Contains(mask, comparison)).ToArray();
     }
 }

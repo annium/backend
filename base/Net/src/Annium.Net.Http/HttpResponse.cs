@@ -2,59 +2,58 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http
-{
-    public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
-    {
-        public T Data { get; }
+namespace Annium.Net.Http;
 
-        public HttpResponse(
-            IHttpResponse message,
-            T data
-        ) : base(message)
-        {
-            Data = data;
-        }
+public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
+{
+    public T Data { get; }
+
+    public HttpResponse(
+        IHttpResponse message,
+        T data
+    ) : base(message)
+    {
+        Data = data;
+    }
+}
+
+public class HttpResponse : IHttpResponse
+{
+    public bool IsSuccess { get; }
+    public bool IsFailure { get; }
+    public HttpStatusCode StatusCode { get; }
+    public string StatusText { get; }
+    public HttpResponseHeaders Headers { get; }
+    public HttpContent Content { get; }
+
+    public HttpResponse(HttpResponseMessage message)
+    {
+        IsSuccess = message.IsSuccessStatusCode;
+        IsFailure = !message.IsSuccessStatusCode;
+        StatusCode = message.StatusCode;
+        StatusText = message.ReasonPhrase!;
+        Headers = message.Headers;
+        Content = message.Content;
     }
 
-    public class HttpResponse : IHttpResponse
+    public HttpResponse(HttpRequestException exception)
     {
-        public bool IsSuccess { get; }
-        public bool IsFailure { get; }
-        public HttpStatusCode StatusCode { get; }
-        public string StatusText { get; }
-        public HttpResponseHeaders Headers { get; }
-        public HttpContent Content { get; }
+        IsSuccess = false;
+        IsFailure = true;
+        StatusCode = HttpStatusCode.InternalServerError;
+        StatusText = exception.Message!;
+        var message = new HttpResponseMessage();
+        Headers = message.Headers;
+        Content = new StringContent(string.Empty);
+    }
 
-        public HttpResponse(HttpResponseMessage message)
-        {
-            IsSuccess = message.IsSuccessStatusCode;
-            IsFailure = !message.IsSuccessStatusCode;
-            StatusCode = message.StatusCode;
-            StatusText = message.ReasonPhrase!;
-            Headers = message.Headers;
-            Content = message.Content;
-        }
-
-        public HttpResponse(HttpRequestException exception)
-        {
-            IsSuccess = false;
-            IsFailure = true;
-            StatusCode = HttpStatusCode.InternalServerError;
-            StatusText = exception.Message!;
-            var message = new HttpResponseMessage();
-            Headers = message.Headers;
-            Content = new StringContent(string.Empty);
-        }
-
-        internal HttpResponse(IHttpResponse response)
-        {
-            IsSuccess = response.IsSuccess;
-            IsFailure = response.IsFailure;
-            StatusCode = response.StatusCode;
-            StatusText = response.StatusText;
-            Headers = response.Headers;
-            Content = response.Content;
-        }
+    internal HttpResponse(IHttpResponse response)
+    {
+        IsSuccess = response.IsSuccess;
+        IsFailure = response.IsFailure;
+        StatusCode = response.StatusCode;
+        StatusText = response.StatusText;
+        Headers = response.Headers;
+        Content = response.Content;
     }
 }

@@ -1,40 +1,39 @@
 using System;
 
-namespace Annium.Testing
+namespace Annium.Testing;
+
+public static class ArrayExtensions
 {
-    public static class ArrayExtensions
+    public static T At<T>(this T[] value, int key)
     {
-        public static T At<T>(this T[] value, int key)
-        {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
-            var total = value.Length;
-            (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total - 1}]");
+        var total = value.Length;
+        (0 <= key && key < total).IsTrue($"Index `{key}` is out of bounds [0,{total - 1}]");
 
-            return value[key];
-        }
+        return value[key];
+    }
 
-        public static T[] Has<T>(this T[] value, int count)
-        {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+    public static T[] Has<T>(this T[] value, int count)
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
-            var total = value.Length;
-            total.Is(count, $"Array expected to have `{count}` items, but has `{total}` items");
+        var total = value.Length;
+        total.Is(count, $"Array expected to have `{count}` items, but has `{total}` items");
 
-            return value;
-        }
+        return value;
+    }
 
-        public static T[] IsEmpty<T>(this T[] value)
-        {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+    public static T[] IsEmpty<T>(this T[] value)
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
-            var total = value.Length;
-            total.Is(0, $"Array expected to be empty, but has `{total}` items");
+        var total = value.Length;
+        total.Is(0, $"Array expected to be empty, but has `{total}` items");
 
-            return value;
-        }
+        return value;
     }
 }

@@ -1,10 +1,9 @@
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Storage.Abstractions
+namespace Annium.Storage.Abstractions;
+
+public abstract class ConfigurationBase
 {
-    public abstract class ConfigurationBase
-    {
-        [ResolutionKey]
-        public string Type { get; set; } = string.Empty;
-    }
+    [ResolutionKey]
+    public string Type { get; set; } = string.Empty;
 }

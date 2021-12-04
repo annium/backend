@@ -1,17 +1,16 @@
 using Annium.Localization.Abstractions;
 using Annium.Localization.Yaml;
 
-namespace Annium.Core.DependencyInjection
-{
-    public static class LocalizationOptionsExtensions
-    {
-        public static LocalizationOptions UseYamlStorage(
-            this LocalizationOptions options
-        )
-        {
-            options.SetLocaleStorage(container => { container.Add<ILocaleStorage, Storage>().Singleton(); });
+namespace Annium.Core.DependencyInjection;
 
-            return options;
-        }
+public static class LocalizationOptionsExtensions
+{
+    public static LocalizationOptions UseYamlStorage(
+        this LocalizationOptions options
+    )
+    {
+        options.SetLocaleStorage(container => { container.Add<ILocaleStorage, Storage>().Singleton(); });
+
+        return options;
     }
 }

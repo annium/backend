@@ -1,12 +1,11 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Pooling
+namespace Annium.Extensions.Pooling;
+
+public interface IObjectCache<TKey, TValue> : IAsyncDisposable
+    where TKey : notnull
+    where TValue : notnull
 {
-    public interface IObjectCache<TKey, TValue> : IAsyncDisposable
-        where TKey : notnull
-        where TValue : notnull
-    {
-        Task<ICacheReference<TValue>> GetAsync(TKey key);
-    }
+    Task<ICacheReference<TValue>> GetAsync(TKey key);
 }

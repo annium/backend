@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
+namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+
+internal interface IConnectionBoundStore
 {
-    internal interface IConnectionBoundStore
-    {
-        Task Cleanup(Guid connectionId);
-    }
+    Task Cleanup(Guid connectionId);
 }

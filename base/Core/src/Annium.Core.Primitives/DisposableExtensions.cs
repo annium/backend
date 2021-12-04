@@ -1,18 +1,17 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives;
+
+public static class DisposableExtensions
 {
-    public static class DisposableExtensions
+    public static ValueTask DisposeAsync(this IDisposable disposable)
     {
-        public static ValueTask DisposeAsync(this IDisposable disposable)
-        {
-            if (disposable is IAsyncDisposable asyncDisposable)
-                return asyncDisposable.DisposeAsync();
+        if (disposable is IAsyncDisposable asyncDisposable)
+            return asyncDisposable.DisposeAsync();
 
-            disposable.Dispose();
+        disposable.Dispose();
 
-            return new ValueTask(Task.CompletedTask);
-        }
+        return new ValueTask(Task.CompletedTask);
     }
 }

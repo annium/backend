@@ -1,12 +1,11 @@
 ﻿using MongoDB.Bson;
 
-namespace Annium.MongoDb.NodaTime.Tests
+namespace Annium.MongoDb.NodaTime.Tests;
+
+internal static class TestHelpers
 {
-    internal static class TestHelpers
+    public static string ToTestJson<TType>(this TType obj)
     {
-        public static string ToTestJson<TType>(this TType obj)
-        {
-            return obj.ToJson().Replace('"', '\'');
-        }
+        return obj.ToJson().Replace('"', '\'');
     }
 }

@@ -4,27 +4,26 @@ using System.Threading.Tasks;
 using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Extensions.Arguments.Internal;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments;
+
+public abstract class AsyncCommand<T1, T2> : CommandBase
+    where T1 : new()
+    where T2 : new()
 {
-    public abstract class AsyncCommand<T1, T2> : CommandBase
-        where T1 : new()
-        where T2 : new()
+    public abstract Task HandleAsync(T1 cfg1, T2 cfg2, CancellationToken ct);
+
+    public override void Process(string command, string[] args, CancellationToken ct)
     {
-        public abstract Task HandleAsync(T1 cfg1, T2 cfg2, CancellationToken ct);
-
-        public override void Process(string command, string[] args, CancellationToken ct)
+        var root = Root!;
+        if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
         {
-            var root = Root!;
-            if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
-            {
-                Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, typeof(T1), typeof(T2)));
-                return;
-            }
-
-            var cfg1 = root.ConfigurationBuilder.Build<T1>(args);
-            var cfg2 = root.ConfigurationBuilder.Build<T2>(args);
-
-            HandleAsync(cfg1, cfg2, ct).Await();
+            Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, typeof(T1), typeof(T2)));
+            return;
         }
+
+        var cfg1 = root.ConfigurationBuilder.Build<T1>(args);
+        var cfg2 = root.ConfigurationBuilder.Build<T2>(args);
+
+        HandleAsync(cfg1, cfg2, ct).Await();
     }
 }

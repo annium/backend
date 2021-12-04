@@ -1,8 +1,7 @@
 using System;
 
-namespace Annium.Serialization.Abstractions
+namespace Annium.Serialization.Abstractions;
+
+public class DeserializationConstructorAttribute : Attribute
 {
-    public class DeserializationConstructorAttribute : Attribute
-    {
-    }
 }

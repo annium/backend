@@ -1,8 +1,7 @@
-namespace Annium.Logging.Shared
+namespace Annium.Logging.Shared;
+
+public interface ILogHandler<TContext>
+    where TContext : class, ILogContext
 {
-    public interface ILogHandler<TContext>
-        where TContext : class, ILogContext
-    {
-        void Handle(LogMessage<TContext> message);
-    }
+    void Handle(LogMessage<TContext> message);
 }

@@ -1,31 +1,30 @@
-namespace Annium.Data.Operations.Implementations
+namespace Annium.Data.Operations.Implementations;
+
+internal sealed record Result<TD> : ResultBase<IResult<TD>>, IResult<TD>
 {
-    internal sealed record Result<TD> : ResultBase<IResult<TD>>, IResult<TD>
+    public TD Data { get; }
+
+    internal Result(TD data)
     {
-        public TD Data { get; }
-
-        internal Result(TD data)
-        {
-            Data = data;
-        }
-
-        public override IResult<TD> Copy()
-        {
-            var clone = new Result<TD>(Data);
-            CloneTo(clone);
-
-            return clone;
-        }
+        Data = data;
     }
 
-    internal sealed record Result : ResultBase<IResult>, IResult
+    public override IResult<TD> Copy()
     {
-        public override IResult Copy()
-        {
-            var clone = new Result();
-            CloneTo(clone);
+        var clone = new Result<TD>(Data);
+        CloneTo(clone);
 
-            return clone;
-        }
+        return clone;
+    }
+}
+
+internal sealed record Result : ResultBase<IResult>, IResult
+{
+    public override IResult Copy()
+    {
+        var clone = new Result();
+        CloneTo(clone);
+
+        return clone;
     }
 }

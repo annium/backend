@@ -3,28 +3,27 @@ using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 
-namespace Annium.Architecture.Mediator.Tests
+namespace Annium.Architecture.Mediator.Tests;
+
+public class TestBase
 {
-    public class TestBase
+    protected IMediator GetMediator(Action<MediatorConfiguration> configure)
     {
-        protected IMediator GetMediator(Action<MediatorConfiguration> configure)
-        {
-            var container = new ServiceContainer();
+        var container = new ServiceContainer();
 
-            container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
-            container.AddTime().WithRealTime().SetDefault();
+        container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+        container.AddTime().WithRealTime().SetDefault();
 
-            container.AddLogging(route => route.UseInMemory());
+        container.AddLogging(route => route.UseInMemory());
 
-            container.AddLocalization(opts => opts.UseInMemoryStorage());
+        container.AddLocalization(opts => opts.UseInMemoryStorage());
 
-            container.AddComposition();
-            container.AddValidation();
+        container.AddComposition();
+        container.AddValidation();
 
-            container.AddMediatorConfiguration(configure);
-            container.AddMediator();
+        container.AddMediatorConfiguration(configure);
+        container.AddMediator();
 
-            return container.BuildServiceProvider().Resolve<IMediator>();
-        }
+        return container.BuildServiceProvider().Resolve<IMediator>();
     }
 }

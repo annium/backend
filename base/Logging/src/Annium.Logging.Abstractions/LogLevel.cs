@@ -1,17 +1,16 @@
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Abstractions;
+
+public enum LogLevel
 {
-    public enum LogLevel
-    {
-        Trace = 0,
+    Trace = 0,
 
-        Debug = 1,
+    Debug = 1,
 
-        Info = 2,
+    Info = 2,
 
-        Warn = 3,
+    Warn = 3,
 
-        Error = 4,
+    Error = 4,
 
-        None = 5,
-    }
+    None = 5,
 }

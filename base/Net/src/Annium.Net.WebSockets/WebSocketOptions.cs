@@ -1,6 +1,5 @@
-namespace Annium.Net.WebSockets
+namespace Annium.Net.WebSockets;
+
+public record WebSocketOptions : WebSocketBaseOptions
 {
-    public record WebSocketOptions : WebSocketBaseOptions
-    {
-    }
 }

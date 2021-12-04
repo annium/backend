@@ -1,6 +1,5 @@
-namespace Annium.Logging.Shared
+namespace Annium.Logging.Shared;
+
+public class DefaultLogContext : ILogContext
 {
-    public class DefaultLogContext : ILogContext
-    {
-    }
 }

@@ -1,9 +1,8 @@
 using System.Reflection;
 
-namespace Annium.Core.Runtime.Loader
+namespace Annium.Core.Runtime.Loader;
+
+public interface IAssemblyLoader
 {
-    public interface IAssemblyLoader
-    {
-        Assembly Load(string name);
-    }
+    Assembly Load(string name);
 }

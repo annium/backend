@@ -1,21 +1,20 @@
 using System;
 
-namespace Annium.Core.DependencyInjection.Tests
+namespace Annium.Core.DependencyInjection.Tests;
+
+public class TestBase
 {
-    public class TestBase
+    protected readonly ServiceContainer _container = new();
+    private IServiceProvider _provider = default!;
+
+    protected void Build()
     {
-        protected readonly ServiceContainer _container = new();
-        private IServiceProvider _provider = default!;
+        _provider = _container.BuildServiceProvider();
+    }
 
-        protected void Build()
-        {
-            _provider = _container.BuildServiceProvider();
-        }
-
-        protected T Get<T>()
-            where T : notnull
-        {
-            return _provider.Resolve<T>();
-        }
+    protected T Get<T>()
+        where T : notnull
+    {
+        return _provider.Resolve<T>();
     }
 }

@@ -1,6 +1,5 @@
-namespace Demo.Core.Mediator.Responses
+namespace Demo.Core.Mediator.Responses;
+
+internal interface IResponse
 {
-    internal interface IResponse
-    {
-    }
 }

@@ -4,35 +4,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Annium.Extensions.Reactive.Tests.Operators
+namespace Annium.Extensions.Reactive.Tests.Operators;
+
+public class TrackCompletionTest
 {
-    public class TrackCompletionTest
+    [Fact]
+    public async Task TrackCompletion_IncompleteWorks()
     {
-        [Fact]
-        public async Task TrackCompletion_IncompleteWorks()
+        // arrange
+        var cts = new CancellationTokenSource();
+        var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
         {
-            // arrange
-            var cts = new CancellationTokenSource();
-            var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
-            {
-                await Task.Delay(10, ctx.Ct);
+            await Task.Delay(10, ctx.Ct);
 
-                return () => Task.CompletedTask;
-            }, cts.Token).TrackCompletion();
+            return () => Task.CompletedTask;
+        }, cts.Token).TrackCompletion();
 
-            // act
-            await observable.WhenCompleted();
-        }
+        // act
+        await observable.WhenCompleted();
+    }
 
-        [Fact]
-        public async Task TrackCompletion_CompleteWorks()
-        {
-            // arrange
-            var cts = new CancellationTokenSource();
-            var observable = ObservableExt.StaticAsyncInstance<string>(_ => Task.FromResult<Func<Task>>(() => Task.CompletedTask), cts.Token).TrackCompletion();
+    [Fact]
+    public async Task TrackCompletion_CompleteWorks()
+    {
+        // arrange
+        var cts = new CancellationTokenSource();
+        var observable = ObservableExt.StaticAsyncInstance<string>(_ => Task.FromResult<Func<Task>>(() => Task.CompletedTask), cts.Token).TrackCompletion();
 
-            // act
-            await observable.WhenCompleted();
-        }
+        // act
+        await observable.WhenCompleted();
     }
 }

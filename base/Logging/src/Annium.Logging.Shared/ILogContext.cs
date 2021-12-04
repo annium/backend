@@ -1,8 +1,7 @@
 using Annium.Core.Primitives;
 
-namespace Annium.Logging.Shared
+namespace Annium.Logging.Shared;
+
+public interface ILogContext
 {
-    public interface ILogContext
-    {
-    }
 }

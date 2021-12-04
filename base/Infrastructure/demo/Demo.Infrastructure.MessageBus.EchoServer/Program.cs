@@ -9,38 +9,37 @@ using Annium.Core.Primitives.Threading;
 using Annium.Infrastructure.MessageBus.Node;
 using Annium.Logging.Abstractions;
 
-namespace Demo.Infrastructure.MessageBus.EchoServer
+namespace Demo.Infrastructure.MessageBus.EchoServer;
+
+internal class Program
 {
-    internal class Program
+    private static async Task Run(
+        IServiceProvider provider,
+        string[] args,
+        CancellationToken ct
+    )
     {
-        private static async Task Run(
-            IServiceProvider provider,
-            string[] args,
-            CancellationToken ct
-        )
+        var subject = provider.Resolve<ILogSubject<Program>>();
+        var socket = provider.Resolve<IMessageBusSocket>();
+        var timeProvider = provider.Resolve<ITimeProvider>();
+
+        var cfg = provider.Resolve<EndpointsConfiguration>();
+        Console.WriteLine($"Start echo server with PUB {cfg.PubEndpoint} / SUB {cfg.SubEndpoint}");
+
+        socket.Subscribe(x => subject.Log().Info($"<<<{x}"));
+
+        while (!ct.IsCancellationRequested)
         {
-            var subject = provider.Resolve<ILogSubject<Program>>();
-            var socket = provider.Resolve<IMessageBusSocket>();
-            var timeProvider = provider.Resolve<ITimeProvider>();
-
-            var cfg = provider.Resolve<EndpointsConfiguration>();
-            Console.WriteLine($"Start echo server with PUB {cfg.PubEndpoint} / SUB {cfg.SubEndpoint}");
-
-            socket.Subscribe(x => subject.Log().Info($"<<<{x}"));
-
-            while (!ct.IsCancellationRequested)
-            {
-                await Task.Delay(500);
-                var msg = timeProvider.Now.ToString(null, null);
-                Console.WriteLine($">>>{msg}");
-                await socket.Send(msg);
-            }
-
-            await ct;
+            await Task.Delay(500);
+            var msg = timeProvider.Now.ToString(null, null);
+            Console.WriteLine($">>>{msg}");
+            await socket.Send(msg);
         }
 
-        internal static Task<int> Main(string[] args) => new Entrypoint()
-            .UseServicePack<ServicePack>()
-            .Run(Run, args);
+        await ct;
     }
+
+    internal static Task<int> Main(string[] args) => new Entrypoint()
+        .UseServicePack<ServicePack>()
+        .Run(Run, args);
 }

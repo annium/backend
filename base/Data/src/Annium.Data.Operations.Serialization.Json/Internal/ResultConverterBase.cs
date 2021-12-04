@@ -5,78 +5,77 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
 
-namespace Annium.Data.Operations.Serialization.Json.Internal
+namespace Annium.Data.Operations.Serialization.Json.Internal;
+
+internal abstract class ResultConverterBase<T> : JsonConverter<T>
+    where T : IResultBase<T>, IResultBase
 {
-    internal abstract class ResultConverterBase<T> : JsonConverter<T>
-        where T : IResultBase<T>, IResultBase
+    protected delegate void CycleAction(ref Utf8JsonReader reader);
+
+    protected (IReadOnlyCollection<string>, IReadOnlyDictionary<string, IReadOnlyCollection<string>>) ReadProperties(
+        ref Utf8JsonReader reader,
+        JsonSerializerOptions options,
+        CycleAction runCycle
+    )
     {
-        protected delegate void CycleAction(ref Utf8JsonReader reader);
+        IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
+        IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
 
-        protected (IReadOnlyCollection<string>, IReadOnlyDictionary<string, IReadOnlyCollection<string>>) ReadProperties(
-            ref Utf8JsonReader reader,
-            JsonSerializerOptions options,
-            CycleAction runCycle
-        )
+        var depth = reader.CurrentDepth + 1;
+        while (reader.Read())
         {
-            IReadOnlyCollection<string> plainErrors = Array.Empty<string>();
-            IReadOnlyDictionary<string, IReadOnlyCollection<string>> labeledErrors = new Dictionary<string, IReadOnlyCollection<string>>();
+            if (reader.CurrentDepth > depth)
+                continue;
+            if (reader.CurrentDepth < depth)
+                break;
 
-            var depth = reader.CurrentDepth + 1;
-            while (reader.Read())
-            {
-                if (reader.CurrentDepth > depth)
-                    continue;
-                if (reader.CurrentDepth < depth)
-                    break;
-
-                runCycle(ref reader);
-                if (reader.HasProperty(nameof(IResultBase.PlainErrors)))
-                    plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!;
-                else if (reader.HasProperty(nameof(IResultBase.LabeledErrors)))
-                    labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!;
-            }
-
-            return (plainErrors, labeledErrors);
+            runCycle(ref reader);
+            if (reader.HasProperty(nameof(IResultBase.PlainErrors)))
+                plainErrors = JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!;
+            else if (reader.HasProperty(nameof(IResultBase.LabeledErrors)))
+                labeledErrors = JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(ref reader, options)!;
         }
 
-        protected void WriteErrors(
-            Utf8JsonWriter writer,
-            T value,
-            JsonSerializerOptions options
-        )
-        {
-            writer.WritePropertyName(nameof(IResultBase.PlainErrors).CamelCase());
-            JsonSerializer.Serialize(writer, value.PlainErrors, options);
-
-            writer.WritePropertyName(nameof(IResultBase.LabeledErrors).CamelCase());
-            JsonSerializer.Serialize(
-                writer,
-                options.DictionaryKeyPolicy == JsonNamingPolicy.CamelCase
-                    ? value.LabeledErrors.ToDictionary(x => x.Key.CamelCase(), x => x.Value)
-                    : value.LabeledErrors,
-                options
-            );
-        }
+        return (plainErrors, labeledErrors);
     }
 
-    internal abstract class ResultConverterBaseFactory : JsonConverterFactory
+    protected void WriteErrors(
+        Utf8JsonWriter writer,
+        T value,
+        JsonSerializerOptions options
+    )
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.IsInterface
-                ? IsConvertibleInterface(objectType)
-                : objectType.GetInterfaces().Any(IsConvertibleInterface);
-        }
+        writer.WritePropertyName(nameof(IResultBase.PlainErrors).CamelCase());
+        JsonSerializer.Serialize(writer, value.PlainErrors, options);
 
-        protected abstract bool IsConvertibleInterface(Type type);
+        writer.WritePropertyName(nameof(IResultBase.LabeledErrors).CamelCase());
+        JsonSerializer.Serialize(
+            writer,
+            options.DictionaryKeyPolicy == JsonNamingPolicy.CamelCase
+                ? value.LabeledErrors.ToDictionary(x => x.Key.CamelCase(), x => x.Value)
+                : value.LabeledErrors,
+            options
+        );
+    }
+}
 
-        protected Type GetImplementation(Type type)
-        {
-            if (type.IsInterface)
-                return type;
+internal abstract class ResultConverterBaseFactory : JsonConverterFactory
+{
+    public override bool CanConvert(Type objectType)
+    {
+        return objectType.IsInterface
+            ? IsConvertibleInterface(objectType)
+            : objectType.GetInterfaces().Any(IsConvertibleInterface);
+    }
 
-            return type.GetInterfaces()
-                .First(IsConvertibleInterface);
-        }
+    protected abstract bool IsConvertibleInterface(Type type);
+
+    protected Type GetImplementation(Type type)
+    {
+        if (type.IsInterface)
+            return type;
+
+        return type.GetInterfaces()
+            .First(IsConvertibleInterface);
     }
 }

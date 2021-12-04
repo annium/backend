@@ -1,7 +1,6 @@
-namespace Annium.Net.Http
+namespace Annium.Net.Http;
+
+public interface IHttpFactoryConfigurationBuilder
 {
-    public interface IHttpFactoryConfigurationBuilder
-    {
-        IHttpFactoryConfigurationBuilder SetDefault();
-    }
+    IHttpFactoryConfigurationBuilder SetDefault();
 }

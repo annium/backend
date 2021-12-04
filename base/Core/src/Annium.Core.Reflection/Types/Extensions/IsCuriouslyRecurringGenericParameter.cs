@@ -1,20 +1,19 @@
 using System;
 using System.Linq;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Reflection;
+
+public static class IsCuriouslyRecurringGenericParameterExtension
 {
-    public static class IsCuriouslyRecurringGenericParameterExtension
+    public static bool IsCuriouslyRecurringGenericParameter(this Type type)
     {
-        public static bool IsCuriouslyRecurringGenericParameter(this Type type)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+        if (type is null)
+            throw new ArgumentNullException(nameof(type));
 
-            if (!type.IsGenericParameter)
-                return false;
+        if (!type.IsGenericParameter)
+            return false;
 
-            return type.GetGenericParameterConstraints()
-                .Any(constraint => constraint.GetGenericArguments().Contains(type));
-        }
+        return type.GetGenericParameterConstraints()
+            .Any(constraint => constraint.GetGenericArguments().Contains(type));
     }
 }

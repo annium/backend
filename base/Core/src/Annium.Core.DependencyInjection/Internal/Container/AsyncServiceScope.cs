@@ -3,19 +3,18 @@ using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.Internal.Container
+namespace Annium.Core.DependencyInjection.Internal.Container;
+
+internal class AsyncServiceScope : IAsyncServiceScope
 {
-    internal class AsyncServiceScope : IAsyncServiceScope
+    public IServiceProvider ServiceProvider => _scope.ServiceProvider;
+
+    private readonly IServiceScope _scope;
+
+    public AsyncServiceScope(IServiceScope scope)
     {
-        public IServiceProvider ServiceProvider => _scope.ServiceProvider;
-
-        private readonly IServiceScope _scope;
-
-        public AsyncServiceScope(IServiceScope scope)
-        {
-            _scope = scope;
-        }
-
-        public ValueTask DisposeAsync() => _scope.DisposeAsync();
+        _scope = scope;
     }
+
+    public ValueTask DisposeAsync() => _scope.DisposeAsync();
 }

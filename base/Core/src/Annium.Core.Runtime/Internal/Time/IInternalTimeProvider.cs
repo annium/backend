@@ -1,13 +1,12 @@
 using System;
 using NodaTime;
 
-namespace Annium.Core.Runtime.Internal.Time
+namespace Annium.Core.Runtime.Internal.Time;
+
+internal interface IInternalTimeProvider
 {
-    internal interface IInternalTimeProvider
-    {
-        Instant Now { get; }
-        DateTime DateTimeNow { get; }
-        long UnixMsNow { get; }
-        long UnixSecondsNow { get; }
-    }
+    Instant Now { get; }
+    DateTime DateTimeNow { get; }
+    long UnixMsNow { get; }
+    long UnixSecondsNow { get; }
 }

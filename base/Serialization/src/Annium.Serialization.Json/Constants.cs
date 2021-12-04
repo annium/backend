@@ -1,9 +1,8 @@
 using System.Net.Mime;
 
-namespace Annium.Serialization.Json
+namespace Annium.Serialization.Json;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public const string MediaType = MediaTypeNames.Application.Json;
-    }
+    public const string MediaType = MediaTypeNames.Application.Json;
 }

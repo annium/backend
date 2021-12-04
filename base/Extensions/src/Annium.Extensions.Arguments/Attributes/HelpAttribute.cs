@@ -1,15 +1,14 @@
 ﻿using System;
 
-namespace Annium.Extensions.Arguments
-{
-    [AttributeUsage(AttributeTargets.Property)]
-    public class HelpAttribute : BaseAttribute
-    {
-        public string Help { get; }
+namespace Annium.Extensions.Arguments;
 
-        public HelpAttribute(string help)
-        {
-            Help = help;
-        }
+[AttributeUsage(AttributeTargets.Property)]
+public class HelpAttribute : BaseAttribute
+{
+    public string Help { get; }
+
+    public HelpAttribute(string help)
+    {
+        Help = help;
     }
 }

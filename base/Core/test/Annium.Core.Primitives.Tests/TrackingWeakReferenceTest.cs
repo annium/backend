@@ -3,42 +3,41 @@ using System.Runtime.CompilerServices;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests
+namespace Annium.Core.Primitives.Tests;
+
+public class TrackingWeakReferenceTest
 {
-    public class TrackingWeakReferenceTest
+    [Fact]
+    public void TrackingWeakReference_Works()
     {
-        [Fact]
-        public void TrackingWeakReference_Works()
+        // arrange
+        var counter = 0;
+        object target;
+        ITrackingWeakReference<object> reference = default!;
+        Wrap(() =>
         {
-            // arrange
-            var counter = 0;
-            object target;
-            ITrackingWeakReference<object> reference = default!;
-            Wrap(() =>
-            {
-                target = new object();
-                reference = TrackingWeakReference.Get(target);
-                reference.Collected += () => counter++;
-            });
+            target = new object();
+            reference = TrackingWeakReference.Get(target);
+            reference.Collected += () => counter++;
+        });
 
-            // act
-            target = default!;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+        // act
+        target = default!;
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
 
-            // assert
-            reference.IsAlive.IsFalse();
+        // assert
+        reference.IsAlive.IsFalse();
 
-            // act
-            reference = default!;
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
+        // act
+        reference = default!;
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
 
-            // assert
-            counter.IsEqual(1);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private void Wrap(Action wrap) => wrap();
+        // assert
+        counter.IsEqual(1);
     }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    private void Wrap(Action wrap) => wrap();
 }

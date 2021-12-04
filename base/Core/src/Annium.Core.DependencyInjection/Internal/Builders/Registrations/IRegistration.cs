@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations
+namespace Annium.Core.DependencyInjection.Internal.Builders.Registrations;
+
+internal interface IRegistration
 {
-    internal interface IRegistration
-    {
-        Type ServiceType { get; }
-        IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime);
-    }
+    Type ServiceType { get; }
+    IEnumerable<IServiceDescriptor> ResolveServiceDescriptors(ServiceLifetime lifetime);
 }

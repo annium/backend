@@ -1,8 +1,7 @@
-namespace Annium.Extensions.Arguments.Internal
+namespace Annium.Extensions.Arguments.Internal;
+
+internal interface IConfigurationBuilder
 {
-    internal interface IConfigurationBuilder
-    {
-        T Build<T>(string[] args)
-            where T : new();
-    }
+    T Build<T>(string[] args)
+        where T : new();
 }

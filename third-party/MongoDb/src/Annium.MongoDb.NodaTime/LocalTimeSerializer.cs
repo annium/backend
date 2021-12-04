@@ -1,12 +1,11 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 
-namespace Annium.MongoDb.NodaTime
+namespace Annium.MongoDb.NodaTime;
+
+public class LocalTimeSerializer : PatternSerializer<LocalTime>
 {
-    public class LocalTimeSerializer : PatternSerializer<LocalTime>
+    public LocalTimeSerializer() : base(LocalTimePattern.ExtendedIso)
     {
-        public LocalTimeSerializer() : base(LocalTimePattern.ExtendedIso)
-        {
-        }
     }
 }

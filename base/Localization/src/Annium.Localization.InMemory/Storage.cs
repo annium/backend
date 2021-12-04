@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Globalization;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Localization.InMemoryStorage
+namespace Annium.Localization.InMemoryStorage;
+
+internal class Storage : ILocaleStorage
 {
-    internal class Storage : ILocaleStorage
+    private readonly IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> _locales;
+
+    public Storage(
+        IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
+    )
     {
-        private readonly IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> _locales;
+        _locales = locales;
+    }
 
-        public Storage(
-            IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
-        )
-        {
-            _locales = locales;
-        }
-
-        public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
-        {
-            return _locales.TryGetValue(culture, out var locale) ? locale : new Dictionary<string, string>();
-        }
+    public IReadOnlyDictionary<string, string> LoadLocale(Type target, CultureInfo culture)
+    {
+        return _locales.TryGetValue(culture, out var locale) ? locale : new Dictionary<string, string>();
     }
 }

@@ -3,25 +3,24 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Logging.Abstractions;
 
-namespace Demo.Logging.Commands
+namespace Demo.Logging.Commands;
+
+internal class ConsoleCommand : AsyncCommand, ILogSubject
 {
-    internal class ConsoleCommand : AsyncCommand, ILogSubject
+    public override string Id { get; } = "console";
+    public override string Description => $"test {Id} log handler";
+    public ILogger Logger { get; }
+
+    public ConsoleCommand(
+        ILogger<ConsoleCommand> logger
+    )
     {
-        public override string Id { get; } = "console";
-        public override string Description => $"test {Id} log handler";
-        public ILogger Logger { get; }
+        Logger = logger;
+    }
 
-        public ConsoleCommand(
-            ILogger<ConsoleCommand> logger
-        )
-        {
-            Logger = logger;
-        }
-
-        public override async Task HandleAsync(CancellationToken ct)
-        {
-            this.Log().Debug("demo");
-            await Task.Delay(100, ct);
-        }
+    public override async Task HandleAsync(CancellationToken ct)
+    {
+        this.Log().Debug("demo");
+        await Task.Delay(100, ct);
     }
 }

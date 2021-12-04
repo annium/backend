@@ -1,12 +1,11 @@
-namespace Demo.Core.Mediator.Requests
-{
-    internal class DeleteTodoRequest : IRequest
-    {
-        public int Id { get; }
+namespace Demo.Core.Mediator.Requests;
 
-        public DeleteTodoRequest(int id)
-        {
-            Id = id;
-        }
+internal class DeleteTodoRequest : IRequest
+{
+    public int Id { get; }
+
+    public DeleteTodoRequest(int id)
+    {
+        Id = id;
     }
 }

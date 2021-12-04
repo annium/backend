@@ -4,34 +4,33 @@ using Annium.Localization.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Localization.Yaml.Tests
+namespace Annium.Localization.Yaml.Tests;
+
+public class StorageTest
 {
-    public class StorageTest
+    [Fact]
+    public void Localization_Works()
     {
-        [Fact]
-        public void Localization_Works()
-        {
-            // arrange
-            var localizer = GetLocalizer();
+        // arrange
+        var localizer = GetLocalizer();
 
-            // act
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
-            var en = localizer["test"];
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
-            var ru = localizer["test"];
+        // act
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
+        var en = localizer["test"];
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
+        var ru = localizer["test"];
 
-            // assert
-            en.IsEqual("demo");
-            ru.IsEqual("демо");
-        }
+        // assert
+        en.IsEqual("demo");
+        ru.IsEqual("демо");
+    }
 
-        private ILocalizer<StorageTest> GetLocalizer()
-        {
-            var container = new ServiceContainer();
+    private ILocalizer<StorageTest> GetLocalizer()
+    {
+        var container = new ServiceContainer();
 
-            container.AddLocalization(opts => opts.UseYamlStorage());
+        container.AddLocalization(opts => opts.UseYamlStorage());
 
-            return container.BuildServiceProvider().Resolve<ILocalizer<StorageTest>>();
-        }
+        return container.BuildServiceProvider().Resolve<ILocalizer<StorageTest>>();
     }
 }

@@ -1,12 +1,11 @@
-namespace Annium.Core.Mapper.Internal.DependencyInjection
-{
-    internal class ProfileInstance
-    {
-        public Profile Instance { get; }
+namespace Annium.Core.Mapper.Internal.DependencyInjection;
 
-        public ProfileInstance(Profile instance)
-        {
-            Instance = instance;
-        }
+internal class ProfileInstance
+{
+    public Profile Instance { get; }
+
+    public ProfileInstance(Profile instance)
+    {
+        Instance = instance;
     }
 }

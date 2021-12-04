@@ -4,22 +4,21 @@ using Annium.Core.Primitives.Threading;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests.Threading
+namespace Annium.Core.Primitives.Tests.Threading;
+
+public class CancellationTokenExtensionsTest
 {
-    public class CancellationTokenExtensionsTest
+    [Fact]
+    public async Task CancellationToken_Await_Works()
     {
-        [Fact]
-        public async Task CancellationToken_Await_Works()
-        {
-            // arrange
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(10);
+        // arrange
+        var cts = new CancellationTokenSource();
+        cts.CancelAfter(10);
 
-            // act
-            await cts.Token;
+        // act
+        await cts.Token;
 
-            // assert
-            cts.Token.IsCancellationRequested.IsTrue();
-        }
+        // assert
+        cts.Token.IsCancellationRequested.IsTrue();
     }
 }

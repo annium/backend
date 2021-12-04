@@ -6,16 +6,15 @@ using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
-namespace Annium.AspNetCore.TestServer.Handlers.Demo
+namespace Annium.AspNetCore.TestServer.Handlers.Demo;
+
+internal class EchoHandler : IRequestResponseHandler<EchoRequest, string, ConnectionState>
 {
-    internal class EchoHandler : IRequestResponseHandler<EchoRequest, string, ConnectionState>
+    public Task<IStatusResult<OperationStatus, string>> HandleAsync(
+        IRequestContext<EchoRequest, ConnectionState> request,
+        CancellationToken ct
+    )
     {
-        public Task<IStatusResult<OperationStatus, string>> HandleAsync(
-            IRequestContext<EchoRequest, ConnectionState> request,
-            CancellationToken ct
-        )
-        {
-            return Task.FromResult(Result.Status(OperationStatus.Ok, request.Request.Message));
-        }
+        return Task.FromResult(Result.Status(OperationStatus.Ok, request.Request.Message));
     }
 }

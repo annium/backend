@@ -1,6 +1,5 @@
-namespace Demo.Core.Mediator.Requests
+namespace Demo.Core.Mediator.Requests;
+
+internal interface IRequest
 {
-    internal interface IRequest
-    {
-    }
 }

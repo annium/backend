@@ -1,8 +1,7 @@
-namespace Annium.Infrastructure.WebSockets.Domain
+namespace Annium.Infrastructure.WebSockets.Domain;
+
+public enum SerializationFormat
 {
-    public enum SerializationFormat
-    {
-        Binary,
-        Text,
-    }
+    Binary,
+    Text,
 }

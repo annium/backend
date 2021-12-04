@@ -5,28 +5,27 @@ using Annium.Data.Operations;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Architecture.Mediator.Tests
+namespace Annium.Architecture.Mediator.Tests;
+
+public class LoggingPipeHandlerTest : TestBase
 {
-    public class LoggingPipeHandlerTest : TestBase
+    [Fact]
+    public async Task ReturnsOriginalResult()
     {
-        [Fact]
-        public async Task ReturnsOriginalResult()
-        {
-            // arrange
-            var mediator = GetMediator(cfg => cfg.AddLoggingHandler().AddHandler(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest();
+        // arrange
+        var mediator = GetMediator(cfg => cfg.AddLoggingHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var request = new LoginRequest();
 
-            // act
-            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
+        // act
+        var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
-            // assert
-            result.Status.IsEqual(OperationStatus.Ok);
-            result.IsOk.IsTrue();
-        }
+        // assert
+        result.Status.IsEqual(OperationStatus.Ok);
+        result.IsOk.IsTrue();
+    }
 
-        private class LoginRequest : IThrowing
-        {
-            public bool Throw { get; set; }
-        }
+    private class LoginRequest : IThrowing
+    {
+        public bool Throw { get; set; }
     }
 }

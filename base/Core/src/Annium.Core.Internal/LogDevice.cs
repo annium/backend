@@ -1,8 +1,7 @@
-namespace Annium.Core.Internal
+namespace Annium.Core.Internal;
+
+public enum LogDevice
 {
-    public enum LogDevice
-    {
-        Console,
-        Tcp
-    }
+    Console,
+    Tcp
 }

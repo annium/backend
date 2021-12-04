@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
 
-namespace Annium.Testing.Executors
-{
-    public interface ITestExecutor
-    {
-        uint Order { get; }
+namespace Annium.Testing.Executors;
 
-        Task ExecuteAsync(Target target);
-    }
+public interface ITestExecutor
+{
+    uint Order { get; }
+
+    Task ExecuteAsync(Target target);
 }

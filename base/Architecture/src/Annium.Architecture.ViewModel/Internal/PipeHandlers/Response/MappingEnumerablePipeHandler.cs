@@ -8,42 +8,41 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response
+namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Response;
+
+internal class MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut> :
+    IPipeRequestHandler<
+        TRequest,
+        TRequest,
+        IStatusResult<OperationStatus, IEnumerable<TResponseIn>>,
+        IStatusResult<OperationStatus, IEnumerable<TResponseOut>>
+    >,
+    ILogSubject
+    where TResponseOut : IResponse<TResponseIn>
 {
-    internal class MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut> :
-        IPipeRequestHandler<
-            TRequest,
-            TRequest,
-            IStatusResult<OperationStatus, IEnumerable<TResponseIn>>,
-            IStatusResult<OperationStatus, IEnumerable<TResponseOut>>
-        >,
-        ILogSubject
-        where TResponseOut : IResponse<TResponseIn>
+    public ILogger Logger { get; }
+    private readonly IMapper _mapper;
+
+    public MappingEnumerablePipeHandler(
+        IMapper mapper,
+        ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut>> logger
+    )
     {
-        public ILogger Logger { get; }
-        private readonly IMapper _mapper;
+        _mapper = mapper;
+        Logger = logger;
+    }
 
-        public MappingEnumerablePipeHandler(
-            IMapper mapper,
-            ILogger<MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut>> logger
-        )
-        {
-            _mapper = mapper;
-            Logger = logger;
-        }
+    public async Task<IStatusResult<OperationStatus, IEnumerable<TResponseOut>>> HandleAsync(
+        TRequest request,
+        CancellationToken ct,
+        Func<TRequest, CancellationToken, Task<IStatusResult<OperationStatus, IEnumerable<TResponseIn>>>> next
+    )
+    {
+        var response = await next(request, ct);
 
-        public async Task<IStatusResult<OperationStatus, IEnumerable<TResponseOut>>> HandleAsync(
-            TRequest request,
-            CancellationToken ct,
-            Func<TRequest, CancellationToken, Task<IStatusResult<OperationStatus, IEnumerable<TResponseIn>>>> next
-        )
-        {
-            var response = await next(request, ct);
+        this.Log().Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
+        var mappedResponse = _mapper.Map<IEnumerable<TResponseOut>>(response.Data);
 
-            this.Log().Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
-            var mappedResponse = _mapper.Map<IEnumerable<TResponseOut>>(response.Data);
-
-            return Result.Status(response.Status, mappedResponse).Join(response);
-        }
+        return Result.Status(response.Status, mappedResponse).Join(response);
     }
 }

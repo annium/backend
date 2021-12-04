@@ -1,7 +1,6 @@
-namespace Annium.Serialization.BinaryString
+namespace Annium.Serialization.BinaryString;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public static string MediaType = "BinaryString";
-    }
+    public static string MediaType = "BinaryString";
 }

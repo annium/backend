@@ -1,13 +1,12 @@
 using System;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Requests
-{
-    public abstract class AbstractRequestBase
-    {
-        public Guid Rid { get; set; } = Guid.NewGuid();
+namespace Annium.Infrastructure.WebSockets.Domain.Requests;
 
-        [ResolutionId]
-        public string Tid => GetType().GetIdString();
-    }
+public abstract class AbstractRequestBase
+{
+    public Guid Rid { get; set; } = Guid.NewGuid();
+
+    [ResolutionId]
+    public string Tid => GetType().GetIdString();
 }

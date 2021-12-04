@@ -1,56 +1,55 @@
 using System;
 
-namespace Annium.Extensions.Pooling.Storages
+namespace Annium.Extensions.Pooling.Storages;
+
+internal abstract class StorageBase<T> : IDisposable
 {
-    internal abstract class StorageBase<T> : IDisposable
+    public int Capacity { get; }
+    public int Free { get; private set; }
+    public int Used { get; private set; }
+
+    protected StorageBase(int capacity)
     {
-        public int Capacity { get; }
-        public int Free { get; private set; }
-        public int Used { get; private set; }
+        Capacity = capacity;
+    }
 
-        protected StorageBase(int capacity)
-        {
-            Capacity = capacity;
-        }
+    public void Add(T item)
+    {
+        if (Free == Capacity)
+            throw new InvalidOperationException("Storage capacity reached");
 
-        public void Add(T item)
-        {
-            if (Free == Capacity)
-                throw new InvalidOperationException("Storage capacity reached");
+        Register(item);
+        ++Free;
+    }
 
-            Register(item);
-            ++Free;
-        }
+    public T Get()
+    {
+        if (Free == 0)
+            throw new InvalidOperationException("No free slots.");
 
-        public T Get()
-        {
-            if (Free == 0)
-                throw new InvalidOperationException("No free slots.");
+        var item = Acquire();
+        --Free;
+        ++Used;
 
-            var item = Acquire();
-            --Free;
-            ++Used;
+        return item;
+    }
 
-            return item;
-        }
+    public void Return(T item)
+    {
+        if (!Release(item))
+            throw new InvalidOperationException("Item is not registered in storage.");
 
-        public void Return(T item)
-        {
-            if (!Release(item))
-                throw new InvalidOperationException("Item is not registered in storage.");
+        ++Free;
+        --Used;
+    }
 
-            ++Free;
-            --Used;
-        }
+    protected abstract void Register(T item);
+    protected abstract T Acquire();
+    protected abstract bool Release(T item);
+    protected abstract void DisposeInternal();
 
-        protected abstract void Register(T item);
-        protected abstract T Acquire();
-        protected abstract bool Release(T item);
-        protected abstract void DisposeInternal();
-
-        public void Dispose()
-        {
-            DisposeInternal();
-        }
+    public void Dispose()
+    {
+        DisposeInternal();
     }
 }

@@ -2,16 +2,14 @@ using System.IO;
 using System.Security.Cryptography;
 using PemUtils;
 
-namespace Annium.Security.Cryptography
+namespace Annium.Security.Cryptography;
+
+public class KeyReader
 {
-    public class KeyReader
+    public RSAParameters ReadRsaKey(Stream stream)
     {
-        public RSAParameters ReadRsaKey(Stream stream)
-        {
-            using (var reader = new PemReader(stream))
-            {
-                return reader.ReadRsaKey();
-            }
-        }
+        using var reader = new PemReader(stream);
+
+        return reader.ReadRsaKey();
     }
 }

@@ -4,77 +4,76 @@ using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Logging.Console.Tests
+namespace Annium.Logging.Console.Tests;
+
+public class ConsoleLoggerTest
 {
-    public class ConsoleLoggerTest
+    [Fact]
+    public void LogMessage_WritesLogMessageToConsole()
     {
-        [Fact]
-        public void LogMessage_WritesLogMessageToConsole()
+        // arrange
+        var subject = GetSubject();
+
+        using (var capture = ConsoleCapture.Start())
+        {
+            // act
+            subject.Log().Info("sample");
+
+            // assert
+            capture.Output.Contains("sample").IsTrue();
+        }
+    }
+
+    [Fact]
+    public void LogAggregateException_WritesErrorsCountAndAllErrorsToConsole()
+    {
+        // arrange
+        var subject = GetSubject();
+
+        using (var capture = ConsoleCapture.Start())
         {
             // arrange
-            var subject = GetSubject();
+            var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
 
-            using (var capture = ConsoleCapture.Start())
-            {
-                // act
-                subject.Log().Info("sample");
+            // act
+            subject.Log().Error(ex);
 
-                // assert
-                capture.Output.Contains("sample").IsTrue();
-            }
+            // assert
+            capture.Output.Contains("Errors (2):").IsTrue();
+            capture.Output.Contains("xxx").IsTrue();
+            capture.Output.Contains("yyy").IsTrue();
         }
+    }
 
-        [Fact]
-        public void LogAggregateException_WritesErrorsCountAndAllErrorsToConsole()
+    [Fact]
+    public void LogException_WritesExceptionToConsole()
+    {
+        // arrange
+        var subject = GetSubject();
+
+        using (var capture = ConsoleCapture.Start())
         {
             // arrange
-            var subject = GetSubject();
+            var ex = new Exception("xxx");
 
-            using (var capture = ConsoleCapture.Start())
-            {
-                // arrange
-                var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
+            // act
+            subject.Log().Error(ex);
 
-                // act
-                subject.Log().Error(ex);
-
-                // assert
-                capture.Output.Contains("Errors (2):").IsTrue();
-                capture.Output.Contains("xxx").IsTrue();
-                capture.Output.Contains("yyy").IsTrue();
-            }
+            // assert
+            capture.Output.Contains("xxx").IsTrue();
         }
+    }
 
-        [Fact]
-        public void LogException_WritesExceptionToConsole()
-        {
-            // arrange
-            var subject = GetSubject();
+    private ILogSubject GetSubject(LogLevel minLogLevel = LogLevel.Trace)
+    {
+        var container = new ServiceContainer();
 
-            using (var capture = ConsoleCapture.Start())
-            {
-                // arrange
-                var ex = new Exception("xxx");
+        container.AddTime().WithManagedTime().SetDefault();
 
-                // act
-                subject.Log().Error(ex);
+        container.AddLogging(route => route
+            .For(m => m.Level >= minLogLevel)
+            .UseConsole());
 
-                // assert
-                capture.Output.Contains("xxx").IsTrue();
-            }
-        }
-
-        private ILogSubject GetSubject(LogLevel minLogLevel = LogLevel.Trace)
-        {
-            var container = new ServiceContainer();
-
-            container.AddTime().WithManagedTime().SetDefault();
-
-            container.AddLogging(route => route
-                .For(m => m.Level >= minLogLevel)
-                .UseConsole());
-
-            return container.BuildServiceProvider().Resolve<ILogSubject<ConsoleLoggerTest>>();
-        }
+        return container.BuildServiceProvider().Resolve<ILogSubject<ConsoleLoggerTest>>();
     }
 }

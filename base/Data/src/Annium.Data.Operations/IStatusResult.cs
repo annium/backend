@@ -1,14 +1,13 @@
-namespace Annium.Data.Operations
+namespace Annium.Data.Operations;
+
+public interface IStatusResult<TS, TD> : IResultBase<IStatusResult<TS, TD>>, IDataResultBase<TD>
 {
-    public interface IStatusResult<TS, TD> : IResultBase<IStatusResult<TS, TD>>, IDataResultBase<TD>
-    {
-        TS Status { get; }
+    TS Status { get; }
 
-        void Deconstruct(out TS status, out TD data);
-    }
+    void Deconstruct(out TS status, out TD data);
+}
 
-    public interface IStatusResult<TS> : IResultBase<IStatusResult<TS>>, IResultBase
-    {
-        TS Status { get; }
-    }
+public interface IStatusResult<TS> : IResultBase<IStatusResult<TS>>, IResultBase
+{
+    TS Status { get; }
 }

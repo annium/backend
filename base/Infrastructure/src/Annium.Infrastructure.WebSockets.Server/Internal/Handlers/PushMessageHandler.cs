@@ -8,63 +8,62 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers
-{
-    internal class PushMessageHandler<T> :
-        IFinalRequestHandler<PushMessage<T>, Unit>,
-        ILogSubject
-    {
-        public ILogger Logger { get; }
-        private readonly ConnectionTracker _connectionTracker;
-        private readonly Serializer _serializer;
+namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 
-        public PushMessageHandler(
-            ConnectionTracker connectionTracker,
-            Serializer serializer,
-            ILogger<PushMessageHandler<T>> logger
-        )
+internal class PushMessageHandler<T> :
+    IFinalRequestHandler<PushMessage<T>, Unit>,
+    ILogSubject
+{
+    public ILogger Logger { get; }
+    private readonly ConnectionTracker _connectionTracker;
+    private readonly Serializer _serializer;
+
+    public PushMessageHandler(
+        ConnectionTracker connectionTracker,
+        Serializer serializer,
+        ILogger<PushMessageHandler<T>> logger
+    )
+    {
+        _connectionTracker = connectionTracker;
+        _serializer = serializer;
+        Logger = logger;
+    }
+
+    public async Task<Unit> HandleAsync(
+        PushMessage<T> request,
+        CancellationToken ct
+    )
+    {
+        this.Log().Trace($"cn {request.ConnectionId} - start");
+        if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
         {
-            _connectionTracker = connectionTracker;
-            _serializer = serializer;
-            Logger = logger;
+            this.Log().Trace($"cn {request.ConnectionId} - not found");
+            return Unit.Default;
         }
 
-        public async Task<Unit> HandleAsync(
-            PushMessage<T> request,
-            CancellationToken ct
-        )
+        try
         {
-            this.Log().Trace($"cn {request.ConnectionId} - start");
-            if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
+            if (cnRef.Value.Socket.State != WebSocketState.Open)
             {
-                this.Log().Trace($"cn {request.ConnectionId} - not found");
+                this.Log().Trace($"cn {request.ConnectionId} - socket not opened");
                 return Unit.Default;
             }
 
-            try
-            {
-                if (cnRef.Value.Socket.State != WebSocketState.Open)
-                {
-                    this.Log().Trace($"cn {request.ConnectionId} - socket not opened");
-                    return Unit.Default;
-                }
-
-                this.Log().Trace($"cn {request.ConnectionId} - start send");
-                await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
-                this.Log().Trace($"cn {request.ConnectionId} - send complete");
-            }
-            // socket can get closed/aborted in a moment
-            catch (WebSocketException e)
-            {
-                this.Log().Trace($"cn {request.ConnectionId} - send failed due to socket exception: {e}");
-            }
-            finally
-            {
-                this.Log().Trace($"cn {request.ConnectionId} - dispose ref");
-                await cnRef.DisposeAsync();
-            }
-
-            return Unit.Default;
+            this.Log().Trace($"cn {request.ConnectionId} - start send");
+            await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
+            this.Log().Trace($"cn {request.ConnectionId} - send complete");
         }
+        // socket can get closed/aborted in a moment
+        catch (WebSocketException e)
+        {
+            this.Log().Trace($"cn {request.ConnectionId} - send failed due to socket exception: {e}");
+        }
+        finally
+        {
+            this.Log().Trace($"cn {request.ConnectionId} - dispose ref");
+            await cnRef.DisposeAsync();
+        }
+
+        return Unit.Default;
     }
 }

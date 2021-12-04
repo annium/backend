@@ -3,56 +3,55 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Mapper.Tests.Resolvers
+namespace Annium.Core.Mapper.Tests.Resolvers;
+
+public class AssignmentMapResolverTest
 {
-    public class AssignmentMapResolverTest
+    [Fact]
+    public void AssignmentMapping_Works()
     {
-        [Fact]
-        public void AssignmentMapping_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var value = new A { Name = "name" };
+        // arrange
+        var mapper = GetMapper();
+        var value = new A { Name = "name" };
 
-            // act
-            var result = mapper.Map<B>(value);
+        // act
+        var result = mapper.Map<B>(value);
 
-            // assert
-            result.Name.IsEqual(value.Name);
-        }
+        // assert
+        result.Name.IsEqual(value.Name);
+    }
 
-        [Fact]
-        public void AssignmentMapping_WithExcessProperties_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var value = new A { Name = "name" };
+    [Fact]
+    public void AssignmentMapping_WithExcessProperties_Works()
+    {
+        // arrange
+        var mapper = GetMapper();
+        var value = new A { Name = "name" };
 
-            // act
-            var result = mapper.Map<C>(value);
+        // act
+        var result = mapper.Map<C>(value);
 
-            // assert
-            result.IsNotDefault();
-        }
+        // assert
+        result.IsNotDefault();
+    }
 
-        private IMapper GetMapper() => new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
-            .AddMapper(autoload: false)
-            .BuildServiceProvider()
-            .Resolve<IMapper>();
+    private IMapper GetMapper() => new ServiceContainer()
+        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddMapper(autoload: false)
+        .BuildServiceProvider()
+        .Resolve<IMapper>();
 
-        private class A
-        {
-            public string? Name { get; set; }
-        }
+    private class A
+    {
+        public string? Name { get; set; }
+    }
 
-        private class B
-        {
-            public string? Name { get; set; }
-        }
+    private class B
+    {
+        public string? Name { get; set; }
+    }
 
-        private class C
-        {
-        }
+    private class C
+    {
     }
 }

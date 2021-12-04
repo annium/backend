@@ -8,160 +8,159 @@ using Annium.Storage.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Storage.FileSystem.Tests
+namespace Annium.Storage.FileSystem.Tests;
+
+public class StorageTest : IDisposable
 {
-    public class StorageTest : IDisposable
+    private readonly string _directory;
+
+    public StorageTest()
     {
-        private readonly string _directory;
+        _directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+    }
 
-        public StorageTest()
+    [Fact]
+    public async Task Setup_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // act
+        await storage.SetupAsync();
+    }
+
+    [Fact]
+    public async Task List_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+
+        // act
+        var keys = await storage.ListAsync();
+
+        // assert
+        keys.Has(1);
+        keys.At(0).IsEqual("demo");
+    }
+
+    [Fact]
+    public async Task Upload_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+
+        // act
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        var keys = await storage.ListAsync();
+
+        // assert
+        keys.Has(1);
+        keys.At(0).IsEqual("demo");
+    }
+
+    [Fact]
+    public async Task Download_Missing_ThrowsKeyNotFoundException()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // act
+        var e = new Exception();
+        try
         {
-            _directory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            await storage.DownloadAsync("demo");
+        }
+        catch (Exception ex)
+        {
+            e = ex;
         }
 
-        [Fact]
-        public async Task Setup_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
+        e.As<KeyNotFoundException>();
+    }
 
-            // act
-            await storage.SetupAsync();
+    [Fact]
+    public async Task Download_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+
+        // act
+        byte[] result;
+        using (var ms = new MemoryStream())
+        {
+            await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
+            result = ms.ToArray();
         }
 
-        [Fact]
-        public async Task List_Works()
+        // assert
+        ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
+    }
+
+    [Fact]
+    public async Task NameVerification_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // assert
+        var e = new Exception();
+        try
         {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-
-            // act
-            var keys = await storage.ListAsync();
-
-            // assert
-            keys.Has(1);
-            keys.At(0).IsEqual("demo");
+            await storage.DownloadAsync(".");
+        }
+        catch (Exception ex)
+        {
+            e = ex;
         }
 
-        [Fact]
-        public async Task Upload_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
+        e.As<ArgumentException>();
+    }
 
-            // act
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-            var keys = await storage.ListAsync();
+    [Fact]
+    public async Task Delete_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
 
-            // assert
-            keys.Has(1);
-            keys.At(0).IsEqual("demo");
-        }
+        // act
+        var first = await storage.DeleteAsync("demo");
+        var second = await storage.DeleteAsync("demo");
 
-        [Fact]
-        public async Task Download_Missing_ThrowsKeyNotFoundException()
-        {
-            // arrange
-            var storage = await GetStorage();
+        // assert
+        first.IsTrue();
+        second.IsFalse();
+    }
 
-            // act
-            var e = new Exception();
-            try
-            {
-                await storage.DownloadAsync("demo");
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-            }
+    private async Task<IStorage> GetStorage()
+    {
+        var container = new ServiceContainer();
+        container.AddStorage().AddFileSystemStorage();
+        container.AddLogging(route => route.UseInMemory());
+        container.AddTime().WithManagedTime().SetDefault();
 
-            e.As<KeyNotFoundException>();
-        }
+        var provider = container.BuildServiceProvider();
 
-        [Fact]
-        public async Task Download_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
+        var factory = provider.Resolve<IStorageFactory>();
+        var configuration = new Configuration();
+        configuration.Directory = _directory;
 
-            // act
-            byte[] result;
-            using (var ms = new MemoryStream())
-            {
-                await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
-                result = ms.ToArray();
-            }
+        var storage = factory.CreateStorage(configuration);
+        await storage.SetupAsync();
 
-            // assert
-            ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
-        }
+        return storage;
+    }
 
-        [Fact]
-        public async Task NameVerification_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
+    private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
 
-            // assert
-            var e = new Exception();
-            try
-            {
-                await storage.DownloadAsync(".");
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-            }
-
-            e.As<ArgumentException>();
-        }
-
-        [Fact]
-        public async Task Delete_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-
-            // act
-            var first = await storage.DeleteAsync("demo");
-            var second = await storage.DeleteAsync("demo");
-
-            // assert
-            first.IsTrue();
-            second.IsFalse();
-        }
-
-        private async Task<IStorage> GetStorage()
-        {
-            var container = new ServiceContainer();
-            container.AddStorage().AddFileSystemStorage();
-            container.AddLogging(route => route.UseInMemory());
-            container.AddTime().WithManagedTime().SetDefault();
-
-            var provider = container.BuildServiceProvider();
-
-            var factory = provider.Resolve<IStorageFactory>();
-            var configuration = new Configuration();
-            configuration.Directory = _directory;
-
-            var storage = factory.CreateStorage(configuration);
-            await storage.SetupAsync();
-
-            return storage;
-        }
-
-        private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
-
-        public void Dispose()
-        {
-            Directory.Delete(_directory, true);
-        }
+    public void Dispose()
+    {
+        Directory.Delete(_directory, true);
     }
 }

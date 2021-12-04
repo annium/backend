@@ -3,28 +3,27 @@ using System.Collections.Generic;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Reflection.Tests.Types.Extensions
+namespace Annium.Core.Reflection.Tests.Types.Extensions;
+
+public class IsCuriouslyRecurringGenericParameterExtensionTests
 {
-    public class IsCuriouslyRecurringGenericParameterExtensionTests
+    [Fact]
+    public void IsCuriouslyRecurringGenericParameter_OfNull_Throws()
     {
-        [Fact]
-        public void IsCuriouslyRecurringGenericParameter_OfNull_Throws()
-        {
-            //assert
-            ((Action) (() => (null as Type) !.IsCuriouslyRecurringGenericParameter())).Throws<ArgumentNullException>();
-        }
+        //assert
+        ((Action) (() => (null as Type) !.IsCuriouslyRecurringGenericParameter())).Throws<ArgumentNullException>();
+    }
 
-        [Fact]
-        public void IsCuriouslyRecurringGenericParameter_Works()
-        {
-            //assert
-            typeof(bool).IsCuriouslyRecurringGenericParameter().IsFalse();
-            typeof(IEnumerable<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsFalse();
-            typeof(Demo<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsTrue();
-        }
+    [Fact]
+    public void IsCuriouslyRecurringGenericParameter_Works()
+    {
+        //assert
+        typeof(bool).IsCuriouslyRecurringGenericParameter().IsFalse();
+        typeof(IEnumerable<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsFalse();
+        typeof(Demo<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsTrue();
+    }
 
-        private class Demo<T> where T : Demo<T>
-        {
-        }
+    private class Demo<T> where T : Demo<T>
+    {
     }
 }

@@ -4,23 +4,22 @@ using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing.Elements;
 
-namespace Annium.Testing
+namespace Annium.Testing;
+
+public static class AssemblyServicesCollector
 {
-    public static class AssemblyServicesCollector
+    public static IServiceContainer Collect(Assembly assembly, IEnumerable<Test> tests)
     {
-        public static IServiceContainer Collect(Assembly assembly, IEnumerable<Test> tests)
-        {
-            var container = new ServiceContainer();
+        var container = new ServiceContainer();
 
-            // fixtures
-            foreach (var type in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<FixtureAttribute>() != null))
-                container.Add(type).Transient();
+        // fixtures
+        foreach (var type in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<FixtureAttribute>() != null))
+            container.Add(type).Transient();
 
-            // test classes
-            foreach (var type in tests.Select(t => t.Method.DeclaringType!).Distinct())
-                container.Add(type).Transient();
+        // test classes
+        foreach (var type in tests.Select(t => t.Method.DeclaringType!).Distinct())
+            container.Add(type).Transient();
 
-            return container;
-        }
+        return container;
     }
 }

@@ -1,11 +1,10 @@
 using System;
 
-namespace Annium.Net.Http
+namespace Annium.Net.Http;
+
+public interface IHttpRequestFactory
 {
-    public interface IHttpRequestFactory
-    {
-        IHttpRequest New();
-        IHttpRequest New(string baseUri);
-        IHttpRequest New(Uri baseUri);
-    }
+    IHttpRequest New();
+    IHttpRequest New(string baseUri);
+    IHttpRequest New(Uri baseUri);
 }

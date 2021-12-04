@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Annium.Net.WebSockets
+namespace Annium.Net.WebSockets;
+
+public interface IWebSocket : ISendingReceivingWebSocket
 {
-    public interface IWebSocket : ISendingReceivingWebSocket
-    {
-        Task DisconnectAsync();
-    }
+    Task DisconnectAsync();
 }

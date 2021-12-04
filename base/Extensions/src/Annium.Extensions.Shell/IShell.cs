@@ -1,7 +1,6 @@
-namespace Annium.Extensions.Shell
+namespace Annium.Extensions.Shell;
+
+public interface IShell
 {
-    public interface IShell
-    {
-        IShellInstance Cmd(params string[] command);
-    }
+    IShellInstance Cmd(params string[] command);
 }

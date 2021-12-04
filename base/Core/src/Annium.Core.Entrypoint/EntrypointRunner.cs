@@ -3,141 +3,140 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 
-namespace Annium.Core.Entrypoint
+namespace Annium.Core.Entrypoint;
+
+public partial class Entrypoint
 {
-    public partial class Entrypoint
+    public int Run(Action<IServiceProvider, string[], CancellationToken> main, string[] args) =>
+        InternalRun(main, args);
+
+    public int Run(Action<IServiceProvider, string[]> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(provider, arguments), args);
+
+    public int Run(Action<IServiceProvider, CancellationToken> main) =>
+        InternalRun((provider, arguments, token) => main(provider, token), Array.Empty<string>());
+
+    public int Run(Action<IServiceProvider> main) =>
+        InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
+
+    public int Run(Action<string[], CancellationToken> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(arguments, token), args);
+
+    public int Run(Action<string[]> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(arguments), args);
+
+    public int Run(Action<CancellationToken> main) =>
+        InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
+
+    public int Run(Action main) =>
+        InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
+
+    public Task<int> Run(Func<IServiceProvider, string[], CancellationToken, Task> main, string[] args) =>
+        InternalRun(main, args);
+
+    public Task<int> Run(Func<IServiceProvider, string[], Task> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(provider, arguments), args);
+
+    public Task<int> Run(Func<IServiceProvider, CancellationToken, Task> main) =>
+        InternalRun((provider, arguments, token) => main(provider, token), Array.Empty<string>());
+
+    public Task<int> Run(Func<IServiceProvider, Task> main) =>
+        InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
+
+    public Task<int> Run(Func<string[], CancellationToken, Task> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(arguments, token), args);
+
+    public Task<int> Run(Func<string[], Task> main, string[] args) =>
+        InternalRun((provider, arguments, token) => main(arguments), args);
+
+    public Task<int> Run(Func<CancellationToken, Task> main) =>
+        InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
+
+    public Task<int> Run(Func<Task> main) =>
+        InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
+
+    private int InternalRun(
+        Action<IServiceProvider, string[], CancellationToken> main,
+        string[] args
+    )
     {
-        public int Run(Action<IServiceProvider, string[], CancellationToken> main, string[] args) =>
-            InternalRun(main, args);
+        var (gate, token, provider) = Build();
 
-        public int Run(Action<IServiceProvider, string[]> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(provider, arguments), args);
-
-        public int Run(Action<IServiceProvider, CancellationToken> main) =>
-            InternalRun((provider, arguments, token) => main(provider, token), Array.Empty<string>());
-
-        public int Run(Action<IServiceProvider> main) =>
-            InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
-
-        public int Run(Action<string[], CancellationToken> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(arguments, token), args);
-
-        public int Run(Action<string[]> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(arguments), args);
-
-        public int Run(Action<CancellationToken> main) =>
-            InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
-
-        public int Run(Action main) =>
-            InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
-
-        public Task<int> Run(Func<IServiceProvider, string[], CancellationToken, Task> main, string[] args) =>
-            InternalRun(main, args);
-
-        public Task<int> Run(Func<IServiceProvider, string[], Task> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(provider, arguments), args);
-
-        public Task<int> Run(Func<IServiceProvider, CancellationToken, Task> main) =>
-            InternalRun((provider, arguments, token) => main(provider, token), Array.Empty<string>());
-
-        public Task<int> Run(Func<IServiceProvider, Task> main) =>
-            InternalRun((provider, arguments, token) => main(provider), Array.Empty<string>());
-
-        public Task<int> Run(Func<string[], CancellationToken, Task> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(arguments, token), args);
-
-        public Task<int> Run(Func<string[], Task> main, string[] args) =>
-            InternalRun((provider, arguments, token) => main(arguments), args);
-
-        public Task<int> Run(Func<CancellationToken, Task> main) =>
-            InternalRun((provider, arguments, token) => main(token), Array.Empty<string>());
-
-        public Task<int> Run(Func<Task> main) =>
-            InternalRun((provider, arguments, token) => main(), Array.Empty<string>());
-
-        private int InternalRun(
-            Action<IServiceProvider, string[], CancellationToken> main,
-            string[] args
-        )
+        try
         {
-            var (gate, token, provider) = Build();
+            main(provider, args, token);
 
-            try
-            {
-                main(provider, args, token);
-
-                return 0;
-            }
-            catch (AggregateException exception)
-            {
-                LogAggregateException(exception);
-                return 1;
-            }
-            catch (Exception exception)
-            {
-                LogException(exception);
-                return 1;
-            }
-            finally
-            {
-                if (provider is IDisposable disposable)
-                    disposable.DisposeAsync().GetAwaiter().GetResult();
-                gate.Set();
-            }
+            return 0;
         }
-
-        private async Task<int> InternalRun(
-            Func<IServiceProvider, string[], CancellationToken, Task> main,
-            string[] args
-        )
+        catch (AggregateException exception)
         {
-            var (gate, token, provider) = Build();
-
-            try
-            {
-                await main(provider, args, token);
-
-                return 0;
-            }
-            catch (AggregateException exception)
-            {
-                LogAggregateException(exception);
-                return 1;
-            }
-            catch (Exception exception)
-            {
-                LogException(exception);
-                return 1;
-            }
-            finally
-            {
-                if (provider is IDisposable disposable)
-                    disposable.DisposeAsync().GetAwaiter().GetResult();
-                gate.Set();
-            }
+            LogAggregateException(exception);
+            return 1;
         }
-
-        private void LogAggregateException(AggregateException aggregateException)
+        catch (Exception exception)
         {
-            var color = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
-
-            var exceptions = aggregateException.Flatten().InnerExceptions;
-            Console.WriteLine($"Errors ({exceptions.Count}):");
-            foreach (var exception in exceptions)
-                Console.WriteLine(exception);
-
-            Console.ForegroundColor = color;
+            LogException(exception);
+            return 1;
         }
-
-        private void LogException(Exception exception)
+        finally
         {
-            var color = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Red;
+            if (provider is IDisposable disposable)
+                disposable.DisposeAsync().GetAwaiter().GetResult();
+            gate.Set();
+        }
+    }
 
+    private async Task<int> InternalRun(
+        Func<IServiceProvider, string[], CancellationToken, Task> main,
+        string[] args
+    )
+    {
+        var (gate, token, provider) = Build();
+
+        try
+        {
+            await main(provider, args, token);
+
+            return 0;
+        }
+        catch (AggregateException exception)
+        {
+            LogAggregateException(exception);
+            return 1;
+        }
+        catch (Exception exception)
+        {
+            LogException(exception);
+            return 1;
+        }
+        finally
+        {
+            if (provider is IDisposable disposable)
+                disposable.DisposeAsync().GetAwaiter().GetResult();
+            gate.Set();
+        }
+    }
+
+    private void LogAggregateException(AggregateException aggregateException)
+    {
+        var color = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
+
+        var exceptions = aggregateException.Flatten().InnerExceptions;
+        Console.WriteLine($"Errors ({exceptions.Count}):");
+        foreach (var exception in exceptions)
             Console.WriteLine(exception);
 
-            Console.ForegroundColor = color;
-        }
+        Console.ForegroundColor = color;
+    }
+
+    private void LogException(Exception exception)
+    {
+        var color = Console.ForegroundColor;
+        Console.ForegroundColor = ConsoleColor.Red;
+
+        Console.WriteLine(exception);
+
+        Console.ForegroundColor = color;
     }
 }

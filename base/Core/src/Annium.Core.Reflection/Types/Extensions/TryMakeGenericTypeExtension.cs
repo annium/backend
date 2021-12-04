@@ -1,26 +1,25 @@
 using System;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Reflection;
+
+public static class TryMakeGenericTypeExtension
 {
-    public static class TryMakeGenericTypeExtension
+    public static bool TryMakeGenericType(this Type type, out Type? result, params Type[] typeArguments)
     {
-        public static bool TryMakeGenericType(this Type type, out Type? result, params Type[] typeArguments)
+        if (type is null)
+            throw new ArgumentNullException(nameof(type));
+
+        try
         {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+            result = type.MakeGenericType(typeArguments);
 
-            try
-            {
-                result = type.MakeGenericType(typeArguments);
+            return true;
+        }
+        catch
+        {
+            result = null;
 
-                return true;
-            }
-            catch
-            {
-                result = null;
-
-                return false;
-            }
+            return false;
         }
     }
 }

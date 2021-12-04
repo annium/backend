@@ -1,7 +1,6 @@
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Abstractions;
+
+public interface IConfigurationBuilder : IConfigurationContainer
 {
-    public interface IConfigurationBuilder : IConfigurationContainer
-    {
-        T Build<T>() where T : new();
-    }
+    T Build<T>() where T : new();
 }

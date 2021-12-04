@@ -3,41 +3,40 @@ using System.Collections.Generic;
 using System.Text;
 using Annium.Logging.Shared;
 
-namespace Annium.Logging.Seq.Internal
+namespace Annium.Logging.Seq.Internal;
+
+internal static class CompactLogEvent<TContext>
+    where TContext : class, ILogContext
 {
-    internal static class CompactLogEvent<TContext>
-        where TContext : class, ILogContext
+    public static Func<LogMessage<TContext>, string, IReadOnlyDictionary<string, string>> CreateFormat(
+        string project
+    ) => (m, msg) =>
     {
-        public static Func<LogMessage<TContext>, string, IReadOnlyDictionary<string, string>> CreateFormat(
-            string project
-        ) => (m, msg) =>
+        var prefix = BuildMessagePrefix(m);
+        var result = new Dictionary<string, string>
         {
-            var prefix = BuildMessagePrefix(m);
-            var result = new Dictionary<string, string>
-            {
-                ["@p"] = project,
-                ["@t"] = m.Instant.InUtc().LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'", null),
-                ["@m"] = $"{prefix}{msg}",
-                ["@mt"] = $"{prefix}{m.MessageTemplate}",
-                ["@l"] = m.Level.ToString(),
-            };
-            if (m.Exception is not null)
-                result["@x"] = $"{m.Exception.Message}{m.Exception.StackTrace}";
-
-            foreach (var (key, value) in m.Data)
-                result[key] = value.ToString()!;
-
-            return result;
+            ["@p"] = project,
+            ["@t"] = m.Instant.InUtc().LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'", null),
+            ["@m"] = $"{prefix}{msg}",
+            ["@mt"] = $"{prefix}{m.MessageTemplate}",
+            ["@l"] = m.Level.ToString(),
         };
+        if (m.Exception is not null)
+            result["@x"] = $"{m.Exception.Message}{m.Exception.StackTrace}";
 
-        private static string BuildMessagePrefix(LogMessage<TContext> m)
-        {
-            var sb = new StringBuilder();
-            sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
-            if (m.Line != 0)
-                sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
+        foreach (var (key, value) in m.Data)
+            result[key] = value.ToString()!;
 
-            return $"[{m.ThreadId:D3}] {sb} >> ";
-        }
+        return result;
+    };
+
+    private static string BuildMessagePrefix(LogMessage<TContext> m)
+    {
+        var sb = new StringBuilder();
+        sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
+        if (m.Line != 0)
+            sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
+
+        return $"[{m.ThreadId:D3}] {sb} >> ";
     }
 }

@@ -8,107 +8,106 @@ using System.Text;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Net.WebSockets.Internal
+namespace Annium.Net.WebSockets.Internal;
+
+internal static class Configurator
 {
-    internal static class Configurator
+    public static Configuration GetConfiguration(
+        IObservable<SocketMessage> observable,
+        Encoding encoding,
+        Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
+        WebSocketBaseOptions options,
+        ILogger logger
+    )
     {
-        public static Configuration GetConfiguration(
-            IObservable<SocketMessage> observable,
-            Encoding encoding,
-            Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-            WebSocketBaseOptions options,
-            ILogger logger
-        )
+        IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
+        var keepAliveFrames = new List<ReadOnlyMemory<byte>>();
+        var disposable = Disposable.Box();
+
+        // if active - send pings/count pongs via monitor
+        if (options.ActiveKeepAlive is not null)
         {
-            IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
-            var keepAliveFrames = new List<ReadOnlyMemory<byte>>();
-            var disposable = Disposable.Box();
+            var opts = options.ActiveKeepAlive;
+            keepAliveFrames.Add(opts.PongFrame);
+            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, logger);
+        }
 
-            // if active - send pings/count pongs via monitor
-            if (options.ActiveKeepAlive is not null)
-            {
-                var opts = options.ActiveKeepAlive;
-                keepAliveFrames.Add(opts.PongFrame);
-                keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, logger);
-            }
-
-            // if passive - listen pings, respond with pongs
-            if (options.PassiveKeepAlive is not null)
-            {
-                var opts = options.PassiveKeepAlive;
-                keepAliveFrames.Add(opts.PingFrame);
-                var logSubject = new PingPongSubject(logger);
-                disposable += observable
-                    .Where(x =>
-                        x.Type == WebSocketMessageType.Binary &&
-                        x.Data.Length == 1 &&
-                        x.Data.Span.SequenceEqual(opts.PingFrame.Span)
-                    )
-                    .DoParallelAsync(async _ =>
-                    {
-                        logSubject.Log().Trace("KeepAlive: ping -> pong");
-                        await send(opts.PongFrame);
-                    })
-                    .Subscribe();
-            }
-
-            // configure messageObservable
-            var messageObservable = observable;
-            if (options.ActiveKeepAlive is not null || options.PassiveKeepAlive is not null)
-                messageObservable = messageObservable
-                    .Where(x =>
-                        // not binary
-                        x.Type != WebSocketMessageType.Binary ||
-                        // or binary, but not single-byte frame
-                        x.Data.Length != 1 ||
-                        // or single-byte binary frame, but not keepAlive frame
-                        keepAliveFrames.All(f => !x.Data.Span.SequenceEqual(f.Span))
-                    );
-
-            // configure binaryObservable
-            var binaryObservable = observable
+        // if passive - listen pings, respond with pongs
+        if (options.PassiveKeepAlive is not null)
+        {
+            var opts = options.PassiveKeepAlive;
+            keepAliveFrames.Add(opts.PingFrame);
+            var logSubject = new PingPongSubject(logger);
+            disposable += observable
                 .Where(x =>
-                    // binary
                     x.Type == WebSocketMessageType.Binary &&
-                    (
-                        // not single-byte frame
-                        x.Data.Length != 1 ||
-                        // or single-byte binary frame, but not keepAlive frame
-                        keepAliveFrames.All(f => !x.Data.Span.SequenceEqual(f.Span))
-                    )
+                    x.Data.Length == 1 &&
+                    x.Data.Span.SequenceEqual(opts.PingFrame.Span)
                 )
-                .Select(x => x.Data);
-
-            // configure textObservable (just for symmetry)
-            var textObservable = observable
-                .Where(x => x.Type == WebSocketMessageType.Text)
-                .Select(x => encoding.GetString(x.Data.Span));
-
-            return new Configuration(
-                keepAliveMonitor,
-                messageObservable,
-                binaryObservable,
-                textObservable,
-                disposable
-            );
+                .DoParallelAsync(async _ =>
+                {
+                    logSubject.Log().Trace("KeepAlive: ping -> pong");
+                    await send(opts.PongFrame);
+                })
+                .Subscribe();
         }
 
-        private class PingPongSubject : ILogSubject
-        {
-            public ILogger Logger { get; }
+        // configure messageObservable
+        var messageObservable = observable;
+        if (options.ActiveKeepAlive is not null || options.PassiveKeepAlive is not null)
+            messageObservable = messageObservable
+                .Where(x =>
+                    // not binary
+                    x.Type != WebSocketMessageType.Binary ||
+                    // or binary, but not single-byte frame
+                    x.Data.Length != 1 ||
+                    // or single-byte binary frame, but not keepAlive frame
+                    keepAliveFrames.All(f => !x.Data.Span.SequenceEqual(f.Span))
+                );
 
-            public PingPongSubject(ILogger logger)
-            {
-                Logger = logger;
-            }
-        }
+        // configure binaryObservable
+        var binaryObservable = observable
+            .Where(x =>
+                // binary
+                x.Type == WebSocketMessageType.Binary &&
+                (
+                    // not single-byte frame
+                    x.Data.Length != 1 ||
+                    // or single-byte binary frame, but not keepAlive frame
+                    keepAliveFrames.All(f => !x.Data.Span.SequenceEqual(f.Span))
+                )
+            )
+            .Select(x => x.Data);
+
+        // configure textObservable (just for symmetry)
+        var textObservable = observable
+            .Where(x => x.Type == WebSocketMessageType.Text)
+            .Select(x => encoding.GetString(x.Data.Span));
+
+        return new Configuration(
+            keepAliveMonitor,
+            messageObservable,
+            binaryObservable,
+            textObservable,
+            disposable
+        );
     }
 
-    internal record Configuration(
-        IKeepAliveMonitor KeepAliveMonitor,
-        IObservable<SocketMessage> MessageObservable,
-        IObservable<ReadOnlyMemory<byte>> BinaryObservable,
-        IObservable<string> TextObservable,
-        IDisposable Disposable
-    );
+    private class PingPongSubject : ILogSubject
+    {
+        public ILogger Logger { get; }
+
+        public PingPongSubject(ILogger logger)
+        {
+            Logger = logger;
+        }
+    }
 }
+
+internal record Configuration(
+    IKeepAliveMonitor KeepAliveMonitor,
+    IObservable<SocketMessage> MessageObservable,
+    IObservable<ReadOnlyMemory<byte>> BinaryObservable,
+    IObservable<string> TextObservable,
+    IDisposable Disposable
+);

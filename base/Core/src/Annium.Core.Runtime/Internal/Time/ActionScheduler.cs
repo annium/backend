@@ -4,34 +4,33 @@ using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using NodaTime;
 
-namespace Annium.Core.Runtime.Internal.Time
+namespace Annium.Core.Runtime.Internal.Time;
+
+internal class ActionScheduler : IActionScheduler
 {
-    internal class ActionScheduler : IActionScheduler
+    public Action Delay(Action handle, int timeout)
+        => Delay(handle, Duration.FromMilliseconds(timeout));
+
+    public Action Delay(Action handle, Duration timeout)
     {
-        public Action Delay(Action handle, int timeout)
-            => Delay(handle, Duration.FromMilliseconds(timeout));
-
-        public Action Delay(Action handle, Duration timeout)
+        var execute = true;
+        Task.Delay(timeout.ToTimeSpan()).ContinueWith(_ =>
         {
-            var execute = true;
-            Task.Delay(timeout.ToTimeSpan()).ContinueWith(_ =>
-            {
-                if (execute)
-                    handle();
-            });
+            if (execute)
+                handle();
+        });
 
-            return () => execute = false;
-        }
+        return () => execute = false;
+    }
 
-        public Action Interval(Action handle, int interval)
-            => Interval(handle, Duration.FromMilliseconds(interval));
+    public Action Interval(Action handle, int interval)
+        => Interval(handle, Duration.FromMilliseconds(interval));
 
-        public Action Interval(Action handle, Duration interval)
-        {
-            var span = interval.ToTimeSpan();
-            var timer = new Timer(_ => handle(), null, span, span);
+    public Action Interval(Action handle, Duration interval)
+    {
+        var span = interval.ToTimeSpan();
+        var timer = new Timer(_ => handle(), null, span, span);
 
-            return () => timer.Dispose();
-        }
+        return () => timer.Dispose();
     }
 }

@@ -3,18 +3,17 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Shell
+namespace Annium.Extensions.Shell;
+
+public interface IShellInstance
 {
-    public interface IShellInstance
-    {
-        IShellInstance Configure(ProcessStartInfo startInfo);
+    IShellInstance Configure(ProcessStartInfo startInfo);
 
-        IShellInstance Pipe(bool pipe);
+    IShellInstance Pipe(bool pipe);
 
-        Task<ShellResult> RunAsync(TimeSpan timeout);
+    Task<ShellResult> RunAsync(TimeSpan timeout);
 
-        Task<ShellResult> RunAsync(CancellationToken ct = default);
+    Task<ShellResult> RunAsync(CancellationToken ct = default);
 
-        ShellAsyncResult Start(CancellationToken ct = default);
-    }
+    ShellAsyncResult Start(CancellationToken ct = default);
 }

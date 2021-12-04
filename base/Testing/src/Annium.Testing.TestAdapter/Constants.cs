@@ -1,9 +1,8 @@
-﻿namespace Annium.Testing.TestAdapter
+﻿namespace Annium.Testing.TestAdapter;
+
+internal class Constants
 {
-    internal class Constants
-    {
-        public const string FileExtensionDll = ".dll";
-        public const string FileExtensionExe = ".exe";
-        public const string ExecutorUri = "executor://annium/";
-    }
+    public const string FileExtensionDll = ".dll";
+    public const string FileExtensionExe = ".exe";
+    public const string ExecutorUri = "executor://annium/";
 }

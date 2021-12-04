@@ -1,7 +1,6 @@
-namespace Annium.Extensions.Arguments.Internal
+namespace Annium.Extensions.Arguments.Internal;
+
+internal class Constants
 {
-    internal class Constants
-    {
-        public const char OptionSign = '-';
-    }
+    public const char OptionSign = '-';
 }

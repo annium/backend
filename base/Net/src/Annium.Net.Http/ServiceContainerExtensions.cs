@@ -1,18 +1,17 @@
 using Annium.Net.Http;
 using Annium.Net.Http.Internal;
 
-namespace Annium.Core.DependencyInjection
-{
-    public static class ServiceContainerExtensions
-    {
-        public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container)
-        {
-            return new HttpFactoryConfigurationBuilder(container, Constants.DefaultKey);
-        }
+namespace Annium.Core.DependencyInjection;
 
-        public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container, string key)
-        {
-            return new HttpFactoryConfigurationBuilder(container, key);
-        }
+public static class ServiceContainerExtensions
+{
+    public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container)
+    {
+        return new HttpFactoryConfigurationBuilder(container, Constants.DefaultKey);
+    }
+
+    public static IHttpFactoryConfigurationBuilder AddHttpRequestFactory(this IServiceContainer container, string key)
+    {
+        return new HttpFactoryConfigurationBuilder(container, key);
     }
 }

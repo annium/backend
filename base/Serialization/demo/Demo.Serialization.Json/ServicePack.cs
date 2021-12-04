@@ -1,24 +1,23 @@
 using System;
 using Annium.Core.DependencyInjection;
 
-namespace Demo.Serialization.Json
+namespace Demo.Serialization.Json;
+
+internal class ServicePack : ServicePackBase
 {
-    internal class ServicePack : ServicePackBase
+    public override void Configure(IServiceContainer container)
     {
-        public override void Configure(IServiceContainer container)
-        {
-            // register configurations
-        }
+        // register configurations
+    }
 
-        public override void Register(IServiceContainer container, IServiceProvider provider)
-        {
-            container.AddRuntimeTools(GetType().Assembly, true);
-            container.AddJsonSerializers().SetDefault();
-        }
+    public override void Register(IServiceContainer container, IServiceProvider provider)
+    {
+        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddJsonSerializers().SetDefault();
+    }
 
-        public override void Setup(IServiceProvider provider)
-        {
-            // setup post-configured services
-        }
+    public override void Setup(IServiceProvider provider)
+    {
+        // setup post-configured services
     }
 }

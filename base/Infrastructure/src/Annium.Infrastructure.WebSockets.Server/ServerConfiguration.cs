@@ -1,52 +1,51 @@
 using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server
+namespace Annium.Infrastructure.WebSockets.Server;
+
+public class ServerConfiguration
 {
-    public class ServerConfiguration
+    public string PathMatch { get; private set; } = string.Empty;
+    public SerializationFormat Format { get; private set; }
+
+    public WebSocketOptions WebSocketOptions { get; private set; } = new()
     {
-        public string PathMatch { get; private set; } = string.Empty;
-        public SerializationFormat Format { get; private set; }
+        ActiveKeepAlive = ActiveKeepAlive.Create(),
+        PassiveKeepAlive = PassiveKeepAlive.Create()
+    };
 
-        public WebSocketOptions WebSocketOptions { get; private set; } = new()
-        {
-            ActiveKeepAlive = ActiveKeepAlive.Create(),
-            PassiveKeepAlive = PassiveKeepAlive.Create()
-        };
+    public ServerConfiguration ListenOn(string pathMatch)
+    {
+        PathMatch = pathMatch;
 
-        public ServerConfiguration ListenOn(string pathMatch)
-        {
-            PathMatch = pathMatch;
+        return this;
+    }
 
-            return this;
-        }
+    public ServerConfiguration UseFormat(SerializationFormat format)
+    {
+        Format = format;
 
-        public ServerConfiguration UseFormat(SerializationFormat format)
-        {
-            Format = format;
+        return this;
+    }
 
-            return this;
-        }
+    public ServerConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 3)
+    {
+        WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
 
-        public ServerConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 3)
-        {
-            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
+        return this;
+    }
 
-            return this;
-        }
+    public ServerConfiguration UseBinaryFormat()
+    {
+        Format = SerializationFormat.Binary;
 
-        public ServerConfiguration UseBinaryFormat()
-        {
-            Format = SerializationFormat.Binary;
+        return this;
+    }
 
-            return this;
-        }
+    public ServerConfiguration UseTextFormat()
+    {
+        Format = SerializationFormat.Text;
 
-        public ServerConfiguration UseTextFormat()
-        {
-            Format = SerializationFormat.Text;
-
-            return this;
-        }
+        return this;
     }
 }

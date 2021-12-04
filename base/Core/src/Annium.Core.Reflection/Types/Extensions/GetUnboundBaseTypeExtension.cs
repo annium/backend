@@ -1,28 +1,27 @@
 using System;
 using System.Linq;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Reflection;
+
+public static class GetUnboundBaseTypeExtension
 {
-    public static class GetUnboundBaseTypeExtension
+    public static Type? GetUnboundBaseType(this Type type)
     {
-        public static Type? GetUnboundBaseType(this Type type)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
+        if (type is null)
+            throw new ArgumentNullException(nameof(type));
 
-            var baseType = type.BaseType;
-            if (baseType == null)
-                return null;
+        var baseType = type.BaseType;
+        if (baseType == null)
+            return null;
 
-            if (!baseType.ContainsGenericParameters)
-                return baseType;
+        if (!baseType.ContainsGenericParameters)
+            return baseType;
 
-            var genericArgs = baseType.GetGenericTypeDefinition().GetGenericArguments();
-            var unboundBaseArgs = baseType.GetGenericArguments()
-                .Select((arg, i) => arg.IsGenericParameter ? genericArgs[i] : arg)
-                .ToArray();
+        var genericArgs = baseType.GetGenericTypeDefinition().GetGenericArguments();
+        var unboundBaseArgs = baseType.GetGenericArguments()
+            .Select((arg, i) => arg.IsGenericParameter ? genericArgs[i] : arg)
+            .ToArray();
 
-            return baseType.GetGenericTypeDefinition().TryMakeGenericType(out var result, unboundBaseArgs) ? result : null;
-        }
+        return baseType.GetGenericTypeDefinition().TryMakeGenericType(out var result, unboundBaseArgs) ? result : null;
     }
 }

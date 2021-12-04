@@ -1,7 +1,6 @@
-namespace Annium.Net.Http
+namespace Annium.Net.Http;
+
+internal class Constants
 {
-    internal class Constants
-    {
-        public const string DefaultKey = "";
-    }
+    public const string DefaultKey = "";
 }

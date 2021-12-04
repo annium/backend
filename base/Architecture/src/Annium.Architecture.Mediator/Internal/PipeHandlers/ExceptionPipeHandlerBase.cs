@@ -4,46 +4,45 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.Mediator.Internal.PipeHandlers
+namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
+
+internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubject
 {
-    internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubject
+    public ILogger Logger { get; }
+
+    public ExceptionPipeHandlerBase(
+        ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger
+    )
     {
-        public ILogger Logger { get; }
+        Logger = logger;
+    }
 
-        public ExceptionPipeHandlerBase(
-            ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger
-        )
+    public async Task<TResponse> HandleAsync(
+        TRequest request,
+        CancellationToken ct,
+        Func<TRequest, CancellationToken, Task<TResponse>> next
+    )
+    {
+        try
         {
-            Logger = logger;
+            return await next(request, ct);
         }
-
-        public async Task<TResponse> HandleAsync(
-            TRequest request,
-            CancellationToken ct,
-            Func<TRequest, CancellationToken, Task<TResponse>> next
-        )
+        catch (TargetInvocationException exception)
         {
-            try
-            {
-                return await next(request, ct);
-            }
-            catch (TargetInvocationException exception)
-            {
-                return Failure(exception.InnerException!);
-            }
-            catch (Exception exception)
-            {
-                return Failure(exception);
-            }
+            return Failure(exception.InnerException!);
         }
-
-        protected abstract TResponse GetFailure(Exception exception);
-
-        private TResponse Failure(Exception exception)
+        catch (Exception exception)
         {
-            this.Log().Trace($"Failure of {typeof(TRequest)}: {exception}");
-
-            return GetFailure(exception);
+            return Failure(exception);
         }
+    }
+
+    protected abstract TResponse GetFailure(Exception exception);
+
+    private TResponse Failure(Exception exception)
+    {
+        this.Log().Trace($"Failure of {typeof(TRequest)}: {exception}");
+
+        return GetFailure(exception);
     }
 }

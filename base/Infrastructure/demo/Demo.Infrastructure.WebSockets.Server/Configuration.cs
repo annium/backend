@@ -1,7 +1,6 @@
-namespace Demo.Infrastructure.WebSockets.Server
+namespace Demo.Infrastructure.WebSockets.Server;
+
+public class Configuration
 {
-    public class Configuration
-    {
-        public bool UseText { get; set; }
-    }
+    public bool UseText { get; set; }
 }

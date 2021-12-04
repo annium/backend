@@ -1,10 +1,9 @@
 using System;
 
-namespace Annium.Extensions.Pooling
+namespace Annium.Extensions.Pooling;
+
+public interface IObjectPool<T> : IDisposable
 {
-    public interface IObjectPool<T> : IDisposable
-    {
-        T Get();
-        void Return(T item);
-    }
+    T Get();
+    void Return(T item);
 }

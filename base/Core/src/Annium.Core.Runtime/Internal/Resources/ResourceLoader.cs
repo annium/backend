@@ -6,31 +6,30 @@ using System.Reflection;
 using Annium.Core.Primitives.Reflection;
 using Annium.Core.Runtime.Resources;
 
-namespace Annium.Core.Runtime.Internal.Resources
+namespace Annium.Core.Runtime.Internal.Resources;
+
+internal class ResourceLoader : IResourceLoader
 {
-    internal class ResourceLoader : IResourceLoader
+    public IReadOnlyCollection<IResource> Load(string prefix) => Load(prefix, Assembly.GetCallingAssembly());
+
+    public IReadOnlyCollection<IResource> Load(string prefix, Assembly assembly)
     {
-        public IReadOnlyCollection<IResource> Load(string prefix) => Load(prefix, Assembly.GetCallingAssembly());
+        prefix = $"{assembly.ShortName()}.{prefix}.";
 
-        public IReadOnlyCollection<IResource> Load(string prefix, Assembly assembly)
-        {
-            prefix = $"{assembly.ShortName()}.{prefix}.";
+        var names = assembly.GetManifestResourceNames();
 
-            var names = assembly.GetManifestResourceNames();
+        return names
+            .Where(r => r.StartsWith(prefix))
+            .Select(r =>
+            {
+                var name = r.Substring(prefix.Length);
+                using var rs = assembly.GetManifestResourceStream(r)!;
+                rs.Seek(0, SeekOrigin.Begin);
+                using var ms = new MemoryStream();
+                rs.CopyTo(ms);
 
-            return names
-                .Where(r => r.StartsWith(prefix))
-                .Select(r =>
-                {
-                    var name = r.Substring(prefix.Length);
-                    using var rs = assembly.GetManifestResourceStream(r)!;
-                    rs.Seek(0, SeekOrigin.Begin);
-                    using var ms = new MemoryStream();
-                    rs.CopyTo(ms);
-
-                    return new Resource(name, ms.ToArray().AsMemory());
-                })
-                .ToArray();
-        }
+                return new Resource(name, ms.ToArray().AsMemory());
+            })
+            .ToArray();
     }
 }

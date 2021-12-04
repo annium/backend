@@ -6,83 +6,82 @@ using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Annium.Storage.Abstractions;
 
-namespace Annium.Storage.FileSystem
+namespace Annium.Storage.FileSystem;
+
+internal class Storage : StorageBase
 {
-    internal class Storage : StorageBase
+    private readonly string _directory;
+
+    public Storage(
+        Configuration configuration,
+        ILogger<Storage> logger
+    ) : base(logger)
     {
-        private readonly string _directory;
+        if (configuration is null)
+            throw new ArgumentNullException(nameof(configuration));
 
-        public Storage(
-            Configuration configuration,
-            ILogger<Storage> logger
-        ) : base(logger)
+        VerifyPath(configuration.Directory);
+
+        _directory = configuration.Directory;
+    }
+
+    protected override Task DoSetupAsync()
+    {
+        if (!Directory.Exists(_directory))
+            Directory.CreateDirectory(_directory);
+
+        return Task.CompletedTask;
+    }
+
+    protected override Task<string[]> DoListAsync()
+    {
+        var entries = Directory.GetFiles(_directory).Select(e => Path.GetRelativePath(_directory, e)).ToArray();
+
+        return Task.FromResult(entries);
+    }
+
+    protected override async Task DoUploadAsync(Stream source, string name)
+    {
+        VerifyName(name);
+
+        var path = Path.Combine(_directory, name);
+        using (var target = File.Open(Path.Combine(_directory, name), FileMode.Create))
         {
-            if (configuration is null)
-                throw new ArgumentNullException(nameof(configuration));
-
-            VerifyPath(configuration.Directory);
-
-            _directory = configuration.Directory;
+            source.Position = 0;
+            await source.CopyToAsync(target);
         }
+    }
 
-        protected override Task DoSetupAsync()
+    protected override async Task<Stream> DoDownloadAsync(string name)
+    {
+        VerifyName(name);
+
+        var path = Path.Combine(_directory, name);
+        if (!File.Exists(path))
+            throw new KeyNotFoundException($"{name} not found in storage");
+
+        using (var source = File.Open(path, FileMode.Open))
         {
-            if (!Directory.Exists(_directory))
-                Directory.CreateDirectory(_directory);
+            var ms = new MemoryStream();
 
-            return Task.CompletedTask;
+            source.Position = 0;
+            await source.CopyToAsync(ms);
+            ms.Position = 0;
+
+            return ms;
         }
+    }
 
-        protected override Task<string[]> DoListAsync()
-        {
-            var entries = Directory.GetFiles(_directory).Select(e => Path.GetRelativePath(_directory, e)).ToArray();
+    protected override Task<bool> DoDeleteAsync(string name)
+    {
+        VerifyName(name);
 
-            return Task.FromResult(entries);
-        }
+        var path = Path.Combine(_directory, name);
+        if (!File.Exists(path))
+            return Task.FromResult(false);
 
-        protected override async Task DoUploadAsync(Stream source, string name)
-        {
-            VerifyName(name);
+        File.Delete(path);
 
-            var path = Path.Combine(_directory, name);
-            using (var target = File.Open(Path.Combine(_directory, name), FileMode.Create))
-            {
-                source.Position = 0;
-                await source.CopyToAsync(target);
-            }
-        }
-
-        protected override async Task<Stream> DoDownloadAsync(string name)
-        {
-            VerifyName(name);
-
-            var path = Path.Combine(_directory, name);
-            if (!File.Exists(path))
-                throw new KeyNotFoundException($"{name} not found in storage");
-
-            using (var source = File.Open(path, FileMode.Open))
-            {
-                var ms = new MemoryStream();
-
-                source.Position = 0;
-                await source.CopyToAsync(ms);
-                ms.Position = 0;
-
-                return ms;
-            }
-        }
-
-        protected override Task<bool> DoDeleteAsync(string name)
-        {
-            VerifyName(name);
-
-            var path = Path.Combine(_directory, name);
-            if (!File.Exists(path))
-                return Task.FromResult(false);
-
-            File.Delete(path);
-
-            return Task.FromResult(true);
-        }
+        return Task.FromResult(true);
     }
 }

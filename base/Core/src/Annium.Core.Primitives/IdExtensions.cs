@@ -1,11 +1,10 @@
 using Annium.Diagnostics.Debug;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives;
+
+public static class IdExtensions
 {
-    public static class IdExtensions
-    {
-        public static string GetFullId<T>(this T obj) where T : class =>
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            obj is null ? "null" : $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
-    }
+    public static string GetFullId<T>(this T obj) where T : class =>
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        obj is null ? "null" : $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
 }

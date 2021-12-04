@@ -5,44 +5,43 @@ using Annium.Data.Operations;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Architecture.Mediator.Tests
+namespace Annium.Architecture.Mediator.Tests;
+
+public class ExceptionPipeHandlerTest : TestBase
 {
-    public class ExceptionPipeHandlerTest : TestBase
+    [Fact]
+    public async Task Exception_ReturnsUncaughtExceptionResult()
     {
-        [Fact]
-        public async Task Exception_ReturnsUncaughtExceptionResult()
-        {
-            // arrange
-            var mediator = GetMediator(cfg => cfg.AddExceptionHandler().AddHandler(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest {Throw = true};
+        // arrange
+        var mediator = GetMediator(cfg => cfg.AddExceptionHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var request = new LoginRequest {Throw = true};
 
-            // act
-            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
+        // act
+        var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
-            // assert
-            result.Status.IsEqual(OperationStatus.UncaughtError);
-            result.PlainErrors.Has(1);
-            result.PlainErrors.At(0).IsEqual("TEST EXCEPTION");
-        }
+        // assert
+        result.Status.IsEqual(OperationStatus.UncaughtError);
+        result.PlainErrors.Has(1);
+        result.PlainErrors.At(0).IsEqual("TEST EXCEPTION");
+    }
 
-        [Fact]
-        public async Task Success_ReturnsOriginalResult()
-        {
-            // arrange
-            var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
-            var request = new LoginRequest {Throw = false};
+    [Fact]
+    public async Task Success_ReturnsOriginalResult()
+    {
+        // arrange
+        var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var request = new LoginRequest {Throw = false};
 
-            // act
-            var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
+        // act
+        var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
-            // assert
-            result.Status.IsEqual(OperationStatus.Ok);
-            result.IsOk.IsTrue();
-        }
+        // assert
+        result.Status.IsEqual(OperationStatus.Ok);
+        result.IsOk.IsTrue();
+    }
 
-        private class LoginRequest : IThrowing
-        {
-            public bool Throw { get; set; }
-        }
+    private class LoginRequest : IThrowing
+    {
+        public bool Throw { get; set; }
     }
 }

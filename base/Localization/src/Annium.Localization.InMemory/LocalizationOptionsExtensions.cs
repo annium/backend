@@ -3,29 +3,28 @@ using System.Globalization;
 using Annium.Localization.Abstractions;
 using Annium.Localization.InMemoryStorage;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public static class LocalizationOptionsExtensions
 {
-    public static class LocalizationOptionsExtensions
+    public static LocalizationOptions UseInMemoryStorage(
+        this LocalizationOptions options
+    )
     {
-        public static LocalizationOptions UseInMemoryStorage(
-            this LocalizationOptions options
-        )
-        {
-            return options.UseInMemoryStorage(new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>());
-        }
+        return options.UseInMemoryStorage(new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>());
+    }
 
-        public static LocalizationOptions UseInMemoryStorage(
-            this LocalizationOptions options,
-            IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
-        )
+    public static LocalizationOptions UseInMemoryStorage(
+        this LocalizationOptions options,
+        IReadOnlyDictionary<CultureInfo, IReadOnlyDictionary<string, string>> locales
+    )
+    {
+        options.SetLocaleStorage(container =>
         {
-            options.SetLocaleStorage(container =>
-            {
-                var storage = new Storage(locales);
-                container.Add<ILocaleStorage>(storage).AsSelf().Singleton();
-            });
+            var storage = new Storage(locales);
+            container.Add<ILocaleStorage>(storage).AsSelf().Singleton();
+        });
 
-            return options;
-        }
+        return options;
     }
 }

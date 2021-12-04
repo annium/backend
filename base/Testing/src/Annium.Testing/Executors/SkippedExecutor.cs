@@ -2,31 +2,30 @@
 using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
 
-namespace Annium.Testing.Executors
+namespace Annium.Testing.Executors;
+
+public class SkippedExecutor : ITestExecutor, ILogSubject
 {
-    public class SkippedExecutor : ITestExecutor, ILogSubject
+    public ILogger Logger { get; }
+
+    public uint Order { get; } = 1;
+
+    public SkippedExecutor(
+        ILogger<SkippedExecutor> logger
+    )
     {
-        public ILogger Logger { get; }
+        Logger = logger;
+    }
 
-        public uint Order { get; } = 1;
-
-        public SkippedExecutor(
-            ILogger<SkippedExecutor> logger
-        )
+    public Task ExecuteAsync(Target target)
+    {
+        if (target.Test.IsSkipped)
         {
-            Logger = logger;
+            target.Result.Outcome = TestOutcome.Skipped;
+
+            this.Log().Trace($"Skip {target.Test.DisplayName}.");
         }
 
-        public Task ExecuteAsync(Target target)
-        {
-            if (target.Test.IsSkipped)
-            {
-                target.Result.Outcome = TestOutcome.Skipped;
-
-                this.Log().Trace($"Skip {target.Test.DisplayName}.");
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

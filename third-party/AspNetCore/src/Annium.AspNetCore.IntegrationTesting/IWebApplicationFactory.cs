@@ -2,17 +2,16 @@ using System;
 using System.Threading.Tasks;
 using Annium.Net.Http;
 
-namespace Annium.AspNetCore.IntegrationTesting
+namespace Annium.AspNetCore.IntegrationTesting;
+
+public interface IWebApplicationFactory : IAsyncDisposable
 {
-    public interface IWebApplicationFactory : IAsyncDisposable
-    {
-        T Resolve<T>() where T : notnull;
+    T Resolve<T>() where T : notnull;
 
-        object Resolve(Type type);
+    object Resolve(Type type);
 
-        IHttpRequest GetHttpRequest();
+    IHttpRequest GetHttpRequest();
 
-        Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)
-            where TWebSocketClient : class, IAsyncDisposable;
-    }
+    Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)
+        where TWebSocketClient : class, IAsyncDisposable;
 }

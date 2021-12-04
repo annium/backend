@@ -1,21 +1,20 @@
 ﻿using System;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class PositionAttribute : BaseAttribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class PositionAttribute : BaseAttribute
+    public int Position { get; }
+
+    public bool IsRequired { get; }
+
+    public PositionAttribute(
+        int position,
+        bool isRequired = true
+    )
     {
-        public int Position { get; }
-
-        public bool IsRequired { get; }
-
-        public PositionAttribute(
-            int position,
-            bool isRequired = true
-        )
-        {
-            Position = position;
-            IsRequired = isRequired;
-        }
+        Position = position;
+        IsRequired = isRequired;
     }
 }

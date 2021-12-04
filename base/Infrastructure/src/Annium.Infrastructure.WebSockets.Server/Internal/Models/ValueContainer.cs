@@ -5,148 +5,147 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models
+namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+
+internal class ValueContainer<TState, TValueLoader, TConfig, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TConfig, TValue>
+    where TState : ConnectionStateBase
+    where TValueLoader : IValueLoader<TState, TConfig, TValue>
 {
-    internal class ValueContainer<TState, TValueLoader, TConfig, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TConfig, TValue>
-        where TState : ConnectionStateBase
-        where TValueLoader : IValueLoader<TState, TConfig, TValue>
+    private bool _isConfigured;
+    private TConfig? _config;
+
+    public ValueContainer(
+        IServiceProvider sp
+    ) : base(sp)
     {
-        private bool _isConfigured;
-        private TConfig? _config;
-
-        public ValueContainer(
-            IServiceProvider sp
-        ) : base(sp)
-        {
-        }
-
-        public void Configure(TConfig config)
-        {
-            if (_isConfigured)
-                throw new InvalidOperationException("Container already configured");
-            _isConfigured = true;
-
-            _config = config;
-        }
-
-        protected override async Task<TValue> LoadValueAsync(IAsyncServiceScope scope)
-        {
-            if (!_isConfigured)
-                throw new InvalidOperationException("Container is not configured");
-            var config = _config!;
-
-            var loader = scope.ServiceProvider.Resolve<TValueLoader>();
-            var value = await loader.LoadAsync(State!, config);
-
-            return value;
-        }
     }
 
-    internal class ValueContainer<TState, TValueLoader, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TValue>
-        where TState : ConnectionStateBase
-        where TValueLoader : IValueLoader<TState, TValue>
+    public void Configure(TConfig config)
     {
-        public ValueContainer(
-            IServiceProvider sp
-        ) : base(sp)
-        {
-        }
+        if (_isConfigured)
+            throw new InvalidOperationException("Container already configured");
+        _isConfigured = true;
 
-        protected override async Task<TValue> LoadValueAsync(IAsyncServiceScope scope)
-        {
-            var loader = scope.ServiceProvider.Resolve<TValueLoader>();
-            var value = await loader.LoadAsync(State!);
-
-            return value;
-        }
+        _config = config;
     }
 
-    internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
-        where TState : ConnectionStateBase
+    protected override async Task<TValue> LoadValueAsync(IAsyncServiceScope scope)
     {
-        public TValue Value
-        {
-            get
-            {
-                EnsureReady();
-                return _value;
-            }
-        }
+        if (!_isConfigured)
+            throw new InvalidOperationException("Container is not configured");
+        var config = _config!;
 
-        public event Action<TValue> OnChange = delegate { };
+        var loader = scope.ServiceProvider.Resolve<TValueLoader>();
+        var value = await loader.LoadAsync(State!, config);
 
-        private readonly IServiceProvider _sp;
-        private readonly AsyncLazy<TValue> _initiator;
-        protected TState? State;
-        private TValue _value;
-        private AsyncDisposableBox _disposable = Disposable.AsyncBox();
+        return value;
+    }
+}
 
-        protected ValueContainerBase(
-            IServiceProvider sp
-        )
-        {
-            _sp = sp;
-            _initiator = new AsyncLazy<TValue>((Func<Task<TValue>>) LoadValueAsync);
-            _value = default!;
-        }
+internal class ValueContainer<TState, TValueLoader, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TValue>
+    where TState : ConnectionStateBase
+    where TValueLoader : IValueLoader<TState, TValue>
+{
+    public ValueContainer(
+        IServiceProvider sp
+    ) : base(sp)
+    {
+    }
 
-        public void Bind(TState state)
-        {
-            if (State is not null)
-                throw new InvalidOperationException("Container is already bound to state");
-            State = state;
-        }
+    protected override async Task<TValue> LoadValueAsync(IAsyncServiceScope scope)
+    {
+        var loader = scope.ServiceProvider.Resolve<TValueLoader>();
+        var value = await loader.LoadAsync(State!);
 
-        public void Set(TValue value)
+        return value;
+    }
+}
+
+internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
+    where TState : ConnectionStateBase
+{
+    public TValue Value
+    {
+        get
         {
             EnsureReady();
-
-            _value = value;
-            OnChange.Invoke(value);
+            return _value;
         }
+    }
+
+    public event Action<TValue> OnChange = delegate { };
+
+    private readonly IServiceProvider _sp;
+    private readonly AsyncLazy<TValue> _initiator;
+    protected TState? State;
+    private TValue _value;
+    private AsyncDisposableBox _disposable = Disposable.AsyncBox();
+
+    protected ValueContainerBase(
+        IServiceProvider sp
+    )
+    {
+        _sp = sp;
+        _initiator = new AsyncLazy<TValue>((Func<Task<TValue>>) LoadValueAsync);
+        _value = default!;
+    }
+
+    public void Bind(TState state)
+    {
+        if (State is not null)
+            throw new InvalidOperationException("Container is already bound to state");
+        State = state;
+    }
+
+    public void Set(TValue value)
+    {
+        EnsureReady();
+
+        _value = value;
+        OnChange.Invoke(value);
+    }
 
 
-        public TaskAwaiter<TValue> GetAwaiter()
-        {
-            EnsureBound();
+    public TaskAwaiter<TValue> GetAwaiter()
+    {
+        EnsureBound();
 
-            return _initiator.IsValueCreated
-                ? Task.FromResult(_value).GetAwaiter()
-                : _initiator.GetAwaiter();
-        }
+        return _initiator.IsValueCreated
+            ? Task.FromResult(_value).GetAwaiter()
+            : _initiator.GetAwaiter();
+    }
 
-        protected abstract Task<TValue> LoadValueAsync(IAsyncServiceScope scope);
+    protected abstract Task<TValue> LoadValueAsync(IAsyncServiceScope scope);
 
-        private async Task<TValue> LoadValueAsync()
-        {
-            var scope = _sp.CreateAsyncScope();
-            _disposable += scope;
+    private async Task<TValue> LoadValueAsync()
+    {
+        var scope = _sp.CreateAsyncScope();
+        _disposable += scope;
 
-            var value = await LoadValueAsync(scope);
+        var value = await LoadValueAsync(scope);
 
-            _value = value;
-            OnChange.Invoke(value);
+        _value = value;
+        OnChange.Invoke(value);
 
-            return value;
-        }
+        return value;
+    }
 
-        private void EnsureReady()
-        {
-            EnsureBound();
+    private void EnsureReady()
+    {
+        EnsureBound();
 
-            if (!_initiator.IsValueCreated)
-                throw new InvalidOperationException("Container is not initiated");
-        }
+        if (!_initiator.IsValueCreated)
+            throw new InvalidOperationException("Container is not initiated");
+    }
 
-        private void EnsureBound()
-        {
-            if (State is null)
-                throw new InvalidOperationException("Container is not bound to state");
-        }
+    private void EnsureBound()
+    {
+        if (State is null)
+            throw new InvalidOperationException("Container is not bound to state");
+    }
 
-        public ValueTask DisposeAsync()
-        {
-            return _disposable.DisposeAsync();
-        }
+    public ValueTask DisposeAsync()
+    {
+        return _disposable.DisposeAsync();
     }
 }

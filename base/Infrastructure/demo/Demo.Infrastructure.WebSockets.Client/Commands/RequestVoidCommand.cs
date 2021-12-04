@@ -6,41 +6,40 @@ using Annium.Logging.Abstractions;
 using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands
+namespace Demo.Infrastructure.WebSockets.Client.Commands;
+
+internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
 {
-    internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+    public override string Id { get; } = "request-void";
+    public override string Description => $"test {Id} flow";
+    public ILogger Logger { get; }
+    private readonly IClientFactory _clientFactory;
+
+    public RequestVoidCommand(
+        IClientFactory clientFactory,
+        ILogger<RequestCommand> logger
+    )
     {
-        public override string Id { get; } = "request-void";
-        public override string Description => $"test {Id} flow";
-        public ILogger Logger { get; }
-        private readonly IClientFactory _clientFactory;
+        _clientFactory = clientFactory;
+        Logger = logger;
+    }
 
-        public RequestVoidCommand(
-            IClientFactory clientFactory,
-            ILogger<RequestCommand> logger
-        )
-        {
-            _clientFactory = clientFactory;
-            Logger = logger;
-        }
+    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    {
+        var configuration = new ClientConfiguration()
+            .ConnectTo(cfg.Server)
+            .WithActiveKeepAlive(600)
+            .WithResponseTimeout(600);
+        var client = _clientFactory.Create(configuration);
 
-        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
-        {
-            var configuration = new ClientConfiguration()
-                .ConnectTo(cfg.Server)
-                .WithActiveKeepAlive(600)
-                .WithResponseTimeout(600);
-            var client = _clientFactory.Create(configuration);
+        await client.ConnectAsync(ct);
 
-            await client.ConnectAsync(ct);
+        var request = new DeleteOrderRequest();
+        this.Log().Debug($">>> {request}");
+        var result = await client.SendAsync(request, ct);
+        this.Log().Debug($"<<< {result}");
 
-            var request = new DeleteOrderRequest();
-            this.Log().Debug($">>> {request}");
-            var result = await client.SendAsync(request, ct);
-            this.Log().Debug($"<<< {result}");
-
-            if (client.IsConnected)
-                await client.DisconnectAsync();
-        }
+        if (client.IsConnected)
+            await client.DisconnectAsync();
     }
 }

@@ -3,73 +3,72 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Mapper.Tests
+namespace Annium.Core.Mapper.Tests;
+
+public class ContextualProfileTest
 {
-    public class ContextualProfileTest
+    [Fact]
+    public void ContextualMapping_With_Works()
     {
-        [Fact]
-        public void ContextualMapping_With_Works()
+        // arrange
+        var mapper = GetMapper();
+        var payload = new OuterPayload(InnerPayload.B);
+
+        // act
+        var result = mapper.Map<OuterModel>(payload);
+
+        // assert
+        result.As<OuterModel>().X.Is(InnerModel.D);
+    }
+
+    [Fact]
+    public void ContextualMapping_Field_Works()
+    {
+        // arrange
+        var mapper = GetMapper();
+        var payload = new OuterPayload(InnerPayload.B);
+
+        // act
+        var result = mapper.Map<OuterModel>(payload);
+
+        // assert
+        result.As<OuterModel>().X.Is(InnerModel.D);
+    }
+
+    private IMapper GetMapper() => new ServiceContainer()
+        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddMapper(autoload: false)
+        .AddProfile<ContextualProfile>()
+        .BuildServiceProvider()
+        .Resolve<IMapper>();
+
+    private class ContextualProfile : Profile
+    {
+        public ContextualProfile()
         {
-            // arrange
-            var mapper = GetMapper();
-            var payload = new OuterPayload(InnerPayload.B);
-
-            // act
-            var result = mapper.Map<OuterModel>(payload);
-
-            // assert
-            result.As<OuterModel>().X.Is(InnerModel.D);
+            Map<SomePayload, SomeModel>().For<InnerModel>(x => x.X, ctx => x => ctx.Map<InnerModel>(x));
+            Map<InnerPayload, InnerModel>(x => x == InnerPayload.A ? InnerModel.C : InnerModel.D);
+            Map<OuterPayload, OuterModel>(ctx => x => new OuterModel(ctx.Map<InnerModel>(x.X)));
         }
+    }
 
-        [Fact]
-        public void ContextualMapping_Field_Works()
-        {
-            // arrange
-            var mapper = GetMapper();
-            var payload = new OuterPayload(InnerPayload.B);
+    private record SomePayload(InnerPayload X, int Value);
 
-            // act
-            var result = mapper.Map<OuterModel>(payload);
+    private record SomeModel(InnerModel X, int Value);
 
-            // assert
-            result.As<OuterModel>().X.Is(InnerModel.D);
-        }
+    private record OuterPayload(InnerPayload X);
 
-        private IMapper GetMapper() => new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
-            .AddMapper(autoload: false)
-            .AddProfile<ContextualProfile>()
-            .BuildServiceProvider()
-            .Resolve<IMapper>();
+    private record OuterModel(InnerModel X);
 
-        private class ContextualProfile : Profile
-        {
-            public ContextualProfile()
-            {
-                Map<SomePayload, SomeModel>().For<InnerModel>(x => x.X, ctx => x => ctx.Map<InnerModel>(x));
-                Map<InnerPayload, InnerModel>(x => x == InnerPayload.A ? InnerModel.C : InnerModel.D);
-                Map<OuterPayload, OuterModel>(ctx => x => new OuterModel(ctx.Map<InnerModel>(x.X)));
-            }
-        }
+    private enum InnerPayload
+    {
+        A,
+        B
+    }
 
-        private record SomePayload(InnerPayload X, int Value);
-
-        private record SomeModel(InnerModel X, int Value);
-
-        private record OuterPayload(InnerPayload X);
-
-        private record OuterModel(InnerModel X);
-
-        private enum InnerPayload
-        {
-            A,
-            B
-        }
-
-        private enum InnerModel
-        {
-            C,
-            D
-        }
+    private enum InnerModel
+    {
+        C,
+        D
     }
 }

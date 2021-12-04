@@ -1,7 +1,6 @@
-namespace Annium.Serialization.Abstractions
+namespace Annium.Serialization.Abstractions;
+
+public class Constants
 {
-    public class Constants
-    {
-        public const string DefaultKey = "";
-    }
+    public const string DefaultKey = "";
 }

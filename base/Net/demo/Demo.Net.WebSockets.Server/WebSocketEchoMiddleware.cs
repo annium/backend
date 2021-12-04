@@ -7,87 +7,86 @@ using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 using Microsoft.AspNetCore.Http;
 
-namespace Demo.Net.WebSockets.Server
+namespace Demo.Net.WebSockets.Server;
+
+public class WebSocketEchoMiddleware
 {
-    public class WebSocketEchoMiddleware
+    private readonly ILogger<WebSocket> _logger;
+    private readonly RequestDelegate _next;
+
+    public WebSocketEchoMiddleware(
+        ILogger<WebSocket> logger,
+        RequestDelegate next
+    )
     {
-        private readonly ILogger<WebSocket> _logger;
-        private readonly RequestDelegate _next;
+        _logger = logger;
+        _next = next;
+    }
 
-        public WebSocketEchoMiddleware(
-            ILogger<WebSocket> logger,
-            RequestDelegate next
-        )
+    public async Task Invoke(HttpContext context)
+    {
+        var path = context.Request.Path;
+        if (!path.StartsWithSegments("/ws"))
         {
-            _logger = logger;
-            _next = next;
+            await _next(context);
+            return;
         }
 
-        public async Task Invoke(HttpContext context)
+        if (!context.WebSockets.IsWebSocketRequest)
         {
-            var path = context.Request.Path;
-            if (!path.StartsWithSegments("/ws"))
-            {
-                await _next(context);
-                return;
-            }
-
-            if (!context.WebSockets.IsWebSocketRequest)
-            {
-                context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
-                return;
-            }
-
-            var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
-
-            if (path == "/ws/echo")
-                await Echo(ws);
-
-            if (path == "/ws/data")
-                await Data(ws);
+            context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            return;
         }
 
-        private Task Echo(IWebSocket ws)
-        {
-            var tcs = new TaskCompletionSource<object>();
+        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
 
-            ws.ListenText().Subscribe(
-                async x =>
-                {
-                    Console.WriteLine($"In:  '{x}'");
-                    await ws.Send(x, CancellationToken.None);
-                    Console.WriteLine($"Out: '{x}'");
-                },
-                async () =>
-                {
-                    Console.WriteLine("Close");
-                    await ws.DisconnectAsync();
-                    Console.WriteLine("Closed");
-                    tcs.TrySetResult(new object());
-                }
-            );
+        if (path == "/ws/echo")
+            await Echo(ws);
 
-            return tcs.Task;
-        }
+        if (path == "/ws/data")
+            await Data(ws);
+    }
 
-        private async Task Data(IWebSocket ws)
-        {
-            var isClosed = false;
-            ws.ListenText().Subscribe(_ => { }, () => isClosed = true);
+    private Task Echo(IWebSocket ws)
+    {
+        var tcs = new TaskCompletionSource<object>();
 
-            for (var i = 0; i < 1000; i++)
+        ws.ListenText().Subscribe(
+            async x =>
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
-
-                if (isClosed)
-                {
-                    Console.WriteLine("Closed");
-                    break;
-                }
-
-                Console.WriteLine($"Out: '{i}'");
-                await ws.Send(i.ToString(), CancellationToken.None);
+                Console.WriteLine($"In:  '{x}'");
+                await ws.Send(x, CancellationToken.None);
+                Console.WriteLine($"Out: '{x}'");
+            },
+            async () =>
+            {
+                Console.WriteLine("Close");
+                await ws.DisconnectAsync();
+                Console.WriteLine("Closed");
+                tcs.TrySetResult(new object());
             }
+        );
+
+        return tcs.Task;
+    }
+
+    private async Task Data(IWebSocket ws)
+    {
+        var isClosed = false;
+        ws.ListenText().Subscribe(_ => { }, () => isClosed = true);
+
+        for (var i = 0; i < 1000; i++)
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1));
+
+            if (isClosed)
+            {
+                Console.WriteLine("Closed");
+                break;
+            }
+
+            Console.WriteLine($"Out: '{i}'");
+            await ws.Send(i.ToString(), CancellationToken.None);
         }
     }
 }

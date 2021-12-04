@@ -12,293 +12,292 @@ using Annium.Logging.Shared;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Mediator.Tests
+namespace Annium.Core.Mediator.Tests;
+
+public class MediatorTest
 {
-    public class MediatorTest
+    [Fact]
+    public async Task SingleClosedHandler_Works()
     {
-        [Fact]
-        public async Task SingleClosedHandler_Works()
+        // arrange
+        var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
+        var request = new Base { Value = "base" };
+
+        // act
+        var response = await mediator.SendAsync<One>(request);
+
+        // assert
+        response.GetHashCode().IsEqual(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
+        logs.Has(2);
+        logs.At(0).Message.IsEqual(typeof(ClosedFinalHandler).FullName);
+        logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+    }
+
+    [Fact]
+    public async Task SingleOpenHandler_WithExpectedParameters_Works()
+    {
+        // arrange
+        var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
+        var request = new Two { Second = 2, Value = "one two three" };
+
+        // act
+        var response = await mediator.SendAsync<Base>(request);
+
+        // assert
+        response.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        logs.Has(2);
+        logs.At(0).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+    }
+
+    [Fact]
+    public async Task ChainOfHandlers_WithExpectedParameters_Works()
+    {
+        // arrange
+        var (mediator, logs) = GetMediator(cfg => cfg
+            .AddHandler(typeof(ConversionHandler<,>))
+            .AddHandler(typeof(ValidationHandler<,>))
+            .AddHandler(typeof(OpenFinalHandler<,>))
+        );
+        var request = new Two { Second = 2, Value = "one two three" };
+        var payload = new Request<Two>(request);
+
+        // act
+        var response = (await mediator.SendAsync<Response<IBooleanResult<Base>>>(payload)).Value;
+
+        // assert
+        response.IsSuccess.IsTrue();
+        response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        logs.Has(6);
+        logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
+        logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
+        logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
+        logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
+        logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+    }
+
+    [Fact]
+    public async Task ChainOfHandlers_WithRegisteredResponse_Works()
+    {
+        // arrange
+        var (mediator, logs) = GetMediator(cfg => cfg
+            .AddHandler(typeof(ConversionHandler<,>))
+            .AddHandler(typeof(ValidationHandler<,>))
+            .AddHandler(typeof(OpenFinalHandler<,>))
+            .AddMatch(typeof(Request<Two>), typeof(IResponse), typeof(Response<IBooleanResult<Base>>))
+        );
+        var request = new Two { Second = 2, Value = "one two three" };
+        var payload = new Request<Two>(request);
+
+        // act
+        var response = (await mediator.SendAsync<IResponse>(payload)).As<Response<IBooleanResult<Base>>>().Value;
+
+        // assert
+        response.IsSuccess.IsTrue();
+        response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        logs.Has(6);
+        logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
+        logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
+        logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
+        logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
+        logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+    }
+
+    private ValueTuple<IMediator, IReadOnlyList<LogMessage<DefaultLogContext>>> GetMediator(Action<MediatorConfiguration> configure)
+    {
+        var logHandler = new InMemoryLogHandler<DefaultLogContext>();
+
+        var container = new ServiceContainer();
+        container.AddTime().WithRealTime().SetDefault();
+        container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
+        container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
+        container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));
+        container.AddMediatorConfiguration(configure);
+        container.AddMediator();
+        var provider = container.BuildServiceProvider();
+
+        return (provider.Resolve<IMediator>(), logHandler.Logs);
+    }
+
+    internal class ConversionHandler<TRequest, TResponse> :
+        IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
+        ILogSubject
+    {
+        private static readonly JsonSerializerOptions
+            Options = new JsonSerializerOptions().ConfigureForOperations();
+
+        public ILogger Logger { get; }
+
+        public ConversionHandler(
+            ILogger<MediatorTest> logger
+        )
         {
-            // arrange
-            var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
-            var request = new Base { Value = "base" };
-
-            // act
-            var response = await mediator.SendAsync<One>(request);
-
-            // assert
-            response.GetHashCode().IsEqual(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
-            logs.Has(2);
-            logs.At(0).Message.IsEqual(typeof(ClosedFinalHandler).FullName);
-            logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+            Logger = logger;
         }
 
-        [Fact]
-        public async Task SingleOpenHandler_WithExpectedParameters_Works()
+        public async Task<Response<TResponse>> HandleAsync(
+            Request<TRequest> request,
+            CancellationToken ct,
+            Func<TRequest, CancellationToken, Task<TResponse>> next
+        )
         {
-            // arrange
-            var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
-            var request = new Two { Second = 2, Value = "one two three" };
+            this.Log().Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
+            var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
 
-            // act
-            var response = await mediator.SendAsync<Base>(request);
+            var result = await next(payload, ct);
 
-            // assert
-            response.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
-            logs.Has(2);
-            logs.At(0).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-            logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+            this.Log().Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
+            return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
+        }
+    }
+
+    internal class Request<T>
+    {
+        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+
+        public string Value { get; }
+
+        public Request(T value)
+        {
+            Value = JsonSerializer.Serialize(value, Options);
+        }
+    }
+
+    internal class Response<T> : IResponse
+    {
+        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+
+        public T Value { get; }
+
+        public Response(string value)
+        {
+            Value = JsonSerializer.Deserialize<T>(value, Options)!;
+        }
+    }
+
+    internal interface IResponse
+    {
+    }
+
+    internal class ValidationHandler<TRequest, TResponse> :
+        IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
+        ILogSubject
+    {
+        public ILogger Logger { get; }
+        private readonly Func<TRequest, bool> _validate;
+
+        public ValidationHandler(
+            Func<TRequest, bool> validate,
+            ILogger<MediatorTest> logger
+        )
+        {
+            _validate = validate;
+            Logger = logger;
         }
 
-        [Fact]
-        public async Task ChainOfHandlers_WithExpectedParameters_Works()
+        public async Task<IBooleanResult<TResponse>> HandleAsync(
+            TRequest request,
+            CancellationToken ct,
+            Func<TRequest, CancellationToken, Task<TResponse>> next
+        )
         {
-            // arrange
-            var (mediator, logs) = GetMediator(cfg => cfg
-                .AddHandler(typeof(ConversionHandler<,>))
-                .AddHandler(typeof(ValidationHandler<,>))
-                .AddHandler(typeof(OpenFinalHandler<,>))
-            );
-            var request = new Two { Second = 2, Value = "one two three" };
-            var payload = new Request<Two>(request);
+            this.Log().Trace($"Start {typeof(TRequest).FriendlyName()} validation");
+            var result = _validate(request)
+                ? Result.Success(default(TResponse) !)
+                : Result.Failure(default(TResponse) !).Error("Validation failed");
+            this.Log().Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
+            if (result.HasErrors)
+                return result;
 
-            // act
-            var response = (await mediator.SendAsync<Response<IBooleanResult<Base>>>(payload)).Value;
+            var response = await next(request, ct);
 
-            // assert
-            response.IsSuccess.IsTrue();
-            response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
-            logs.Has(6);
-            logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
-            logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
-            logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-            logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-            logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
-            logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+            return Result.Success(response);
+        }
+    }
+
+    private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>, ILogSubject
+        where TRequest : TResponse
+        where TResponse : Base, new()
+    {
+        public ILogger Logger { get; }
+
+        public OpenFinalHandler(
+            ILogger<MediatorTest> logger
+        )
+        {
+            Logger = logger;
         }
 
-        [Fact]
-        public async Task ChainOfHandlers_WithRegisteredResponse_Works()
+        public Task<TResponse> HandleAsync(
+            TRequest request,
+            CancellationToken ct
+        )
         {
-            // arrange
-            var (mediator, logs) = GetMediator(cfg => cfg
-                .AddHandler(typeof(ConversionHandler<,>))
-                .AddHandler(typeof(ValidationHandler<,>))
-                .AddHandler(typeof(OpenFinalHandler<,>))
-                .AddMatch(typeof(Request<Two>), typeof(IResponse), typeof(Response<IBooleanResult<Base>>))
-            );
-            var request = new Two { Second = 2, Value = "one two three" };
-            var payload = new Request<Two>(request);
+            this.Log().Info(GetType().FriendlyName());
+            this.Log().Trace(request.GetHashCode().ToString());
 
-            // act
-            var response = (await mediator.SendAsync<IResponse>(payload)).As<Response<IBooleanResult<Base>>>().Value;
+            var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
-            // assert
-            response.IsSuccess.IsTrue();
-            response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
-            logs.Has(6);
-            logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
-            logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
-            logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-            logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-            logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
-            logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+            return Task.FromResult(response);
+        }
+    }
+
+    private class ClosedFinalHandler : IFinalRequestHandler<Base, One>, ILogSubject
+    {
+        public ILogger Logger { get; }
+
+        public ClosedFinalHandler(
+            ILogger<MediatorTest> logger
+        )
+        {
+            Logger = logger;
         }
 
-        private ValueTuple<IMediator, IReadOnlyList<LogMessage<DefaultLogContext>>> GetMediator(Action<MediatorConfiguration> configure)
+        public Task<One> HandleAsync(
+            Base request,
+            CancellationToken ct
+        )
         {
-            var logHandler = new InMemoryLogHandler<DefaultLogContext>();
+            this.Log().Trace(GetType().FullName!);
+            this.Log().Trace(request.GetHashCode().ToString());
 
-            var container = new ServiceContainer();
-            container.AddTime().WithRealTime().SetDefault();
-            container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
-            container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
-            container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));
-            container.AddMediatorConfiguration(configure);
-            container.AddMediator();
-            var provider = container.BuildServiceProvider();
-
-            return (provider.Resolve<IMediator>(), logHandler.Logs);
+            return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
         }
+    }
 
-        internal class ConversionHandler<TRequest, TResponse> :
-            IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
-            ILogSubject
-        {
-            private static readonly JsonSerializerOptions
-                Options = new JsonSerializerOptions().ConfigureForOperations();
+    private class Authored<T>
+    {
+        public int AuthorId { get; set; }
+        public T Entity { get; set; } = default !;
 
-            public ILogger Logger { get; }
+        public override int GetHashCode() => 13 * AuthorId.GetHashCode() + Entity!.GetHashCode();
+    }
 
-            public ConversionHandler(
-                ILogger<MediatorTest> logger
-            )
-            {
-                Logger = logger;
-            }
+    private class Base
+    {
+        public string? Value { get; set; }
 
-            public async Task<Response<TResponse>> HandleAsync(
-                Request<TRequest> request,
-                CancellationToken ct,
-                Func<TRequest, CancellationToken, Task<TResponse>> next
-            )
-            {
-                this.Log().Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
-                var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
+        public override int GetHashCode() => Value!.GetHashCode();
+    }
 
-                var result = await next(payload, ct);
+    private class One : Base
+    {
+        public long First { get; set; }
 
-                this.Log().Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
-                return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
-            }
-        }
+        public override int GetHashCode() => 7 * base.GetHashCode() + First.GetHashCode();
+    }
 
-        internal class Request<T>
-        {
-            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+    private class Two : Base
+    {
+        public int Second { get; set; }
 
-            public string Value { get; }
+        public override int GetHashCode() => 11 * base.GetHashCode() + Second.GetHashCode();
+    }
 
-            public Request(T value)
-            {
-                Value = JsonSerializer.Serialize(value, Options);
-            }
-        }
-
-        internal class Response<T> : IResponse
-        {
-            private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
-
-            public T Value { get; }
-
-            public Response(string value)
-            {
-                Value = JsonSerializer.Deserialize<T>(value, Options)!;
-            }
-        }
-
-        internal interface IResponse
-        {
-        }
-
-        internal class ValidationHandler<TRequest, TResponse> :
-            IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
-            ILogSubject
-        {
-            public ILogger Logger { get; }
-            private readonly Func<TRequest, bool> _validate;
-
-            public ValidationHandler(
-                Func<TRequest, bool> validate,
-                ILogger<MediatorTest> logger
-            )
-            {
-                _validate = validate;
-                Logger = logger;
-            }
-
-            public async Task<IBooleanResult<TResponse>> HandleAsync(
-                TRequest request,
-                CancellationToken ct,
-                Func<TRequest, CancellationToken, Task<TResponse>> next
-            )
-            {
-                this.Log().Trace($"Start {typeof(TRequest).FriendlyName()} validation");
-                var result = _validate(request)
-                    ? Result.Success(default(TResponse) !)
-                    : Result.Failure(default(TResponse) !).Error("Validation failed");
-                this.Log().Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
-                if (result.HasErrors)
-                    return result;
-
-                var response = await next(request, ct);
-
-                return Result.Success(response);
-            }
-        }
-
-        private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>, ILogSubject
-            where TRequest : TResponse
-            where TResponse : Base, new()
-        {
-            public ILogger Logger { get; }
-
-            public OpenFinalHandler(
-                ILogger<MediatorTest> logger
-            )
-            {
-                Logger = logger;
-            }
-
-            public Task<TResponse> HandleAsync(
-                TRequest request,
-                CancellationToken ct
-            )
-            {
-                this.Log().Info(GetType().FriendlyName());
-                this.Log().Trace(request.GetHashCode().ToString());
-
-                var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
-
-                return Task.FromResult(response);
-            }
-        }
-
-        private class ClosedFinalHandler : IFinalRequestHandler<Base, One>, ILogSubject
-        {
-            public ILogger Logger { get; }
-
-            public ClosedFinalHandler(
-                ILogger<MediatorTest> logger
-            )
-            {
-                Logger = logger;
-            }
-
-            public Task<One> HandleAsync(
-                Base request,
-                CancellationToken ct
-            )
-            {
-                this.Log().Trace(GetType().FullName!);
-                this.Log().Trace(request.GetHashCode().ToString());
-
-                return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
-            }
-        }
-
-        private class Authored<T>
-        {
-            public int AuthorId { get; set; }
-            public T Entity { get; set; } = default !;
-
-            public override int GetHashCode() => 13 * AuthorId.GetHashCode() + Entity!.GetHashCode();
-        }
-
-        private class Base
-        {
-            public string? Value { get; set; }
-
-            public override int GetHashCode() => Value!.GetHashCode();
-        }
-
-        private class One : Base
-        {
-            public long First { get; set; }
-
-            public override int GetHashCode() => 7 * base.GetHashCode() + First.GetHashCode();
-        }
-
-        private class Two : Base
-        {
-            public int Second { get; set; }
-
-            public override int GetHashCode() => 11 * base.GetHashCode() + Second.GetHashCode();
-        }
-
-        private interface IBase
-        {
-            string Value { get; set; }
-        }
+    private interface IBase
+    {
+        string Value { get; set; }
     }
 }

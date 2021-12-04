@@ -1,9 +1,8 @@
 using Annium.Serialization.Abstractions;
 
-namespace Annium.Infrastructure.MessageBus.Node.Transport
+namespace Annium.Infrastructure.MessageBus.Node.Transport;
+
+public interface IInMemoryConfigurationBuilder
 {
-    public interface IInMemoryConfigurationBuilder
-    {
-        IInMemoryConfigurationBuilder WithSerializer(ISerializer<string> serializer);
-    }
+    IInMemoryConfigurationBuilder WithSerializer(ISerializer<string> serializer);
 }

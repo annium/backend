@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Validation.Internal
+namespace Annium.Extensions.Validation.Internal;
+
+internal interface IRuleContainer<TValue>
 {
-    internal interface IRuleContainer<TValue>
-    {
-        Task<bool> ValidateAsync(ValidationContext<TValue> context, TValue value, int stage);
-    }
+    Task<bool> ValidateAsync(ValidationContext<TValue> context, TValue value, int stage);
 }

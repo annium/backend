@@ -1,18 +1,17 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Annium.Storage.Abstractions
+namespace Annium.Storage.Abstractions;
+
+public interface IStorage
 {
-    public interface IStorage
-    {
-        Task SetupAsync();
+    Task SetupAsync();
 
-        Task<string[]> ListAsync();
+    Task<string[]> ListAsync();
 
-        Task UploadAsync(Stream source, string name);
+    Task UploadAsync(Stream source, string name);
 
-        Task<Stream> DownloadAsync(string name);
+    Task<Stream> DownloadAsync(string name);
 
-        Task<bool> DeleteAsync(string name);
-    }
+    Task<bool> DeleteAsync(string name);
 }

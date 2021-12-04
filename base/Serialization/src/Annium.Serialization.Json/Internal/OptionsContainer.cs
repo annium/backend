@@ -1,14 +1,13 @@
 using System.Text.Json;
 
-namespace Annium.Serialization.Json.Internal
-{
-    internal class OptionsContainer
-    {
-        public JsonSerializerOptions Value { get; }
+namespace Annium.Serialization.Json.Internal;
 
-        public OptionsContainer(JsonSerializerOptions value)
-        {
-            Value = value;
-        }
+internal class OptionsContainer
+{
+    public JsonSerializerOptions Value { get; }
+
+    public OptionsContainer(JsonSerializerOptions value)
+    {
+        Value = value;
     }
 }

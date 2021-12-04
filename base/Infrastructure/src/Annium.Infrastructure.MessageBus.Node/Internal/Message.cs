@@ -1,28 +1,27 @@
 using System.Text.Json.Serialization;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Infrastructure.MessageBus.Node.Internal
+namespace Annium.Infrastructure.MessageBus.Node.Internal;
+
+internal record Message<T> : Message, IMessage<T>
 {
-    internal record Message<T> : Message, IMessage<T>
-    {
-        [JsonPropertyName("v")]
-        public T Content { get; }
+    [JsonPropertyName("v")]
+    public T Content { get; }
 
-        public Message(T content)
-        {
-            Content = content;
-        }
-    }
-
-    internal interface IMessage<out T>
+    public Message(T content)
     {
-        T Content { get; }
+        Content = content;
     }
+}
 
-    internal abstract record Message
-    {
-        [ResolutionId]
-        [JsonPropertyName("t")]
-        public string Tid => GetType().GetIdString();
-    }
+internal interface IMessage<out T>
+{
+    T Content { get; }
+}
+
+internal abstract record Message
+{
+    [ResolutionId]
+    [JsonPropertyName("t")]
+    public string Tid => GetType().GetIdString();
 }

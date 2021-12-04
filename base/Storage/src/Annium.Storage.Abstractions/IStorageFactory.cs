@@ -1,7 +1,6 @@
-namespace Annium.Storage.Abstractions
+namespace Annium.Storage.Abstractions;
+
+public interface IStorageFactory
 {
-    public interface IStorageFactory
-    {
-        IStorage CreateStorage(ConfigurationBase configuration);
-    }
+    IStorage CreateStorage(ConfigurationBase configuration);
 }

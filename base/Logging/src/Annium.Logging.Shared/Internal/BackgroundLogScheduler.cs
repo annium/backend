@@ -6,118 +6,117 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 
-namespace Annium.Logging.Shared.Internal
+namespace Annium.Logging.Shared.Internal;
+
+internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyncDisposable
+    where TContext : class, ILogContext
 {
-    internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyncDisposable
-        where TContext : class, ILogContext
+    public Func<LogMessage<TContext>, bool> Filter { get; }
+    private int Count => _messageReader.CanCount ? _messageReader.Count : -1;
+    private bool _isDisposed;
+    private readonly ChannelReader<LogMessage<TContext>> _messageReader;
+    private readonly ChannelWriter<LogMessage<TContext>> _messageWriter;
+    private readonly CancellationTokenSource _observableCts = new();
+    private readonly IObservable<LogMessage<TContext>> _observable;
+    private readonly IDisposable _subscription;
+
+    public BackgroundLogScheduler(
+        Func<LogMessage<TContext>, bool> filter,
+        IAsyncLogHandler<TContext> handler,
+        LogRouteConfiguration configuration
+    )
     {
-        public Func<LogMessage<TContext>, bool> Filter { get; }
-        private int Count => _messageReader.CanCount ? _messageReader.Count : -1;
-        private bool _isDisposed;
-        private readonly ChannelReader<LogMessage<TContext>> _messageReader;
-        private readonly ChannelWriter<LogMessage<TContext>> _messageWriter;
-        private readonly CancellationTokenSource _observableCts = new();
-        private readonly IObservable<LogMessage<TContext>> _observable;
-        private readonly IDisposable _subscription;
+        if (configuration.BufferTime == TimeSpan.Zero)
+            throw new ArgumentOutOfRangeException(nameof(configuration.BufferTime), "Buffer time is expected to be non-zero");
 
-        public BackgroundLogScheduler(
-            Func<LogMessage<TContext>, bool> filter,
-            IAsyncLogHandler<TContext> handler,
-            LogRouteConfiguration configuration
-        )
+        if (configuration.BufferCount <= 0)
+            throw new ArgumentOutOfRangeException(nameof(configuration.BufferCount), "Buffer count is expected to be positive");
+
+        Filter = filter;
+
+        var channel = Channel.CreateUnbounded<LogMessage<TContext>>(new UnboundedChannelOptions
         {
-            if (configuration.BufferTime == TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException(nameof(configuration.BufferTime), "Buffer time is expected to be non-zero");
+            AllowSynchronousContinuations = true,
+            SingleWriter = false,
+            SingleReader = true
+        });
+        _messageWriter = channel.Writer;
+        _messageReader = channel.Reader;
+        _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token).TrackCompletion();
+        _subscription = _observable
+            .Buffer(configuration.BufferTime, configuration.BufferCount)
+            .Where(x => x.Count > 0)
+            .DoParallelAsync(async x => await handler.Handle(x.ToArray()))
+            .Subscribe();
+    }
 
-            if (configuration.BufferCount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(configuration.BufferCount), "Buffer count is expected to be positive");
+    public void Handle(LogMessage<TContext> message)
+    {
+        EnsureNotDisposed();
 
-            Filter = filter;
+        lock (_messageWriter)
+            if (!_messageWriter.TryWrite(message))
+                throw new InvalidOperationException("Message must have been written to channel");
+    }
 
-            var channel = Channel.CreateUnbounded<LogMessage<TContext>>(new UnboundedChannelOptions
+    private async Task<Func<Task>> Run(ObserverContext<LogMessage<TContext>> ctx)
+    {
+        this.Trace("start");
+
+        // normal mode - runs task immediately or waits for one
+        while (!Volatile.Read(ref _isDisposed))
+        {
+            try
             {
-                AllowSynchronousContinuations = true,
-                SingleWriter = false,
-                SingleReader = true
-            });
-            _messageWriter = channel.Writer;
-            _messageReader = channel.Reader;
-            _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token).TrackCompletion();
-            _subscription = _observable
-                .Buffer(configuration.BufferTime, configuration.BufferCount)
-                .Where(x => x.Count > 0)
-                .DoParallelAsync(async x => await handler.Handle(x.ToArray()))
-                .Subscribe();
-        }
-
-        public void Handle(LogMessage<TContext> message)
-        {
-            EnsureNotDisposed();
-
-            lock (_messageWriter)
-                if (!_messageWriter.TryWrite(message))
-                    throw new InvalidOperationException("Message must have been written to channel");
-        }
-
-        private async Task<Func<Task>> Run(ObserverContext<LogMessage<TContext>> ctx)
-        {
-            this.Trace("start");
-
-            // normal mode - runs task immediately or waits for one
-            while (!Volatile.Read(ref _isDisposed))
-            {
-                try
-                {
-                    var message = await _messageReader.ReadAsync(ctx.Ct);
-                    ctx.OnNext(message);
-                }
-                catch (ChannelClosedException)
-                {
-                    break;
-                }
-                catch (OperationCanceledException)
-                {
-                    break;
-                }
+                var message = await _messageReader.ReadAsync(ctx.Ct);
+                ctx.OnNext(message);
             }
-
-            // shutdown mode - handle only left tasks
-            this.Trace($"handle {Count} messages left");
-            while (true)
+            catch (ChannelClosedException)
             {
-                if (_messageReader.TryRead(out var message))
-                    ctx.OnNext(message);
-                else
-                    break;
+                break;
             }
-
-            this.Trace("done");
-
-            return () => Task.CompletedTask;
+            catch (OperationCanceledException)
+            {
+                break;
+            }
         }
 
-        public async ValueTask DisposeAsync()
+        // shutdown mode - handle only left tasks
+        this.Trace($"handle {Count} messages left");
+        while (true)
         {
-            this.Trace("start");
-            EnsureNotDisposed();
-            Volatile.Write(ref _isDisposed, true);
-            lock (_messageWriter)
-                _messageWriter.Complete();
-            this.Trace("wait for reader completion");
-            await _messageReader.Completion;
-            this.Trace("cancel observable cts");
-            _observableCts.Cancel();
-            this.Trace("await observable");
-            await _observable.WhenCompleted();
-            this.Trace("dispose subscription");
-            _subscription.Dispose();
-            this.Trace("done");
+            if (_messageReader.TryRead(out var message))
+                ctx.OnNext(message);
+            else
+                break;
         }
 
-        private void EnsureNotDisposed()
-        {
-            if (Volatile.Read(ref _isDisposed))
-                throw new InvalidOperationException("Log scheduler is already disposed");
-        }
+        this.Trace("done");
+
+        return () => Task.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        this.Trace("start");
+        EnsureNotDisposed();
+        Volatile.Write(ref _isDisposed, true);
+        lock (_messageWriter)
+            _messageWriter.Complete();
+        this.Trace("wait for reader completion");
+        await _messageReader.Completion;
+        this.Trace("cancel observable cts");
+        _observableCts.Cancel();
+        this.Trace("await observable");
+        await _observable.WhenCompleted();
+        this.Trace("dispose subscription");
+        _subscription.Dispose();
+        this.Trace("done");
+    }
+
+    private void EnsureNotDisposed()
+    {
+        if (Volatile.Read(ref _isDisposed))
+            throw new InvalidOperationException("Log scheduler is already disposed");
     }
 }

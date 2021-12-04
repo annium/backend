@@ -1,14 +1,13 @@
 using System;
 
-namespace Annium.Extensions.Pooling.Storages
+namespace Annium.Extensions.Pooling.Storages;
+
+internal static class StorageFactory
 {
-    internal static class StorageFactory
+    public static IStorage<T> Create<T>(PoolStorageMode mode, int capacity) => mode switch
     {
-        public static IStorage<T> Create<T>(PoolStorageMode mode, int capacity) => mode switch
-        {
-            PoolStorageMode.Fifo => new QueueStorage<T>(capacity),
-            PoolStorageMode.Lifo => new StackStorage<T>(capacity),
-            _                    => throw new NotImplementedException($"Unsupported storage mode {mode}"),
-        };
-    }
+        PoolStorageMode.Fifo => new QueueStorage<T>(capacity),
+        PoolStorageMode.Lifo => new StackStorage<T>(capacity),
+        _                    => throw new NotImplementedException($"Unsupported storage mode {mode}"),
+    };
 }

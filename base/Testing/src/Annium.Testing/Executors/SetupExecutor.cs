@@ -1,28 +1,27 @@
 ﻿using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Testing.Executors
+namespace Annium.Testing.Executors;
+
+public class SetupExecutor : ITestExecutor, ILogSubject
 {
-    public class SetupExecutor : ITestExecutor, ILogSubject
+    public ILogger Logger { get; }
+
+    public uint Order { get; } = 2;
+
+    public SetupExecutor(
+        ILogger<SetupExecutor> logger
+    )
     {
-        public ILogger Logger { get; }
+        Logger = logger;
+    }
 
-        public uint Order { get; } = 2;
+    public Task ExecuteAsync(Target target)
+    {
+        this.Log().Trace($"Setup {target.Test.DisplayName}.");
 
-        public SetupExecutor(
-            ILogger<SetupExecutor> logger
-        )
-        {
-            Logger = logger;
-        }
+        target.Init();
 
-        public Task ExecuteAsync(Target target)
-        {
-            this.Log().Trace($"Setup {target.Test.DisplayName}.");
-
-            target.Init();
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

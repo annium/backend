@@ -1,15 +1,14 @@
-namespace Annium.Testing.Elements
+namespace Annium.Testing.Elements;
+
+public enum TestOutcome
 {
-    public enum TestOutcome
-    {
-        None = 0,
+    None = 0,
 
-        Passed = 1,
+    Passed = 1,
 
-        Failed = 2,
+    Failed = 2,
 
-        Skipped = 3,
+    Skipped = 3,
 
-        NotFound = 4
-    }
+    NotFound = 4
 }

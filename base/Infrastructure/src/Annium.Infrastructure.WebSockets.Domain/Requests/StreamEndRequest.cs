@@ -1,6 +1,5 @@
-namespace Annium.Infrastructure.WebSockets.Domain.Requests
+namespace Annium.Infrastructure.WebSockets.Domain.Requests;
+
+public sealed class StreamEndRequest : AbstractRequestBase
 {
-    public sealed class StreamEndRequest : AbstractRequestBase
-    {
-    }
 }

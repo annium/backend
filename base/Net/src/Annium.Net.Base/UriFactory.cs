@@ -3,114 +3,113 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 
-namespace Annium.Net.Base
+namespace Annium.Net.Base;
+
+public class UriFactory
 {
-    public class UriFactory
+    public static UriFactory Base(Uri baseUri) => new(baseUri);
+
+    public static UriFactory Base(string baseUri) => new(new Uri(baseUri));
+
+    public static UriFactory Base() => new();
+
+    private readonly Uri? _baseUri;
+    private string? _uri;
+    private readonly UriQuery _query = UriQuery.New();
+
+    private UriFactory(
+        Uri? baseUri,
+        string? uri,
+        UriQuery query
+    )
     {
-        public static UriFactory Base(Uri baseUri) => new(baseUri);
-
-        public static UriFactory Base(string baseUri) => new(new Uri(baseUri));
-
-        public static UriFactory Base() => new();
-
-        private readonly Uri? _baseUri;
-        private string? _uri;
-        private readonly UriQuery _query = UriQuery.New();
-
-        private UriFactory(
-            Uri? baseUri,
-            string? uri,
-            UriQuery query
-        )
-        {
-            if (baseUri != null)
-                EnsureAbsolute(baseUri);
-
-            _baseUri = baseUri;
-            _uri = uri;
-            _query = query.Copy();
-        }
-
-        private UriFactory(
-            Uri baseUri
-        )
-        {
+        if (baseUri != null)
             EnsureAbsolute(baseUri);
 
-            _baseUri = baseUri;
-        }
+        _baseUri = baseUri;
+        _uri = uri;
+        _query = query.Copy();
+    }
 
-        private UriFactory()
+    private UriFactory(
+        Uri baseUri
+    )
+    {
+        EnsureAbsolute(baseUri);
+
+        _baseUri = baseUri;
+    }
+
+    private UriFactory()
+    {
+    }
+
+    public UriFactory Path(string uri)
+    {
+        _uri = uri.Trim();
+
+        return this;
+    }
+
+    public UriFactory Param<T>(string key, T value)
+    {
+        _query[key] = value?.ToString() ?? string.Empty;
+
+        return this;
+    }
+
+
+    public UriFactory Clone() => new(_baseUri, _uri, _query);
+
+    public Uri Build()
+    {
+        var uri = BuildUriBase();
+        var query = UriQuery.Parse(uri.Query);
+
+        // add manually defined params to queryBuilder
+        foreach (var (name, value) in _query)
+            if (!query.TryAdd(name, value))
+                query[name] = StringValues.Concat(query[name], value);
+
+        return new UriBuilder(uri) { Query = query.ToString() }.Uri;
+    }
+
+    private Uri BuildUriBase()
+    {
+        if (_baseUri is null)
         {
+            if (string.IsNullOrWhiteSpace(_uri))
+                throw new UriFormatException("Request URI is empty");
+
+            var uri = new Uri(_uri);
+            EnsureAbsolute(uri);
+
+            return uri;
         }
 
-        public UriFactory Path(string uri)
+        if (string.IsNullOrWhiteSpace(_uri) || _uri == "/")
+            return _baseUri;
+
+        if (!_uri.StartsWith("/"))
         {
-            _uri = uri.Trim();
+            if (Uri.TryCreate(_uri, UriKind.Absolute, out _))
+                throw new UriFormatException("Both base and path are absolute URI");
 
-            return this;
+            return new Uri($"{_baseUri.ToString().TrimEnd('/')}/{_uri.TrimStart('/')}");
         }
 
-        public UriFactory Param<T>(string key, T value)
-        {
-            _query[key] = value?.ToString() ?? string.Empty;
+        var sb = new StringBuilder();
+        sb.Append($"{_baseUri.Scheme}://");
+        sb.Append(_baseUri.Host);
+        if (!_baseUri.IsDefaultPort)
+            sb.Append($":{_baseUri.Port}");
 
-            return this;
-        }
+        return new Uri($"{sb}/{_uri.TrimStart('/')}");
+    }
 
-
-        public UriFactory Clone() => new(_baseUri, _uri, _query);
-
-        public Uri Build()
-        {
-            var uri = BuildUriBase();
-            var query = UriQuery.Parse(uri.Query);
-
-            // add manually defined params to queryBuilder
-            foreach (var (name, value) in _query)
-                if (!query.TryAdd(name, value))
-                    query[name] = StringValues.Concat(query[name], value);
-
-            return new UriBuilder(uri) { Query = query.ToString() }.Uri;
-        }
-
-        private Uri BuildUriBase()
-        {
-            if (_baseUri is null)
-            {
-                if (string.IsNullOrWhiteSpace(_uri))
-                    throw new UriFormatException("Request URI is empty");
-
-                var uri = new Uri(_uri);
-                EnsureAbsolute(uri);
-
-                return uri;
-            }
-
-            if (string.IsNullOrWhiteSpace(_uri) || _uri == "/")
-                return _baseUri;
-
-            if (!_uri.StartsWith("/"))
-            {
-                if (Uri.TryCreate(_uri, UriKind.Absolute, out _))
-                    throw new UriFormatException("Both base and path are absolute URI");
-
-                return new Uri($"{_baseUri.ToString().TrimEnd('/')}/{_uri.TrimStart('/')}");
-            }
-
-            var sb = new StringBuilder();
-            sb.Append($"{_baseUri.Scheme}://");
-            sb.Append(_baseUri.Host);
-            if (!_baseUri.IsDefaultPort)
-                sb.Append($":{_baseUri.Port}");
-
-            return new Uri($"{sb}/{_uri.TrimStart('/')}");
-        }
-
-        private void EnsureAbsolute(Uri uri)
-        {
-            if (!uri.IsAbsoluteUri)
-                throw new UriFormatException($"URI {uri} is not absolute");
-        }
+    private void EnsureAbsolute(Uri uri)
+    {
+        if (!uri.IsAbsoluteUri)
+            throw new UriFormatException($"URI {uri} is not absolute");
     }
 }

@@ -2,33 +2,32 @@ using System;
 using Annium.Core.DependencyInjection.Internal.Packs;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
 {
-    public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>
+    private readonly Action<ServiceProviderBuilder> _configure;
+
+    public ServiceProviderFactory()
     {
-        private readonly Action<ServiceProviderBuilder> _configure;
+        _configure = _ => { };
+    }
 
-        public ServiceProviderFactory()
-        {
-            _configure = _ => { };
-        }
+    public ServiceProviderFactory(Action<IServiceProviderBuilder> configure)
+    {
+        _configure = configure;
+    }
 
-        public ServiceProviderFactory(Action<IServiceProviderBuilder> configure)
-        {
-            _configure = configure;
-        }
+    public IServiceProviderBuilder CreateBuilder(IServiceCollection services)
+    {
+        var builder = new ServiceProviderBuilder(services);
+        _configure(builder);
 
-        public IServiceProviderBuilder CreateBuilder(IServiceCollection services)
-        {
-            var builder = new ServiceProviderBuilder(services);
-            _configure(builder);
+        return builder;
+    }
 
-            return builder;
-        }
-
-        public IServiceProvider CreateServiceProvider(IServiceProviderBuilder container)
-        {
-            return ((ServiceProviderBuilder) container).Build();
-        }
+    public IServiceProvider CreateServiceProvider(IServiceProviderBuilder container)
+    {
+        return ((ServiceProviderBuilder) container).Build();
     }
 }

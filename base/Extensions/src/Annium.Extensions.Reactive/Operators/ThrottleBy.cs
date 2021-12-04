@@ -2,43 +2,42 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using NodaTime;
 
-namespace System
+namespace System;
+
+public static class ThrottleByOperatorExtensions
 {
-    public static class ThrottleByOperatorExtensions
+    public static IObservable<TSource> ThrottleBy<TSource, TKey>(
+        this IObservable<TSource> source,
+        Func<TSource, TKey> getKey,
+        Duration interval
+    )
+        where TKey : notnull
     {
-        public static IObservable<TSource> ThrottleBy<TSource, TKey>(
-            this IObservable<TSource> source,
-            Func<TSource, TKey> getKey,
-            Duration interval
-        )
-            where TKey : notnull
+        var clock = SystemClock.Instance;
+        var intervalMilliseconds = (long) interval.TotalMilliseconds;
+
+        return Observable.Create<TSource>(observer =>
         {
-            var clock = SystemClock.Instance;
-            var intervalMilliseconds = (long) interval.TotalMilliseconds;
+            var keys = new Dictionary<TKey, long>();
 
-            return Observable.Create<TSource>(observer =>
+            return source.Subscribe(x =>
             {
-                var keys = new Dictionary<TKey, long>();
+                var now = clock.GetCurrentInstant().ToUnixTimeMilliseconds();
+                var key = getKey(x);
 
-                return source.Subscribe(x =>
+                var send = false;
+                lock (keys)
                 {
-                    var now = clock.GetCurrentInstant().ToUnixTimeMilliseconds();
-                    var key = getKey(x);
-
-                    var send = false;
-                    lock (keys)
+                    if (!keys.TryGetValue(key, out var till) || till <= now)
                     {
-                        if (!keys.TryGetValue(key, out var till) || till <= now)
-                        {
-                            keys[key] = now + intervalMilliseconds;
-                            send = true;
-                        }
+                        keys[key] = now + intervalMilliseconds;
+                        send = true;
                     }
+                }
 
-                    if (send)
-                        observer.OnNext(x);
-                }, observer.OnError, observer.OnCompleted);
-            });
-        }
+                if (send)
+                    observer.OnNext(x);
+            }, observer.OnError, observer.OnCompleted);
+        });
     }
 }

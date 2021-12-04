@@ -5,31 +5,30 @@ using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Configuration.Abstractions.Tests
+namespace Annium.Configuration.Abstractions.Tests;
+
+public class ConfigurationBuilderTest
 {
-    public class ConfigurationBuilderTest
+    [Fact]
+    public void BaseBuilding_Works()
     {
-        [Fact]
-        public void BaseBuilding_Works()
-        {
-            // arrange
-            var cfg = new Dictionary<string[], string>();
-            cfg[new[] { "plain" }] = "10";
-            cfg[new[] { "abstract", "type" }] = "ConfigOne";
-            cfg[new[] { "abstract", "value" }] = "14";
-            cfg[new[] { "enum" }] = "two";
+        // arrange
+        var cfg = new Dictionary<string[], string>();
+        cfg[new[] { "plain" }] = "10";
+        cfg[new[] { "abstract", "type" }] = "ConfigOne";
+        cfg[new[] { "abstract", "value" }] = "14";
+        cfg[new[] { "enum" }] = "two";
 
-            // act
-            var provider = Helper.GetProvider<Config>(x => x.Add(cfg));
-            var result = provider.Resolve<Config>();
-            var nested = provider.Resolve<SomeConfig>();
+        // act
+        var provider = Helper.GetProvider<Config>(x => x.Add(cfg));
+        var result = provider.Resolve<Config>();
+        var nested = provider.Resolve<SomeConfig>();
 
-            // assert
-            result.IsNotDefault();
-            result.Plain.IsEqual(10);
-            result.Abstract.IsEqual(nested);
-            result.Enum.IsEqual(SomeEnum.Two);
-            nested.IsShallowEqual(new ConfigOne { Value = 14 });
-        }
+        // assert
+        result.IsNotDefault();
+        result.Plain.IsEqual(10);
+        result.Abstract.IsEqual(nested);
+        result.Enum.IsEqual(SomeEnum.Two);
+        nested.IsShallowEqual(new ConfigOne { Value = 14 });
     }
 }

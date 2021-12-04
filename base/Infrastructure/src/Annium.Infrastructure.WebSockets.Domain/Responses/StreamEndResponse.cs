@@ -1,13 +1,12 @@
 using System;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Responses
+namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+
+public sealed class StreamEndResponse : ResponseBase
 {
-    public sealed class StreamEndResponse : ResponseBase
+    public StreamEndResponse(
+        Guid rid
+    ) : base(rid)
     {
-        public StreamEndResponse(
-            Guid rid
-        ) : base(rid)
-        {
-        }
     }
 }

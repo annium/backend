@@ -1,26 +1,25 @@
 using System;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public static class ServiceContainerExtensions
 {
-    public static class ServiceContainerExtensions
+    public static IServiceContainer AddLocalization(
+        this IServiceContainer container,
+        Action<LocalizationOptions> configure
+    )
     {
-        public static IServiceContainer AddLocalization(
-            this IServiceContainer container,
-            Action<LocalizationOptions> configure
-        )
-        {
-            var options = new LocalizationOptions();
-            configure(options);
+        var options = new LocalizationOptions();
+        configure(options);
 
-            foreach (var service in options.LocaleStorageServices)
-                container.Add(service);
+        foreach (var service in options.LocaleStorageServices)
+            container.Add(service);
 
-            container.Add(options.CultureAccessor).AsSelf().Singleton();
+        container.Add(options.CultureAccessor).AsSelf().Singleton();
 
-            container.Add(typeof(Localizer<>)).As(typeof(ILocalizer<>)).Singleton();
+        container.Add(typeof(Localizer<>)).As(typeof(ILocalizer<>)).Singleton();
 
-            return container;
-        }
+        return container;
     }
 }

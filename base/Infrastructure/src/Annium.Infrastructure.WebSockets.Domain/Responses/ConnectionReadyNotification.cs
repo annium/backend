@@ -1,6 +1,5 @@
-namespace Annium.Infrastructure.WebSockets.Domain.Responses
+namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+
+public class ConnectionReadyNotification : NotificationBase
 {
-    public class ConnectionReadyNotification : NotificationBase
-    {
-    }
 }

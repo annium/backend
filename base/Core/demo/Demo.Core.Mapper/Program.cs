@@ -4,24 +4,23 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Mapper;
 
-namespace Demo.Extensions.Mapping
+namespace Demo.Extensions.Mapping;
+
+public class Program
 {
-    public class Program
+    private static void Run(
+        IServiceProvider provider,
+        string[] args,
+        CancellationToken ct
+    )
     {
-        private static void Run(
-            IServiceProvider provider,
-            string[] args,
-            CancellationToken ct
-        )
-        {
-            var mapper = provider.Resolve<IMapper>();
+        var mapper = provider.Resolve<IMapper>();
 
-            var value = new Plain { ClientName = "Den" };
-            _ = mapper.Map<Complex>(value);
-        }
-
-        public static int Main(string[] args) => new Entrypoint()
-            .UseServicePack<ServicePack>()
-            .Run(Run, args);
+        var value = new Plain { ClientName = "Den" };
+        _ = mapper.Map<Complex>(value);
     }
+
+    public static int Main(string[] args) => new Entrypoint()
+        .UseServicePack<ServicePack>()
+        .Run(Run, args);
 }

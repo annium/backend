@@ -1,16 +1,15 @@
 using Annium.Extensions.Jobs;
 using Annium.Extensions.Jobs.Internal;
 
-namespace Annium.Core.DependencyInjection
-{
-    public static class ServiceContainerExtensions
-    {
-        public static IServiceContainer AddScheduler(this IServiceContainer container)
-        {
-            container.Add<IIntervalResolver, IntervalResolver>().Singleton();
-            container.Add<IScheduler, Scheduler>().Singleton();
+namespace Annium.Core.DependencyInjection;
 
-            return container;
-        }
+public static class ServiceContainerExtensions
+{
+    public static IServiceContainer AddScheduler(this IServiceContainer container)
+    {
+        container.Add<IIntervalResolver, IntervalResolver>().Singleton();
+        container.Add<IScheduler, Scheduler>().Singleton();
+
+        return container;
     }
 }

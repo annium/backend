@@ -5,110 +5,109 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Mapper.Tests
+namespace Annium.Core.Mapper.Tests;
+
+public class RepackerTest
 {
-    public class RepackerTest
+    [Fact]
+    public void Binary_Works()
     {
-        [Fact]
-        public void Binary_Works()
-        {
-            // act
-            var result = Repack<int?, int>(v => v ?? default);
+        // act
+        var result = Repack<int?, int>(v => v ?? default);
 
-            // assert
-            result(1).IsEqual(1);
-            result(null).IsEqual(0);
-        }
+        // assert
+        result(1).IsEqual(1);
+        result(null).IsEqual(0);
+    }
 
-        [Fact]
-        public void Call_Works()
-        {
-            // act
-            var result = Repack<int, string>(v => v.ToString());
+    [Fact]
+    public void Call_Works()
+    {
+        // act
+        var result = Repack<int, string>(v => v.ToString());
 
-            // assert
-            result(1).IsEqual("1");
-        }
+        // assert
+        result(1).IsEqual("1");
+    }
 
-        [Fact]
-        public void Lambda_Works()
-        {
-            // act
-            var result = Repack<int, int>(v => v);
+    [Fact]
+    public void Lambda_Works()
+    {
+        // act
+        var result = Repack<int, int>(v => v);
 
-            // assert
-            result(1).IsEqual(1);
-        }
+        // assert
+        result(1).IsEqual(1);
+    }
 
-        [Fact]
-        public void Member_Works()
-        {
-            // act
-            var result = Repack<string, int>(v => v.Length);
+    [Fact]
+    public void Member_Works()
+    {
+        // act
+        var result = Repack<string, int>(v => v.Length);
 
-            // assert
-            result("asd").IsEqual(3);
-        }
+        // assert
+        result("asd").IsEqual(3);
+    }
 
-        [Fact]
-        public void MemberInit_Works()
-        {
-            // act
-            var result = Repack<int, string>(v => new string(' ', v));
+    [Fact]
+    public void MemberInit_Works()
+    {
+        // act
+        var result = Repack<int, string>(v => new string(' ', v));
 
-            // assert
-            result(3).IsEqual("   ");
-        }
+        // assert
+        result(3).IsEqual("   ");
+    }
 
-        [Fact]
-        public void Ternary_Works()
-        {
-            // act
-            var result = Repack<string, string>(v =>
-                v == "1" ? "one" :
-                v == "2" ? "two" :
-                "other"
-            );
+    [Fact]
+    public void Ternary_Works()
+    {
+        // act
+        var result = Repack<string, string>(v =>
+            v == "1" ? "one" :
+            v == "2" ? "two" :
+            "other"
+        );
 
-            // assert
-            result("1").IsEqual("one");
-            result("2").IsEqual("two");
-            result("3").IsEqual("other");
-        }
+        // assert
+        result("1").IsEqual("one");
+        result("2").IsEqual("two");
+        result("3").IsEqual("other");
+    }
 
-        [Fact]
-        public void New_Works()
-        {
-            // act
-            var result = Repack<string, Exception>(v => new Exception(v) { Source = v });
+    [Fact]
+    public void New_Works()
+    {
+        // act
+        var result = Repack<string, Exception>(v => new Exception(v) { Source = v });
 
-            // assert
-            var ex = result("a");
-            ex.Message.IsEqual("a");
-            ex.Source.IsEqual("a");
-        }
+        // assert
+        var ex = result("a");
+        ex.Message.IsEqual("a");
+        ex.Source.IsEqual("a");
+    }
 
-        [Fact]
-        public void Unary_Works()
-        {
-            // act
-            var result = Repack<bool, bool>(v => !v);
+    [Fact]
+    public void Unary_Works()
+    {
+        // act
+        var result = Repack<bool, bool>(v => !v);
 
-            // assert
-            result(false).IsTrue();
-        }
+        // assert
+        result(false).IsTrue();
+    }
 
-        private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
-        {
-            var repacker = new ServiceContainer()
-                .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
-                .AddMapper(false)
-                .BuildServiceProvider()
-                .Resolve<IRepacker>();
+    private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
+    {
+        var repacker = new ServiceContainer()
+            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+            .AddMapper(false)
+            .BuildServiceProvider()
+            .Resolve<IRepacker>();
 
-            var param = Expression.Parameter(typeof(TS));
+        var param = Expression.Parameter(typeof(TS));
 
-            return ((Expression<Func<TS, TR>>) repacker.Repack(ex)(param)).Compile();
-        }
+        return ((Expression<Func<TS, TR>>) repacker.Repack(ex)(param)).Compile();
     }
 }

@@ -1,12 +1,11 @@
 using Annium.Core.DependencyInjection;
 
-namespace Demo.Infrastructure.WebSockets.Domain
+namespace Demo.Infrastructure.WebSockets.Domain;
+
+public class ServicePack : ServicePackBase
 {
-    public class ServicePack : ServicePackBase
+    public ServicePack()
     {
-        public ServicePack()
-        {
-            Add<Annium.Infrastructure.WebSockets.Domain.ServicePack>();
-        }
+        Add<Annium.Infrastructure.WebSockets.Domain.ServicePack>();
     }
 }

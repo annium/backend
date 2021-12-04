@@ -1,8 +1,7 @@
-namespace Annium.Extensions.Arguments.Internal
+namespace Annium.Extensions.Arguments.Internal;
+
+internal class HelpConfiguration
 {
-    internal class HelpConfiguration
-    {
-        [Option]
-        public bool Help { get; set; }
-    }
+    [Option]
+    public bool Help { get; set; }
 }

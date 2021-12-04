@@ -4,26 +4,25 @@ using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.AspNetCore.IntegrationTesting.Tests
+namespace Annium.AspNetCore.IntegrationTesting.Tests;
+
+public class HttpTest : IntegrationTestBase
 {
-    public class HttpTest : IntegrationTestBase
+    private IHttpRequest Http => AppFactory.GetHttpRequest();
+
+    [Fact]
+    public async Task True_IsTrue()
     {
-        private IHttpRequest Http => AppFactory.GetHttpRequest();
+        // arrange
+        var value = "custom value";
+        var sharedDataContainer = AppFactory.Resolve<SharedDataContainer>();
+        sharedDataContainer.Value = value;
 
-        [Fact]
-        public async Task True_IsTrue()
-        {
-            // arrange
-            var value = "custom value";
-            var sharedDataContainer = AppFactory.Resolve<SharedDataContainer>();
-            sharedDataContainer.Value = value;
+        // act
+        var result = await Http.Get("/").AsResultAsync<string>();
 
-            // act
-            var result = await Http.Get("/").AsResultAsync<string>();
-
-            // assert
-            result.IsOk.IsTrue();
-            result.Data.Is(value);
-        }
+        // assert
+        result.IsOk.IsTrue();
+        result.Data.Is(value);
     }
 }

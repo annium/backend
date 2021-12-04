@@ -9,68 +9,67 @@ using Annium.Core.Reflection;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Extensions.Composition.Internal
+namespace Annium.Extensions.Composition.Internal;
+
+internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : class
 {
-    internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : class
+    private static readonly Type[] ComposerSets = typeof(TValue)
+        .GetInheritanceChain(self: true)
+        .Concat(typeof(TValue).GetInterfaces())
+        .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(ICompositionContainer<>).MakeGenericType(t)))
+        .ToArray();
+
+    private readonly ICompositionContainer<TValue>[] _composers;
+
+    private readonly ILocalizer<TValue> _localizer;
+
+    public CompositionExecutor(
+        IServiceProvider serviceProvider
+    )
     {
-        private static readonly Type[] ComposerSets = typeof(TValue)
-            .GetInheritanceChain(self: true)
-            .Concat(typeof(TValue).GetInterfaces())
-            .Select(t => typeof(IEnumerable<>).MakeGenericType(typeof(ICompositionContainer<>).MakeGenericType(t)))
+        _composers = ComposerSets
+            .Select(s => (IEnumerable<ICompositionContainer<TValue>>) serviceProvider.Resolve(s))
+            .SelectMany(v => v)
             .ToArray();
 
-        private readonly ICompositionContainer<TValue>[] _composers;
+        var duplicates = GetDuplicates(_composers);
+        if (duplicates.Count > 0)
+            throw new InvalidOperationException(
+                $@"{typeof(TValue)} has {duplicates.Count} properties with multiple loaders:{Environment.NewLine}{string.Join(Environment.NewLine, duplicates.Select(p => $"{p.Key.Name}: {string.Join(", ", p.Value)}"))}");
 
-        private readonly ILocalizer<TValue> _localizer;
+        _localizer = serviceProvider.Resolve<ILocalizer<TValue>>();
+    }
 
-        public CompositionExecutor(
-            IServiceProvider serviceProvider
-        )
-        {
-            _composers = ComposerSets
-                .Select(s => (IEnumerable<ICompositionContainer<TValue>>) serviceProvider.Resolve(s))
-                .SelectMany(v => v)
-                .ToArray();
+    public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "")
+    {
+        var hasLabel = !string.IsNullOrWhiteSpace(label);
 
-            var duplicates = GetDuplicates(_composers);
-            if (duplicates.Count > 0)
-                throw new InvalidOperationException(
-                    $@"{typeof(TValue)} has {duplicates.Count} properties with multiple loaders:{Environment.NewLine}{string.Join(Environment.NewLine, duplicates.Select(p => $"{p.Key.Name}: {string.Join(", ", p.Value)}"))}");
+        if (value is null)
+            return hasLabel
+                ? Result.Status(OperationStatus.BadRequest).Error(label, "Value is null")
+                : Result.Status(OperationStatus.BadRequest).Error("Value is null");
 
-            _localizer = serviceProvider.Resolve<ILocalizer<TValue>>();
-        }
+        if (_composers.Length == 0)
+            return Result.Status(OperationStatus.Ok);
 
-        public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "")
-        {
-            var hasLabel = !string.IsNullOrWhiteSpace(label);
+        var result = Result.New();
 
-            if (value is null)
-                return hasLabel
-                    ? Result.Status(OperationStatus.BadRequest).Error(label, "Value is null")
-                    : Result.Status(OperationStatus.BadRequest).Error("Value is null");
+        foreach (var composer in _composers)
+            result.Join(await composer.ComposeAsync(value, label, _localizer));
 
-            if (_composers.Length == 0)
-                return Result.Status(OperationStatus.Ok);
+        return Result.Status(result.IsOk ? OperationStatus.Ok : OperationStatus.NotFound).Join(result);
+    }
 
-            var result = Result.New();
+    private IReadOnlyDictionary<PropertyInfo, IList<Type>> GetDuplicates(ICompositionContainer<TValue>[] composers)
+    {
+        var duplicates = new Dictionary<PropertyInfo, IList<Type>>();
+        foreach (var composer in composers)
+        foreach (var field in composer.Fields)
+            if (duplicates.ContainsKey(field))
+                duplicates[field].Add(composer.GetType());
+            else
+                duplicates[field] = new List<Type> { composer.GetType() };
 
-            foreach (var composer in _composers)
-                result.Join(await composer.ComposeAsync(value, label, _localizer));
-
-            return Result.Status(result.IsOk ? OperationStatus.Ok : OperationStatus.NotFound).Join(result);
-        }
-
-        private IReadOnlyDictionary<PropertyInfo, IList<Type>> GetDuplicates(ICompositionContainer<TValue>[] composers)
-        {
-            var duplicates = new Dictionary<PropertyInfo, IList<Type>>();
-            foreach (var composer in composers)
-            foreach (var field in composer.Fields)
-                if (duplicates.ContainsKey(field))
-                    duplicates[field].Add(composer.GetType());
-                else
-                    duplicates[field] = new List<Type> { composer.GetType() };
-
-            return duplicates.Where(p => p.Value.Count > 1).ToDictionary(p => p.Key, p => p.Value);
-        }
+        return duplicates.Where(p => p.Value.Count > 1).ToDictionary(p => p.Key, p => p.Value);
     }
 }

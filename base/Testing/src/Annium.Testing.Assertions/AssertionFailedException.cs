@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace Annium.Testing
+namespace Annium.Testing;
+
+public class AssertionFailedException : Exception
 {
-    public class AssertionFailedException : Exception
+    public AssertionFailedException(string message) : base(message)
     {
-        public AssertionFailedException(string message) : base(message)
-        {
-        }
     }
 }

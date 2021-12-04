@@ -4,53 +4,52 @@ using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.WebSockets.Client;
 
-namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient
+namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient;
+
+public static class TestServerClientServiceContainerExtensions
 {
-    public static class TestServerClientServiceContainerExtensions
+    public static IServiceContainer AddTestServerClient(
+        this IServiceContainer container,
+        Action<ClientConfiguration> configure
+    )
     {
-        public static IServiceContainer AddTestServerClient(
-            this IServiceContainer container,
-            Action<ClientConfiguration> configure
-        )
+        // client
+        container.Add(sp =>
         {
-            // client
-            container.Add(sp =>
-            {
-                var configuration = new ClientConfiguration();
-                configure(configuration);
+            var configuration = new ClientConfiguration();
+            configure(configuration);
 
-                var factory = sp.Resolve<IClientFactory>();
-                var client = factory.Create(configuration);
+            var factory = sp.Resolve<IClientFactory>();
+            var client = factory.Create(configuration);
 
-                return new TestServerClient(client);
-            }).AsSelf().Singleton();
+            return new TestServerClient(client);
+        }).AsSelf().Singleton();
 
-            // system
-            container.AddWebSocketClient();
+        // system
+        container.AddWebSocketClient();
 
-            return container;
-        }
+        return container;
+    }
 
-        public static IServiceContainer AddTestServerTestClient(
-            this IServiceContainer container,
-            Action<TestClientConfiguration>? configure = default
-        )
+    public static IServiceContainer AddTestServerTestClient(
+        this IServiceContainer container,
+        Action<TestClientConfiguration>? configure = default
+    )
+    {
+        // test client
+        container.Add<Func<WebSocket, TestServerTestClient>>(sp =>
         {
-            // test client
-            container.Add<Func<WebSocket, TestServerTestClient>>(sp =>
-            {
-                var configuration = new TestClientConfiguration();
-                configure?.Invoke(configuration);
+            var configuration = new TestClientConfiguration();
+            configure?.Invoke(configuration);
 
-                var factory = sp.Resolve<ITestClientFactory>();
+            var factory = sp.Resolve<ITestClientFactory>();
 
-                return socket => new TestServerTestClient(factory.Create(socket, configuration));
-            }).AsSelf().Singleton();
+            return socket => new TestServerTestClient(factory.Create(socket, configuration));
+        }).AsSelf().Singleton();
 
-            // system
-            container.AddWebSocketClient();
+        // system
+        container.AddWebSocketClient();
 
-            return container;
-        }
+        return container;
     }
 }

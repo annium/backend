@@ -4,41 +4,40 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Shared;
 
-namespace Annium.Logging.File.Internal
+namespace Annium.Logging.File.Internal;
+
+internal class FileLogHandler<TContext> : BufferingLogHandler<TContext, string>
+    where TContext : class, ILogContext
 {
-    internal class FileLogHandler<TContext> : BufferingLogHandler<TContext, string>
-        where TContext : class, ILogContext
+    private readonly AutoResetEvent _gate = new(true);
+    private readonly FileLoggingConfiguration _cfg;
+
+    public FileLogHandler(
+        Func<LogMessage<TContext>, string, string> format,
+        FileLoggingConfiguration cfg
+    ) : base(format, cfg)
     {
-        private readonly AutoResetEvent _gate = new(true);
-        private readonly FileLoggingConfiguration _cfg;
+        _cfg = cfg;
+        System.IO.File.WriteAllText(_cfg.File, string.Empty);
+    }
 
-        public FileLogHandler(
-            Func<LogMessage<TContext>, string, string> format,
-            FileLoggingConfiguration cfg
-        ) : base(format, cfg)
+    protected override async ValueTask<bool> SendEventsAsync(IReadOnlyCollection<string> events)
+    {
+        try
         {
-            _cfg = cfg;
-            System.IO.File.WriteAllText(_cfg.File, string.Empty);
+            _gate.WaitOne();
+            await System.IO.File.AppendAllLinesAsync(_cfg.File, events);
+            await System.IO.File.AppendAllTextAsync(_cfg.File, string.Empty);
+            return true;
         }
-
-        protected override async ValueTask<bool> SendEventsAsync(IReadOnlyCollection<string> events)
+        catch (Exception e)
         {
-            try
-            {
-                _gate.WaitOne();
-                await System.IO.File.AppendAllLinesAsync(_cfg.File, events);
-                await System.IO.File.AppendAllTextAsync(_cfg.File, string.Empty);
-                return true;
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Failed to to write events to {_cfg.File}: {e}");
-                return false;
-            }
-            finally
-            {
-                _gate.Set();
-            }
+            Console.WriteLine($"Failed to to write events to {_cfg.File}: {e}");
+            return false;
+        }
+        finally
+        {
+            _gate.Set();
         }
     }
 }

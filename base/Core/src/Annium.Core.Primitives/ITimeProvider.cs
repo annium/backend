@@ -1,13 +1,12 @@
 using System;
 using NodaTime;
 
-namespace Annium.Core.Primitives
+namespace Annium.Core.Primitives;
+
+public interface ITimeProvider
 {
-    public interface ITimeProvider
-    {
-        Instant Now { get; }
-        DateTime DateTimeNow { get; }
-        long UnixMsNow { get; }
-        long UnixSecondsNow { get; }
-    }
+    Instant Now { get; }
+    DateTime DateTimeNow { get; }
+    long UnixMsNow { get; }
+    long UnixSecondsNow { get; }
 }

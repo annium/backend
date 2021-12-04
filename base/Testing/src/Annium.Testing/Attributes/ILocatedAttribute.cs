@@ -1,9 +1,8 @@
-﻿namespace Annium.Testing
-{
-    public interface ILocatedAttribute
-    {
-        string File { get; }
+﻿namespace Annium.Testing;
 
-        int Line { get; }
-    }
+public interface ILocatedAttribute
+{
+    string File { get; }
+
+    int Line { get; }
 }

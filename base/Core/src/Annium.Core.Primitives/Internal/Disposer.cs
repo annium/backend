@@ -1,16 +1,15 @@
 using System;
 
-namespace Annium.Core.Primitives.Internal
+namespace Annium.Core.Primitives.Internal;
+
+internal class Disposer : IDisposable
 {
-    internal class Disposer : IDisposable
+    private readonly Action _handle;
+
+    public Disposer(Action handle)
     {
-        private readonly Action _handle;
-
-        public Disposer(Action handle)
-        {
-            _handle = handle;
-        }
-
-        public void Dispose() => _handle();
+        _handle = handle;
     }
+
+    public void Dispose() => _handle();
 }

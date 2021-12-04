@@ -3,72 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection.Internal.Packs
+namespace Annium.Core.DependencyInjection.Internal.Packs;
+
+internal class ServiceProviderBuilder : IServiceProviderBuilder
 {
-    internal class ServiceProviderBuilder : IServiceProviderBuilder
+    private bool _isAlreadyBuilt;
+
+    private readonly IServiceContainer _container;
+
+    private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
+
+    public ServiceProviderBuilder()
     {
-        private bool _isAlreadyBuilt;
+        _container = new ServiceContainer();
+    }
 
-        private readonly IServiceContainer _container;
+    public ServiceProviderBuilder(IServiceCollection services)
+    {
+        _container = new ServiceContainer(services);
+    }
 
-        private readonly IList<ServicePackBase> _packs = new List<ServicePackBase>();
+    public IServiceProviderBuilder UseServicePack<TServicePack>()
+        where TServicePack : ServicePackBase, new()
+    {
+        if (_packs.All(e => e.GetType() != typeof(TServicePack)))
+            _packs.Add(new TServicePack());
 
-        public ServiceProviderBuilder()
-        {
-            _container = new ServiceContainer();
-        }
+        return this;
+    }
 
-        public ServiceProviderBuilder(IServiceCollection services)
-        {
-            _container = new ServiceContainer(services);
-        }
+    public IServiceProviderBuilder UseServicePack(ServicePackBase servicePack)
+    {
+        _packs.Add(servicePack);
 
-        public IServiceProviderBuilder UseServicePack<TServicePack>()
-            where TServicePack : ServicePackBase, new()
-        {
-            if (_packs.All(e => e.GetType() != typeof(TServicePack)))
-                _packs.Add(new TServicePack());
+        return this;
+    }
 
-            return this;
-        }
+    public ServiceProvider Build()
+    {
+        if (_isAlreadyBuilt)
+            throw new InvalidOperationException("Entrypoint is already built");
+        _isAlreadyBuilt = true;
 
-        public IServiceProviderBuilder UseServicePack(ServicePackBase servicePack)
-        {
-            _packs.Add(servicePack);
+        // configure all packs
+        var configurationContainer = new ServiceContainer();
+        foreach (var pack in _packs)
+            pack.InternalConfigure(configurationContainer);
 
-            return this;
-        }
+        // copy all configuration services to services
+        foreach (var descriptor in configurationContainer)
+            _container.Add(descriptor);
 
-        public ServiceProvider Build()
-        {
-            if (_isAlreadyBuilt)
-                throw new InvalidOperationException("Entrypoint is already built");
-            _isAlreadyBuilt = true;
+        // create provider from configurationServices
+        var provider = _container.BuildServiceProvider();
 
-            // configure all packs
-            var configurationContainer = new ServiceContainer();
-            foreach (var pack in _packs)
-                pack.InternalConfigure(configurationContainer);
+        // register all services from packs
+        foreach (var pack in _packs)
+            pack.InternalRegister(_container, provider);
 
-            // copy all configuration services to services
-            foreach (var descriptor in configurationContainer)
-                _container.Add(descriptor);
+        // create provider from actual services
+        provider = _container.BuildServiceProvider();
 
-            // create provider from configurationServices
-            var provider = _container.BuildServiceProvider();
+        // setup all services from packs
+        foreach (var pack in _packs)
+            pack.InternalSetup(provider);
 
-            // register all services from packs
-            foreach (var pack in _packs)
-                pack.InternalRegister(_container, provider);
-
-            // create provider from actual services
-            provider = _container.BuildServiceProvider();
-
-            // setup all services from packs
-            foreach (var pack in _packs)
-                pack.InternalSetup(provider);
-
-            return provider;
-        }
+        return provider;
     }
 }

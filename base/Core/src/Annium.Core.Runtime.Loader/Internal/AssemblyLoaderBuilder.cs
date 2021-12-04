@@ -4,30 +4,29 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Runtime.Loader.Internal
+namespace Annium.Core.Runtime.Loader.Internal;
+
+internal class AssemblyLoaderBuilder : IAssemblyLoaderBuilder
 {
-    internal class AssemblyLoaderBuilder : IAssemblyLoaderBuilder
+    private readonly IList<Func<AssemblyName, string?>> _pathResolvers = new List<Func<AssemblyName, string?>>();
+    private readonly IList<Func<AssemblyName, Task<byte[]>?>> _byteArrayResolvers = new List<Func<AssemblyName, Task<byte[]>?>>();
+
+    public IAssemblyLoaderBuilder AddResolver(Func<AssemblyName, string?> pathResolver)
     {
-        private readonly IList<Func<AssemblyName, string?>> _pathResolvers = new List<Func<AssemblyName, string?>>();
-        private readonly IList<Func<AssemblyName, Task<byte[]>?>> _byteArrayResolvers = new List<Func<AssemblyName, Task<byte[]>?>>();
+        _pathResolvers.Add(pathResolver);
 
-        public IAssemblyLoaderBuilder AddResolver(Func<AssemblyName, string?> pathResolver)
-        {
-            _pathResolvers.Add(pathResolver);
+        return this;
+    }
 
-            return this;
-        }
+    public IAssemblyLoaderBuilder AddResolver(Func<AssemblyName, Task<byte[]>?> byteArrayResolver)
+    {
+        _byteArrayResolvers.Add(byteArrayResolver);
 
-        public IAssemblyLoaderBuilder AddResolver(Func<AssemblyName, Task<byte[]>?> byteArrayResolver)
-        {
-            _byteArrayResolvers.Add(byteArrayResolver);
+        return this;
+    }
 
-            return this;
-        }
-
-        public IAssemblyLoader Build()
-        {
-            return new AssemblyLoader(_pathResolvers.ToArray(), _byteArrayResolvers.ToArray());
-        }
+    public IAssemblyLoader Build()
+    {
+        return new AssemblyLoader(_pathResolvers.ToArray(), _byteArrayResolvers.ToArray());
     }
 }

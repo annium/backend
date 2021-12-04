@@ -9,167 +9,166 @@ using Annium.Storage.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Storage.S3.Tests
+namespace Annium.Storage.S3.Tests;
+
+public class StorageTest : IDisposable
 {
-    public class StorageTest : IDisposable
+    private readonly string _directory;
+
+    public StorageTest()
     {
-        private readonly string _directory;
+        _directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
+    }
 
-        public StorageTest()
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task Setup_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // act
+        await storage.SetupAsync();
+    }
+
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task List_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+
+        // act
+        var keys = await storage.ListAsync();
+
+        // assert
+        keys.Has(1);
+        keys.At(0).IsEqual("demo");
+    }
+
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task Upload_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+
+        // act
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        var keys = await storage.ListAsync();
+
+        // assert
+        keys.Has(1);
+        keys.At(0).IsEqual("demo");
+    }
+
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task Download_Missing_ThrowsKeyNotFoundException()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // act
+        var e = new Exception();
+        try
         {
-            _directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
+            await storage.DownloadAsync("demo");
+        }
+        catch (Exception ex)
+        {
+            e = ex;
         }
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task Setup_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
+        e.As<KeyNotFoundException>();
+    }
 
-            // act
-            await storage.SetupAsync();
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task Download_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
+
+        // act
+        byte[] result;
+        using (var ms = new MemoryStream())
+        {
+            await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
+            result = ms.ToArray();
         }
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task List_Works()
+        // assert
+        ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
+    }
+
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task NameVerification_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+
+        // assert
+        var e = new Exception();
+        try
         {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-
-            // act
-            var keys = await storage.ListAsync();
-
-            // assert
-            keys.Has(1);
-            keys.At(0).IsEqual("demo");
+            await storage.DownloadAsync(".");
+        }
+        catch (Exception ex)
+        {
+            e = ex;
         }
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task Upload_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
+        e.As<ArgumentException>();
+    }
 
-            // act
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-            var keys = await storage.ListAsync();
+    [Fact(Skip = "Needs durable test basis")]
+    public async Task Delete_Works()
+    {
+        // arrange
+        var storage = await GetStorage();
+        var blob = GenerateBlob();
+        await storage.UploadAsync(new MemoryStream(blob), "demo");
 
-            // assert
-            keys.Has(1);
-            keys.At(0).IsEqual("demo");
-        }
+        // act
+        var first = await storage.DeleteAsync("demo");
+        var second = await storage.DeleteAsync("demo");
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task Download_Missing_ThrowsKeyNotFoundException()
-        {
-            // arrange
-            var storage = await GetStorage();
+        // assert
+        first.IsTrue();
+        second.IsFalse();
+    }
 
-            // act
-            var e = new Exception();
-            try
-            {
-                await storage.DownloadAsync("demo");
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-            }
+    private async Task<IStorage> GetStorage()
+    {
+        var container = new ServiceContainer();
+        container.AddStorage().AddS3Storage();
+        container.AddLogging(route => route.UseInMemory());
+        container.AddTime().WithManagedTime().SetDefault();
 
-            e.As<KeyNotFoundException>();
-        }
+        var provider = container.BuildServiceProvider();
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task Download_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
+        var factory = provider.Resolve<IStorageFactory>();
+        var configuration = new Configuration();
+        configuration.Server = "https://server-address.com";
+        configuration.AccessKey = "access-key";
+        configuration.AccessSecret = "access-secret";
+        configuration.Region = "us-east-1";
+        configuration.Bucket = "annium.tests";
+        configuration.Directory = _directory;
 
-            // act
-            byte[] result;
-            using (var ms = new MemoryStream())
-            {
-                await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
-                result = ms.ToArray();
-            }
+        var storage = factory.CreateStorage(configuration);
+        await storage.SetupAsync();
 
-            // assert
-            ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
-        }
+        return storage;
+    }
 
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task NameVerification_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
+    private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
 
-            // assert
-            var e = new Exception();
-            try
-            {
-                await storage.DownloadAsync(".");
-            }
-            catch (Exception ex)
-            {
-                e = ex;
-            }
-
-            e.As<ArgumentException>();
-        }
-
-        [Fact(Skip = "Needs durable test basis")]
-        public async Task Delete_Works()
-        {
-            // arrange
-            var storage = await GetStorage();
-            var blob = GenerateBlob();
-            await storage.UploadAsync(new MemoryStream(blob), "demo");
-
-            // act
-            var first = await storage.DeleteAsync("demo");
-            var second = await storage.DeleteAsync("demo");
-
-            // assert
-            first.IsTrue();
-            second.IsFalse();
-        }
-
-        private async Task<IStorage> GetStorage()
-        {
-            var container = new ServiceContainer();
-            container.AddStorage().AddS3Storage();
-            container.AddLogging(route => route.UseInMemory());
-            container.AddTime().WithManagedTime().SetDefault();
-
-            var provider = container.BuildServiceProvider();
-
-            var factory = provider.Resolve<IStorageFactory>();
-            var configuration = new Configuration();
-            configuration.Server = "https://server-address.com";
-            configuration.AccessKey = "access-key";
-            configuration.AccessSecret = "access-secret";
-            configuration.Region = "us-east-1";
-            configuration.Bucket = "annium.tests";
-            configuration.Directory = _directory;
-
-            var storage = factory.CreateStorage(configuration);
-            await storage.SetupAsync();
-
-            return storage;
-        }
-
-        private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
-
-        public void Dispose()
-        {
-            var storage = GetStorage().Result;
-            foreach (var item in storage.ListAsync().Result)
-                storage.DeleteAsync(item).Await();
-        }
+    public void Dispose()
+    {
+        var storage = GetStorage().Result;
+        foreach (var item in storage.ListAsync().Result)
+            storage.DeleteAsync(item).Await();
     }
 }

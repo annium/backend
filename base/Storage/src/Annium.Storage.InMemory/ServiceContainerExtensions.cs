@@ -4,18 +4,17 @@ using Annium.Storage.Abstractions;
 using Annium.Storage.InMemory;
 using MemoryStorage = Annium.Storage.InMemory.Storage;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public static class ServiceContainerExtensions
 {
-    public static class ServiceContainerExtensions
+    public static IServiceContainer AddInMemoryStorage(this IServiceContainer container)
     {
-        public static IServiceContainer AddInMemoryStorage(this IServiceContainer container)
-        {
-            Func<IServiceProvider, Func<Configuration, MemoryStorage>> factory =
-                sp => configuration => new MemoryStorage(configuration, sp.Resolve<ILogger<MemoryStorage>>());
+        Func<IServiceProvider, Func<Configuration, MemoryStorage>> factory =
+            sp => configuration => new MemoryStorage(configuration, sp.Resolve<ILogger<MemoryStorage>>());
 
-            container.Add<Func<Configuration, IStorage>>(factory).AsSelf().Singleton();
+        container.Add<Func<Configuration, IStorage>>(factory).AsSelf().Singleton();
 
-            return container;
-        }
+        return container;
     }
 }

@@ -4,20 +4,19 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse
-{
-    internal class ExceptionPipeHandler<TRequest, TResponse> : ExceptionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>,
-        IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>>
-    {
-        public ExceptionPipeHandler(
-            ILogger<ExceptionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>> logger
-        ) : base(logger)
-        {
-        }
+namespace Annium.Architecture.Mediator.Internal.PipeHandlers.RequestResponse;
 
-        protected override IStatusResult<OperationStatus, TResponse> GetFailure(Exception exception)
-        {
-            return Result.Status(OperationStatus.UncaughtError, default(TResponse)!).Error(exception.Message);
-        }
+internal class ExceptionPipeHandler<TRequest, TResponse> : ExceptionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>,
+    IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus, TResponse>, IStatusResult<OperationStatus, TResponse>>
+{
+    public ExceptionPipeHandler(
+        ILogger<ExceptionPipeHandlerBase<TRequest, IStatusResult<OperationStatus, TResponse>>> logger
+    ) : base(logger)
+    {
+    }
+
+    protected override IStatusResult<OperationStatus, TResponse> GetFailure(Exception exception)
+    {
+        return Result.Status(OperationStatus.UncaughtError, default(TResponse)!).Error(exception.Message);
     }
 }

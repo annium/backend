@@ -2,31 +2,30 @@ using System;
 using System.Linq;
 using System.Reflection;
 
-namespace Annium.Core.Reflection
+namespace Annium.Core.Reflection;
+
+public static class GetAllMethodsExtension
 {
-    public static class GetAllMethodsExtension
+    public static MethodInfo[] GetAllMethods(
+        this Type type
+    )
     {
-        public static MethodInfo[] GetAllMethods(
-            this Type type
-        )
-        {
-            var info = type.GetTypeInfo();
+        var info = type.GetTypeInfo();
 
-            return info.GetMethods()
-                .Concat(info.ImplementedInterfaces.SelectMany(x => x.GetMethods()))
-                .ToArray();
-        }
+        return info.GetMethods()
+            .Concat(info.ImplementedInterfaces.SelectMany(x => x.GetMethods()))
+            .ToArray();
+    }
 
-        public static MethodInfo[] GetAllMethods(
-            this Type type,
-            BindingFlags flags
-        )
-        {
-            var info = type.GetTypeInfo();
+    public static MethodInfo[] GetAllMethods(
+        this Type type,
+        BindingFlags flags
+    )
+    {
+        var info = type.GetTypeInfo();
 
-            return info.GetMethods(flags)
-                .Concat(info.ImplementedInterfaces.SelectMany(x => x.GetMethods(flags)))
-                .ToArray();
-        }
+        return info.GetMethods(flags)
+            .Concat(info.ImplementedInterfaces.SelectMany(x => x.GetMethods(flags)))
+            .ToArray();
     }
 }

@@ -5,54 +5,53 @@ using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
 
-namespace Annium.Testing.Executors
+namespace Annium.Testing.Executors;
+
+public class MethodExecutor : ILogSubject
 {
-    public class MethodExecutor : ILogSubject
+    public ILogger Logger { get; }
+
+    public MethodExecutor(
+        ILogger<MethodExecutor> logger
+    )
     {
-        public ILogger Logger { get; }
+        Logger = logger;
+    }
 
-        public MethodExecutor(
-            ILogger<MethodExecutor> logger
-        )
+    public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
+    {
+        this.Log().Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+
+        var watch = new Stopwatch();
+        watch.Start();
+
+        try
         {
-            Logger = logger;
+            if (method.Invoke(instance, new object[] { }) is Task task)
+                await task;
         }
-
-        public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
+        catch (TargetInvocationException exception)
         {
-            this.Log().Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
-
-            var watch = new Stopwatch();
-            watch.Start();
-
-            try
-            {
-                if (method.Invoke(instance, new object[] { }) is Task task)
-                    await task;
-            }
-            catch (TargetInvocationException exception)
-            {
-                HandleException(method, result, exception.InnerException!);
-            }
-            catch (Exception exception)
-            {
-                HandleException(method, result, exception);
-            }
-            finally
-            {
-                watch.Stop();
-                result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
-
-                this.Log().Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
-            }
+            HandleException(method, result, exception.InnerException!);
         }
-
-        private void HandleException(MethodInfo method, TestResult result, Exception exception)
+        catch (Exception exception)
         {
-            result.Outcome = TestOutcome.Failed;
-            result.Failure = exception;
-
-            this.Log().Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+            HandleException(method, result, exception);
         }
+        finally
+        {
+            watch.Stop();
+            result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
+
+            this.Log().Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+        }
+    }
+
+    private void HandleException(MethodInfo method, TestResult result, Exception exception)
+    {
+        result.Outcome = TestOutcome.Failed;
+        result.Failure = exception;
+
+        this.Log().Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
     }
 }

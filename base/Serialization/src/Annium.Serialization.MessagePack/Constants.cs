@@ -1,7 +1,6 @@
-namespace Annium.Serialization.MessagePack
+namespace Annium.Serialization.MessagePack;
+
+public static class Constants
 {
-    public static class Constants
-    {
-        public static string MediaType = "MessagePack";
-    }
+    public static string MediaType = "MessagePack";
 }

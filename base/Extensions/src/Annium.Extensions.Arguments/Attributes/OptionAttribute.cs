@@ -1,21 +1,20 @@
 ﻿using System;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments;
+
+[AttributeUsage(AttributeTargets.Property)]
+public class OptionAttribute : BaseAttribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class OptionAttribute : BaseAttribute
+    public string? Alias { get; }
+
+    public bool IsRequired { get; }
+
+    public OptionAttribute(
+        string? alias = null,
+        bool isRequired = false
+    )
     {
-        public string? Alias { get; }
-
-        public bool IsRequired { get; }
-
-        public OptionAttribute(
-            string? alias = null,
-            bool isRequired = false
-        )
-        {
-            Alias = alias;
-            IsRequired = isRequired;
-        }
+        Alias = alias;
+        IsRequired = isRequired;
     }
 }

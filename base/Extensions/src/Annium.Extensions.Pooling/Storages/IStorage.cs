@@ -1,14 +1,13 @@
 using System;
 
-namespace Annium.Extensions.Pooling.Storages
+namespace Annium.Extensions.Pooling.Storages;
+
+internal interface IStorage<T> : IDisposable
 {
-    internal interface IStorage<T> : IDisposable
-    {
-        int Capacity { get; }
-        int Free { get; }
-        int Used { get; }
-        void Add(T item);
-        T Get();
-        void Return(T item);
-    }
+    int Capacity { get; }
+    int Free { get; }
+    int Used { get; }
+    void Add(T item);
+    T Get();
+    void Return(T item);
 }

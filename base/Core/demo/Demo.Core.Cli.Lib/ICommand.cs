@@ -1,10 +1,9 @@
-namespace Demo.Core.Cli.Lib
-{
-    public interface ICommand
-    {
-        string Name { get; }
-        string Description { get; }
+namespace Demo.Core.Cli.Lib;
 
-        int Execute();
-    }
+public interface ICommand
+{
+    string Name { get; }
+    string Description { get; }
+
+    int Execute();
 }

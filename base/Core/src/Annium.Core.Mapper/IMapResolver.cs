@@ -1,14 +1,13 @@
 using System;
 using Annium.Core.Mapper.Internal;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper;
+
+public interface IMapResolver
 {
-    public interface IMapResolver
-    {
-        int Order { get; }
+    int Order { get; }
 
-        bool CanResolveMap(Type src, Type tgt);
+    bool CanResolveMap(Type src, Type tgt);
 
-        Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx);
-    }
+    Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx);
 }

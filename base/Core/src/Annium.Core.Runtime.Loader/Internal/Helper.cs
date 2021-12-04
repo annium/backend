@@ -1,9 +1,8 @@
 using System.IO;
 
-namespace Annium.Core.Runtime.Loader.Internal
+namespace Annium.Core.Runtime.Loader.Internal;
+
+internal static class Helper
 {
-    internal static class Helper
-    {
-        public static string ToDllPath(string directory, string name) => Path.Combine(directory, $"{name}.dll");
-    }
+    public static string ToDllPath(string directory, string name) => Path.Combine(directory, $"{name}.dll");
 }

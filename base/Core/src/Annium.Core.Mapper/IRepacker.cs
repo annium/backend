@@ -1,9 +1,8 @@
 using System.Linq.Expressions;
 
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper;
+
+public interface IRepacker
 {
-    public interface IRepacker
-    {
-        Mapping Repack(Expression ex);
-    }
+    Mapping Repack(Expression ex);
 }

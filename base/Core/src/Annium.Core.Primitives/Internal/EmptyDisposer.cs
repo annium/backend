@@ -1,11 +1,10 @@
 using System;
 
-namespace Annium.Core.Primitives.Internal
+namespace Annium.Core.Primitives.Internal;
+
+internal class EmptyDisposer : IDisposable
 {
-    internal class EmptyDisposer : IDisposable
+    public void Dispose()
     {
-        public void Dispose()
-        {
-        }
     }
 }

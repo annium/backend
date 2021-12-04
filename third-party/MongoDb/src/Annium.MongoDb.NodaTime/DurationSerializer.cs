@@ -1,12 +1,11 @@
 ﻿using NodaTime;
 using NodaTime.Text;
 
-namespace Annium.MongoDb.NodaTime
+namespace Annium.MongoDb.NodaTime;
+
+public class DurationSerializer : PatternSerializer<Duration>
 {
-    public class DurationSerializer : PatternSerializer<Duration>
+    public DurationSerializer() : base(DurationPattern.Roundtrip)
     {
-        public DurationSerializer() : base(DurationPattern.Roundtrip)
-        {
-        }
     }
 }

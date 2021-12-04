@@ -1,7 +1,6 @@
-namespace Annium.Logging.Abstractions
+namespace Annium.Logging.Abstractions;
+
+public interface ILoggerFactory
 {
-    public interface ILoggerFactory
-    {
-        ILogger<T> GetLogger<T>();
-    }
+    ILogger<T> GetLogger<T>();
 }

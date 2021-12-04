@@ -1,6 +1,5 @@
-namespace Annium.Architecture.CQRS.Queries
+namespace Annium.Architecture.CQRS.Queries;
+
+public interface IQuery
 {
-    public interface IQuery
-    {
-    }
 }

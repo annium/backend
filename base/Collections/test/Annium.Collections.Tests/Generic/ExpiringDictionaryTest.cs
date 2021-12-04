@@ -11,117 +11,116 @@ using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
-namespace Annium.Collections.Tests.Generic
+namespace Annium.Collections.Tests.Generic;
+
+public class ExpiringDictionaryTest
 {
-    public class ExpiringDictionaryTest
+    [Fact]
+    public void Add_Works()
     {
-        [Fact]
-        public void Add_Works()
-        {
-            // arrange
-            var (_, timeProvider) = GetTimeTools();
-            var collection = new ExpiringDictionary<int, string>(timeProvider);
-            var ttl = Duration.FromSeconds(5);
+        // arrange
+        var (_, timeProvider) = GetTimeTools();
+        var collection = new ExpiringDictionary<int, string>(timeProvider);
+        var ttl = Duration.FromSeconds(5);
 
-            // act
-            Parallel.ForEach(Enumerable.Range(0, 100), (x, _, _) => collection.Add(x, $"val:{x}", ttl));
+        // act
+        Parallel.ForEach(Enumerable.Range(0, 100), (x, _, _) => collection.Add(x, $"val:{x}", ttl));
 
-            // assert
-            foreach (var value in Enumerable.Range(0, 100))
-                collection.ContainsKey(value).IsTrue();
-        }
+        // assert
+        foreach (var value in Enumerable.Range(0, 100))
+            collection.ContainsKey(value).IsTrue();
+    }
 
-        [Fact]
-        public void Get_Works()
-        {
-            // arrange
-            var (timeManager, timeProvider) = GetTimeTools();
-            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
-            var key = Guid.NewGuid();
-            var value = "secret";
-            var ttl = Duration.FromSeconds(5);
-            collection.Add(key, value, ttl);
+    [Fact]
+    public void Get_Works()
+    {
+        // arrange
+        var (timeManager, timeProvider) = GetTimeTools();
+        var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+        var key = Guid.NewGuid();
+        var value = "secret";
+        var ttl = Duration.FromSeconds(5);
+        collection.Add(key, value, ttl);
 
-            // assert
-            collection.Get(key).Is(value);
-            timeManager.SetNow(timeProvider.Now + ttl);
-            collection.Get(key).Is(value);
-            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
-        }
+        // assert
+        collection.Get(key).Is(value);
+        timeManager.SetNow(timeProvider.Now + ttl);
+        collection.Get(key).Is(value);
+        timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+        ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
+    }
 
-        [Fact]
-        public void TryGet_Works()
-        {
-            // arrange
-            var (timeManager, timeProvider) = GetTimeTools();
-            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
-            var key = Guid.NewGuid();
-            var value = "secret";
-            var ttl = Duration.FromSeconds(5);
-            collection.Add(key, value, ttl);
+    [Fact]
+    public void TryGet_Works()
+    {
+        // arrange
+        var (timeManager, timeProvider) = GetTimeTools();
+        var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+        var key = Guid.NewGuid();
+        var value = "secret";
+        var ttl = Duration.FromSeconds(5);
+        collection.Add(key, value, ttl);
 
-            // assert
-            collection.TryGet(key, out var val).IsTrue();
-            val.Is(value);
-            timeManager.SetNow(timeProvider.Now + ttl);
-            collection.Get(key).Is(value);
-            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
-        }
+        // assert
+        collection.TryGet(key, out var val).IsTrue();
+        val.Is(value);
+        timeManager.SetNow(timeProvider.Now + ttl);
+        collection.Get(key).Is(value);
+        timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+        ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
+    }
 
-        [Fact]
-        public void ContainsKey_Works()
-        {
-            // arrange
-            var (timeManager, timeProvider) = GetTimeTools();
-            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
-            var key = Guid.NewGuid();
-            var ttl = Duration.FromSeconds(5);
-            collection.Add(key, "secret", ttl);
+    [Fact]
+    public void ContainsKey_Works()
+    {
+        // arrange
+        var (timeManager, timeProvider) = GetTimeTools();
+        var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+        var key = Guid.NewGuid();
+        var ttl = Duration.FromSeconds(5);
+        collection.Add(key, "secret", ttl);
 
-            // assert
-            collection.ContainsKey(key).IsTrue();
-            timeManager.SetNow(timeProvider.Now + ttl);
-            collection.ContainsKey(key).IsTrue();
-            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            collection.ContainsKey(key).IsFalse();
-        }
+        // assert
+        collection.ContainsKey(key).IsTrue();
+        timeManager.SetNow(timeProvider.Now + ttl);
+        collection.ContainsKey(key).IsTrue();
+        timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+        collection.ContainsKey(key).IsFalse();
+    }
 
-        [Fact]
-        public void Remove_Works()
-        {
-            // arrange
-            var (timeManager, timeProvider) = GetTimeTools();
-            var collection = new ExpiringDictionary<Guid, string>(timeProvider);
-            var key1 = Guid.NewGuid();
-            var key2 = Guid.NewGuid();
-            var ttl = Duration.FromSeconds(5);
-            collection.Add(key1, "a", ttl);
-            collection.Add(key2, "b", ttl * 2);
+    [Fact]
+    public void Remove_Works()
+    {
+        // arrange
+        var (timeManager, timeProvider) = GetTimeTools();
+        var collection = new ExpiringDictionary<Guid, string>(timeProvider);
+        var key1 = Guid.NewGuid();
+        var key2 = Guid.NewGuid();
+        var ttl = Duration.FromSeconds(5);
+        collection.Add(key1, "a", ttl);
+        collection.Add(key2, "b", ttl * 2);
 
-            // assert
-            collection.Remove(key2, out _).IsTrue();
-            collection.ContainsKey(key1).IsTrue();
-            collection.ContainsKey(key2).IsFalse();
-            timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-            collection.Remove(key2, out _).IsFalse();
-            collection.ContainsKey(key1).IsFalse();
-            collection.ContainsKey(key2).IsFalse();
-        }
+        // assert
+        collection.Remove(key2, out _).IsTrue();
+        collection.ContainsKey(key1).IsTrue();
+        collection.ContainsKey(key2).IsFalse();
+        timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
+        collection.Remove(key2, out _).IsFalse();
+        collection.ContainsKey(key1).IsFalse();
+        collection.ContainsKey(key2).IsFalse();
+    }
 
-        private (ITimeManager, ITimeProvider) GetTimeTools()
-        {
-            var container = new ServiceContainer();
-            container.AddTime().WithManagedTime().SetDefault();
-            var provider = container.BuildServiceProvider();
+    private (ITimeManager, ITimeProvider) GetTimeTools()
+    {
+        var container = new ServiceContainer();
+        container.AddTime().WithManagedTime().SetDefault();
+        var provider = container.BuildServiceProvider();
 
-            var timeManager = provider.GetRequiredService<ITimeManager>();
-            timeManager.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
+        var timeManager = provider.GetRequiredService<ITimeManager>();
+        timeManager.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
 
-            var timeProvider = provider.GetRequiredService<ITimeProvider>();
+        var timeProvider = provider.GetRequiredService<ITimeProvider>();
 
-            return (timeManager, timeProvider);
-        }
+        return (timeManager, timeProvider);
     }
 }

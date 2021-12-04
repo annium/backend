@@ -4,58 +4,57 @@ using Annium.Core.Primitives;
 using NodaTime;
 using NodaTime.Utility;
 
-namespace Annium.NodaTime.Serialization.Json.Internal.Converters
+namespace Annium.NodaTime.Serialization.Json.Internal.Converters;
+
+/// <summary>
+/// Json converter for <see cref="DateInterval"/> using a compound representation. The start and
+/// end aspects of the date interval are represented with separate properties, each parsed and formatted
+/// by the <see cref="LocalDate"/> converter for the serializer provided.
+/// </summary>
+internal sealed class NodaDateIntervalConverter : ConverterBase<DateInterval>
 {
-    /// <summary>
-    /// Json converter for <see cref="DateInterval"/> using a compound representation. The start and
-    /// end aspects of the date interval are represented with separate properties, each parsed and formatted
-    /// by the <see cref="LocalDate"/> converter for the serializer provided.
-    /// </summary>
-    internal sealed class NodaDateIntervalConverter : ConverterBase<DateInterval>
+    public override DateInterval ReadImplementation(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options
+    )
     {
-        public override DateInterval ReadImplementation(
-            ref Utf8JsonReader reader,
-            Type typeToConvert,
-            JsonSerializerOptions options
-        )
+        LocalDate? startLocalDate = null;
+        LocalDate? endLocalDate = null;
+
+        var depth = reader.CurrentDepth;
+        while (reader.Read() && reader.CurrentDepth > depth)
         {
-            LocalDate? startLocalDate = null;
-            LocalDate? endLocalDate = null;
+            if (reader.HasProperty(nameof(Interval.Start)))
+                startLocalDate = JsonSerializer.Deserialize<LocalDate>(ref reader, options);
 
-            var depth = reader.CurrentDepth;
-            while (reader.Read() && reader.CurrentDepth > depth)
-            {
-                if (reader.HasProperty(nameof(Interval.Start)))
-                    startLocalDate = JsonSerializer.Deserialize<LocalDate>(ref reader, options);
-
-                else if (reader.HasProperty(nameof(Interval.End)))
-                    endLocalDate = JsonSerializer.Deserialize<LocalDate>(ref reader, options);
-            }
-
-            if (!startLocalDate.HasValue)
-                throw new InvalidNodaDataException("Expected date interval; start date was missing.");
-
-            if (!endLocalDate.HasValue)
-                throw new InvalidNodaDataException("Expected date interval; end date was missing.");
-
-            return new DateInterval(startLocalDate.Value, endLocalDate.Value);
+            else if (reader.HasProperty(nameof(Interval.End)))
+                endLocalDate = JsonSerializer.Deserialize<LocalDate>(ref reader, options);
         }
 
-        public override void WriteImplementation(
-            Utf8JsonWriter writer,
-            DateInterval value,
-            JsonSerializerOptions options
-        )
-        {
-            writer.WriteStartObject();
+        if (!startLocalDate.HasValue)
+            throw new InvalidNodaDataException("Expected date interval; start date was missing.");
 
-            writer.WritePropertyName(nameof(Interval.Start).CamelCase());
-            JsonSerializer.Serialize(writer, value.Start, options);
+        if (!endLocalDate.HasValue)
+            throw new InvalidNodaDataException("Expected date interval; end date was missing.");
 
-            writer.WritePropertyName(nameof(Interval.End).CamelCase());
-            JsonSerializer.Serialize(writer, value.End, options);
+        return new DateInterval(startLocalDate.Value, endLocalDate.Value);
+    }
 
-            writer.WriteEndObject();
-        }
+    public override void WriteImplementation(
+        Utf8JsonWriter writer,
+        DateInterval value,
+        JsonSerializerOptions options
+    )
+    {
+        writer.WriteStartObject();
+
+        writer.WritePropertyName(nameof(Interval.Start).CamelCase());
+        JsonSerializer.Serialize(writer, value.Start, options);
+
+        writer.WritePropertyName(nameof(Interval.End).CamelCase());
+        JsonSerializer.Serialize(writer, value.End, options);
+
+        writer.WriteEndObject();
     }
 }

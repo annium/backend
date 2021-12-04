@@ -2,160 +2,159 @@ using System;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.DependencyInjection.Tests.Registrations
+namespace Annium.Core.DependencyInjection.Tests.Registrations;
+
+public class InstanceRegistrationTest : TestBase
 {
-    public class InstanceRegistrationTest : TestBase
+    [Fact]
+    public void AsSelf_Works()
     {
-        [Fact]
-        public void AsSelf_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsSelf().Singleton();
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsSelf().Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<D>().Is(instance);
-        }
+        // assert
+        Get<D>().Is(instance);
+    }
 
-        [Fact]
-        public void As_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).As(typeof(A)).Singleton();
+    [Fact]
+    public void As_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).As(typeof(A)).Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-        }
+        // assert
+    }
 
-        [Fact]
-        public void AsInterfaces_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsSelf().AsInterfaces().Singleton();
+    [Fact]
+    public void AsInterfaces_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsSelf().AsInterfaces().Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<IC>().Is(Get<D>());
-            Get<ID>().Is(Get<D>());
-        }
+        // assert
+        Get<IC>().Is(Get<D>());
+        Get<ID>().Is(Get<D>());
+    }
 
-        [Fact]
-        public void AsKeyedSelf_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsKeyedSelf(nameof(D)).Singleton();
+    [Fact]
+    public void AsKeyedSelf_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsKeyedSelf(nameof(D)).Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<IIndex<string, D>>()[nameof(D)].Is(instance);
-        }
+        // assert
+        Get<IIndex<string, D>>()[nameof(D)].Is(instance);
+    }
 
-        [Fact]
-        public void AsKeyed_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsKeyed<C, string>(nameof(D)).Singleton();
+    [Fact]
+    public void AsKeyed_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsKeyed<C, string>(nameof(D)).Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<IIndex<string, C>>()[nameof(D)].Is(instance);
-        }
+        // assert
+        Get<IIndex<string, C>>()[nameof(D)].Is(instance);
+    }
 
-        [Fact]
-        public void AsSelfFactory_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsSelfFactory().Singleton();
+    [Fact]
+    public void AsSelfFactory_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsSelfFactory().Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<Func<D>>()().Is(instance);
-        }
+        // assert
+        Get<Func<D>>()().Is(instance);
+    }
 
-        [Fact]
-        public void AsFactory_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsFactory<C>().Singleton();
+    [Fact]
+    public void AsFactory_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsFactory<C>().Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<Func<C>>()().Is(instance);
-        }
+        // assert
+        Get<Func<C>>()().Is(instance);
+    }
 
-        [Fact]
-        public void AsKeyedSelfFactory_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsKeyedSelfFactory(nameof(D)).Singleton();
+    [Fact]
+    public void AsKeyedSelfFactory_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsKeyedSelfFactory(nameof(D)).Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<IIndex<string, Func<D>>>()[nameof(D)]().Is(instance);
-        }
+        // assert
+        Get<IIndex<string, Func<D>>>()[nameof(D)]().Is(instance);
+    }
 
-        [Fact]
-        public void AsKeyedFactory_Works()
-        {
-            // arrange
-            var instance = new D(new A());
-            _container.Add(instance).AsKeyedFactory<C, string>(nameof(C)).Singleton();
+    [Fact]
+    public void AsKeyedFactory_Works()
+    {
+        // arrange
+        var instance = new D(new A());
+        _container.Add(instance).AsKeyedFactory<C, string>(nameof(C)).Singleton();
 
-            // act
-            Build();
+        // act
+        Build();
 
-            // assert
-            Get<IIndex<string, Func<C>>>()[nameof(C)]().Is(instance);
-        }
+        // assert
+        Get<IIndex<string, Func<C>>>()[nameof(C)]().Is(instance);
+    }
 
-        private sealed class D : C, ID
-        {
-            public D(A x) : base(x)
-            {
-            }
-        }
-
-        private class C : IC
-        {
-            protected C(A _)
-            {
-            }
-        }
-
-        private interface ID : IC
+    private sealed class D : C, ID
+    {
+        public D(A x) : base(x)
         {
         }
+    }
 
-        private interface IC
+    private class C : IC
+    {
+        protected C(A _)
         {
         }
+    }
 
-        private class A
-        {
-        }
+    private interface ID : IC
+    {
+    }
+
+    private interface IC
+    {
+    }
+
+    private class A
+    {
     }
 }

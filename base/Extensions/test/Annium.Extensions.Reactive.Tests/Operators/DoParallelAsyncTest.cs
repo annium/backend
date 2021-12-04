@@ -6,38 +6,37 @@ using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Extensions.Reactive.Tests.Operators
+namespace Annium.Extensions.Reactive.Tests.Operators;
+
+public class DoParallelAsyncTest
 {
-    public class DoParallelAsyncTest
+    [Fact]
+    public async Task DoParallelAsync_WorksCorrectly()
     {
-        [Fact]
-        public async Task DoParallelAsync_WorksCorrectly()
-        {
-            // arrange
-            var log = new List<string>();
-            var tcs = new TaskCompletionSource();
-            using var observable = Observable.Range(1, 5)
-                .DoParallelAsync(async x =>
-                {
-                    lock (log)
-                        log.Add($"start: {x}");
-                    await Task.Delay(10);
-                    lock (log)
-                        log.Add($"end: {x}");
-                })
-                .Subscribe(x =>
-                {
-                    lock (log)
-                        log.Add($"sub: {x}");
-                }, tcs.SetResult);
+        // arrange
+        var log = new List<string>();
+        var tcs = new TaskCompletionSource();
+        using var observable = Observable.Range(1, 5)
+            .DoParallelAsync(async x =>
+            {
+                lock (log)
+                    log.Add($"start: {x}");
+                await Task.Delay(10);
+                lock (log)
+                    log.Add($"end: {x}");
+            })
+            .Subscribe(x =>
+            {
+                lock (log)
+                    log.Add($"sub: {x}");
+            }, tcs.SetResult);
 
-            await tcs.Task;
+        await tcs.Task;
 
-            log.Has(15);
-            var starts = log.Select((x, i) => (x, i)).Where(x => x.x.StartsWith("start")).Select(x => x.i).ToArray();
-            var ends = log.Select((x, i) => (x, i)).Where(x => !x.x.StartsWith("start")).Select(x => x.i).ToArray();
-            // ends/subs go after all starts
-            ends.All(x => starts.All(s => s < x)).IsTrue();
-        }
+        log.Has(15);
+        var starts = log.Select((x, i) => (x, i)).Where(x => x.x.StartsWith("start")).Select(x => x.i).ToArray();
+        var ends = log.Select((x, i) => (x, i)).Where(x => !x.x.StartsWith("start")).Select(x => x.i).ToArray();
+        // ends/subs go after all starts
+        ends.All(x => starts.All(s => s < x)).IsTrue();
     }
 }

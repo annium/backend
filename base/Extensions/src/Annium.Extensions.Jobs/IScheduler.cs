@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Extensions.Jobs
+namespace Annium.Extensions.Jobs;
+
+public interface IScheduler
 {
-    public interface IScheduler
-    {
-        IDisposable Schedule(Func<Task> handler, string interval);
-    }
+    IDisposable Schedule(Func<Task> handler, string interval);
 }

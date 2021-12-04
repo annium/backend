@@ -1,21 +1,20 @@
 using Annium.Extensions.Validation;
 using Annium.Extensions.Validation.Internal;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public static class ServiceContainerExtensions
 {
-    public static class ServiceContainerExtensions
+    public static IServiceContainer AddValidation(this IServiceContainer container)
     {
-        public static IServiceContainer AddValidation(this IServiceContainer container)
-        {
-            container.AddAll()
-                .AssignableTo(typeof(Validator<>))
-                .Where(x => !x.IsGenericType)
-                .AsInterfaces()
-                .Scoped();
+        container.AddAll()
+            .AssignableTo(typeof(Validator<>))
+            .Where(x => !x.IsGenericType)
+            .AsInterfaces()
+            .Scoped();
 
-            container.Add(typeof(ValidationExecutor<>)).As(typeof(IValidator<>)).Scoped();
+        container.Add(typeof(ValidationExecutor<>)).As(typeof(IValidator<>)).Scoped();
 
-            return container;
-        }
+        return container;
     }
 }

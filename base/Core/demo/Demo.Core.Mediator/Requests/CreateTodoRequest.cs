@@ -1,12 +1,11 @@
-namespace Demo.Core.Mediator.Requests
-{
-    internal class CreateTodoRequest : IRequest
-    {
-        public string Value { get; }
+namespace Demo.Core.Mediator.Requests;
 
-        public CreateTodoRequest(string value)
-        {
-            Value = value;
-        }
+internal class CreateTodoRequest : IRequest
+{
+    public string Value { get; }
+
+    public CreateTodoRequest(string value)
+    {
+        Value = value;
     }
 }

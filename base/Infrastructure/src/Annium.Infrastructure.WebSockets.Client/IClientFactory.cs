@@ -1,7 +1,6 @@
-namespace Annium.Infrastructure.WebSockets.Client
+namespace Annium.Infrastructure.WebSockets.Client;
+
+public interface IClientFactory
 {
-    public interface IClientFactory
-    {
-        IClient Create(IClientConfiguration configuration);
-    }
+    IClient Create(IClientConfiguration configuration);
 }

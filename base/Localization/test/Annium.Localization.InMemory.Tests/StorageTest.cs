@@ -5,38 +5,37 @@ using Annium.Localization.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Localization.InMemory.Tests
+namespace Annium.Localization.InMemory.Tests;
+
+public class StorageTest
 {
-    public class StorageTest
+    [Fact]
+    public void Localization_Works()
     {
-        [Fact]
-        public void Localization_Works()
-        {
-            // arrange
-            var localizer = GetLocalizer();
+        // arrange
+        var localizer = GetLocalizer();
 
-            // act
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
-            var en = localizer["test"];
-            CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
-            var ru = localizer["test"];
+        // act
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
+        var en = localizer["test"];
+        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
+        var ru = localizer["test"];
 
-            // assert
-            en.IsEqual("demo");
-            ru.IsEqual("демо");
-        }
+        // assert
+        en.IsEqual("demo");
+        ru.IsEqual("демо");
+    }
 
-        private ILocalizer<StorageTest> GetLocalizer()
-        {
-            var container = new ServiceContainer();
+    private ILocalizer<StorageTest> GetLocalizer()
+    {
+        var container = new ServiceContainer();
 
-            var locales = new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
-            locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string> { { "test", "demo" } };
-            locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string> { { "test", "демо" } };
+        var locales = new Dictionary<CultureInfo, IReadOnlyDictionary<string, string>>();
+        locales[CultureInfo.GetCultureInfo("en")] = new Dictionary<string, string> { { "test", "demo" } };
+        locales[CultureInfo.GetCultureInfo("ru")] = new Dictionary<string, string> { { "test", "демо" } };
 
-            container.AddLocalization(opts => opts.UseInMemoryStorage(locales));
+        container.AddLocalization(opts => opts.UseInMemoryStorage(locales));
 
-            return container.BuildServiceProvider().Resolve<ILocalizer<StorageTest>>();
-        }
+        return container.BuildServiceProvider().Resolve<ILocalizer<StorageTest>>();
     }
 }

@@ -12,139 +12,138 @@ using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public static class ServiceContainerExtensions
 {
-    public static class ServiceContainerExtensions
+    public static IServiceContainer AddMapper(
+        this IServiceContainer container,
+        bool autoload = true
+    )
     {
-        public static IServiceContainer AddMapper(
-            this IServiceContainer container,
-            bool autoload = true
-        )
+        // register base services
+        container.Add<IRepacker, Repacker>().Singleton();
+        container.Add<IMapBuilder, MapBuilder>().Singleton();
+        container.Add<IMapper, Mapper.Internal.Mapper>().Singleton();
+        container.Add(sp => new Lazy<IMapContext>(
+            () => new MapContext(sp.Resolve<IMapper>()),
+            true
+        )).AsSelf().Singleton();
+
+        // register resolvers
+        container.Add<IMapResolver, AssignmentMapResolver>().Singleton();
+        container.Add<IMapResolver, ConstructorMapResolver>().Singleton();
+        container.Add<IMapResolver, DictionaryAssignmentMapResolver>().Singleton();
+        container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();
+        container.Add<IMapResolver, EnumerableMapResolver>().Singleton();
+        container.Add<IMapResolver, ResolutionMapResolver>().Singleton();
+
+        // add default profile
+        container.AddProfileInstance(new EmptyProfile());
+        container.AddProfileInstance(new DefaultProfile());
+        container.AddProfileType(typeof(EnumProfile<>));
+
+        // special cases
+        container.AddProfileInstance(new EnumProfile<LogLevel>());
+
+        // if autoload requested - discover and register profiles
+        if (autoload)
         {
-            // register base services
-            container.Add<IRepacker, Repacker>().Singleton();
-            container.Add<IMapBuilder, MapBuilder>().Singleton();
-            container.Add<IMapper, Mapper.Internal.Mapper>().Singleton();
-            container.Add(sp => new Lazy<IMapContext>(
-                () => new MapContext(sp.Resolve<IMapper>()),
-                true
-            )).AsSelf().Singleton();
+            var typeManager = container.GetTypeManager();
 
-            // register resolvers
-            container.Add<IMapResolver, AssignmentMapResolver>().Singleton();
-            container.Add<IMapResolver, ConstructorMapResolver>().Singleton();
-            container.Add<IMapResolver, DictionaryAssignmentMapResolver>().Singleton();
-            container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();
-            container.Add<IMapResolver, EnumerableMapResolver>().Singleton();
-            container.Add<IMapResolver, ResolutionMapResolver>().Singleton();
-
-            // add default profile
-            container.AddProfileInstance(new EmptyProfile());
-            container.AddProfileInstance(new DefaultProfile());
-            container.AddProfileType(typeof(EnumProfile<>));
-
-            // special cases
-            container.AddProfileInstance(new EnumProfile<LogLevel>());
-
-            // if autoload requested - discover and register profiles
-            if (autoload)
-            {
-                var typeManager = container.GetTypeManager();
-
-                foreach (var profileType in typeManager.GetImplementations(typeof(Profile)))
-                    container.AddProfileType(profileType);
-            }
-
-            // register profile resolution
-            container.Add(ResolveProfiles).AsSelf().Singleton();
-
-            return container;
+            foreach (var profileType in typeManager.GetImplementations(typeof(Profile)))
+                container.AddProfileType(profileType);
         }
 
-        public static IServiceContainer AddProfile(
-            this IServiceContainer container,
-            Action<Profile> configure
-        )
-        {
-            var profile = new EmptyProfile();
-            configure(profile);
+        // register profile resolution
+        container.Add(ResolveProfiles).AsSelf().Singleton();
 
-            container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
+        return container;
+    }
 
-            return container;
-        }
+    public static IServiceContainer AddProfile(
+        this IServiceContainer container,
+        Action<Profile> configure
+    )
+    {
+        var profile = new EmptyProfile();
+        configure(profile);
 
-        public static IServiceContainer AddProfile<T>(
-            this IServiceContainer container
-        )
-            where T : Profile
-        {
-            container.AddProfileType(typeof(T));
+        container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
 
-            return container;
-        }
+        return container;
+    }
 
-        public static IServiceContainer AddProfile(
-            this IServiceContainer container,
-            Type profileType
-        )
-        {
-            if (!profileType.GetInheritanceChain().Contains(typeof(Profile)))
-                throw new ArgumentException($"Type {profileType} is not inherited from {typeof(Profile)}");
+    public static IServiceContainer AddProfile<T>(
+        this IServiceContainer container
+    )
+        where T : Profile
+    {
+        container.AddProfileType(typeof(T));
 
-            container.AddProfileType(profileType);
+        return container;
+    }
 
-            return container;
-        }
+    public static IServiceContainer AddProfile(
+        this IServiceContainer container,
+        Type profileType
+    )
+    {
+        if (!profileType.GetInheritanceChain().Contains(typeof(Profile)))
+            throw new ArgumentException($"Type {profileType} is not inherited from {typeof(Profile)}");
 
-        private static IServiceContainer AddProfileInstance<T>(
-            this IServiceContainer container,
-            T profile
-        )
-            where T : Profile
-        {
-            container.Add(profile).AsSelf().Singleton();
-            container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
+        container.AddProfileType(profileType);
 
-            return container;
-        }
+        return container;
+    }
 
-        private static IServiceContainer AddProfileType(
-            this IServiceContainer container,
-            Type profileType
-        )
-        {
-            container.Add(profileType).AsSelf().Singleton();
-            container.Add(new ProfileType(profileType)).AsSelf().Singleton();
+    private static IServiceContainer AddProfileInstance<T>(
+        this IServiceContainer container,
+        T profile
+    )
+        where T : Profile
+    {
+        container.Add(profile).AsSelf().Singleton();
+        container.Add(new ProfileInstance(profile)).AsSelf().Singleton();
 
-            return container;
-        }
+        return container;
+    }
 
-        private static IEnumerable<Profile> ResolveProfiles(
-            IServiceProvider sp
-        )
-        {
-            var baseInstances = sp.Resolve<IEnumerable<ProfileInstance>>()
-                .Select(x => x.Instance)
-                .ToArray();
+    private static IServiceContainer AddProfileType(
+        this IServiceContainer container,
+        Type profileType
+    )
+    {
+        container.Add(profileType).AsSelf().Singleton();
+        container.Add(new ProfileType(profileType)).AsSelf().Singleton();
 
-            var typeResolver = sp.Resolve<ITypeResolver>();
-            var profileTypes = sp.Resolve<IEnumerable<ProfileType>>().ToArray();
+        return container;
+    }
 
-            var types = profileTypes
-                .SelectMany(x => typeResolver.ResolveType(x.Type))
-                .Where(x =>
-                    !x.IsGenericType ||
-                    x.GetGenericArguments().All(a => a.GetCustomAttribute<AutoMappedAttribute>() is not null)
-                )
-                .ToArray();
+    private static IEnumerable<Profile> ResolveProfiles(
+        IServiceProvider sp
+    )
+    {
+        var baseInstances = sp.Resolve<IEnumerable<ProfileInstance>>()
+            .Select(x => x.Instance)
+            .ToArray();
 
-            var typeInstances = types
-                .Select(sp.Resolve)
-                .OfType<Profile>()
-                .ToArray();
+        var typeResolver = sp.Resolve<ITypeResolver>();
+        var profileTypes = sp.Resolve<IEnumerable<ProfileType>>().ToArray();
 
-            return baseInstances.Concat(typeInstances).ToArray();
-        }
+        var types = profileTypes
+            .SelectMany(x => typeResolver.ResolveType(x.Type))
+            .Where(x =>
+                !x.IsGenericType ||
+                x.GetGenericArguments().All(a => a.GetCustomAttribute<AutoMappedAttribute>() is not null)
+            )
+            .ToArray();
+
+        var typeInstances = types
+            .Select(sp.Resolve)
+            .OfType<Profile>()
+            .ToArray();
+
+        return baseInstances.Concat(typeInstances).ToArray();
     }
 }

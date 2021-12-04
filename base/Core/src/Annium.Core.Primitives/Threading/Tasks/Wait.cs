@@ -2,68 +2,67 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Primitives.Threading.Tasks
+namespace Annium.Core.Primitives.Threading.Tasks;
+
+public static class Wait
 {
-    public static class Wait
+    /// <summary>
+    ///     Awaits while condition is true or task is canceled.
+    /// </summary>
+    /// <param name="condition">
+    ///     The condition that will perpetuate the block.
+    /// </param>
+    /// <param name="ct">
+    ///     Cancellation token.
+    /// </param>
+    /// <param name="pollDelay">
+    ///     The delay at which the condition will be polled, in milliseconds.
+    /// </param>
+    /// <returns>
+    ///     <see cref="Task" />.
+    /// </returns>
+    public static async Task WhileAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
     {
-        /// <summary>
-        ///     Awaits while condition is true or task is canceled.
-        /// </summary>
-        /// <param name="condition">
-        ///     The condition that will perpetuate the block.
-        /// </param>
-        /// <param name="ct">
-        ///     Cancellation token.
-        /// </param>
-        /// <param name="pollDelay">
-        ///     The delay at which the condition will be polled, in milliseconds.
-        /// </param>
-        /// <returns>
-        ///     <see cref="Task" />.
-        /// </returns>
-        public static async Task WhileAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
-        {
-            while (condition() && !ct.IsCancellationRequested)
-                await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
-        }
-
-        public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
-            => WhileAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
-
-        public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue)
-            => WhileAsync(condition, new CancellationTokenSource(ms).Token);
-
-        public static Task WhileAsync(Func<bool> condition)
-            => WhileAsync(condition, CancellationToken.None);
-
-        /// <summary>
-        ///     Awaits until condition is true or task is canceled.
-        /// </summary>
-        /// <param name="condition">
-        ///     The condition that will perpetuate the block.
-        /// </param>
-        /// <param name="ct">
-        ///     Cancellation token.
-        /// </param>
-        /// <param name="pollDelay">
-        ///     The delay at which the condition will be polled, in milliseconds.
-        /// </param>
-        /// <returns>
-        ///     <see cref="Task" />.
-        /// </returns>
-        public static async Task UntilAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
-        {
-            while (!condition() && !ct.IsCancellationRequested)
-                await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
-        }
-
-        public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
-            => UntilAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
-
-        public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue)
-            => UntilAsync(condition, new CancellationTokenSource(ms).Token);
-
-        public static Task UntilAsync(Func<bool> condition)
-            => UntilAsync(condition, CancellationToken.None);
+        while (condition() && !ct.IsCancellationRequested)
+            await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
     }
+
+    public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
+        => WhileAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
+
+    public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue)
+        => WhileAsync(condition, new CancellationTokenSource(ms).Token);
+
+    public static Task WhileAsync(Func<bool> condition)
+        => WhileAsync(condition, CancellationToken.None);
+
+    /// <summary>
+    ///     Awaits until condition is true or task is canceled.
+    /// </summary>
+    /// <param name="condition">
+    ///     The condition that will perpetuate the block.
+    /// </param>
+    /// <param name="ct">
+    ///     Cancellation token.
+    /// </param>
+    /// <param name="pollDelay">
+    ///     The delay at which the condition will be polled, in milliseconds.
+    /// </param>
+    /// <returns>
+    ///     <see cref="Task" />.
+    /// </returns>
+    public static async Task UntilAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
+    {
+        while (!condition() && !ct.IsCancellationRequested)
+            await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
+    }
+
+    public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
+        => UntilAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
+
+    public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue)
+        => UntilAsync(condition, new CancellationTokenSource(ms).Token);
+
+    public static Task UntilAsync(Func<bool> condition)
+        => UntilAsync(condition, CancellationToken.None);
 }

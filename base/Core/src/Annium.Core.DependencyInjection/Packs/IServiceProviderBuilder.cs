@@ -1,14 +1,13 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public interface IServiceProviderBuilder
 {
-    public interface IServiceProviderBuilder
-    {
-        IServiceProviderBuilder UseServicePack<TServicePack>()
-            where TServicePack : ServicePackBase, new();
+    IServiceProviderBuilder UseServicePack<TServicePack>()
+        where TServicePack : ServicePackBase, new();
 
-        IServiceProviderBuilder UseServicePack(ServicePackBase servicePack);
+    IServiceProviderBuilder UseServicePack(ServicePackBase servicePack);
 
-        ServiceProvider Build();
-    }
+    ServiceProvider Build();
 }

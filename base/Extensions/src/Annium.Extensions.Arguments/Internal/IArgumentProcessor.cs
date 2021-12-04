@@ -1,7 +1,6 @@
-namespace Annium.Extensions.Arguments.Internal
+namespace Annium.Extensions.Arguments.Internal;
+
+internal interface IArgumentProcessor
 {
-    internal interface IArgumentProcessor
-    {
-        RawConfiguration Compose(string[] args);
-    }
+    RawConfiguration Compose(string[] args);
 }

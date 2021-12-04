@@ -1,11 +1,10 @@
 using Annium.Data.Operations;
 
-namespace Annium.Architecture.Http.Exceptions
+namespace Annium.Architecture.Http.Exceptions;
+
+public class ForbiddenException : HttpException
 {
-    public class ForbiddenException : HttpException
+    public ForbiddenException(IResultBase result) : base(result)
     {
-        public ForbiddenException(IResultBase result) : base(result)
-        {
-        }
     }
 }

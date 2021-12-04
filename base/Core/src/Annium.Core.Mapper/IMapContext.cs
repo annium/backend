@@ -1,7 +1,6 @@
-namespace Annium.Core.Mapper
+namespace Annium.Core.Mapper;
+
+public interface IMapContext
 {
-    public interface IMapContext
-    {
-        T Map<T>(object source);
-    }
+    T Map<T>(object source);
 }

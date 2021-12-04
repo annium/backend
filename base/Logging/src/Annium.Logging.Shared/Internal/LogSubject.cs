@@ -1,14 +1,13 @@
 using Annium.Logging.Abstractions;
 
-namespace Annium.Logging.Shared.Internal
-{
-    internal class LogSubject<T> : ILogSubject<T>
-    {
-        public ILogger Logger { get; }
+namespace Annium.Logging.Shared.Internal;
 
-        public LogSubject(ILogger<T> logger)
-        {
-            Logger = logger;
-        }
+internal class LogSubject<T> : ILogSubject<T>
+{
+    public ILogger Logger { get; }
+
+    public LogSubject(ILogger<T> logger)
+    {
+        Logger = logger;
     }
 }

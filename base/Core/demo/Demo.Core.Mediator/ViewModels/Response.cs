@@ -1,12 +1,11 @@
-namespace Demo.Core.Mediator.ViewModels
-{
-    internal class Response<T>
-    {
-        public string Value { get; }
+namespace Demo.Core.Mediator.ViewModels;
 
-        public Response(string value)
-        {
-            Value = value;
-        }
+internal class Response<T>
+{
+    public string Value { get; }
+
+    public Response(string value)
+    {
+        Value = value;
     }
 }

@@ -1,31 +1,30 @@
 using System;
 using Annium.Core.DependencyInjection.Internal.Packs;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+/// <summary>
+/// This is emulation class for compatibility with extensions, expecting HostBuilder pattern implementation
+/// </summary>
+/// <typeparam name="TServicePack"></typeparam>
+public class HostServicesBuilder<TServicePack>
+    where TServicePack : ServicePackBase, new()
 {
-    /// <summary>
-    /// This is emulation class for compatibility with extensions, expecting HostBuilder pattern implementation
-    /// </summary>
-    /// <typeparam name="TServicePack"></typeparam>
-    public class HostServicesBuilder<TServicePack>
-        where TServicePack : ServicePackBase, new()
+    public HostServicesProvider Build()
     {
-        public HostServicesProvider Build()
-        {
-            ServiceProviderBuilder builder = new();
-            builder.UseServicePack<TServicePack>();
+        ServiceProviderBuilder builder = new();
+        builder.UseServicePack<TServicePack>();
 
-            return new HostServicesProvider(builder.Build());
-        }
+        return new HostServicesProvider(builder.Build());
     }
+}
 
-    public class HostServicesProvider
+public class HostServicesProvider
+{
+    public IServiceProvider Services { get; }
+
+    public HostServicesProvider(IServiceProvider services)
     {
-        public IServiceProvider Services { get; }
-
-        public HostServicesProvider(IServiceProvider services)
-        {
-            Services = services;
-        }
+        Services = services;
     }
 }

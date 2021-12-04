@@ -2,35 +2,34 @@ using Annium.Testing;
 using MessagePack;
 using Xunit;
 
-namespace Annium.Serialization.MessagePack.Tests
+namespace Annium.Serialization.MessagePack.Tests;
+
+public class MessagePackSerializerTests : TestBase
 {
-    public class MessagePackSerializerTests : TestBase
+    [Fact]
+    public void Serialization_Deserialization_Works()
     {
-        [Fact]
-        public void Serialization_Deserialization_Works()
-        {
-            // arrange
-            var serializer = GetSerializer();
-            var data = new Person { FirstName = "Max", LastName = "Madness" };
+        // arrange
+        var serializer = GetSerializer();
+        var data = new Person { FirstName = "Max", LastName = "Madness" };
 
-            // act
-            var serialized = serializer.Serialize(data);
-            var deserialized = serializer.Deserialize<Person>(serialized);
+        // act
+        var serialized = serializer.Serialize(data);
+        var deserialized = serializer.Deserialize<Person>(serialized);
 
-            // assert
-            deserialized.IsNotDefault();
-            deserialized.FirstName.IsEqual(data.FirstName);
-            deserialized.LastName.IsEqual(data.LastName);
-        }
+        // assert
+        deserialized.IsNotDefault();
+        deserialized.FirstName.IsEqual(data.FirstName);
+        deserialized.LastName.IsEqual(data.LastName);
+    }
 
-        [MessagePackObject]
-        public class Person
-        {
-            [Key(0)]
-            public string FirstName { get; set; } = string.Empty;
+    [MessagePackObject]
+    public class Person
+    {
+        [Key(0)]
+        public string FirstName { get; set; } = string.Empty;
 
-            [Key(1)]
-            public string LastName { get; set; } = string.Empty;
-        }
+        [Key(1)]
+        public string LastName { get; set; } = string.Empty;
     }
 }

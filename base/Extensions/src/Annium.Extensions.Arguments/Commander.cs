@@ -2,16 +2,15 @@
 using System.Threading;
 using Annium.Core.DependencyInjection;
 
-namespace Annium.Extensions.Arguments
+namespace Annium.Extensions.Arguments;
+
+public static class Commander
 {
-    public static class Commander
+    public static void Run<TGroup>(IServiceProvider provider, string[] args, CancellationToken ct = default)
+        where TGroup : Group
     {
-        public static void Run<TGroup>(IServiceProvider provider, string[] args, CancellationToken ct = default)
-            where TGroup : Group
-        {
-            var group = provider.Resolve<TGroup>();
-            group.SetRoot(provider.Resolve<Root>());
-            group.Process(group.Id, args, ct);
-        }
+        var group = provider.Resolve<TGroup>();
+        group.SetRoot(provider.Resolve<Root>());
+        group.Process(group.Id, args, ct);
     }
 }

@@ -1,28 +1,27 @@
 using System;
 using System.IO;
 
-namespace Annium.Core.Primitives.IO
+namespace Annium.Core.Primitives.IO;
+
+public static class DirectoryInfoExtensions
 {
-    public static class DirectoryInfoExtensions
+    public static bool IsAt(this DirectoryInfo value, string root, bool self = false)
     {
-        public static bool IsAt(this DirectoryInfo value, string root, bool self = false)
-        {
-            return value.IsAt(new DirectoryInfo(root), self);
-        }
+        return value.IsAt(new DirectoryInfo(root), self);
+    }
 
-        public static bool IsAt(this DirectoryInfo value, DirectoryInfo root, bool self = false)
-        {
-            if (value is null)
-                throw new ArgumentNullException(nameof(value));
+    public static bool IsAt(this DirectoryInfo value, DirectoryInfo root, bool self = false)
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
 
-            if (self && value.FullName == root.FullName)
-                return true;
+        if (self && value.FullName == root.FullName)
+            return true;
 
-            var rootPath = root.FullName.EndsWith(Path.DirectorySeparatorChar)
-                ? root.FullName
-                : $"{root.FullName}{Path.DirectorySeparatorChar}";
+        var rootPath = root.FullName.EndsWith(Path.DirectorySeparatorChar)
+            ? root.FullName
+            : $"{root.FullName}{Path.DirectorySeparatorChar}";
 
-            return value.FullName.Length > rootPath.Length && value.FullName.StartsWith(rootPath);
-        }
+        return value.FullName.Length > rootPath.Length && value.FullName.StartsWith(rootPath);
     }
 }

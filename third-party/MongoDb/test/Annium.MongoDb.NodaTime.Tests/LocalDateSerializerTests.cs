@@ -5,53 +5,52 @@ using MongoDB.Bson.Serialization;
 using NodaTime;
 using Xunit;
 
-namespace Annium.MongoDb.NodaTime.Tests
+namespace Annium.MongoDb.NodaTime.Tests;
+
+public class LocalDateSerializerTests
 {
-    public class LocalDateSerializerTests
+    static LocalDateSerializerTests()
     {
-        static LocalDateSerializerTests()
-        {
-            BsonSerializer.RegisterSerializer(new LocalDateSerializer());
-        }
+        BsonSerializer.RegisterSerializer(new LocalDateSerializer());
+    }
 
-        [Fact]
-        public void CanRoundTripValueWithIsoCalendar()
-        {
-            var obj = new Test { LocalDate = new LocalDate(2015, 1, 1) };
-            obj.ToTestJson().Contains("'LocalDate' : '2015-01-01'").IsTrue();
+    [Fact]
+    public void CanRoundTripValueWithIsoCalendar()
+    {
+        var obj = new Test { LocalDate = new LocalDate(2015, 1, 1) };
+        obj.ToTestJson().Contains("'LocalDate' : '2015-01-01'").IsTrue();
 
-            obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-            obj.LocalDate.IsEqual(obj.LocalDate);
-        }
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+        obj.LocalDate.IsEqual(obj.LocalDate);
+    }
 
-        [Fact]
-        public void ConvertsToIsoCalendarWhenSerializing()
-        {
-            var obj = new Test { LocalDate = new LocalDate(2015, 1, 1).WithCalendar(CalendarSystem.PersianSimple) };
-            obj.ToTestJson().Contains("'LocalDate' : '2015-01-01'").IsTrue();
+    [Fact]
+    public void ConvertsToIsoCalendarWhenSerializing()
+    {
+        var obj = new Test { LocalDate = new LocalDate(2015, 1, 1).WithCalendar(CalendarSystem.PersianSimple) };
+        obj.ToTestJson().Contains("'LocalDate' : '2015-01-01'").IsTrue();
 
-            obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-            obj.LocalDate.IsEqual(obj.LocalDate.WithCalendar(CalendarSystem.Iso));
-        }
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+        obj.LocalDate.IsEqual(obj.LocalDate.WithCalendar(CalendarSystem.Iso));
+    }
 
-        [Fact]
-        public void ThrowsWhenDateIsInvalid()
-        {
-            ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", "bleh"))))).Throws<FormatException>();
-            ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", BsonNull.Value))))).Throws<FormatException>();
-        }
+    [Fact]
+    public void ThrowsWhenDateIsInvalid()
+    {
+        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", "bleh"))))).Throws<FormatException>();
+        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", BsonNull.Value))))).Throws<FormatException>();
+    }
 
-        [Fact]
-        public void CanParseNullable()
-        {
-            BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDate", BsonNull.Value))).NullableLocalDate.IsDefault();
-        }
+    [Fact]
+    public void CanParseNullable()
+    {
+        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDate", BsonNull.Value))).NullableLocalDate.IsDefault();
+    }
 
-        private class Test
-        {
-            public LocalDate LocalDate { get; set; }
+    private class Test
+    {
+        public LocalDate LocalDate { get; set; }
 
-            public LocalDate? NullableLocalDate { get; set; }
-        }
+        public LocalDate? NullableLocalDate { get; set; }
     }
 }

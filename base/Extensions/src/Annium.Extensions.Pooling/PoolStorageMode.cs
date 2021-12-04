@@ -1,8 +1,7 @@
-namespace Annium.Extensions.Pooling
+namespace Annium.Extensions.Pooling;
+
+public enum PoolStorageMode
 {
-    public enum PoolStorageMode
-    {
-        Fifo,
-        Lifo,
-    }
+    Fifo,
+    Lifo,
 }

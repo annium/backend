@@ -8,32 +8,31 @@ using Annium.Infrastructure.WebSockets.Server.Models;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
 using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers
+namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+
+internal class UserSubscriptionsHandler :
+    ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState>
 {
-    internal class UserSubscriptionsHandler :
-        ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState>
+    public async Task<Unit> HandleAsync(
+        ISubscriptionContext<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState> ctx,
+        CancellationToken ct
+    )
     {
-        public async Task<Unit> HandleAsync(
-            ISubscriptionContext<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState> ctx,
-            CancellationToken ct
-        )
+        // confirm subscription
+        ctx.Handle(Result.Status(OperationStatus.Ok));
+
+        // subscription body
+        var rnd = new Random();
+        var balance = rnd.Next(0, 100);
+        // callback on subscription end
+        ct.Register(() => Console.WriteLine("Subscription cancelled"));
+        // main code to run until subscription ended
+        while (!ct.IsCancellationRequested)
         {
-            // confirm subscription
-            ctx.Handle(Result.Status(OperationStatus.Ok));
-
-            // subscription body
-            var rnd = new Random();
-            var balance = rnd.Next(0, 100);
-            // callback on subscription end
-            ct.Register(() => Console.WriteLine("Subscription cancelled"));
-            // main code to run until subscription ended
-            while (!ct.IsCancellationRequested)
-            {
-                ctx.Send(new UserBalanceMessage { Balance = balance += rnd.Next(-4, 5) });
-                await Task.Delay(500);
-            }
-
-            return Unit.Default;
+            ctx.Send(new UserBalanceMessage { Balance = balance += rnd.Next(-4, 5) });
+            await Task.Delay(500);
         }
+
+        return Unit.Default;
     }
 }

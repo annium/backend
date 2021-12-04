@@ -1,21 +1,20 @@
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests
+namespace Annium.Core.Primitives.Tests;
+
+public class ByteExtensionsTest
 {
-    public class ByteExtensionsTest
+    [Fact]
+    public void ToHexString_Works()
     {
-        [Fact]
-        public void ToHexString_Works()
-        {
-            // arrange
-            var byteArray = new byte[] { 7, 220, 34 };
+        // arrange
+        var byteArray = new byte[] { 7, 220, 34 };
 
-            // act
-            var str = byteArray.ToHexString();
+        // act
+        var str = byteArray.ToHexString();
 
-            // assert
-            str.IsEqual("07DC22");
-        }
+        // assert
+        str.IsEqual("07DC22");
     }
 }

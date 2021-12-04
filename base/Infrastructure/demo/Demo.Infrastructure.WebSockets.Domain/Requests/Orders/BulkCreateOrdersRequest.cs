@@ -1,15 +1,14 @@
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 
-namespace Demo.Infrastructure.WebSockets.Domain.Requests.Orders
-{
-    // request stream -> response stream
-    public class BulkCreateOrdersRequest : StreamHeadRequestBase
-    {
-        public string Customer { get; init; } = string.Empty;
-    }
+namespace Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
-    public class BulkCreateOrderStreamChunkRequest : StreamChunkRequestBase
-    {
-        public string Product { get; init; } = string.Empty;
-    }
+// request stream -> response stream
+public class BulkCreateOrdersRequest : StreamHeadRequestBase
+{
+    public string Customer { get; init; } = string.Empty;
+}
+
+public class BulkCreateOrderStreamChunkRequest : StreamChunkRequestBase
+{
+    public string Product { get; init; } = string.Empty;
 }

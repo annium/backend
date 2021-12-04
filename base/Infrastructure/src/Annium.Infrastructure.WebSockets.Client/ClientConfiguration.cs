@@ -3,99 +3,98 @@ using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Net.WebSockets;
 using NodaTime;
 
-namespace Annium.Infrastructure.WebSockets.Client
+namespace Annium.Infrastructure.WebSockets.Client;
+
+public class ClientConfiguration : ClientConfigurationBase<ClientConfiguration>, IClientConfiguration
 {
-    public class ClientConfiguration : ClientConfigurationBase<ClientConfiguration>, IClientConfiguration
+    public Uri Uri { get; private set; } = default!;
+
+    public bool AutoConnect { get; private set; }
+
+    public ClientWebSocketOptions WebSocketOptions { get; } = new()
     {
-        public Uri Uri { get; private set; } = default!;
+        ReconnectTimeout = Duration.FromSeconds(5),
+        ActiveKeepAlive = ActiveKeepAlive.Create(),
+        PassiveKeepAlive = PassiveKeepAlive.Create()
+    };
 
-        public bool AutoConnect { get; private set; }
+    public ClientConfiguration ConnectTo(Uri uri)
+    {
+        Uri = uri;
 
-        public ClientWebSocketOptions WebSocketOptions { get; } = new()
-        {
-            ReconnectTimeout = Duration.FromSeconds(5),
-            ActiveKeepAlive = ActiveKeepAlive.Create(),
-            PassiveKeepAlive = PassiveKeepAlive.Create()
-        };
-
-        public ClientConfiguration ConnectTo(Uri uri)
-        {
-            Uri = uri;
-
-            return this;
-        }
-
-        public ClientConfiguration WithAutoConnect()
-        {
-            AutoConnect = true;
-
-            return this;
-        }
-
-        public ClientConfiguration WithConnectTimeout(uint timeout)
-        {
-            WebSocketOptions.ConnectTimeout = Duration.FromSeconds(timeout);
-
-            return this;
-        }
-
-        public ClientConfiguration WithReconnectTimeout(uint timeout)
-        {
-            WebSocketOptions.ReconnectTimeout = Duration.FromSeconds(timeout);
-
-            return this;
-        }
-
-        public ClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
-        {
-            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
-
-            return this;
-        }
+        return this;
     }
 
-    public class TestClientConfiguration : ClientConfigurationBase<TestClientConfiguration>, ITestClientConfiguration
+    public ClientConfiguration WithAutoConnect()
     {
-        public WebSocketOptions WebSocketOptions { get; } = new()
-        {
-            ActiveKeepAlive = ActiveKeepAlive.Create(),
-            PassiveKeepAlive = PassiveKeepAlive.Create()
-        };
+        AutoConnect = true;
 
-        public TestClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
-        {
-            WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
-
-            return this;
-        }
+        return this;
     }
 
-    public abstract class ClientConfigurationBase<TConfiguration> : IClientConfigurationBase
-        where TConfiguration : ClientConfigurationBase<TConfiguration>
+    public ClientConfiguration WithConnectTimeout(uint timeout)
     {
-        public SerializationFormat Format { get; private set; }
+        WebSocketOptions.ConnectTimeout = Duration.FromSeconds(timeout);
 
-        public Duration ResponseTimeout { get; private set; } = Duration.FromMinutes(1);
+        return this;
+    }
 
-        public TConfiguration UseBinaryFormat()
-        {
-            Format = SerializationFormat.Binary;
+    public ClientConfiguration WithReconnectTimeout(uint timeout)
+    {
+        WebSocketOptions.ReconnectTimeout = Duration.FromSeconds(timeout);
 
-            return (TConfiguration) this;
-        }
+        return this;
+    }
 
-        public TConfiguration UseTextFormat()
-        {
-            Format = SerializationFormat.Text;
+    public ClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
+    {
+        WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
 
-            return (TConfiguration) this;
-        }
+        return this;
+    }
+}
 
-        public TConfiguration WithResponseTimeout(uint timeout)
-        {
-            ResponseTimeout = Duration.FromSeconds(timeout);
+public class TestClientConfiguration : ClientConfigurationBase<TestClientConfiguration>, ITestClientConfiguration
+{
+    public WebSocketOptions WebSocketOptions { get; } = new()
+    {
+        ActiveKeepAlive = ActiveKeepAlive.Create(),
+        PassiveKeepAlive = PassiveKeepAlive.Create()
+    };
 
-            return (TConfiguration) this;
-        }
+    public TestClientConfiguration WithActiveKeepAlive(uint pingInterval = 60, uint retries = 5)
+    {
+        WebSocketOptions.ActiveKeepAlive = ActiveKeepAlive.Create(pingInterval, retries);
+
+        return this;
+    }
+}
+
+public abstract class ClientConfigurationBase<TConfiguration> : IClientConfigurationBase
+    where TConfiguration : ClientConfigurationBase<TConfiguration>
+{
+    public SerializationFormat Format { get; private set; }
+
+    public Duration ResponseTimeout { get; private set; } = Duration.FromMinutes(1);
+
+    public TConfiguration UseBinaryFormat()
+    {
+        Format = SerializationFormat.Binary;
+
+        return (TConfiguration) this;
+    }
+
+    public TConfiguration UseTextFormat()
+    {
+        Format = SerializationFormat.Text;
+
+        return (TConfiguration) this;
+    }
+
+    public TConfiguration WithResponseTimeout(uint timeout)
+    {
+        ResponseTimeout = Duration.FromSeconds(timeout);
+
+        return (TConfiguration) this;
     }
 }

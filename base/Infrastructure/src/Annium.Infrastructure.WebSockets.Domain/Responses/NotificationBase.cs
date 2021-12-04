@@ -1,6 +1,5 @@
-namespace Annium.Infrastructure.WebSockets.Domain.Responses
+namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+
+public abstract class NotificationBase : AbstractResponseBase
 {
-    public abstract class NotificationBase : AbstractResponseBase
-    {
-    }
 }

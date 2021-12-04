@@ -1,9 +1,8 @@
 using System;
 
-namespace Annium.Core.DependencyInjection
+namespace Annium.Core.DependencyInjection;
+
+public interface IAsyncServiceScope : IAsyncDisposable
 {
-    public interface IAsyncServiceScope : IAsyncDisposable
-    {
-        IServiceProvider ServiceProvider { get; }
-    }
+    IServiceProvider ServiceProvider { get; }
 }

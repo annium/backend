@@ -2,29 +2,28 @@ using System;
 using System.Linq;
 using Annium.Configuration.CommandLine.Internal;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Abstractions;
+
+public static class ConfigurationContainerExtensions
 {
-    public static class ConfigurationContainerExtensions
+    public static TContainer AddCommandLineArgs<TContainer>(
+        this TContainer container
+    )
+        where TContainer : IConfigurationContainer
     {
-        public static TContainer AddCommandLineArgs<TContainer>(
-            this TContainer container
-        )
-            where TContainer : IConfigurationContainer
-        {
-            return container.AddCommandLineArgs(Environment.GetCommandLineArgs().Skip(1).ToArray());
-        }
+        return container.AddCommandLineArgs(Environment.GetCommandLineArgs().Skip(1).ToArray());
+    }
 
-        public static TContainer AddCommandLineArgs<TContainer>(
-            this TContainer container,
-            string[] args
-        )
-            where TContainer : IConfigurationContainer
-        {
-            var configuration = new CommandLineConfigurationProvider(args).Read();
+    public static TContainer AddCommandLineArgs<TContainer>(
+        this TContainer container,
+        string[] args
+    )
+        where TContainer : IConfigurationContainer
+    {
+        var configuration = new CommandLineConfigurationProvider(args).Read();
 
-            container.Add(configuration);
+        container.Add(configuration);
 
-            return container;
-        }
+        return container;
     }
 }

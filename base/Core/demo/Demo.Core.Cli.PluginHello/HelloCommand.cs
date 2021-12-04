@@ -1,18 +1,17 @@
 using System;
 using Demo.Core.Cli.Lib;
 
-namespace Demo.Core.Cli.PluginHello
+namespace Demo.Core.Cli.PluginHello;
+
+internal class HelloCommand : ICommand
 {
-    internal class HelloCommand : ICommand
+    public string Name => "hello";
+    public string Description => "Displays hello message.";
+
+    public int Execute()
     {
-        public string Name => "hello";
-        public string Description => "Displays hello message.";
+        Console.WriteLine("Hello!");
 
-        public int Execute()
-        {
-            Console.WriteLine("Hello!");
-
-            return 0;
-        }
+        return 0;
     }
 }

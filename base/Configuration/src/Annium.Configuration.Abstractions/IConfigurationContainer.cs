@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Abstractions;
+
+public interface IConfigurationContainer
 {
-    public interface IConfigurationContainer
-    {
-        IConfigurationContainer Add(IReadOnlyDictionary<string[], string> config);
-        IReadOnlyDictionary<string[], string> Get();
-    }
+    IConfigurationContainer Add(IReadOnlyDictionary<string[], string> config);
+    IReadOnlyDictionary<string[], string> Get();
 }

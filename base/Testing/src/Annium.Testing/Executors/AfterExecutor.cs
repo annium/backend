@@ -1,32 +1,31 @@
 ﻿using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Testing.Executors
+namespace Annium.Testing.Executors;
+
+public class AfterExecutor : ITestExecutor, ILogSubject
 {
-    public class AfterExecutor : ITestExecutor, ILogSubject
+    public uint Order { get; } = 5;
+    public ILogger Logger { get; }
+    private readonly MethodExecutor _executor;
+
+    public AfterExecutor(
+        MethodExecutor executor,
+        ILogger<AfterExecutor> logger
+    )
     {
-        public uint Order { get; } = 5;
-        public ILogger Logger { get; }
-        private readonly MethodExecutor _executor;
+        _executor = executor;
+        Logger = logger;
+    }
 
-        public AfterExecutor(
-            MethodExecutor executor,
-            ILogger<AfterExecutor> logger
-        )
-        {
-            _executor = executor;
-            Logger = logger;
-        }
+    public Task ExecuteAsync(Target target)
+    {
+        var (instance, test, result) = target;
+        if (test.After == null)
+            return Task.CompletedTask;
 
-        public Task ExecuteAsync(Target target)
-        {
-            var (instance, test, result) = target;
-            if (test.After == null)
-                return Task.CompletedTask;
+        this.Log().Trace($"Execute After of {target.Test.DisplayName}.");
 
-            this.Log().Trace($"Execute After of {target.Test.DisplayName}.");
-
-            return _executor.ExecuteAsync(instance, test.After, result);
-        }
+        return _executor.ExecuteAsync(instance, test.After, result);
     }
 }

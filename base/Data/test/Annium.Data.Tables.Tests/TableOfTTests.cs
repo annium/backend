@@ -6,41 +6,40 @@ using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Data.Tables.Tests
+namespace Annium.Data.Tables.Tests;
+
+public class TableOfTTests
 {
-    public class TableOfTTests
+    [Fact]
+    public async Task Events_AreEmittedCorrectly()
     {
-        [Fact]
-        public async Task Events_AreEmittedCorrectly()
-        {
-            // arrange
-            var table = Table.New<Sample>()
-                .Allow(TablePermission.All)
-                .Key(x => x.Key)
-                .Keep(x => x.IsAlive)
-                .Build();
-            var log1 = new List<IChangeEvent<Sample>>();
-            var log2 = new List<IChangeEvent<Sample>>();
+        // arrange
+        var table = Table.New<Sample>()
+            .Allow(TablePermission.All)
+            .Key(x => x.Key)
+            .Keep(x => x.IsAlive)
+            .Build();
+        var log1 = new List<IChangeEvent<Sample>>();
+        var log2 = new List<IChangeEvent<Sample>>();
 
-            // subscribe will emit init events
-            table.Subscribe(log1.Add);
-            table.Subscribe(log2.Add);
-            log1.Has(1);
-            log1.At(0).IsEqual(ChangeEvent.Init(Array.Empty<Sample>()));
-            log2.At(0).IsEqual(log1.At(0));
+        // subscribe will emit init events
+        table.Subscribe(log1.Add);
+        table.Subscribe(log2.Add);
+        log1.Has(1);
+        log1.At(0).IsEqual(ChangeEvent.Init(Array.Empty<Sample>()));
+        log2.At(0).IsEqual(log1.At(0));
 
-            // init with some data
-            var initValues = new[] { new Sample(1, true) };
-            table.Init(initValues);
-            await Wait.UntilAsync(() => log1.Count > 1);
-            log1.Has(2);
-            log1.At(1).IsEqual(ChangeEvent.Init(initValues));
-            log2.At(1).Is(log1.At(1));
-        }
+        // init with some data
+        var initValues = new[] { new Sample(1, true) };
+        table.Init(initValues);
+        await Wait.UntilAsync(() => log1.Count > 1);
+        log1.Has(2);
+        log1.At(1).IsEqual(ChangeEvent.Init(initValues));
+        log2.At(1).Is(log1.At(1));
+    }
 
-        private record Sample(int Key, bool IsAlive) : ICopyable<Sample>
-        {
-            public Sample Copy() => this with { };
-        }
+    private record Sample(int Key, bool IsAlive) : ICopyable<Sample>
+    {
+        public Sample Copy() => this with { };
     }
 }

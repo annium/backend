@@ -3,37 +3,36 @@ using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.Primitives;
 
-namespace Annium.Serialization.Json.Internal.Converters
+namespace Annium.Serialization.Json.Internal.Converters;
+
+internal class ConstructorJsonConverterConfiguration
 {
-    internal class ConstructorJsonConverterConfiguration
+    public ConstructorInfo Constructor { get; }
+    public List<ParameterItem> Parameters { get; }
+    public IReadOnlyCollection<PropertyInfo> Properties { get; }
+
+    public ConstructorJsonConverterConfiguration(
+        ConstructorInfo constructor,
+        List<ParameterItem> parameters,
+        IReadOnlyCollection<PropertyInfo> properties
+    )
     {
-        public ConstructorInfo Constructor { get; }
-        public List<ParameterItem> Parameters { get; }
-        public IReadOnlyCollection<PropertyInfo> Properties { get; }
+        Constructor = constructor;
+        Parameters = parameters;
+        Properties = properties;
+    }
 
-        public ConstructorJsonConverterConfiguration(
-            ConstructorInfo constructor,
-            List<ParameterItem> parameters,
-            IReadOnlyCollection<PropertyInfo> properties
-        )
+    internal class ParameterItem
+    {
+        public Type Type { get; }
+        public string Name { get; }
+
+        public ParameterItem(Type type, string name)
         {
-            Constructor = constructor;
-            Parameters = parameters;
-            Properties = properties;
+            Type = type;
+            Name = name;
         }
 
-        internal class ParameterItem
-        {
-            public Type Type { get; }
-            public string Name { get; }
-
-            public ParameterItem(Type type, string name)
-            {
-                Type = type;
-                Name = name;
-            }
-
-            public override string ToString() => $"{Type.FriendlyName()} {Name}";
-        }
+        public override string ToString() => $"{Type.FriendlyName()} {Name}";
     }
 }

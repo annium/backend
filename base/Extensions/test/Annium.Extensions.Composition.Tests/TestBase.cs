@@ -1,15 +1,14 @@
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 
-namespace Annium.Extensions.Composition.Tests
+namespace Annium.Extensions.Composition.Tests;
+
+public class TestBase
 {
-    public class TestBase
-    {
-        protected IComposer<T> GetComposer<T>() where T : class => new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
-            .AddComposition()
-            .AddLocalization(opts => opts.UseInMemoryStorage())
-            .BuildServiceProvider()
-            .Resolve<IComposer<T>>();
-    }
+    protected IComposer<T> GetComposer<T>() where T : class => new ServiceContainer()
+        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddComposition()
+        .AddLocalization(opts => opts.UseInMemoryStorage())
+        .BuildServiceProvider()
+        .Resolve<IComposer<T>>();
 }

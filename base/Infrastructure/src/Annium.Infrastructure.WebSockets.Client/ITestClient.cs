@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Infrastructure.WebSockets.Client
+namespace Annium.Infrastructure.WebSockets.Client;
+
+public interface ITestClient : IClientBase
 {
-    public interface ITestClient : IClientBase
-    {
-        event Func<Task> ConnectionLost;
-    }
+    event Func<Task> ConnectionLost;
 }

@@ -3,72 +3,71 @@ using System.IO;
 using Annium.Configuration.Abstractions;
 using YamlDotNet.RepresentationModel;
 
-namespace Annium.Configuration.Yaml.Internal
+namespace Annium.Configuration.Yaml.Internal;
+
+internal class YamlConfigurationProvider : ConfigurationProviderBase
 {
-    internal class YamlConfigurationProvider : ConfigurationProviderBase
+    private readonly string _raw;
+
+    public YamlConfigurationProvider(string raw)
     {
-        private readonly string _raw;
+        _raw = raw;
+    }
 
-        public YamlConfigurationProvider(string raw)
-        {
-            _raw = raw;
-        }
+    public override IReadOnlyDictionary<string[], string> Read()
+    {
+        Init();
 
-        public override IReadOnlyDictionary<string[], string> Read()
-        {
-            Init();
+        var stream = new YamlStream();
+        using var reader = new StringReader(_raw);
+        stream.Load(reader);
 
-            var stream = new YamlStream();
-            using var reader = new StringReader(_raw);
-            stream.Load(reader);
-
-            if (stream.Documents.Count == 0)
-                return Data;
-
-            Process((YamlMappingNode) stream.Documents[0].RootNode);
-
+        if (stream.Documents.Count == 0)
             return Data;
-        }
 
-        private void Process(YamlMappingNode node)
+        Process((YamlMappingNode) stream.Documents[0].RootNode);
+
+        return Data;
+    }
+
+    private void Process(YamlMappingNode node)
+    {
+        foreach (var (key, value) in node.Children)
         {
-            foreach (var (key, value) in node.Children)
-            {
-                Context.Push(((YamlScalarNode) key).Value!);
+            Context.Push(((YamlScalarNode) key).Value!);
 
-                if (value is YamlMappingNode map)
-                    Process(map);
-                else if (value is YamlSequenceNode seq)
-                    Process(seq);
-                else
-                    Process((YamlScalarNode) value);
+            if (value is YamlMappingNode map)
+                Process(map);
+            else if (value is YamlSequenceNode seq)
+                Process(seq);
+            else
+                Process((YamlScalarNode) value);
 
-                Context.Pop();
-            }
+            Context.Pop();
         }
+    }
 
-        private void Process(YamlSequenceNode node)
+    private void Process(YamlSequenceNode node)
+    {
+        var index = 0;
+        foreach (var item in node)
         {
-            var index = 0;
-            foreach (var item in node)
-            {
-                Context.Push(index.ToString());
+            Context.Push(index.ToString());
 
-                if (item is YamlMappingNode map)
-                    Process(map);
-                else if (item is YamlSequenceNode seq)
-                    Process(seq);
-                else
-                    Process((YamlScalarNode) item);
+            if (item is YamlMappingNode map)
+                Process(map);
+            else if (item is YamlSequenceNode seq)
+                Process(seq);
+            else
+                Process((YamlScalarNode) item);
 
-                Context.Pop();
-                index++;
-            }
+            Context.Pop();
+            index++;
         }
+    }
 
-        private void Process(YamlScalarNode token)
-        {
-            Data[Path] = token.Value!;
-        }
+    private void Process(YamlScalarNode token)
+    {
+        Data[Path] = token.Value!;
     }
 }

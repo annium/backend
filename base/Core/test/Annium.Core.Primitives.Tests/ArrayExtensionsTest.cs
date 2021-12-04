@@ -1,140 +1,139 @@
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests
+namespace Annium.Core.Primitives.Tests;
+
+public class ArrayExtensionsTest
 {
-    public class ArrayExtensionsTest
+    [Fact]
+    public void Deconstruct_1_Works()
     {
-        [Fact]
-        public void Deconstruct_1_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, rest) = arr;
-            x1.IsEqual(1);
-            rest.IsEqual(new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10 });
-        }
+        var (x1, rest) = arr;
+        x1.IsEqual(1);
+        rest.IsEqual(new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_2_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_2_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            rest.IsEqual(new[] { 3, 4, 5, 6, 7, 8, 9, 10 });
-        }
+        var (x1, x2, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        rest.IsEqual(new[] { 3, 4, 5, 6, 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_3_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_3_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            rest.IsEqual(new[] { 4, 5, 6, 7, 8, 9, 10 });
-        }
+        var (x1, x2, x3, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        rest.IsEqual(new[] { 4, 5, 6, 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_4_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_4_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, x4, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            x4.IsEqual(4);
-            rest.IsEqual(new[] { 5, 6, 7, 8, 9, 10 });
-        }
+        var (x1, x2, x3, x4, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        x4.IsEqual(4);
+        rest.IsEqual(new[] { 5, 6, 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_5_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_5_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, x4, x5, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            x4.IsEqual(4);
-            x5.IsEqual(5);
-            rest.IsEqual(new[] { 6, 7, 8, 9, 10 });
-        }
+        var (x1, x2, x3, x4, x5, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        x4.IsEqual(4);
+        x5.IsEqual(5);
+        rest.IsEqual(new[] { 6, 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_6_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_6_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, x4, x5, x6, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            x4.IsEqual(4);
-            x5.IsEqual(5);
-            x6.IsEqual(6);
-            rest.IsEqual(new[] { 7, 8, 9, 10 });
-        }
+        var (x1, x2, x3, x4, x5, x6, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        x4.IsEqual(4);
+        x5.IsEqual(5);
+        x6.IsEqual(6);
+        rest.IsEqual(new[] { 7, 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_7_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_7_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, x4, x5, x6, x7, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            x4.IsEqual(4);
-            x5.IsEqual(5);
-            x6.IsEqual(6);
-            x7.IsEqual(7);
-            rest.IsEqual(new[] { 8, 9, 10 });
-        }
+        var (x1, x2, x3, x4, x5, x6, x7, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        x4.IsEqual(4);
+        x5.IsEqual(5);
+        x6.IsEqual(6);
+        x7.IsEqual(7);
+        rest.IsEqual(new[] { 8, 9, 10 });
+    }
 
-        [Fact]
-        public void Deconstruct_8_Works()
-        {
-            // arrange
-            var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+    [Fact]
+    public void Deconstruct_8_Works()
+    {
+        // arrange
+        var arr = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            // act & assert
+        // act & assert
 
-            var (x1, x2, x3, x4, x5, x6, x7, x8, rest) = arr;
-            x1.IsEqual(1);
-            x2.IsEqual(2);
-            x3.IsEqual(3);
-            x4.IsEqual(4);
-            x5.IsEqual(5);
-            x6.IsEqual(6);
-            x7.IsEqual(7);
-            x8.IsEqual(8);
-            rest.IsEqual(new[] { 9, 10 });
-        }
+        var (x1, x2, x3, x4, x5, x6, x7, x8, rest) = arr;
+        x1.IsEqual(1);
+        x2.IsEqual(2);
+        x3.IsEqual(3);
+        x4.IsEqual(4);
+        x5.IsEqual(5);
+        x6.IsEqual(6);
+        x7.IsEqual(7);
+        x8.IsEqual(8);
+        rest.IsEqual(new[] { 9, 10 });
     }
 }

@@ -6,78 +6,77 @@ using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
 using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands
+namespace Demo.Infrastructure.WebSockets.Client.Commands;
+
+internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
 {
-    internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+    public override string Id { get; } = "keep-alive";
+    public override string Description => $"test {Id} flow";
+    public ILogger Logger { get; }
+    private readonly IClientFactory _clientFactory;
+
+    public KeepAliveCommand(
+        IClientFactory clientFactory,
+        ILogger<RequestCommand> logger
+    )
     {
-        public override string Id { get; } = "keep-alive";
-        public override string Description => $"test {Id} flow";
-        public ILogger Logger { get; }
-        private readonly IClientFactory _clientFactory;
+        _clientFactory = clientFactory;
+        Logger = logger;
+    }
 
-        public KeepAliveCommand(
-            IClientFactory clientFactory,
-            ILogger<RequestCommand> logger
-        )
+    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    {
+        this.Log().Debug($"Interacting to {cfg.Server}");
+
+        this.Log().Debug("create client");
+        var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);
+        var client = _clientFactory.Create(configuration);
+        client.ConnectionLost += () =>
         {
-            _clientFactory = clientFactory;
-            Logger = logger;
-        }
-
-        public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+            this.Log().Debug("connection lost");
+            return Task.CompletedTask;
+        };
+        client.ConnectionRestored += () =>
         {
-            this.Log().Debug($"Interacting to {cfg.Server}");
+            this.Log().Debug("connection restored");
+            return Task.CompletedTask;
+        };
 
-            this.Log().Debug("create client");
-            var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);
-            var client = _clientFactory.Create(configuration);
-            client.ConnectionLost += () =>
+        while (true)
+        {
+            this.Log().Debug("press key");
+            var key = Console.ReadKey(true).Key;
+
+            if (key == ConsoleKey.C)
             {
-                this.Log().Debug("connection lost");
-                return Task.CompletedTask;
-            };
-            client.ConnectionRestored += () =>
-            {
-                this.Log().Debug("connection restored");
-                return Task.CompletedTask;
-            };
-
-            while (true)
-            {
-                this.Log().Debug("press key");
-                var key = Console.ReadKey(true).Key;
-
-                if (key == ConsoleKey.C)
-                {
-                    this.Log().Debug("connecting");
-                    await client.ConnectAsync(ct);
-                    this.Log().Debug("connected");
-                }
-
-                if (key == ConsoleKey.D)
-                {
-                    this.Log().Debug("disconnecting");
-                    await client.DisconnectAsync();
-                    this.Log().Debug("disconnected");
-                }
-
-                if (key == ConsoleKey.Escape)
-                {
-                    this.Log().Debug("break");
-                    break;
-                }
-
-                // await to avoid key pressing mess
-                await Task.Delay(100, CancellationToken.None);
+                this.Log().Debug("connecting");
+                await client.ConnectAsync(ct);
+                this.Log().Debug("connected");
             }
 
-            if (client.IsConnected)
+            if (key == ConsoleKey.D)
             {
-                this.Log().Debug("Disconnecting");
+                this.Log().Debug("disconnecting");
                 await client.DisconnectAsync();
+                this.Log().Debug("disconnected");
             }
 
-            this.Log().Debug("Disconnected");
+            if (key == ConsoleKey.Escape)
+            {
+                this.Log().Debug("break");
+                break;
+            }
+
+            // await to avoid key pressing mess
+            await Task.Delay(100, CancellationToken.None);
         }
+
+        if (client.IsConnected)
+        {
+            this.Log().Debug("Disconnecting");
+            await client.DisconnectAsync();
+        }
+
+        this.Log().Debug("Disconnected");
     }
 }

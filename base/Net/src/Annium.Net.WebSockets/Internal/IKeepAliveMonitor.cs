@@ -1,11 +1,10 @@
 using System.Threading;
 
-namespace Annium.Net.WebSockets.Internal
+namespace Annium.Net.WebSockets.Internal;
+
+internal interface IKeepAliveMonitor
 {
-    internal interface IKeepAliveMonitor
-    {
-        CancellationToken Token { get; }
-        void Resume();
-        void Pause();
-    }
+    CancellationToken Token { get; }
+    void Resume();
+    void Pause();
 }

@@ -6,57 +6,56 @@ using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Annium.Storage.Abstractions;
 
-namespace Annium.Storage.InMemory
+namespace Annium.Storage.InMemory;
+
+internal class Storage : StorageBase
 {
-    internal class Storage : StorageBase
+    private IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
+
+    public Storage(
+        Configuration configuration,
+        ILogger<Storage> logger
+    ) : base(logger)
     {
-        private IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
+        if (configuration is null)
+            throw new ArgumentNullException(nameof(configuration));
+    }
 
-        public Storage(
-            Configuration configuration,
-            ILogger<Storage> logger
-        ) : base(logger)
+    protected override Task DoSetupAsync() => Task.CompletedTask;
+
+    protected override Task<string[]> DoListAsync() => Task.FromResult(_storage.Keys.ToArray());
+
+    protected override async Task DoUploadAsync(Stream source, string name)
+    {
+        VerifyName(name);
+
+        using (var ms = new MemoryStream())
         {
-            if (configuration is null)
-                throw new ArgumentNullException(nameof(configuration));
+            ms.Position = 0;
+            await source.CopyToAsync(ms);
+            _storage[name] = ms.ToArray();
         }
+    }
 
-        protected override Task DoSetupAsync() => Task.CompletedTask;
+    protected override Task<Stream> DoDownloadAsync(string name)
+    {
+        VerifyName(name);
 
-        protected override Task<string[]> DoListAsync() => Task.FromResult(_storage.Keys.ToArray());
+        if (!_storage.ContainsKey(name))
+            throw new KeyNotFoundException($"{name} not found in storage");
 
-        protected override async Task DoUploadAsync(Stream source, string name)
-        {
-            VerifyName(name);
+        return Task.FromResult<Stream>(new MemoryStream(_storage[name]));
+    }
 
-            using (var ms = new MemoryStream())
-            {
-                ms.Position = 0;
-                await source.CopyToAsync(ms);
-                _storage[name] = ms.ToArray();
-            }
-        }
+    protected override Task<bool> DoDeleteAsync(string name)
+    {
+        VerifyName(name);
 
-        protected override Task<Stream> DoDownloadAsync(string name)
-        {
-            VerifyName(name);
+        if (!_storage.ContainsKey(name))
+            return Task.FromResult(false);
 
-            if (!_storage.ContainsKey(name))
-                throw new KeyNotFoundException($"{name} not found in storage");
+        _storage.Remove(name);
 
-            return Task.FromResult<Stream>(new MemoryStream(_storage[name]));
-        }
-
-        protected override Task<bool> DoDeleteAsync(string name)
-        {
-            VerifyName(name);
-
-            if (!_storage.ContainsKey(name))
-                return Task.FromResult(false);
-
-            _storage.Remove(name);
-
-            return Task.FromResult(true);
-        }
+        return Task.FromResult(true);
     }
 }

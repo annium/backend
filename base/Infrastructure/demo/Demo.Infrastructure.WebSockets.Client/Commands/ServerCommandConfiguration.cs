@@ -1,12 +1,11 @@
 using System;
 using Annium.Extensions.Arguments;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands
+namespace Demo.Infrastructure.WebSockets.Client.Commands;
+
+public record ServerCommandConfiguration
 {
-    public record ServerCommandConfiguration
-    {
-        [Option("s", isRequired: true)]
-        [Help("Server address.")]
-        public Uri Server { get; set; } = default!;
-    }
+    [Option("s", isRequired: true)]
+    [Help("Server address.")]
+    public Uri Server { get; set; } = default!;
 }

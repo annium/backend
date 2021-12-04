@@ -1,10 +1,9 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Infrastructure.MessageBus.Node
+namespace Annium.Infrastructure.MessageBus.Node;
+
+public interface IMessageBusServer
 {
-    public interface IMessageBusServer
-    {
-        IDisposable Handle<TRequest, TResponse>(string topic, Func<IMessageBusRequestContext<TRequest, TResponse>, Task> process);
-    }
+    IDisposable Handle<TRequest, TResponse>(string topic, Func<IMessageBusRequestContext<TRequest, TResponse>, Task> process);
 }

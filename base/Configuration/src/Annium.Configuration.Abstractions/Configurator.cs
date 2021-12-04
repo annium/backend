@@ -2,54 +2,53 @@ using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 
-namespace Annium.Configuration.Abstractions
+namespace Annium.Configuration.Abstractions;
+
+public static class Configurator
 {
-    public static class Configurator
+    public static T Get<T>(
+        Action<IConfigurationContainer> configure,
+        bool tryLoadReferences
+    )
+        where T : class, new()
     {
-        public static T Get<T>(
-            Action<IConfigurationContainer> configure,
-            bool tryLoadReferences
-        )
-            where T : class, new()
-        {
-            var container = GetServices<T>(tryLoadReferences);
+        var container = GetServices<T>(tryLoadReferences);
 
-            container.AddConfiguration<T>(configure);
+        container.AddConfiguration<T>(configure);
 
-            return Get<T>(container);
-        }
+        return Get<T>(container);
+    }
 
-        public static async Task<T> Get<T>(
-            Func<IConfigurationContainer, Task> configure,
-            bool tryLoadReferences
-        )
-            where T : class, new()
-        {
-            var container = GetServices<T>(tryLoadReferences);
+    public static async Task<T> Get<T>(
+        Func<IConfigurationContainer, Task> configure,
+        bool tryLoadReferences
+    )
+        where T : class, new()
+    {
+        var container = GetServices<T>(tryLoadReferences);
 
-            await container.AddConfiguration<T>(configure);
+        await container.AddConfiguration<T>(configure);
 
-            return Get<T>(container);
-        }
+        return Get<T>(container);
+    }
 
-        private static IServiceContainer GetServices<T>(bool tryLoadReferences)
-        {
-            var container = new ServiceContainer();
+    private static IServiceContainer GetServices<T>(bool tryLoadReferences)
+    {
+        var container = new ServiceContainer();
 
-            container.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
-            container.AddMapper();
+        container.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
+        container.AddMapper();
 
-            return container;
-        }
+        return container;
+    }
 
-        private static T Get<T>(IServiceContainer container)
-            where T : notnull
-        {
-            var provider = container.BuildServiceProvider();
+    private static T Get<T>(IServiceContainer container)
+        where T : notnull
+    {
+        var provider = container.BuildServiceProvider();
 
-            var configuration = provider.Resolve<T>();
+        var configuration = provider.Resolve<T>();
 
-            return configuration;
-        }
+        return configuration;
     }
 }

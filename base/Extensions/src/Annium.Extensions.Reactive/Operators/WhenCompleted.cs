@@ -1,25 +1,24 @@
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 
-namespace System
+namespace System;
+
+public static class WhenCompletedExtensions
 {
-    public static class WhenCompletedExtensions
+    public static async Task WhenCompleted<TSource>(
+        this IObservable<TSource> source
+    )
     {
-        public static async Task WhenCompleted<TSource>(
-            this IObservable<TSource> source
-        )
+        var tcs = new TaskCompletionSource<object?>();
+        source.Trace("subscribe");
+        using var _ = source.Subscribe(delegate { }, () =>
         {
-            var tcs = new TaskCompletionSource<object?>();
-            source.Trace("subscribe");
-            using var _ = source.Subscribe(delegate { }, () =>
-            {
-                source.Trace("set - start");
-                tcs.SetResult(null);
-                source.Trace("set - done");
-            });
-            source.Trace("wait");
-            await tcs.Task;
-            source.Trace("done");
-        }
+            source.Trace("set - start");
+            tcs.SetResult(null);
+            source.Trace("set - done");
+        });
+        source.Trace("wait");
+        await tcs.Task;
+        source.Trace("done");
     }
 }

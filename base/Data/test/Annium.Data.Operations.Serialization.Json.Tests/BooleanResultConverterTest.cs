@@ -3,143 +3,142 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Data.Operations.Serialization.Json.Tests
+namespace Annium.Data.Operations.Serialization.Json.Tests;
+
+public class BooleanResultConverterTest
 {
-    public class BooleanResultConverterTest
+    [Fact]
+    public void BaseWrite_Blank_WritesCorrectly()
     {
-        [Fact]
-        public void BaseWrite_Blank_WritesCorrectly()
-        {
-            // act
-            var str = JsonSerializer.Serialize(Result.Success(), GetSettings());
+        // act
+        var str = JsonSerializer.Serialize(Result.Success(), GetSettings());
 
-            // assert
-            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[],""labeledErrors"":{}}");
-        }
-
-        [Fact]
-        public void BaseWrite_WithErrors_WritesCorrectly()
-        {
-            // act
-            var str = JsonSerializer.Serialize(Result.Success().Error("plain").Error("label", "another"), GetSettings());
-
-            // assert
-            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
-        }
-
-        [Fact]
-        public void BaseRead_Blank_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>("{}", GetSettings())!;
-
-            // assert
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
-        }
-
-        [Fact]
-        public void BaseRead_Result_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>(@"{""isSuccess"":true}", GetSettings())!;
-
-            // assert
-            result.IsSuccess.IsTrue();
-            result.IsFailure.IsFalse();
-        }
-
-        [Fact]
-        public void BaseRead_WithErrors_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult>(
-                @"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}"
-                , GetSettings()
-            )!;
-
-            // assert
-            result.IsSuccess.IsTrue();
-            result.IsFailure.IsFalse();
-            result.PlainErrors.Has(1);
-            result.PlainErrors.At(0).IsEqual("plain");
-            result.LabeledErrors.Has(1);
-            result.LabeledErrors.At("label").At(0).IsEqual("another");
-        }
-
-        [Fact]
-        public void DataWrite_Blank_WritesCorrectly()
-        {
-            // act
-            var str = JsonSerializer.Serialize(Result.Success(5), GetSettings());
-
-            // assert
-            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
-        }
-
-        [Fact]
-        public void DataWrite_WithErrors_WritesCorrectly()
-        {
-            // act
-            var str = JsonSerializer.Serialize(Result.Success(5).Error("plain").Error("label", "another"), GetSettings());
-
-            // assert
-            str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
-        }
-
-        [Fact]
-        public void DataRead_BlankValueType_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>("{}", GetSettings())!;
-
-            // assert
-            result.Data.IsEqual(0);
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
-        }
-
-        [Fact]
-        public void DataRead_BlankReferenceType_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<string>>("{}", GetSettings())!;
-
-            // assert
-            result.Data.IsDefault();
-            result.IsSuccess.IsFalse();
-            result.IsFailure.IsTrue();
-        }
-
-        [Fact]
-        public void DataRead_Result_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings())!;
-
-            // assert
-            result.Data.IsEqual(5);
-            result.IsSuccess.IsTrue();
-            result.IsFailure.IsFalse();
-        }
-
-        [Fact]
-        public void DataRead_WithErrors_ReadsCorrectly()
-        {
-            // act
-            var result = JsonSerializer.Deserialize<IBooleanResult<int>>(
-                @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
-
-            // assert
-            result.Data.IsEqual(5);
-            result.IsSuccess.IsTrue();
-            result.IsFailure.IsFalse();
-            result.PlainErrors.Has(1);
-            result.PlainErrors.At(0).IsEqual("plain");
-            result.LabeledErrors.Has(1);
-            result.LabeledErrors.At("label").At(0).IsEqual("another");
-        }
-
-        private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();
+        // assert
+        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[],""labeledErrors"":{}}");
     }
+
+    [Fact]
+    public void BaseWrite_WithErrors_WritesCorrectly()
+    {
+        // act
+        var str = JsonSerializer.Serialize(Result.Success().Error("plain").Error("label", "another"), GetSettings());
+
+        // assert
+        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+    }
+
+    [Fact]
+    public void BaseRead_Blank_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult>("{}", GetSettings())!;
+
+        // assert
+        result.IsSuccess.IsFalse();
+        result.IsFailure.IsTrue();
+    }
+
+    [Fact]
+    public void BaseRead_Result_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult>(@"{""isSuccess"":true}", GetSettings())!;
+
+        // assert
+        result.IsSuccess.IsTrue();
+        result.IsFailure.IsFalse();
+    }
+
+    [Fact]
+    public void BaseRead_WithErrors_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult>(
+            @"{""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}"
+            , GetSettings()
+        )!;
+
+        // assert
+        result.IsSuccess.IsTrue();
+        result.IsFailure.IsFalse();
+        result.PlainErrors.Has(1);
+        result.PlainErrors.At(0).IsEqual("plain");
+        result.LabeledErrors.Has(1);
+        result.LabeledErrors.At("label").At(0).IsEqual("another");
+    }
+
+    [Fact]
+    public void DataWrite_Blank_WritesCorrectly()
+    {
+        // act
+        var str = JsonSerializer.Serialize(Result.Success(5), GetSettings());
+
+        // assert
+        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
+    }
+
+    [Fact]
+    public void DataWrite_WithErrors_WritesCorrectly()
+    {
+        // act
+        var str = JsonSerializer.Serialize(Result.Success(5).Error("plain").Error("label", "another"), GetSettings());
+
+        // assert
+        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+    }
+
+    [Fact]
+    public void DataRead_BlankValueType_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult<int>>("{}", GetSettings())!;
+
+        // assert
+        result.Data.IsEqual(0);
+        result.IsSuccess.IsFalse();
+        result.IsFailure.IsTrue();
+    }
+
+    [Fact]
+    public void DataRead_BlankReferenceType_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult<string>>("{}", GetSettings())!;
+
+        // assert
+        result.Data.IsDefault();
+        result.IsSuccess.IsFalse();
+        result.IsFailure.IsTrue();
+    }
+
+    [Fact]
+    public void DataRead_Result_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings())!;
+
+        // assert
+        result.Data.IsEqual(5);
+        result.IsSuccess.IsTrue();
+        result.IsFailure.IsFalse();
+    }
+
+    [Fact]
+    public void DataRead_WithErrors_ReadsCorrectly()
+    {
+        // act
+        var result = JsonSerializer.Deserialize<IBooleanResult<int>>(
+            @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
+
+        // assert
+        result.Data.IsEqual(5);
+        result.IsSuccess.IsTrue();
+        result.IsFailure.IsFalse();
+        result.PlainErrors.Has(1);
+        result.PlainErrors.At(0).IsEqual("plain");
+        result.LabeledErrors.Has(1);
+        result.LabeledErrors.At("label").At(0).IsEqual("another");
+    }
+
+    private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();
 }

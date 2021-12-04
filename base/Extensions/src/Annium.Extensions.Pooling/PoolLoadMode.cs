@@ -1,8 +1,7 @@
-namespace Annium.Extensions.Pooling
+namespace Annium.Extensions.Pooling;
+
+public enum PoolLoadMode
 {
-    public enum PoolLoadMode
-    {
-        Eager,
-        Lazy,
-    }
+    Eager,
+    Lazy,
 }

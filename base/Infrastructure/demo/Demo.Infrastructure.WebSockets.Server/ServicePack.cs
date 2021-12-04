@@ -7,44 +7,43 @@ using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Infrastructure.WebSockets.Server;
 using Demo.Infrastructure.WebSockets.Server.Handlers;
 
-namespace Demo.Infrastructure.WebSockets.Server
+namespace Demo.Infrastructure.WebSockets.Server;
+
+internal class ServicePack : ServicePackBase
 {
-    internal class ServicePack : ServicePackBase
+    public ServicePack()
     {
-        public ServicePack()
-        {
-            Add<Domain.ServicePack>();
-        }
+        Add<Domain.ServicePack>();
+    }
 
-        public override void Configure(IServiceContainer container)
-        {
-            container.AddConfiguration<Configuration>(cfg => cfg.AddCommandLineArgs());
-        }
+    public override void Configure(IServiceContainer container)
+    {
+        container.AddConfiguration<Configuration>(cfg => cfg.AddCommandLineArgs());
+    }
 
-        public override void Register(IServiceContainer container, IServiceProvider provider)
-        {
-            container.AddRuntimeTools(GetType().Assembly, true);
-            container.AddTime().WithRealTime().SetDefault();
-            container.AddJsonSerializers()
-                .Configure(opts => opts
-                    .ConfigureForOperations()
-                    .ConfigureForNodaTime()
-                )
-                .SetDefault();
-            container.AddLogging(route => route.UseConsole());
-            container.AddMapper();
-            container.AddMediator();
-            container.AddMediatorConfiguration(ConfigureMediator);
-            container.AddWebSocketServer<ConnectionState>(
-                (sp, cfg) => cfg
-                    .UseFormat(sp.Resolve<Configuration>().UseText ? SerializationFormat.Text : SerializationFormat.Binary)
-                    .WithActiveKeepAlive(600)
-            );
-        }
+    public override void Register(IServiceContainer container, IServiceProvider provider)
+    {
+        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddTime().WithRealTime().SetDefault();
+        container.AddJsonSerializers()
+            .Configure(opts => opts
+                .ConfigureForOperations()
+                .ConfigureForNodaTime()
+            )
+            .SetDefault();
+        container.AddLogging(route => route.UseConsole());
+        container.AddMapper();
+        container.AddMediator();
+        container.AddMediatorConfiguration(ConfigureMediator);
+        container.AddWebSocketServer<ConnectionState>(
+            (sp, cfg) => cfg
+                .UseFormat(sp.Resolve<Configuration>().UseText ? SerializationFormat.Text : SerializationFormat.Binary)
+                .WithActiveKeepAlive(600)
+        );
+    }
 
-        private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)
-        {
-            cfg.AddWebSocketServerHandlers(tm);
-        }
+    private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)
+    {
+        cfg.AddWebSocketServerHandlers(tm);
     }
 }

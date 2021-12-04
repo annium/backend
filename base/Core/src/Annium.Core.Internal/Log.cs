@@ -8,92 +8,91 @@ using System.Threading;
 using Annium.Core.Internal.Internal;
 using Annium.Core.Primitives;
 
-namespace Annium.Core.Internal
+namespace Annium.Core.Internal;
+
+public static class Log
 {
-    public static class Log
+    private const string LogVar = "ANNIUM_LOG";
+    private static bool Enabled { get; }
+    public static Action<string> Write { get; set; }
+    private static List<string> Filter { get; }
+    private static DateTime Since { get; }
+    private static Func<string> GetLogTime { get; set; }
+
+    static Log()
     {
-        private const string LogVar = "ANNIUM_LOG";
-        private static bool Enabled { get; }
-        public static Action<string> Write { get; set; }
-        private static List<string> Filter { get; }
-        private static DateTime Since { get; }
-        private static Func<string> GetLogTime { get; set; }
-
-        static Log()
-        {
-            Since = DateTime.Now;
-            GetLogTime = GetAbsoluteLogTime;
-            (Enabled, Write, Filter) = Configure();
-        }
-
-        public static void SetTestMode() => GetLogTime = GetRelativeLogTime;
-
-        public static TimeSpan ToRelativeLogTime(DateTime dt) => dt - Since;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Trace(
-            string message,
-            [CallerFilePath] string callerFilePath = "",
-            [CallerMemberName] string member = "",
-            [CallerLineNumber] int line = 0
-        )
-        {
-            if (!Enabled)
-                return;
-
-            var caller = Path.GetFileNameWithoutExtension(callerFilePath);
-            if (Filter.Count == 0 || Filter.Any(caller.Contains))
-                Write(
-                    $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}: {message}"
-                );
-        }
-
-        private static Config Configure()
-        {
-            var raw = Environment.GetEnvironmentVariable(LogVar);
-            if (raw is null)
-                return new(false, Console.WriteLine, new());
-
-            // convert to cfg dictionary
-            var cfg = raw
-                .Split(';', StringSplitOptions.RemoveEmptyEntries)
-                .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
-                .Where(x => x.Length == 2)
-                .ToDictionary(x => x[0], x => x[1]);
-
-            // resolve device
-            if (!cfg.TryGetValue("dev", out var rawDevice) || !rawDevice.TryParseEnum<LogDevice>(out var device))
-                device = LogDevice.Console;
-            var write = ResolveWrite(device, cfg.TryGetValue("addr", out var address) ? address : string.Empty);
-
-            // resolve filter
-            var filter = cfg.TryGetValue("filter", out var rawFilter)
-                ? rawFilter.Split(',').ToList()
-                : new List<string>();
-
-            return new(true, write, filter);
-        }
-
-        private static Action<string> ResolveWrite(LogDevice dev, string address)
-        {
-            switch (dev)
-            {
-                case LogDevice.Console:
-                    return Console.WriteLine;
-                case LogDevice.Tcp:
-                    if (string.IsNullOrWhiteSpace(address))
-                        throw new ArgumentNullException(
-                            $"To use {dev}, specify {nameof(IPEndPoint)} in {nameof(address)}  variable");
-                    Console.WriteLine($"Send logs to {address}");
-                    return new TcpLogger(address).Write;
-                default:
-                    throw new NotSupportedException($"Device {dev} support is not implemented yet");
-            }
-        }
-
-        private record Config(bool Enabled, Action<string> Write, List<string> Filter);
-
-        private static string GetAbsoluteLogTime() => DateTime.Now.ToString("HH:mm:ss.fff");
-        private static string GetRelativeLogTime() => (DateTime.Now - Since).ToString(@"hh\:mm\:ss\.fff");
+        Since = DateTime.Now;
+        GetLogTime = GetAbsoluteLogTime;
+        (Enabled, Write, Filter) = Configure();
     }
+
+    public static void SetTestMode() => GetLogTime = GetRelativeLogTime;
+
+    public static TimeSpan ToRelativeLogTime(DateTime dt) => dt - Since;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void Trace(
+        string message,
+        [CallerFilePath] string callerFilePath = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0
+    )
+    {
+        if (!Enabled)
+            return;
+
+        var caller = Path.GetFileNameWithoutExtension(callerFilePath);
+        if (Filter.Count == 0 || Filter.Any(caller.Contains))
+            Write(
+                $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}: {message}"
+            );
+    }
+
+    private static Config Configure()
+    {
+        var raw = Environment.GetEnvironmentVariable(LogVar);
+        if (raw is null)
+            return new(false, Console.WriteLine, new());
+
+        // convert to cfg dictionary
+        var cfg = raw
+            .Split(';', StringSplitOptions.RemoveEmptyEntries)
+            .Select(x => x.Split('=', StringSplitOptions.RemoveEmptyEntries))
+            .Where(x => x.Length == 2)
+            .ToDictionary(x => x[0], x => x[1]);
+
+        // resolve device
+        if (!cfg.TryGetValue("dev", out var rawDevice) || !rawDevice.TryParseEnum<LogDevice>(out var device))
+            device = LogDevice.Console;
+        var write = ResolveWrite(device, cfg.TryGetValue("addr", out var address) ? address : string.Empty);
+
+        // resolve filter
+        var filter = cfg.TryGetValue("filter", out var rawFilter)
+            ? rawFilter.Split(',').ToList()
+            : new List<string>();
+
+        return new(true, write, filter);
+    }
+
+    private static Action<string> ResolveWrite(LogDevice dev, string address)
+    {
+        switch (dev)
+        {
+            case LogDevice.Console:
+                return Console.WriteLine;
+            case LogDevice.Tcp:
+                if (string.IsNullOrWhiteSpace(address))
+                    throw new ArgumentNullException(
+                        $"To use {dev}, specify {nameof(IPEndPoint)} in {nameof(address)}  variable");
+                Console.WriteLine($"Send logs to {address}");
+                return new TcpLogger(address).Write;
+            default:
+                throw new NotSupportedException($"Device {dev} support is not implemented yet");
+        }
+    }
+
+    private record Config(bool Enabled, Action<string> Write, List<string> Filter);
+
+    private static string GetAbsoluteLogTime() => DateTime.Now.ToString("HH:mm:ss.fff");
+    private static string GetRelativeLogTime() => (DateTime.Now - Since).ToString(@"hh\:mm\:ss\.fff");
 }
