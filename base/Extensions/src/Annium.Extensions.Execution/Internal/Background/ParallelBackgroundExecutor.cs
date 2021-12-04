@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
 
-namespace Annium.Extensions.Execution.Internal;
+namespace Annium.Extensions.Execution.Internal.Background;
 
 // ReSharper disable once UnusedTypeParameter
 internal class ParallelBackgroundExecutor<T> : IBackgroundExecutor
