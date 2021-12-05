@@ -71,12 +71,12 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
             }
             catch (ChannelClosedException)
             {
-                this.Trace("cancelled");
+                this.Trace("channel closed");
                 break;
             }
             catch (OperationCanceledException)
             {
-                this.Trace("cancelled");
+                this.Trace("operation canceled");
                 break;
             }
         }

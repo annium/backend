@@ -69,6 +69,8 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
 
         this.Trace($"wait for {_taskCounter} task(s) to finish");
         await _tcs.Task;
+
+        _gate.Dispose();
     }
 
     private async Task Run()
@@ -86,12 +88,14 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
             }
             catch (ChannelClosedException)
             {
-                this.Trace("cancelled");
+                this.Trace("channel closed");
+                _gate.Release();
                 break;
             }
             catch (OperationCanceledException)
             {
-                this.Trace("cancelled");
+                this.Trace("operation canceled");
+                _gate.Release();
                 break;
             }
         }

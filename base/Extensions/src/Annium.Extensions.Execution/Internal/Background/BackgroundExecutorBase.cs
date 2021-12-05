@@ -22,6 +22,8 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 
     private int _isAvailable = 1;
     private int _isStarted;
+    private int _isStopped;
+    private int _isDisposed;
 
     public void Schedule(Action task)
     {
@@ -215,6 +217,12 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 
     public async ValueTask DisposeAsync()
     {
+        if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+        {
+            this.Trace("already disposed");
+            return;
+        }
+
         this.Trace("start");
         EnsureAvailable();
         Stop();
@@ -254,6 +262,12 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Stop()
     {
+        if (Interlocked.CompareExchange(ref _isStopped, 1, 0) == 1)
+        {
+            this.Trace("already stopped");
+            return;
+        }
+
         this.Trace("start");
         Volatile.Write(ref _isAvailable, 0);
         HandleStop();
