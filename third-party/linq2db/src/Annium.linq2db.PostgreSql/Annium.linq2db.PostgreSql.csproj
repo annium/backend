@@ -15,6 +15,6 @@
         <ProjectReference Include="../Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Npgsql" Version="6.0.0" />
+        <PackageReference Include="Npgsql" Version="6.0.1" />
     </ItemGroup>
 </Project>
