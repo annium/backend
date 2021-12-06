@@ -37,7 +37,7 @@ internal static class Program
     {
         var pluginsSet = new Dictionary<string, string>
         {
-            {"Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/net5.0/Demo.Core.Cli.PluginHello.dll"}
+            {"Demo.Core.Cli.PluginHello", @"Demo.Core.Cli.PluginHello/bin/Debug/net6.0/Demo.Core.Cli.PluginHello.dll"}
         };
 
         Console.WriteLine("---BEFORE---");
