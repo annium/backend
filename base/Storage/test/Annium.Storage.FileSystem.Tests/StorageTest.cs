@@ -98,7 +98,7 @@ public class StorageTest : IDisposable
         }
 
         // assert
-        ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
+        ((Span<byte>)result).SequenceEqual((Span<byte>)blob).IsTrue();
     }
 
     [Fact]
@@ -142,10 +142,12 @@ public class StorageTest : IDisposable
     {
         var container = new ServiceContainer();
         container.AddStorage().AddFileSystemStorage();
-        container.AddLogging(route => route.UseInMemory());
+        container.AddLogging();
         container.AddTime().WithManagedTime().SetDefault();
 
         var provider = container.BuildServiceProvider();
+
+        provider.UseLogging(route => route.UseInMemory());
 
         var factory = provider.Resolve<IStorageFactory>();
         var configuration = new Configuration();

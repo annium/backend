@@ -39,8 +39,9 @@ public class Program
         container.AddTime().WithRealTime().SetDefault();
 
         var logger = container
-            .AddLogging(route => route.UseConsole())
+            .AddLogging()
             .BuildServiceProvider()
+            .UseLogging(route => route.UseConsole())
             .Resolve<ILogger<ObjectCache<uint, Item>>>();
 
         var logs = new List<string>();

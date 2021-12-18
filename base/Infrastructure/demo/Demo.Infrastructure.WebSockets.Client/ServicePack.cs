@@ -20,7 +20,7 @@ internal class ServicePack : ServicePackBase
                 .ConfigureForNodaTime()
             )
             .SetDefault();
-        container.AddLogging(route => route.UseConsole());
+        container.AddLogging();
         container.AddMapper();
         container.AddArguments();
         container.AddWebSocketClient();
@@ -30,5 +30,10 @@ internal class ServicePack : ServicePackBase
             .Where(x => x.Name.EndsWith("Group") || x.Name.EndsWith("Command"))
             .AsSelf()
             .Singleton();
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route => route.UseConsole());
     }
 }

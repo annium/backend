@@ -14,7 +14,7 @@ public class TestBase
         container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
         container.AddTime().WithRealTime().SetDefault();
 
-        container.AddLogging(route => route.UseInMemory());
+        container.AddLogging();
 
         container.AddLocalization(opts => opts.UseInMemoryStorage());
 
@@ -24,6 +24,10 @@ public class TestBase
         container.AddMediatorConfiguration(configure);
         container.AddMediator();
 
-        return container.BuildServiceProvider().Resolve<IMediator>();
+        var sp = container.BuildServiceProvider();
+
+        sp.UseLogging(route => route.UseInMemory());
+
+        return sp.Resolve<IMediator>();
     }
 }

@@ -13,9 +13,12 @@ public class TestBase
         container.AddJsonSerializers()
             .Configure(opts => opts.UseCamelCaseNamingPolicy())
             .SetDefault();
-        container.AddLogging(x => x.UseInMemory());
+        container.AddLogging();
 
-        return container.BuildServiceProvider()
-            .ResolveSerializer<string>(Abstractions.Constants.DefaultKey, Constants.MediaType);
+        var provider = container.BuildServiceProvider();
+
+        provider.UseLogging(x => x.UseInMemory());
+
+        return provider.ResolveSerializer<string>(Abstractions.Constants.DefaultKey, Constants.MediaType);
     }
 }

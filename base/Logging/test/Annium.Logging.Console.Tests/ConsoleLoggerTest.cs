@@ -70,10 +70,15 @@ public class ConsoleLoggerTest
 
         container.AddTime().WithManagedTime().SetDefault();
 
-        container.AddLogging(route => route
-            .For(m => m.Level >= minLogLevel)
-            .UseConsole());
+        container.AddLogging();
 
-        return container.BuildServiceProvider().Resolve<ILogSubject<ConsoleLoggerTest>>();
+        var provider = container.BuildServiceProvider();
+        provider.UseLogging(
+            route => route
+                .For(m => m.Level >= minLogLevel)
+                .UseConsole()
+        );
+
+        return provider.Resolve<ILogSubject<ConsoleLoggerTest>>();
     }
 }

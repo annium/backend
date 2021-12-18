@@ -135,10 +135,12 @@ public class StorageTest
     {
         var container = new ServiceContainer();
         container.AddStorage().AddInMemoryStorage();
-        container.AddLogging(route => route.UseInMemory());
+        container.AddLogging();
         container.AddTime().WithManagedTime().SetDefault();
 
         var provider = container.BuildServiceProvider();
+
+        provider.UseLogging(route => route.UseInMemory());
 
         var factory = provider.Resolve<IStorageFactory>();
 

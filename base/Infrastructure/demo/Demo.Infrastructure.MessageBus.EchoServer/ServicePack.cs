@@ -1,3 +1,4 @@
+using System;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.MessageBus.Node;
@@ -11,7 +12,7 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntimeTools(GetType().Assembly, true);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddLogging(route => route.UseConsole());
+        container.AddLogging();
         container.AddJsonSerializers().SetDefault();
         container.AddMapper();
         container.AddConfiguration<EndpointsConfiguration>(x => x.AddYamlFile("cfg_local.yml"));
@@ -19,5 +20,10 @@ internal class ServicePack : ServicePackBase
             .WithSerializer(sp.Resolve<ISerializer<string>>())
             .WithEndpoints(sp.Resolve<EndpointsConfiguration>())
         );
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route => route.UseConsole());
     }
 }

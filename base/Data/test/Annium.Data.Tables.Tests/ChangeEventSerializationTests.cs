@@ -72,9 +72,11 @@ public class ChangeEventSerializationTests
         container.AddRuntimeTools(GetType().GetAssembly(), true);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers().SetDefault();
-        container.AddLogging(x => x.UseInMemory());
+        container.AddLogging();
 
         var sp = container.BuildServiceProvider();
+
+        sp.UseLogging(route => route.UseInMemory());
 
         return sp.Resolve<ISerializer<string>>();
     }

@@ -113,10 +113,13 @@ public class MediatorTest
         container.AddTime().WithRealTime().SetDefault();
         container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
         container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
-        container.AddLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));
+        container.AddLogging();
         container.AddMediatorConfiguration(configure);
         container.AddMediator();
+
         var provider = container.BuildServiceProvider();
+
+        provider.UseLogging(route => route.For(m => m.Source == typeof(MediatorTest).FriendlyName()).UseInMemory(logHandler));
 
         return (provider.Resolve<IMediator>(), logHandler.Logs);
     }

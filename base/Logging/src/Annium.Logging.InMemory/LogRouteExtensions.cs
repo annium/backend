@@ -8,7 +8,7 @@ public static class LogRouteExtensions
     public static LogRoute<TContext> UseInMemory<TContext>(this LogRoute<TContext> route)
         where TContext : class, ILogContext
     {
-        route.UseType<InMemoryLogHandler<TContext>>(new LogRouteConfiguration());
+        route.UseInstance(new InMemoryLogHandler<TContext>(), new LogRouteConfiguration());
 
         return route;
     }

@@ -31,7 +31,7 @@ internal class ServicePack : ServicePackBase
                 .ConfigureForNodaTime()
             )
             .SetDefault();
-        container.AddLogging(route => route.UseConsole());
+        container.AddLogging();
         container.AddMapper();
         container.AddMediator();
         container.AddMediatorConfiguration(ConfigureMediator);
@@ -40,6 +40,11 @@ internal class ServicePack : ServicePackBase
                 .UseFormat(sp.Resolve<Configuration>().UseText ? SerializationFormat.Text : SerializationFormat.Binary)
                 .WithActiveKeepAlive(600)
         );
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route => route.UseConsole());
     }
 
     private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

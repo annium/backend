@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
@@ -11,57 +9,27 @@ namespace Annium.Core.DependencyInjection;
 public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddLogging<TContext>(
-        this IServiceContainer container,
-        Action<LogRoute<TContext>> configure
+        this IServiceContainer container
     )
         where TContext : class, ILogContext
     {
-        return container.AddLoggingBase(configure, ServiceLifetime.Scoped);
+        return container.AddLoggingBase<TContext>(ServiceLifetime.Scoped);
     }
 
     public static IServiceContainer AddLogging(
-        this IServiceContainer container,
-        Action<LogRoute<DefaultLogContext>> configure
+        this IServiceContainer container
     )
     {
-        return container.AddLoggingBase(configure, ServiceLifetime.Singleton);
+        return container.AddLoggingBase<DefaultLogContext>(ServiceLifetime.Singleton);
     }
 
     private static IServiceContainer AddLoggingBase<TContext>(
         this IServiceContainer container,
-        Action<LogRoute<TContext>> configure,
         ServiceLifetime lifetime
     )
         where TContext : class, ILogContext
     {
-        var routes = new List<LogRoute<TContext>>();
-        configure(new LogRoute<TContext>(routes.Add));
-        routes = routes.Where(r => r.Service != null).ToList();
-
-        foreach (var route in routes)
-        {
-            var cfg = route.Configuration!;
-            var serviceType = route.Service!.ServiceType;
-            if (typeof(ILogHandler<TContext>).IsAssignableFrom(serviceType))
-                container.Add(sp => new ImmediateLogScheduler<TContext>(
-                    route.Filter,
-                    (ILogHandler<TContext>)sp.Resolve(route.Service!.ServiceType)
-                )).AsInterfaces().Singleton();
-            else if (typeof(IAsyncLogHandler<TContext>).IsAssignableFrom(serviceType))
-                container.Add(sp => new BackgroundLogScheduler<TContext>(
-                    route.Filter,
-                    (IAsyncLogHandler<TContext>)sp.Resolve(route.Service!.ServiceType),
-                    cfg
-                )).AsInterfaces().Singleton();
-            else
-                throw new Exception($"Unsupported log handler service type: {serviceType.FriendlyName()}");
-        }
-
-        foreach (var route in routes)
-        {
-            if (route.Service != null)
-                container.Add(route.Service);
-        }
+        container.Add(new List<ILogScheduler<TContext>>()).AsSelf().As<IReadOnlyCollection<ILogScheduler<TContext>>>().Singleton();
 
         container.Add<TContext>().AsSelf().In(lifetime);
         container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).In(lifetime);

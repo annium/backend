@@ -9,7 +9,7 @@ internal class LogRouter<TContext>
 
     public LogRouter(
         ILogSentry<TContext> sentry,
-        IEnumerable<ILogScheduler<TContext>> schedulers
+        IReadOnlyCollection<ILogScheduler<TContext>> schedulers
     )
     {
         sentry.SetHandler(Send);

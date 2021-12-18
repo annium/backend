@@ -15,7 +15,7 @@ public class ConfigurationTest
         var container = new ServiceContainer();
         container.AddRuntimeTools(GetType().Assembly, false);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddLogging(x => x.UseInMemory());
+        container.AddLogging();
         // default
         container.AddJsonSerializers().SetDefault();
         // custom
@@ -26,6 +26,7 @@ public class ConfigurationTest
         });
         container.AddJsonSerializers("b").Configure(x => x.UseCamelCaseNamingPolicy());
         var sp = container.BuildServiceProvider();
+        sp.UseLogging(x => x.UseInMemory());
 
         var serializerDefault = sp.ResolveSerializer<string>(Abstractions.Constants.DefaultKey, Constants.MediaType);
         var serializerA = sp.ResolveSerializer<string>("a", Constants.MediaType);

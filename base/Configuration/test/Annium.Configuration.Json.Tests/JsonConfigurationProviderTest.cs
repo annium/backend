@@ -38,7 +38,7 @@ public class JsonConfigurationProviderTest
             container.AddRuntimeTools(GetType().Assembly, false);
             container.AddTime().WithRealTime().SetDefault();
             container.AddJsonSerializers().SetDefault();
-            container.AddLogging(x => x.UseInMemory());
+            container.AddLogging();
             var serializer = container.BuildServiceProvider()
                 .Resolve<ISerializer<string>>();
             File.WriteAllText(jsonFile, serializer.Serialize(cfg));

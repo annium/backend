@@ -21,7 +21,7 @@ public class ServicePack : ServicePackBase
                 .ConfigureForOperations()
                 .ConfigureForNodaTime()
             );
-        container.AddLogging(route => route.UseTestConsole());
+        container.AddLogging();
         container.AddHttpRequestFactory().SetDefault();
         container.AddMediatorConfiguration(ConfigureMediator);
         container.AddMediator();
@@ -32,6 +32,11 @@ public class ServicePack : ServicePackBase
                 .WithActiveKeepAlive(600)
         );
         container.Add<SharedDataContainer>().AsSelf().Singleton();
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route => route.UseTestConsole());
     }
 
     private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

@@ -12,7 +12,22 @@ internal class ServicePack : ServicePackBase
         container.AddRuntimeTools(GetType().Assembly, false);
         container.AddTime().WithRealTime().SetDefault();
 
-        container.AddLogging(route => route
+        container.AddLogging();
+        container.AddMapper();
+        container.AddArguments();
+        container.AddJsonSerializers().SetDefault();
+        container.AddHttpRequestFactory().SetDefault();
+
+        // commands
+        container.AddAll(GetType().Assembly)
+            .Where(x => x.Name.EndsWith("Group") || x.Name.EndsWith("Command"))
+            .AsSelf()
+            .Singleton();
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route => route
             .For(m => m.Level == LogLevel.Info).UseSeq(
                 new SeqConfiguration
                 {
@@ -24,16 +39,7 @@ internal class ServicePack : ServicePackBase
                 }
             )
             .For(m => m.Level == LogLevel.Debug).UseConsole()
-            .For(m => m.Level == LogLevel.Trace).UseInMemory());
-        container.AddMapper();
-        container.AddArguments();
-        container.AddJsonSerializers().SetDefault();
-        container.AddHttpRequestFactory().SetDefault();
-
-        // commands
-        container.AddAll(GetType().Assembly)
-            .Where(x => x.Name.EndsWith("Group") || x.Name.EndsWith("Command"))
-            .AsSelf()
-            .Singleton();
+            .For(m => m.Level == LogLevel.Trace).UseInMemory()
+        );
     }
 }

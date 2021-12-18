@@ -139,12 +139,16 @@ public class BaseLoggerTest
 
         container.AddTime().WithManagedTime().SetDefault();
 
-        container.AddLogging<Context>(route => route
+        container.AddLogging<Context>();
+
+        var provider = container.BuildServiceProvider();
+
+        provider.UseLogging<Context>(route => route
             .For(m => m.Level >= minLogLevel)
             .UseInstance(new LogHandler(_messages), new LogRouteConfiguration())
         );
 
-        return container.BuildServiceProvider();
+        return provider;
     }
 
     private class LogHandler : ILogHandler<Context>

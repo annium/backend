@@ -42,10 +42,10 @@ public class ObjectCacheTests
         // act
         await Task.WhenAll(Enumerable.Range(0, 30).Select(async i =>
         {
-            await using var reference = await cache.GetAsync((uint) i % 2);
+            await using var reference = await cache.GetAsync((uint)i % 2);
             await Task.Delay(20);
         }));
-        var references = await Task.WhenAll(Enumerable.Range(0, 20).Select(i => cache.GetAsync((uint) i % 2)));
+        var references = await Task.WhenAll(Enumerable.Range(0, 20).Select(i => cache.GetAsync((uint)i % 2)));
         await cache.DisposeAsync();
 
         // assert
@@ -68,9 +68,9 @@ public class ObjectCacheTests
 
         var logger = container
             .AddTime().WithManagedTime().SetDefault()
-            .AddLogging(route => route.UseInMemory())
-            // .AddLogging(route => route.UseConsole())
+            .AddLogging()
             .BuildServiceProvider()
+            .UseLogging(route => route.UseInMemory())
             .Resolve<ILogger<ObjectCache<uint, Item>>>();
         var logs = new List<string>();
 

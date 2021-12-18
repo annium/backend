@@ -24,7 +24,12 @@ public class ServicePack : ServicePackBase
         container.Add<MethodExecutor>().Singleton();
 
         // tools
-        container.AddLogging(route =>
+        container.AddLogging();
+    }
+
+    public override void Setup(IServiceProvider provider)
+    {
+        provider.UseLogging(route =>
         {
             var cfg = provider.Resolve<TestingConfiguration>();
             if (cfg is null)
