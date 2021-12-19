@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Core.Primitives;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
@@ -13,7 +14,7 @@ namespace Demo.Infrastructure.WebSockets.Server.Handlers;
 internal class UserSubscriptionsHandler :
     ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState>
 {
-    public async Task<Unit> HandleAsync(
+    public async Task<None> HandleAsync(
         ISubscriptionContext<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState> ctx,
         CancellationToken ct
     )
@@ -33,6 +34,6 @@ internal class UserSubscriptionsHandler :
             await Task.Delay(500);
         }
 
-        return Unit.Default;
+        return None.Default;
     }
 }

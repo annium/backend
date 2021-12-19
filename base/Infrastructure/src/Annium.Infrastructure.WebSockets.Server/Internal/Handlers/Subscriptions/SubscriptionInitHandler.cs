@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
@@ -14,7 +15,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     IPipeRequestHandler<
         RequestContext<TInit, TState>,
         ISubscriptionContext<TInit, TMessage, TState>,
-        Unit,
+        None,
         VoidResponse<TMessage>
     >,
     ILogSubject
@@ -45,7 +46,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     public async Task<VoidResponse<TMessage>> HandleAsync(
         RequestContext<TInit, TState> ctx,
         CancellationToken ct,
-        Func<ISubscriptionContext<TInit, TMessage, TState>, CancellationToken, Task<Unit>> next
+        Func<ISubscriptionContext<TInit, TMessage, TState>, CancellationToken, Task<None>> next
     )
     {
         var subscriptionId = ctx.Request.Rid;
@@ -65,6 +66,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         context.OnInit(() =>
         {
             this.Log().Trace($"subscription {subscriptionId} - save to store");
+            // ReSharper disable once AccessToDisposedClosure
             _subscriptionContextStore.Save(context);
         });
 

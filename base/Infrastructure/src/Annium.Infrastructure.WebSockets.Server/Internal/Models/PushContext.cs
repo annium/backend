@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
+using Annium.Core.Primitives;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Models;
@@ -53,5 +54,5 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
     }
 
     private void SendInternal<T>(T msg) =>
-        _executor.Schedule(() => _mediator.SendAsync<Unit>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None));
+        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None));
 }

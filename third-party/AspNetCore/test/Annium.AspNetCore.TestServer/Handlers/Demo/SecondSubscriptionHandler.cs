@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
+using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
@@ -22,7 +23,7 @@ internal class SecondSubscriptionHandler :
         _container = container;
     }
 
-    public async Task<Unit> HandleAsync(
+    public async Task<None> HandleAsync(
         ISubscriptionContext<SecondSubscriptionInit, string, ConnectionState> ctx,
         CancellationToken ct
     )
@@ -40,6 +41,6 @@ internal class SecondSubscriptionHandler :
 
         _container.Log.Enqueue("second canceled");
 
-        return Unit.Default;
+        return None.Default;
     }
 }

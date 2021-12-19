@@ -3,15 +3,15 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 
 internal class PushMessageHandler<T> :
-    IFinalRequestHandler<PushMessage<T>, Unit>,
+    IFinalRequestHandler<PushMessage<T>, None>,
     ILogSubject
 {
     public ILogger Logger { get; }
@@ -29,7 +29,7 @@ internal class PushMessageHandler<T> :
         Logger = logger;
     }
 
-    public async Task<Unit> HandleAsync(
+    public async Task<None> HandleAsync(
         PushMessage<T> request,
         CancellationToken ct
     )
@@ -38,7 +38,7 @@ internal class PushMessageHandler<T> :
         if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
         {
             this.Log().Trace($"cn {request.ConnectionId} - not found");
-            return Unit.Default;
+            return None.Default;
         }
 
         try
@@ -46,7 +46,7 @@ internal class PushMessageHandler<T> :
             if (cnRef.Value.Socket.State != WebSocketState.Open)
             {
                 this.Log().Trace($"cn {request.ConnectionId} - socket not opened");
-                return Unit.Default;
+                return None.Default;
             }
 
             this.Log().Trace($"cn {request.ConnectionId} - start send");
@@ -64,6 +64,6 @@ internal class PushMessageHandler<T> :
             await cnRef.DisposeAsync();
         }
 
-        return Unit.Default;
+        return None.Default;
     }
 }
