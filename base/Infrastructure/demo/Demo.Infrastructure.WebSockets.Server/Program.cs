@@ -1,32 +1,14 @@
-using System.IO;
 using Annium.Core.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Demo.Infrastructure.WebSockets.Server;
+using Microsoft.AspNetCore.Builder;
 
-namespace Demo.Infrastructure.WebSockets.Server;
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServicePack<ServicePack>();
+builder.Logging.ConfigureLoggingBridge();
+builder.WebHost.UseKestrelDefaults();
 
-internal static class Program
-{
-    internal static void Main(string[] args)
-    {
-        CreateHostBuilder(args).Build().Run();
-    }
+var app = builder.Build();
 
-    private static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .UseServiceProviderFactory(new ServiceProviderFactory(b => b.UseServicePack<ServicePack>()))
-            .ConfigureLoggingBridge()
-            .ConfigureWebHostDefaults(builder =>
-            {
-                builder
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseKestrel(server =>
-                    {
-                        server.AddServerHeader = false;
-                        server.ListenAnyIP(5000);
-                    })
-                    .UseStartup<Startup>();
-            });
-    }
-}
+app.UseWebSocketsServer();
+
+await app.RunAsync();
