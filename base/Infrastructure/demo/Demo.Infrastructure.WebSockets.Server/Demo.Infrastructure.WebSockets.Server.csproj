@@ -15,6 +15,7 @@
         <ProjectReference Include="../../../../third-party/AspNetCore/src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
         <ProjectReference Include="../../../../third-party/AspNetCore/src/Annium.AspNetCore.WebSockets/Annium.AspNetCore.WebSockets.csproj" />
         <ProjectReference Include="../../../Configuration/src/Annium.Configuration.CommandLine/Annium.Configuration.CommandLine.csproj" />
+        <ProjectReference Include="../../src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
         <ProjectReference Include="../Demo.Infrastructure.WebSockets.Domain/Demo.Infrastructure.WebSockets.Domain.csproj" />
