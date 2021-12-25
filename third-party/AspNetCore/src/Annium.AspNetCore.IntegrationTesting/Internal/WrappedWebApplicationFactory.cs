@@ -9,15 +9,15 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace Annium.AspNetCore.IntegrationTesting.Internal;
 
-internal class WrappedWebApplicationFactory<TStartup> : IWebApplicationFactory
-    where TStartup : class
+internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactory
+    where TEntryPoint : class
 {
-    private readonly WebApplicationFactory<TStartup> _appFactory;
+    private readonly WebApplicationFactory<TEntryPoint> _appFactory;
     private readonly Lazy<IHttpRequest> _httpRequest;
     private AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
     public WrappedWebApplicationFactory(
-        WebApplicationFactory<TStartup> appFactory
+        WebApplicationFactory<TEntryPoint> appFactory
     )
     {
         _appFactory = appFactory;

@@ -41,32 +41,33 @@ public class IntegrationTest : IAsyncDisposable
 
     #region WebAppFactory cache access
 
-    public IWebApplicationFactory GetAppFactory<TStartup>(
+    protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder
     )
         where TStartup : class =>
         GetAppFactory<TStartup>(ConfigureHost(configureBuilder));
 
-    public IWebApplicationFactory GetAppFactory<TStartup>(
+    protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceContainer> configureServices
     )
         where TStartup : class =>
         GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices));
 
-    private IWebApplicationFactory GetAppFactory<TStartup>(
+    private IWebApplicationFactory GetAppFactory<TEntryPoint>(
         Action<IHostBuilder> configureHost
     )
-        where TStartup : class =>
-        _appFactoryCache.GetOrAdd(typeof(TStartup), (_, configure) =>
+        where TEntryPoint : class =>
+        _appFactoryCache.GetOrAdd(typeof(TEntryPoint), static (_, ctx) =>
         {
-            var appFactory = new TestWebApplicationFactory<TStartup>(configure);
+            var (test, configure) = ctx;
+            var appFactory = new TestWebApplicationFactory<TEntryPoint>(configure);
             // _disposable += () => appFactory.Server.Host.StopAsync();
-            var wrappedAppFactory = new WrappedWebApplicationFactory<TStartup>(appFactory);
-            _disposable += wrappedAppFactory;
+            var wrappedAppFactory = new WrappedWebApplicationFactory<TEntryPoint>(appFactory);
+            test._disposable += wrappedAppFactory;
 
             return wrappedAppFactory;
-        }, configureHost);
+        }, (this, configureHost));
 
     #endregion
 
