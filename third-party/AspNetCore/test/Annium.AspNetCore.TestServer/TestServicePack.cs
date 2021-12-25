@@ -3,9 +3,9 @@ using Annium.Core.DependencyInjection;
 
 namespace Annium.AspNetCore.TestServer;
 
-public class ServicePack : ServicePackBase
+public class TestServicePack : ServicePackBase
 {
-    public ServicePack()
+    public TestServicePack()
     {
         Console.WriteLine(nameof(TestServicePack));
         Add<BaseServicePack>();

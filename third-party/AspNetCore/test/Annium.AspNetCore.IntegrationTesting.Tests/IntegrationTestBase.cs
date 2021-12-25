@@ -5,7 +5,7 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
 public abstract class IntegrationTestBase : IntegrationTest
 {
-    protected IWebApplicationFactory AppFactory => GetAppFactory<Startup>(
+    protected IWebApplicationFactory AppFactory => GetAppFactory<Program>(
         builder => builder.UseServicePack<ServicePack>(),
         container => container
             .AddTestServerTestClient(x => x

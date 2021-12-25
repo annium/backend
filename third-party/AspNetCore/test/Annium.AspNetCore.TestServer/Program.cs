@@ -1,27 +1,21 @@
-using System.IO;
+using Annium.AspNetCore.TestServer;
 using Annium.Core.DependencyInjection;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Builder;
 
-namespace Annium.AspNetCore.TestServer;
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServicePack<ServicePack>();
+builder.Logging.ConfigureLoggingBridge();
 
-internal static class Program
+var app = builder.Build();
+
+app.UseExceptionMiddleware();
+app.UseWebSocketsServer();
+app.UseRouting();
+app.UseCorsDefaults();
+app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+await app.RunAsync();
+
+public partial class Program
 {
-    public static void Main(string[] args)
-    {
-        CreateHostBuilder(args).Build().Run();
-    }
-
-    private static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .UseServiceProviderFactory(new ServiceProviderFactory(b => b.UseServicePack<ServicePack>()))
-            .ConfigureLoggingBridge()
-            .ConfigureWebHostDefaults(builder =>
-            {
-                builder
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseStartup<Startup>();
-            });
-    }
 }
