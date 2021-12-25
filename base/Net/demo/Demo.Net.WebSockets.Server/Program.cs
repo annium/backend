@@ -1,38 +1,16 @@
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Entrypoint;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+using Demo.Net.WebSockets.Server;
+using Microsoft.AspNetCore.Builder;
 
-namespace Demo.Net.WebSockets.Server;
+var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseServicePack<ServicePack>();
+builder.Logging.ConfigureLoggingBridge();
+builder.WebHost.UseKestrelDefaults();
 
-internal static class Program
-{
-    internal static Task Run(string[] args, CancellationToken ct)
-    {
-        return CreateHostBuilder(args).Build().RunAsync(ct);
-    }
+var app = builder.Build();
 
-    private static IHostBuilder CreateHostBuilder(string[] args)
-    {
-        return Host.CreateDefaultBuilder(args)
-            .UseServiceProviderFactory(new ServiceProviderFactory(b => b.UseServicePack<ServicePack>()))
-            .ConfigureWebHostDefaults(builder =>
-            {
-                builder
-                    .UseContentRoot(Directory.GetCurrentDirectory())
-                    .UseKestrel(server =>
-                    {
-                        server.AddServerHeader = false;
-                        server.ListenAnyIP(5000);
-                    })
-                    .UseStartup<Startup>();
-            });
-    }
+app.UseWebSockets();
+app.UseMiddleware<WebSocketEchoMiddleware>();
+app.UseRouting();
 
-    public static Task<int> Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
-}
+await app.RunAsync();
