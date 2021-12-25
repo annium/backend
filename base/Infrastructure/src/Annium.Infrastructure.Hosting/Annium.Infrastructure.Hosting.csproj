@@ -8,7 +8,7 @@
         <DebugType>portable</DebugType>
         <LangVersion>10.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>false</IsPackable>
+        <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
