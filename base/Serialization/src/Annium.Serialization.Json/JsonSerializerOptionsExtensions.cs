@@ -14,6 +14,7 @@ public static class JsonSerializerOptionsExtensions
     )
     {
         options.Converters.Add(new EnumJsonConverterFactory());
+        options.Converters.Add(new ObjectArrayJsonConverterFactory());
         options.Converters.Add(new AbstractJsonConverterFactory(typeManager));
         options.Converters.Add(new ConstructorJsonConverterFactory());
         options.Converters.Add(new GenericDictionaryJsonConverterFactory());
