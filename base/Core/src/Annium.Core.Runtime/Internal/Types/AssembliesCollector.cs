@@ -27,7 +27,10 @@ internal static class AssembliesCollector
         // collect assemblies, already residing in AppDomain
         foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             if (domainAssembly.FullName != null! && !allAssemblies.ContainsKey(domainAssembly.FullName))
+            {
+                Log.Trace($"{domainAssembly.FriendlyName()} - register with {domainAssembly.FullName}");
                 allAssemblies[domainAssembly.FullName] = domainAssembly;
+            }
 
         var resolveAssembly = tryLoadReferences ? LoadAssembly(allAssemblies) : GetAssembly(allAssemblies);
 
@@ -52,18 +55,23 @@ internal static class AssembliesCollector
     {
         var assembly = resolveAssembly(name);
         if (assembly is null)
+        {
+            Log.Trace($"{name.Name} - not resolved");
             return;
+        }
 
         if (!registerAssembly(assembly))
             return;
 
         var autoScanned = assembly.GetCustomAttributes()
             .SingleOrDefault(x => x.GetType().GetId() == AutoScannedTypeId);
-        if (autoScanned != null)
+        if (autoScanned is null)
+            Log.Trace($"{name.Name} - not marked as autoscanned");
+        else
         {
             Log.Trace($"{name.Name} - matched");
             addMatchedAssembly(assembly);
-            var dependencies = (Assembly[]) autoScanned.GetType()
+            var dependencies = (Assembly[])autoScanned.GetType()
                 .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
                 .GetValue(autoScanned)!;
             foreach (var dependency in dependencies)
