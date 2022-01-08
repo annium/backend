@@ -31,11 +31,11 @@ public static class DateTimeExtensions
         DateTime.SpecifyKind(m, DateTimeKind.Utc);
 
     public static long ToUnixTimeMinutes(this DateTime m) =>
-        (long)Math.Floor((m.InUtc() - UnixEpoch).TotalMinutes);
+        (m.InUtc() - UnixEpoch).TotalMinutes.FloorInt64();
 
     public static long ToUnixTimeSeconds(this DateTime m) =>
-        (long)Math.Floor((m.InUtc() - UnixEpoch).TotalSeconds);
+        (m.InUtc() - UnixEpoch).TotalSeconds.FloorInt64();
 
     public static long ToUnixTimeMilliseconds(this DateTime m) =>
-        (long)Math.Floor((m.InUtc() - UnixEpoch).TotalMilliseconds);
+        (m.InUtc() - UnixEpoch).TotalMilliseconds.FloorInt64();
 }

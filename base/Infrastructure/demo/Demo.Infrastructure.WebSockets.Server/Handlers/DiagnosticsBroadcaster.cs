@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Demo.Infrastructure.WebSockets.Domain.Responses.System;
@@ -21,7 +22,7 @@ internal class DiagnosticsBroadcaster : IBroadcaster<DiagnosticsNotification>
             ctx.Send(new DiagnosticsNotification
             {
                 StartTime = process.StartTime,
-                Cpu = (long)Math.Floor(process.TotalProcessorTime.TotalMilliseconds),
+                Cpu = process.TotalProcessorTime.TotalMilliseconds.FloorInt64(),
                 Memory = process.WorkingSet64.Bytes().Humanize("#.#"),
             });
         }
