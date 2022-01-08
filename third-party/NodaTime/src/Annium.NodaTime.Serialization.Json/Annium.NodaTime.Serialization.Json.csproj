@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Core/src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
+        <ProjectReference Include="../../../../base/Core/src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Text.Json" Version="6.0.0" />
