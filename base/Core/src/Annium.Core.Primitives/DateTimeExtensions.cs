@@ -4,7 +4,7 @@ namespace Annium.Core.Primitives;
 
 public static class DateTimeExtensions
 {
-    private static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
 
     public static DateTime FromUnixTimeMinutes(long minutes) =>
         UnixEpoch.AddMinutes(minutes);
@@ -30,12 +30,12 @@ public static class DateTimeExtensions
     public static DateTime InUtc(this DateTime m) =>
         DateTime.SpecifyKind(m, DateTimeKind.Utc);
 
+    public static long ToUnixTimeMinutes(this DateTime m) =>
+        (long)Math.Floor((m.InUtc() - UnixEpoch).TotalMinutes);
+
     public static long ToUnixTimeSeconds(this DateTime m) =>
         (long)Math.Floor((m.InUtc() - UnixEpoch).TotalSeconds);
 
     public static long ToUnixTimeMilliseconds(this DateTime m) =>
         (long)Math.Floor((m.InUtc() - UnixEpoch).TotalMilliseconds);
-
-    public static long ToUnixTimeMinutes(this DateTime m) =>
-        (long)Math.Floor((m.InUtc() - UnixEpoch).TotalMinutes);
 }
