@@ -5,16 +5,16 @@ namespace Annium.NodaTime.Extensions;
 
 public static class LocalDateTimeExtensions
 {
-    private static readonly LocalDateTime UnixEpoch = new(1970, 1, 1, 0, 0, 0, 0);
+    private static readonly Instant UnixEpoch = Instant.FromUtc(1970, 1, 1, 0, 0, 0);
 
     public static LocalDateTime FromUnixTimeMinutes(long minutes) =>
-        UnixEpoch.PlusMinutes(minutes);
+        UnixEpoch.Plus(Duration.FromMinutes(minutes)).InUtc().LocalDateTime;
 
     public static LocalDateTime FromUnixTimeSeconds(long seconds) =>
-        UnixEpoch.PlusSeconds(seconds);
+        UnixEpoch.Plus(Duration.FromSeconds(seconds)).InUtc().LocalDateTime;
 
     public static LocalDateTime FromUnixTimeMilliseconds(long milliseconds) =>
-        UnixEpoch.PlusMilliseconds(milliseconds);
+        UnixEpoch.Plus(Duration.FromMilliseconds(milliseconds)).InUtc().LocalDateTime;
 
     public static LocalDateTime AlignToSecond(this LocalDateTime m) =>
         new(m.Year, m.Month, m.Day, m.Hour, m.Minute, m.Second, 0);
@@ -28,17 +28,15 @@ public static class LocalDateTimeExtensions
     public static LocalDateTime AlignToDay(this LocalDateTime m) =>
         new(m.Year, m.Month, m.Day, 0, 0, 0, 0);
 
-    public static bool IsMidnight(this LocalDateTime dateTime)
-    {
-        return dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0;
-    }
+    public static bool IsMidnight(this LocalDateTime dateTime) =>
+        dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0;
 
     public static long ToUnixTimeMinutes(this LocalDateTime m) =>
-        (long)Math.Floor((m - UnixEpoch).ToDuration().TotalSeconds);
+        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalMinutes);
 
     public static long ToUnixTimeSeconds(this LocalDateTime m) =>
-        (long)Math.Floor((m - UnixEpoch).ToDuration().TotalSeconds);
+        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalSeconds);
 
     public static long ToUnixTimeMilliseconds(this LocalDateTime m) =>
-        (long)Math.Floor((m - UnixEpoch).ToDuration().TotalMilliseconds);
+        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalMilliseconds);
 }

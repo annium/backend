@@ -47,4 +47,34 @@ public class LocalDateTimeExtensionsTest
         midNight.IsMidnight().IsTrue();
         nonMdNight.IsMidnight().IsFalse();
     }
+
+    [Fact]
+    public void ToUnixTimeMinutes()
+    {
+        // arrange
+        var value = new LocalDateTime(1971, 11, 26, 10, 40).ToUnixTimeMinutes();
+
+        // assert
+        value.Is(1_000_000L);
+    }
+
+    [Fact]
+    public void ToUnixTimeSeconds()
+    {
+        // arrange
+        var value = new LocalDateTime(1971, 11, 26, 10, 40).ToUnixTimeSeconds();
+
+        // assert
+        value.Is(60_000_000L);
+    }
+
+    [Fact]
+    public void ToUnixTimeMilliseconds()
+    {
+        // arrange
+        var value = new LocalDateTime(1971, 11, 26, 10, 40).ToUnixTimeMilliseconds();
+
+        // assert
+        value.Is(60_000_000_000L);
+    }
 }
