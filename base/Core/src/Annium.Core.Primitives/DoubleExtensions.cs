@@ -18,5 +18,5 @@ public static class DoubleExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long FloorInt64(this double value) =>
-        (int)Math.Floor(value);
+        (long)Math.Floor(value);
 }
