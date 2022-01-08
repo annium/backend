@@ -1,4 +1,5 @@
 using System;
+using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.NodaTime.Extensions;
@@ -32,11 +33,11 @@ public static class LocalDateTimeExtensions
         dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0;
 
     public static long ToUnixTimeMinutes(this LocalDateTime m) =>
-        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalMinutes);
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMinutes.FloorInt64();
 
     public static long ToUnixTimeSeconds(this LocalDateTime m) =>
-        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalSeconds);
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalSeconds.FloorInt64();
 
     public static long ToUnixTimeMilliseconds(this LocalDateTime m) =>
-        (long)Math.Floor(m.InUtc().ToInstant().Minus(UnixEpoch).TotalMilliseconds);
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMilliseconds.FloorInt64();
 }

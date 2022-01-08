@@ -12,6 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../base/Core/src/Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="NodaTime" Version="3.0.9" />
     </ItemGroup>
 </Project>
