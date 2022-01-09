@@ -21,6 +21,46 @@ public static class DoubleExtensions
         (long)Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int CeilInt32(this double value) =>
+        (int)Math.Ceiling(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long CeilInt64(this double value) =>
+        (long)Math.Ceiling(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this double value) =>
+        (int)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this double value, int digits) =>
+        (int)Math.Round(value, digits);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this double value, MidpointRounding mode) =>
+        (int)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this double value, int digits, MidpointRounding mode) =>
+        (int)Math.Round(value, digits, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this double value) =>
+        (long)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this double value, int digits) =>
+        (long)Math.Round(value, digits);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this double value, MidpointRounding mode) =>
+        (long)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this double value, int digits, MidpointRounding mode) =>
+        (long)Math.Round(value, digits, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Within(this double value, double min, double max) => value.Above(min).Below(max);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
