@@ -8,7 +8,6 @@ public static class EnumerableExtensions
 {
     private static readonly Random Random = new();
     public static string Join(this IEnumerable<string> src, string separator = "") => string.Join(separator, src);
-    public static string Join(this IEnumerable<string> src, char separator = ' ') => string.Join(separator, src);
 
     public static IEnumerable<IReadOnlyCollection<T>> Chunks<T>(this IEnumerable<T> src, int chunkSize)
     {
