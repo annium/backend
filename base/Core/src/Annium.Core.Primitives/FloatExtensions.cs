@@ -11,4 +11,13 @@ public static class FloatExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAround(this float value, float to, float precision) =>
         value.DiffFrom(to) <= precision;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Within(this float value, float min, float max) => value.Above(min).Below(max);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Above(this float value, float min) => Math.Max(value, min);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static float Below(this float value, float max) => Math.Min(value, max);
 }

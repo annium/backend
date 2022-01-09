@@ -19,4 +19,13 @@ public static class DoubleExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long FloorInt64(this double value) =>
         (long)Math.Floor(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Within(this double value, double min, double max) => value.Above(min).Below(max);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Above(this double value, double min) => Math.Max(value, min);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static double Below(this double value, double max) => Math.Min(value, max);
 }
