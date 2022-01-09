@@ -5,11 +5,21 @@ namespace Annium.NodaTime.Extensions;
 
 public static class InstantExtensions
 {
-    private static readonly Instant UnixEpoch = Instant.FromUtc(1970, 1, 1, 0, 0, 0);
-
     public static Instant FromUnixTimeMinutes(long minutes) =>
-        UnixEpoch + Duration.FromMinutes(minutes);
+        NodaConstants.UnixEpoch + Duration.FromMinutes(minutes);
 
     public static long ToUnixTimeMinutes(this Instant m) =>
-        m.Minus(UnixEpoch).TotalMinutes.FloorInt64();
+        m.Minus(NodaConstants.UnixEpoch).TotalMinutes.FloorInt64();
+
+    public static Instant AlignToSecond(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).AlignToSecond();
+
+    public static Instant AlignToMinute(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).AlignToMinute();
+
+    public static Instant AlignToHour(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).AlignToHour();
+
+    public static Instant AlignToDay(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).AlignToDay();
 }

@@ -25,4 +25,44 @@ public class InstantExtensionsTest
         // assert
         value.Is(1_000_000L);
     }
+
+    [Fact]
+    public void AlignToSecond()
+    {
+        // arrange
+        var value = Instant.MinValue + Duration.FromTicks(999_999_999_999L).AlignToSecond();
+
+        // assert
+        value.Is(Instant.MinValue + Duration.FromSeconds(99999));
+    }
+
+    [Fact]
+    public void AlignToMinute()
+    {
+        // arrange
+        var value = Instant.MinValue + Duration.FromTicks(999_999_999_999L).AlignToMinute();
+
+        // assert
+        value.Is(Instant.MinValue + Duration.FromSeconds(99960));
+    }
+
+    [Fact]
+    public void AlignToHour()
+    {
+        // arrange
+        var value = Instant.MinValue + Duration.FromTicks(999_999_999_999L).AlignToHour();
+
+        // assert
+        value.Is(Instant.MinValue + Duration.FromSeconds(97200));
+    }
+
+    [Fact]
+    public void AlignToDay()
+    {
+        // arrange
+        var value = Instant.MinValue + Duration.FromTicks(999_999_999_999L).AlignToDay();
+
+        // assert
+        value.Is(Instant.MinValue + Duration.FromSeconds(86400));
+    }
 }
