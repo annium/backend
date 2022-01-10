@@ -1,9 +1,9 @@
 using System;
 using NodaTime;
 
-namespace Annium.Extensions.Jobs;
+namespace Annium.Extensions.Jobs.Internal;
 
-public interface IIntervalResolver
+internal interface IIntervalResolver
 {
     Func<Instant, bool> GetMatcher(string interval);
 }

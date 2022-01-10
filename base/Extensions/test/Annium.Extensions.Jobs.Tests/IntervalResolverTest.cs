@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Extensions.Jobs.Internal;
 using Annium.Testing;
 using NodaTime;
 using Xunit;
