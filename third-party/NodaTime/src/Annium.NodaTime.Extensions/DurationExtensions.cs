@@ -5,14 +5,17 @@ namespace Annium.NodaTime.Extensions;
 public static class DurationExtensions
 {
     public static Duration AlignToSecond(this Duration m) =>
-        m - Duration.FromTicks(m.SubsecondTicks);
+        m.AlignTo(Duration.FromSeconds(1));
 
     public static Duration AlignToMinute(this Duration m) =>
-        m - Duration.FromSeconds(m.Seconds) - Duration.FromTicks(m.SubsecondTicks);
+        m.AlignTo(Duration.FromMinutes(1));
 
     public static Duration AlignToHour(this Duration m) =>
-        m - Duration.FromMinutes(m.Minutes) - Duration.FromSeconds(m.Seconds) - Duration.FromTicks(m.SubsecondTicks);
+        m.AlignTo(Duration.FromHours(1));
 
     public static Duration AlignToDay(this Duration m) =>
-        m - Duration.FromHours(m.Hours) - Duration.FromMinutes(m.Minutes) - Duration.FromSeconds(m.Seconds) - Duration.FromTicks(m.SubsecondTicks);
+        m.AlignTo(Duration.FromDays(1));
+
+    public static Duration AlignTo(this Duration m, Duration d) =>
+        m - Duration.FromTicks(m.TotalTicks % d.TotalTicks);
 }

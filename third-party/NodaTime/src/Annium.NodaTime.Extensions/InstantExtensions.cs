@@ -22,4 +22,7 @@ public static class InstantExtensions
 
     public static Instant AlignToDay(this Instant m) =>
         Instant.MinValue + (m - Instant.MinValue).AlignToDay();
+
+    public static Instant AlignTo(this Instant m, Duration d) =>
+        Instant.MinValue + (m - Instant.MinValue).AlignTo(d);
 }
