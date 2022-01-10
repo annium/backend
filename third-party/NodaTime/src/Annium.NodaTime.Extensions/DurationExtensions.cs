@@ -17,5 +17,5 @@ public static class DurationExtensions
         m.AlignTo(Duration.FromDays(1));
 
     public static Duration AlignTo(this Duration m, Duration d) =>
-        m - Duration.FromTicks(m.TotalTicks % d.TotalTicks);
+        m - Duration.FromTicks((long)m.TotalTicks % (long)d.TotalTicks);
 }
