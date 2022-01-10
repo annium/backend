@@ -25,4 +25,11 @@ public static class InstantExtensions
 
     public static Instant AlignTo(this Instant m, Duration d) =>
         Instant.MinValue + (m - Instant.MinValue).AlignTo(d);
+
+    public static bool IsMidnight(this Instant m)
+    {
+        var d = m - Instant.MinValue;
+
+        return d.Hours == 0 && d.Minutes == 0 && d.Seconds == 0 && d.SubsecondTicks == 0;
+    }
 }

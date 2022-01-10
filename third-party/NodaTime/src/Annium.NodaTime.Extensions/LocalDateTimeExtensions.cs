@@ -17,6 +17,15 @@ public static class LocalDateTimeExtensions
     public static LocalDateTime FromUnixTimeMilliseconds(long milliseconds) =>
         UnixEpoch.Plus(Duration.FromMilliseconds(milliseconds)).InUtc().LocalDateTime;
 
+    public static long ToUnixTimeMinutes(this LocalDateTime m) =>
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMinutes.FloorInt64();
+
+    public static long ToUnixTimeSeconds(this LocalDateTime m) =>
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalSeconds.FloorInt64();
+
+    public static long ToUnixTimeMilliseconds(this LocalDateTime m) =>
+        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMilliseconds.FloorInt64();
+
     public static LocalDateTime AlignToSecond(this LocalDateTime m) =>
         new(m.Year, m.Month, m.Day, m.Hour, m.Minute, m.Second, 0);
 
@@ -31,13 +40,4 @@ public static class LocalDateTimeExtensions
 
     public static bool IsMidnight(this LocalDateTime dateTime) =>
         dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0;
-
-    public static long ToUnixTimeMinutes(this LocalDateTime m) =>
-        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMinutes.FloorInt64();
-
-    public static long ToUnixTimeSeconds(this LocalDateTime m) =>
-        m.InUtc().ToInstant().Minus(UnixEpoch).TotalSeconds.FloorInt64();
-
-    public static long ToUnixTimeMilliseconds(this LocalDateTime m) =>
-        m.InUtc().ToInstant().Minus(UnixEpoch).TotalMilliseconds.FloorInt64();
 }
