@@ -46,7 +46,7 @@ public class ValueRangeTest
     }
 
     [Fact]
-    public void Contains()
+    public void Contains_Point()
     {
         // arrange
         var range = ValueRange.Create(1, 3);
@@ -64,6 +64,31 @@ public class ValueRangeTest
         range.Contains(3, RangeBounds.Start).IsFalse();
         range.Contains(3, RangeBounds.End).IsTrue();
         range.Contains(3, RangeBounds.Both).IsTrue();
+    }
+
+    [Fact]
+    public void Contains_Range()
+    {
+        // arrange
+        var range = ValueRange.Create(1, 4);
+
+        // assert
+        range.Contains(ValueRange.Create(1, 4), RangeBounds.None).IsFalse();
+        range.Contains(ValueRange.Create(1, 4), RangeBounds.Start).IsFalse();
+        range.Contains(ValueRange.Create(1, 4), RangeBounds.End).IsFalse();
+        range.Contains(ValueRange.Create(1, 4), RangeBounds.Both).IsTrue();
+        range.Contains(ValueRange.Create(1, 3), RangeBounds.None).IsFalse();
+        range.Contains(ValueRange.Create(1, 3), RangeBounds.Start).IsTrue();
+        range.Contains(ValueRange.Create(1, 3), RangeBounds.End).IsFalse();
+        range.Contains(ValueRange.Create(1, 3), RangeBounds.Both).IsTrue();
+        range.Contains(ValueRange.Create(2, 4), RangeBounds.None).IsFalse();
+        range.Contains(ValueRange.Create(2, 4), RangeBounds.Start).IsFalse();
+        range.Contains(ValueRange.Create(2, 4), RangeBounds.End).IsTrue();
+        range.Contains(ValueRange.Create(2, 4), RangeBounds.Both).IsTrue();
+        range.Contains(ValueRange.Create(2, 3), RangeBounds.None).IsTrue();
+        range.Contains(ValueRange.Create(2, 3), RangeBounds.Start).IsTrue();
+        range.Contains(ValueRange.Create(2, 3), RangeBounds.End).IsTrue();
+        range.Contains(ValueRange.Create(2, 3), RangeBounds.Both).IsTrue();
     }
 
     [Fact]
