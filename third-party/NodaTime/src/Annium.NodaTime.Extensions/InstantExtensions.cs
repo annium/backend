@@ -11,20 +11,35 @@ public static class InstantExtensions
     public static long ToUnixTimeMinutes(this Instant m) =>
         m.Minus(NodaConstants.UnixEpoch).TotalMinutes.FloorInt64();
 
-    public static Instant AlignToSecond(this Instant m) =>
-        Instant.MinValue + (m - Instant.MinValue).AlignToSecond();
+    public static Instant FloorToSecond(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).FloorToSecond();
 
-    public static Instant AlignToMinute(this Instant m) =>
-        Instant.MinValue + (m - Instant.MinValue).AlignToMinute();
+    public static Instant FloorToMinute(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).FloorToMinute();
 
-    public static Instant AlignToHour(this Instant m) =>
-        Instant.MinValue + (m - Instant.MinValue).AlignToHour();
+    public static Instant FloorToHour(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).FloorToHour();
 
-    public static Instant AlignToDay(this Instant m) =>
-        Instant.MinValue + (m - Instant.MinValue).AlignToDay();
+    public static Instant FloorToDay(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).FloorToDay();
 
-    public static Instant AlignTo(this Instant m, Duration d) =>
-        Instant.MinValue + (m - Instant.MinValue).AlignTo(d);
+    public static Instant FloorTo(this Instant m, Duration d) =>
+        Instant.MinValue + (m - Instant.MinValue).FloorTo(d);
+
+    public static Instant CeilToSecond(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).CeilToSecond();
+
+    public static Instant CeilToMinute(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).CeilToMinute();
+
+    public static Instant CeilToHour(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).CeilToHour();
+
+    public static Instant CeilToDay(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).CeilToDay();
+
+    public static Instant CeilTo(this Instant m, Duration d) =>
+        Instant.MinValue + (m - Instant.MinValue).CeilTo(d);
 
     public static bool IsMidnight(this Instant m)
     {
