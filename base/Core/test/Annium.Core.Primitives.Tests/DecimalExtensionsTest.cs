@@ -31,4 +31,20 @@ public class DecimalExtensionsTest
         123.9214999m.ToPretty(0.1m).Is(120m);
         123.9214999m.ToPretty(0.5m).Is(100m);
     }
+
+    [Fact]
+    public void FloorTo()
+    {
+        // assert
+        123.21m.FloorTo(7.6m).Is(121.6m);
+        123.21m.FloorTo(0.2m).Is(123.2m);
+    }
+
+    [Fact]
+    public void CeilTo()
+    {
+        // assert
+        123.21m.CeilTo(7.6m).Is(129.2m);
+        123.21m.CeilTo(0.2m).Is(123.4m);
+    }
 }

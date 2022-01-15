@@ -102,6 +102,12 @@ public static class DecimalExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal FloorTo(this decimal value, decimal step) => value - value % step;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal CeilTo(this decimal value, decimal step) => value + step - value % step;
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static decimal DiffFromInternal(this decimal value, decimal from) => Math.Abs((value - from) / from);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
