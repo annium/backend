@@ -15,17 +15,32 @@ public static class DateTimeExtensions
     public static DateTime FromUnixTimeMilliseconds(long milliseconds) =>
         UnixEpoch.AddSeconds(milliseconds);
 
-    public static DateTime AlignToSecond(this DateTime m) =>
-        new(m.Year, m.Month, m.Day, m.Hour, m.Minute, m.Second, 0, m.Kind);
+    public static DateTime FloorToSecond(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).FloorToSecond();
 
-    public static DateTime AlignToMinute(this DateTime m) =>
-        new(m.Year, m.Month, m.Day, m.Hour, m.Minute, 0, 0, m.Kind);
+    public static DateTime FloorToMinute(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).FloorToMinute();
 
-    public static DateTime AlignToHour(this DateTime m) =>
-        new(m.Year, m.Month, m.Day, m.Hour, 0, 0, 0, m.Kind);
+    public static DateTime FloorToHour(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).FloorToHour();
 
-    public static DateTime AlignToDay(this DateTime m) =>
-        new(m.Year, m.Month, m.Day, 0, 0, 0, 0, m.Kind);
+    public static DateTime FloorToDay(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).FloorToDay();
+
+    public static DateTime FloorTo(this DateTime m, TimeSpan t) =>
+        DateTime.MinValue + (m - DateTime.MinValue).FloorTo(t);
+
+    public static DateTime CeilToSecond(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).CeilToSecond();
+
+    public static DateTime CeilToMinute(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).CeilToMinute();
+
+    public static DateTime CeilToHour(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).CeilToHour();
+
+    public static DateTime CeilToDay(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).CeilToDay();
 
     public static DateTime InUtc(this DateTime m) =>
         DateTime.SpecifyKind(m, DateTimeKind.Utc);
