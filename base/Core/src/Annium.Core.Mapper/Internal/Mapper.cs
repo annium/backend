@@ -12,9 +12,9 @@ internal class Mapper : IMapper
         _mapBuilder = mapBuilder;
     }
 
-    public bool HasMap<T>(object source) => HasMap(source, typeof(T));
+    public bool HasMap<T>(object? source) => HasMap(source, typeof(T));
 
-    public bool HasMap(object source, Type type)
+    public bool HasMap(object? source, Type? type)
     {
         if (source is null || type is null)
             return false;
@@ -25,7 +25,7 @@ internal class Mapper : IMapper
         return _mapBuilder.HasMap(source.GetType(), type);
     }
 
-    public T Map<T>(object source)
+    public T Map<T>(object? source)
     {
         if (source is null)
             return default!;
@@ -33,7 +33,7 @@ internal class Mapper : IMapper
         return (T) Map(source, typeof(T));
     }
 
-    public object Map(object source, Type type)
+    public object Map(object? source, Type type)
     {
         if (type is null)
             throw new ArgumentNullException(nameof(type));

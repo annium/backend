@@ -30,10 +30,10 @@ internal class ConfigurationProcessor<T>
 
     public T Process()
     {
-        return (T) Process(typeof(T));
+        return (T)(Process(typeof(T)) ?? default!);
     }
 
-    private object Process(Type type)
+    private object? Process(Type type)
     {
         if (type.IsEnum || _mapper.HasMap(string.Empty, type))
             return ProcessValue(type);
@@ -55,13 +55,14 @@ internal class ConfigurationProcessor<T>
 
         // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
         var items = GetDescendants();
-        var result = (IDictionary) Activator.CreateInstance(type)!;
+        var result = (IDictionary)Activator.CreateInstance(type)!;
 
         foreach (var name in items)
         {
             // var name = key.Substring(path.Length + separator.Length).Split(separator) [0];
             _context.Push(name);
-            result[_mapper.Map(name, keyType)] = Process(valueType);
+            var key = _mapper.Map(name, keyType) ?? throw new InvalidOperationException($"Key at {keyType} is mapped to null");
+            result[key] = Process(valueType);
             _context.Pop();
         }
 
@@ -71,7 +72,7 @@ internal class ConfigurationProcessor<T>
     private object ProcessList(Type type)
     {
         var elementType = type.GetGenericArguments()[0];
-        var result = (IList) Activator.CreateInstance(type)!;
+        var result = (IList)Activator.CreateInstance(type)!;
 
         var items = GetDescendants();
 
@@ -88,9 +89,9 @@ internal class ConfigurationProcessor<T>
     private object ProcessArray(Type type)
     {
         var elementType = type.GetElementType()!;
-        var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
+        var raw = (IList)ProcessList(typeof(List<>).MakeGenericType(elementType));
 
-        var result = (IList) Array.CreateInstance(elementType, raw.Count);
+        var result = (IList)Array.CreateInstance(elementType, raw.Count);
 
         for (var index = 0; index < raw.Count; index++)
             result[index] = raw[index];
@@ -130,7 +131,7 @@ internal class ConfigurationProcessor<T>
         return result;
     }
 
-    private object ProcessValue(Type type)
+    private object? ProcessValue(Type type)
     {
         if (_config.TryGetValue(Path, out var value))
             return _mapper.Map(value, type);

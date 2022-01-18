@@ -135,7 +135,7 @@ internal class ConfigurationBuilder : IConfigurationBuilder
         var (property, _) = _configurationProcessor.GetPropertiesWithAttribute<RawAttribute>(typeof(T))
             .FirstOrDefault();
 
-        if (property != null)
+        if (property != null!)
             property.SetValue(value, GetValue(property, property.PropertyType, raw));
     }
 
@@ -155,7 +155,7 @@ internal class ConfigurationBuilder : IConfigurationBuilder
         return null;
     }
 
-    private object GetValue(PropertyInfo property, Type type, string value)
+    private object? GetValue(PropertyInfo property, Type type, string value)
     {
         var values = property.GetCustomAttribute<ValuesAttribute>()?.Values;
         if (values != null && !values.Contains(value))
