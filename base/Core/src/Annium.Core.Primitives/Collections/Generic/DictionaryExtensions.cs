@@ -41,4 +41,17 @@ public static class DictionaryExtensions
         foreach (var item in src.Where(x => predicate(x.Key, x.Value)).ToArray())
             src.Remove(item);
     }
+
+    public static Dictionary<TKey, TValue> Merge<TKey, TValue>(
+        this IEnumerable<KeyValuePair<TKey, TValue>> source,
+        IEnumerable<KeyValuePair<TKey, TValue>> target
+    )
+        where TKey : notnull
+    {
+        var values = source.ToDictionary(x => x.Key, x => x.Value);
+        foreach (var (key, value) in target)
+            values[key] = value;
+
+        return values;
+    }
 }
