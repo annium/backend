@@ -19,6 +19,27 @@ public static class TimeSpanExtensions
     public static TimeSpan FloorTo(this TimeSpan t, TimeSpan d) =>
         TimeSpan.FromTicks(t.Ticks - t.Ticks % d.Ticks);
 
+    public static TimeSpan RoundToSecond(this TimeSpan m) =>
+        m.RoundTo(TimeSpan.FromSeconds(1));
+
+    public static TimeSpan RoundToMinute(this TimeSpan m) =>
+        m.RoundTo(TimeSpan.FromMinutes(1));
+
+    public static TimeSpan RoundToHour(this TimeSpan m) =>
+        m.RoundTo(TimeSpan.FromHours(1));
+
+    public static TimeSpan RoundToDay(this TimeSpan m) =>
+        m.RoundTo(TimeSpan.FromDays(1));
+
+    public static TimeSpan RoundTo(this TimeSpan t, TimeSpan d)
+    {
+        var mt = t.Ticks;
+        var dt = d.Ticks;
+        var diff = mt % dt;
+
+        return TimeSpan.FromTicks(mt - diff + (dt > diff * 2L ? 0L : dt));
+    }
+
     public static TimeSpan CeilToSecond(this TimeSpan m) =>
         m.CeilTo(TimeSpan.FromSeconds(1));
 

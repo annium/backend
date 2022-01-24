@@ -30,6 +30,21 @@ public static class DateTimeExtensions
     public static DateTime FloorTo(this DateTime m, TimeSpan t) =>
         DateTime.MinValue + (m - DateTime.MinValue).FloorTo(t);
 
+    public static DateTime RoundToSecond(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).RoundToSecond();
+
+    public static DateTime RoundToMinute(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).RoundToMinute();
+
+    public static DateTime RoundToHour(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).RoundToHour();
+
+    public static DateTime RoundToDay(this DateTime m) =>
+        DateTime.MinValue + (m - DateTime.MinValue).RoundToDay();
+
+    public static DateTime RoundTo(this DateTime m, TimeSpan t) =>
+        DateTime.MinValue + (m - DateTime.MinValue).RoundTo(t);
+
     public static DateTime CeilToSecond(this DateTime m) =>
         DateTime.MinValue + (m - DateTime.MinValue).CeilToSecond();
 
