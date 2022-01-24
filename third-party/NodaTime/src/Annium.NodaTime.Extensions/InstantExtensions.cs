@@ -26,6 +26,21 @@ public static class InstantExtensions
     public static Instant FloorTo(this Instant m, Duration d) =>
         Instant.MinValue + (m - Instant.MinValue).FloorTo(d);
 
+    public static Instant RoundToSecond(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).RoundToSecond();
+
+    public static Instant RoundToMinute(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).RoundToMinute();
+
+    public static Instant RoundToHour(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).RoundToHour();
+
+    public static Instant RoundToDay(this Instant m) =>
+        Instant.MinValue + (m - Instant.MinValue).RoundToDay();
+
+    public static Instant RoundTo(this Instant m, Duration d) =>
+        Instant.MinValue + (m - Instant.MinValue).RoundTo(d);
+
     public static Instant CeilToSecond(this Instant m) =>
         Instant.MinValue + (m - Instant.MinValue).CeilToSecond();
 

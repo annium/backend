@@ -24,6 +24,27 @@ public static class DurationExtensions
         return Duration.FromTicks(mt - mt % dt);
     }
 
+    public static Duration RoundToSecond(this Duration m) =>
+        m.RoundTo(Duration.FromSeconds(1));
+
+    public static Duration RoundToMinute(this Duration m) =>
+        m.RoundTo(Duration.FromMinutes(1));
+
+    public static Duration RoundToHour(this Duration m) =>
+        m.RoundTo(Duration.FromHours(1));
+
+    public static Duration RoundToDay(this Duration m) =>
+        m.RoundTo(Duration.FromDays(1));
+
+    public static Duration RoundTo(this Duration m, Duration d)
+    {
+        var mt = (long)m.TotalTicks;
+        var dt = (long)d.TotalTicks;
+        var diff = mt % dt;
+
+        return Duration.FromTicks(mt - diff + (dt > diff * 2L ? 0L : dt));
+    }
+
     public static Duration CeilToSecond(this Duration m) =>
         m.CeilTo(Duration.FromSeconds(1));
 
