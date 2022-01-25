@@ -13,6 +13,54 @@ public static class FloatExtensions
         value.DiffFrom(to) <= precision;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int FloorInt32(this float value) =>
+        (int)Math.Floor(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long FloorInt64(this float value) =>
+        (long)Math.Floor(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int CeilInt32(this float value) =>
+        (int)Math.Ceiling(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long CeilInt64(this float value) =>
+        (long)Math.Ceiling(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this float value) =>
+        (int)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this float value, int digits) =>
+        (int)Math.Round(value, digits);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this float value, MidpointRounding mode) =>
+        (int)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this float value, int digits, MidpointRounding mode) =>
+        (int)Math.Round(value, digits, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this float value) =>
+        (long)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this float value, int digits) =>
+        (long)Math.Round(value, digits);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this float value, MidpointRounding mode) =>
+        (long)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this float value, int digits, MidpointRounding mode) =>
+        (long)Math.Round(value, digits, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Within(this float value, float min, float max) => value.Above(min).Below(max);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
