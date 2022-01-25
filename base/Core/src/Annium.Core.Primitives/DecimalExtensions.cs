@@ -21,6 +21,42 @@ public static class DecimalExtensions
         (long)Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Floor(this decimal value) =>
+        Math.Floor(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this decimal value) =>
+        (int)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static int RoundInt32(this decimal value, MidpointRounding mode) =>
+        (int)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this decimal value) =>
+        (long)Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static long RoundInt64(this decimal value, MidpointRounding mode) =>
+        (long)Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Round(this decimal value) =>
+        Math.Round(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Round(this decimal value, int digits) =>
+        Math.Round(value, digits);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Round(this decimal value, MidpointRounding mode) =>
+        Math.Round(value, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Round(this decimal value, int digits, MidpointRounding mode) =>
+        Math.Round(value, digits, mode);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CeilInt32(this decimal value) =>
         (int)Math.Ceiling(value);
 
@@ -29,36 +65,8 @@ public static class DecimalExtensions
         (long)Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int RoundInt32(this decimal value) =>
-        (int)Math.Round(value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int RoundInt32(this decimal value, int digits) =>
-        (int)Math.Round(value, digits);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int RoundInt32(this decimal value, MidpointRounding mode) =>
-        (int)Math.Round(value, mode);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static int RoundInt32(this decimal value, int digits, MidpointRounding mode) =>
-        (int)Math.Round(value, digits, mode);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long RoundInt64(this decimal value) =>
-        (long)Math.Round(value);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long RoundInt64(this decimal value, int digits) =>
-        (long)Math.Round(value, digits);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long RoundInt64(this decimal value, MidpointRounding mode) =>
-        (long)Math.Round(value, mode);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static long RoundInt64(this decimal value, int digits, MidpointRounding mode) =>
-        (long)Math.Round(value, digits, mode);
+    public static double Ceil(this double value) =>
+        Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal Within(this decimal value, decimal min, decimal max) => value.Above(min).Below(max);
@@ -103,6 +111,13 @@ public static class DecimalExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal FloorTo(this decimal value, decimal step) => value - value % step;
+
+    public static decimal RoundTo(this decimal value, decimal step)
+    {
+        var diff = value % step;
+
+        return value - diff + (step > diff * 2m ? 0m : step);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal CeilTo(this decimal value, decimal step) => value + step - value % step;
