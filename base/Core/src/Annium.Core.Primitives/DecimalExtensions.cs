@@ -108,8 +108,8 @@ public static class DecimalExtensions
     public static decimal CeilTo(this decimal value, decimal step) => value + step - value % step;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static decimal DiffFromInternal(this decimal value, decimal from) => Math.Abs((value - from) / from);
+    public static int Decimals(this decimal value) => decimal.GetBits(value)[3] >> 16;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private static int Decimals(this decimal value) => decimal.GetBits(value)[3] >> 16;
+    private static decimal DiffFromInternal(this decimal value, decimal from) => Math.Abs((value - from) / from);
 }
