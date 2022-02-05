@@ -6,7 +6,7 @@ namespace Annium.Core.Primitives;
 public static class DecimalExtensions
 {
     public static decimal DiffFrom(this decimal value, decimal from) =>
-        from == 0m ? decimal.MaxValue : value.DiffFromInternal(from);
+        from == 0m ? value == 0m ? 0 : decimal.MaxValue : value.DiffFromInternal(from);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsAround(this decimal value, decimal to, decimal precision) =>

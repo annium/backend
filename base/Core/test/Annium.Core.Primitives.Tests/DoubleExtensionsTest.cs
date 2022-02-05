@@ -21,5 +21,6 @@ public class DoubleExtensionsTest
         a.DiffFrom(c).Is(float.PositiveInfinity);
         a.DiffFrom(d).Is(0.1d);
         a.DiffFrom(e).Is(1.9d);
+        0d.DiffFrom(0d).Is(0d);
     }
 }

@@ -21,5 +21,6 @@ public class FloatExtensionsTest
         a.DiffFrom(c).Is(float.PositiveInfinity);
         a.DiffFrom(d).Is(0.1f);
         a.DiffFrom(e).Is(1.9f);
+        0f.DiffFrom(0f).Is(0f);
     }
 }
