@@ -4,5 +4,5 @@ namespace Annium.Logging.File;
 
 public record FileLoggingConfiguration : LogRouteConfiguration
 {
-    public string File { get; init; } = string.Empty;
+    public string File { get; set; } = string.Empty;
 }
