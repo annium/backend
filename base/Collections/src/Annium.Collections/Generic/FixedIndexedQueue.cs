@@ -53,3 +53,8 @@ public class FixedIndexedQueue<T> : IFixedIndexedQueue<T>
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
+
+public interface IFixedIndexedQueue<T> : IReadOnlyList<T>
+{
+    void Add(T item);
+}

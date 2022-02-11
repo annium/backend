@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Annium.Collections.Tests.Generic;
 
-public class FixedIndexedQueueTests
+public class FixedIndexedQueueTest
 {
     [Fact]
     public void Add_Count_Index_Enumerate()

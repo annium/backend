@@ -4,32 +4,32 @@ using Xunit;
 
 namespace Annium.Collections.Tests.Generic;
 
-public class IndexedSpanTests
+public class ListSpanTest
 {
     [Fact]
     public void Add_Count_Index_Move()
     {
         // arrange
-        var data = new[] { 1m, 2m, 3m, 4m, 5m };
+        var data = new[] { 1, 2, 3, 4, 5 };
 
         // act & assert - move forward
-        var span = data.ToReadOnlyIndexedSpan(0, 2);
+        var span = data.ToListSpan(0, 2);
         span.Count.Is(2);
         span.Move(-1).IsFalse();
-        span[0].Is(1m);
-        span[1].Is(2m);
+        span[0].Is(1);
+        span[1].Is(2);
         span.Move(3).IsTrue();
-        span[0].Is(4m);
-        span[1].Is(5m);
+        span[0].Is(4);
+        span[1].Is(5);
 
         // act & assert - move backward
-        span = data.ToReadOnlyIndexedSpan(3, 2);
+        span = data.ToListSpan(3, 2);
         span.Count.Is(2);
         span.Move(1).IsFalse();
-        span[0].Is(4m);
-        span[1].Is(5m);
+        span[0].Is(4);
+        span[1].Is(5);
         span.Move(-3).IsTrue();
-        span[0].Is(1m);
-        span[1].Is(2m);
+        span[0].Is(1);
+        span[1].Is(2);
     }
 }

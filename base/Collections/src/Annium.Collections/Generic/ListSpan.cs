@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Annium.Collections.Generic;
 
-public record IndexedSpan<T> : IIndexedSpan<T>
+public record ListSpan<T> : IListSpan<T>
 {
     public int Count { get; }
     public int Start { get; private set; }
@@ -12,7 +12,7 @@ public record IndexedSpan<T> : IIndexedSpan<T>
 
     private readonly IReadOnlyList<T> _collection;
 
-    public IndexedSpan(
+    public ListSpan(
         IReadOnlyList<T> collection,
         int start,
         int count
@@ -55,4 +55,9 @@ public record IndexedSpan<T> : IIndexedSpan<T>
     }
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+}
+
+public interface IListSpan<out T> : IReadOnlyIndexedSpan<T>
+{
+    bool Move(int offset);
 }
