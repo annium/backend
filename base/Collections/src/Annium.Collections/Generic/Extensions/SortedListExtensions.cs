@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 
 namespace Annium.Collections.Generic;
 
@@ -46,6 +45,7 @@ public static class SortedListExtensions
         var result = new Dictionary<(TKey Start, TKey End), ISortedListSpan<TKey, TValue>?>();
 
         var outChunkStart = start;
+        var outChunkEnd = start;
         var inChunkStart = start;
         var prevKey = start;
         var key = start;
@@ -54,7 +54,7 @@ public static class SortedListExtensions
         var inSource = index >= 0;
         var size = 0;
 
-        while (compare(key, end) <= 0)
+        while (true)
         {
             // get index of current key
             index = source.Keys.IndexOf(key);
@@ -62,6 +62,10 @@ public static class SortedListExtensions
             // go to next key if state is same (in or out)
             if (inSource == index >= 0)
             {
+                // break if end
+                if (compare(key, end) == 0)
+                    break;
+
                 // go to next key
                 prevKey = key;
                 key = nextKey(key);
@@ -75,15 +79,24 @@ public static class SortedListExtensions
 
             // if entering chunk
             if (index >= 0)
+            {
+                outChunkEnd = prevKey;
                 inChunkStart = key;
+            }
 
-            // if leaving chunk and size is enough for chunk - return new chunk
+            // if leaving chunk and chunk size is enough - return new chunk
             if (index == -1 && size >= chunkSize)
             {
-                TryAddNullChunk(result, compare, outChunkStart, inChunkStart);
+                if (compare(outChunkEnd, inChunkStart) < 0)
+                    result[(outChunkStart, outChunkEnd)] = null;
                 result[(inChunkStart, prevKey)] = source.GetRange(inChunkStart, prevKey);
-                outChunkStart = prevKey;
+                outChunkStart = key;
+                outChunkEnd = key;
             }
+
+            // break if end
+            if (compare(key, end) == 0)
+                break;
 
             // go to next key
             prevKey = key;
@@ -91,27 +104,24 @@ public static class SortedListExtensions
             size = 1;
         }
 
-        if (inSource && (compare(inChunkStart, start) == 0 || size >= chunkSize))
+        if (inSource)
         {
-            TryAddNullChunk(result, compare, outChunkStart, inChunkStart);
-            result[(inChunkStart, end)] = source.GetRange(inChunkStart, end);
+            // if chunk matches full range
+            if (compare(inChunkStart, start) == 0)
+                result[(inChunkStart, end)] = source.GetRange(inChunkStart, end);
+
+            // if chunk size is enough
+            else if (size >= chunkSize)
+            {
+                if (compare(outChunkEnd, inChunkStart) < 0)
+                    result[(outChunkStart, outChunkEnd)] = null;
+                result[(inChunkStart, end)] = source.GetRange(inChunkStart, end);
+            }
         }
 
         if (!inSource)
-            TryAddNullChunk(result, compare, outChunkStart, end);
+            result[(outChunkStart, end)] = null;
 
         return result;
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static void TryAddNullChunk(
-            Dictionary<(TKey Start, TKey End), ISortedListSpan<TKey, TValue>?> output,
-            Func<TKey, TKey, int> comp,
-            TKey from,
-            TKey to
-        )
-        {
-            if (comp(from, to) < 0)
-                output[(from, to)] = null;
-        }
     }
 }

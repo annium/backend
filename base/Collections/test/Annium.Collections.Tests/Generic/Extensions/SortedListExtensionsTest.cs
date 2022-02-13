@@ -49,34 +49,34 @@ public class SortedListExtensionsTest
         // act & assert - missing beginning
         var chunks = data.GetChunks(0, 2, Next);
         chunks.Has(2);
-        chunks.At((0, 1)).IsDefault();
+        chunks.At((0, 0)).IsDefault();
         chunks.At((1, 2)).Is(data.GetRange(1, 2));
 
         // act & assert - missing end
         chunks = data.GetChunks(3, 6, Next);
         chunks.Has(2);
         chunks.At((3, 5)).Is(data.GetRange(3, 5));
-        chunks.At((5, 6)).IsDefault();
+        chunks.At((6, 6)).IsDefault();
 
         // act & assert - missing parts
         data = new[] { 1, 3, 5 }.ToSortedList(x => x);
         chunks = data.GetChunks(0, 6, Next);
         chunks.Has(7);
-        chunks.At((0, 1)).IsDefault();
+        chunks.At((0, 0)).IsDefault();
         chunks.At((1, 1)).Is(data.GetRange(1, 1));
-        chunks.At((1, 3)).IsDefault();
+        chunks.At((2, 2)).IsDefault();
         chunks.At((3, 3)).Is(data.GetRange(3, 3));
-        chunks.At((3, 5)).IsDefault();
+        chunks.At((4, 4)).IsDefault();
         chunks.At((5, 5)).Is(data.GetRange(5, 5));
-        chunks.At((5, 6)).IsDefault();
+        chunks.At((6, 6)).IsDefault();
 
         // act & assert - chunk size control
         data = new[] { 1, 3, 4, 6 }.ToSortedList(x => x);
         chunks = data.GetChunks(0, 7, Next, 2);
         chunks.Has(3);
-        chunks.At((0, 3)).IsDefault();
+        chunks.At((0, 2)).IsDefault();
         chunks.At((3, 4)).Is(data.GetRange(3, 4));
-        chunks.At((4, 7)).IsDefault();
+        chunks.At((5, 7)).IsDefault();
 
         // act & assert - chunk size control - skip all chunks
         data = new[] { 1, 3, 4, 6 }.ToSortedList(x => x);
