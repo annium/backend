@@ -8,7 +8,7 @@ public record ListSpan<T> : IListSpan<T>
 {
     public int Count { get; }
     public int Start { get; private set; }
-    public int End => Start + Count;
+    public int End => Start + Count - 1;
 
     private readonly IReadOnlyList<T> _collection;
 
