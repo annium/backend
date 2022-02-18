@@ -6,11 +6,11 @@ namespace Annium.Logging.Console.Internal;
 internal class ConsoleLogHandler<TContext> : ILogHandler<TContext>
     where TContext : class, ILogContext
 {
-    private readonly Func<LogMessage<TContext>, string, string> _format;
+    private readonly Func<LogMessage<TContext>, string> _format;
     private readonly bool _color;
 
     public ConsoleLogHandler(
-        Func<LogMessage<TContext>, string, string> format,
+        Func<LogMessage<TContext>, string> format,
         bool color
     )
     {
@@ -28,18 +28,7 @@ internal class ConsoleLogHandler<TContext> : ILogHandler<TContext>
                 if (_color)
                     System.Console.ForegroundColor = StaticState.LevelColors[msg.Level];
 
-                if (msg.Exception is AggregateException aggregateException)
-                {
-                    var errors = aggregateException.Flatten().InnerExceptions;
-                    WriteLine(msg, $"Errors ({errors.Count}):");
-
-                    foreach (var error in errors)
-                        WriteLine(msg, GetExceptionMessage(error));
-                }
-                else if (msg.Exception != null)
-                    WriteLine(msg, GetExceptionMessage(msg.Exception));
-                else
-                    WriteLine(msg, msg.Message);
+                System.Console.WriteLine(_format(msg));
             }
             finally
             {
@@ -48,8 +37,4 @@ internal class ConsoleLogHandler<TContext> : ILogHandler<TContext>
             }
         }
     }
-
-    private void WriteLine(LogMessage<TContext> msg, string message) => System.Console.WriteLine(_format(msg, message));
-
-    private string GetExceptionMessage(Exception e) => $"{e.Message}{Environment.NewLine}{e.StackTrace}";
 }

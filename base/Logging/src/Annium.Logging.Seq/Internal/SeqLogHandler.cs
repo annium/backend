@@ -9,10 +9,11 @@ using Annium.Serialization.Abstractions;
 
 namespace Annium.Logging.Seq.Internal;
 
-internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext, IReadOnlyDictionary<string, string>>
+internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
     where TContext : class, ILogContext
 {
     private readonly IHttpRequest _request;
+    private readonly Func<LogMessage<TContext>, IReadOnlyDictionary<string, string>> _format;
     private readonly ISerializer<string> _serializer;
     private readonly SeqConfiguration _cfg;
 
@@ -21,20 +22,20 @@ internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext, IReadOnly
         ISerializer<string> serializer,
         SeqConfiguration cfg
     ) : base(
-        CompactLogEvent<TContext>.CreateFormat(cfg.Project),
         cfg
     )
     {
         _request = httpRequestFactory.New(cfg.Endpoint);
+        _format = CompactLogEvent<TContext>.CreateFormat(cfg.Project);
         _serializer = serializer;
         _cfg = cfg;
     }
 
     protected override async ValueTask<bool> SendEventsAsync(
-        IReadOnlyCollection<IReadOnlyDictionary<string, string>> events
+        IReadOnlyCollection<LogMessage<TContext>> events
     )
     {
-        var data = events.Select(_serializer.Serialize).Join(Environment.NewLine);
+        var data = events.Select(x => _serializer.Serialize(_format(x))).Join(Environment.NewLine);
 
         try
         {

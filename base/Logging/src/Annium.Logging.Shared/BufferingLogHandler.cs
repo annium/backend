@@ -4,31 +4,22 @@ using System.Threading.Tasks;
 
 namespace Annium.Logging.Shared;
 
-public abstract class BufferingLogHandler<TContext, TMessage> : IAsyncLogHandler<TContext>
+public abstract class BufferingLogHandler<TContext> : IAsyncLogHandler<TContext>
     where TContext : class, ILogContext
 {
-    private readonly Func<LogMessage<TContext>, string, TMessage> _format;
     private readonly LogRouteConfiguration _cfg;
-    private readonly Queue<TMessage> _eventsBuffer = new();
+    private readonly Queue<LogMessage<TContext>> _eventsBuffer = new();
 
     protected BufferingLogHandler(
-        Func<LogMessage<TContext>, string, TMessage> format,
         LogRouteConfiguration cfg
     )
     {
-        _format = format;
         _cfg = cfg;
     }
 
     public async ValueTask Handle(IReadOnlyCollection<LogMessage<TContext>> messages)
     {
-        var events = new List<TMessage>();
-
-        void AddEvent(LogMessage<TContext> msg, string message) => events
-            .Add(_format(msg, message));
-
-        foreach (var message in messages)
-            LogMessageProcessor.Process(message, AddEvent);
+        var events = new List<LogMessage<TContext>>(messages);
 
         // if failed to send events - add them to buffer
         if (!await SendEventsAsync(events))
@@ -62,9 +53,9 @@ public abstract class BufferingLogHandler<TContext, TMessage> : IAsyncLogHandler
         }
     }
 
-    protected abstract ValueTask<bool> SendEventsAsync(IReadOnlyCollection<TMessage> events);
+    protected abstract ValueTask<bool> SendEventsAsync(IReadOnlyCollection<LogMessage<TContext>> events);
 
-    private void BufferEvents(IReadOnlyCollection<TMessage> events)
+    private void BufferEvents(IReadOnlyCollection<LogMessage<TContext>> events)
     {
         lock (_eventsBuffer)
             foreach (var e in events)

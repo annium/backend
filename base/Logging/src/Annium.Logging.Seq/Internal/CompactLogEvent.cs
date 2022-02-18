@@ -8,16 +8,14 @@ namespace Annium.Logging.Seq.Internal;
 internal static class CompactLogEvent<TContext>
     where TContext : class, ILogContext
 {
-    public static Func<LogMessage<TContext>, string, IReadOnlyDictionary<string, string>> CreateFormat(
-        string project
-    ) => (m, msg) =>
+    public static Func<LogMessage<TContext>, IReadOnlyDictionary<string, string>> CreateFormat(string project) => m =>
     {
         var prefix = BuildMessagePrefix(m);
         var result = new Dictionary<string, string>
         {
             ["@p"] = project,
             ["@t"] = m.Instant.InUtc().LocalDateTime.ToString("yyyy-MM-ddTHH:mm:ss.fff'Z'", null),
-            ["@m"] = $"{prefix}{msg}",
+            ["@m"] = $"{prefix}{m.Message}",
             ["@mt"] = $"{prefix}{m.MessageTemplate}",
             ["@l"] = m.Level.ToString(),
         };

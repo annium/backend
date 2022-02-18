@@ -23,7 +23,7 @@ public static class LogRouteExtensions
 
     public static LogRoute<TContext> UseFile<TContext>(
         this LogRoute<TContext> route,
-        Func<LogMessage<TContext>, string, string> format,
+        Func<LogMessage<TContext>, string> format,
         FileLoggingConfiguration cfg
     )
         where TContext : class, ILogContext

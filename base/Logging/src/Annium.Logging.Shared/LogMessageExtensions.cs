@@ -9,16 +9,16 @@ public static class LogMessageExtensions
 {
     public static readonly DateTimeZone Tz = DateTimeZoneProviders.Tzdb.GetSystemDefault();
 
-    public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string message)
+    public static string DefaultFormat<TContext>(this LogMessage<TContext> m)
         where TContext : class, ILogContext
-        => DefaultFormat(m, m.TimeFormat(), message);
+        => DefaultFormat(m, m.TimeFormat());
 
-    public static string DefaultTestFormat<TContext>(this LogMessage<TContext> m, string message)
+    public static string DefaultTestFormat<TContext>(this LogMessage<TContext> m)
         where TContext : class, ILogContext
-        => DefaultFormat(m, m.TestTimeFormat(), message);
+        => DefaultFormat(m, m.TestTimeFormat());
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string time, string message)
+    public static string DefaultFormat<TContext>(this LogMessage<TContext> m, string time)
         where TContext : class, ILogContext
     {
         var sb = new StringBuilder();
@@ -26,7 +26,7 @@ public static class LogMessageExtensions
         if (m.Line != 0)
             sb.Append(m.Location());
 
-        return $"[{time}] {m.Level} [{m.ThreadId:D3}] {sb} >> {message}";
+        return $"[{time}] {m.Level} [{m.ThreadId:D3}] {sb} >> {m.Message}";
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

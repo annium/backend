@@ -22,7 +22,7 @@ public static class LogRouteExtensions
 
     public static LogRoute<TContext> UseConsole<TContext>(
         this LogRoute<TContext> route,
-        Func<LogMessage<TContext>, string, string> format,
+        Func<LogMessage<TContext>, string> format,
         bool color = false
     )
         where TContext : class, ILogContext

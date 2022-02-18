@@ -50,7 +50,7 @@ internal class LogSentryBridge<TContext> : ILogSentryBridge
             level,
             source,
             Thread.CurrentThread.ManagedThreadId,
-            message,
+            exception is null ? message : LogMessageEnricher.GetExceptionMessage(exception),
             exception?.Demystify(),
             messageTemplate,
             data,
