@@ -1,8 +1,10 @@
+using System;
 using Annium.Logging.Shared;
 
 namespace Annium.Logging.File;
 
-public record FileLoggingConfiguration : LogRouteConfiguration
+public record FileLoggingConfiguration<TContext> : LogRouteConfiguration
+    where TContext : class, ILogContext
 {
-    public string File { get; set; } = string.Empty;
+    public Func<LogMessage<TContext>, string>? GetFile { get; set; }
 }

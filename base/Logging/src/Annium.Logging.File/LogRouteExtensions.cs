@@ -9,14 +9,14 @@ public static class LogRouteExtensions
 {
     public static LogRoute<TContext> UseFile<TContext>(
         this LogRoute<TContext> route,
-        FileLoggingConfiguration cfg
+        FileLoggingConfiguration<TContext> cfg
     )
         where TContext : class, ILogContext
         => route.UseFile(LogMessageExtensions.DefaultFormat, cfg);
 
     public static LogRoute<TContext> UseTestFile<TContext>(
         this LogRoute<TContext> route,
-        FileLoggingConfiguration cfg
+        FileLoggingConfiguration<TContext> cfg
     )
         where TContext : class, ILogContext
         => route.UseFile(LogMessageExtensions.DefaultTestFormat, cfg);
@@ -24,7 +24,7 @@ public static class LogRouteExtensions
     public static LogRoute<TContext> UseFile<TContext>(
         this LogRoute<TContext> route,
         Func<LogMessage<TContext>, string> format,
-        FileLoggingConfiguration cfg
+        FileLoggingConfiguration<TContext> cfg
     )
         where TContext : class, ILogContext
     {
