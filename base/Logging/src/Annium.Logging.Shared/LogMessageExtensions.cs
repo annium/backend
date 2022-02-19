@@ -24,7 +24,7 @@ public static class LogMessageExtensions
         var sb = new StringBuilder();
         sb.Append(m.Subject());
         if (m.Line != 0)
-            sb.Append(m.Location());
+            sb.Append($" at {m.Location()}");
 
         return $"[{time}] {m.Level} [{m.ThreadId:D3}] {sb} >> {m.Message}";
     }
@@ -37,7 +37,7 @@ public static class LogMessageExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Location<TContext>(this LogMessage<TContext> m)
         where TContext : class, ILogContext
-        => $" at {m.Type}.{m.Member}:{m.Line}";
+        => $"{m.Type}.{m.Member}:{m.Line}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string DateTimeFormat<TContext>(this LogMessage<TContext> m)
