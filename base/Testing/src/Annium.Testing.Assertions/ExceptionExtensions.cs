@@ -1,30 +1,35 @@
 using System;
 using System.Linq;
-using Annium.Core.Primitives.Collections.Generic;
+using System.Runtime.CompilerServices;
+using Annium.Testing.Assertions.Internal;
 
 namespace Annium.Testing;
 
 public static class ExceptionExtensions
 {
-    public static T Reports<T>(this T value, string message, params string[] messages)
+    public static T Reports<T>(
+        this T value,
+        string[] messages,
+        [CallerArgumentExpression("value")] string valueEx = default!,
+        [CallerArgumentExpression("messages")] string messagesEx = default!
+    )
         where T : Exception
     {
-        var allMessages = message.Yield().Concat(messages).ToArray();
-        if (!allMessages.All(value.Message.Contains))
-            throw new AssertionFailedException(
-                $"Expected exception message `{value.Message}` to contain: `{allMessages.Join("`, `")}`"
-            );
+        if (!messages.All(value.Message.Contains))
+            throw new AssertionFailedException($"{value.Wrap(valueEx)} expected to report: `{messages.Wrap(messagesEx)}`");
 
         return value;
     }
 
-    public static T ReportsExactly<T>(this T value, string message)
+    public static T ReportsExactly<T>(
+        this T value,
+        string message,
+        [CallerArgumentExpression("value")] string valueEx = default!,
+        [CallerArgumentExpression("message")] string messageEx = default!
+    )
         where T : Exception
     {
-        value.Message.Is(
-            message,
-            $"Expected exception message `{value.Message}` to be `{message}`"
-        );
+        value.Message.Is(message, $"{value.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
 
         return value;
     }

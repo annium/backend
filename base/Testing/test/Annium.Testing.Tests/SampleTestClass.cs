@@ -21,7 +21,7 @@ public class SampleTestClass : IDisposable
     public void Test_Failing()
     {
         Console.WriteLine(nameof(Test_Failing));
-        ((Action) (() => { throw new ArgumentException(); })).Throws<ArgumentException>();
+        Wrap.It((Action)(() => throw new ArgumentException())).Throws<ArgumentException>();
     }
 
     [Fact]

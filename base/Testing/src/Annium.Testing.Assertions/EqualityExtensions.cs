@@ -1,27 +1,32 @@
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Runtime.CompilerServices;
+using Annium.Testing.Assertions.Internal;
 
 namespace Annium.Testing;
 
 public static class EqualityExtensions
 {
-    public static void Is<T>(this T value, T data, string message = "")
+    public static void Is<T>(
+        this T value,
+        T data,
+        string? message = null,
+        [CallerArgumentExpression("value")] string valueEx = default!,
+        [CallerArgumentExpression("data")] string dataEx = default!
+    )
     {
         if (!EqualityComparer<T>.Default.Equals(value, data))
-            throw new AssertionFailedException(
-                string.IsNullOrEmpty(message)
-                    ? $"{JsonSerializer.Serialize(value)} != {JsonSerializer.Serialize(data)}"
-                    : message
-            );
+            throw new AssertionFailedException(message ?? $"{valueEx} ({value.Str()}) != {dataEx} ({data.Str()})");
     }
 
-    public static void IsNot<T>(this T value, T data, string message = "")
+    public static void IsNot<T>(
+        this T value,
+        T data,
+        string? message = null,
+        [CallerArgumentExpression("value")] string valueEx = default!,
+        [CallerArgumentExpression("data")] string dataEx = default!
+    )
     {
         if (EqualityComparer<T>.Default.Equals(value, data))
-            throw new AssertionFailedException(
-                string.IsNullOrEmpty(message)
-                    ? $"{JsonSerializer.Serialize(value)} == {JsonSerializer.Serialize(data)}"
-                    : message
-            );
+            throw new AssertionFailedException(message ?? $"{valueEx} ({value.Str()}) == {dataEx} ({data.Str()})");
     }
 }

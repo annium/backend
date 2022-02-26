@@ -1,18 +1,29 @@
+using System.Runtime.CompilerServices;
+using Annium.Testing.Assertions.Internal;
+
 namespace Annium.Testing;
 
 public static class TypeExtensions
 {
-    public static T As<T>(this object? value, string message = "")
+    public static T As<T>(
+        this object? value,
+        string? message = null,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
     {
-        (value is T).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(T)}" : message);
+        (value is T).IsTrue(message ?? $"{valueEx} is {value?.GetType()}, not {typeof(T)}");
 
-        return (T) value!;
+        return (T)value!;
     }
 
-    public static T AsExact<T>(this object? value, string message = "")
+    public static T AsExact<T>(
+        this object? value,
+        string? message = null,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
     {
-        (value?.GetType() == typeof(T)).IsTrue(string.IsNullOrEmpty(message) ? $"{value} is {value?.GetType()}, not {typeof(T)}" : message);
+        (value?.GetType() == typeof(T)).IsTrue(message ?? $"{valueEx} is {value?.GetType()}, not {typeof(T)}");
 
-        return (T) value!;
+        return (T)value!;
     }
 }
