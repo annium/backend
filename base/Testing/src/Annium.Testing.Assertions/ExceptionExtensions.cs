@@ -9,6 +9,20 @@ public static class ExceptionExtensions
 {
     public static T Reports<T>(
         this T value,
+        string message,
+        [CallerArgumentExpression("value")] string valueEx = default!,
+        [CallerArgumentExpression("message")] string messageEx = default!
+    )
+        where T : Exception
+    {
+        if (!value.Message.Contains(message))
+            throw new AssertionFailedException($"{value.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
+
+        return value;
+    }
+
+    public static T ReportsAll<T>(
+        this T value,
         string[] messages,
         [CallerArgumentExpression("value")] string valueEx = default!,
         [CallerArgumentExpression("messages")] string messagesEx = default!
