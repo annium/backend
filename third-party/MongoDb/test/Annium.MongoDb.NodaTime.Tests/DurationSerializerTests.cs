@@ -27,8 +27,8 @@ public class DurationSerializerTests
     [Fact]
     public void ThrowsWhenValueIsInvalid()
     {
-        Action act = () => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", "bleh")));
-        act.Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", "bleh"))))
+            .Throws<FormatException>();
     }
 
     [Fact]

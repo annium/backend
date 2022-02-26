@@ -10,7 +10,7 @@ public class GetInheritanceChainExtensionTests
     public void GetInheritanceChain_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.GetInheritanceChain())).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.GetInheritanceChain()).Throws<ArgumentNullException>();
     }
 
     [Fact]

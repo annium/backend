@@ -16,10 +16,10 @@ public class ValueContainerTest
         var state = GetState();
 
         // assert
-        ((Action)(() =>
+        Wrap.It(() =>
         {
             var _ = state.A.Value;
-        })).Throws<InvalidOperationException>();
+        }).Throws<InvalidOperationException>();
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class ValueContainerTest
         var state = GetState();
 
         // assert
-        ((Action)(() => { state.A.Set(5); })).Throws<InvalidOperationException>();
+        Wrap.It(() => { state.A.Set(5); }).Throws<InvalidOperationException>();
     }
 
     [Fact]

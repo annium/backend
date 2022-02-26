@@ -12,7 +12,7 @@ public class IsDerivedFromExtensionTests
     public void IsDerivedFromExtensionTests_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.IsDerivedFrom(typeof(object)))).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.IsDerivedFrom(typeof(object))).Throws<ArgumentNullException>();
     }
 
     [Fact]

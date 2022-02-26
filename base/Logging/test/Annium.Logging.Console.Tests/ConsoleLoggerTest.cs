@@ -30,19 +30,18 @@ public class ConsoleLoggerTest
         // arrange
         var subject = GetSubject();
 
-        using (var capture = ConsoleCapture.Start())
-        {
-            // arrange
-            var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
+        using var capture = ConsoleCapture.Start();
 
-            // act
-            subject.Log().Error(ex);
+        // arrange
+        var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
 
-            // assert
-            capture.Output.Contains("Errors (2):").IsTrue();
-            capture.Output.Contains("xxx").IsTrue();
-            capture.Output.Contains("yyy").IsTrue();
-        }
+        // act
+        subject.Log().Error(ex);
+
+        // assert
+        capture.Output.Contains("2 error(s) in").IsTrue();
+        capture.Output.Contains("xxx").IsTrue();
+        capture.Output.Contains("yyy").IsTrue();
     }
 
     [Fact]

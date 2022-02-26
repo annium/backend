@@ -10,7 +10,7 @@ public class TryMakeGenericTypeExtensionTests
     public void TryMakeGenericType_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.TryMakeGenericType(out var result))).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.TryMakeGenericType(out var result)).Throws<ArgumentNullException>();
     }
 
     [Fact]

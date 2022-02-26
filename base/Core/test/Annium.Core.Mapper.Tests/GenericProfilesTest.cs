@@ -30,7 +30,7 @@ public class GenericProfilesTest
     public void GenericProfiles_Unconstrained_Fails()
     {
         // arrange
-        ((Func<IMapper>) (() => GetMapper(typeof(InvalidProfile<>)))).Throws<ArgumentException>();
+        Wrap.It(() => GetMapper(typeof(InvalidProfile<>))).Throws<ArgumentException>();
     }
 
     private IMapper GetMapper(Type profileType) => new ServiceContainer()

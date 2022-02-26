@@ -14,15 +14,15 @@ public class GetTargetImplementationExtensionTests
     public void GetTargetImplementation_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.GetTargetImplementation(typeof(bool)))).Throws<ArgumentNullException>();
-        ((Action) (() => typeof(bool).GetTargetImplementation(null!))).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.GetTargetImplementation(typeof(bool))).Throws<ArgumentNullException>();
+        Wrap.It(() => typeof(bool).GetTargetImplementation(null!)).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void GetTargetImplementation_OpenType_Throws()
     {
         //assert
-        ((Action) (() => typeof(List<>).GetTargetImplementation(typeof(bool)))).Throws<ArgumentException>();
+        Wrap.It(() => typeof(List<>).GetTargetImplementation(typeof(bool))).Throws<ArgumentException>();
     }
 
     [Fact]

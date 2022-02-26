@@ -71,7 +71,7 @@ public class TypeHelperTest
     public void ResolveProperty_NotProperty_Fails()
     {
         // assert
-        ((Action) (() => TypeHelper.ResolveProperty<B>(x => x.InnerTwo.ToString()!))).Throws<ArgumentException>();
+        Wrap.It(() => TypeHelper.ResolveProperty<B>(x => x.InnerTwo.ToString()!)).Throws<ArgumentException>();
     }
 
     private class B

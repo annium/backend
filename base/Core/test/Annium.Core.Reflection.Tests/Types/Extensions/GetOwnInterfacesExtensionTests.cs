@@ -10,7 +10,7 @@ public class GetOwnInterfacesExtensionTests
     public void GetOwnInterfaces_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.GetOwnInterfaces())).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.GetOwnInterfaces()).Throws<ArgumentNullException>();
     }
 
     [Fact]

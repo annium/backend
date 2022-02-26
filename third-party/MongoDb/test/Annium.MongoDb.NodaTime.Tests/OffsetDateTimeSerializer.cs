@@ -37,8 +37,8 @@ public class OffsetDateTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", "bleh"))))).Throws<FormatException>();
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value))))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", "bleh")))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value)))).Throws<FormatException>();
     }
 
     [Fact]

@@ -45,7 +45,7 @@ public class ConcurrentTest
         var disposalTask = executor.DisposeAsync();
         executor.IsAvailable.IsFalse();
         // throws, as not available already
-        ((Action)(() => executor.Schedule(() => { }))).Throws<InvalidOperationException>();
+        Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
         counter.Is(200);
 
@@ -99,7 +99,7 @@ public class ConcurrentTest
         var disposalTask = executor.DisposeAsync();
         executor.IsAvailable.IsFalse();
         // throws, as not available already
-        ((Action)(() => executor.Schedule(() => { }))).Throws<InvalidOperationException>();
+        Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
         successes.Is(196);
         failures.Is(2);

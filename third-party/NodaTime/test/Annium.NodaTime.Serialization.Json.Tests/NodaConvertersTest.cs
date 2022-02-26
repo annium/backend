@@ -41,7 +41,7 @@ public class ConvertersTest
     {
         var localDate = new LocalDate(2012, 1, 2, CalendarSystem.Coptic);
 
-        ((Action) (() => JsonSerializer.Serialize(localDate, With(Converters.LocalDateConverter)))).Throws<ArgumentException>();
+        Wrap.It(() => JsonSerializer.Serialize(localDate, With(Converters.LocalDateConverter))).Throws<ArgumentException>();
     }
 
     [Fact]
@@ -57,7 +57,7 @@ public class ConvertersTest
     {
         var localDateTime = new LocalDateTime(2012, 1, 2, 3, 4, 5, CalendarSystem.Coptic);
 
-        ((Action) (() => JsonSerializer.Serialize(localDateTime, With(Converters.LocalDateTimeConverter)))).Throws<ArgumentException>();
+        Wrap.It(() => JsonSerializer.Serialize(localDateTime, With(Converters.LocalDateTimeConverter))).Throws<ArgumentException>();
     }
 
     [Fact]

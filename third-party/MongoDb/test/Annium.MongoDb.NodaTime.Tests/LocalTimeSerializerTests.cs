@@ -27,8 +27,8 @@ public class LocalTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", "bleh"))))).Throws<FormatException>();
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", BsonNull.Value))))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", "bleh")))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", BsonNull.Value)))).Throws<FormatException>();
     }
 
     [Fact]

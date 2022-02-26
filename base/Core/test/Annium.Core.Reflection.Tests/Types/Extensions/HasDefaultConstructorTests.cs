@@ -12,7 +12,7 @@ public class HasDefaultConstructorTests
     public void HasDefaultConstructor_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.HasDefaultConstructor())).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type) !.HasDefaultConstructor()).Throws<ArgumentNullException>();
     }
 
     [Fact]
@@ -35,6 +35,6 @@ public class HasDefaultConstructorTests
     public void HasDefaultConstructor_Other_Throws()
     {
         //assert
-        ((Action) (() => typeof(IEnumerable).HasDefaultConstructor())).Throws<ArgumentException>();
+        Wrap.It(() => typeof(IEnumerable).HasDefaultConstructor()).Throws<ArgumentException>();
     }
 }

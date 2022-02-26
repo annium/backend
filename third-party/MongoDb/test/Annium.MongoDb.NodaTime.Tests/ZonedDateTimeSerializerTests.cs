@@ -45,8 +45,8 @@ public class ZonedDateTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", "bleh"))))).Throws<FormatException>();
-        ((Action) (() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value))))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", "bleh")))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value)))).Throws<FormatException>();
     }
 
     [Fact]

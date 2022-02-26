@@ -20,7 +20,7 @@ public class UriFactoryTest
     public void Create_Uri_Relative_Throws()
     {
         // assert
-        ((Action) (() => UriFactory.Base(new Uri("example.com/path")).Build())).Throws<UriFormatException>();
+        Wrap.It(() => UriFactory.Base(new Uri("example.com/path")).Build()).Throws<UriFormatException>();
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class UriFactoryTest
     public void Create_string_Relative_Throws()
     {
         // assert
-        ((Action) (() => UriFactory.Base("example.com/path").Build())).Throws<UriFormatException>();
+        Wrap.It(() => UriFactory.Base("example.com/path").Build()).Throws<UriFormatException>();
     }
 
     [Fact]
@@ -54,21 +54,21 @@ public class UriFactoryTest
     public void Create_empty_Unfilled_Throws()
     {
         // assert
-        ((Action) (() => UriFactory.Base().Build())).Throws<UriFormatException>();
+        Wrap.It(() => UriFactory.Base().Build()).Throws<UriFormatException>();
     }
 
     [Fact]
     public void Create_empty_Relative_Throws()
     {
         // assert
-        ((Action) (() => UriFactory.Base("example.com/path").Build())).Throws<UriFormatException>();
+        Wrap.It(() => UriFactory.Base("example.com/path").Build()).Throws<UriFormatException>();
     }
 
     [Fact]
     public void Path_Full_Throws()
     {
         // assert
-        ((Action) (() => UriFactory.Base("https://example.com").Path("https://localhost:9000/path").Build())).Throws<UriFormatException>();
+        Wrap.It(() => UriFactory.Base("https://example.com").Path("https://localhost:9000/path").Build()).Throws<UriFormatException>();
     }
 
     [Fact]

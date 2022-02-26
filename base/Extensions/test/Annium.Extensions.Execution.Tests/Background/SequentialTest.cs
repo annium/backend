@@ -48,7 +48,7 @@ public class SequentialTest
         var disposalTask = executor.DisposeAsync();
         executor.IsAvailable.IsFalse();
         // throws, as not available already
-        ((Action) (() => executor.Schedule(() => { }))).Throws<InvalidOperationException>();
+        Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
         queue.Count.Is(40);
         queue.ToArray().IsEqual(Enumerable.Range(0, 40).ToArray());

@@ -14,9 +14,9 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     public void ResolveGenericArgumentsByImplementation_OfNull_Throws()
     {
         //assert
-        ((Action) (() => (null as Type) !.ResolveGenericArgumentsByImplementation(typeof(bool))))
+        Wrap.It(() => (null as Type) !.ResolveGenericArgumentsByImplementation(typeof(bool)))
             .Throws<ArgumentNullException>();
-        ((Action) (() => typeof(bool).ResolveGenericArgumentsByImplementation(null!)))
+        Wrap.It(() => typeof(bool).ResolveGenericArgumentsByImplementation(null!))
             .Throws<ArgumentNullException>();
     }
 

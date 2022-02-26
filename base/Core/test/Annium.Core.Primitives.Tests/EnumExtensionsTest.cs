@@ -20,7 +20,7 @@ public class EnumExtensionsTest
         name.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
         desc.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
         value.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
-        ((Func<TestEnum>) (() => invalid.ParseEnum<TestEnum>())).Throws<ArgumentException>();
+        Wrap.It(() => invalid.ParseEnum<TestEnum>()).Throws<ArgumentException>();
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class EnumExtensionsTest
         b.ParseEnum<TestEnum>().IsEqual(TestEnum.One | TestEnum.Two);
         c.ParseEnum<TestEnum>().IsEqual(TestEnum.One);
         d.ParseEnum<TestEnum>().IsEqual(TestEnum.One | TestEnum.Three);
-        ((Func<TestEnum>) (() => e.ParseEnum<TestEnum>())).Throws<ArgumentException>();
+        Wrap.It(() => e.ParseEnum<TestEnum>()).Throws<ArgumentException>();
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class EnumExtensionsTest
         // assert
         valid.ParseFlags<TestEnum>("|").IsEqual(TestEnum.One | TestEnum.Two);
         string.Empty.ParseFlags<TestEnum>("|").IsEqual(TestEnum.None);
-        ((Func<TestEnum>) (() => invalid.ParseFlags<TestEnum>(","))).Throws<ArgumentException>();
+        Wrap.It(() => invalid.ParseFlags<TestEnum>(",")).Throws<ArgumentException>();
     }
 
     [Fact]

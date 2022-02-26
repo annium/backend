@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
@@ -100,7 +99,7 @@ public class TypeManagerTest
         var key = "key";
 
         // assert
-        ((Func<Type?>) (() => manager.ResolveByKey(key, typeof(F)))).Throws<TypeResolutionException>();
+        Wrap.It(() => manager.ResolveByKey(key, typeof(F))).Throws<TypeResolutionException>();
     }
 
     [Fact]
@@ -111,7 +110,7 @@ public class TypeManagerTest
         var key = "F";
 
         // assert
-        ((Func<Type?>) (() => manager.ResolveByKey(key, typeof(D)))).Throws<TypeResolutionException>();
+        Wrap.It(() => manager.ResolveByKey(key, typeof(D))).Throws<TypeResolutionException>();
     }
 
     [Fact]

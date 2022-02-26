@@ -63,17 +63,17 @@ public class InstantSerializerTests
     public void ThrowsForInvalidTypes()
     {
         var doc = new BsonDocument(new BsonElement("Instant", new BsonBoolean(false)));
-        ((Action) (() => BsonSerializer.Deserialize<Test>(doc))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
 
         doc = new BsonDocument(new BsonElement("Instant", new BsonInt32(1)));
-        ((Action) (() => BsonSerializer.Deserialize<Test>(doc))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
     }
 
     [Fact]
     public void ThrowsForNullWhenNotNullable()
     {
         var doc = new BsonDocument(new BsonElement("Instant", BsonNull.Value));
-        ((Action) (() => BsonSerializer.Deserialize<Test>(doc))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
     }
 
     [Fact]

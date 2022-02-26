@@ -14,11 +14,10 @@ public class ComparableTest
         var a = new Money(1, 1);
         var b = new Money(1, 2);
         var c = new Money(2, 1);
-        Action deniedObjectOther = () => a.CompareTo(10);
 
         // assert
         a.CompareTo(null !).IsEqual(1);
-        deniedObjectOther.Throws<ArgumentException>();
+        Wrap.It(() => a.CompareTo(10)).Throws<ArgumentException>();
         a.CompareTo(a as object).IsEqual(0);
         a.CompareTo(b as object).IsEqual(-1);
         a.CompareTo(c as object).IsEqual(-1);

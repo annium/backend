@@ -47,7 +47,7 @@ public class ExpiringDictionaryTest
         timeManager.SetNow(timeProvider.Now + ttl);
         collection.Get(key).Is(value);
         timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-        ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
+        Wrap.It(() => collection.Get(key)).Throws<KeyNotFoundException>();
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class ExpiringDictionaryTest
         timeManager.SetNow(timeProvider.Now + ttl);
         collection.Get(key).Is(value);
         timeManager.SetNow(timeProvider.Now + ttl + Duration.FromMilliseconds(1));
-        ((Func<string>)(() => collection.Get(key))).Throws<KeyNotFoundException>();
+        Wrap.It(() => collection.Get(key)).Throws<KeyNotFoundException>();
     }
 
     [Fact]
