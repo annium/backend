@@ -16,7 +16,7 @@ public static class ExceptionExtensions
         where T : Exception
     {
         if (!value.Message.Contains(message))
-            throw new AssertionFailedException($"{value.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
+            throw new AssertionFailedException($"{value.Message.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
 
         return value;
     }
@@ -30,7 +30,7 @@ public static class ExceptionExtensions
         where T : Exception
     {
         if (!messages.All(value.Message.Contains))
-            throw new AssertionFailedException($"{value.Wrap(valueEx)} expected to report: `{messages.Wrap(messagesEx)}`");
+            throw new AssertionFailedException($"{value.Message.Wrap(valueEx)} expected to report: `{messages.Wrap(messagesEx)}`");
 
         return value;
     }
@@ -43,7 +43,7 @@ public static class ExceptionExtensions
     )
         where T : Exception
     {
-        value.Message.Is(message, $"{value.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
+        value.Message.Is(message, $"{value.Message.Wrap(valueEx)} expected to report: `{message.Wrap(messageEx)}`");
 
         return value;
     }
