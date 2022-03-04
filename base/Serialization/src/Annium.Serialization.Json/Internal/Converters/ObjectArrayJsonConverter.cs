@@ -9,15 +9,31 @@ namespace Annium.Serialization.Json.Internal.Converters;
 
 internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
 {
-    private static readonly IReadOnlyCollection<MemberInfo> Members = typeof(T).GetMembers()
-        .Where(x => x switch
-        {
-            PropertyInfo p => p.CanRead && p.CanWrite,
-            FieldInfo f    => !f.IsInitOnly,
-            _              => false
-        })
-        .OrderBy(x => x.Name)
-        .ToArray();
+    private static readonly IReadOnlyCollection<MemberInfo> Members;
+
+    static ObjectArrayJsonConverter()
+    {
+        var members = typeof(T).GetMembers()
+            .Where(x => x switch
+            {
+                PropertyInfo p => p.CanRead && p.CanWrite,
+                FieldInfo f    => !f.IsInitOnly,
+                _              => false
+            })
+            .Select(x => (member: x, order: x.GetCustomAttribute<JsonPropertyOrderAttribute>()))
+            .ToArray();
+
+        Members = members.All(x => x.order is null)
+            ? members
+                .OrderBy(x => x.member.Name)
+                .Select(x => x.member)
+                .ToArray()
+            : members
+                .Where(x => x.order is not null)
+                .OrderBy(x => x.order!.Order)
+                .Select(x => x.member)
+                .ToArray();
+    }
 
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
