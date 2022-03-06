@@ -31,8 +31,8 @@ public static class ServiceContainerExtensions
         return container;
     }
 
-    public static ITimeConfigurationBuilder AddTime(this IServiceContainer container)
-        => new TimeConfigurationBuilder(container);
+    public static ITimeConfigurationBuilder AddTime(this IServiceContainer container, ServiceLifetime serviceLifetime = ServiceLifetime.Singleton)
+        => new TimeConfigurationBuilder(container, serviceLifetime);
 
     public static ITypeManager GetTypeManager(this IServiceContainer container)
     {
