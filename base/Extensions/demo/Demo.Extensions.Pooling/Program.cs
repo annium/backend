@@ -68,7 +68,7 @@ public class Program
             _log = log;
         }
 
-        public override async Task<Item> CreateAsync(uint id)
+        public override async Task<Item> CreateAsync(uint id, CancellationToken ct)
         {
             await Task.Delay(10);
             return new Item(id, _log);

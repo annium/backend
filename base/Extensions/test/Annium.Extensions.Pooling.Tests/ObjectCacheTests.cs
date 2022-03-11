@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
@@ -95,7 +96,7 @@ public class ObjectCacheTests
             _log = log;
         }
 
-        public override async Task<Item> CreateAsync(uint id)
+        public override async Task<Item> CreateAsync(uint id, CancellationToken ct)
         {
             await Task.Delay(10);
             return new Item(id, _log);

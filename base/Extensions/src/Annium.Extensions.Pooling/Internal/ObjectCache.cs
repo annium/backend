@@ -24,7 +24,7 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
         Logger = logger;
     }
 
-    public async Task<ICacheReference<TValue>> GetAsync(TKey key)
+    public async Task<ICacheReference<TValue>> GetAsync(TKey key, CancellationToken ct = default)
     {
         // get or create CacheEntry
         CacheEntry entry;
@@ -47,10 +47,10 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
         {
             this.Log().Trace($"Get by {key}: initialize entry");
             if (_provider.HasCreate)
-                entry.SetValue(await _provider.CreateAsync(key));
+                entry.SetValue(await _provider.CreateAsync(key, ct));
             else if (_provider.HasExternalCreate)
             {
-                reference = await _provider.ExternalCreateAsync(key);
+                reference = await _provider.ExternalCreateAsync(key, ct);
                 entry.SetValue(reference.Value);
             }
             else
