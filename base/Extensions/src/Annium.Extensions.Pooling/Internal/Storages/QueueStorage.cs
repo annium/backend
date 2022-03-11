@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.Extensions.Pooling.Storages;
+namespace Annium.Extensions.Pooling.Internal.Storages;
 
 internal class QueueStorage<T> : StorageBase<T>, IStorage<T>
 {

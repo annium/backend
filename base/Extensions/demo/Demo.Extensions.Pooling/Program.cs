@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Pooling;
-using Annium.Logging.Abstractions;
 
 namespace Demo.Extensions.Pooling;
 
@@ -38,12 +37,6 @@ public class Program
         var container = new ServiceContainer();
         container.AddTime().WithRealTime().SetDefault();
 
-        var logger = container
-            .AddLogging()
-            .BuildServiceProvider()
-            .UseLogging(route => route.UseConsole())
-            .Resolve<ILogger<ObjectCache<uint, Item>>>();
-
         var logs = new List<string>();
 
         void Log(string message)
@@ -51,18 +44,38 @@ public class Program
             lock (logs!) logs.Add(message);
         }
 
-        var cache = new ObjectCache<uint, Item>(
-            async id =>
-            {
-                await Task.Delay(10);
-                return new Item(id, Log);
-            },
-            item => item.Suspend(),
-            item => item.Resume(),
-            logger
-        );
+        var sp = container
+            .AddLogging()
+            .AddObjectCache<uint, Item, ItemProvider>(ServiceLifetime.Singleton)
+            .Add<Action<string>>(Log).AsSelf().Singleton()
+            .BuildServiceProvider()
+            .UseLogging(route => route.UseConsole());
+        var cache = sp.Resolve<IObjectCache<uint, Item>>();
 
         return cache;
+    }
+
+    private class ItemProvider : ObjectCacheProvider<uint, Item>
+    {
+        private readonly Action<string> _log;
+        public override bool HasCreate => true;
+        public override bool HasExternalCreate => false;
+
+        public ItemProvider(
+            Action<string> log
+        )
+        {
+            _log = log;
+        }
+
+        public override async Task<Item> CreateAsync(uint id)
+        {
+            await Task.Delay(10);
+            return new Item(id, _log);
+        }
+
+        public override Task SuspendAsync(Item value) => value.Suspend();
+        public override Task ResumeAsync(Item value) => value.Resume();
     }
 
     private class Item : IDisposable

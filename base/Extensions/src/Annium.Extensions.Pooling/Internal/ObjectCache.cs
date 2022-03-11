@@ -5,66 +5,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
-namespace Annium.Extensions.Pooling;
+namespace Annium.Extensions.Pooling.Internal;
 
-public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
+internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
     where TKey : notnull
     where TValue : notnull
 {
+    private readonly ObjectCacheProvider<TKey, TValue> _provider;
     public ILogger Logger { get; }
     private readonly IDictionary<TKey, CacheEntry> _entries = new Dictionary<TKey, CacheEntry>();
-    private readonly Func<TKey, Task<TValue>>? _factory;
-    private readonly Func<TKey, Task<ICacheReference<TValue>>>? _externalFactory;
-    private readonly Func<TValue, Task> _suspend;
-    private readonly Func<TValue, Task> _resume;
 
     public ObjectCache(
-        Func<TKey, Task<TValue>> factory,
-        ILogger<ObjectCache<TKey, TValue>> logger
-    ) : this(
-        factory,
-        _ => Task.CompletedTask,
-        _ => Task.CompletedTask,
-        logger
-    )
-    {
-    }
-
-    public ObjectCache(
-        Func<TKey, Task<TValue>> factory,
-        Func<TValue, Task> suspend,
-        Func<TValue, Task> resume,
+        ObjectCacheProvider<TKey, TValue> provider,
         ILogger<ObjectCache<TKey, TValue>> logger
     )
     {
-        _factory = factory;
-        _suspend = suspend;
-        _resume = resume;
-        Logger = logger;
-    }
-
-    public ObjectCache(
-        Func<TKey, Task<ICacheReference<TValue>>> externalFactory,
-        ILogger<ObjectCache<TKey, TValue>> logger
-    ) : this(
-        externalFactory,
-        _ => Task.CompletedTask,
-        _ => Task.CompletedTask,
-        logger
-    )
-    {
-    }
-
-    public ObjectCache(
-        Func<TKey, Task<ICacheReference<TValue>>> externalFactory,
-        Func<TValue, Task> suspend,
-        Func<TValue, Task> resume,
-        ILogger<ObjectCache<TKey, TValue>> logger
-    )
-    {
-        _externalFactory = externalFactory;
-        _suspend = suspend;
-        _resume = resume;
+        _provider = provider;
         Logger = logger;
     }
 
@@ -90,13 +46,15 @@ public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
         if (isInitializing)
         {
             this.Log().Trace($"Get by {key}: initialize entry");
-            if (_factory != null)
-                entry.SetValue(await _factory(key));
-            else if (_externalFactory != null)
+            if (_provider.HasCreate)
+                entry.SetValue(await _provider.CreateAsync(key));
+            else if (_provider.HasExternalCreate)
             {
-                reference = await _externalFactory(key);
+                reference = await _provider.ExternalCreateAsync(key);
                 entry.SetValue(reference.Value);
             }
+            else
+                throw new NotImplementedException("Neither base not external factory is implemented");
         }
         else
         {
@@ -108,14 +66,13 @@ public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
         if (!isInitializing && !entry.HasReferences)
         {
             this.Log().Trace($"Get by {key}: resume entry");
-            await _resume(entry.Value);
+            await _provider.ResumeAsync(entry.Value);
         }
 
         // create reference, incrementing reference counter
         this.Log().Trace($"Get by {key}: add entry reference");
         entry.AddReference();
-        if (reference is null)
-            reference = new CacheReference<TValue>(entry.Value, () => Release(key, entry));
+        reference ??= new CacheReference<TValue>(entry.Value, () => Release(key, entry));
 
         entry.Unlock();
 
@@ -132,7 +89,7 @@ public class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
         if (!entry.HasReferences)
         {
             this.Log().Trace($"Release by {key}: suspend entry");
-            await _suspend(entry.Value);
+            await _provider.SuspendAsync(entry.Value);
         }
 
         entry.Unlock();

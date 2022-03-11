@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Xunit;
 
@@ -64,33 +63,46 @@ public class ObjectCacheTests
 
     private (IObjectCache<uint, Item>, IReadOnlyCollection<string>) CreateCache()
     {
-        var container = new ServiceContainer();
-
-        var logger = container
-            .AddTime().WithManagedTime().SetDefault()
-            .AddLogging()
-            .BuildServiceProvider()
-            .UseLogging(route => route.UseInMemory())
-            .Resolve<ILogger<ObjectCache<uint, Item>>>();
         var logs = new List<string>();
 
         void Log(string message)
         {
-            lock (logs!) logs.Add(message);
+            lock (logs) logs.Add(message);
         }
 
-        var cache = new ObjectCache<uint, Item>(
-            async id =>
-            {
-                await Task.Delay(10);
-                return new Item(id, Log);
-            },
-            item => item.Suspend(),
-            item => item.Resume(),
-            logger
-        );
+        var sp = new ServiceContainer()
+            .AddTime().WithManagedTime().SetDefault()
+            .AddLogging()
+            .AddObjectCache<uint, Item, ItemProvider>(ServiceLifetime.Singleton)
+            .Add<Action<string>>(Log).AsSelf().Singleton()
+            .BuildServiceProvider()
+            .UseLogging(route => route.UseInMemory());
+        var cache = sp.Resolve<IObjectCache<uint, Item>>();
 
         return (cache, logs);
+    }
+
+    private class ItemProvider : ObjectCacheProvider<uint, Item>
+    {
+        private readonly Action<string> _log;
+        public override bool HasCreate => true;
+        public override bool HasExternalCreate => false;
+
+        public ItemProvider(
+            Action<string> log
+        )
+        {
+            _log = log;
+        }
+
+        public override async Task<Item> CreateAsync(uint id)
+        {
+            await Task.Delay(10);
+            return new Item(id, _log);
+        }
+
+        public override Task SuspendAsync(Item value) => value.Suspend();
+        public override Task ResumeAsync(Item value) => value.Resume();
     }
 
     private class Item : IDisposable

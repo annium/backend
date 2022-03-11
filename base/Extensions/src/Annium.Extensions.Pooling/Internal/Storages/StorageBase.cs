@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Extensions.Pooling.Storages;
+namespace Annium.Extensions.Pooling.Internal.Storages;
 
 internal abstract class StorageBase<T> : IDisposable
 {

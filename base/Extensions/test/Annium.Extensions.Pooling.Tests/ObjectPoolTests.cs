@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Xunit;
 
@@ -17,13 +18,13 @@ public class ObjectPoolTests
     private const string Disposed = "Disposed";
 
     [Fact]
-    public void ObjectPool_Eager_FIFO_Works()
+    public async Task ObjectPool_Eager_FIFO_Works()
     {
         // arrange
         var (pool, logs) = CreatePool(PoolLoadMode.Eager, PoolStorageMode.Fifo);
 
         // act
-        Run(pool);
+        await Run(pool);
 
         // assert
         // as eager - all workers Created
@@ -36,19 +37,19 @@ public class ObjectPoolTests
     }
 
     [Fact]
-    public void ObjectPool_Lazy_LIFO_Works()
+    public async Task ObjectPool_Lazy_LIFO_Works()
     {
         // arrange
         var (pool, logs) = CreatePool(PoolLoadMode.Lazy, PoolStorageMode.Lifo);
 
         // act
-        Run(pool);
+        await Run(pool);
 
         // assert
         // all job is done
         Enumerable.Range(0, Jobs).All(i => logs.Any(e => e.Contains($"{Action} {i}"))).IsTrue();
         // all workers are Disposed
-        (logs.Where(x => x.Contains(Disposed)).Count() == logs.Where(x => x.Contains(Created)).Count()).IsTrue();
+        (logs.Count(x => x.Contains(Disposed)) == logs.Count(x => x.Contains(Created))).IsTrue();
     }
 
     private (IObjectPool<Item>, IReadOnlyCollection<string>) CreatePool(
@@ -64,22 +65,27 @@ public class ObjectPoolTests
             lock (logs!) logs.Add(message);
         }
 
-        var pool = new ObjectPool<Item>(() => new Item(nextId++, Log), 5, loadMode, storageMode);
+        var sp = new ServiceContainer()
+            .AddObjectPool<Item>(5, ServiceLifetime.Singleton, loadMode, storageMode)
+            .Add(_ => new Item(nextId++, Log)).AsSelf().Transient()
+            .BuildServiceProvider();
+
+        var pool = sp.Resolve<IObjectPool<Item>>();
 
         return (pool, logs);
     }
 
-    private void Run(
+    private async Task Run(
         IObjectPool<Item> pool
     )
     {
-        var tasks = Enumerable.Range(0, Jobs).Select(i => Task.Run(() =>
+        await Task.WhenAll(Enumerable.Range(0, Jobs).Select(i => Task.Run(() =>
         {
             var item = pool.Get();
             item.ExecuteAction(i);
             pool.Return(item);
-        })).ToArray();
-        Task.WaitAll(tasks);
+        })));
+
         pool.Dispose();
     }
 

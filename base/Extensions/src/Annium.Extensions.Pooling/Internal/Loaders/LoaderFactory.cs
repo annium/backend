@@ -1,7 +1,7 @@
 using System;
-using Annium.Extensions.Pooling.Storages;
+using Annium.Extensions.Pooling.Internal.Storages;
 
-namespace Annium.Extensions.Pooling.Loaders;
+namespace Annium.Extensions.Pooling.Internal.Loaders;
 
 internal static class LoaderFactory
 {

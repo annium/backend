@@ -1,11 +1,13 @@
 using System;
 using System.Threading;
-using Annium.Extensions.Pooling.Loaders;
-using Annium.Extensions.Pooling.Storages;
+using Annium.Core.DependencyInjection;
+using Annium.Extensions.Pooling.Internal.Loaders;
+using Annium.Extensions.Pooling.Internal.Storages;
 
-namespace Annium.Extensions.Pooling;
+namespace Annium.Extensions.Pooling.Internal;
 
-public class ObjectPool<T> : IObjectPool<T>, IDisposable
+internal class ObjectPool<T> : IObjectPool<T>
+    where T : notnull
 {
     private readonly object _poolLocker = new();
     private readonly ILoader<T> _loader;
@@ -13,21 +15,13 @@ public class ObjectPool<T> : IObjectPool<T>, IDisposable
     private readonly Semaphore _semaphore;
 
     public ObjectPool(
-        Func<T> factory,
-        int capacity,
-        PoolLoadMode loadMode = PoolLoadMode.Lazy,
-        PoolStorageMode storageMode = PoolStorageMode.Fifo
+        IServiceProvider sp,
+        ObjectPoolConfig<T> config
     )
     {
-        if (factory is null)
-            throw new ArgumentNullException(nameof(factory));
-
-        if (capacity <= 0)
-            throw new ArgumentOutOfRangeException(nameof(capacity), capacity, $"Argument '{nameof(capacity)}' must be greater than zero.");
-
-        _storage = StorageFactory.Create<T>(storageMode, capacity);
-        _loader = LoaderFactory.Create(loadMode, factory, _storage);
-        _semaphore = new Semaphore(capacity, capacity);
+        _storage = StorageFactory.Create<T>(config.StorageMode, config.Capacity);
+        _loader = LoaderFactory.Create(config.LoadMode, sp.Resolve<T>, _storage);
+        _semaphore = new Semaphore(config.Capacity, config.Capacity);
     }
 
     public T Get()
