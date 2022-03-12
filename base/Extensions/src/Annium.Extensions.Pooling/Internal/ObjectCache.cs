@@ -55,11 +55,13 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
             }
             else
                 throw new NotImplementedException("Neither base not external factory is implemented");
+
+            this.Log().Trace($"Get by {key}: entry ready");
         }
         else
         {
             this.Log().Trace($"Get by {key}: wait entry");
-            entry.Wait();
+            await entry.WaitAsync();
         }
 
         // if not initializing and entry has no references - it is suspended, need to resume
@@ -74,7 +76,7 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
         entry.AddReference();
         reference ??= new CacheReference<TValue>(entry.Value, () => Release(key, entry));
 
-        entry.Unlock();
+        entry.Release();
 
         return reference;
     }
@@ -82,7 +84,7 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
     private async Task Release(TKey key, CacheEntry entry)
     {
         this.Log().Trace($"Release by {key}: wait entry");
-        entry.Wait();
+        await entry.WaitAsync();
 
         this.Log().Trace($"Release by {key}: remove reference");
         entry.RemoveReference();
@@ -92,7 +94,7 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
             await _provider.SuspendAsync(entry.Value);
         }
 
-        entry.Unlock();
+        entry.Release();
     }
 
     public async ValueTask DisposeAsync()
@@ -117,8 +119,9 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
         private readonly AutoResetEvent _gate = new(initialState: false);
         private uint _references;
 
-        public void Wait() => _gate.WaitOne();
-        public void Unlock() => _gate.Set();
+        public Task WaitAsync() => Task.Run(() => _gate.WaitOne());
+
+        public void Release() => _gate.Set();
 
         public void SetValue(TValue value)
         {
