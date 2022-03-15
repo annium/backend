@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
@@ -98,6 +99,26 @@ public class RepackerTest
         result(false).IsTrue();
     }
 
+    [Fact]
+    public void ListInit_Works()
+    {
+        // act
+        var result = Repack<int, List<int>>(x => new List<int> { x });
+
+        // assert
+        result(5).Has(1).At(0).Is(5);
+    }
+
+    [Fact]
+    public void NewArrayInit_Works()
+    {
+        // act
+        var result = Repack<int, int[]>(x => new[] { x });
+
+        // assert
+        result(5).Has(1).At(0).Is(5);
+    }
+
     private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
     {
         var repacker = new ServiceContainer()
@@ -108,6 +129,6 @@ public class RepackerTest
 
         var param = Expression.Parameter(typeof(TS));
 
-        return ((Expression<Func<TS, TR>>) repacker.Repack(ex)(param)).Compile();
+        return ((Expression<Func<TS, TR>>)repacker.Repack(ex)(param)).Compile();
     }
 }
