@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
@@ -40,6 +41,7 @@ internal class ServicePack : ServicePackBase
                 .UseFormat(sp.Resolve<Configuration>().UseText ? SerializationFormat.Text : SerializationFormat.Binary)
                 .WithActiveKeepAlive(600)
         );
+        container.Add(new WebHostConfiguration()).AsSelf().Singleton();
     }
 
     public override void Setup(IServiceProvider provider)

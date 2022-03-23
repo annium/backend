@@ -13,6 +13,7 @@ internal class ServicePack : ServicePackBase
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
         // register and setup services
+        container.Add(new WebHostConfiguration()).AsSelf().Singleton();
     }
 
     public override void Setup(IServiceProvider provider)
