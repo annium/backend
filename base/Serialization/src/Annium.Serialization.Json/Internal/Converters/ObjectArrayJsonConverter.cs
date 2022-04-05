@@ -4,35 +4,69 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium.Core.Primitives;
+using Annium.Serialization.Json.Attributes;
 
 namespace Annium.Serialization.Json.Internal.Converters;
 
 internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
 {
-    private static readonly IReadOnlyCollection<MemberInfo> Members;
+    private static readonly IReadOnlyList<object?> Members;
 
     static ObjectArrayJsonConverter()
     {
-        var members = typeof(T).GetMembers()
+        var raw = typeof(T).GetMembers()
             .Where(x => x switch
             {
                 PropertyInfo p => p.CanRead && p.CanWrite,
                 FieldInfo f    => !f.IsInitOnly,
                 _              => false
             })
-            .Select(x => (member: x, order: x.GetCustomAttribute<JsonPropertyOrderAttribute>()))
+            .Select(x => (order: x.GetCustomAttribute<JsonPropertyOrderAttribute>()?.Order, member: x))
             .ToArray();
 
-        Members = members.All(x => x.order is null)
-            ? members
-                .OrderBy(x => x.member.Name)
-                .Select(x => x.member)
-                .ToArray()
-            : members
-                .Where(x => x.order is not null)
-                .OrderBy(x => x.order!.Order)
-                .Select(x => x.member)
-                .ToArray();
+        Members = raw.All(x => x.order is null)
+            ? GetAllMembersList(raw)
+            : GetMembersWithPlaceholdersList(raw);
+    }
+
+    private static IReadOnlyList<MemberInfo> GetAllMembersList(IReadOnlyCollection<(int? order, MemberInfo member)> raw)
+    {
+        return raw.OrderBy(x => x.member.Name).Select(x => x.member).ToArray();
+    }
+
+    private static IReadOnlyList<object?> GetMembersWithPlaceholdersList(IReadOnlyCollection<(int? order, MemberInfo member)> raw)
+    {
+        var result = new List<object?>();
+
+        var items = typeof(T).GetCustomAttributes<JsonArrayPlaceholderAttribute>()
+            .Select(x => (x.Order as int?, x.Value))
+            .Concat(raw.Select<(int? order, MemberInfo member), (int?, object?)>(x => (x.order, x.member)));
+
+        foreach (var (order, value) in items)
+        {
+            if (order is null)
+                continue;
+
+            // pad with null, if needed
+            while (result.Count < order.Value)
+                result.Add(null!);
+
+            // add if last
+            if (result.Count == order.Value)
+            {
+                result.Add(value);
+                continue;
+            }
+
+            // ensure null before setting
+            if (result[order.Value] != null)
+                throw new InvalidOperationException($"Failed to setup {typeof(ObjectArrayJsonConverter<T>).FriendlyName()}: multiple members at order {order}");
+
+            result[order.Value] = value;
+        }
+
+        return result;
     }
 
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -68,12 +102,18 @@ internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
         writer.WriteStartArray();
 
         foreach (var member in Members)
-        {
-            if (member is PropertyInfo p)
-                JsonSerializer.Serialize(writer, p.GetValue(value), p.PropertyType, options);
-            if (member is FieldInfo f)
-                JsonSerializer.Serialize(writer, f.GetValue(value), f.FieldType, options);
-        }
+            switch (member)
+            {
+                case PropertyInfo p:
+                    JsonSerializer.Serialize(writer, p.GetValue(value), p.PropertyType, options);
+                    break;
+                case FieldInfo f:
+                    JsonSerializer.Serialize(writer, f.GetValue(value), f.FieldType, options);
+                    break;
+                default:
+                    JsonSerializer.Serialize(writer, member, member is null ? typeof(object) : member.GetType(), options);
+                    break;
+            }
 
         writer.WriteEndArray();
     }
