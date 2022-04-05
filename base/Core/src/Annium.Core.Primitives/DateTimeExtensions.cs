@@ -13,7 +13,7 @@ public static class DateTimeExtensions
         UnixEpoch.AddSeconds(seconds);
 
     public static DateTime FromUnixTimeMilliseconds(long milliseconds) =>
-        UnixEpoch.AddSeconds(milliseconds);
+        UnixEpoch.AddMilliseconds(milliseconds);
 
     public static DateTime FloorToSecond(this DateTime m) =>
         DateTime.MinValue + (m - DateTime.MinValue).FloorToSecond();
