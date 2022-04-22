@@ -1,48 +1,35 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 
-namespace Demo.Net.WebSockets.Client;
+await using var entry = Entrypoint.Default.Setup();
 
-public class Program
+var (provider, ct) = entry;
+
+var socket = new ClientWebSocket(provider.Resolve<ILogger<ClientWebSocket>>());
+
+await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
+
+if (ct.IsCancellationRequested)
 {
-    private static async Task Run(
-        IServiceProvider sp,
-        string[] args,
-        CancellationToken ct
-    )
-    {
-        var socket = new ClientWebSocket(sp.Resolve<ILogger<ClientWebSocket>>());
-
-        await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
-
-        if (ct.IsCancellationRequested)
-        {
-            Console.WriteLine("Connection terminated");
-            return;
-        }
-
-        Console.WriteLine("Connection established");
-
-        var tcs = new TaskCompletionSource<object>();
-
-        ct.Register(() =>
-        {
-            Console.WriteLine("Process terminated");
-            tcs.TrySetResult(new object());
-        });
-
-        var s1 = socket.ListenText().Subscribe(x => Console.WriteLine($"In: '{x}'"));
-
-        await tcs.Task;
-        s1.Dispose();
-    }
-
-    public static Task<int> Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
+    Console.WriteLine("Connection terminated");
+    return;
 }
+
+Console.WriteLine("Connection established");
+
+var tcs = new TaskCompletionSource<object>();
+
+ct.Register(() =>
+{
+    Console.WriteLine("Process terminated");
+    tcs.TrySetResult(new object());
+});
+
+var s1 = socket.ListenText().Subscribe(x => Console.WriteLine($"In: '{x}'"));
+
+await tcs.Task;
+s1.Dispose();

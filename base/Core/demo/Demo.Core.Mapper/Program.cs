@@ -1,26 +1,13 @@
-using System;
-using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Mapper;
+using Demo.Extensions.Mapping;
 
-namespace Demo.Extensions.Mapping;
+await using var entry = Entrypoint.Default
+    .UseServicePack<ServicePack>()
+    .Setup();
 
-public class Program
-{
-    private static void Run(
-        IServiceProvider provider,
-        string[] args,
-        CancellationToken ct
-    )
-    {
-        var mapper = provider.Resolve<IMapper>();
+var mapper = entry.Provider.Resolve<IMapper>();
 
-        var value = new Plain { ClientName = "Den" };
-        _ = mapper.Map<Complex>(value);
-    }
-
-    public static int Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
-}
+var value = new Plain { ClientName = "Den" };
+_ = mapper.Map<Complex>(value);

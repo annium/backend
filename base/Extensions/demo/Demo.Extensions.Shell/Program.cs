@@ -1,34 +1,23 @@
 using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Shell;
+using Demo.Extensions.Shell;
 
-namespace Demo.Extensions.Shell;
+await using var entry = Entrypoint.Default
+    .UseServicePack<ServicePack>()
+    .Setup();
 
-public class Program
-{
-    private static async Task Run(
-        IServiceProvider provider,
-        string[] args,
-        CancellationToken ct
-    )
-    {
-        var shell = provider.Resolve<IShell>();
-        var ls = await shell
-            .Cmd("ls")
-            .Configure(new ProcessStartInfo { WorkingDirectory = "/" })
-            .RunAsync(ct);
+var (provider, ct) = entry;
 
-        Console.WriteLine(ls.IsSuccess);
-        Console.WriteLine(ls.Code);
-        Console.WriteLine(ls.Output);
-        Console.WriteLine(ls.Error);
-    }
+var shell = provider.Resolve<IShell>();
+var ls = await shell
+    .Cmd("ls")
+    .Configure(new ProcessStartInfo { WorkingDirectory = "/" })
+    .RunAsync(ct);
 
-    public static Task<int> Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
-}
+Console.WriteLine(ls.IsSuccess);
+Console.WriteLine(ls.Code);
+Console.WriteLine(ls.Output);
+Console.WriteLine(ls.Error);

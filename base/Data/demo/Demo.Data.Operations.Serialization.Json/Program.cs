@@ -3,38 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using Annium.Core.Entrypoint;
 using Annium.Core.Primitives;
 using Annium.Data.Operations;
 
-namespace Demo.Data.Operations.Serialization.Json;
+await using var entry = Entrypoint.Default.Setup();
 
-public class Program
-{
-    private static void Run(
-        IServiceProvider provider,
-        string[] args,
-        CancellationToken ct
-    )
-    {
-        var result = Result.New()
-            .Errors("plain", "other")
-            .Error("labelA", "valueA")
-            .Error("labelB", "valueB");
+var result = Result.New()
+    .Errors("plain", "other")
+    .Error("labelA", "valueA")
+    .Error("labelB", "valueB");
 
-        var opts = new JsonSerializerOptions();
-        opts.Converters.Add(new ResultConverter());
+var opts = new JsonSerializerOptions();
+opts.Converters.Add(new ResultConverter());
 
-        var str = JsonSerializer.Serialize(result, opts);
-        Console.WriteLine(str);
-        var source = JsonSerializer.Deserialize<IResult>(str, opts);
-    }
-
-    public static int Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
-}
+var str = JsonSerializer.Serialize(result, opts);
+Console.WriteLine(str);
+var source = JsonSerializer.Deserialize<IResult>(str, opts);
 
 public class ResultConverter : ResultConverterBase<IResult>
 {

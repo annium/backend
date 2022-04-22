@@ -1,34 +1,24 @@
 using System;
 using System.Globalization;
-using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Localization.Abstractions;
+using Demo.Localization;
 
-namespace Demo.Localization;
+await using var entry = Entrypoint.Default
+    .UseServicePack<ServicePack>()
+    .Setup();
 
-public class Program
-{
-    private static void Run(
-        IServiceProvider provider,
-        string[] args,
-        CancellationToken ct
-    )
-    {
-        var localizer = provider.Resolve<ILocalizer<Program>>();
+var (provider, _) = entry;
 
-        var entry = "demo";
-        Console.WriteLine($"Source: {entry}");
-        Console.WriteLine($"IV:     {localizer[entry]}");
-        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
-        Console.WriteLine($"EN:     {localizer[entry]}");
-        CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
-        Console.WriteLine($"RU:     {localizer[entry]}");
-        CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-        Console.WriteLine($"IV:     {localizer[entry]}");
-    }
+var localizer = provider.Resolve<ILocalizer<Program>>();
 
-    public static int Main(string[] args) => new Entrypoint()
-        .UseServicePack<ServicePack>()
-        .Run(Run, args);
-}
+var item = "demo";
+Console.WriteLine($"Source: {item}");
+Console.WriteLine($"IV:     {localizer[item]}");
+CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("en");
+Console.WriteLine($"EN:     {localizer[item]}");
+CultureInfo.CurrentCulture = CultureInfo.GetCultureInfo("ru");
+Console.WriteLine($"RU:     {localizer[item]}");
+CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+Console.WriteLine($"IV:     {localizer[item]}");
