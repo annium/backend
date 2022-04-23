@@ -22,8 +22,8 @@ public static class ModelBuilderExtensions
     {
         foreach (var entity in builder.Model.GetEntityTypes().Where(x => x.BaseType is null))
         {
-            var tableName = entity.GetTableName()?.SnakeCase();
-            entity.SetTableName(tableName);
+            entity.SetTableName(entity.GetTableName()?.SnakeCase());
+            entity.SetSchema(entity.GetSchema()?.SnakeCase());
 
             foreach (var property in entity.GetProperties())
                 property.SetColumnName(property.GetColumnBaseName().SnakeCase());
