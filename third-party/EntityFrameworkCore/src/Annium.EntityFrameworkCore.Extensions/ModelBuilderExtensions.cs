@@ -12,7 +12,12 @@ public static class ModelBuilderExtensions
     public static void ApplyConfigurations<TContext>(this ModelBuilder builder)
         where TContext : DbContext
     {
-        var configurationAssemblies = typeof(TContext).GetOwnInterfaces().Select(x => x.Assembly).ToArray();
+        var configurationAssemblies = typeof(TContext)
+            .GetOwnInterfaces()
+            .Select(x => x.Assembly)
+            .Distinct()
+            .Append(typeof(TContext).Assembly)
+            .ToArray();
 
         foreach (var assembly in configurationAssemblies)
             builder.ApplyConfigurationsFromAssembly(assembly);
