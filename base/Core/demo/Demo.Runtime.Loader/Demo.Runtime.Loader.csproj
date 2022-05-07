@@ -9,6 +9,7 @@
         <LangVersion>10.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
