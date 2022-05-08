@@ -5,7 +5,7 @@ using Annium.Core.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Annium.Core.DependencyInjection;
+namespace Annium.EntityFrameworkCore.Extensions;
 
 public static class ModelBuilderExtensions
 {
