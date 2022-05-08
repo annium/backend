@@ -27,16 +27,13 @@ internal class EntityMaterializerSource : EntityMaterializerSourceBase
         if (!clrType.GetInterfaces().Contains(typeof(IMaterializable)))
             return baseExpression;
 
-        var onMaterializingMethod = clrType.GetMethod(nameof(IMaterializable.OnMaterializing))!;
         var onMaterializedMethod = clrType.GetMethod(nameof(IMaterializable.OnMaterialized))!;
 
         var blockExpressions = new List<Expression>(((BlockExpression)baseExpression).Expressions);
         var instanceVariable = (ParameterExpression)blockExpressions.Last();
 
-        var onMaterializingExpression = Expression.Call(instanceVariable, onMaterializingMethod);
         var onMaterializedExpression = Expression.Call(instanceVariable, onMaterializedMethod);
 
-        blockExpressions.Insert(1, onMaterializingExpression);
         blockExpressions.Insert(blockExpressions.Count - 1, onMaterializedExpression);
 
         return Expression.Block(new[] { instanceVariable }, blockExpressions);
