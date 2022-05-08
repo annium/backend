@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Annium.Core.Reflection;
 
 namespace Annium.Serialization.Json.Internal.Options;
@@ -24,5 +25,14 @@ internal static class JsonSerializerOptionsExtensions
             p.SetValue(clone, p.GetValue(opts));
 
         return clone;
+    }
+
+    public static JsonSerializerOptions RemoveConverter<T>(this JsonSerializerOptions opts)
+        where T : JsonConverter
+    {
+        var factory = opts.Converters.Single(x => x.GetType() == typeof(T));
+        opts.Converters.Remove(factory);
+
+        return opts;
     }
 }

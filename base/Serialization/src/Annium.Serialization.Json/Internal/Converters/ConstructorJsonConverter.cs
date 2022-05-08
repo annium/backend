@@ -82,7 +82,7 @@ internal class ConstructorJsonConverter<T> : JsonConverter<T>
         foreach (var (property, val) in properties)
             property.SetValue(result, val);
 
-        return (T) result;
+        return (T)result;
     }
 
     public override void Write(
@@ -91,10 +91,6 @@ internal class ConstructorJsonConverter<T> : JsonConverter<T>
         JsonSerializerOptions options
     )
     {
-        var opts = options.Clone();
-        var factory = opts.Converters.Single(x => x.GetType() == typeof(ConstructorJsonConverterFactory));
-        opts.Converters.Remove(factory);
-
-        JsonSerializer.Serialize(writer, value, opts);
+        JsonSerializer.Serialize(writer, value, options.Clone().RemoveConverter<ConstructorJsonConverterFactory>());
     }
 }
