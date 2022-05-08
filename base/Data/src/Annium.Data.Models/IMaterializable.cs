@@ -5,6 +5,5 @@ namespace Annium.Data.Models;
 /// </summary>
 public interface IMaterializable
 {
-    void OnMaterializing();
     void OnMaterialized();
 }
