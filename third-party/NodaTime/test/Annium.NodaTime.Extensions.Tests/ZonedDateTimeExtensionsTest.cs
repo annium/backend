@@ -4,15 +4,15 @@ using Xunit;
 
 namespace Annium.NodaTime.Extensions.Tests;
 
-public class LocalDateTimeExtensionsTest
+public class ZonedDateTimeExtensionsTest
 {
-    private readonly LocalDateTime _moment = new(1971, 11, 26, 10, 40);
+    private readonly ZonedDateTime _moment = new(new LocalDateTime(1971, 11, 26, 10, 40), DateTimeZone.Utc, Offset.Zero);
 
     [Fact]
     public void FromUnixTimeMinutes()
     {
         // arrange
-        var value = LocalDateTimeExtensions.FromUnixTimeMinutes(1_000_000L);
+        var value = ZonedDateTimeExtensions.FromUnixTimeMinutes(1_000_000L);
 
         // assert
         value.Is(_moment);
@@ -22,7 +22,7 @@ public class LocalDateTimeExtensionsTest
     public void FromUnixTimeSeconds()
     {
         // arrange
-        var value = LocalDateTimeExtensions.FromUnixTimeSeconds(60_000_000L);
+        var value = ZonedDateTimeExtensions.FromUnixTimeSeconds(60_000_000L);
 
         // assert
         value.Is(_moment);
@@ -32,7 +32,7 @@ public class LocalDateTimeExtensionsTest
     public void FromUnixTimeMilliseconds()
     {
         // arrange
-        var value = LocalDateTimeExtensions.FromUnixTimeMilliseconds(60_000_000_000L);
+        var value = ZonedDateTimeExtensions.FromUnixTimeMilliseconds(60_000_000_000L);
 
         // assert
         value.Is(_moment);
@@ -52,8 +52,8 @@ public class LocalDateTimeExtensionsTest
     public void IsMidnight()
     {
         // arrange
-        var midNight = new LocalDateTime(1, 2, 3, 0, 0, 0, 0);
-        var nonMdNight = new LocalDateTime(1, 2, 3, 0, 0, 0, 1);
+        var midNight = new ZonedDateTime(new LocalDateTime(1, 2, 3, 0, 0, 0, 0), DateTimeZone.Utc, Offset.Zero);
+        var nonMdNight = new ZonedDateTime(new LocalDateTime(1, 2, 3, 0, 0, 0, 1), DateTimeZone.Utc, Offset.Zero);
 
         // assert
         midNight.IsMidnight().IsTrue();
