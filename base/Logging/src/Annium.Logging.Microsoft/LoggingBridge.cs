@@ -7,12 +7,12 @@ using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Annium.Logging.Microsoft;
 
-internal class LoggerBridge : ILogger
+internal class LoggingBridge : ILogger
 {
     private readonly ILogSentryBridge _sentryBridge;
     private readonly string _source;
 
-    public LoggerBridge(
+    public LoggingBridge(
         ILogSentryBridge sentryBridge,
         string source
     )

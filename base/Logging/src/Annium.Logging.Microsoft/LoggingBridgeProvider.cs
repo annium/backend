@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Annium.Logging.Microsoft;
 
-internal class LoggerBridgeProvider : ILoggerProvider
+internal class LoggingBridgeProvider : ILoggerProvider
 {
     private readonly ILogSentryBridge _sentryBridge;
 
-    public LoggerBridgeProvider(
+    public LoggingBridgeProvider(
         ILogSentryBridge sentryBridge
     )
     {
@@ -16,7 +16,7 @@ internal class LoggerBridgeProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName)
     {
-        return new LoggerBridge(_sentryBridge, categoryName);
+        return new LoggingBridge(_sentryBridge, categoryName);
     }
 
     public void Dispose()

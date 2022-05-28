@@ -11,7 +11,7 @@ public static class LoggingBuilderExtensions
     )
     {
         builder.ClearProviders();
-        builder.Services.AddScoped<ILoggerProvider, LoggerBridgeProvider>();
+        builder.Services.AddScoped<ILoggerProvider, LoggingBridgeProvider>();
 
         return builder;
     }
