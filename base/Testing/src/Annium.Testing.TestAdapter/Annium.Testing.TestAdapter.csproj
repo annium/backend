@@ -17,7 +17,7 @@
         <ProjectReference Include="../Annium.Testing/Annium.Testing.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.1.0" />
+        <PackageReference Include="Microsoft.TestPlatform.TestHost" Version="17.2.0" />
     </ItemGroup>
     <ItemGroup Label="Package">
         <None Include="build/annium.testing.testadapter.props" PackagePath="build/net6.0/annium.testing.testadapter.props" Pack="true" />
