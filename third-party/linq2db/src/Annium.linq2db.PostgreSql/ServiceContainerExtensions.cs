@@ -63,7 +63,9 @@ public static class ServiceContainerExtensions
         where TConnection : DataConnectionBase
     {
         var mappingSchema = new MappingSchema();
-        mappingSchema.GetMappingBuilder(configurationsAssembly).ApplyConfigurations();
+        mappingSchema.GetMappingBuilder(configurationsAssembly)
+            .ApplyConfigurations()
+            .SnakeCaseColumns();
         configure(mappingSchema);
 
         container.Add(sp =>
