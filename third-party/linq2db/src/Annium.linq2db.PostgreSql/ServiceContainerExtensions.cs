@@ -62,29 +62,31 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnectionBase
     {
-        var builder = new LinqToDBConnectionOptionsBuilder();
-        builder.UseConnectionString(ProviderName.PostgreSQL95, string.Join(
-            ';',
-            $"Host={cfg.Host}",
-            $"Port={cfg.Port}",
-            $"Database={cfg.Database}",
-            $"Username={cfg.User}",
-            $"Password={cfg.Password}",
-            "SSL Mode=Prefer",
-            "Trust Server Certificate=true"
-        ));
-
         var mappingSchema = new MappingSchema();
-        mappingSchema.GetMappingBuilder(configurationsAssembly)
-            .ApplyConfigurations()
-            .SnakeCaseColumns();
+        mappingSchema.GetMappingBuilder(configurationsAssembly).ApplyConfigurations();
         configure(mappingSchema);
 
-        builder.UseMappingSchema(mappingSchema);
+        container.Add(sp =>
+        {
+            var builder = new LinqToDBConnectionOptionsBuilder();
+            builder.UseConnectionString(ProviderName.PostgreSQL95, string.Join(
+                ';',
+                $"Host={cfg.Host}",
+                $"Port={cfg.Port}",
+                $"Database={cfg.Database}",
+                $"Username={cfg.User}",
+                $"Password={cfg.Password}",
+                "SSL Mode=Prefer",
+                "Trust Server Certificate=true"
+            ));
+            builder.UseMappingSchema(mappingSchema);
+            builder.UseLogging<TConnection>(sp);
 
-        var options = builder.Build();
+            var options = builder.Build();
 
-        container.Add(_ => (TConnection)Activator.CreateInstance(typeof(TConnection), options)!).AsSelf().Scoped();
+            return (TConnection)Activator.CreateInstance(typeof(TConnection), options)!;
+        }).AsSelf().Scoped();
+
         container.AddAll()
             .Where(x => x.BaseType is not null && x.BaseType.IsGenericType && x.BaseType.GetGenericTypeDefinition() == typeof(RepositoryBase<>))
             .AsInterfaces()
