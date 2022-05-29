@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -8,8 +9,13 @@ namespace Annium.Core.Primitives;
 
 public static class StringExtensions
 {
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static bool IsFilled(this string? value) => !string.IsNullOrWhiteSpace(value);
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrEmpty(this string? value) => string.IsNullOrEmpty(value);
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsNullOrWhiteSpace(this string? value) => string.IsNullOrWhiteSpace(value);
 
     public static string UpperFirst(this string value)
@@ -154,7 +160,7 @@ public static class StringExtensions
             if (!lookup.TryGetValue(c2, out var b2))
                 throw new OverflowException($"{c2} is not a valid hex character");
 
-            byteArray[i / 2] = (byte) ((b1 << 4) + b2);
+            byteArray[i / 2] = (byte)((b1 << 4) + b2);
         }
 
         return byteArray;
@@ -175,7 +181,7 @@ public static class StringExtensions
             var c2 = str[i + 1];
 
             if (lookup.TryGetValue(c1, out var b1) && lookup.TryGetValue(c2, out var b2))
-                array[i / 2] = (byte) ((b1 << 4) + b2);
+                array[i / 2] = (byte)((b1 << 4) + b2);
             else
                 return false;
         }
