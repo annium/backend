@@ -32,5 +32,5 @@ public static class MappingBuilderExtensions
         foreach (var table in db.Tables)
         foreach (var column in table.Columns)
             column.Attribute.Name = column.Member.Name.SnakeCase();
-    });
+    }, MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns);
 }
