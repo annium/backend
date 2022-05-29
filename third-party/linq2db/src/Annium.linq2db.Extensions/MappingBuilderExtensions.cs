@@ -6,7 +6,7 @@ namespace Annium.linq2db.Extensions;
 
 public static class MappingBuilderExtensions
 {
-    internal static MappingBuilder IncludeAssociationKeysAsColumns(this MappingBuilder builder) => builder.Configure(db =>
+    internal static IMappingBuilder IncludeAssociationKeysAsColumns(this IMappingBuilder builder) => builder.Configure(db =>
     {
         var fluentBuilder = builder.Map;
 
@@ -27,7 +27,7 @@ public static class MappingBuilderExtensions
         }
     }, MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns);
 
-    public static MappingBuilder SnakeCaseColumns(this MappingBuilder builder) => builder.Configure(db =>
+    public static IMappingBuilder SnakeCaseColumns(this IMappingBuilder builder) => builder.Configure(db =>
     {
         foreach (var table in db.Tables)
         foreach (var column in table.Columns)

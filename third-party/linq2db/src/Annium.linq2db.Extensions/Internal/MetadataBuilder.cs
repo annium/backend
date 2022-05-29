@@ -4,7 +4,7 @@ using System.Reflection;
 using Annium.linq2db.Extensions.Models;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Internal;
 
 internal class MetadataBuilder
 {

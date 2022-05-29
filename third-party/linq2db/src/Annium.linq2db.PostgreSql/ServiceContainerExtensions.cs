@@ -84,7 +84,7 @@ public static class ServiceContainerExtensions
 
         var options = builder.Build();
 
-        container.Add(_ => (TConnection)Activator.CreateInstance(typeof(TConnection), options)!).AsInterfaces().Scoped();
+        container.Add(_ => (TConnection)Activator.CreateInstance(typeof(TConnection), options)!).Scoped();
 
         return container;
     }

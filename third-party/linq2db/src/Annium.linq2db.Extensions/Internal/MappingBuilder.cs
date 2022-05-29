@@ -5,9 +5,9 @@ using Annium.Core.Runtime.Types;
 using Annium.linq2db.Extensions.Models;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Internal;
 
-public class MappingBuilder
+internal class MappingBuilder : IMappingBuilder
 {
     public FluentMappingBuilder Map { get; }
     private readonly MetadataBuilder _metadataBuilder;
@@ -25,18 +25,18 @@ public class MappingBuilder
         _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
     }
 
-    public MappingBuilder ApplyConfigurations()
+    public IMappingBuilder ApplyConfigurations()
     {
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
 
         foreach (var (configurationType, entityType) in _configurations.Value)
         {
             var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                .Invoke(Map, new object?[] {null})!;
+                .Invoke(Map, new object?[] { null })!;
             var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
                 .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
             var configuration = Activator.CreateInstance(configurationType)!;
-            configureMethod.Invoke(configuration, new[] {entityMappingBuilder});
+            configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }
 
         this.IncludeAssociationKeysAsColumns();
@@ -44,12 +44,9 @@ public class MappingBuilder
         return this;
     }
 
-    public Database GetMetadata(MetadataBuilderFlags flags = MetadataBuilderFlags.None) =>
-        _metadataBuilder.Build(Map.MappingSchema, flags);
-
-    public MappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None)
+    public IMappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None)
     {
-        configure(GetMetadata(flags));
+        configure(_metadataBuilder.Build(Map.MappingSchema, flags));
 
         return this;
     }
