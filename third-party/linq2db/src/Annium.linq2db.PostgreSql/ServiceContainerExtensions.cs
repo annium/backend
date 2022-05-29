@@ -3,6 +3,7 @@ using System.Reflection;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.PostgreSql;
 using LinqToDB;
+using LinqToDB.Configuration;
 using LinqToDB.Mapping;
 
 namespace Annium.Core.DependencyInjection;
@@ -61,27 +62,29 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnectionBase
     {
+        var builder = new LinqToDBConnectionOptionsBuilder();
+        builder.UseConnectionString(ProviderName.PostgreSQL95, string.Join(
+            ';',
+            $"Host={cfg.Host}",
+            $"Port={cfg.Port}",
+            $"Database={cfg.Database}",
+            $"Username={cfg.User}",
+            $"Password={cfg.Password}",
+            "SSL Mode=Prefer",
+            "Trust Server Certificate=true"
+        ));
+
         var mappingSchema = new MappingSchema();
         mappingSchema.GetMappingBuilder(configurationsAssembly)
             .ApplyConfigurations()
             .SnakeCaseColumns();
         configure(mappingSchema);
 
-        container.Add(_ => (TConnection) Activator.CreateInstance(
-            typeof(TConnection),
-            ProviderName.PostgreSQL95,
-            string.Join(
-                ';',
-                $"Host={cfg.Host}",
-                $"Port={cfg.Port}",
-                $"Database={cfg.Database}",
-                $"Username={cfg.User}",
-                $"Password={cfg.Password}",
-                "SSL Mode=Prefer",
-                "Trust Server Certificate=true"
-            ),
-            mappingSchema
-        )!).Scoped();
+        builder.UseMappingSchema(mappingSchema);
+
+        var options = builder.Build();
+
+        container.Add(_ => (TConnection)Activator.CreateInstance(typeof(TConnection), options)!).AsInterfaces().Scoped();
 
         return container;
     }

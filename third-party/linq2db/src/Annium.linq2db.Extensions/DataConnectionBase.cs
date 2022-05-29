@@ -1,16 +1,15 @@
+using LinqToDB.Configuration;
 using LinqToDB.Data;
-using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions;
 
 public class DataConnectionBase : DataConnection
 {
     public DataConnectionBase(
-        string providerName,
-        string connectionString,
-        MappingSchema mappingSchema
-    ) : base(providerName, connectionString)
+        LinqToDBConnectionOptions options
+    ) : base(options)
     {
-        AddMappingSchema(mappingSchema);
+        if (options.MappingSchema is not null)
+            AddMappingSchema(options.MappingSchema);
     }
 }
