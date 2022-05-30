@@ -89,10 +89,7 @@ public static class ServiceContainerExtensions
             return (TConnection)Activator.CreateInstance(typeof(TConnection), options)!;
         }).AsSelf().Scoped();
 
-        container.AddAll()
-            .Where(x => x.BaseType is not null && x.BaseType.IsGenericType && x.BaseType.GetGenericTypeDefinition() == typeof(RepositoryBase<>))
-            .AsInterfaces()
-            .Scoped();
+        container.AddRepositories();
 
         return container;
     }
