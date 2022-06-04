@@ -9,80 +9,135 @@ public class DurationExtensionsTest
     [Fact]
     public void FloorToSecond()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).FloorToSecond();
-
-        // assert
-        value.Is(Duration.FromSeconds(99999));
+        Duration.FromMilliseconds(1999)
+            .FloorToSecond()
+            .Is(Duration.FromSeconds(1));
     }
 
     [Fact]
     public void FloorToMinute()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).FloorToMinute();
-
-        // assert
-        value.Is(Duration.FromSeconds(99960));
+        Duration.FromSeconds(100)
+            .FloorToMinute()
+            .Is(Duration.FromMinutes(1));
     }
 
     [Fact]
     public void FloorToHour()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).FloorToHour();
-
-        // assert
-        value.Is(Duration.FromSeconds(97200));
+        Duration.FromMinutes(100)
+            .FloorToHour()
+            .Is(Duration.FromHours(1));
     }
 
     [Fact]
     public void FloorToDay()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).FloorToDay();
+        Duration.FromHours(30)
+            .FloorToDay()
+            .Is(Duration.FromDays(1));
+    }
 
-        // assert
-        value.Is(Duration.FromSeconds(86400));
+    [Fact]
+    public void FloorTo()
+    {
+        Duration.FromSeconds(55)
+            .FloorTo(Duration.FromSeconds(15))
+            .Is(Duration.FromSeconds(45));
     }
 
     [Fact]
     public void CeilToSecond()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).CeilToSecond();
-
-        // assert
-        value.Is(Duration.FromSeconds(100000));
+        Duration.FromMilliseconds(1)
+            .CeilToSecond()
+            .Is(Duration.FromSeconds(1));
     }
 
     [Fact]
     public void CeilToMinute()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).CeilToMinute();
-
-        // assert
-        value.Is(Duration.FromSeconds(100020));
+        Duration.FromSeconds(1)
+            .CeilToMinute()
+            .Is(Duration.FromMinutes(1));
     }
 
     [Fact]
     public void CeilToHour()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).CeilToHour();
-
-        // assert
-        value.Is(Duration.FromSeconds(100800));
+        Duration.FromMinutes(1)
+            .CeilToHour()
+            .Is(Duration.FromHours(1));
     }
 
     [Fact]
     public void CeilToDay()
     {
-        // arrange
-        var value = Duration.FromTicks(999_999_999_999L).CeilToDay();
+        Duration.FromHours(1)
+            .CeilToDay()
+            .Is(Duration.FromDays(1));
+    }
 
-        // assert
-        value.Is(Duration.FromSeconds(172800));
+    [Fact]
+    public void CeilTo()
+    {
+        Duration.FromSeconds(55)
+            .CeilTo(Duration.FromSeconds(15))
+            .Is(Duration.FromSeconds(60));
+    }
+
+    [Fact]
+    public void RoundToSecond()
+    {
+        Duration.FromMilliseconds(499)
+            .RoundToSecond()
+            .Is(Duration.Zero);
+        Duration.FromMilliseconds(500)
+            .RoundToSecond()
+            .Is(Duration.FromSeconds(1));
+    }
+
+    [Fact]
+    public void RoundToMinute()
+    {
+        Duration.FromSeconds(29)
+            .RoundToMinute()
+            .Is(Duration.Zero);
+        Duration.FromSeconds(30)
+            .RoundToMinute()
+            .Is(Duration.FromMinutes(1));
+    }
+
+    [Fact]
+    public void RoundToHour()
+    {
+        Duration.FromMinutes(29)
+            .RoundToHour()
+            .Is(Duration.Zero);
+        Duration.FromMinutes(30)
+            .RoundToHour()
+            .Is(Duration.FromHours(1));
+    }
+
+    [Fact]
+    public void RoundToDay()
+    {
+        Duration.FromHours(11)
+            .RoundToDay()
+            .Is(Duration.Zero);
+        Duration.FromHours(12)
+            .RoundToDay()
+            .Is(Duration.FromDays(1));
+    }
+
+    [Fact]
+    public void RoundTo()
+    {
+        Duration.FromSeconds(50)
+            .RoundTo(Duration.FromSeconds(15))
+            .Is(Duration.FromSeconds(45));
+        Duration.FromSeconds(55)
+            .RoundTo(Duration.FromSeconds(15))
+            .Is(Duration.FromSeconds(60));
     }
 }
