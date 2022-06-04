@@ -9,6 +9,7 @@ public static class ServiceContainerExtensions
     )
     {
         container.AddAll()
+            .Where(x => x.IsClass && !x.IsAbstract)
             .AssignableTo<IRepository>()
             .AsInterfaces()
             .Scoped();
