@@ -12,6 +12,7 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
     private TablePermission _permissions;
     private Expression<Func<TW, object>>? _getKey;
     private Func<TW, bool>? _getIsActive;
+    private Func<TW, TR>? _toRead;
 
     public ITableBuilder<TR, TW> Allow(TablePermission permissions)
     {
@@ -34,10 +35,11 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
         return this;
     }
 
-    public ITableBuilder<TR, TW, TM> MapWith<TM>(TM mappingContext)
-        where TM : notnull
+    public ITableBuilder<TR, TW> MapWith(Func<TW, TR> toRead)
     {
-        return new TableBuilder<TR, TW, TM>(mappingContext, _permissions, _getKey, _getIsActive);
+        _toRead = toRead;
+
+        return this;
     }
 
     public ITable<TR, TW> Build(
@@ -51,7 +53,7 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
             _permissions,
             _getKey,
             _getIsActive ?? (_ => true),
-            x => mapper.Map<TR>(x)
+            _toRead ?? (x => mapper.Map<TR>(x))
         );
     }
 }

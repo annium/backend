@@ -23,7 +23,7 @@ public class TableOfTWRTests : TestBase
             .Allow(TablePermission.All)
             .Key(x => x.Key)
             .Keep(x => x.IsAlive)
-            .MapWith(ctx)
+            .MapWith(x => new Sample(x.Key, x.IsAlive, ctx.Secret))
             .Build(mapper);
         ctx.Secret = "asd";
         var log1 = new List<IChangeEvent<Sample>>();
