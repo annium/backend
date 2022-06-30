@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using Annium.Core.Mapper;
 using Annium.Core.Primitives;
 using Annium.Core.Primitives.Collections.Generic;
 using static Annium.Data.Tables.Internal.TableHelper;
@@ -43,13 +42,13 @@ internal sealed class Table<TR, TW> : TableBase<TR>, ITable<TR, TW>
         TablePermission permissions,
         Expression<Func<TW, object>> key,
         Func<TW, bool> isActive,
-        IMapper mapper
+        Func<TW, TR> toRead
     ) : base(permissions)
     {
         _getKey = BuildGetKey(key);
         _update = BuildUpdate<TW>(permissions);
         _isActive = isActive;
-        _toRead = x => mapper.Map<TR>(x);
+        _toRead = toRead;
     }
 
     public int GetKey(TW value) => _getKey(value);

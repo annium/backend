@@ -11,7 +11,7 @@ namespace Annium.Data.Tables.Tests;
 public class TableOfTTests
 {
     [Fact]
-    public async Task Events_AreEmittedCorrectly()
+    public async Task Works()
     {
         // arrange
         var table = Table.New<Sample>()
