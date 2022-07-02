@@ -50,10 +50,11 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator<TState>>();
         try
         {
-            var tcs = new TaskCompletionSource<object>();
+            var tcs = new TaskCompletionSource();
+            tcs.Task.ContinueWith(_ => this.Log().Trace($"cn {cnId} - listen ended"), CancellationToken.None).GetAwaiter();
 
             // immediately subscribe to cancellation
-            ct.Register(() => tcs.TrySetResult(new object()));
+            ct.Register(() => tcs.TrySetResult());
 
             // use derived cts for socket subscription
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -75,9 +76,9 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
                         this.Log().Trace($"cn {cnId} - handle error");
                         cts.Cancel();
                         this.Log().Error(e);
-                        tcs.TrySetResult(new object());
+                        tcs.TrySetResult();
                     },
-                    () => tcs.TrySetResult(new object()),
+                    () => tcs.TrySetResult(),
                     cts.Token
                 );
 
@@ -92,6 +93,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
 
             // execute run hook
             var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
+            pusherTask.ContinueWith(_ => this.Log().Trace($"cn {cnId} - push ended"), CancellationToken.None).GetAwaiter();
             this.Log().Trace($"cn {cnId} - push handlers start - start");
             this.Log().Trace($"cn {cnId} - push handlers start - done");
 
