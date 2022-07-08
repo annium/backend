@@ -99,6 +99,8 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
 
     public async ValueTask DisposeAsync()
     {
+        this.Log().Trace("start");
+
         KeyValuePair<TKey, CacheEntry>[] cacheEntries;
         lock (_entries)
         {
@@ -106,12 +108,18 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
             _entries.Clear();
         }
 
-        this.Log().Trace($"Dispose cache: {cacheEntries.Length} entries");
+        this.Log().Trace("dispose {count} entries", cacheEntries.Length);
+
         foreach (var (_, entry) in cacheEntries)
+        {
+            this.Log().Trace("dispose {entry} entries", entry);
             await entry.DisposeAsync();
+        }
+
+        this.Log().Trace("done");
     }
 
-    private class CacheEntry : IAsyncDisposable
+    private sealed record CacheEntry : IAsyncDisposable
     {
         public TValue Value { get; private set; } = default!;
         public bool HasReferences => _references != 0;
@@ -133,6 +141,8 @@ internal class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubje
 
         public void AddReference() => ++_references;
         public void RemoveReference() => --_references;
+
+        public override string ToString() => $"{Value} [{_references}]";
 
         public async ValueTask DisposeAsync()
         {
