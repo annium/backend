@@ -6,7 +6,6 @@ using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium.Core.Internal.Internal;
-using Annium.Core.Primitives;
 
 namespace Annium.Core.Internal;
 
@@ -62,7 +61,7 @@ public static class Log
             .ToDictionary(x => x[0], x => x[1]);
 
         // resolve device
-        if (!cfg.TryGetValue("dev", out var rawDevice) || !rawDevice.TryParseEnum<LogDevice>(out var device))
+        if (!cfg.TryGetValue("dev", out var rawDevice) || !Enum.TryParse<LogDevice>(rawDevice, out var device))
             device = LogDevice.Console;
         var write = ResolveWrite(device, cfg.TryGetValue("addr", out var address) ? address : string.Empty);
 

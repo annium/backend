@@ -1,6 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
-using Annium.Core.Primitives;
+using Annium.Diagnostics.Debug;
 
 namespace Annium.Core.Internal;
 
@@ -17,7 +17,7 @@ public static class LogExtensions
     )
         where T : class
     {
-        var subject = obj.GetFullId();
+        var subject = obj is null ? "null" : $"{obj.GetType().FullName}_{obj.GetId()}";
         var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
         var msg = string.IsNullOrWhiteSpace(message) ? string.Empty : $" >> {message}";
         Log.Trace($"{subject}{trace}{msg}", callerFilePath, member, line);
