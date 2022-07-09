@@ -8,7 +8,7 @@ public class TestBase
 {
     protected ISerializer<ReadOnlyMemory<byte>> GetSerializer() => new ServiceContainer()
         .AddMessagePackSerializer()
-        .AddRuntimeTools(GetType().Assembly, false)
+        .AddRuntime(GetType().Assembly)
         .BuildServiceProvider()
         .ResolveSerializer<ReadOnlyMemory<byte>>(Abstractions.Constants.DefaultKey, Constants.MediaType);
 }

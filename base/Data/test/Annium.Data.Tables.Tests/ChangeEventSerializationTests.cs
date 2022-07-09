@@ -1,4 +1,3 @@
-using AgileObjects.NetStandardPolyfills;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
@@ -69,7 +68,7 @@ public class ChangeEventSerializationTests
     private ISerializer<string> GetSerializer()
     {
         var container = new ServiceContainer();
-        container.AddRuntimeTools(GetType().GetAssembly(), true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers().SetDefault();
         container.AddLogging();

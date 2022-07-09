@@ -51,7 +51,7 @@ public abstract class TestBase
 
     private void SharedRegister(IServiceContainer container)
     {
-        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithManagedTime().SetDefault();
         container.AddLogging();
         container.AddMapper();

@@ -12,12 +12,11 @@ public static class TypeManager
         new();
 
     public static ITypeManager GetInstance(
-        Assembly assembly,
-        bool tryLoadReferences
+        Assembly assembly
     )
     {
-        var key = new CacheKey(assembly, tryLoadReferences);
-        return Instances.GetOrAdd(key, key => new TypeManagerInstance(key.Assembly, key.TryLoadReferences));
+        var key = new CacheKey(assembly);
+        return Instances.GetOrAdd(key, key => new TypeManagerInstance(key.Assembly));
     }
 
     public static void Release(Assembly assembly)
@@ -26,10 +25,10 @@ public static class TypeManager
             Instances.TryRemove(key, out _);
     }
 
-    private record CacheKey(Assembly Assembly, bool TryLoadReferences)
+    private record CacheKey(Assembly Assembly)
     {
         public virtual bool Equals(CacheKey? other) => GetHashCode() == other?.GetHashCode();
 
-        public override int GetHashCode() => HashCode.Combine(Assembly, TryLoadReferences);
+        public override int GetHashCode() => HashCode.Combine(Assembly);
     }
 }

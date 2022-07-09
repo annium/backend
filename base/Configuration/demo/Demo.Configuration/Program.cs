@@ -54,7 +54,7 @@ void TestJson()
     {
         jsonFile = Path.GetTempFileName();
         var container = new ServiceContainer();
-        container.AddRuntimeTools(typeof(Program).Assembly, false);
+        container.AddRuntime(typeof(Program).Assembly);
         container.AddJsonSerializers().SetDefault();
         var serializer = container
             .BuildServiceProvider()

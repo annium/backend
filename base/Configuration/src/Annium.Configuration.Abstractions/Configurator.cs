@@ -7,12 +7,11 @@ namespace Annium.Configuration.Abstractions;
 public static class Configurator
 {
     public static T Get<T>(
-        Action<IConfigurationContainer> configure,
-        bool tryLoadReferences
+        Action<IConfigurationContainer> configure
     )
         where T : class, new()
     {
-        var container = GetServices<T>(tryLoadReferences);
+        var container = GetServices<T>();
 
         container.AddConfiguration<T>(configure);
 
@@ -20,23 +19,22 @@ public static class Configurator
     }
 
     public static async Task<T> Get<T>(
-        Func<IConfigurationContainer, Task> configure,
-        bool tryLoadReferences
+        Func<IConfigurationContainer, Task> configure
     )
         where T : class, new()
     {
-        var container = GetServices<T>(tryLoadReferences);
+        var container = GetServices<T>();
 
         await container.AddConfiguration<T>(configure);
 
         return Get<T>(container);
     }
 
-    private static IServiceContainer GetServices<T>(bool tryLoadReferences)
+    private static IServiceContainer GetServices<T>()
     {
         var container = new ServiceContainer();
 
-        container.AddRuntimeTools(typeof(T).Assembly, tryLoadReferences);
+        container.AddRuntime(typeof(T).Assembly);
         container.AddMapper();
 
         return container;

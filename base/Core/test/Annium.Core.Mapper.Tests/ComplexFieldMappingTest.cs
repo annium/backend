@@ -55,7 +55,7 @@ public class ComplexFieldMappingTest
     }
 
     private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddRuntime(Assembly.GetCallingAssembly())
         .AddMapper(autoload: false)
         .AddProfile(ConfigureProfile)
         .BuildServiceProvider()

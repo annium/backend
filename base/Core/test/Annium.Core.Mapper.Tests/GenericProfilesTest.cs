@@ -34,7 +34,7 @@ public class GenericProfilesTest
     }
 
     private IMapper GetMapper(Type profileType) => new ServiceContainer()
-        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddRuntime(Assembly.GetCallingAssembly())
         .AddMapper(autoload: false)
         .AddProfile(profileType)
         .BuildServiceProvider()

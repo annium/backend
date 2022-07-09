@@ -13,7 +13,7 @@ public static class Helper
         where T : class, new()
     {
         var container = new ServiceContainer();
-        container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+        container.AddRuntime(Assembly.GetCallingAssembly());
         container.AddMapper();
         container.AddConfiguration<T>(configure);
 

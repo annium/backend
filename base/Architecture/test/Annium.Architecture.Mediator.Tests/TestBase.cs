@@ -11,7 +11,7 @@ public class TestBase
     {
         var container = new ServiceContainer();
 
-        container.AddRuntimeTools(Assembly.GetCallingAssembly(), false);
+        container.AddRuntime(Assembly.GetCallingAssembly());
         container.AddTime().WithRealTime().SetDefault();
 
         container.AddLogging();

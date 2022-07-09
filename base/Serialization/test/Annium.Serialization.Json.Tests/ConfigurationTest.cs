@@ -13,7 +13,7 @@ public class ConfigurationTest
     {
         // arrange
         var container = new ServiceContainer();
-        container.AddRuntimeTools(GetType().Assembly, false);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddLogging();
         // default

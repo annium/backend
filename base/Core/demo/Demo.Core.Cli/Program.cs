@@ -70,7 +70,7 @@ Wrap(() =>
     Console.WriteLine("---TYPES---");
     foreach (var (name, plugin) in plugins)
     {
-        Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin, false).Types.Count}");
+        Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin).Types.Count}");
         TypeManager.Release(plugin);
     }
 

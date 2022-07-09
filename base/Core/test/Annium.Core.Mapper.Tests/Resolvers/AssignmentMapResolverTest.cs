@@ -36,7 +36,7 @@ public class AssignmentMapResolverTest
     }
 
     private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+        .AddRuntime(Assembly.GetCallingAssembly())
         .AddMapper(autoload: false)
         .BuildServiceProvider()
         .Resolve<IMapper>();

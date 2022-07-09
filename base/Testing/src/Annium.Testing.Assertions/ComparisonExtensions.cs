@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 using Annium.Testing.Assertions.Internal;
 
 namespace Annium.Testing;

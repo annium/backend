@@ -13,8 +13,7 @@ internal static class AssembliesCollector
     private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetId();
 
     public static IReadOnlyCollection<Assembly> Collect(
-        Assembly assembly,
-        bool tryLoadReferences
+        Assembly assembly
     )
     {
         Log.Trace("start");
@@ -32,7 +31,7 @@ internal static class AssembliesCollector
                 allAssemblies[domainAssembly.FullName] = domainAssembly;
             }
 
-        var resolveAssembly = tryLoadReferences ? LoadAssembly(allAssemblies) : GetAssembly(allAssemblies);
+        var resolveAssembly = LoadAssembly(allAssemblies);
 
         Collect(
             assembly.GetName(),
@@ -85,14 +84,6 @@ internal static class AssembliesCollector
         foreach (var assemblyName in assembly.GetReferencedAssemblies())
             Collect(assemblyName, resolveAssembly, registerAssembly, addMatchedAssembly);
     }
-
-    private static Func<AssemblyName, Assembly?> GetAssembly(IDictionary<string, Assembly> assemblies) => name =>
-    {
-        if (assemblies.TryGetValue(name.FullName, out var asm))
-            return asm;
-
-        return null;
-    };
 
     private static Func<AssemblyName, Assembly?> LoadAssembly(IDictionary<string, Assembly> assemblies) => name =>
     {

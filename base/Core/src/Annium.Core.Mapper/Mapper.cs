@@ -12,7 +12,7 @@ public static class Mapper
         Mappers.GetOrAdd(assembly, x =>
         {
             var container = new ServiceContainer();
-            container.AddRuntimeTools(x, false);
+            container.AddRuntime(x);
             container.AddMapper(false);
 
             var provider = container.BuildServiceProvider();

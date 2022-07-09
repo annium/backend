@@ -10,7 +10,7 @@ internal class ServicePack : ServicePackBase
 {
     public override void Configure(IServiceContainer container)
     {
-        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddLogging();
         container.AddJsonSerializers().SetDefault();

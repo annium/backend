@@ -53,7 +53,7 @@ public class InMemoryMessageBusTest
     private IServiceProvider GetProvider()
     {
         var container = new ServiceContainer();
-        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers().SetDefault();
         container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));

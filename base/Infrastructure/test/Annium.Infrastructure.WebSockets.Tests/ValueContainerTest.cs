@@ -107,7 +107,7 @@ public class ValueContainerTest
     private ConnectionState GetState()
     {
         var container = new ServiceContainer();
-        container.AddRuntimeTools(GetType().Assembly, false);
+        container.AddRuntime(GetType().Assembly);
         container.AddWebSocketServer<ConnectionState>((_, _) => { });
 
         var sp = container.BuildServiceProvider();

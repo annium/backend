@@ -19,13 +19,12 @@ internal class TypeManagerInstance : ITypeManager
     private readonly IReadOnlyDictionary<TypeId, Type> _ids;
 
     public TypeManagerInstance(
-        Assembly assembly,
-        bool tryLoadReferences
+        Assembly assembly
     )
     {
         this.Trace($"start for {assembly}");
         this.Trace("collect assemblies");
-        var assemblies = AssembliesCollector.Collect(assembly, tryLoadReferences);
+        var assemblies = AssembliesCollector.Collect(assembly);
         this.Trace("collect types");
         var types = TypesCollector.Collect(assemblies);
         this.Trace("build hierarchy");

@@ -12,13 +12,12 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddRuntimeTools(
+    public static IServiceContainer AddRuntime(
         this IServiceContainer container,
-        Assembly assembly,
-        bool tryLoadReferences
+        Assembly assembly
     )
     {
-        container.Add(TypeManager.GetInstance(assembly, tryLoadReferences)).As<ITypeManager>().Singleton();
+        container.Add(TypeManager.GetInstance(assembly)).As<ITypeManager>().Singleton();
         container.Add<ITypeResolver, TypeResolver>().Singleton();
 
         return container;

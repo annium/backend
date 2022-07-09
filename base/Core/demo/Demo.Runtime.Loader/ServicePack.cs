@@ -7,7 +7,7 @@ namespace Demo.Runtime.Loader
     {
         public override void Register(IServiceContainer container, IServiceProvider provider)
         {
-            container.AddRuntimeTools(GetType().Assembly, false);
+            container.AddRuntime(GetType().Assembly);
             container.AddAssemblyLoader();
         }
     }

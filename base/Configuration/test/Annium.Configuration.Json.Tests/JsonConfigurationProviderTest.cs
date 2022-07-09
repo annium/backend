@@ -35,7 +35,7 @@ public class JsonConfigurationProviderTest
         {
             jsonFile = Path.GetTempFileName();
             var container = new ServiceContainer();
-            container.AddRuntimeTools(GetType().Assembly, false);
+            container.AddRuntime(GetType().Assembly);
             container.AddTime().WithRealTime().SetDefault();
             container.AddJsonSerializers().SetDefault();
             container.AddLogging();

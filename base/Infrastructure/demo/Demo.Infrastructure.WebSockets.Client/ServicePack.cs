@@ -12,7 +12,7 @@ internal class ServicePack : ServicePackBase
 
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
-        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers()
             .Configure(opts => opts

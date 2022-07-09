@@ -55,7 +55,7 @@ internal class MappingBuilder : IMappingBuilder
     {
         var configurationType = typeof(IEntityConfiguration<>);
 
-        var allTypes = TypeManager.GetInstance(_configurationsAssembly, false).Types;
+        var allTypes = TypeManager.GetInstance(_configurationsAssembly).Types;
         var concreteClasses = allTypes.Where(x => x.IsClass && !x.IsAbstract && !x.IsGenericType).ToArray();
 
         var configurationTypes = concreteClasses

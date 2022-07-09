@@ -8,7 +8,7 @@ public class TestBase
     protected ISerializer<string> GetSerializer()
     {
         var container = new ServiceContainer();
-        container.AddRuntimeTools(GetType().Assembly, false);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers()
             .Configure(opts => opts.UseCamelCaseNamingPolicy())

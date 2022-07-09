@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
@@ -24,7 +23,7 @@ internal class ServicePack : ServicePackBase
 
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
-        container.AddRuntimeTools(GetType().Assembly, true);
+        container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddJsonSerializers()
             .Configure(opts => opts

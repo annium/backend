@@ -122,7 +122,7 @@ public class RepackerTest
     private Func<TS, TR> Repack<TS, TR>(Expression<Func<TS, TR>> ex)
     {
         var repacker = new ServiceContainer()
-            .AddRuntimeTools(Assembly.GetCallingAssembly(), false)
+            .AddRuntime(Assembly.GetCallingAssembly())
             .AddMapper(false)
             .BuildServiceProvider()
             .Resolve<IRepacker>();

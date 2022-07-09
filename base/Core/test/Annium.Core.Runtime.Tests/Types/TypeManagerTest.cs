@@ -169,7 +169,7 @@ public class TypeManagerTest
         result.IsEqual(typeof(B));
     }
 
-    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false);
+    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
 
     private class A
     {

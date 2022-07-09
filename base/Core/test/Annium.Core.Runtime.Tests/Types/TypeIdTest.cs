@@ -41,5 +41,5 @@ public class TypeIdTest
         parsed!.Type.Is(type);
     }
 
-    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly, false);
+    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
 }
