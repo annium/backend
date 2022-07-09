@@ -13,7 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Core.Internal/Annium.Core.Internal.csproj" />
-        <ProjectReference Include="../../../Diagnostics/src/Annium.Diagnostics.Debug/Annium.Diagnostics.Debug.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="NodaTime" Version="3.1.0" />
