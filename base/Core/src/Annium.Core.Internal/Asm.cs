@@ -1,5 +1,7 @@
 using System.Runtime.CompilerServices;
 
+// Entry
+[assembly: InternalsVisibleTo("Annium.Core.Entrypoint")]
 // TypeManagerInstance, AssembliesCollector
 [assembly: InternalsVisibleTo("Annium.Core.Runtime")]
 // SequentialBackgroundExecutor, ParallelBackgroundExecutor

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 
 namespace Annium.Core.Entrypoint;
 
@@ -25,11 +26,17 @@ public record struct Entry(
 
     public async ValueTask DisposeAsync()
     {
+        Log.Trace("start");
+
         if (Provider is IAsyncDisposable asyncDisposable)
             await asyncDisposable.DisposeAsync();
         else if (Provider is IDisposable disposable)
             disposable.Dispose();
 
+        Log.Trace("set gate");
+
         _gate.Set();
+
+        Log.Trace("done");
     }
 }
