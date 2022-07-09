@@ -38,7 +38,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         _eventWriter = taskChannel.Writer;
         _eventReader = taskChannel.Reader;
 
-        _observable = CreateObservable(_observableCts.Token).ObserveOn(TaskPoolScheduler.Default);
+        _observable = CreateObservable(_observableCts.Token).TrackCompletion().ObserveOn(TaskPoolScheduler.Default);
 
         Logger = logger;
     }
