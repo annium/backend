@@ -2,6 +2,7 @@ using System;
 using System.Linq.Expressions;
 using Annium.Core.Mapper;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
@@ -13,6 +14,17 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
     private Expression<Func<TW, object>>? _getKey;
     private Func<TW, bool>? _getIsActive;
     private Func<TW, TR>? _toRead;
+    private readonly IMapper _mapper;
+    private readonly ILogger<Table<TR, TW>> _logger;
+
+    public TableBuilder(
+        IMapper mapper,
+        ILogger<Table<TR, TW>> logger
+    )
+    {
+        _mapper = mapper;
+        _logger = logger;
+    }
 
     public ITableBuilder<TR, TW> Allow(TablePermission permissions)
     {
@@ -43,7 +55,6 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
     }
 
     public ITable<TR, TW> Build(
-        IMapper mapper
     )
     {
         if (_getKey is null)
@@ -53,7 +64,8 @@ internal class TableBuilder<TR, TW> : ITableBuilder<TR, TW>
             _permissions,
             _getKey,
             _getIsActive ?? (_ => true),
-            _toRead ?? (x => mapper.Map<TR>(x))
+            _toRead ?? (x => _mapper.Map<TR>(x)),
+            _logger
         );
     }
 }

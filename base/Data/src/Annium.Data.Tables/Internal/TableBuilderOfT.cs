@@ -1,6 +1,7 @@
 using System;
 using System.Linq.Expressions;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
@@ -10,6 +11,14 @@ internal class TableBuilder<T> : ITableBuilder<T>
     private TablePermission _permissions;
     private Expression<Func<T, object>>? _getKey;
     private Func<T, bool>? _isActive;
+    private readonly ILogger<Table<T>> _logger;
+
+    public TableBuilder(
+        ILogger<Table<T>> logger
+    )
+    {
+        _logger = logger;
+    }
 
     public ITableBuilder<T> Allow(TablePermission permissions)
     {
@@ -41,7 +50,8 @@ internal class TableBuilder<T> : ITableBuilder<T>
         return new Table<T>(
             _permissions,
             _getKey,
-            _isActive ?? (_ => true)
+            _isActive ?? (_ => true),
+            _logger
         );
     }
 }

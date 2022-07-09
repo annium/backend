@@ -1,20 +1,28 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
 
 namespace Annium.Data.Tables.Tests;
 
-public class TableOfTTests
+public class TableOfTTests : TestBase
 {
+    public TableOfTTests()
+    {
+        Register(x => x.AddTables());
+    }
+
     [Fact]
     public async Task Works()
     {
         // arrange
-        var table = Table.New<Sample>()
+        var table = Get<ITableFactory>()
+            .New<Sample>()
             .Allow(TablePermission.All)
             .Key(x => x.Key)
             .Keep(x => x.IsAlive)

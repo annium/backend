@@ -7,12 +7,14 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
-internal abstract class TableBase<T> : ITableView<T>
+internal abstract class TableBase<T> : ITableView<T>, ILogSubject
     where T : IEquatable<T>, ICopyable<T>
 {
+    public ILogger Logger { get; }
     public abstract int Count { get; }
     protected readonly object DataLocker = new();
     private readonly CancellationTokenSource _observableCts = new();
@@ -20,9 +22,11 @@ internal abstract class TableBase<T> : ITableView<T>
     private readonly TablePermission _permissions;
     private readonly ChannelWriter<IChangeEvent<T>> _eventWriter;
     private readonly ChannelReader<IChangeEvent<T>> _eventReader;
-    private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
-    protected TableBase(TablePermission permissions)
+    protected TableBase(
+        TablePermission permissions,
+        ILogger logger
+    )
     {
         _permissions = permissions;
         var taskChannel = Channel.CreateUnbounded<IChangeEvent<T>>(new UnboundedChannelOptions
@@ -35,6 +39,8 @@ internal abstract class TableBase<T> : ITableView<T>
         _eventReader = taskChannel.Reader;
 
         _observable = CreateObservable(_observableCts.Token).ObserveOn(TaskPoolScheduler.Default);
+
+        Logger = logger;
     }
 
     public IDisposable Subscribe(IObserver<IChangeEvent<T>> observer)
@@ -98,9 +104,12 @@ internal abstract class TableBase<T> : ITableView<T>
 
     public virtual async ValueTask DisposeAsync()
     {
+        this.Log().Trace("start, complete writer");
         _eventWriter.Complete();
+        this.Log().Trace("cancel observable");
         _observableCts.Cancel();
+        this.Log().Trace("await observable completion");
         await _observable.WhenCompleted();
-        await _disposable.DisposeAsync();
+        this.Log().Trace("done");
     }
 }

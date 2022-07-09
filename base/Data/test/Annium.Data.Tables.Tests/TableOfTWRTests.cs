@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper;
 using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading.Tasks;
@@ -13,18 +14,23 @@ namespace Annium.Data.Tables.Tests;
 
 public class TableOfTWRTests : TestBase
 {
+    public TableOfTWRTests()
+    {
+        Register(x => x.AddTables());
+    }
+
     [Fact]
     public async Task Works()
     {
         // arrange
-        var mapper = Get<IMapper>();
         var ctx = new Context();
-        var table = Table.New<Sample, SampleDto>()
+        var table = Get<ITableFactory>()
+            .New<Sample, SampleDto>()
             .Allow(TablePermission.All)
             .Key(x => x.Key)
             .Keep(x => x.IsAlive)
             .MapWith(x => new Sample(x.Key, x.IsAlive, ctx.Secret))
-            .Build(mapper);
+            .Build();
         ctx.Secret = "asd";
         var log1 = new List<IChangeEvent<Sample>>();
         var log2 = new List<IChangeEvent<Sample>>();
