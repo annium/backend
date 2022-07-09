@@ -10,7 +10,7 @@ public static class IdExtensions
     private static readonly ConcurrentDictionary<Type, IdTable> IdTables = new();
 
     public static string GetId<T>(this T obj) =>
-        IdTables.GetOrAdd(obj.GetType(), _ => new IdTable()).GetId(obj);
+        obj is null ? "null" : IdTables.GetOrAdd(obj.GetType(), _ => new IdTable()).GetId(obj);
 
     private class IdTable
     {
