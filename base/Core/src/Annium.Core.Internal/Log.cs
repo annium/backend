@@ -31,6 +31,7 @@ public static class Log
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Trace(
+        string subject,
         string message,
         [CallerFilePath] string callerFilePath = "",
         [CallerMemberName] string member = "",
@@ -43,7 +44,25 @@ public static class Log
         var caller = Path.GetFileNameWithoutExtension(callerFilePath);
         if (Filter.Count == 0 || Filter.Any(caller.Contains))
             Write(
-                $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}]:{caller}.{member}#{line}: {message}"
+                $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}] {subject} at {caller}.{member}:{line} >> {message}"
+            );
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void Trace(
+        string message,
+        [CallerFilePath] string callerFilePath = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0
+    )
+    {
+        if (!Enabled)
+            return;
+
+        var caller = Path.GetFileNameWithoutExtension(callerFilePath);
+        if (Filter.Count == 0 || Filter.Any(caller.Contains))
+            Write(
+                $"[{GetLogTime()}] ADBG [{Thread.CurrentThread.ManagedThreadId:D3}] {caller}.{member}:{line} >> {message}"
             );
     }
 
