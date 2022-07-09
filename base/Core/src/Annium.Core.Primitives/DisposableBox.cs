@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 
 namespace Annium.Core.Primitives;
 
@@ -17,11 +18,26 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
 
     public async ValueTask DisposeAsync()
     {
+        this.Trace("start");
+
         DisposeBase();
+
         if (_asyncDisposables.Count > 0)
-            await Task.WhenAll(Pull(_asyncDisposables).Select(async x => await x.DisposeAsync()));
+            await Task.WhenAll(Pull(_asyncDisposables).Select(async entry =>
+            {
+                this.Trace($"dispose {entry.GetFullId()} - start");
+                await entry.DisposeAsync();
+                this.Trace($"dispose {entry.GetFullId()} - done");
+            }));
         if (_asyncDisposes.Count > 0)
-            await Task.WhenAll(Pull(_asyncDisposes).Select(async x => await x()));
+            await Task.WhenAll(Pull(_asyncDisposes).Select(async entry =>
+            {
+                this.Trace($"dispose {entry.GetFullId()} - start");
+                await entry();
+                this.Trace($"dispose {entry.GetFullId()} - done");
+            }));
+
+        this.Trace("done");
     }
 
     public static AsyncDisposableBox operator +(AsyncDisposableBox box, IDisposable disposable) => box.Add(box.SyncDisposables, disposable);
@@ -50,7 +66,9 @@ public sealed class DisposableBox : DisposableBoxBase<DisposableBox>, IDisposabl
 
     public void Dispose()
     {
+        this.Trace("start");
         DisposeBase();
+        this.Trace("done");
     }
 
     public static DisposableBox operator +(DisposableBox box, IDisposable disposable) => box.Add(box.SyncDisposables, disposable);
@@ -82,9 +100,12 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         EnsureNotDisposed();
 
         lock (_locker)
+        {
+            this.Trace($"add {item.GetFullId()}");
             entries.Add(item);
+        }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -94,9 +115,12 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
 
         lock (_locker)
             foreach (var item in items)
+            {
+                this.Trace($"add {item.GetFullId()}");
                 entries.Add(item);
+            }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -105,9 +129,12 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         EnsureNotDisposed();
 
         lock (_locker)
+        {
+            this.Trace($"remove {item.GetFullId()}");
             entries.Remove(item);
+        }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -117,9 +144,12 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
 
         lock (_locker)
             foreach (var item in items)
+            {
+                this.Trace($"remove {item.GetFullId()}");
                 entries.Remove(item);
+            }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -136,16 +166,28 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         lock (_locker)
         {
             if (IsDisposed)
+            {
+                this.Trace("already disposed");
                 return;
+            }
+
             IsDisposed = true;
         }
 
         if (SyncDisposables.Count > 0)
             foreach (var entry in Pull(SyncDisposables))
+            {
+                this.Trace($"dispose {entry.GetFullId()} - start");
                 entry.Dispose();
+                this.Trace($"dispose {entry.GetFullId()} - done");
+            }
 
         if (SyncDisposes.Count > 0)
             foreach (var entry in Pull(SyncDisposes))
+            {
+                this.Trace($"dispose {entry.GetFullId()} - start");
                 entry();
+                this.Trace($"dispose {entry.GetFullId()} - done");
+            }
     }
 }
