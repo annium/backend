@@ -27,7 +27,7 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
         _messageWriter = taskChannel.Writer;
         _messageReader = taskChannel.Reader;
 
-        _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token);
+        _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token).TrackCompletion();
     }
 
     public IObservable<Unit> Send(string message)

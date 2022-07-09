@@ -29,7 +29,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
         _subscriber.Connect(cfg.Endpoints.SubEndpoint);
         _subscriber.SubscribeToAnyTopic();
 
-        _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token);
+        _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token).TrackCompletion();
     }
 
     public IObservable<Unit> Send(string message)
