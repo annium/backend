@@ -26,20 +26,8 @@ public static class TypeManager
             Instances.TryRemove(key, out _);
     }
 
-    private record CacheKey
+    private record CacheKey(Assembly Assembly, bool TryLoadReferences)
     {
-        public Assembly Assembly { get; }
-        public bool TryLoadReferences { get; }
-
-        public CacheKey(
-            Assembly assembly,
-            bool tryLoadReferences
-        )
-        {
-            Assembly = assembly;
-            TryLoadReferences = tryLoadReferences;
-        }
-
         public virtual bool Equals(CacheKey? other) => GetHashCode() == other?.GetHashCode();
 
         public override int GetHashCode() => HashCode.Combine(Assembly, TryLoadReferences);
