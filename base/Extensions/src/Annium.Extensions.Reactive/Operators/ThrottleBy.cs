@@ -1,5 +1,6 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Reactive.Linq;
+using Annium.Core.Primitives;
 using NodaTime;
 
 namespace System;
@@ -14,28 +15,25 @@ public static class ThrottleByOperatorExtensions
         where TKey : notnull
     {
         var clock = SystemClock.Instance;
-        var intervalMilliseconds = (long) interval.TotalMilliseconds;
+        var intervalMs = interval.TotalMilliseconds.FloorInt64();
 
         return Observable.Create<TSource>(observer =>
         {
-            var keys = new Dictionary<TKey, long>();
+            var keys = new ConcurrentDictionary<TKey, long>();
 
             return source.Subscribe(x =>
             {
                 var now = clock.GetCurrentInstant().ToUnixTimeMilliseconds();
                 var key = getKey(x);
 
-                var send = false;
-                lock (keys)
-                {
-                    if (!keys.TryGetValue(key, out var till) || till <= now)
-                    {
-                        keys[key] = now + intervalMilliseconds;
-                        send = true;
-                    }
-                }
+                var stamp = keys.AddOrUpdate(
+                    key,
+                    static (_, data) => data.now + data.interval,
+                    static (_, value, data) => value <= data.now ? data.now + data.interval : value,
+                    (now, interval: intervalMs)
+                );
 
-                if (send)
+                if (stamp == now + intervalMs)
                     observer.OnNext(x);
             }, observer.OnError, observer.OnCompleted);
         });
