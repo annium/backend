@@ -20,14 +20,14 @@ public static class ServiceContainerExtensions
             .AddPostgreSql<TConnection>(
                 Assembly.GetCallingAssembly(),
                 cfg,
-                _ => { }
+                (_, _) => { }
             );
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
         IPostgreSqlConfiguration cfg,
-        Action<IMappingBuilder> configure
+        Action<IServiceProvider, IMappingBuilder> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -50,7 +50,7 @@ public static class ServiceContainerExtensions
             .AddPostgreSql<TConnection>(
                 configurationsAssembly,
                 cfg,
-                _ => { }
+                (_, _) => { }
             );
     }
 
@@ -58,7 +58,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly configurationsAssembly,
         IPostgreSqlConfiguration cfg,
-        Action<IMappingBuilder> configure
+        Action<IServiceProvider, IMappingBuilder> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -67,7 +67,6 @@ public static class ServiceContainerExtensions
         mappingBuilder
             .ApplyConfigurations()
             .SnakeCaseColumns();
-        configure(mappingBuilder);
 
         container.Add(sp =>
         {
@@ -82,6 +81,7 @@ public static class ServiceContainerExtensions
                 "SSL Mode=Prefer",
                 "Trust Server Certificate=true"
             ));
+            configure(sp, mappingBuilder);
             builder.UseMappingSchema(mappingSchema);
             builder.UseLogging<TConnection>(sp);
 
