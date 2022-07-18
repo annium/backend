@@ -27,7 +27,7 @@ public static class ServiceContainerExtensions
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
         IPostgreSqlConfiguration cfg,
-        Action<MappingSchema> configure
+        Action<IMappingBuilder> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -58,15 +58,16 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly configurationsAssembly,
         IPostgreSqlConfiguration cfg,
-        Action<MappingSchema> configure
+        Action<IMappingBuilder> configure
     )
         where TConnection : DataConnectionBase
     {
         var mappingSchema = new MappingSchema();
-        mappingSchema.GetMappingBuilder(configurationsAssembly)
+        var mappingBuilder = mappingSchema.GetMappingBuilder(configurationsAssembly);
+        mappingBuilder
             .ApplyConfigurations()
             .SnakeCaseColumns();
-        configure(mappingSchema);
+        configure(mappingBuilder);
 
         container.Add(sp =>
         {
@@ -86,7 +87,7 @@ public static class ServiceContainerExtensions
 
             var options = builder.Build();
 
-            return (TConnection)Activator.CreateInstance(typeof(TConnection), options)!;
+            return (TConnection) Activator.CreateInstance(typeof(TConnection), options)!;
         }).AsSelf().Scoped();
 
         container.AddRepositories();

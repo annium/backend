@@ -9,6 +9,7 @@ namespace Annium.linq2db.Extensions.Internal;
 
 internal class MappingBuilder : IMappingBuilder
 {
+    public MappingSchema Schema { get; }
     public FluentMappingBuilder Map { get; }
     private readonly MetadataBuilder _metadataBuilder;
     private readonly Assembly _configurationsAssembly;
@@ -19,6 +20,7 @@ internal class MappingBuilder : IMappingBuilder
         MappingSchema schema
     )
     {
+        Schema = schema;
         Map = schema.GetFluentMappingBuilder();
         _metadataBuilder = new MetadataBuilder();
         _configurationsAssembly = configurationsAssembly;

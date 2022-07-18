@@ -6,6 +6,7 @@ namespace Annium.linq2db.Extensions;
 
 public interface IMappingBuilder
 {
+    MappingSchema Schema { get; }
     FluentMappingBuilder Map { get; }
     IMappingBuilder ApplyConfigurations();
     IMappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None);
