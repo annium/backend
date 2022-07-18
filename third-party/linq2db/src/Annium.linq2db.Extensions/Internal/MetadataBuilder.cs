@@ -31,6 +31,12 @@ internal class MetadataBuilder
 
     private TableColumn? Build(MappingSchema schema, Type type, MemberInfo member, MetadataBuilderFlags flags)
     {
+        var memberType = member switch
+        {
+            PropertyInfo property => property.PropertyType,
+            FieldInfo field       => field.FieldType,
+            _                     => throw new NotImplementedException($"Member {member} is not supported")
+        };
         var column = schema.GetAttribute<ColumnAttribute>(type, member);
 
         // if not marked as column
@@ -51,6 +57,6 @@ internal class MetadataBuilder
         var primaryKey = schema.GetAttribute<PrimaryKeyAttribute>(type, member);
         var association = schema.GetAttribute<AssociationAttribute>(type, member);
 
-        return new TableColumn(member, column, dataType, nullable, primaryKey, association);
+        return new TableColumn(member, memberType, column, dataType, nullable, primaryKey, association);
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using LinqToDB.Extensions;
 using LinqToDB.Mapping;
@@ -8,6 +9,7 @@ public class TableColumn
 {
     public string Name => Attribute.Name ?? Member.Name;
     public MemberInfo Member { get; }
+    public Type Type { get; }
     public ColumnAttribute Attribute { get; }
     public DataTypeAttribute? DataType { get; }
     public NullableAttribute? Nullable { get; }
@@ -16,6 +18,7 @@ public class TableColumn
 
     public TableColumn(
         MemberInfo member,
+        Type type,
         ColumnAttribute attribute,
         DataTypeAttribute? dataType,
         NullableAttribute? nullable,
@@ -24,6 +27,7 @@ public class TableColumn
     )
     {
         Member = member;
+        Type = type;
         Attribute = attribute;
         DataType = dataType;
         Nullable = nullable;
