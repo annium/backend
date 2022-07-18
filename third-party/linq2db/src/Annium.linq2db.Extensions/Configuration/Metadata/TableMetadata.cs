@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration.Schema;
+namespace Annium.linq2db.Extensions.Configuration.Metadata;
 
-public class Table
+public class TableMetadata
 {
     public string? Schema => Attribute.Schema;
     public string Name => Attribute.Name ?? Type.Name;
     public Type Type { get; }
     public TableAttribute Attribute { get; }
-    public IReadOnlyCollection<TableColumn> Columns { get; }
+    public IReadOnlyCollection<ColumnMetadata> Columns { get; }
 
-    public Table(
+    public TableMetadata(
         Type type,
         TableAttribute attribute,
-        IReadOnlyCollection<TableColumn> columns
+        IReadOnlyCollection<ColumnMetadata> columns
     )
     {
         Type = type;

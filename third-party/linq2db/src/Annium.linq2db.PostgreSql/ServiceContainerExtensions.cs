@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using Annium.linq2db.Extensions;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
@@ -30,7 +29,7 @@ public static class ServiceContainerExtensions
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
         IPostgreSqlConfiguration cfg,
-        Action<IServiceProvider, IMappingBuilder> configure
+        Action<IServiceProvider, MappingSchema> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -61,7 +60,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly configurationsAssembly,
         IPostgreSqlConfiguration cfg,
-        Action<IServiceProvider, IMappingBuilder> configure
+        Action<IServiceProvider, MappingSchema> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -80,12 +79,11 @@ public static class ServiceContainerExtensions
             ));
 
             var mappingSchema = new MappingSchema();
-            var mappingBuilder = mappingSchema.GetMappingBuilder(configurationsAssembly);
-            mappingBuilder
-                .ApplyConfigurations()
+            mappingSchema.GetMappingBuilder(configurationsAssembly).ApplyConfigurations();
+            mappingSchema
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
-            configure(sp, mappingBuilder);
+            configure(sp, mappingSchema);
             builder.UseMappingSchema(mappingSchema);
             builder.UseLogging<TConnection>(sp);
 

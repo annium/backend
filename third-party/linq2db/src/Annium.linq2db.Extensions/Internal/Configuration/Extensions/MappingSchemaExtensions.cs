@@ -1,14 +1,15 @@
 using System.Linq;
 using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Extensions;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 
-internal static class MappingBuilderExtensions
+internal static class MappingSchemaExtensions
 {
-    public static IMappingBuilder IncludeAssociationKeysAsColumns(this IMappingBuilder builder) => builder.Configure(db =>
+    public static MappingSchema IncludeAssociationKeysAsColumns(this MappingSchema schema) => schema.Configure(db =>
     {
-        var fluentBuilder = builder.Map;
+        var fluentBuilder = schema.GetFluentMappingBuilder();
 
         foreach (var table in db.Tables)
         foreach (var column in table.Columns)
@@ -25,5 +26,5 @@ internal static class MappingBuilderExtensions
             if (isForeignKey)
                 fluentBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
         }
-    }, MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns);
+    }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
 }

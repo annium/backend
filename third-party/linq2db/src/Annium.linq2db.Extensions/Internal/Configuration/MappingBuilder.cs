@@ -3,7 +3,6 @@ using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Schema;
 using Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 using LinqToDB.Mapping;
 
@@ -13,7 +12,6 @@ internal class MappingBuilder : IMappingBuilder
 {
     public MappingSchema Schema { get; }
     public FluentMappingBuilder Map { get; }
-    private readonly MetadataBuilder _metadataBuilder;
     private readonly Assembly _configurationsAssembly;
     private readonly Lazy<(Type configurationType, Type entityType)[]> _configurations;
 
@@ -24,7 +22,6 @@ internal class MappingBuilder : IMappingBuilder
     {
         Schema = schema;
         Map = schema.GetFluentMappingBuilder();
-        _metadataBuilder = new MetadataBuilder();
         _configurationsAssembly = configurationsAssembly;
         _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
     }
@@ -43,17 +40,7 @@ internal class MappingBuilder : IMappingBuilder
             configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }
 
-        this.IncludeAssociationKeysAsColumns();
-
-        return this;
-    }
-
-    public Database BuildMetadata(MetadataBuilderFlags flags = MetadataBuilderFlags.None) =>
-        _metadataBuilder.Build(Map.MappingSchema, flags);
-
-    public IMappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None)
-    {
-        configure(BuildMetadata(flags));
+        Schema.IncludeAssociationKeysAsColumns();
 
         return this;
     }

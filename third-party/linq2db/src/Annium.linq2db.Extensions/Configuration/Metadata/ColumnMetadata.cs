@@ -3,9 +3,9 @@ using System.Reflection;
 using LinqToDB.Extensions;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration.Schema;
+namespace Annium.linq2db.Extensions.Configuration.Metadata;
 
-public class TableColumn
+public class ColumnMetadata
 {
     public string Name => Attribute.Name ?? Member.Name;
     public MemberInfo Member { get; }
@@ -16,7 +16,7 @@ public class TableColumn
     public PrimaryKeyAttribute? PrimaryKey { get; }
     public AssociationAttribute? Association { get; }
 
-    public TableColumn(
+    public ColumnMetadata(
         MemberInfo member,
         Type type,
         ColumnAttribute attribute,

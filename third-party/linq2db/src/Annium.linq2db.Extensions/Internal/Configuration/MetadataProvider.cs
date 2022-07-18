@@ -2,23 +2,23 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Schema;
+using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Internal.Configuration;
 
-internal class MetadataBuilder
+internal static class MetadataProvider
 {
-    public Database Build(MappingSchema schema, MetadataBuilderFlags flags)
+    public static DbMetadata Describe(MappingSchema schema, MetadataFlags flags)
     {
         var types = schema.GetDefinedTypes();
 
         var tables = types.OrderBy(x => x.Name).Select(x => Build(schema, x, flags)).ToArray();
 
-        return new Database(tables);
+        return new DbMetadata(tables);
     }
 
-    private Table Build(MappingSchema schema, Type type, MetadataBuilderFlags flags)
+    private static TableMetadata Build(MappingSchema schema, Type type, MetadataFlags flags)
     {
         var table = schema.GetAttribute<TableAttribute>(type)!;
 
@@ -27,10 +27,10 @@ internal class MetadataBuilder
             .Where(x => x != null)
             .ToArray();
 
-        return new Table(type, table, columns);
+        return new TableMetadata(type, table, columns);
     }
 
-    private TableColumn? Build(MappingSchema schema, Type type, MemberInfo member, MetadataBuilderFlags flags)
+    private static ColumnMetadata? Build(MappingSchema schema, Type type, MemberInfo member, MetadataFlags flags)
     {
         var memberType = member switch
         {
@@ -44,7 +44,7 @@ internal class MetadataBuilder
         if (column is null)
         {
             // if requested to be included in metadata - add ColumnAttribute; otherwise - skip
-            if (flags.HasFlag(MetadataBuilderFlags.IncludeMembersNotMarkedAsColumns))
+            if (flags.HasFlag(MetadataFlags.IncludeMembersNotMarkedAsColumns))
                 column = new ColumnAttribute(member.Name) { IsColumn = false };
             else
                 return null;
@@ -58,6 +58,6 @@ internal class MetadataBuilder
         var primaryKey = schema.GetAttribute<PrimaryKeyAttribute>(type, member);
         var association = schema.GetAttribute<AssociationAttribute>(type, member);
 
-        return new TableColumn(member, memberType, column, dataType, nullable, primaryKey, association);
+        return new ColumnMetadata(member, memberType, column, dataType, nullable, primaryKey, association);
     }
 }

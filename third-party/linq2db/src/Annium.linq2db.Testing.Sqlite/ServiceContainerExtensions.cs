@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using Annium.linq2db.Extensions;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Testing.Sqlite;
@@ -23,14 +22,14 @@ public static class ServiceContainerExtensions
             .AddTestingSqlite<TConnection>(
                 Assembly.GetCallingAssembly(),
                 migrationsAssembly,
-                _ => { }
+                (_, _) => { }
             );
     }
 
     public static IServiceContainer AddTestingSqlite<TConnection>(
         this IServiceContainer container,
         Assembly migrationsAssembly,
-        Action<MappingSchema> configure
+        Action<IServiceProvider, MappingSchema> configure
     )
         where TConnection : DataConnectionBase
     {
@@ -53,7 +52,7 @@ public static class ServiceContainerExtensions
             .AddTestingSqlite<TConnection>(
                 configurationsAssembly,
                 migrationsAssembly,
-                _ => { }
+                (_, _) => { }
             );
     }
 
@@ -61,16 +60,10 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly configurationsAssembly,
         Assembly migrationsAssembly,
-        Action<MappingSchema> configure
+        Action<IServiceProvider, MappingSchema> configure
     )
         where TConnection : DataConnectionBase
     {
-        var mappingSchema = new MappingSchema();
-        mappingSchema.GetMappingBuilder(configurationsAssembly)
-            .ApplyConfigurations()
-            .UseSnakeCaseColumns();
-        configure(mappingSchema);
-
         container.Add(_ =>
         {
             var testingReference = new TestingSqliteReference();
@@ -81,13 +74,22 @@ public static class ServiceContainerExtensions
             return testingReference;
         }).Singleton();
 
-
-        container.Add(sp => (TConnection) Activator.CreateInstance(
-            typeof(TConnection),
-            ProviderName.SQLiteMS,
-            sp.Resolve<TestingSqliteReference>().ConnectionString,
+        container.Add(sp =>
+        {
+            var mappingSchema = new MappingSchema();
+            mappingSchema.GetMappingBuilder(configurationsAssembly).ApplyConfigurations();
             mappingSchema
-        )!).Scoped();
+                .UseSnakeCaseColumns()
+                .UseJsonSupport(sp);
+            configure(sp, mappingSchema);
+
+            return (TConnection) Activator.CreateInstance(
+                typeof(TConnection),
+                ProviderName.SQLiteMS,
+                sp.Resolve<TestingSqliteReference>().ConnectionString,
+                mappingSchema
+            )!;
+        }).Scoped();
 
         return container;
     }
