@@ -5,7 +5,7 @@ using Annium.Infrastructure.WebSockets.Client;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 
-public class TestServerClient: IAsyncDisposable
+public class TestServerClient : IAsyncDisposable
 {
     public DemoClient Demo { get; }
     public bool IsConnected => _client.IsConnected;

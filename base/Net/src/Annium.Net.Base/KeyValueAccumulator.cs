@@ -35,7 +35,7 @@ public struct KeyValueAccumulator
             else if (values.Count == 1)
             {
                 // Second value for this key
-                _accumulator[key] = new[] {values[0], value};
+                _accumulator[key] = new[] { values[0], value };
             }
             else
             {

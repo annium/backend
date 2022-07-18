@@ -22,5 +22,4 @@ public static class ServiceDescriptorExtensions
         IInstanceServiceDescriptor x => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationInstance),
         _                            => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
     };
-
 }

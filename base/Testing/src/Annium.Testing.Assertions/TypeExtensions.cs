@@ -12,7 +12,7 @@ public static class TypeExtensions
     {
         (value is T).IsTrue(message ?? $"{valueEx} is {value?.GetType()}, not {typeof(T)}");
 
-        return (T)value!;
+        return (T) value!;
     }
 
     public static T AsExact<T>(
@@ -23,6 +23,6 @@ public static class TypeExtensions
     {
         (value?.GetType() == typeof(T)).IsTrue(message ?? $"{valueEx} is {value?.GetType()}, not {typeof(T)}");
 
-        return (T)value!;
+        return (T) value!;
     }
 }

@@ -30,7 +30,7 @@ internal class ConfigurationProcessor<T>
 
     public T Process()
     {
-        return (T)(Process(typeof(T)) ?? default!);
+        return (T) (Process(typeof(T)) ?? default!);
     }
 
     private object? Process(Type type)
@@ -55,7 +55,7 @@ internal class ConfigurationProcessor<T>
 
         // var items = config.Where(e => e.Key.StartsWith(path, StringComparison.OrdinalIgnoreCase) && e.Key.Length > path.Length).ToArray();
         var items = GetDescendants();
-        var result = (IDictionary)Activator.CreateInstance(type)!;
+        var result = (IDictionary) Activator.CreateInstance(type)!;
 
         foreach (var name in items)
         {
@@ -72,7 +72,7 @@ internal class ConfigurationProcessor<T>
     private object ProcessList(Type type)
     {
         var elementType = type.GetGenericArguments()[0];
-        var result = (IList)Activator.CreateInstance(type)!;
+        var result = (IList) Activator.CreateInstance(type)!;
 
         var items = GetDescendants();
 
@@ -89,9 +89,9 @@ internal class ConfigurationProcessor<T>
     private object ProcessArray(Type type)
     {
         var elementType = type.GetElementType()!;
-        var raw = (IList)ProcessList(typeof(List<>).MakeGenericType(elementType));
+        var raw = (IList) ProcessList(typeof(List<>).MakeGenericType(elementType));
 
-        var result = (IList)Array.CreateInstance(elementType, raw.Count);
+        var result = (IList) Array.CreateInstance(elementType, raw.Count);
 
         for (var index = 0; index < raw.Count; index++)
             result[index] = raw[index];

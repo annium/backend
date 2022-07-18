@@ -105,7 +105,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
             entries.Add(item);
         }
 
-        return (TBox)this;
+        return (TBox) this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -120,7 +120,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
                 entries.Add(item);
             }
 
-        return (TBox)this;
+        return (TBox) this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -134,7 +134,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
             entries.Remove(item);
         }
 
-        return (TBox)this;
+        return (TBox) this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -149,7 +149,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
                 entries.Remove(item);
             }
 
-        return (TBox)this;
+        return (TBox) this;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

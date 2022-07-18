@@ -253,7 +253,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         }
 
         this.Log().Trace($"{type}#{subscriptionId} - track observable");
-        if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>)observable)))
+        if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>) observable)))
             throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
         return Result.Status(response.Status, observable);
@@ -330,7 +330,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
             if (!await SendInternal(request))
                 return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
 
-            var response = (TResponse)await tcs.Task;
+            var response = (TResponse) await tcs.Task;
             return (Result.Status(OperationStatus.Ok), response);
         }
         catch (OperationCanceledException)

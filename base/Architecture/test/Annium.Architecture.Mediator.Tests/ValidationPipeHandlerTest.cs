@@ -32,7 +32,7 @@ public class ValidationPipeHandlerTest : TestBase
     {
         // arrange
         var mediator = GetMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
-        var request = new LoginRequest {UserName = "user", Password = "pass"};
+        var request = new LoginRequest { UserName = "user", Password = "pass" };
 
         // act
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);

@@ -29,7 +29,7 @@ public static class YearMonthExtensions
     {
         var totalMonths = period.Month + value;
         // totalMonths - 1 - hack to define YearMonth with 12 months'
-        var addYears = (int)Math.Floor((decimal)(totalMonths - 1) / 12);
+        var addYears = (int) Math.Floor((decimal) (totalMonths - 1) / 12);
         var years = period.Year + addYears;
         var months = totalMonths - addYears * 12;
 

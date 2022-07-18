@@ -17,7 +17,7 @@ internal class BooleanDataResultConverter<TD> : ResultConverterBase<IBooleanResu
         var isSuccess = false;
         TD data = default !;
 
-        var (plainErrors,labeledErrors)=ReadProperties(ref reader,options,(ref Utf8JsonReader r) =>
+        var (plainErrors, labeledErrors) = ReadProperties(ref reader, options, (ref Utf8JsonReader r) =>
         {
             if (r.HasProperty(nameof(X.IsSuccess)))
                 isSuccess = JsonSerializer.Deserialize<bool>(ref r, options);

@@ -98,7 +98,7 @@ public class StorageTest : IDisposable
         }
 
         // assert
-        ((Span<byte>)result).SequenceEqual((Span<byte>)blob).IsTrue();
+        ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
     }
 
     [Fact]

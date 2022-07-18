@@ -14,11 +14,11 @@ public static class DecimalExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int FloorInt32(this decimal value) =>
-        (int)Math.Floor(value);
+        (int) Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long FloorInt64(this decimal value) =>
-        (long)Math.Floor(value);
+        (long) Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal Floor(this decimal value) =>
@@ -26,19 +26,19 @@ public static class DecimalExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this decimal value) =>
-        (int)Math.Round(value);
+        (int) Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this decimal value, MidpointRounding mode) =>
-        (int)Math.Round(value, mode);
+        (int) Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this decimal value) =>
-        (long)Math.Round(value);
+        (long) Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this decimal value, MidpointRounding mode) =>
-        (long)Math.Round(value, mode);
+        (long) Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static decimal Round(this decimal value) =>
@@ -58,11 +58,11 @@ public static class DecimalExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CeilInt32(this decimal value) =>
-        (int)Math.Ceiling(value);
+        (int) Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long CeilInt64(this decimal value) =>
-        (long)Math.Ceiling(value);
+        (long) Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Ceil(this double value) =>

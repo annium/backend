@@ -14,7 +14,7 @@ public class ExceptionPipeHandlerTest : TestBase
     {
         // arrange
         var mediator = GetMediator(cfg => cfg.AddExceptionHandler().AddHandler(typeof(EchoRequestHandler<>)));
-        var request = new LoginRequest {Throw = true};
+        var request = new LoginRequest { Throw = true };
 
         // act
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
@@ -30,7 +30,7 @@ public class ExceptionPipeHandlerTest : TestBase
     {
         // arrange
         var mediator = GetMediator(cfg => cfg.AddCompositionHandler().AddHandler(typeof(EchoRequestHandler<>)));
-        var request = new LoginRequest {Throw = false};
+        var request = new LoginRequest { Throw = false };
 
         // act
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);

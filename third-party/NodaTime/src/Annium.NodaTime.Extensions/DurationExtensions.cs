@@ -18,8 +18,8 @@ public static class DurationExtensions
 
     public static Duration FloorTo(this Duration m, Duration d)
     {
-        var mt = (long)m.TotalTicks;
-        var dt = (long)d.TotalTicks;
+        var mt = (long) m.TotalTicks;
+        var dt = (long) d.TotalTicks;
 
         return Duration.FromTicks(mt - mt % dt);
     }
@@ -38,8 +38,8 @@ public static class DurationExtensions
 
     public static Duration RoundTo(this Duration m, Duration d)
     {
-        var mt = (long)m.TotalTicks;
-        var dt = (long)d.TotalTicks;
+        var mt = (long) m.TotalTicks;
+        var dt = (long) d.TotalTicks;
         var diff = mt % dt;
 
         return Duration.FromTicks(mt - diff + (dt > diff * 2L ? 0L : dt));
@@ -59,8 +59,8 @@ public static class DurationExtensions
 
     public static Duration CeilTo(this Duration m, Duration d)
     {
-        var mt = (long)m.TotalTicks;
-        var dt = (long)d.TotalTicks;
+        var mt = (long) m.TotalTicks;
+        var dt = (long) d.TotalTicks;
 
         return Duration.FromTicks(mt + dt - mt % dt);
     }

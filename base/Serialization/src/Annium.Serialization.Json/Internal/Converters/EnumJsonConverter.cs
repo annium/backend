@@ -32,7 +32,7 @@ internal class EnumJsonConverter<T> : JsonConverter<T>
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        writer.WriteNumberValue((long)Convert.ChangeType(value, typeof(long)));
+        writer.WriteNumberValue((long) Convert.ChangeType(value, typeof(long)));
     }
 }
 
@@ -63,6 +63,6 @@ internal class FlagsEnumJsonConverter<T> : JsonConverter<T>
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        writer.WriteNumberValue((long)Convert.ChangeType(value, typeof(long)));
+        writer.WriteNumberValue((long) Convert.ChangeType(value, typeof(long)));
     }
 }

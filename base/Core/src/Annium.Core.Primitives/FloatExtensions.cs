@@ -14,59 +14,59 @@ public static class FloatExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int FloorInt32(this float value) =>
-        (int)Math.Floor(value);
+        (int) Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long FloorInt64(this float value) =>
-        (long)Math.Floor(value);
+        (long) Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Floor(this float value) =>
-        (float)Math.Floor(value);
+        (float) Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this float value) =>
-        (int)Math.Round(value);
+        (int) Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this float value, MidpointRounding mode) =>
-        (int)Math.Round(value, mode);
+        (int) Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this float value) =>
-        (long)Math.Round(value);
+        (long) Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this float value, MidpointRounding mode) =>
-        (long)Math.Round(value, mode);
+        (long) Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Round(this float value) =>
-        (float)Math.Round(value);
+        (float) Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Round(this float value, int digits) =>
-        (float)Math.Round(value, digits);
+        (float) Math.Round(value, digits);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Round(this float value, MidpointRounding mode) =>
-        (float)Math.Round(value, mode);
+        (float) Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Round(this float value, int digits, MidpointRounding mode) =>
-        (float)Math.Round(value, digits, mode);
+        (float) Math.Round(value, digits, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CeilInt32(this float value) =>
-        (int)Math.Ceiling(value);
+        (int) Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long CeilInt64(this float value) =>
-        (long)Math.Ceiling(value);
+        (long) Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Ceil(this float value) =>
-        (float)Math.Ceiling(value);
+        (float) Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static float Within(this float value, float min, float max) => value.Above(min).Below(max);

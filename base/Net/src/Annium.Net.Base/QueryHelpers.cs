@@ -40,7 +40,7 @@ public static class QueryHelpers
         }
 
         return AddQueryString(
-            uri, new[] {new KeyValuePair<string, string?>(name, value)});
+            uri, new[] { new KeyValuePair<string, string?>(name, value) });
     }
 
     /// <summary>

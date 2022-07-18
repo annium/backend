@@ -29,7 +29,7 @@ public static class IPEndPointExt
         if (IPAddress.TryParse(uri.Host, out var ipAddress))
             return new IPEndPoint(ipAddress, port);
 
-        return new IPEndPoint(new IPAddress(new byte[] {127, 0, 0, 1}), port);
+        return new IPEndPoint(new IPAddress(new byte[] { 127, 0, 0, 1 }), port);
     }
 
     private static bool IsValidPort(int port) => port is >= 0 and < 65536;

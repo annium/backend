@@ -15,6 +15,6 @@ internal class MaterializableJsonConverterFactory : JsonConverterFactory
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        return (JsonConverter)Activator.CreateInstance(typeof(MaterializableJsonConverter<>).MakeGenericType(typeToConvert))!;
+        return (JsonConverter) Activator.CreateInstance(typeof(MaterializableJsonConverter<>).MakeGenericType(typeToConvert))!;
     }
 }

@@ -154,10 +154,12 @@ internal class MapBuilder : IMapBuilder
         public bool HasConfiguration => Configuration is not null;
         public IMapConfiguration Configuration { get; private set; } = default!;
         public object MappingLock = new();
+
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         public bool HasMapping => _mapping is not null;
         public Mapping Mapping => _mapping.Value;
         public object MapLock = new();
+
         // ReSharper disable once ConditionIsAlwaysTrueOrFalse
         public bool HasMap => Map is not null;
         public Delegate Map { get; private set; } = default!;

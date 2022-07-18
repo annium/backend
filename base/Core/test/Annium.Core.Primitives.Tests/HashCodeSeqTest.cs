@@ -24,19 +24,19 @@ public class HashCodeSeqTest
     internal sealed record A : Base, ICopyable<A>
     {
         public int X { get; init; }
-        public override A Copy() => this with {};
+        public override A Copy() => this with { };
     }
 
     internal sealed record B : Base, ICopyable<B>
     {
         public int Y { get; init; }
-        public override B Copy() => this with {};
+        public override B Copy() => this with { };
     }
 
     internal sealed record Z : Base, ICopyable<Z>
     {
         public List<Base> Items { get; init; } = new();
-        public override Z Copy() => this with {Items = Items.ToList()};
+        public override Z Copy() => this with { Items = Items.ToList() };
         public bool Equals(Z? other) => base.Equals(other) && Items.SequenceEqual(other.Items);
         public override int GetHashCode() => HashCode.Combine(base.GetHashCode(), HashCodeSeq.Combine(Items));
     }

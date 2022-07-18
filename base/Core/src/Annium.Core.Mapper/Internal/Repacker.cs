@@ -50,11 +50,11 @@ internal class Repacker : IRepacker
         );
 
     private Mapping Lambda(LambdaExpression ex) => source =>
-        Expression.Lambda(Repack(ex.Body)(source), (ParameterExpression)source);
+        Expression.Lambda(Repack(ex.Body)(source), (ParameterExpression) source);
 
     private Mapping ListInit(ListInitExpression ex) => source =>
         Expression.ListInit(
-            (NewExpression)Repack(ex.NewExpression)(source),
+            (NewExpression) Repack(ex.NewExpression)(source),
             ex.Initializers.Select(x => x.Update(x.Arguments.Select(a => Repack(a)(source))))
         );
 
@@ -63,7 +63,7 @@ internal class Repacker : IRepacker
 
     private Mapping MemberInit(MemberInitExpression ex) => source =>
         Expression.MemberInit(
-            (NewExpression)Repack(ex.NewExpression)(source),
+            (NewExpression) Repack(ex.NewExpression)(source),
             ex.Bindings.Select(b =>
             {
                 if (b is MemberAssignment ma)

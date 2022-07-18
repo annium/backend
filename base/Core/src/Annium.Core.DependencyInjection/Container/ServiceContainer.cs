@@ -67,7 +67,7 @@ public class ServiceContainer : IServiceContainer
 
     public bool Contains(IServiceDescriptor descriptor)
     {
-        var lifetime = (Microsoft.Extensions.DependencyInjection.ServiceLifetime)descriptor.Lifetime;
+        var lifetime = (Microsoft.Extensions.DependencyInjection.ServiceLifetime) descriptor.Lifetime;
 
         return descriptor switch
         {
