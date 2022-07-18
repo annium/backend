@@ -48,9 +48,12 @@ internal class MappingBuilder : IMappingBuilder
         return this;
     }
 
+    public Database BuildMetadata(MetadataBuilderFlags flags = MetadataBuilderFlags.None) =>
+        _metadataBuilder.Build(Map.MappingSchema, flags);
+
     public IMappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None)
     {
-        configure(_metadataBuilder.Build(Map.MappingSchema, flags));
+        configure(BuildMetadata(flags));
 
         return this;
     }

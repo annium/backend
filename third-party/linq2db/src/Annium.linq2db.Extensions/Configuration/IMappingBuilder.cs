@@ -9,5 +9,6 @@ public interface IMappingBuilder
     MappingSchema Schema { get; }
     FluentMappingBuilder Map { get; }
     IMappingBuilder ApplyConfigurations();
+    Database BuildMetadata(MetadataBuilderFlags flags = MetadataBuilderFlags.None);
     IMappingBuilder Configure(Action<Database> configure, MetadataBuilderFlags flags = MetadataBuilderFlags.None);
 }
