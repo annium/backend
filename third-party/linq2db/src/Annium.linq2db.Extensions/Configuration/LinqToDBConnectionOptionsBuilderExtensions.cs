@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
 using Annium.Core.DependencyInjection;
+using Annium.linq2db.Extensions.Models;
 using Annium.Logging.Abstractions;
 using LinqToDB.Configuration;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 public static class LinqToDBConnectionOptionsBuilderExtensions
 {

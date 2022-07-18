@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Annium.linq2db.Extensions.Models;
+namespace Annium.linq2db.Extensions.Configuration.Schema;
 
 public class Database
 {

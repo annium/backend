@@ -1,6 +1,8 @@
 using System;
 using System.Reflection;
 using Annium.linq2db.Extensions;
+using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Testing.Sqlite;
 using FluentMigrator.Runner;
 using LinqToDB;
@@ -66,7 +68,7 @@ public static class ServiceContainerExtensions
         var mappingSchema = new MappingSchema();
         mappingSchema.GetMappingBuilder(configurationsAssembly)
             .ApplyConfigurations()
-            .SnakeCaseColumns();
+            .UseSnakeCaseColumns();
         configure(mappingSchema);
 
         container.Add(_ =>

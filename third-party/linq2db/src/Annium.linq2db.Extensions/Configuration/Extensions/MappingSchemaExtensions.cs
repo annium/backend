@@ -1,8 +1,8 @@
 using System.Reflection;
-using Annium.linq2db.Extensions.Internal;
+using Annium.linq2db.Extensions.Internal.Configuration;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration.Extensions;
 
 public static class MappingSchemaExtensions
 {

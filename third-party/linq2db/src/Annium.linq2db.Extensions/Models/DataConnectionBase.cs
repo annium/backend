@@ -1,7 +1,7 @@
 using LinqToDB.Configuration;
 using LinqToDB.Data;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Models;
 
 public class DataConnectionBase : DataConnection
 {

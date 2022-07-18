@@ -1,6 +1,9 @@
 using System;
 using System.Reflection;
 using Annium.linq2db.Extensions;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.PostgreSql;
 using LinqToDB;
 using LinqToDB.Configuration;
@@ -62,12 +65,6 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnectionBase
     {
-        var mappingSchema = new MappingSchema();
-        var mappingBuilder = mappingSchema.GetMappingBuilder(configurationsAssembly);
-        mappingBuilder
-            .ApplyConfigurations()
-            .SnakeCaseColumns();
-
         container.Add(sp =>
         {
             var builder = new LinqToDBConnectionOptionsBuilder();
@@ -81,6 +78,13 @@ public static class ServiceContainerExtensions
                 "SSL Mode=Prefer",
                 "Trust Server Certificate=true"
             ));
+
+            var mappingSchema = new MappingSchema();
+            var mappingBuilder = mappingSchema.GetMappingBuilder(configurationsAssembly);
+            mappingBuilder
+                .ApplyConfigurations()
+                .UseSnakeCaseColumns()
+                .UseJsonSupport(sp);
             configure(sp, mappingBuilder);
             builder.UseMappingSchema(mappingSchema);
             builder.UseLogging<TConnection>(sp);

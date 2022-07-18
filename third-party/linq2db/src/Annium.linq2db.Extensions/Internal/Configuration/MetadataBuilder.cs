@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Annium.linq2db.Extensions.Models;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Schema;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Internal;
+namespace Annium.linq2db.Extensions.Internal.Configuration;
 
 internal class MetadataBuilder
 {

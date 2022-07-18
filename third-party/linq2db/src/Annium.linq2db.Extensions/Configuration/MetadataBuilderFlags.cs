@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 [Flags]
 public enum MetadataBuilderFlags

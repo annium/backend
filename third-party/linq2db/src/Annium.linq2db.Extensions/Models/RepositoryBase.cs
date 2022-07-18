@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Models;
 
 public abstract class RepositoryBase<TConnection> : IAsyncDisposable
     where TConnection : DataConnectionBase

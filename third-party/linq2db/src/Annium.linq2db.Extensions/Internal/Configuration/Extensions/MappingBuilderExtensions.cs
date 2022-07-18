@@ -1,8 +1,8 @@
 using System.Linq;
-using Annium.Core.Primitives;
+using Annium.linq2db.Extensions.Configuration;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Internal;
+namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 
 internal static class MappingBuilderExtensions
 {

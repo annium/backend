@@ -1,8 +1,8 @@
 using System;
-using Annium.linq2db.Extensions.Models;
+using Annium.linq2db.Extensions.Configuration.Schema;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 public interface IMappingBuilder
 {
