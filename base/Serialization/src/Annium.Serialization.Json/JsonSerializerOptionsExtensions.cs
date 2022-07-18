@@ -1,5 +1,6 @@
 using System.Text.Encodings.Web;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json.Internal.Converters;
 using Annium.Serialization.Json.Internal.Options;
@@ -35,6 +36,7 @@ public static class JsonSerializerOptionsExtensions
 
     private static JsonSerializerOptions UseNamingPolicy(this JsonSerializerOptions options, JsonNamingPolicy policy)
     {
+        options.Converters.Insert(0, new JsonStringEnumConverter(policy));
         options.DictionaryKeyPolicy = policy;
         options.PropertyNamingPolicy = policy;
 
