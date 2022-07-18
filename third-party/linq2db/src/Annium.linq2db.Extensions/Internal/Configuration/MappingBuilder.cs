@@ -10,9 +10,8 @@ namespace Annium.linq2db.Extensions.Internal.Configuration;
 
 internal class MappingBuilder : IMappingBuilder
 {
-    public MappingSchema Schema { get; }
-    public FluentMappingBuilder Map { get; }
     private readonly Assembly _configurationsAssembly;
+    private readonly MappingSchema _schema;
     private readonly Lazy<(Type configurationType, Type entityType)[]> _configurations;
 
     public MappingBuilder(
@@ -20,27 +19,28 @@ internal class MappingBuilder : IMappingBuilder
         MappingSchema schema
     )
     {
-        Schema = schema;
-        Map = schema.GetFluentMappingBuilder();
         _configurationsAssembly = configurationsAssembly;
+        _schema = schema;
         _configurations = new Lazy<(Type configurationType, Type entityType)[]>(CollectConfigurations);
     }
 
     public IMappingBuilder ApplyConfigurations()
     {
+        var fluentMappingBuilder = _schema.GetFluentMappingBuilder();
+
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
 
         foreach (var (configurationType, entityType) in _configurations.Value)
         {
             var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                .Invoke(Map, new object?[] { null })!;
+                .Invoke(fluentMappingBuilder, new object?[] { null })!;
             var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
                 .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
             var configuration = Activator.CreateInstance(configurationType)!;
             configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }
 
-        Schema.IncludeAssociationKeysAsColumns();
+        _schema.IncludeAssociationKeysAsColumns();
 
         return this;
     }
