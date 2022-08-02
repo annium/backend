@@ -3,45 +3,66 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
-using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB;
 
 namespace Annium.linq2db.Extensions.Extensions;
 
-public static class TableInsertOrUpdateExtensions
+public static class TableSaveExtensions
 {
-    public static Task<int> InsertOrUpdateAsync<T>(
-        this ITable<T> target,
+    public static Task<int> InsertAsync<T>(
+        this ITable<T> table,
         T value
     )
         where T : notnull
     {
-        var table = target.DataContext.MappingSchema.Describe().Tables.SingleOrDefault(x => x.Type == typeof(T))
-                    ?? throw new InvalidOperationException($"Unknown type {typeof(T).FriendlyName()}");
-        var insertSetter = BuildInsertSetter(table, value);
-        var onDuplicateKeyUpdateSetter = BuildOnDuplicateKeyUpdateSetter(table, value);
+        var tableMetadata = table.GetMetadata();
+        var insertSetter = BuildInsertSetter(tableMetadata, value);
 
-        return target.InsertOrUpdateAsync(insertSetter, onDuplicateKeyUpdateSetter, CancellationToken.None);
+        return table.InsertAsync(insertSetter, CancellationToken.None);
+    }
+
+    public static Task<int> UpdateAsync<T>(
+        this ITable<T> table,
+        T value
+    )
+        where T : notnull
+    {
+        var tableMetadata = table.GetMetadata();
+        var updateSetter = BuildUpdateSetter<T, T>(tableMetadata, value);
+
+        return table.UpdateAsync(updateSetter, CancellationToken.None);
+    }
+
+    public static Task<int> InsertOrUpdateAsync<T>(
+        this ITable<T> table,
+        T value
+    )
+        where T : notnull
+    {
+        var tableMetadata = table.GetMetadata();
+        var insertSetter = BuildInsertSetter(tableMetadata, value);
+        var onDuplicateKeyUpdateSetter = BuildUpdateSetter<T, T?>(tableMetadata, value);
+
+        return table.InsertOrUpdateAsync(insertSetter, onDuplicateKeyUpdateSetter, CancellationToken.None);
     }
 
     private static Expression<Func<T>> BuildInsertSetter<T>(TableMetadata table, T value) => Expression.Lambda<Func<T>>(
         Expression.MemberInit(
             Expression.New(typeof(T)),
-            table.Columns
+            table.Columns.Values
                 .Where(c => c.Association is null)
                 .Select(c => Expression.Bind(c.Member, Expression.PropertyOrField(Expression.Constant(value), c.Member.Name)))
         )
     );
 
-    private static Expression<Func<T, T?>> BuildOnDuplicateKeyUpdateSetter<T>(TableMetadata table, T value) => Expression.Lambda<Func<T, T?>>(
+    private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value) => Expression.Lambda<Func<TIn, TOut>>(
         Expression.MemberInit(
-            Expression.New(typeof(T)),
-            table.Columns
+            Expression.New(typeof(TIn)),
+            table.Columns.Values
                 .Where(c => c.Association is null)
                 .Select(c => Expression.Bind(c.Member, Expression.PropertyOrField(Expression.Constant(value), c.Member.Name)))
         ),
-        Expression.Parameter(typeof(T))
+        Expression.Parameter(typeof(TIn))
     );
 }
