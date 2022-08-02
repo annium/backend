@@ -11,14 +11,14 @@ internal static class MappingSchemaExtensions
     {
         var fluentBuilder = schema.GetFluentMappingBuilder();
 
-        foreach (var table in db.Tables)
-        foreach (var column in table.Columns)
+        foreach (var table in db.Tables.Values)
+        foreach (var column in table.Columns.Values)
         {
             if (column.Attribute.IsColumn)
                 continue;
 
             // check if is foreign key
-            var isForeignKey = table.Columns
+            var isForeignKey = table.Columns.Values
                 .Where(x => x.Attribute.IsColumn)
                 .Any(x => x.Association?.ThisKey == column.Member.Name);
 

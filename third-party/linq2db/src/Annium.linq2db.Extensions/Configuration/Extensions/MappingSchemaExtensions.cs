@@ -13,8 +13,8 @@ public static class MappingSchemaExtensions
 {
     public static MappingSchema UseSnakeCaseColumns(this MappingSchema schema) => schema.Configure(db =>
     {
-        foreach (var table in db.Tables)
-        foreach (var column in table.Columns)
+        foreach (var table in db.Tables.Values)
+        foreach (var column in table.Columns.Values)
             column.Attribute.Name = column.Member.Name.SnakeCase();
     }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
 
@@ -25,8 +25,8 @@ public static class MappingSchemaExtensions
         var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] { typeof(object) })!;
         var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] { typeof(Type), typeof(string) })!;
 
-        foreach (var table in db.Tables)
-        foreach (var column in table.Columns)
+        foreach (var table in db.Tables.Values)
+        foreach (var column in table.Columns.Values)
         {
             if (column.Attribute.DataType is not DataType.BinaryJson)
                 continue;

@@ -13,7 +13,7 @@ internal static class MetadataProvider
     {
         var types = schema.GetDefinedTypes();
 
-        var tables = types.OrderBy(x => x.Name).Select(x => Build(schema, x, flags)).ToArray();
+        var tables = types.ToDictionary(x => x, x => Build(schema, x, flags));
 
         return new DatabaseMetadata(tables);
     }
@@ -23,9 +23,9 @@ internal static class MetadataProvider
         var table = schema.GetAttribute<TableAttribute>(type)!;
 
         var columns = type.GetProperties().Concat<MemberInfo>(type.GetFields())
-            .Select(x => Build(schema, type, x, flags)!)
-            .Where(x => x != null)
-            .ToArray();
+            .Select(x => Build(schema, type, x, flags))
+            .OfType<ColumnMetadata>()
+            .ToDictionary(x => x.Member);
 
         return new TableMetadata(type, table, columns);
     }
@@ -35,8 +35,8 @@ internal static class MetadataProvider
         var memberType = member switch
         {
             PropertyInfo property => property.PropertyType,
-            FieldInfo field       => field.FieldType,
-            _                     => throw new NotImplementedException($"Member {member} is not supported")
+            FieldInfo field => field.FieldType,
+            _ => throw new InvalidOperationException($"Member {member} is not supported")
         };
         var column = schema.GetAttribute<ColumnAttribute>(type, member);
 
@@ -45,7 +45,7 @@ internal static class MetadataProvider
         {
             // if requested to be included in metadata - add ColumnAttribute; otherwise - skip
             if (flags.HasFlag(MetadataFlags.IncludeMembersNotMarkedAsColumns))
-                column = new ColumnAttribute(member.Name) { IsColumn = false };
+                column = new ColumnAttribute(member.Name) {IsColumn = false};
             else
                 return null;
         }

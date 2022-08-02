@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Configuration.Metadata;
@@ -10,12 +11,12 @@ public class TableMetadata
     public string Name => Attribute.Name ?? Type.Name;
     public Type Type { get; }
     public TableAttribute Attribute { get; }
-    public IReadOnlyCollection<ColumnMetadata> Columns { get; }
+    public IReadOnlyDictionary<MemberInfo, ColumnMetadata> Columns { get; }
 
     public TableMetadata(
         Type type,
         TableAttribute attribute,
-        IReadOnlyCollection<ColumnMetadata> columns
+        IReadOnlyDictionary<MemberInfo, ColumnMetadata> columns
     )
     {
         Type = type;
