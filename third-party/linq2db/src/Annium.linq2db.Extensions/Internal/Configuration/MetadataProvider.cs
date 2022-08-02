@@ -9,13 +9,13 @@ namespace Annium.linq2db.Extensions.Internal.Configuration;
 
 internal static class MetadataProvider
 {
-    public static DbMetadata Describe(MappingSchema schema, MetadataFlags flags)
+    public static DatabaseMetadata Describe(MappingSchema schema, MetadataFlags flags)
     {
         var types = schema.GetDefinedTypes();
 
         var tables = types.OrderBy(x => x.Name).Select(x => Build(schema, x, flags)).ToArray();
 
-        return new DbMetadata(tables);
+        return new DatabaseMetadata(tables);
     }
 
     private static TableMetadata Build(MappingSchema schema, Type type, MetadataFlags flags)

@@ -16,7 +16,7 @@ public static class MappingSchemaExtensionsBase
     ) => new MappingBuilder(configurationsAssembly, schema);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DbMetadata Describe(
+    public static DatabaseMetadata Describe(
         this MappingSchema schema,
         MetadataFlags flags = MetadataFlags.None
     ) => MetadataProvider.Describe(schema, flags);
@@ -24,7 +24,7 @@ public static class MappingSchemaExtensionsBase
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MappingSchema Configure(
         this MappingSchema schema,
-        Action<DbMetadata> configure,
+        Action<DatabaseMetadata> configure,
         MetadataFlags flags = MetadataFlags.None
     )
     {

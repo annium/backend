@@ -2,11 +2,11 @@ using System.Collections.Generic;
 
 namespace Annium.linq2db.Extensions.Configuration.Metadata;
 
-public class DbMetadata
+public class DatabaseMetadata
 {
     public IReadOnlyCollection<TableMetadata> Tables { get; }
 
-    public DbMetadata(
+    public DatabaseMetadata(
         IReadOnlyCollection<TableMetadata> tables
     )
     {
