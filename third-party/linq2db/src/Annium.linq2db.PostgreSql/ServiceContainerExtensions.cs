@@ -90,7 +90,7 @@ public static class ServiceContainerExtensions
             var options = builder.Build();
 
             return (TConnection) Activator.CreateInstance(typeof(TConnection), options)!;
-        }).AsSelf().Scoped();
+        }).AsSelf().Transient();
 
         container.AddRepositories();
 
