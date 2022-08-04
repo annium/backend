@@ -72,7 +72,7 @@ public static class ServiceContainerExtensions
             migrationRunner.MigrateUp();
 
             return testingReference;
-        }).Singleton();
+        }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
@@ -83,13 +83,21 @@ public static class ServiceContainerExtensions
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
 
+            return mappingSchema;
+        }).AsSelf().Singleton();
+
+        container.Add(sp =>
+        {
+            var connectionString = sp.Resolve<TestingSqliteReference>().ConnectionString;
+            var mappingSchema = sp.Resolve<ConfigurationContainer>().Schema;
+
             return (TConnection) Activator.CreateInstance(
                 typeof(TConnection),
                 ProviderName.SQLiteMS,
-                sp.Resolve<TestingSqliteReference>().ConnectionString,
+                connectionString,
                 mappingSchema
             )!;
-        }).Scoped();
+        }).AsSelf().Transient();
 
         return container;
     }
@@ -107,4 +115,6 @@ public static class ServiceContainerExtensions
 
         return container.BuildServiceProvider().Resolve<IMigrationRunner>();
     }
+
+    private sealed record ConfigurationContainer(MappingSchema Schema);
 }
