@@ -89,11 +89,19 @@ public static class ServiceContainerExtensions
 
             var options = builder.Build();
 
-            return (TConnection) Activator.CreateInstance(typeof(TConnection), options)!;
+            return new ConfigurationContainer(options);
+        }).AsSelf().Singleton();
+
+        container.Add(sp =>
+        {
+            var configurationContainer = sp.Resolve<ConfigurationContainer>();
+            return (TConnection) Activator.CreateInstance(typeof(TConnection), configurationContainer.Options)!;
         }).AsSelf().Transient();
 
         container.AddRepositories();
 
         return container;
     }
+
+    private sealed record ConfigurationContainer(LinqToDBConnectionOptions Options);
 }

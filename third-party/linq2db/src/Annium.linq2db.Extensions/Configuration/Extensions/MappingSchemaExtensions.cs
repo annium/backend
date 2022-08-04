@@ -18,36 +18,40 @@ public static class MappingSchemaExtensions
             column.Attribute.Name = column.Member.Name.SnakeCase();
     }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
 
-    public static MappingSchema UseJsonSupport(this MappingSchema schema, IServiceProvider sp) => schema.Configure(db =>
+    public static MappingSchema UseJsonSupport(this MappingSchema schema, IServiceProvider sp)
     {
         var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>();
-        var serializer = Expression.Constant(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)]);
-        var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] { typeof(object) })!;
-        var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] { typeof(Type), typeof(string) })!;
 
-        foreach (var table in db.Tables.Values)
-        foreach (var column in table.Columns.Values)
+        return schema.Configure(db =>
         {
-            if (column.Attribute.DataType is not DataType.BinaryJson)
-                continue;
+            var serializer = Expression.Constant(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)]);
+            var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] {typeof(object)})!;
+            var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] {typeof(Type), typeof(string)})!;
 
-            var serializeValue = Expression.Parameter(column.Type);
-            var serializeFn = Expression.Lambda(
-                Expression.Call(serializer, serialize, serializeValue),
-                serializeValue
-            );
-            schema.SetConvertExpression(column.Type, typeof(string), serializeFn);
+            foreach (var table in db.Tables.Values)
+            foreach (var column in table.Columns.Values)
+            {
+                if (column.Attribute.DataType is not DataType.BinaryJson)
+                    continue;
 
-            var deserializeType = Expression.Constant(column.Type);
-            var deserializeValue = Expression.Parameter(typeof(string));
-            var deserializeFn = Expression.Lambda(
-                Expression.Convert(
-                    Expression.Call(serializer, deserialize, deserializeType, deserializeValue),
-                    column.Type
-                ),
-                deserializeValue
-            );
-            schema.SetConvertExpression(typeof(string), column.Type, deserializeFn);
-        }
-    }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
+                var serializeValue = Expression.Parameter(column.Type);
+                var serializeFn = Expression.Lambda(
+                    Expression.Call(serializer, serialize, serializeValue),
+                    serializeValue
+                );
+                schema.SetConvertExpression(column.Type, typeof(string), serializeFn);
+
+                var deserializeType = Expression.Constant(column.Type);
+                var deserializeValue = Expression.Parameter(typeof(string));
+                var deserializeFn = Expression.Lambda(
+                    Expression.Convert(
+                        Expression.Call(serializer, deserialize, deserializeType, deserializeValue),
+                        column.Type
+                    ),
+                    deserializeValue
+                );
+                schema.SetConvertExpression(typeof(string), column.Type, deserializeFn);
+            }
+        }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
+    }
 }
