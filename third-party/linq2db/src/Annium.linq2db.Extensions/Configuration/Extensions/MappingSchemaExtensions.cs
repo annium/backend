@@ -21,36 +21,54 @@ public static class MappingSchemaExtensions
     public static MappingSchema UseJsonSupport(this MappingSchema schema, IServiceProvider sp)
     {
         var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>();
+        var serializer = serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)];
+        var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] { typeof(object) })!;
+        var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] { typeof(Type), typeof(string) })!;
 
         return schema.Configure(db =>
         {
-            var serializer = Expression.Constant(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)]);
-            var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] {typeof(object)})!;
-            var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] {typeof(Type), typeof(string)})!;
+            var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
+            var fluentMappingBuilder = schema.GetFluentMappingBuilder();
 
             foreach (var table in db.Tables.Values)
-            foreach (var column in table.Columns.Values)
             {
-                if (column.Attribute.DataType is not DataType.BinaryJson)
-                    continue;
+                var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(table.Type)
+                    .Invoke(fluentMappingBuilder, new object?[] { null })!;
+                var getPropertyMappingBuilder = entityMappingBuilder.GetType().GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
 
-                var serializeValue = Expression.Parameter(column.Type);
-                var serializeFn = Expression.Lambda(
-                    Expression.Call(serializer, serialize, serializeValue),
-                    serializeValue
-                );
-                schema.SetConvertExpression(column.Type, typeof(string), serializeFn);
+                foreach (var column in table.Columns.Values)
+                {
+                    if (column.Attribute.DataType is not DataType.BinaryJson)
+                        continue;
 
-                var deserializeType = Expression.Constant(column.Type);
-                var deserializeValue = Expression.Parameter(typeof(string));
-                var deserializeFn = Expression.Lambda(
-                    Expression.Convert(
-                        Expression.Call(serializer, deserialize, deserializeType, deserializeValue),
-                        column.Type
-                    ),
-                    deserializeValue
-                );
-                schema.SetConvertExpression(typeof(string), column.Type, deserializeFn);
+                    var typeParameter = Expression.Parameter(table.Type);
+                    var propertyMappingBuilder = getPropertyMappingBuilder
+                        .MakeGenericMethod(column.Type)
+                        .Invoke(
+                            entityMappingBuilder,
+                            new object[]
+                            {
+                                Expression.Lambda(Expression.PropertyOrField(typeParameter, column.Member.Name), typeParameter)
+                            }
+                        )!;
+                    var hasConversionFunc = propertyMappingBuilder.GetType().GetMethod(nameof(PropertyMappingBuilder<object, object>.HasConversionFunc))!.MakeGenericMethod(typeof(string));
+                    var instance = Expression.Constant(serializer);
+                    var serializeValue = Expression.Parameter(column.Type);
+                    var serializeFn = Expression.Lambda(
+                        Expression.Call(instance, serialize, serializeValue),
+                        serializeValue
+                    ).Compile();
+                    var deserializeType = Expression.Constant(column.Type);
+                    var deserializeValue = Expression.Parameter(typeof(string));
+                    var deserializeFn = Expression.Lambda(
+                        Expression.Convert(
+                            Expression.Call(instance, deserialize, deserializeType, deserializeValue),
+                            column.Type
+                        ),
+                        deserializeValue
+                    ).Compile();
+                    hasConversionFunc.Invoke(propertyMappingBuilder, new object[] { serializeFn, deserializeFn, false });
+                }
             }
         }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
     }
