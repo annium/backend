@@ -45,7 +45,7 @@ internal static class MetadataProvider
         {
             // if requested to be included in metadata - add ColumnAttribute; otherwise - skip
             if (flags.HasFlag(MetadataFlags.IncludeMembersNotMarkedAsColumns))
-                column = new ColumnAttribute(member.Name) {IsColumn = false};
+                column = new ColumnAttribute(member.Name) { IsColumn = false };
             else
                 return null;
         }

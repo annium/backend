@@ -11,20 +11,20 @@ public abstract record ValueRange<T>
 
     public bool Contains(T value, RangeBounds bounds) => bounds switch
     {
-        RangeBounds.None  => Start.CompareTo(value) < 0 && End.CompareTo(value) > 0,
+        RangeBounds.None => Start.CompareTo(value) < 0 && End.CompareTo(value) > 0,
         RangeBounds.Start => Start.CompareTo(value) <= 0 && End.CompareTo(value) > 0,
-        RangeBounds.End   => Start.CompareTo(value) < 0 && End.CompareTo(value) >= 0,
-        RangeBounds.Both  => Start.CompareTo(value) <= 0 && End.CompareTo(value) >= 0,
-        _                 => throw new ArgumentOutOfRangeException(nameof(bounds), bounds, null)
+        RangeBounds.End => Start.CompareTo(value) < 0 && End.CompareTo(value) >= 0,
+        RangeBounds.Both => Start.CompareTo(value) <= 0 && End.CompareTo(value) >= 0,
+        _ => throw new ArgumentOutOfRangeException(nameof(bounds), bounds, null)
     };
 
     public bool Contains(ValueRange<T> value, RangeBounds bounds) => bounds switch
     {
-        RangeBounds.None  => Start.CompareTo(value.Start) < 0 && End.CompareTo(value.End) > 0,
+        RangeBounds.None => Start.CompareTo(value.Start) < 0 && End.CompareTo(value.End) > 0,
         RangeBounds.Start => Start.CompareTo(value.Start) <= 0 && End.CompareTo(value.End) > 0,
-        RangeBounds.End   => Start.CompareTo(value.Start) < 0 && End.CompareTo(value.End) >= 0,
-        RangeBounds.Both  => Start.CompareTo(value.Start) <= 0 && End.CompareTo(value.End) >= 0,
-        _                 => throw new ArgumentOutOfRangeException(nameof(bounds), bounds, null)
+        RangeBounds.End => Start.CompareTo(value.Start) < 0 && End.CompareTo(value.End) >= 0,
+        RangeBounds.Both => Start.CompareTo(value.Start) <= 0 && End.CompareTo(value.End) >= 0,
+        _ => throw new ArgumentOutOfRangeException(nameof(bounds), bounds, null)
     };
 
     public void Deconstruct(out T start, out T end)

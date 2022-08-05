@@ -71,7 +71,7 @@ internal class AssignmentMapResolver : IMapResolver
             {
                 // otherwise - target field must match respective source field
                 var prop = sources.FirstOrDefault(p => string.Equals(p.Name, target.Name, StringComparison.InvariantCultureIgnoreCase)) ??
-                           throw new MappingException(src, tgt, $"No property found for target property {target}");
+                    throw new MappingException(src, tgt, $"No property found for target property {target}");
 
                 // resolve map for conversion and use it, if necessary
                 var map = ctx.ResolveMapping(prop.PropertyType, target.PropertyType);

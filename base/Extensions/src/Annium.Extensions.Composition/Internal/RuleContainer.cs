@@ -70,15 +70,15 @@ internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRu
 
     private async Task<bool> CheckAsync(CompositionContext<TValue> context) => _check switch
     {
-        Func<CompositionContext<TValue>, bool> check       => check(context),
+        Func<CompositionContext<TValue>, bool> check => check(context),
         Func<CompositionContext<TValue>, Task<bool>> check => await check(context),
-        _                                                  => true,
+        _ => true,
     };
 
     private async Task<TField> LoadAsync(CompositionContext<TValue> context) => _load switch
     {
-        Func<CompositionContext<TValue>, TField> load       => load(context),
+        Func<CompositionContext<TValue>, TField> load => load(context),
         Func<CompositionContext<TValue>, Task<TField>> load => await load(context),
-        _                                                   => throw new InvalidOperationException($"{context.Field} has no {nameof(LoadWith)} defined."),
+        _ => throw new InvalidOperationException($"{context.Field} has no {nameof(LoadWith)} defined."),
     };
 }

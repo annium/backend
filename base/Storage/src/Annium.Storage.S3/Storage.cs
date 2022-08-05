@@ -22,7 +22,7 @@ internal class Storage : StorageBase
     ) : base(logger)
     {
         _configuration = configuration ??
-                         throw new ArgumentNullException(nameof(configuration));
+            throw new ArgumentNullException(nameof(configuration));
 
         VerifyPath(configuration.Directory);
 

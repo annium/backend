@@ -55,8 +55,8 @@ public static class TypeExtensions
             return false;
 
         return type.IsArray
-               || type == typeof(IEnumerable)
-               || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
+            || type == typeof(IEnumerable)
+            || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
     }
 
     public static object? DefaultValue(this Type type)

@@ -7,10 +7,10 @@ public static class ChangeEventExtensions
 {
     public static IChangeEvent<TOut> MapChangeEvent<TIn, TOut>(this IMapper mapper, IChangeEvent<TIn> e) => e switch
     {
-        InitEvent<TIn> x   => ChangeEvent.Init(mapper.Map<TOut[]>(x.Values)),
-        AddEvent<TIn> x    => ChangeEvent.Add(mapper.Map<TOut>(x.Value!)),
+        InitEvent<TIn> x => ChangeEvent.Init(mapper.Map<TOut[]>(x.Values)),
+        AddEvent<TIn> x => ChangeEvent.Add(mapper.Map<TOut>(x.Value!)),
         UpdateEvent<TIn> x => ChangeEvent.Update(mapper.Map<TOut>(x.OldValue!), mapper.Map<TOut>(x.NewValue!)),
         DeleteEvent<TIn> x => ChangeEvent.Delete(mapper.Map<TOut>(x.Value!)),
-        _                  => throw new NotImplementedException()
+        _ => throw new NotImplementedException()
     };
 }

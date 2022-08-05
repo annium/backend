@@ -25,15 +25,15 @@ internal static class HelperExtensions
     }
 
     public static ConstructorInfo GetParametrizedConstructor(this Type type) => type
-                                                                                    .GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
-                                                                                    .Where(x => x.GetParameters().Length > 0)
-                                                                                    .OrderByDescending(c => c.GetParameters().Length)
-                                                                                    .FirstOrDefault()
-                                                                                ?? throw new InvalidOperationException("Parameterized constructor not found");
+            .GetConstructors(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
+            .Where(x => x.GetParameters().Length > 0)
+            .OrderByDescending(c => c.GetParameters().Length)
+            .FirstOrDefault()
+        ?? throw new InvalidOperationException("Parameterized constructor not found");
 
     public static ConstructorInfo GetDefaultConstructor(this Type type) => type
-                                                                               .GetConstructor(Type.EmptyTypes)
-                                                                           ?? throw new InvalidOperationException("Parameterless constructor not found");
+            .GetConstructor(Type.EmptyTypes)
+        ?? throw new InvalidOperationException("Parameterless constructor not found");
 
     public static PropertyInfo[] GetReadableProperties(this Type type) => type
         .GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)

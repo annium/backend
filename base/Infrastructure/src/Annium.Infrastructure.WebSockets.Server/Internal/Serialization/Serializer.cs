@@ -21,7 +21,7 @@ internal class Serializer
         Instance = configuration.Format switch
         {
             SerializationFormat.Binary => binarySerializers[key],
-            SerializationFormat.Text   => textSerializers[key],
+            SerializationFormat.Text => textSerializers[key],
             _ => throw new NotImplementedException(
                 $"Serialization format {configuration.Format} is not implemented"
             )
@@ -31,14 +31,14 @@ internal class Serializer
     public object Serialize<T>(T value) => Instance switch
     {
         ISerializer<ReadOnlyMemory<byte>> x => x.Serialize(value),
-        ISerializer<string> x               => x.Serialize(value),
-        _                                   => throw new NotImplementedException()
+        ISerializer<string> x => x.Serialize(value),
+        _ => throw new NotImplementedException()
     };
 
     public T Deserialize<T>(ReadOnlyMemory<byte> data) => Instance switch
     {
         ISerializer<ReadOnlyMemory<byte>> x => x.Deserialize<T>(data),
-        ISerializer<string> x               => x.Deserialize<T>(Encoding.UTF8.GetString(data.Span)),
-        _                                   => throw new NotImplementedException()
+        ISerializer<string> x => x.Deserialize<T>(Encoding.UTF8.GetString(data.Span)),
+        _ => throw new NotImplementedException()
     };
 }

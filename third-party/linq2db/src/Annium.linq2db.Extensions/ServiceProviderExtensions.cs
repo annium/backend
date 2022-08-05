@@ -21,10 +21,10 @@ public static class ServiceProviderExtensions
 
     private static LogLevel MapTraceLevel(TraceLevel level) => level switch
     {
-        TraceLevel.Error   => LogLevel.Error,
+        TraceLevel.Error => LogLevel.Error,
         TraceLevel.Warning => LogLevel.Warn,
-        TraceLevel.Info    => LogLevel.Info,
+        TraceLevel.Info => LogLevel.Info,
         TraceLevel.Verbose => LogLevel.Trace,
-        _                  => LogLevel.None,
+        _ => LogLevel.None,
     };
 }

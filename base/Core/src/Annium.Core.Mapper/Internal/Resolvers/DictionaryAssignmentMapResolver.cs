@@ -20,11 +20,11 @@ internal class DictionaryAssignmentMapResolver : IMapResolver
     public bool CanResolveMap(Type src, Type tgt)
     {
         return (
-                   src == typeof(Dictionary<string, object>) ||
-                   src == typeof(IDictionary<string, object>) ||
-                   src == typeof(IReadOnlyDictionary<string, object>)
-               ) &&
-               tgt.GetConstructor(Type.EmptyTypes) is not null;
+                src == typeof(Dictionary<string, object>) ||
+                src == typeof(IDictionary<string, object>) ||
+                src == typeof(IReadOnlyDictionary<string, object>)
+            ) &&
+            tgt.GetConstructor(Type.EmptyTypes) is not null;
     }
 
     public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx) => source =>
@@ -38,7 +38,7 @@ internal class DictionaryAssignmentMapResolver : IMapResolver
 
         // get source and target type properties
         var tryGetValue = src.GetMethod(nameof(Dictionary<object, object>.TryGetValue))
-                          ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
+            ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
         var targets = tgt.GetWriteableProperties();
 
         // exclude target properties, that are configured to be ignored or have configured mapping, from basic assignment mapping

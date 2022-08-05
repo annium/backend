@@ -17,7 +17,7 @@ internal class MaterializableJsonConverter<T> : JsonConverter<T>
     )
     {
         var value = JsonSerializer.Deserialize<T>(ref reader, options.Clone().RemoveConverter<MaterializableJsonConverterFactory>())
-                    ?? throw new JsonException($"Failed to deserialize {typeof(T).FriendlyName()}");
+            ?? throw new JsonException($"Failed to deserialize {typeof(T).FriendlyName()}");
 
         value.OnMaterialized();
 

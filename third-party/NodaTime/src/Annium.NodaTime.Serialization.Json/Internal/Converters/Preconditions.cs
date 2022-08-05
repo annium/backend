@@ -15,7 +15,7 @@ internal static class Preconditions
         where T : class
     {
         return argument ??
-               throw new ArgumentNullException(paramName);
+            throw new ArgumentNullException(paramName);
     }
 
     internal static void CheckArgument(

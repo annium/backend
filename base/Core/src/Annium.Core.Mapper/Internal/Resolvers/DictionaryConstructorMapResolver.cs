@@ -19,11 +19,11 @@ internal class DictionaryConstructorMapResolver : IMapResolver
     public bool CanResolveMap(Type src, Type tgt)
     {
         return (
-                   src == typeof(Dictionary<string, object>) ||
-                   src == typeof(IDictionary<string, object>) ||
-                   src == typeof(IReadOnlyDictionary<string, object>)
-               ) &&
-               tgt.GetConstructor(Type.EmptyTypes) is null;
+                src == typeof(Dictionary<string, object>) ||
+                src == typeof(IDictionary<string, object>) ||
+                src == typeof(IReadOnlyDictionary<string, object>)
+            ) &&
+            tgt.GetConstructor(Type.EmptyTypes) is null;
     }
 
     public Mapping ResolveMap(Type src, Type tgt, IMapConfiguration cfg, IMapResolverContext ctx) => source =>
@@ -33,7 +33,7 @@ internal class DictionaryConstructorMapResolver : IMapResolver
 
         // get source accessor and constructor parameters
         var tryGetValue = src.GetMethod(nameof(Dictionary<object, object>.TryGetValue))
-                          ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
+            ?? throw new MappingException(src, tgt, $"Failed to resolve method {src.FriendlyName()}.{nameof(Dictionary<object, object>.TryGetValue)}");
         var parameters = constructor.GetParameters();
 
         var body = new List<Expression>();

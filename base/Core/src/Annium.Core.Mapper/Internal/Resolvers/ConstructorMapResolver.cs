@@ -80,7 +80,7 @@ internal class ConstructorMapResolver : IMapResolver
 
                 // otherwise - parameter must match respective source field
                 var prop = sources.FirstOrDefault(p => p.Name.ToLowerInvariant() == paramName) ??
-                           throw new MappingException(src, tgt, $"No property found for constructor parameter {param}");
+                    throw new MappingException(src, tgt, $"No property found for constructor parameter {param}");
 
                 // resolve map for conversion and use it, if necessary
                 var map = ctx.ResolveMapping(prop.PropertyType, param.ParameterType);

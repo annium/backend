@@ -115,7 +115,7 @@ internal class ConfigurationProcessor<T>
 
             var key = _mapper.Map(rawKey, resolutionKeyProperty.PropertyType);
             type = _typeManager.ResolveByKey(key!, type)
-                   ?? throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
+                ?? throw new ArgumentException($"Can't resolve abstract type {type} with key {key}");
         }
 
         var result = Activator.CreateInstance(type)!;

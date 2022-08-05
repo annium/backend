@@ -37,7 +37,7 @@ public class TestConverter
         var name = fqn[^1];
 
         var method = assembly.GetType(type)?.GetMethod(name) ??
-                     throw new InvalidOperationException($"Failed to resolve {type}.{name} method");
+            throw new InvalidOperationException($"Failed to resolve {type}.{name} method");
 
         return new Test(method);
     }

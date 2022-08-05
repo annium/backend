@@ -87,7 +87,7 @@ public abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResul
                 if (name.Equals(nameof(IResultBase.PlainErrors), StringComparison.InvariantCultureIgnoreCase))
                     value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!);
                 else if (name.Equals(nameof(IResultBase.LabeledErrors),
-                             StringComparison.InvariantCultureIgnoreCase))
+                    StringComparison.InvariantCultureIgnoreCase))
                     value.Errors(
                         JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(
                             ref reader,

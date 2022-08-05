@@ -13,7 +13,7 @@ internal static class HttpRequestContentExtensions
         var raw = await content.ReadAsStringAsync();
 
         var mediaType = content.Headers.ContentType?.MediaType
-                        ?? throw new HttpRequestException("Media-type missing in response");
+            ?? throw new HttpRequestException("Media-type missing in response");
 
         return request.ContentSerializer.Deserialize<T>(mediaType, raw);
     }
