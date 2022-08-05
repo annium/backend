@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
@@ -19,12 +18,6 @@ public static class MappingSchemaExtensionsBase
     private readonly record struct DescriptionCacheKey(MappingSchema Schema, MetadataFlags Flags);
 
     private static readonly ConcurrentDictionary<DescriptionCacheKey, DatabaseMetadata> DatabaseMetadataCache = new();
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static IMappingBuilder GetMappingBuilder(
-        this MappingSchema schema,
-        Assembly configurationsAssembly
-    ) => new MappingBuilder(configurationsAssembly, schema);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DatabaseMetadata Describe(
