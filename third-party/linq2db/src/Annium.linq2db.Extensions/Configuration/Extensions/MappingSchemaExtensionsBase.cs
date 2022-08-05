@@ -1,9 +1,15 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Annium.Core.DependencyInjection;
+using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.linq2db.Extensions.Configuration.Metadata;
 using Annium.linq2db.Extensions.Internal.Configuration;
+using Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Configuration.Extensions;
@@ -43,6 +49,31 @@ public static class MappingSchemaExtensionsBase
     )
     {
         configure(schema.Describe(flags));
+
+        return schema;
+    }
+
+    public static MappingSchema ApplyConfigurations(this MappingSchema schema, IServiceProvider sp)
+    {
+        var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
+        var fluentMappingBuilder = schema.GetFluentMappingBuilder();
+
+        var configurations = sp.Resolve<IEnumerable<IEntityConfiguration>>();
+        foreach (var configuration in configurations)
+        {
+            var configurationType = configuration.GetType().GetTargetImplementation(typeof(IEntityConfiguration<>));
+            if (configurationType is null)
+                throw new InvalidOperationException($"Configuration {configuration} doesn't implement {typeof(IEntityConfiguration<>).FriendlyName()}");
+
+            var entityType = configurationType.GenericTypeArguments.Single();
+            var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
+                .Invoke(fluentMappingBuilder, new object?[] { null })!;
+            var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
+                .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
+            configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
+        }
+
+        schema.IncludeAssociationKeysAsColumns();
 
         return schema;
     }

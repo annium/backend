@@ -79,8 +79,8 @@ public static class ServiceContainerExtensions
             ));
 
             var mappingSchema = new MappingSchema();
-            mappingSchema.GetMappingBuilder(configurationsAssembly).ApplyConfigurations();
             mappingSchema
+                .ApplyConfigurations(sp)
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
@@ -98,6 +98,7 @@ public static class ServiceContainerExtensions
             return (TConnection) Activator.CreateInstance(typeof(TConnection), configurationContainer.Options)!;
         }).AsSelf().Transient();
 
+        container.AddEntityConfigurations();
         container.AddRepositories();
 
         return container;
