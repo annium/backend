@@ -2,6 +2,7 @@ using System;
 using System.Text.Json;
 using Annium.Testing;
 using NodaTime;
+using NodaTime.Calendars;
 using Xunit;
 using static Annium.NodaTime.Serialization.Json.Tests.TestHelper;
 
@@ -187,5 +188,21 @@ public class ConvertersTest
         var value = new LocalTime(3, 4, 5).PlusNanoseconds(123456789).WithOffset(Offset.FromHoursAndMinutes(-1, -30));
         string json = "\"03:04:05.123456789-01:30\"";
         AssertConversions(value, json, Converters.OffsetTimeConverter);
+    }
+
+    [Fact]
+    public void YearMonthConverter()
+    {
+        var value = new YearMonth(2000, 2, CalendarSystem.Iso);
+        string json = "\"2000-02\"";
+        AssertConversions(value, json, Converters.YearMonthConverter);
+    }
+
+    [Fact]
+    public void YearMonthConverter_SerializeNonIso_Throws()
+    {
+        var value = new YearMonth(2000, 2, CalendarSystem.Coptic);
+
+        Wrap.It(() => JsonSerializer.Serialize(value, With(Converters.YearMonthConverter))).Throws<ArgumentException>();
     }
 }

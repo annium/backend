@@ -66,6 +66,7 @@ public static class JsonSerializerOptionsExtensions
         converters.Insert(0, Converters.OffsetDateTimeConverter);
         converters.Insert(0, Converters.OffsetDateConverter);
         converters.Insert(0, Converters.OffsetTimeConverter);
+        converters.Insert(0, Converters.YearMonthConverter);
         converters.Insert(0, Converters.CreateZonedDateTimeConverter(provider));
     }
 

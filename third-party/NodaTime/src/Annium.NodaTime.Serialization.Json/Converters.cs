@@ -122,6 +122,12 @@ public static class Converters
     /// </summary>
     public static JsonConverter NormalizingIsoPeriodConverter { get; } = new NodaPatternConverter<Period>(PeriodPattern.NormalizingIso);
 
+    /// <summary>
+    /// Converter for YearMonth.
+    /// </summary>
+    public static JsonConverter YearMonthConverter { get; } = new NodaPatternConverter<YearMonth>(
+        YearMonthPattern.Iso, CreateIsoValidator<YearMonth>(x => x.Calendar));
+
     private static Action<T> CreateIsoValidator<T>(Func<T, CalendarSystem> calendarProjection) => value =>
     {
         var calendar = calendarProjection(value);
