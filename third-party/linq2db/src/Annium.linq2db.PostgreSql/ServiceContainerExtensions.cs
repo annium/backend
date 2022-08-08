@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
@@ -20,7 +19,6 @@ public static class ServiceContainerExtensions
     {
         return container
             .AddPostgreSql<TConnection>(
-                Assembly.GetCallingAssembly(),
                 cfg,
                 (_, _) => { }
             );
@@ -28,37 +26,6 @@ public static class ServiceContainerExtensions
 
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
-        IPostgreSqlConfiguration cfg,
-        Action<IServiceProvider, MappingSchema> configure
-    )
-        where TConnection : DataConnectionBase
-    {
-        return container
-            .AddPostgreSql<TConnection>(
-                Assembly.GetCallingAssembly(),
-                cfg,
-                configure
-            );
-    }
-
-    public static IServiceContainer AddPostgreSql<TConnection>(
-        this IServiceContainer container,
-        Assembly configurationsAssembly,
-        IPostgreSqlConfiguration cfg
-    )
-        where TConnection : DataConnectionBase
-    {
-        return container
-            .AddPostgreSql<TConnection>(
-                configurationsAssembly,
-                cfg,
-                (_, _) => { }
-            );
-    }
-
-    public static IServiceContainer AddPostgreSql<TConnection>(
-        this IServiceContainer container,
-        Assembly configurationsAssembly,
         IPostgreSqlConfiguration cfg,
         Action<IServiceProvider, MappingSchema> configure
     )
@@ -89,12 +56,12 @@ public static class ServiceContainerExtensions
 
             var options = builder.Build();
 
-            return new ConfigurationContainer(options);
+            return new ConfigurationContainer<TConnection>(options);
         }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
-            var configurationContainer = sp.Resolve<ConfigurationContainer>();
+            var configurationContainer = sp.Resolve<ConfigurationContainer<TConnection>>();
             return (TConnection) Activator.CreateInstance(typeof(TConnection), configurationContainer.Options)!;
         }).AsSelf().Transient();
 
@@ -103,5 +70,5 @@ public static class ServiceContainerExtensions
         return container;
     }
 
-    private sealed record ConfigurationContainer(LinqToDBConnectionOptions Options);
+    private sealed record ConfigurationContainer<TConnection>(LinqToDBConnectionOptions Options);
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Annium.Core.DependencyInjection;
@@ -51,7 +52,7 @@ public static class MappingSchemaExtensionsBase
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
         var fluentMappingBuilder = schema.GetFluentMappingBuilder();
 
-        var configurations = sp.Resolve<IEnumerable<IEntityConfiguration>>();
+        var configurations = sp.Resolve<IEnumerable<IEntityConfiguration>>().ToImmutableHashSet();
         foreach (var configuration in configurations)
         {
             var configurationType = configuration.GetType().GetTargetImplementation(typeof(IEntityConfiguration<>));

@@ -20,7 +20,6 @@ public static class ServiceContainerExtensions
     {
         return container
             .AddTestingSqlite<TConnection>(
-                Assembly.GetCallingAssembly(),
                 migrationsAssembly,
                 (_, _) => { }
             );
@@ -28,37 +27,6 @@ public static class ServiceContainerExtensions
 
     public static IServiceContainer AddTestingSqlite<TConnection>(
         this IServiceContainer container,
-        Assembly migrationsAssembly,
-        Action<IServiceProvider, MappingSchema> configure
-    )
-        where TConnection : DataConnectionBase
-    {
-        return container
-            .AddTestingSqlite<TConnection>(
-                Assembly.GetCallingAssembly(),
-                migrationsAssembly,
-                configure
-            );
-    }
-
-    public static IServiceContainer AddTestingSqlite<TConnection>(
-        this IServiceContainer container,
-        Assembly configurationsAssembly,
-        Assembly migrationsAssembly
-    )
-        where TConnection : DataConnectionBase
-    {
-        return container
-            .AddTestingSqlite<TConnection>(
-                configurationsAssembly,
-                migrationsAssembly,
-                (_, _) => { }
-            );
-    }
-
-    public static IServiceContainer AddTestingSqlite<TConnection>(
-        this IServiceContainer container,
-        Assembly configurationsAssembly,
         Assembly migrationsAssembly,
         Action<IServiceProvider, MappingSchema> configure
     )
@@ -83,13 +51,13 @@ public static class ServiceContainerExtensions
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
 
-            return mappingSchema;
+            return new ConfigurationContainer<TConnection>(mappingSchema);
         }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
             var connectionString = sp.Resolve<TestingSqliteReference>().ConnectionString;
-            var mappingSchema = sp.Resolve<ConfigurationContainer>().Schema;
+            var mappingSchema = sp.Resolve<ConfigurationContainer<TConnection>>().Schema;
 
             return (TConnection) Activator.CreateInstance(
                 typeof(TConnection),
@@ -118,5 +86,5 @@ public static class ServiceContainerExtensions
         return container.BuildServiceProvider().Resolve<IMigrationRunner>();
     }
 
-    private sealed record ConfigurationContainer(MappingSchema Schema);
+    private sealed record ConfigurationContainer<TConnection>(MappingSchema Schema);
 }
