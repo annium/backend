@@ -100,7 +100,6 @@ public static class ServiceContainerExtensions
         }).AsSelf().Transient();
 
         container.AddEntityConfigurations();
-        container.AddRepositories();
 
         return container;
     }
