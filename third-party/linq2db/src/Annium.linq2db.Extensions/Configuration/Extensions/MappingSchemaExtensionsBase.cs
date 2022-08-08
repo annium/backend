@@ -68,6 +68,7 @@ public static class MappingSchemaExtensionsBase
         }
 
         schema.IncludeAssociationKeysAsColumns();
+        schema.MarkNotColumnsExplicitly();
 
         return schema;
     }
