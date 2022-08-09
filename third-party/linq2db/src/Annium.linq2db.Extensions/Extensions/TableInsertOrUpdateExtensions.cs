@@ -18,6 +18,7 @@ public static class TableSaveExtensions
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
+
         var insertSetter = BuildInsertSetter(tableMetadata, value);
 
         return table.InsertAsync(insertSetter, CancellationToken.None);
@@ -30,9 +31,11 @@ public static class TableSaveExtensions
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
+
+        var primaryKeyPredicate = BuildPrimaryKeyPredicate(tableMetadata, value);
         var updateSetter = BuildUpdateSetter<T, T>(tableMetadata, value);
 
-        return table.UpdateAsync(updateSetter, CancellationToken.None);
+        return table.Where(primaryKeyPredicate).UpdateAsync(updateSetter, CancellationToken.None);
     }
 
     public static Task<int> InsertOrUpdateAsync<T>(
@@ -42,6 +45,7 @@ public static class TableSaveExtensions
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
+
         var insertSetter = BuildInsertSetter(tableMetadata, value);
         var onDuplicateKeyUpdateSetter = BuildUpdateSetter<T, T?>(tableMetadata, value);
 
@@ -68,11 +72,28 @@ public static class TableSaveExtensions
         );
     }
 
+    private static Expression<Func<T, bool>> BuildPrimaryKeyPredicate<T>(TableMetadata table, T value)
+        where T : notnull
+    {
+        var param = Expression.Parameter(typeof(T));
+
+        var condition = table.Columns.Values
+            .Where(c => c.PrimaryKey is not null)
+            .Select(c =>
+            {
+                var memberValue = c.Member.GetPropertyOrFieldValue(value);
+                return Expression.Equal(Expression.PropertyOrField(param, c.Member.Name), Expression.Constant(memberValue));
+            })
+            .Aggregate(Expression.AndAlso);
+
+        return Expression.Lambda<Func<T, bool>>(condition, param);
+    }
+
     private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value)
         where TIn : notnull
     {
         var bindings = table.Columns.Values
-            .Where(c => c.Association is null)
+            .Where(c => c.Association is null && !c.Attribute.IsPrimaryKey)
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
