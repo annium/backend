@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Annium.Core.Reflection;
 
-public static class GetInhertianceChainExtension
+public static class GetInheritanceChainExtension
 {
     public static Type[] GetInheritanceChain(
         this Type type,

@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Annium.Core.Reflection;
 
-public static class ResolveGenericArgumentsByImplentationExtension
+public static class ResolveGenericArgumentsByImplementationExtension
 {
     public static Type[]? ResolveGenericArgumentsByImplementation(this Type type, Type target)
     {

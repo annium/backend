@@ -1,21 +1,14 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Annium.Core.Reflection.Extensions;
 
 namespace Annium.Core.Reflection;
 
 public static class GetAllMethodsExtension
 {
-    public static MethodInfo[] GetAllMethods(
-        this Type type
-    )
-    {
-        var info = type.GetTypeInfo();
-
-        return info.GetMethods()
-            .Concat(info.ImplementedInterfaces.SelectMany(x => x.GetMethods()))
-            .ToArray();
-    }
+    public static MethodInfo[] GetAllMethods(this Type type) =>
+        type.GetAllMethods(Constants.DefaultBindingFlags);
 
     public static MethodInfo[] GetAllMethods(
         this Type type,
