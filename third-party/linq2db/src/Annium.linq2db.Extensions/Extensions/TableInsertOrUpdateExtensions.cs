@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Reflection;
 using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB;
 
@@ -47,22 +48,44 @@ public static class TableSaveExtensions
         return table.InsertOrUpdateAsync(insertSetter, onDuplicateKeyUpdateSetter, CancellationToken.None);
     }
 
-    private static Expression<Func<T>> BuildInsertSetter<T>(TableMetadata table, T value) => Expression.Lambda<Func<T>>(
-        Expression.MemberInit(
-            Expression.New(typeof(T)),
-            table.Columns.Values
-                .Where(c => c.Association is null)
-                .Select(c => Expression.Bind(c.Member, Expression.PropertyOrField(Expression.Constant(value), c.Member.Name)))
-        )
-    );
+    private static Expression<Func<T>> BuildInsertSetter<T>(TableMetadata table, T value)
+        where T : notnull
+    {
+        var bindings = table.Columns.Values
+            .Where(c => c.Association is null)
+            .Select<ColumnMetadata, MemberBinding>(c =>
+            {
+                var memberValue = c.Member.GetPropertyOrFieldValue(value);
+                return Expression.Bind(c.Member, Expression.Constant(memberValue));
+            })
+            .ToArray();
 
-    private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value) => Expression.Lambda<Func<TIn, TOut>>(
-        Expression.MemberInit(
-            Expression.New(typeof(TIn)),
-            table.Columns.Values
-                .Where(c => c.Association is null)
-                .Select(c => Expression.Bind(c.Member, Expression.PropertyOrField(Expression.Constant(value), c.Member.Name)))
-        ),
-        Expression.Parameter(typeof(TIn))
-    );
+        return Expression.Lambda<Func<T>>(
+            Expression.MemberInit(
+                Expression.New(typeof(T)),
+                bindings
+            )
+        );
+    }
+
+    private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value)
+        where TIn : notnull
+    {
+        var bindings = table.Columns.Values
+            .Where(c => c.Association is null)
+            .Select<ColumnMetadata, MemberBinding>(c =>
+            {
+                var memberValue = c.Member.GetPropertyOrFieldValue(value);
+                return Expression.Bind(c.Member, Expression.Constant(memberValue));
+            })
+            .ToArray();
+
+        return Expression.Lambda<Func<TIn, TOut>>(
+            Expression.MemberInit(
+                Expression.New(typeof(TIn)),
+                bindings
+            ),
+            Expression.Parameter(typeof(TIn))
+        );
+    }
 }
