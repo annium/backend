@@ -1,12 +1,12 @@
 using System;
 using System.Reflection;
+using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
-using Annium.linq2db.Testing.Sqlite;
-using FluentMigrator.Runner;
+using Annium.linq2db.Testing.Sqlite.Internal;
 using LinqToDB;
+using LinqToDB.Configuration;
 using LinqToDB.Mapping;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Core.DependencyInjection;
 
@@ -36,35 +36,37 @@ public static class ServiceContainerExtensions
         {
             var testingReference = new TestingSqliteReference();
 
-            var migrationRunner = CreateMigrationRunner(testingReference.ConnectionString, migrationsAssembly);
-            migrationRunner.MigrateUp();
+            Migrator.Execute(migrationsAssembly, testingReference.ConnectionString);
 
             return testingReference;
         }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
+            var builder = new LinqToDBConnectionOptionsBuilder();
+
+            var connectionString = sp.Resolve<TestingSqliteReference>().ConnectionString;
+            builder.UseConnectionString(ProviderName.SQLiteMS, connectionString);
+
             var mappingSchema = new MappingSchema();
             mappingSchema
                 .ApplyConfigurations(sp)
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
+            builder.UseMappingSchema(mappingSchema);
+            builder.UseLogging<TConnection>(sp);
 
-            return new ConfigurationContainer<TConnection>(mappingSchema);
+            var options = builder.Build();
+
+            return new ConfigurationContainer<TConnection>(options);
         }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
-            var connectionString = sp.Resolve<TestingSqliteReference>().ConnectionString;
-            var mappingSchema = sp.Resolve<ConfigurationContainer<TConnection>>().Schema;
+            var configurationContainer = sp.Resolve<ConfigurationContainer<TConnection>>();
 
-            return (TConnection) Activator.CreateInstance(
-                typeof(TConnection),
-                ProviderName.SQLiteMS,
-                connectionString,
-                mappingSchema
-            )!;
+            return (TConnection) Activator.CreateInstance(typeof(TConnection), configurationContainer.Options)!;
         }).AsSelf().Transient();
 
         container.AddEntityConfigurations();
@@ -72,19 +74,10 @@ public static class ServiceContainerExtensions
         return container;
     }
 
-    private static IMigrationRunner CreateMigrationRunner(string connectionString, Assembly migrationsAssembly)
-    {
-        var container = new ServiceContainer();
-        container.Collection
-            .AddFluentMigratorCore()
-            .ConfigureRunner(rb => rb
-                .AddSQLite()
-                .WithGlobalConnectionString(connectionString)
-                .ScanIn(migrationsAssembly).For.Migrations()
-            );
-
-        return container.BuildServiceProvider().Resolve<IMigrationRunner>();
-    }
-
-    private sealed record ConfigurationContainer<TConnection>(MappingSchema Schema);
+    /// <summary>
+    /// Configuration container per <see cref="TConnection"/>
+    /// </summary>
+    /// <param name="Schema"></param>
+    /// <typeparam name="TConnection">Connection type, configuration is specific for</typeparam>
+    private sealed record ConfigurationContainer<TConnection>(LinqToDBConnectionOptions Options);
 }

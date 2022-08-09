@@ -2,9 +2,9 @@ using System;
 using System.IO;
 using Microsoft.Data.Sqlite;
 
-namespace Annium.linq2db.Testing.Sqlite;
+namespace Annium.linq2db.Testing.Sqlite.Internal;
 
-public class TestingSqliteReference
+internal class TestingSqliteReference : IDisposable
 {
     private readonly string _dataSource = $"{Guid.NewGuid()}.db";
 

@@ -70,5 +70,10 @@ public static class ServiceContainerExtensions
         return container;
     }
 
+    /// <summary>
+    /// Configuration container per <see cref="TConnection"/>
+    /// </summary>
+    /// <param name="Schema"></param>
+    /// <typeparam name="TConnection">Connection type, configuration is specific for</typeparam>
     private sealed record ConfigurationContainer<TConnection>(LinqToDBConnectionOptions Options);
 }

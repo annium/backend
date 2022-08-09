@@ -38,7 +38,7 @@ public static class MappingSchemaExtensions
 
                 foreach (var column in table.Columns.Values)
                 {
-                    if (column.Attribute.DataType is not DataType.BinaryJson)
+                    if (column.Attribute.DataType is not DataType.Json or DataType.BinaryJson)
                         continue;
 
                     var typeParameter = Expression.Parameter(table.Type);
