@@ -11,6 +11,8 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntime(Assembly.GetExecutingAssembly());
         container.AddTestingSqlite<Connection>(Assembly.GetExecutingAssembly());
-        container.AddJsonSerializers().SetDefault();
+        container.AddJsonSerializers()
+            .Configure(opts => opts.UseCamelCaseNamingPolicy())
+            .SetDefault();
     }
 }
