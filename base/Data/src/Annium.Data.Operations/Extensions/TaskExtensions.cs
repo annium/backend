@@ -13,6 +13,13 @@ public static class TaskExtensions
         return result.Data;
     }
 
+    public static async Task<IReadOnlyCollection<T>> GetData<T>(this Task<IResult<IEnumerable<T>>> task)
+    {
+        var response = await task;
+
+        return response.Data.ToArray();
+    }
+
     public static async Task<bool> GetStatus(this Task<IBooleanResult> task)
     {
         var result = await task;
