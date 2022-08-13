@@ -8,7 +8,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
 using Annium.Core.Reflection;
-using Annium.Serialization.Abstractions;
 using Annium.Serialization.Abstractions.Attributes;
 
 namespace Annium.Serialization.Json.Internal.Converters;
@@ -33,56 +32,40 @@ internal class ConstructorJsonConverterFactory : JsonConverterFactory
 
     private ConstructorJsonConverterConfiguration? GetConfiguration(Type type)
     {
-        // must be class or struct
-        if (!type.IsClass && !type.IsValueType)
-            return null;
-
-        // must be not abstract and constructable
-        if (type.IsAbstract || type.IsGenericType && !type.IsConstructedGenericType)
-            return null;
-
-        // must be object-like
-        if (typeof(IEnumerable).IsAssignableFrom(type))
-            return null;
-
-        // must not be Tuple
-        if (typeof(ITuple).IsAssignableFrom(type))
-            return null;
-
-        // must not be nullable struct
-        if (type.IsNullableValueType())
+        if (!IsSuitableType(type))
             return null;
 
         // select non-default constructors
         var constructors = type
             .GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Where(x =>
-            {
-                var constructorParams = x.GetParameters();
-
-                // default constructor is not applicable
-                if (constructorParams.Length == 0)
-                    return false;
-
-                // clone constructor is not applicable
-                if (constructorParams.Length == 1 && constructorParams[0].ParameterType == type)
-                    return false;
-
-                return true;
-            })
+            .Where(IsSuitableConstructor)
+            .Select(x => (
+                constructor: x,
+                isSelected: x.GetCustomAttribute<DeserializationConstructorAttribute>() != null,
+                paramsCount: x.GetParameters().Length
+            ))
+            .OrderByDescending(x => x.paramsCount)
             .ToArray();
 
-        // if many non-default constructors - try find single constructor with DeserializationConstructorAttribute
-        if (constructors.Length != 1)
-            constructors = constructors
-                .Where(x => x.GetCustomAttribute<DeserializationConstructorAttribute>() != null)
-                .ToArray();
+        // if ambiguous selection - throw
+        var selected = constructors.Where(x => x.isSelected).ToArray();
+        if (selected.Length > 1)
+            throw new JsonException($"Type {type.FriendlyName()} has multiple constructors, marked with {typeof(DeserializationConstructorAttribute).FriendlyName()}");
 
-        // if ambiguous match - won't convert
-        if (constructors.Length != 1)
+        if (selected.Length == 1)
+            return BuildConfiguration(selected[0].constructor);
+
+        // if many non-default constructors - won't convert
+        var nonDefault = constructors.Where(x => x.paramsCount > 0).ToArray();
+        if (nonDefault.Length != 1)
             return null;
 
-        var constructor = constructors[0];
+        return BuildConfiguration(nonDefault[0].constructor);
+    }
+
+    private static ConstructorJsonConverterConfiguration BuildConfiguration(ConstructorInfo constructor)
+    {
+        var type = constructor.DeclaringType;
         var parameters = constructor.GetParameters()
             .Select(x =>
             {
@@ -97,5 +80,42 @@ internal class ConstructorJsonConverterFactory : JsonConverterFactory
             .ToArray();
 
         return new ConstructorJsonConverterConfiguration(constructor, parameters, properties);
+    }
+
+    private static bool IsSuitableType(Type type)
+    {
+        // must be class or struct
+        if (!type.IsClass && !type.IsValueType)
+            return false;
+
+        // must be not abstract and constructable
+        if (type.IsAbstract || type.IsGenericType && !type.IsConstructedGenericType)
+            return false;
+
+        // must be object-like
+        if (typeof(IEnumerable).IsAssignableFrom(type))
+            return false;
+
+        // must not be Tuple
+        if (typeof(ITuple).IsAssignableFrom(type))
+            return false;
+
+        // must not be nullable struct
+        if (type.IsNullableValueType())
+            return false;
+
+        return true;
+    }
+
+    private static bool IsSuitableConstructor(ConstructorInfo constructor)
+    {
+        var type = constructor.DeclaringType;
+        var constructorParams = constructor.GetParameters();
+
+        // clone constructor is not applicable
+        if (constructorParams.Length == 1 && constructorParams[0].ParameterType == type)
+            return false;
+
+        return true;
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.Runtime.Types;
+using Annium.Serialization.Abstractions.Attributes;
 using Annium.Testing;
 using Xunit;
 
@@ -114,6 +115,36 @@ public class ConstructorJsonConverterTest : TestBase
     }
 
     [Fact]
+    public void Deserialization_SelectConstructor_Works()
+    {
+        // arrange
+        var serializer = GetSerializer();
+        var x = new SelectConstructor(5, 1);
+        var str = serializer.Serialize(x);
+
+        // act
+        var result = serializer.Deserialize<SelectConstructor>(str);
+
+        // assert
+        result.IsEqual(x);
+    }
+
+    [Fact]
+    public void Deserialization_ForceDefault_Works()
+    {
+        // arrange
+        var serializer = GetSerializer();
+        var x = new ForceDefault(5);
+        var str = serializer.Serialize(x);
+
+        // act
+        var result = serializer.Deserialize<ForceDefault>(str);
+
+        // assert
+        result.IsEqual(x);
+    }
+
+    [Fact]
     public void Deserialization_Collection_Works()
     {
         // arrange
@@ -203,6 +234,39 @@ public class ConstructorJsonConverterTest : TestBase
         public Extra(int value)
         {
             Value = value;
+        }
+    }
+
+    public class SelectConstructor
+    {
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public int Value { get; }
+
+        [DeserializationConstructor]
+        public SelectConstructor(int value)
+        {
+            Value = value;
+        }
+
+        public SelectConstructor(int value, int addition = 1)
+        {
+            Value = value + addition;
+        }
+    }
+
+    public class ForceDefault
+    {
+        public Guid Id { get; private set; } = Guid.NewGuid();
+        public int Value { get; set; }
+
+        public ForceDefault(int value)
+        {
+            Value = value + 1;
+        }
+
+        [DeserializationConstructor]
+        private ForceDefault()
+        {
         }
     }
 
