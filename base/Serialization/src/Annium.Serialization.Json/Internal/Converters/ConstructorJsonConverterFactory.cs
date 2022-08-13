@@ -9,6 +9,7 @@ using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Abstractions.Attributes;
 
 namespace Annium.Serialization.Json.Internal.Converters;
 
