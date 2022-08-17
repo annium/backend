@@ -37,7 +37,6 @@ internal class LogSentryBridge<TContext> : ILogSentryBridge
         Exception? exception,
         object[] dataItems
     )
-        where T : class, ILogSubject
     {
         var instant = _timeProvider.Now;
         var (message, data) = Helper.Process(messageTemplate, dataItems);

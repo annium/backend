@@ -5,11 +5,11 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Logging.Commands;
 
-internal class SeqCommand : AsyncCommand, ILogSubject
+internal class SeqCommand : AsyncCommand, ILogSubject<SeqCommand>
 {
     public override string Id { get; } = "seq";
     public override string Description => $"test {Id} log handler";
-    public ILogger Logger { get; }
+    public ILogger<SeqCommand> Logger { get; }
 
     public SeqCommand(
         ILogger<SeqCommand> logger

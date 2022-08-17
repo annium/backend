@@ -33,7 +33,7 @@ internal class LoggingBridge : ILogger
         Func<TState, Exception?, string> formatter
     )
     {
-        _sentryBridge.Register<ILogSubject>(
+        _sentryBridge.Register<LoggingBridge>(
             null,
             string.Empty,
             string.Empty,

@@ -2,6 +2,17 @@ using System.Runtime.CompilerServices;
 
 namespace Annium.Logging.Abstractions;
 
+public static class LogSubjectTExtensions
+{
+    public static LogEntryContext<T> Log<T>(
+        this T subject,
+        [CallerFilePath] string file = "",
+        [CallerMemberName] string member = "",
+        [CallerLineNumber] int line = 0
+    ) where T : ILogSubject<T> =>
+        new(subject, subject.Logger, file, member, line);
+}
+
 public static class LogSubjectExtensions
 {
     public static LogEntryContext<T> Log<T>(
@@ -9,6 +20,6 @@ public static class LogSubjectExtensions
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
-    ) where T : class, ILogSubject =>
-        new(subject, file, member, line);
+    ) where T : ILogSubject =>
+        new(subject, subject.Logger, file, member, line);
 }

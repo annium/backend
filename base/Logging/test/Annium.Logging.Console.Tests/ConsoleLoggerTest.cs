@@ -13,15 +13,13 @@ public class ConsoleLoggerTest
     {
         // arrange
         var subject = GetSubject();
+        using var capture = ConsoleCapture.Start();
 
-        using (var capture = ConsoleCapture.Start())
-        {
-            // act
-            subject.Log().Info("sample");
+        // act
+        subject.Log().Info("sample");
 
-            // assert
-            capture.Output.Contains("sample").IsTrue();
-        }
+        // assert
+        capture.Output.Contains("sample").IsTrue();
     }
 
     [Fact]
@@ -29,7 +27,6 @@ public class ConsoleLoggerTest
     {
         // arrange
         var subject = GetSubject();
-
         using var capture = ConsoleCapture.Start();
 
         // arrange
@@ -49,21 +46,19 @@ public class ConsoleLoggerTest
     {
         // arrange
         var subject = GetSubject();
+        using var capture = ConsoleCapture.Start();
 
-        using (var capture = ConsoleCapture.Start())
-        {
-            // arrange
-            var ex = new Exception("xxx");
+        // arrange
+        var ex = new Exception("xxx");
 
-            // act
-            subject.Log().Error(ex);
+        // act
+        subject.Log().Error(ex);
 
-            // assert
-            capture.Output.Contains("xxx").IsTrue();
-        }
+        // assert
+        capture.Output.Contains("xxx").IsTrue();
     }
 
-    private ILogSubject GetSubject(LogLevel minLogLevel = LogLevel.Trace)
+    private ILogSubject<ConsoleLoggerTest> GetSubject(LogLevel minLogLevel = LogLevel.Trace)
     {
         var container = new ServiceContainer();
 

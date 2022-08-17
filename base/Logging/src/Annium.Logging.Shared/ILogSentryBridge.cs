@@ -15,6 +15,5 @@ public interface ILogSentryBridge
         string messageTemplate,
         Exception? exception,
         object[] dataItems
-    )
-        where T : class, ILogSubject;
+    );
 }

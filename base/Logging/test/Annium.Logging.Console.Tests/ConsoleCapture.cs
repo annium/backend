@@ -13,9 +13,9 @@ internal class ConsoleCapture : IDisposable
 
     public string Output => _writer.ToString();
 
-    private TextWriter _stdout;
+    private readonly TextWriter _stdout;
 
-    private StringWriter _writer = new();
+    private readonly StringWriter _writer = new();
 
     private ConsoleCapture()
     {
