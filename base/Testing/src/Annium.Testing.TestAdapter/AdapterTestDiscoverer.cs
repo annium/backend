@@ -13,9 +13,9 @@ namespace Annium.Testing.TestAdapter;
 [FileExtension(Constants.FileExtensionDll)]
 [FileExtension(Constants.FileExtensionExe)]
 [DefaultExecutorUri(Constants.ExecutorUri)]
-public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
+public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject<AdapterTestDiscoverer>
 {
-    public ILogger Logger { get; private set; } = default!;
+    public ILogger<AdapterTestDiscoverer> Logger { get; private set; } = default!;
     private readonly TestConverter _testConverter;
     private TestDiscoverer? _testDiscoverer;
 

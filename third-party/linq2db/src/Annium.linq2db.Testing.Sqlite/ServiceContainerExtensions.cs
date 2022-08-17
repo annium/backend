@@ -4,6 +4,7 @@ using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Testing.Sqlite.Internal;
+using Annium.Logging.Abstractions;
 using LinqToDB;
 using LinqToDB.Configuration;
 using LinqToDB.Mapping;
@@ -16,7 +17,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly migrationsAssembly
     )
-        where TConnection : DataConnectionBase
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
         return container
             .AddTestingSqlite<TConnection>(
@@ -30,7 +31,7 @@ public static class ServiceContainerExtensions
         Assembly migrationsAssembly,
         Action<IServiceProvider, MappingSchema> configure
     )
-        where TConnection : DataConnectionBase
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
         container.Add(_ =>
         {
@@ -59,25 +60,13 @@ public static class ServiceContainerExtensions
 
             var options = builder.Build();
 
-            return new ConfigurationContainer<TConnection>(options);
+            return new Config<TConnection>(options);
         }).AsSelf().Singleton();
 
-        container.Add(sp =>
-        {
-            var configurationContainer = sp.Resolve<ConfigurationContainer<TConnection>>();
-
-            return (TConnection) Activator.CreateInstance(typeof(TConnection), configurationContainer.Options)!;
-        }).AsSelf().Transient();
+        container.Add<TConnection>().AsSelf().Transient();
 
         container.AddEntityConfigurations();
 
         return container;
     }
-
-    /// <summary>
-    /// Configuration container per <see cref="TConnection"/>
-    /// </summary>
-    /// <param name="Schema"></param>
-    /// <typeparam name="TConnection">Connection type, configuration is specific for</typeparam>
-    private sealed record ConfigurationContainer<TConnection>(LinqToDBConnectionOptions Options);
 }

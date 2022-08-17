@@ -6,9 +6,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
 
-internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>, ILogSubject
+internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>, ILogSubject<LoggingPipeHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<LoggingPipeHandler<TRequest, TResponse>> Logger { get; }
 
     public LoggingPipeHandler(
         ILogger<LoggingPipeHandler<TRequest, TResponse>> logger

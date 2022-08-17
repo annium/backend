@@ -12,9 +12,9 @@ namespace Demo.Core.Mediator.Handlers;
 
 internal class ValidationHandler<TRequest, TResponse> :
     IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
-    ILogSubject
+    ILogSubject<ValidationHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<ValidationHandler<TRequest, TResponse>> Logger { get; }
     private readonly IEnumerable<IValidator<TRequest>> _validators;
 
     public ValidationHandler(

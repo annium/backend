@@ -23,12 +23,12 @@ internal class TableFactory : ITableFactory
         where TR : IEquatable<TR>, ICopyable<TR>
         where TW : notnull
     {
-        return new TableBuilder<TR, TW>(_mapper, _loggerFactory.GetLogger<Table<TR, TW>>());
+        return new TableBuilder<TR, TW>(_mapper, _loggerFactory.Get<Table<TR, TW>>());
     }
 
     public ITableBuilder<T> New<T>()
         where T : IEquatable<T>, ICopyable<T>
     {
-        return new TableBuilder<T>(_loggerFactory.GetLogger<Table<T>>());
+        return new TableBuilder<T>(_loggerFactory.Get<Table<T>>());
     }
 }

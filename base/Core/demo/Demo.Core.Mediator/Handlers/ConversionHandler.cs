@@ -10,9 +10,9 @@ namespace Demo.Core.Mediator.Handlers;
 
 internal class ConversionHandler<TRequest, TResponse> :
     IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
-    ILogSubject
+    ILogSubject<ConversionHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<ConversionHandler<TRequest, TResponse>> Logger { get; }
 
     public ConversionHandler(
         ILogger<ConversionHandler<TRequest, TResponse>> logger

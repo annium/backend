@@ -1,14 +1,15 @@
 using System;
 using System.Text;
 using System.Text.Json;
+using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;
 
-internal class ByteArraySerializer : ISerializer<byte[]>, ILogSubject
+internal class ByteArraySerializer : ISerializer<byte[]>, ILogSubject<ByteArraySerializer>
 {
-    public ILogger Logger { get; }
+    public ILogger<ByteArraySerializer> Logger { get; }
     private readonly JsonSerializerOptions _options;
 
     public ByteArraySerializer(
@@ -28,20 +29,20 @@ internal class ByteArraySerializer : ISerializer<byte[]>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value), typeof(T), e);
+            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value), typeof(T).FriendlyName(), e);
             throw;
         }
     }
 
-    public object Deserialize(Type type, byte[] value)
+    public object? Deserialize(Type type, byte[] value)
     {
         try
         {
-            return JsonSerializer.Deserialize(value, type, _options)!;
+            return JsonSerializer.Deserialize(value, type, _options);
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value), type, e);
+            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value), type.FriendlyName(), e);
             throw;
         }
     }
@@ -54,12 +55,12 @@ internal class ByteArraySerializer : ISerializer<byte[]>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T), e);
+            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T).FriendlyName(), e);
             throw;
         }
     }
 
-    public byte[] Serialize(object value)
+    public byte[] Serialize(object? value)
     {
         try
         {
@@ -67,7 +68,7 @@ internal class ByteArraySerializer : ISerializer<byte[]>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value, value?.GetType() ?? (object) "null", e);
+            this.Log().Error("Failed to serialize {value} as {type} with {error}", value!, value?.GetType().FriendlyName() ?? (object) "null", e);
             throw;
         }
     }

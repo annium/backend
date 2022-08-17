@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,9 +16,6 @@ internal class Storage : StorageBase
         ILogger<Storage> logger
     ) : base(logger)
     {
-        if (configuration is null)
-            throw new ArgumentNullException(nameof(configuration));
-
         VerifyPath(configuration.Directory);
 
         _directory = configuration.Directory;
@@ -45,11 +41,9 @@ internal class Storage : StorageBase
         VerifyName(name);
 
         var path = Path.Combine(_directory, name);
-        using (var target = File.Open(Path.Combine(_directory, name), FileMode.Create))
-        {
-            source.Position = 0;
-            await source.CopyToAsync(target);
-        }
+        await using var target = File.Open(path, FileMode.Create);
+        source.Position = 0;
+        await source.CopyToAsync(target);
     }
 
     protected override async Task<Stream> DoDownloadAsync(string name)
@@ -60,16 +54,14 @@ internal class Storage : StorageBase
         if (!File.Exists(path))
             throw new KeyNotFoundException($"{name} not found in storage");
 
-        using (var source = File.Open(path, FileMode.Open))
-        {
-            var ms = new MemoryStream();
+        await using var source = File.Open(path, FileMode.Open);
+        var ms = new MemoryStream();
 
-            source.Position = 0;
-            await source.CopyToAsync(ms);
-            ms.Position = 0;
+        source.Position = 0;
+        await source.CopyToAsync(ms);
+        ms.Position = 0;
 
-            return ms;
-        }
+        return ms;
     }
 
     protected override Task<bool> DoDeleteAsync(string name)

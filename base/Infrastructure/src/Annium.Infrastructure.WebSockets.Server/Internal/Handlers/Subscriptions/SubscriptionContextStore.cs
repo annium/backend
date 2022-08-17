@@ -7,9 +7,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
 
-internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
+internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject<SubscriptionContextStore>
 {
-    public ILogger Logger { get; }
+    public ILogger<SubscriptionContextStore> Logger { get; }
     private readonly List<ISubscriptionContext> _contexts = new();
 
     public SubscriptionContextStore(

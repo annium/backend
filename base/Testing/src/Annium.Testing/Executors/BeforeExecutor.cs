@@ -3,9 +3,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors;
 
-public class BeforeExecutor : ITestExecutor, ILogSubject
+public class BeforeExecutor : ITestExecutor, ILogSubject<BeforeExecutor>
 {
-    public ILogger Logger { get; }
+    public ILogger<BeforeExecutor> Logger { get; }
     public uint Order { get; } = 3;
     private readonly MethodExecutor _executor;
 

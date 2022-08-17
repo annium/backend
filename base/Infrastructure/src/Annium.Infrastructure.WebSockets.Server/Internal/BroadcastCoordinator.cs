@@ -10,9 +10,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
+internal class BroadcastCoordinator : ILogSubject<BroadcastCoordinator>, IAsyncDisposable
 {
-    public ILogger Logger { get; }
+    public ILogger<BroadcastCoordinator> Logger { get; }
     private readonly ConnectionTracker _connectionTracker;
     private readonly IEnumerable<IBroadcasterRunner> _runners;
     private readonly Serializer _serializer;

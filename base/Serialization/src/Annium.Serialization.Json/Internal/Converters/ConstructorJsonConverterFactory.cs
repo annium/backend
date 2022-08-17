@@ -65,7 +65,7 @@ internal class ConstructorJsonConverterFactory : JsonConverterFactory
 
     private static ConstructorJsonConverterConfiguration BuildConfiguration(ConstructorInfo constructor)
     {
-        var type = constructor.DeclaringType;
+        var type = constructor.DeclaringType!;
         var parameters = constructor.GetParameters()
             .Select(x =>
             {

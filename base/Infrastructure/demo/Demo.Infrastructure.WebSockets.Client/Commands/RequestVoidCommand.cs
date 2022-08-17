@@ -3,21 +3,20 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
-using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<RequestVoidCommand>
 {
     public override string Id { get; } = "request-void";
     public override string Description => $"test {Id} flow";
-    public ILogger Logger { get; }
+    public ILogger<RequestVoidCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public RequestVoidCommand(
         IClientFactory clientFactory,
-        ILogger<RequestCommand> logger
+        ILogger<RequestVoidCommand> logger
     )
     {
         _clientFactory = clientFactory;

@@ -12,9 +12,9 @@ using Microsoft.AspNetCore.Http;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares;
 
-internal class ExceptionMiddleware : ILogSubject
+internal class ExceptionMiddleware : ILogSubject<ExceptionMiddleware>
 {
-    public ILogger Logger { get; }
+    public ILogger<ExceptionMiddleware> Logger { get; }
     private readonly RequestDelegate _next;
     private readonly Helper _helper;
 

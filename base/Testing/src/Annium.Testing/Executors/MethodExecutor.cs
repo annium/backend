@@ -7,9 +7,9 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class MethodExecutor : ILogSubject
+public class MethodExecutor : ILogSubject<MethodExecutor>
 {
-    public ILogger Logger { get; }
+    public ILogger<MethodExecutor> Logger { get; }
 
     public MethodExecutor(
         ILogger<MethodExecutor> logger
@@ -41,7 +41,7 @@ public class MethodExecutor : ILogSubject
         finally
         {
             watch.Stop();
-            result.ExecutionDuration.Add(new TimeSpan(watch.ElapsedTicks));
+            result.ExecutionDuration += TimeSpan.FromTicks(watch.ElapsedTicks);
 
             this.Log().Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
         }

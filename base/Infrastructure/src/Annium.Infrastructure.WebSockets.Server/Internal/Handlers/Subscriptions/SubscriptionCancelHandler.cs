@@ -16,10 +16,10 @@ internal class SubscriptionCancelHandler<TState> :
         IRequestContext<SubscriptionCancelRequest, TState>,
         ResultResponse
     >,
-    ILogSubject
+    ILogSubject<SubscriptionCancelHandler<TState>>
     where TState : ConnectionStateBase
 {
-    public ILogger Logger { get; }
+    public ILogger<SubscriptionCancelHandler<TState>> Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;
 
     public SubscriptionCancelHandler(

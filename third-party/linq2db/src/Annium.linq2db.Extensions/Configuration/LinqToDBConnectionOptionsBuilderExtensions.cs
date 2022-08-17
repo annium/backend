@@ -10,7 +10,7 @@ namespace Annium.linq2db.Extensions.Configuration;
 public static class LinqToDBConnectionOptionsBuilderExtensions
 {
     public static LinqToDBConnectionOptionsBuilder UseLogging<TConnection>(this LinqToDBConnectionOptionsBuilder builder, IServiceProvider sp)
-        where TConnection : DataConnectionBase
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
         var logSubject = sp.Resolve<ILogSubject<TConnection>>();
 

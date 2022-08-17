@@ -10,9 +10,9 @@ using Annium.Testing.Executors;
 
 namespace Annium.Testing;
 
-public class TestExecutor : ILogSubject
+public class TestExecutor : ILogSubject<TestExecutor>
 {
-    public ILogger Logger { get; }
+    public ILogger<TestExecutor> Logger { get; }
     private readonly TestingConfiguration _cfg;
     private readonly IServiceProvider _provider;
     private readonly PipelineExecutor _executor;

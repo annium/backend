@@ -3,10 +3,10 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors;
 
-public class BodyExecutor : ITestExecutor, ILogSubject
+public class BodyExecutor : ITestExecutor, ILogSubject<BodyExecutor>
 {
     public uint Order => 4;
-    public ILogger Logger { get; }
+    public ILogger<BodyExecutor> Logger { get; }
     private readonly MethodExecutor _executor;
 
     public BodyExecutor(
@@ -21,8 +21,6 @@ public class BodyExecutor : ITestExecutor, ILogSubject
     public Task ExecuteAsync(Target target)
     {
         var (instance, test, result) = target;
-        if (test.Method == null)
-            return Task.CompletedTask;
 
         this.Log().Trace($"Execute Body of {target.Test.DisplayName}.");
 

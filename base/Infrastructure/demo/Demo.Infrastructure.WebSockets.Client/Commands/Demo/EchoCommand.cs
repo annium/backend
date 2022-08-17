@@ -11,11 +11,11 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject
+internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject<EchoCommand>
 {
     public override string Id { get; } = "echo";
     public override string Description { get; } = "test echo flow";
-    public ILogger Logger { get; }
+    public ILogger<EchoCommand> Logger { get; }
     private readonly ILoggerFactory _loggerFactory;
 
     public EchoCommand(
@@ -23,14 +23,14 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject
     )
     {
         _loggerFactory = loggerFactory;
-        Logger = loggerFactory.GetLogger<EchoCommand>();
+        Logger = loggerFactory.Get<EchoCommand>();
     }
 
     public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
             new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory.GetLogger<ClientWebSocket>()
+            _loggerFactory
         );
         ws.ConnectionLost += () =>
         {

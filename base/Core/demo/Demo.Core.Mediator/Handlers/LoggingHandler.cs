@@ -8,9 +8,9 @@ namespace Demo.Core.Mediator.Handlers;
 
 internal class LoggingHandler<TRequest, TResponse> :
     IPipeRequestHandler<TRequest, TRequest, TResponse, TResponse>,
-    ILogSubject
+    ILogSubject<LoggingHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<LoggingHandler<TRequest, TResponse>> Logger { get; }
 
     public LoggingHandler(
         ILogger<LoggingHandler<TRequest, TResponse>> logger

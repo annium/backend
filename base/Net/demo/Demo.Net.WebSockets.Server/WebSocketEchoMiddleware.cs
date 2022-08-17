@@ -11,15 +11,15 @@ namespace Demo.Net.WebSockets.Server;
 
 public class WebSocketEchoMiddleware
 {
-    private readonly ILogger<WebSocket> _logger;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly RequestDelegate _next;
 
     public WebSocketEchoMiddleware(
-        ILogger<WebSocket> logger,
+        ILoggerFactory loggerFactory,
         RequestDelegate next
     )
     {
-        _logger = logger;
+        _loggerFactory = loggerFactory;
         _next = next;
     }
 
@@ -38,7 +38,7 @@ public class WebSocketEchoMiddleware
             return;
         }
 
-        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
+        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _loggerFactory);
 
         if (path == "/ws/echo")
             await Echo(ws);

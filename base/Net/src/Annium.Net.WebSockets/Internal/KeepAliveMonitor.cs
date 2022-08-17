@@ -9,13 +9,13 @@ using NodaTime;
 
 namespace Annium.Net.WebSockets.Internal;
 
-internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject
+internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject<KeepAliveMonitor>
 {
     public CancellationToken Token => _cts.Token;
     private readonly IObservable<SocketMessage> _observable;
     private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
     private readonly ActiveKeepAlive _options;
-    public ILogger Logger { get; }
+    public ILogger<KeepAliveMonitor> Logger { get; }
     private DisposableBox _disposable = Disposable.Box();
     private CancellationTokenSource _cts = new();
     private Instant _lastPongTime;
@@ -25,7 +25,7 @@ internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject
         IObservable<SocketMessage> observable,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
         ActiveKeepAlive options,
-        ILogger logger
+        ILogger<KeepAliveMonitor> logger
     )
     {
         _observable = observable;

@@ -17,7 +17,7 @@ internal static class Configurator
         Encoding encoding,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
         WebSocketBaseOptions options,
-        ILogger logger
+        ILoggerFactory loggerFactory
     )
     {
         IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
@@ -29,7 +29,7 @@ internal static class Configurator
         {
             var opts = options.ActiveKeepAlive;
             keepAliveFrames.Add(opts.PongFrame);
-            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, logger);
+            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, loggerFactory.Get<KeepAliveMonitor>());
         }
 
         // if passive - listen pings, respond with pongs
@@ -37,7 +37,7 @@ internal static class Configurator
         {
             var opts = options.PassiveKeepAlive;
             keepAliveFrames.Add(opts.PingFrame);
-            var logSubject = new PingPongSubject(logger);
+            var logSubject = new PingPongSubject(loggerFactory.Get<PingPongSubject>());
             disposable += observable
                 .Where(x =>
                     x.Type == WebSocketMessageType.Binary &&
@@ -93,18 +93,18 @@ internal static class Configurator
         );
     }
 
-    private class PingPongSubject : ILogSubject
+    private class PingPongSubject : ILogSubject<PingPongSubject>
     {
-        public ILogger Logger { get; }
+        public ILogger<PingPongSubject> Logger { get; }
 
-        public PingPongSubject(ILogger logger)
+        public PingPongSubject(ILogger<PingPongSubject> logger)
         {
             Logger = logger;
         }
     }
 }
 
-internal record Configuration(
+internal sealed record Configuration(
     IKeepAliveMonitor KeepAliveMonitor,
     IObservable<SocketMessage> MessageObservable,
     IObservable<ReadOnlyMemory<byte>> BinaryObservable,

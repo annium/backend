@@ -4,11 +4,11 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class SkippedExecutor : ITestExecutor, ILogSubject
+public class SkippedExecutor : ITestExecutor, ILogSubject<SkippedExecutor>
 {
-    public ILogger Logger { get; }
+    public ILogger<SkippedExecutor> Logger { get; }
 
-    public uint Order { get; } = 1;
+    public uint Order => 1;
 
     public SkippedExecutor(
         ILogger<SkippedExecutor> logger

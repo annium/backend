@@ -2,12 +2,20 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
 
 namespace Annium.Logging.Console.Tests;
 
-public class ConsoleLoggerTest
+public class ConsoleLoggerTest : TestBase, ILogSubject<ConsoleLoggerTest>
 {
+    public ILogger<ConsoleLoggerTest> Logger { get; }
+
+    public ConsoleLoggerTest()
+    {
+        Logger = Get<ILogger<ConsoleLoggerTest>>();
+    }
+
     [Fact]
     public void LogMessage_WritesLogMessageToConsole()
     {

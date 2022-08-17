@@ -11,7 +11,7 @@ internal class ValidationPipeHandler<TRequest> : ValidationPipeHandlerBase<TRequ
 {
     public ValidationPipeHandler(
         IValidator<TRequest> validator,
-        ILogger<ValidationPipeHandlerBase<TRequest, IStatusResult<OperationStatus>>> logger
+        ILogger<ValidationPipeHandler<TRequest>> logger
     ) : base(validator, logger)
     {
     }

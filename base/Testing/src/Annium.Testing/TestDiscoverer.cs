@@ -7,9 +7,9 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing;
 
-public class TestDiscoverer : ILogSubject
+public class TestDiscoverer : ILogSubject<TestDiscoverer>
 {
-    public ILogger Logger { get; }
+    public ILogger<TestDiscoverer> Logger { get; }
 
     public TestDiscoverer(ILogger<TestDiscoverer> logger)
     {

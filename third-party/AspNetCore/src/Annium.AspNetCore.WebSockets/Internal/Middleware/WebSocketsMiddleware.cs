@@ -13,9 +13,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.WebSockets.Internal.Middleware;
 
-internal class WebSocketsMiddleware : ILogSubject
+internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
 {
-    public ILogger Logger { get; }
+    public ILogger<WebSocketsMiddleware> Logger { get; }
     private readonly RequestDelegate _next;
     private readonly ICoordinator _coordinator;
     private readonly ServerConfiguration _cfg;
@@ -67,7 +67,7 @@ internal class WebSocketsMiddleware : ILogSubject
             this.Log().Trace("accept");
             var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
             this.Log().Trace("create socket");
-            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory.GetLogger<WebSocket>());
+            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory);
             this.Log().Trace("handle");
             await _coordinator.HandleAsync(socket);
         }

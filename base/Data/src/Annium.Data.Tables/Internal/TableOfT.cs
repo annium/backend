@@ -111,7 +111,7 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
         using var _ = DataLocker.Lock();
 
         if (_table.Remove(key, out var item))
-            AddEvent(ChangeEvent.Delete(item!));
+            AddEvent(ChangeEvent.Delete(item));
 
         Cleanup();
     }

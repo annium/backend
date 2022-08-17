@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -10,15 +9,12 @@ namespace Annium.Storage.InMemory;
 
 internal class Storage : StorageBase
 {
-    private IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
+    private readonly IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
 
     public Storage(
-        Configuration configuration,
         ILogger<Storage> logger
     ) : base(logger)
     {
-        if (configuration is null)
-            throw new ArgumentNullException(nameof(configuration));
     }
 
     protected override Task DoSetupAsync() => Task.CompletedTask;
@@ -29,12 +25,10 @@ internal class Storage : StorageBase
     {
         VerifyName(name);
 
-        using (var ms = new MemoryStream())
-        {
-            ms.Position = 0;
-            await source.CopyToAsync(ms);
-            _storage[name] = ms.ToArray();
-        }
+        using var ms = new MemoryStream();
+        ms.Position = 0;
+        await source.CopyToAsync(ms);
+        _storage[name] = ms.ToArray();
     }
 
     protected override Task<Stream> DoDownloadAsync(string name)

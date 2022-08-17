@@ -6,10 +6,10 @@ using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using YamlDotNet.Serialization;
 
-// TestBuilder();
-// TestCli();
+TestBuilder();
+TestCli();
 TestJson();
-// TestYaml();
+TestYaml();
 
 void TestBuilder()
 {

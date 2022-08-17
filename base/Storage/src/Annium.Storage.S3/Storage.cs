@@ -11,8 +11,9 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.S3;
 
-internal class Storage : StorageBase
+internal class Storage : StorageBase, ILogSubject<Storage>
 {
+    public new ILogger<Storage> Logger { get; }
     private readonly Configuration _configuration;
     private readonly string _directory;
 
@@ -21,8 +22,8 @@ internal class Storage : StorageBase
         ILogger<Storage> logger
     ) : base(logger)
     {
-        _configuration = configuration ??
-            throw new ArgumentNullException(nameof(configuration));
+        Logger = logger;
+        _configuration = configuration;
 
         VerifyPath(configuration.Directory);
 
@@ -31,91 +32,109 @@ internal class Storage : StorageBase
 
     protected override async Task DoSetupAsync()
     {
-        using (var s3 = GetClient())
-        {
-            var buckets = (await s3.ListBucketsAsync()).Buckets.Select(b => b.BucketName).ToArray();
-            if (buckets.Contains(_configuration.Bucket))
-                return;
+        this.Log().Trace("start, list buckets");
 
-            await s3.PutBucketAsync(new PutBucketRequest { BucketName = _configuration.Bucket });
+        using var s3 = GetClient();
+
+        var buckets = (await s3.ListBucketsAsync()).Buckets.Select(b => b.BucketName).ToArray();
+        if (buckets.Contains(_configuration.Bucket))
+        {
+            this.Log().Trace("bucket already exists, noop, done");
+
+            return;
         }
+
+        await s3.PutBucketAsync(new PutBucketRequest { BucketName = _configuration.Bucket });
+        this.Log().Trace("bucket created, done");
     }
 
     protected override async Task<string[]> DoListAsync()
     {
+        this.Log().Trace("start");
         var listRequest = new ListObjectsRequest { BucketName = _configuration.Bucket, MaxKeys = 100, Prefix = _directory };
 
-        using (var s3 = GetClient())
-        {
-            var objects = (await s3.ListObjectsAsync(listRequest)).S3Objects;
+        using var s3 = GetClient();
 
-            return objects
-                .Select(o => ReadKey(o.Key))
-                .ToArray();
-        }
+        var objects = (await s3.ListObjectsAsync(listRequest)).S3Objects;
+
+        var result = objects
+            .Select(o => ReadKey(o.Key))
+            .ToArray();
+
+        this.Log().Trace("done");
+
+        return result;
     }
 
     protected override async Task DoUploadAsync(Stream source, string name)
     {
+        this.Log().Trace("start");
+
         VerifyName(name);
 
         source.Position = 0;
         var putRequest = new PutObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name), InputStream = source, };
 
-        using (var s3 = GetClient())
-        {
-            await s3.PutObjectAsync(putRequest);
-        }
+        using var s3 = GetClient();
+
+        await s3.PutObjectAsync(putRequest);
+
+        this.Log().Trace("done");
     }
 
     protected override async Task<Stream> DoDownloadAsync(string name)
     {
+        this.Log().Trace("start");
+
         VerifyName(name);
 
-        using (var s3 = GetClient())
+        try
         {
-            try
-            {
-                var getRequest = new GetObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
-                using (var getResponse = await s3.GetObjectAsync(getRequest))
-                {
-                    var ms = new MemoryStream();
-                    await getResponse.ResponseStream.CopyToAsync(ms);
-                    ms.Position = 0;
+            using var s3 = GetClient();
 
-                    return ms;
-                }
-            }
-            catch (AmazonS3Exception)
-            {
-                // assume object was not found
-                throw new KeyNotFoundException($"{name} not found in storage");
-            }
+            var getRequest = new GetObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
+            using var getResponse = await s3.GetObjectAsync(getRequest);
+
+            var ms = new MemoryStream();
+            await getResponse.ResponseStream.CopyToAsync(ms);
+            ms.Position = 0;
+
+            this.Log().Trace("done");
+
+            return ms;
+        }
+        catch (AmazonS3Exception)
+        {
+            // assume object was not found
+            throw new KeyNotFoundException($"{name} not found in storage");
         }
     }
 
     protected override async Task<bool> DoDeleteAsync(string name)
     {
+        this.Log().Trace("start");
+
         VerifyName(name);
 
-        using (var s3 = GetClient())
+        using var s3 = GetClient();
+
+        var getRequest = new GetObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
+        try
         {
-            var getRequest = new GetObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
-            try
-            {
-                await s3.GetObjectAsync(getRequest);
-            }
-            catch (AmazonS3Exception)
-            {
-                // assume object was not found
-                return false;
-            }
-
-            var deleteRequest = new DeleteObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
-            var deleteResponse = await s3.DeleteObjectAsync(deleteRequest);
-
-            return true;
+            await s3.GetObjectAsync(getRequest);
         }
+        catch (AmazonS3Exception)
+        {
+            // assume object was not found
+            return false;
+        }
+
+        var deleteRequest = new DeleteObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
+        await s3.DeleteObjectAsync(deleteRequest);
+
+        this.Log().Trace("done");
+
+        return true;
     }
 
     private IAmazonS3 GetClient()

@@ -8,8 +8,9 @@ using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket
+public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket, ILogSubject<ClientWebSocket>
 {
+    public new ILogger<ClientWebSocket> Logger { get; }
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
     public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
     private readonly ClientWebSocketOptions _options;
@@ -17,20 +18,21 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public ClientWebSocket(
         ClientWebSocketOptions options,
-        ILogger<ClientWebSocket> logger
+        ILoggerFactory loggerFactory
     ) : base(
         new NativeClientWebSocket(),
         options,
         Extensions.Execution.Executor.Background.Parallel<ClientWebSocket>(),
-        logger
+        loggerFactory
     )
     {
+        Logger = loggerFactory.Get<ClientWebSocket>();
         _options = options;
     }
 
     public ClientWebSocket(
-        ILogger<ClientWebSocket> logger
-    ) : this(new ClientWebSocketOptions(), logger)
+        ILoggerFactory loggerFactory
+    ) : this(new ClientWebSocketOptions(), loggerFactory)
     {
     }
 

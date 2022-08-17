@@ -7,9 +7,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Core.Mediator.Internal;
 
-internal class ChainBuilder : ILogSubject
+internal class ChainBuilder : ILogSubject<ChainBuilder>
 {
-    public ILogger Logger { get; }
+    public ILogger<ChainBuilder> Logger { get; }
     private readonly MediatorConfiguration _configuration;
     private readonly NextBuilder _nextBuilder;
 

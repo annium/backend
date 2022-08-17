@@ -7,11 +7,11 @@ using WebSocket = Annium.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class Connection : IAsyncDisposable, ILogSubject
+internal class Connection : IAsyncDisposable, ILogSubject<Connection>
 {
     public Guid Id { get; }
     public ISendingReceivingWebSocket Socket => _socket;
-    public ILogger Logger { get; }
+    public ILogger<Connection> Logger { get; }
     private readonly WebSocket _socket;
 
     public Connection(

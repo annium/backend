@@ -7,8 +7,11 @@ namespace Annium.Serialization.MessagePack.Tests;
 public class TestBase
 {
     protected ISerializer<ReadOnlyMemory<byte>> GetSerializer() => new ServiceContainer()
-        .AddMessagePackSerializer()
         .AddRuntime(GetType().Assembly)
+        .AddMessagePackSerializer()
+        .AddTime().WithManagedTime().SetDefault()
+        .AddLogging()
         .BuildServiceProvider()
+        .UseLogging(x => x.UseInMemory())
         .ResolveSerializer<ReadOnlyMemory<byte>>(Abstractions.Constants.DefaultKey, Constants.MediaType);
 }

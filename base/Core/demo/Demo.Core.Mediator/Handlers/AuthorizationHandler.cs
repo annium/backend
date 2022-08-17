@@ -9,9 +9,9 @@ namespace Demo.Core.Mediator.Handlers;
 
 internal class AuthorizationHandler<TRequest, TResponse> :
     IPipeRequestHandler<TRequest, Authored<TRequest>, TResponse, TResponse>,
-    ILogSubject
+    ILogSubject<AuthorizationHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<AuthorizationHandler<TRequest, TResponse>> Logger { get; }
 
     public AuthorizationHandler(
         ILogger<AuthorizationHandler<TRequest, TResponse>> logger

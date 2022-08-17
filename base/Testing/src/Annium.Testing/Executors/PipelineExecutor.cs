@@ -7,9 +7,9 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class PipelineExecutor : ILogSubject
+public class PipelineExecutor : ILogSubject<PipelineExecutor>
 {
-    public ILogger Logger { get; }
+    public ILogger<PipelineExecutor> Logger { get; }
     private readonly ITestExecutor[] _executors;
 
     public PipelineExecutor(

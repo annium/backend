@@ -7,17 +7,19 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
+public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket, ILogSubject<WebSocket>
 {
+    public new ILogger<WebSocket> Logger { get; }
+
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
 
     public WebSocket(
         NativeWebSocket socket,
-        ILogger<WebSocket> logger
+        ILoggerFactory loggerFactory
     ) : this(
         socket,
         new WebSocketOptions(),
-        logger
+        loggerFactory
     )
     {
     }
@@ -25,17 +27,19 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     public WebSocket(
         NativeWebSocket socket,
         WebSocketOptions options,
-        ILogger<WebSocket> logger
+        ILoggerFactory loggerFactory
     ) : base(
         socket,
         options,
         Extensions.Execution.Executor.Background.Parallel<WebSocket>(),
-        logger
+        loggerFactory
     )
     {
         // resume observable unconditionally, because this kind of socket is expected to be connected
         if (Socket.State is not WebSocketState.Open)
             throw new WebSocketException("Unmanaged Socket must be already connected");
+
+        Logger = loggerFactory.Get<WebSocket>();
 
         ResumeObservable();
     }

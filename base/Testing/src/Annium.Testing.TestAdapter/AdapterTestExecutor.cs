@@ -14,9 +14,9 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 namespace Annium.Testing.TestAdapter;
 
 [ExtensionUri(Constants.ExecutorUri)]
-public class AdapterTestExecutor : ITestExecutor, ILogSubject
+public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecutor>
 {
-    public ILogger Logger { get; private set; } = default!;
+    public ILogger<AdapterTestExecutor> Logger { get; private set; } = default!;
     private readonly TestConverter _testConverter;
     private readonly TestResultConverter _testResultConverter;
     private IServiceProvider? _provider;

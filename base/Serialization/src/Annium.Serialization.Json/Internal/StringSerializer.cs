@@ -1,13 +1,14 @@
 using System;
 using System.Text.Json;
+using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;
 
-internal class StringSerializer : ISerializer<string>, ILogSubject
+internal class StringSerializer : ISerializer<string>, ILogSubject<StringSerializer>
 {
-    public ILogger Logger { get; }
+    public ILogger<StringSerializer> Logger { get; }
     private readonly JsonSerializerOptions _options;
 
     public StringSerializer(
@@ -27,20 +28,20 @@ internal class StringSerializer : ISerializer<string>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, typeof(T), e);
+            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, typeof(T).FriendlyName(), e);
             throw;
         }
     }
 
-    public object Deserialize(Type type, string value)
+    public object? Deserialize(Type type, string value)
     {
         try
         {
-            return JsonSerializer.Deserialize(value, type, _options)!;
+            return JsonSerializer.Deserialize(value, type, _options);
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, type, e);
+            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, type.FriendlyName(), e);
             throw;
         }
     }
@@ -53,12 +54,12 @@ internal class StringSerializer : ISerializer<string>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T), e);
+            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T).FriendlyName(), e);
             throw;
         }
     }
 
-    public string Serialize(object value)
+    public string Serialize(object? value)
     {
         try
         {
@@ -66,7 +67,7 @@ internal class StringSerializer : ISerializer<string>, ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value, value?.GetType() ?? (object) "null", e);
+            this.Log().Error("Failed to serialize {value} as {type} with {error}", value!, value?.GetType().FriendlyName() ?? (object) "null", e);
             throw;
         }
     }

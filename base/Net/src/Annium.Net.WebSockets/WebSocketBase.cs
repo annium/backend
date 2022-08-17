@@ -18,13 +18,13 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 namespace Annium.Net.WebSockets;
 
 // TODO: rewrite as generic socket wrapper
-public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket, ILogSubject
+public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket, ILogSubject<WebSocketBase<TNativeSocket>>
     where TNativeSocket : NativeWebSocket
 {
     private const int BufferSize = 65536;
 
     public WebSocketState State => Socket.State;
-    public ILogger Logger { get; }
+    public ILogger<WebSocketBase<TNativeSocket>> Logger { get; }
     protected TNativeSocket Socket { get; set; }
     protected IBackgroundExecutor Executor { get; }
     private TaskCompletionSource<object> _socketTcs = new();
@@ -43,13 +43,13 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         TNativeSocket socket,
         WebSocketBaseOptions options,
         IBackgroundExecutor executor,
-        ILogger logger
+        ILoggerFactory loggerFactory
     )
     {
         Socket = socket;
 
         Executor = executor;
-        Logger = logger;
+        Logger = loggerFactory.Get<WebSocketBase<TNativeSocket>>();
         Executor.Start();
 
         // start socket observable
@@ -57,8 +57,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             .TrackCompletion();
 
         // resolve components from configuration
-        this.Log().Trace(options.ToString());
-        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, Logger);
+        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, loggerFactory);
         _keepAliveMonitor = cfg.KeepAliveMonitor;
         _messageObservable = cfg.MessageObservable;
         _binaryObservable = cfg.BinaryObservable;
@@ -119,7 +118,6 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     private IObservable<SocketMessage> CreateSocketObservable(CancellationToken ct) => ObservableExt.StaticSyncInstance<SocketMessage>(async ctx =>
     {
-        this.Log().Trace("register socket tcs completion on observable disposal");
         await using var ctRegistration = ctx.Ct.Register(() =>
         {
             if (_socketTcs.Task.IsCompleted)
@@ -131,9 +129,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             }
         });
 
-        this.Log().Trace("spin until keepAlive monitor is ready");
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        await Wait.UntilAsync(() => _keepAliveMonitor is not null, CancellationToken.None, pollDelay: 5);
+        await Wait.UntilAsync(() => _keepAliveMonitor != default!, CancellationToken.None, pollDelay: 5);
 
         while (true)
         {
@@ -202,57 +198,68 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
     )
     {
         await using var stream = new MemoryStream();
-        ValueWebSocketReceiveResult result = default;
+        ValueWebSocketReceiveResult? result;
         do
         {
-            try
-            {
-                result = await Socket.ReceiveAsync(buffer, _receiveCts.Token);
-            }
-            //  remote party closed connection w/o handshake
-            catch (WebSocketException e)
-            {
-                this.Log().Trace($"{nameof(WebSocketException)} {e}");
-                if (await HandleConnectionLost() == Status.Closed)
-                    return Status.Closed;
-            }
-            // token was canceled, no message received - will retry
-            catch (OperationCanceledException)
-            {
-                // Operation canceled either by disconnect, or by disposal
-                if (!_keepAliveMonitor.Token.IsCancellationRequested)
-                {
-                    this.Log().Trace($"{nameof(OperationCanceledException)} by disconnect or disposal");
-                    HandleDisconnected();
-
-                    return Status.Closed;
-                }
-
-                this.Log().Trace($"{nameof(OperationCanceledException)} by keepAlive");
-                if (await HandleConnectionLost() == Status.Closed)
-                    return Status.Closed;
-            }
-            catch (Exception e)
-            {
-                this.Log().Trace($"exception {e}");
-                // unexpected case
-                throw;
-            }
+            result = await ReceiveChunkAsync(buffer);
+            if (result is null)
+                return Status.Closed;
 
             // if closing - handle disconnect
-            if (result.MessageType == WebSocketMessageType.Close)
+            if (result.Value.MessageType == WebSocketMessageType.Close)
             {
                 this.Log().Trace("received close message");
                 if (await HandleConnectionLost() == Status.Closed)
                     return Status.Closed;
             }
 
-            stream.Write(buffer[..result.Count].Span);
-        } while (!result.EndOfMessage);
+            stream.Write(buffer[..result.Value.Count].Span);
+        } while (!result.Value.EndOfMessage);
 
-        ctx.OnNext(new SocketMessage(result.MessageType, stream.ToArray()));
+        ctx.OnNext(new SocketMessage(result.Value.MessageType, stream.ToArray()));
 
         return Status.Opened;
+    }
+
+    private async ValueTask<ValueWebSocketReceiveResult?> ReceiveChunkAsync(
+        Memory<byte> buffer
+    )
+    {
+        try
+        {
+            return await Socket.ReceiveAsync(buffer, _receiveCts.Token);
+        }
+        //  remote party closed connection w/o handshake
+        catch (WebSocketException e)
+        {
+            this.Log().Trace($"{nameof(WebSocketException)} {e}");
+            if (await HandleConnectionLost() == Status.Closed)
+                return null;
+        }
+        // token was canceled, no message received - will retry
+        catch (OperationCanceledException)
+        {
+            // Operation canceled either by disconnect, or by disposal
+            if (!_keepAliveMonitor.Token.IsCancellationRequested)
+            {
+                this.Log().Trace($"{nameof(OperationCanceledException)} by disconnect or disposal");
+                HandleDisconnected();
+
+                return null;
+            }
+
+            this.Log().Trace($"{nameof(OperationCanceledException)} by keepAlive");
+            if (await HandleConnectionLost() == Status.Closed)
+                return null;
+        }
+        catch (Exception e)
+        {
+            this.Log().Trace($"exception {e}");
+            // unexpected case
+            throw;
+        }
+
+        return null;
     }
 
     private async Task<Status> HandleConnectionLost()

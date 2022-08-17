@@ -4,20 +4,19 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
-using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<KeepAliveCommand>
 {
     public override string Id { get; } = "keep-alive";
     public override string Description => $"test {Id} flow";
-    public ILogger Logger { get; }
+    public ILogger<KeepAliveCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public KeepAliveCommand(
         IClientFactory clientFactory,
-        ILogger<RequestCommand> logger
+        ILogger<KeepAliveCommand> logger
     )
     {
         _clientFactory = clientFactory;

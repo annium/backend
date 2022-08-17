@@ -4,13 +4,21 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
 
 namespace Annium.Logging.Shared.Tests;
 
-public class BaseLoggerTest
+public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
 {
+    public ILogger<BaseLoggerTest> Logger { get; }
     private readonly IList<LogMessage<Context>> _messages = new List<LogMessage<Context>>();
+
+    public BaseLoggerTest()
+    {
+        Logger = Get<ILogger<BaseLoggerTest>>();
+    }
+
 
     [Fact]
     public void Log_ValidLevel_WritesLogEntry()

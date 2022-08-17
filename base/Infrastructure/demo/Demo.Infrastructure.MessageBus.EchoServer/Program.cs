@@ -6,7 +6,6 @@ using Annium.Core.Entrypoint;
 using Annium.Core.Primitives;
 using Annium.Core.Primitives.Threading;
 using Annium.Infrastructure.MessageBus.Node;
-using Annium.Logging.Abstractions;
 using Demo.Infrastructure.MessageBus.EchoServer;
 
 await using var entry = Entrypoint.Default
@@ -15,14 +14,13 @@ await using var entry = Entrypoint.Default
 
 var (provider, ct) = entry;
 
-var subject = provider.Resolve<ILogSubject<Program>>();
 var socket = provider.Resolve<IMessageBusSocket>();
 var timeProvider = provider.Resolve<ITimeProvider>();
 
 var cfg = provider.Resolve<EndpointsConfiguration>();
 Console.WriteLine($"Start echo server with PUB {cfg.PubEndpoint} / SUB {cfg.SubEndpoint}");
 
-socket.Subscribe(x => subject.Log().Info($"<<<{x}"));
+socket.Subscribe(x => Console.WriteLine($"<<<{x}"));
 
 while (!ct.IsCancellationRequested)
 {

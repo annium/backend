@@ -18,11 +18,11 @@ using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogSubject
+internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogSubject<RequestCommand>
 {
     public override string Id { get; } = "request";
     public override string Description { get; } = "test demo flow";
-    public ILogger Logger { get; }
+    public ILogger<RequestCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -33,14 +33,14 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogS
     {
         _serializer = serializer;
         _loggerFactory = loggerFactory;
-        Logger = loggerFactory.GetLogger<RequestCommand>();
+        Logger = loggerFactory.Get<RequestCommand>();
     }
 
     public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
             new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory.GetLogger<ClientWebSocket>()
+            _loggerFactory
         );
         ws.ConnectionLost += () =>
         {

@@ -9,21 +9,20 @@ using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Logging.Abstractions;
-using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<RequestResponseCommand>
 {
     public override string Id { get; } = "request-response";
     public override string Description => $"test {Id} flow";
-    public ILogger Logger { get; }
+    public ILogger<RequestResponseCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public RequestResponseCommand(
         IClientFactory clientFactory,
-        ILogger<RequestCommand> logger
+        ILogger<RequestResponseCommand> logger
     )
     {
         _clientFactory = clientFactory;

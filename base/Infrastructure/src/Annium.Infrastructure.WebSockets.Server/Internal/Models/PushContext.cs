@@ -10,7 +10,7 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
 
-internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, ILogSubject
+internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, ILogSubject<PushContext<TMessage, TState>>
     where TMessage : NotificationBase
     where TState : ConnectionStateBase
 {
@@ -18,7 +18,7 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
     private readonly IMediator _mediator;
     private readonly IServiceProvider _sp;
     public TState State { get; }
-    public ILogger Logger { get; }
+    public ILogger<PushContext<TMessage, TState>> Logger { get; }
     private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<PushContext<TMessage, TState>>();
 
     public PushContext(

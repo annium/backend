@@ -9,7 +9,7 @@ await using var entry = Entrypoint.Default.Setup();
 
 var (provider, ct) = entry;
 
-var socket = new ClientWebSocket(provider.Resolve<ILogger<ClientWebSocket>>());
+var socket = new ClientWebSocket(provider.Resolve<ILoggerFactory>());
 
 await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
 

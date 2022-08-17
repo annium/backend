@@ -8,11 +8,11 @@ public readonly ref struct LogEntryContext<T>
     private readonly string _file;
     private readonly string _member;
     private readonly int _line;
-    private readonly ILogger _logger;
+    private readonly ILogger<T> _logger;
 
     public LogEntryContext(
         T subject,
-        ILogger logger,
+        ILogger<T> logger,
         string file,
         string member,
         int line

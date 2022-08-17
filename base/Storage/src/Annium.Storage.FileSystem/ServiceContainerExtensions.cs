@@ -10,10 +10,7 @@ public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddFileSystemStorage(this IServiceContainer container)
     {
-        Func<IServiceProvider, Func<Configuration, FsStorage>> factory =
-            sp => configuration => new FsStorage(configuration, sp.Resolve<ILogger<FsStorage>>());
-
-        container.Add<Func<Configuration, IStorage>>(factory).AsSelf().Singleton();
+        container.Add<Func<Configuration, IStorage>>(sp => configuration => new FsStorage(configuration, sp.Resolve<ILogger<FsStorage>>())).AsSelf().Singleton();
 
         return container;
     }

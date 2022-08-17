@@ -4,22 +4,21 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
-using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
 using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<SubUnsubCommand>
 {
     public override string Id { get; } = "sub-unsub";
     public override string Description => $"test {Id} flow";
-    public ILogger Logger { get; }
+    public ILogger<SubUnsubCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public SubUnsubCommand(
         IClientFactory clientFactory,
-        ILogger<RequestCommand> logger
+        ILogger<SubUnsubCommand> logger
     )
     {
         _clientFactory = clientFactory;

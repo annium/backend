@@ -9,15 +9,16 @@ using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class ConnectionTracker : IAsyncDisposable, ILogSubject
+internal class ConnectionTracker : IAsyncDisposable, ILogSubject<ConnectionTracker>
 {
-    public ILogger Logger { get; }
+    public ILogger<ConnectionTracker> Logger { get; }
     private readonly IServerLifetime _lifetime;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly Dictionary<Guid, ConnectionRef> _connections = new();
     private readonly TaskCompletionSource<object> _disposeTcs = new();
+    private readonly ILogger<Connection> _connectionLogger;
     private bool _isDisposing;
     private bool _isDisposed;
+    private readonly ILogger<ConnectionRef> _connectionRefLogger;
 
     public ConnectionTracker(
         IServerLifetime lifetime,
@@ -26,8 +27,9 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     )
     {
         _lifetime = lifetime;
-        _loggerFactory = loggerFactory;
         Logger = logger;
+        _connectionLogger = loggerFactory.Get<Connection>();
+        _connectionRefLogger = loggerFactory.Get<ConnectionRef>();
         _lifetime.Stopping.Register(TryStop);
     }
 
@@ -38,10 +40,10 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         if (_lifetime.Stopping.IsCancellationRequested)
             throw new InvalidOperationException("Server is already stopping");
 
-        var cn = new Connection(Guid.NewGuid(), socket, _loggerFactory.GetLogger<Connection>());
+        var cn = new Connection(Guid.NewGuid(), socket, _connectionLogger);
         this.Log().Trace($"connection {cn.Id} - start");
         lock (_connections)
-            _connections[cn.Id] = new ConnectionRef(cn, Logger);
+            _connections[cn.Id] = new ConnectionRef(cn, _connectionRefLogger);
 
         this.Log().Trace($"connection {cn.Id} - done");
         return cn;
@@ -146,22 +148,14 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             throw new ObjectDisposedException(nameof(ConnectionTracker));
     }
 
-    private record ConnectionRef : ILogSubject
+    private sealed record ConnectionRef(
+        Connection Connection,
+        ILogger<ConnectionRef> Logger
+    ) : ILogSubject<ConnectionRef>
     {
-        public ILogger Logger { get; }
-        public Connection Connection { get; }
         public Task CanBeReleased => _disposeTcs.Task;
         private readonly TaskCompletionSource<object?> _disposeTcs = new();
         private int _refCount;
-
-        public ConnectionRef(
-            Connection connection,
-            ILogger logger
-        )
-        {
-            Logger = logger;
-            Connection = connection;
-        }
 
         public void Acquire()
         {

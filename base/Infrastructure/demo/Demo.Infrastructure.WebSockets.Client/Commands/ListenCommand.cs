@@ -5,21 +5,20 @@ using Annium.Core.Primitives.Threading;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging.Abstractions;
-using Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 using Demo.Infrastructure.WebSockets.Domain.Responses.System;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject
+internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<ListenCommand>
 {
     public override string Id { get; } = "listen";
     public override string Description => $"test {Id} flow";
-    public ILogger Logger { get; }
+    public ILogger<ListenCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public ListenCommand(
         IClientFactory clientFactory,
-        ILogger<RequestCommand> logger
+        ILogger<ListenCommand> logger
     )
     {
         _clientFactory = clientFactory;

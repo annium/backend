@@ -9,9 +9,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Extensions.Shell;
 
-internal class ShellInstance : IShellInstance, ILogSubject
+internal class ShellInstance : IShellInstance, ILogSubject<ShellInstance>
 {
-    public ILogger Logger { get; }
+    public ILogger<ShellInstance> Logger { get; }
     private readonly object _consoleLock = new();
     private readonly string _cmd;
     private ProcessStartInfo _startInfo;
@@ -19,7 +19,7 @@ internal class ShellInstance : IShellInstance, ILogSubject
 
     public ShellInstance(
         string cmd,
-        ILogger<Shell> logger
+        ILogger<ShellInstance> logger
     )
     {
         _cmd = cmd;

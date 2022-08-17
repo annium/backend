@@ -9,12 +9,12 @@ namespace Demo.Core.Mediator.Handlers;
 
 internal class ExceptionHandler<TRequest, TResponse> :
     IPipeRequestHandler<TRequest, TRequest, IBooleanResult<TResponse>, IBooleanResult<TResponse>>,
-    ILogSubject
+    ILogSubject<ExceptionHandler<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<ExceptionHandler<TRequest, TResponse>> Logger { get; }
 
     public ExceptionHandler(
-        ILogger<LoggingHandler<TRequest, TResponse>> logger
+        ILogger<ExceptionHandler<TRequest, TResponse>> logger
     )
     {
         Logger = logger;

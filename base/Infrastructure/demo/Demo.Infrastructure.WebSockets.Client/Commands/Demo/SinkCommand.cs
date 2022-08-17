@@ -12,11 +12,11 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ILogSubject
+internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ILogSubject<SinkCommand>
 {
     public override string Id { get; } = "sink";
     public override string Description { get; } = "socket sink (to listen broadcasts)";
-    public ILogger Logger { get; }
+    public ILogger<SinkCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
     private readonly ILoggerFactory _loggerFactory;
 
@@ -27,14 +27,14 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ILogSubject
     {
         _serializer = serializer;
         _loggerFactory = loggerFactory;
-        Logger = loggerFactory.GetLogger<SinkCommand>();
+        Logger = loggerFactory.Get<SinkCommand>();
     }
 
     public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
             new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory.GetLogger<ClientWebSocket>()
+            _loggerFactory
         );
         ws.ConnectionLost += () =>
         {

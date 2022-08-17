@@ -6,11 +6,11 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
 
-internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubject
+internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubject<ExceptionPipeHandlerBase<TRequest, TResponse>>
 {
-    public ILogger Logger { get; }
+    public ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> Logger { get; }
 
-    public ExceptionPipeHandlerBase(
+    protected ExceptionPipeHandlerBase(
         ILogger<ExceptionPipeHandlerBase<TRequest, TResponse>> logger
     )
     {
