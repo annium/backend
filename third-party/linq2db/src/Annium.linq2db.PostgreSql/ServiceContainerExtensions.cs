@@ -46,6 +46,7 @@ public static class ServiceContainerExtensions
                 "Trust Server Certificate=true",
                 "Keepalive=30",
                 "Tcp Keepalive=true",
+                "ConnectionLifetime=180",
                 "MinPoolSize=5",
                 "MaxPoolSize=1000"
             ));
