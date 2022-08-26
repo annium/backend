@@ -43,7 +43,11 @@ public static class ServiceContainerExtensions
                 $"Username={cfg.User}",
                 $"Password={cfg.Password}",
                 "SSL Mode=Prefer",
-                "Trust Server Certificate=true"
+                "Trust Server Certificate=true",
+                "Keepalive=30",
+                "Tcp Keepalive=true",
+                "MinPoolSize=5",
+                "MaxPoolSize=1000"
             ));
 
             var mappingSchema = new MappingSchema();
