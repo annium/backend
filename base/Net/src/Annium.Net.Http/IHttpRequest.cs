@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
+using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Http;
 
@@ -11,7 +12,7 @@ public partial interface IHttpRequest
 {
     HttpMethod Method { get; }
     Uri Uri { get; }
-    IReadOnlyDictionary<string, string> Params { get; }
+    IReadOnlyDictionary<string, StringValues> Params { get; }
     HttpContent? Content { get; }
     bool IsEnsuringSuccess { get; }
     IHttpContentSerializer ContentSerializer { get; }
@@ -21,6 +22,12 @@ public partial interface IHttpRequest
     IHttpRequest UseClient(HttpClient client);
     IHttpRequest With(HttpMethod method, Uri uri);
     IHttpRequest With(HttpMethod method, string uri);
+    IHttpRequest Param<T>(string key, List<T> values);
+    IHttpRequest Param<T>(string key, IList<T> values);
+    IHttpRequest Param<T>(string key, IReadOnlyList<T> values);
+    IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values);
+    IHttpRequest Param<T>(string key, T[] values);
+    IHttpRequest Param<T>(string key, IEnumerable<T> values);
     IHttpRequest Param<T>(string key, T value);
     IHttpRequest Attach(HttpContent content);
     IHttpRequest DontEnsureSuccessStatusCode();

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Net.Base;
+using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Http.Internal;
 
@@ -25,7 +26,7 @@ internal partial class HttpRequest : IHttpRequest
 
     public HttpMethod Method { get; private set; } = HttpMethod.Get;
     public Uri Uri => GetUriFactory().Build();
-    public IReadOnlyDictionary<string, string> Params => _parameters;
+    public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
     public bool IsEnsuringSuccess => _getFailureMessage != null;
     public IHttpContentSerializer ContentSerializer { get; }
@@ -34,7 +35,7 @@ internal partial class HttpRequest : IHttpRequest
     private Uri? _baseUri;
     private string? _uri;
     private readonly HttpRequestHeaders _headers;
-    private readonly Dictionary<string, string> _parameters = new();
+    private readonly Dictionary<string, StringValues> _parameters = new();
     private Func<IHttpResponse, Task<string>>? _getFailureMessage;
     private readonly IList<Middleware> _middlewares = new List<Middleware>();
 
@@ -70,7 +71,7 @@ internal partial class HttpRequest : IHttpRequest
         Uri? baseUri,
         string? uri,
         HttpRequestHeaders headers,
-        IReadOnlyDictionary<string, string> parameters,
+        IReadOnlyDictionary<string, StringValues> parameters,
         HttpContent? content,
         Func<IHttpResponse, Task<string>>? getFailureMessage,
         IList<Middleware> middlewares
@@ -113,6 +114,19 @@ internal partial class HttpRequest : IHttpRequest
     {
         Method = method;
         _uri = uri;
+
+        return this;
+    }
+
+    public IHttpRequest Param<T>(string key, List<T> values) => Param(key, values.AsEnumerable());
+    public IHttpRequest Param<T>(string key, IList<T> values) => Param(key, values.AsEnumerable());
+    public IHttpRequest Param<T>(string key, IReadOnlyList<T> values) => Param(key, values.AsEnumerable());
+    public IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values) => Param(key, values.AsEnumerable());
+    public IHttpRequest Param<T>(string key, T[] values) => Param(key, values.AsEnumerable());
+
+    public IHttpRequest Param<T>(string key, IEnumerable<T> values)
+    {
+        _parameters[key] = new StringValues(values.Where(x => x is not null).Select(x => x.ToString()).ToArray());
 
         return this;
     }
