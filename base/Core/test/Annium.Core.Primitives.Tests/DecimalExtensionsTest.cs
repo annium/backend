@@ -48,4 +48,13 @@ public class DecimalExtensionsTest
         123.21m.CeilTo(7.6m).Is(129.2m);
         123.21m.CeilTo(0.2m).Is(123.4m);
     }
+
+    [Fact]
+    public void Align()
+    {
+        // assert
+        123m.Align().Decimals().Is(0);
+        123.21m.Align().Decimals().Is(2);
+        123.2100m.Align().Decimals().Is(2);
+    }
 }

@@ -123,6 +123,25 @@ public static class DecimalExtensions
     public static decimal CeilTo(this decimal value, decimal step) => value + step - value % step;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public static decimal Align(this decimal value)
+    {
+        while (true)
+        {
+            var bits = decimal.GetBits(value);
+            var scale = (byte) ((bits[3] >> 16) & 0x7F);
+
+            if (bits[0] % 10 != 0 || scale == 0)
+                break;
+
+            var sign = (bits[3] & 0x80000000) != 0;
+
+            value = new decimal(bits[0] / 10, bits[1], bits[2], sign, (byte) (scale - 1));
+        }
+
+        return value;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int Decimals(this decimal value) => decimal.GetBits(value)[3] >> 16;
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
