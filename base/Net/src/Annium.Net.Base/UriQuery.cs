@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Text.Encodings.Web;
 using Annium.Core.Primitives;
 using Microsoft.Extensions.Primitives;
 
@@ -76,7 +78,35 @@ public sealed record UriQuery : IDictionary<string, StringValues>, IReadOnlyDict
         return code;
     }
 
-    public override string ToString() => _data.Count > 0
-        ? '?' + string.Join("&", _data.Select(x => string.Join("&", x.Value.Select(y => $"{x.Key}={y}"))))
-        : string.Empty;
+    public override string ToString()
+    {
+        var builder = new StringBuilder();
+
+        var joiner = '?';
+        foreach (var (key, values) in _data)
+        {
+            if (values.Count == 0)
+            {
+                Append(builder, joiner, key, string.Empty);
+                joiner = '&';
+                continue;
+            }
+
+            foreach (var value in values)
+            {
+                Append(builder, joiner, key, value);
+                joiner = '&';
+            }
+        }
+
+        return builder.ToString();
+
+        static void Append(StringBuilder b, char joiner, string key, string? value)
+        {
+            b.Append(joiner);
+            b.Append(UrlEncoder.Default.Encode(key));
+            b.Append('=');
+            b.Append(UrlEncoder.Default.Encode(value ?? string.Empty));
+        }
+    }
 }

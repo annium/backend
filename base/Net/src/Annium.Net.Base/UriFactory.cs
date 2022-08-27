@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.Extensions.Primitives;
 
@@ -51,6 +52,19 @@ public class UriFactory
         return this;
     }
 
+    public UriFactory Param<T>(string key, List<T> values) => Param(key, values.AsEnumerable());
+    public UriFactory Param<T>(string key, IList<T> values) => Param(key, values.AsEnumerable());
+    public UriFactory Param<T>(string key, IReadOnlyList<T> values) => Param(key, values.AsEnumerable());
+    public UriFactory Param<T>(string key, IReadOnlyCollection<T> values) => Param(key, values.AsEnumerable());
+    public UriFactory Param<T>(string key, T[] values) => Param(key, values.AsEnumerable());
+
+    public UriFactory Param<T>(string key, IEnumerable<T> values)
+    {
+        _query[key] = new StringValues(values.Where(x => x is not null).Select(x => x.ToString()).ToArray());
+
+        return this;
+    }
+
     public UriFactory Param<T>(string key, T value)
     {
         _query[key] = value?.ToString() ?? string.Empty;
@@ -58,6 +72,22 @@ public class UriFactory
         return this;
     }
 
+    // public UriFactory Param(string key, object? value)
+    // {
+    //     if (value is System.Collections.IEnumerable enumerable)
+    //         _query[key] = new StringValues((from object? item in enumerable select item?.ToString() ?? string.Empty).ToArray());
+    //     else
+    //         _query[key] = value?.ToString() ?? string.Empty;
+    //
+    //     return this;
+    // }
+
+    public UriFactory Param(string key, StringValues value)
+    {
+        _query[key] = value;
+
+        return this;
+    }
 
     public UriFactory Clone() => new(_baseUri, _uri, _query);
 

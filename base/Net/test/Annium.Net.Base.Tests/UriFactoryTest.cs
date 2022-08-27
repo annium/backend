@@ -122,11 +122,17 @@ public class UriFactoryTest
     public void Path_QueryParams_Works()
     {
         // act
-        var uri = UriFactory.Base("https://example.com").Path("path/on/server?with=query")
-            .Param("with", "param").Param("int", 20).Param<object?>("null", null).Build().ToString();
+        var uri = UriFactory.Base("https://example.com")
+            .Path("path/on/server?with=query")
+            .Param("with", "param")
+            .Param("int", 20)
+            .Param("null", null as object)
+            .Param("x", new[] { 1, 2 })
+            .Build()
+            .ToString();
 
         // assert
-        uri.IsEqual("https://example.com/path/on/server?with=query&with=param&int=20&null=");
+        uri.IsEqual("https://example.com/path/on/server?with=query&with=param&int=20&null=&x=1&x=2");
     }
 
     [Fact]
