@@ -13,5 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
+        <ProjectReference Include="../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
     </ItemGroup>
 </Project>
