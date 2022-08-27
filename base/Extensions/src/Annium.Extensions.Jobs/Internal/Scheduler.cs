@@ -12,9 +12,8 @@ internal class Scheduler : IScheduler, IAsyncDisposable
 {
     private readonly ITimeProvider _timeProvider;
     private readonly IIntervalResolver _intervalResolver;
-    private readonly CancellationTokenSource _cts = new();
     private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers = new Dictionary<Func<Task>, Func<Instant, bool>>();
-    private readonly Task _runTask;
+    private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
 
     public Scheduler(
         ITimeProvider timeProvider,
@@ -23,7 +22,15 @@ internal class Scheduler : IScheduler, IAsyncDisposable
     {
         _timeProvider = timeProvider;
         _intervalResolver = intervalResolver;
-        _runTask = Task.Run(() => Run(_cts.Token));
+
+        var cts = new CancellationTokenSource();
+
+        _disposable += () =>
+        {
+            cts.Cancel();
+            cts.Dispose();
+        };
+        _disposable += Task.Run(() => Run(cts.Token));
     }
 
     public IDisposable Schedule(Func<Task> handler, string interval)
@@ -55,9 +62,7 @@ internal class Scheduler : IScheduler, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        _cts.Cancel();
-        _cts.Dispose();
+        await _disposable.DisposeAsync();
         _handlers.Clear();
-        await _runTask;
     }
 }
