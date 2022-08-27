@@ -8,12 +8,13 @@ using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal;
 
-internal class Scheduler : IScheduler, IDisposable
+internal class Scheduler : IScheduler, IAsyncDisposable
 {
     private readonly ITimeProvider _timeProvider;
     private readonly IIntervalResolver _intervalResolver;
     private readonly CancellationTokenSource _cts = new();
     private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers = new Dictionary<Func<Task>, Func<Instant, bool>>();
+    private readonly Task _runTask;
 
     public Scheduler(
         ITimeProvider timeProvider,
@@ -22,7 +23,7 @@ internal class Scheduler : IScheduler, IDisposable
     {
         _timeProvider = timeProvider;
         _intervalResolver = intervalResolver;
-        Run(_cts.Token).GetAwaiter();
+        _runTask = Task.Run(() => Run(_cts.Token));
     }
 
     public IDisposable Schedule(Func<Task> handler, string interval)
@@ -52,29 +53,11 @@ internal class Scheduler : IScheduler, IDisposable
         }
     }
 
-    #region IDisposable Support
-
-    private bool _disposedValue; // To detect redundant calls
-
-    protected virtual void Dispose(bool disposing)
+    public async ValueTask DisposeAsync()
     {
-        if (!_disposedValue)
-        {
-            if (disposing)
-            {
-                _cts.Cancel();
-                _cts.Dispose();
-                _handlers.Clear();
-            }
-
-            _disposedValue = true;
-        }
+        _cts.Cancel();
+        _cts.Dispose();
+        _handlers.Clear();
+        await _runTask;
     }
-
-    public void Dispose()
-    {
-        Dispose(true);
-    }
-
-    #endregion
 }
