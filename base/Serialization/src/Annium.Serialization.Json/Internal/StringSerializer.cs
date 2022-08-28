@@ -1,22 +1,18 @@
 using System;
 using System.Text.Json;
 using Annium.Core.Primitives;
-using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;
 
-internal class StringSerializer : ISerializer<string>, ILogSubject<StringSerializer>
+internal class StringSerializer : ISerializer<string>
 {
-    public ILogger<StringSerializer> Logger { get; }
     private readonly JsonSerializerOptions _options;
 
     public StringSerializer(
-        ILogger<StringSerializer> logger,
         OptionsContainer options
     )
     {
-        Logger = logger;
         _options = options.Value;
     }
 
@@ -26,10 +22,13 @@ internal class StringSerializer : ISerializer<string>, ILogSubject<StringSeriali
         {
             return JsonSerializer.Deserialize<T>(value, _options)!;
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to deserialize {value} as {typeof(T).FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, typeof(T).FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to deserialize {value} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -39,10 +38,13 @@ internal class StringSerializer : ISerializer<string>, ILogSubject<StringSeriali
         {
             return JsonSerializer.Deserialize(value, type, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to deserialize {value} as {type.FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", value, type.FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to deserialize {value} as {type.FriendlyName()}", e);
         }
     }
 
@@ -52,10 +54,13 @@ internal class StringSerializer : ISerializer<string>, ILogSubject<StringSeriali
         {
             return JsonSerializer.Serialize(value, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T).FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -65,10 +70,13 @@ internal class StringSerializer : ISerializer<string>, ILogSubject<StringSeriali
         {
             return JsonSerializer.Serialize(value, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value!, value?.GetType().FriendlyName() ?? (object) "null", e);
-            throw;
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
         }
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
-using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;
@@ -29,15 +28,15 @@ internal class JsonSerializersConfigurationBuilder : IJsonSerializersConfigurati
         }
 
         _container.Add<ISerializer<byte[]>>(OptionsResolvingFactory(key,
-                (sp, opts) => new ByteArraySerializer(sp.Resolve<ILogger<ByteArraySerializer>>(), opts)
+                (_, opts) => new ByteArraySerializer(opts)
             ))
             .AsKeyed<ISerializer<byte[]>, SerializerKey>(_fullKey).Singleton();
         _container.Add<ISerializer<ReadOnlyMemory<byte>>>(OptionsResolvingFactory(key,
-                (sp, opts) => new ReadOnlyMemoryByteSerializer(sp.Resolve<ILogger<ReadOnlyMemoryByteSerializer>>(), opts)
+                (_, opts) => new ReadOnlyMemoryByteSerializer(opts)
             ))
             .AsKeyed<ISerializer<ReadOnlyMemory<byte>>, SerializerKey>(_fullKey).Singleton();
         _container.Add<ISerializer<string>>(OptionsResolvingFactory(key,
-                (sp, opts) => new StringSerializer(sp.Resolve<ILogger<StringSerializer>>(), opts)
+                (_, opts) => new StringSerializer(opts)
             ))
             .AsKeyed<ISerializer<string>, SerializerKey>(_fullKey).Singleton();
 

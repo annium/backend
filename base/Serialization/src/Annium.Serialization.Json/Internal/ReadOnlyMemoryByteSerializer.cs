@@ -2,22 +2,18 @@ using System;
 using System.Text;
 using System.Text.Json;
 using Annium.Core.Primitives;
-using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;
 
-internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSubject<ReadOnlyMemoryByteSerializer>
+internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>
 {
-    public ILogger<ReadOnlyMemoryByteSerializer> Logger { get; }
     private readonly JsonSerializerOptions _options;
 
     public ReadOnlyMemoryByteSerializer(
-        ILogger<ReadOnlyMemoryByteSerializer> logger,
         OptionsContainer options
     )
     {
-        Logger = logger;
         _options = options.Value;
     }
 
@@ -27,10 +23,13 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>,
         {
             return JsonSerializer.Deserialize<T>(value.Span, _options)!;
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {typeof(T).FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value.ToArray()), typeof(T).FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -40,10 +39,13 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>,
         {
             return JsonSerializer.Deserialize(value.Span, type, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {type.FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value.ToArray()), type.FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {type.FriendlyName()}", e);
         }
     }
 
@@ -53,10 +55,13 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>,
         {
             return JsonSerializer.SerializeToUtf8Bytes(value, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T).FriendlyName(), e);
-            throw;
+            throw new JsonException($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -66,10 +71,13 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>,
         {
             return JsonSerializer.SerializeToUtf8Bytes(value, _options);
         }
+        catch (JsonException e)
+        {
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value!, value?.GetType().FriendlyName() ?? (object) "null", e);
-            throw;
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
         }
     }
 }
