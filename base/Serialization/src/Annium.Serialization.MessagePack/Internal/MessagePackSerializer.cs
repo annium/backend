@@ -1,23 +1,13 @@
 using System;
 using System.Text;
 using Annium.Core.Primitives;
-using Annium.Logging.Abstractions;
 using Annium.Serialization.Abstractions;
 using MessagePack;
 
 namespace Annium.Serialization.MessagePack.Internal;
 
-internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSubject<MessagePackSerializer>
+internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>
 {
-    public ILogger<MessagePackSerializer> Logger { get; }
-
-    public MessagePackSerializer(
-        ILogger<MessagePackSerializer> logger
-    )
-    {
-        Logger = logger;
-    }
-
     private readonly MessagePackSerializerOptions _opts =
         MessagePackSerializerOptions.Standard.WithCompression(MessagePackCompression.Lz4BlockArray);
 
@@ -27,10 +17,13 @@ internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSu
         {
             return global::MessagePack.MessagePackSerializer.Deserialize<T>(value, _opts);
         }
+        catch (MessagePackSerializationException e)
+        {
+            throw new Exception($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {typeof(T).FriendlyName()}", e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value.ToArray()), typeof(T).FriendlyName(), e);
-            throw;
+            throw new Exception($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -40,10 +33,13 @@ internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSu
         {
             return global::MessagePack.MessagePackSerializer.Deserialize(type, value, _opts);
         }
+        catch (MessagePackSerializationException e)
+        {
+            throw new Exception($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {type.FriendlyName()}", e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to deserialize {value} as {type} with {error}", Encoding.UTF8.GetString(value.ToArray()), type.FriendlyName(), e);
-            throw;
+            throw new Exception($"Failed to deserialize {Encoding.UTF8.GetString(value.ToArray())} as {type.FriendlyName()}", e);
         }
     }
 
@@ -53,10 +49,13 @@ internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSu
         {
             return global::MessagePack.MessagePackSerializer.Serialize(value, _opts);
         }
+        catch (MessagePackSerializationException e)
+        {
+            throw new MessagePackSerializationException($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value?.ToString() ?? (object) "null", typeof(T).FriendlyName(), e);
-            throw;
+            throw new Exception($"Failed to serialize {value} as {typeof(T).FriendlyName()}", e);
         }
     }
 
@@ -66,10 +65,13 @@ internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>, ILogSu
         {
             return global::MessagePack.MessagePackSerializer.Serialize(value, _opts);
         }
+        catch (MessagePackSerializationException e)
+        {
+            throw new MessagePackSerializationException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
+        }
         catch (Exception e)
         {
-            this.Log().Error("Failed to serialize {value} as {type} with {error}", value!, value?.GetType().FriendlyName() ?? (object) "null", e);
-            throw;
+            throw new Exception($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
         }
     }
 }
