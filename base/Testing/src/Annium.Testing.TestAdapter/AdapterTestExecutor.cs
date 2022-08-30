@@ -29,8 +29,16 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         _testResultConverter = provider.Resolve<TestResultConverter>();
     }
 
-    public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
+    public void RunTests(
+        IEnumerable<string>? sources,
+        IRunContext? runContext,
+        IFrameworkHandle? frameworkHandle
+    )
     {
+        if (sources == null) throw new ArgumentNullException(nameof(sources));
+        if (runContext == null) throw new ArgumentNullException(nameof(runContext));
+        if (frameworkHandle == null) throw new ArgumentNullException(nameof(frameworkHandle));
+
         if (runContext.IsBeingDebugged)
             Debugger.Launch();
 
@@ -42,8 +50,15 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         Task.WhenAll(sources.Select(source => RunAssemblyTestsAsync(Source.Resolve(source), frameworkHandle))).Wait();
     }
 
-    public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
+    public void RunTests(
+        IEnumerable<TestCase>? tests,
+        IRunContext? runContext,
+        IFrameworkHandle? frameworkHandle
+    )
     {
+        if (tests == null) throw new ArgumentNullException(nameof(tests));
+        if (runContext == null) throw new ArgumentNullException(nameof(runContext));
+        if (frameworkHandle == null) throw new ArgumentNullException(nameof(frameworkHandle));
         var testSet = tests.ToArray();
 
         if (runContext.IsBeingDebugged)
@@ -55,8 +70,9 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         this.Log().Debug("Start execution.");
 
         Task.WhenAll(testSet.Select(test => test.Source).Distinct().Select(
-            source => RunAssemblyTestsAsync(Source.Resolve(source), testSet.Where(test => test.Source == source), frameworkHandle)
-        ));
+                source => RunAssemblyTestsAsync(Source.Resolve(source), testSet.Where(test => test.Source == source), frameworkHandle)
+            )
+        );
     }
 
     public void Cancel()
@@ -73,7 +89,11 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         await RunTestsAsync(assembly, tests, frameworkHandle);
     }
 
-    private Task RunAssemblyTestsAsync(Assembly assembly, IEnumerable<TestCase> testCases, IFrameworkHandle frameworkHandle)
+    private Task RunAssemblyTestsAsync(
+        Assembly assembly,
+        IEnumerable<TestCase> testCases,
+        IFrameworkHandle frameworkHandle
+    )
     {
         var testCasesSet = testCases.ToArray();
 
@@ -84,7 +104,10 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         return RunTestsAsync(assembly, tests, frameworkHandle);
     }
 
-    private Task RunTestsAsync(Assembly assembly, IEnumerable<Test> tests, IFrameworkHandle frameworkHandle)
+    private Task RunTestsAsync(Assembly assembly,
+        IEnumerable<Test> tests,
+        IFrameworkHandle frameworkHandle
+    )
     {
         var cfg = _provider!.Resolve<TestingConfiguration>();
         var testSet = tests.FilterMask(cfg.Filter).ToArray();

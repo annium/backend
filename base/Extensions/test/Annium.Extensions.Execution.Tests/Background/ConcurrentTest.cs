@@ -52,7 +52,7 @@ public class ConcurrentTest
         Console.WriteLine($"done {index}");
     }
 
-    private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
 
     [Fact]
     public async Task ConcurrentExecutor_CompletesOnFailure()

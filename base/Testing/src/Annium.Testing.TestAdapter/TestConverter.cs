@@ -20,7 +20,7 @@ public class TestConverter
         var testCase = new TestCase
         {
             ExecutorUri = _executorUri,
-            Source = assembly.FullName,
+            Source = assembly.FullName ?? string.Empty,
             CodeFilePath = test.File,
             LineNumber = test.Line,
             FullyQualifiedName = test.FullyQualifiedName,

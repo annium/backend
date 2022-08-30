@@ -16,6 +16,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="dbup-sqlite" Version="4.6.0" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.6" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.8" />
     </ItemGroup>
 </Project>

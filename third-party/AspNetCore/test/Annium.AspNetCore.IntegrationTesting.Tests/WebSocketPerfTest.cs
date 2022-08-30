@@ -173,5 +173,5 @@ public class WebSocketPerfTest : IntegrationTestBase
         Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - done");
     }
 
-    private static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 100).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 100).Select(x => new object[] { x });
 }

@@ -126,7 +126,7 @@ internal partial class HttpRequest : IHttpRequest
 
     public IHttpRequest Param<T>(string key, IEnumerable<T> values)
     {
-        _parameters[key] = new StringValues(values.Where(x => x is not null).Select(x => x.ToString()).ToArray());
+        _parameters[key] = new StringValues(values.Where(x => x is not null).Select(x => x!.ToString()).ToArray());
 
         return this;
     }

@@ -60,7 +60,7 @@ public class UriFactory
 
     public UriFactory Param<T>(string key, IEnumerable<T> values)
     {
-        _query[key] = new StringValues(values.Where(x => x is not null).Select(x => x.ToString()).ToArray());
+        _query[key] = new StringValues(values.Where(x => x is not null).Select(x => x!.ToString()).ToArray());
 
         return this;
     }

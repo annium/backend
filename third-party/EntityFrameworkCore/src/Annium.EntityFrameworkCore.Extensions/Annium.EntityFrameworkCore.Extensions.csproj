@@ -16,6 +16,6 @@
         <ProjectReference Include="../../../Sqlite/src/Annium.Sqlite.Extensions/Annium.Sqlite.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.8" />
     </ItemGroup>
 </Project>
