@@ -13,6 +13,12 @@ public sealed record ManagedValueRange<T>(
     private T _start = _start;
     private T _end = _end;
 
+    public void Set(T start, T end)
+    {
+        _start = start;
+        _end = end;
+    }
+
     public void SetStart(T start) => _start = start;
     public void SetEnd(T end) => _end = end;
 
