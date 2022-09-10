@@ -24,6 +24,7 @@ internal static class AssembliesCollector
         var matchedAssemblies = new HashSet<Assembly>();
 
         // collect assemblies, already residing in AppDomain
+        Log.Trace("register AppDomain assemblies");
         foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             if (domainAssembly.FullName != null! && !allAssemblies.ContainsKey(domainAssembly.FullName))
             {
@@ -33,6 +34,7 @@ internal static class AssembliesCollector
 
         var resolveAssembly = LoadAssembly(allAssemblies);
 
+        Log.Trace($"collect {assembly} dependencies");
         Collect(
             assembly.GetName(),
             resolveAssembly,
@@ -65,7 +67,7 @@ internal static class AssembliesCollector
         var autoScanned = assembly.GetCustomAttributes()
             .SingleOrDefault(x => x.GetType().GetId() == AutoScannedTypeId);
         if (autoScanned is null)
-            Log.Trace($"{name.Name} - not marked as autoscanned");
+            Log.Trace($"{name.Name} - not marked as auto-scanned");
         else
         {
             Log.Trace($"{name.Name} - matched");
@@ -90,7 +92,7 @@ internal static class AssembliesCollector
         if (assemblies.TryGetValue(name.FullName, out var asm))
             return asm;
 
-        // Log.Trace($"load {name}");
+        Log.Trace($"load {name}");
         return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
     };
 }
