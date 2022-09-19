@@ -35,4 +35,18 @@ internal static class JsonSerializerOptionsExtensions
 
         return opts;
     }
+
+    public static JsonSerializerOptions Indented(this JsonSerializerOptions opts)
+    {
+        opts.WriteIndented = true;
+
+        return opts;
+    }
+
+    public static JsonSerializerOptions NotIndented(this JsonSerializerOptions opts)
+    {
+        opts.WriteIndented = false;
+
+        return opts;
+    }
 }
