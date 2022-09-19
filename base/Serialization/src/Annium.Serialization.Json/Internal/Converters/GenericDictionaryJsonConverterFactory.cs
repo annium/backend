@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
@@ -8,19 +9,23 @@ namespace Annium.Serialization.Json.Internal.Converters;
 
 internal class GenericDictionaryJsonConverterFactory : JsonConverterFactory
 {
+    private static readonly ConcurrentDictionary<Type, (Type, Type)?> TypeResolutions = new();
+
     public override bool CanConvert(Type objectType)
     {
-        return ResolveKeyValueTypes(objectType).Any();
+        return GetKeyValueType(objectType) is not null;
     }
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        var (key, value) = ResolveKeyValueTypes(typeToConvert).Single();
+        var (key, value) = GetKeyValueType(typeToConvert)!.Value;
 
         return (JsonConverter) Activator.CreateInstance(typeof(GenericDictionaryJsonConverter<,>).MakeGenericType(key, value))!;
     }
 
-    private IEnumerable<(Type, Type)> ResolveKeyValueTypes(Type type) => type
+    private static (Type, Type)? GetKeyValueType(Type type) => TypeResolutions.GetOrAdd(type, ResolveKeyValueType);
+
+    private static (Type, Type)? ResolveKeyValueType(Type type) => type
         .GetInterfaces()
         .Select<Type, (Type, Type)?>(x =>
         {
@@ -36,5 +41,5 @@ internal class GenericDictionaryJsonConverterFactory : JsonConverterFactory
 
             return null;
         })
-        .OfType<(Type, Type)>();
+        .SingleOrDefault(x => x is not null);
 }
