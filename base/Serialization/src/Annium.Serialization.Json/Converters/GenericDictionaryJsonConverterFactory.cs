@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium.Serialization.Json.Internal.Converters;
 
-namespace Annium.Serialization.Json.Internal.Converters;
+namespace Annium.Serialization.Json.Converters;
 
-internal class GenericDictionaryJsonConverterFactory : JsonConverterFactory
+public class GenericDictionaryJsonConverterFactory : JsonConverterFactory
 {
     private static readonly ConcurrentDictionary<Type, (Type, Type)?> TypeResolutions = new();
 

@@ -9,10 +9,11 @@ using System.Text.Json.Serialization;
 using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Serialization.Abstractions.Attributes;
+using Annium.Serialization.Json.Internal.Converters;
 
-namespace Annium.Serialization.Json.Internal.Converters;
+namespace Annium.Serialization.Json.Converters;
 
-internal class ConstructorJsonConverterFactory : JsonConverterFactory
+public class ConstructorJsonConverterFactory : JsonConverterFactory
 {
     private readonly ConcurrentDictionary<Type, ConstructorJsonConverterConfiguration?> _configurations = new();
 

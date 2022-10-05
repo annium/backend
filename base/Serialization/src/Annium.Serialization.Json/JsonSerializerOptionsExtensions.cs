@@ -1,8 +1,12 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
-using Annium.Serialization.Json.Internal.Converters;
+using Annium.Serialization.Json.Converters;
 using Annium.Serialization.Json.Internal.Options;
 
 namespace Annium.Core.DependencyInjection;
@@ -42,5 +46,46 @@ public static class JsonSerializerOptionsExtensions
         options.PropertyNamingPolicy = policy;
 
         return options;
+    }
+
+    private static readonly IReadOnlyCollection<PropertyInfo> CloneableProperties = typeof(JsonSerializerOptions)
+        .GetProperties(BindingFlags.Public | BindingFlags.Instance)
+        .Where(x => x.PropertyType.GetTargetImplementation(typeof(IEnumerable<>)) is null && x.CanRead && x.CanWrite)
+        .ToArray();
+
+    public static JsonSerializerOptions Clone(this JsonSerializerOptions opts)
+    {
+        var clone = new JsonSerializerOptions();
+
+        foreach (var converter in opts.Converters)
+            clone.Converters.Add(converter);
+
+        foreach (var p in CloneableProperties)
+            p.SetValue(clone, p.GetValue(opts));
+
+        return clone;
+    }
+
+    public static JsonSerializerOptions RemoveConverter<T>(this JsonSerializerOptions opts)
+        where T : JsonConverter
+    {
+        var factory = opts.Converters.Single(x => x.GetType() == typeof(T));
+        opts.Converters.Remove(factory);
+
+        return opts;
+    }
+
+    public static JsonSerializerOptions Indented(this JsonSerializerOptions opts)
+    {
+        opts.WriteIndented = true;
+
+        return opts;
+    }
+
+    public static JsonSerializerOptions NotIndented(this JsonSerializerOptions opts)
+    {
+        opts.WriteIndented = false;
+
+        return opts;
     }
 }

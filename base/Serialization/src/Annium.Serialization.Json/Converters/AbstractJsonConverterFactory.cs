@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Runtime.Types;
+using Annium.Serialization.Json.Internal.Converters;
 
-namespace Annium.Serialization.Json.Internal.Converters;
+namespace Annium.Serialization.Json.Converters;
 
-internal class AbstractJsonConverterFactory : JsonConverterFactory
+public class AbstractJsonConverterFactory : JsonConverterFactory
 {
     private readonly ITypeManager _typeManager;
 

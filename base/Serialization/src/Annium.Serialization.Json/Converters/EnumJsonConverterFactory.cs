@@ -3,10 +3,11 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Serialization.Abstractions.Attributes;
+using Annium.Serialization.Json.Internal.Converters;
 
-namespace Annium.Serialization.Json.Internal.Converters;
+namespace Annium.Serialization.Json.Converters;
 
-internal class EnumJsonConverterFactory : JsonConverterFactory
+public class EnumJsonConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
     {

@@ -3,10 +3,11 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Data.Models;
+using Annium.Serialization.Json.Internal.Converters;
 
-namespace Annium.Serialization.Json.Internal.Converters;
+namespace Annium.Serialization.Json.Converters;
 
-internal class MaterializableJsonConverterFactory : JsonConverterFactory
+public class MaterializableJsonConverterFactory : JsonConverterFactory
 {
     public override bool CanConvert(Type typeToConvert)
     {
