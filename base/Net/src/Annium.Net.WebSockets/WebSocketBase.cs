@@ -129,6 +129,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             }
         });
 
+        await Task.Delay(5, CancellationToken.None);
         await Wait.UntilAsync(() => _keepAliveMonitor != default!, CancellationToken.None, pollDelay: 5);
 
         while (true)
