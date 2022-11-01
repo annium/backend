@@ -118,7 +118,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     private IObservable<SocketMessage> CreateSocketObservable(CancellationToken ct) => ObservableExt.StaticSyncInstance<SocketMessage>(async ctx =>
     {
-        await using var ctRegistration = ctx.Ct.Register(() =>
+        await using var _ = ctx.Ct.Register(() =>
         {
             if (_socketTcs.Task.IsCompleted)
                 this.Log().Trace("observable disposing - socket tcs already released");
@@ -129,8 +129,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             }
         });
 
-        await Task.Delay(5, CancellationToken.None);
-        await Wait.UntilAsync(() => _keepAliveMonitor != default!, CancellationToken.None, pollDelay: 5);
+        await Wait.UntilAsync(() => _keepAliveMonitor != default! && Logger != default!, CancellationToken.None, pollDelay: 5);
 
         while (true)
         {
