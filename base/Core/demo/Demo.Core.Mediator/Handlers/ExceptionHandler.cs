@@ -36,7 +36,7 @@ internal class ExceptionHandler<TRequest, TResponse> :
         catch (Exception exception)
         {
             this.Log().Trace($"Request {typeof(TRequest).Name} failed with {exception}");
-            return Result.Failure(default(TResponse) !).Error(exception.Message);
+            return Result.Failure(default(TResponse)!).Error(exception.Message);
         }
     }
 }

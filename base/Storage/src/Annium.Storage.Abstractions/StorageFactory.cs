@@ -26,7 +26,7 @@ internal class StorageFactory : IStorageFactory
 
         try
         {
-            return (IStorage) factory.DynamicInvoke(configuration) !;
+            return (IStorage) factory.DynamicInvoke(configuration)!;
         }
         catch (TargetInvocationException ex)
         {

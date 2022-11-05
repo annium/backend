@@ -31,7 +31,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             _labeledErrors.Clear();
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Error(string error)
@@ -39,7 +39,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
         lock (_locker)
             _plainErrors.Add(error);
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Error(string label, string error)
@@ -51,7 +51,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             _labeledErrors[label].Add(error);
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Errors(params string[] errors)
@@ -60,7 +60,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             foreach (var error in errors)
                 _plainErrors.Add(error);
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Errors(IReadOnlyCollection<string> errors)
@@ -69,7 +69,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             foreach (var error in errors)
                 _plainErrors.Add(error);
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Errors(params ValueTuple<string, IReadOnlyCollection<string>>[] errors)
@@ -85,7 +85,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             }
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Errors(IReadOnlyCollection<KeyValuePair<string, IReadOnlyCollection<string>>> errors)
@@ -101,7 +101,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             }
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Join(params IResultBase[] results)
@@ -112,7 +112,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             Errors(result.LabeledErrors);
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     public T Join(IReadOnlyCollection<IResultBase> results)
@@ -123,7 +123,7 @@ internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<
             Errors(result.LabeledErrors);
         }
 
-        return (this as T) !;
+        return (this as T)!;
     }
 
     protected void CloneTo(T clone)

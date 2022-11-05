@@ -33,7 +33,7 @@ internal class ValidationHandler<TRequest, TResponse> :
     )
     {
         this.Log().Trace($"Start {typeof(TRequest).Name} validation");
-        var result = Result.Failure(default(TResponse) !)
+        var result = Result.Failure(default(TResponse)!)
             .Join(await Task.WhenAll(_validators.Select(v => v.ValidateAsync(request))));
         this.Log().Trace($"Status of {typeof(TRequest).Name} validation: {result.IsFailure}");
         if (result.HasErrors)

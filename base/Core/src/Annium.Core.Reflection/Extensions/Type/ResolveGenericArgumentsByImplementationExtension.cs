@@ -398,8 +398,8 @@ public static class ResolveGenericArgumentsByImplementationExtension
         Type[] targetArgs;
         if (target.IsArray)
         {
-            sourceArgs = new[] { source.GetElementType() ! };
-            targetArgs = new[] { target.GetElementType() ! };
+            sourceArgs = new[] { source.GetElementType()! };
+            targetArgs = new[] { target.GetElementType()! };
         }
         else if (target.IsGenericType)
         {
