@@ -25,7 +25,7 @@ internal partial class HttpRequest : IHttpRequest
     private static readonly HttpClient DefaultClient = new();
 
     public HttpMethod Method { get; private set; } = HttpMethod.Get;
-    public Uri Uri => GetUriFactory().Build();
+    public Uri Uri => BuildUri();
     public HttpRequestHeaders Headers => _headers;
     public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
