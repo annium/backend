@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
@@ -12,6 +13,7 @@ public partial interface IHttpRequest
 {
     HttpMethod Method { get; }
     Uri Uri { get; }
+    HttpRequestHeaders Headers { get; }
     IReadOnlyDictionary<string, StringValues> Params { get; }
     HttpContent? Content { get; }
     bool IsEnsuringSuccess { get; }
