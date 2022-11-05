@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.Encodings.Web;
 using Annium.Core.Primitives;
 using Microsoft.Extensions.Primitives;
 
@@ -104,9 +103,9 @@ public sealed record UriQuery : IDictionary<string, StringValues>, IReadOnlyDict
         static void Append(StringBuilder b, char joiner, string key, string? value)
         {
             b.Append(joiner);
-            b.Append(UrlEncoder.Default.Encode(key));
+            b.Append(Uri.EscapeDataString(key));
             b.Append('=');
-            b.Append(UrlEncoder.Default.Encode(value ?? string.Empty));
+            b.Append(Uri.EscapeDataString(value ?? string.Empty));
         }
     }
 }

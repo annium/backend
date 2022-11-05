@@ -17,11 +17,11 @@ public class UriQueryTest
         var q4 = UriQuery.Parse("a=1&b=2,3");
 
         // assert
-        qn.ToString().IsEqual("");
-        q1.ToString().IsEqual("");
-        q2.ToString().IsEqual("?value=");
-        q3.ToString().IsEqual("?a=1&b=2&b=3");
-        q4.ToString().IsEqual("?a=1&b=2,3");
+        qn.ToString().Is("");
+        q1.ToString().Is("");
+        q2.ToString().Is("?value=");
+        q3.ToString().Is("?a=1&b=2&b=3");
+        q4.ToString().Is("?a=1&b=2%2C3");
     }
 
     [Fact]
