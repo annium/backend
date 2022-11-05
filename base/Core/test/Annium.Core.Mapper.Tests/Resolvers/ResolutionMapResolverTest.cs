@@ -21,8 +21,8 @@ public class ResolutionMapResolverTest
 
         // assert
         result.Has(2);
-        result.At(0).As<ImageModel>().Image.IsEqual("img");
-        result.At(1).As<LinkModel>().Link.IsEqual("lnk");
+        result.At(0).As<ImageModel>().Image.Is("img");
+        result.At(1).As<LinkModel>().Link.Is("lnk");
     }
 
     [Fact]
@@ -37,8 +37,8 @@ public class ResolutionMapResolverTest
 
         // assert
         result.Has(2);
-        result.At(0).As<ImageMod>().Data.IsEqual("img");
-        result.At(1).As<LinkMod>().Data.IsEqual("lnk");
+        result.At(0).As<ImageMod>().Data.Is("img");
+        result.At(1).As<LinkMod>().Data.Is("lnk");
     }
 
     private IMapper GetMapper() => new ServiceContainer()

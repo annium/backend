@@ -24,9 +24,9 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-01T22:04:05 America/New_York (-05)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.IsEqual(obj.ZonedDateTime);
-        obj.ZonedDateTime.IsEqual(dateTime);
-        obj.ZonedDateTime.Zone.IsEqual(EasternTimezone);
+        obj.ZonedDateTime.Is(obj.ZonedDateTime);
+        obj.ZonedDateTime.Is(dateTime);
+        obj.ZonedDateTime.Zone.Is(EasternTimezone);
     }
 
     [Fact]
@@ -37,9 +37,9 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-02T03:04:05 UTC (+00)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.IsEqual(obj.ZonedDateTime);
-        obj.ZonedDateTime.IsEqual(dateTime);
-        obj.ZonedDateTime.Zone.IsEqual(DateTimeZone.Utc);
+        obj.ZonedDateTime.Is(obj.ZonedDateTime);
+        obj.ZonedDateTime.Is(dateTime);
+        obj.ZonedDateTime.Zone.Is(DateTimeZone.Utc);
     }
 
     [Fact]

@@ -22,8 +22,8 @@ public class StorageTest
         var ru = localizer["test"];
 
         // assert
-        en.IsEqual("demo");
-        ru.IsEqual("демо");
+        en.Is("demo");
+        ru.Is("демо");
     }
 
     private ILocalizer<StorageTest> GetLocalizer()

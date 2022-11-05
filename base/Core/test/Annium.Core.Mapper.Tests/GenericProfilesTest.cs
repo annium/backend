@@ -22,8 +22,8 @@ public class GenericProfilesTest
         var two = mapper.Map<D>(c);
 
         // assert
-        one.LowerName.IsEqual("mike");
-        two.LowerName.IsEqual("donny");
+        one.LowerName.Is("mike");
+        two.LowerName.Is("donny");
     }
 
     [Fact]

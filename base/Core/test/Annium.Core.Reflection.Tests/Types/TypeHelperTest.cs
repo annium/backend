@@ -19,7 +19,7 @@ public class TypeHelperTest
         expressions.Has(2);
         var getOne = expressions.At(0).Compile();
         var result = getOne.DynamicInvoke(data);
-        result.IsEqual(data.InnerOne.One);
+        result.Is(data.InnerOne.One);
         var getTwo = expressions.At(1).Compile();
         result = getTwo.DynamicInvoke(data);
         result.IsEqual(data.InnerTwo);
@@ -38,7 +38,7 @@ public class TypeHelperTest
         expressions.Has(1);
         var getOne = expressions.At(0).Compile();
         var result = getOne.DynamicInvoke(data);
-        result.IsEqual(data.InnerOne.One);
+        result.Is(data.InnerOne.One);
     }
 
     [Fact]
@@ -49,22 +49,22 @@ public class TypeHelperTest
 
         // assert
         properties.Has(2);
-        properties.At(0).IsEqual(typeof(A).GetProperty(nameof(A.One)));
-        properties.At(1).IsEqual(typeof(B).GetProperty(nameof(B.InnerTwo)));
+        properties.At(0).Is(typeof(A).GetProperty(nameof(A.One)));
+        properties.At(1).Is(typeof(B).GetProperty(nameof(B.InnerTwo)));
     }
 
     [Fact]
     public void ResolveProperty_Unary_Works()
     {
         // assert
-        TypeHelper.ResolveProperty<A>(x => x.Two).IsEqual(typeof(A).GetProperty(nameof(A.Two)));
+        TypeHelper.ResolveProperty<A>(x => x.Two).Is(typeof(A).GetProperty(nameof(A.Two)));
     }
 
     [Fact]
     public void ResolveProperty_Inner_Works()
     {
         // assert
-        TypeHelper.ResolveProperty<B>(x => x.InnerTwo.Two).IsEqual(typeof(A).GetProperty(nameof(A.Two)));
+        TypeHelper.ResolveProperty<B>(x => x.InnerTwo.Two).Is(typeof(A).GetProperty(nameof(A.Two)));
     }
 
     [Fact]

@@ -35,7 +35,7 @@ public class TrackingWeakReferenceTest
         GC.WaitForPendingFinalizers();
 
         // assert
-        counter.IsEqual(1);
+        counter.Is(1);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]

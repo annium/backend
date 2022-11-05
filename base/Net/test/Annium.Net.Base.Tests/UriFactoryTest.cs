@@ -13,7 +13,7 @@ public class UriFactoryTest
         var uri = UriFactory.Base(new Uri("https://example.com")).Build();
 
         // assert
-        uri.ToString().IsEqual("https://example.com/");
+        uri.ToString().Is("https://example.com/");
     }
 
     [Fact]
@@ -30,7 +30,7 @@ public class UriFactoryTest
         var uri = UriFactory.Base("https://example.com").Build();
 
         // assert
-        uri.ToString().IsEqual("https://example.com/");
+        uri.ToString().Is("https://example.com/");
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class UriFactoryTest
         var uri = UriFactory.Base().Path("https://example.com").Build();
 
         // assert
-        uri.ToString().IsEqual("https://example.com/");
+        uri.ToString().Is("https://example.com/");
     }
 
     [Fact]
@@ -75,13 +75,13 @@ public class UriFactoryTest
     public void Path_Relative_Works()
     {
         UriFactory.Base("https://example.com/some").Path("/path/on/server").Build().ToString()
-            .IsEqual("https://example.com/path/on/server");
+            .Is("https://example.com/path/on/server");
         UriFactory.Base("https://example.com/some").Path("path/on/server").Build().ToString()
-            .IsEqual("https://example.com/some/path/on/server");
+            .Is("https://example.com/some/path/on/server");
         UriFactory.Base("https://example.com").Path("/path/on/server").Build().ToString()
-            .IsEqual("https://example.com/path/on/server");
+            .Is("https://example.com/path/on/server");
         UriFactory.Base("https://example.com").Path("path/on/server").Build().ToString()
-            .IsEqual("https://example.com/path/on/server");
+            .Is("https://example.com/path/on/server");
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class UriFactoryTest
         var uri = UriFactory.Base("https://example.com").Path("/").Build().ToString();
 
         // assert
-        uri.IsEqual("https://example.com/");
+        uri.Is("https://example.com/");
     }
 
     [Fact]
@@ -99,13 +99,13 @@ public class UriFactoryTest
     {
         // assert
         UriFactory.Base("https://example.com:443/").Path("/path/on/server").Build().ToString()
-            .IsEqual("https://example.com/path/on/server");
+            .Is("https://example.com/path/on/server");
         UriFactory.Base("https://example.com:8443/").Path("/path/on/server").Build().ToString()
-            .IsEqual("https://example.com:8443/path/on/server");
+            .Is("https://example.com:8443/path/on/server");
         UriFactory.Base("https://example.com:443/").Path("path/on/server").Build().ToString()
-            .IsEqual("https://example.com/path/on/server");
+            .Is("https://example.com/path/on/server");
         UriFactory.Base("https://example.com:8443/").Path("path/on/server").Build().ToString()
-            .IsEqual("https://example.com:8443/path/on/server");
+            .Is("https://example.com:8443/path/on/server");
     }
 
     [Fact]
@@ -115,7 +115,7 @@ public class UriFactoryTest
         var uri = UriFactory.Base("https://example.com").Path("path/on/server?with=query").Build().ToString();
 
         // assert
-        uri.IsEqual("https://example.com/path/on/server?with=query");
+        uri.Is("https://example.com/path/on/server?with=query");
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class UriFactoryTest
             .ToString();
 
         // assert
-        uri.IsEqual("https://example.com/path/on/server?with=query&with=param&int=20&null=&x=1&x=2");
+        uri.Is("https://example.com/path/on/server?with=query&with=param&int=20&null=&x=1&x=2");
     }
 
     [Fact]
@@ -143,6 +143,6 @@ public class UriFactoryTest
             .Param("with", "param").Param("int", 20).Clone().Build().ToString();
 
         // assert
-        uri.IsEqual("https://example.com/path/on/server?with=query&with=param&int=20");
+        uri.Is("https://example.com/path/on/server?with=query&with=param&int=20");
     }
 }

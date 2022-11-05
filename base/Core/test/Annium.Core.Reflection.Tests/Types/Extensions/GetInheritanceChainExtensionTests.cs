@@ -10,7 +10,7 @@ public class GetInheritanceChainExtensionTests
     public void GetInheritanceChain_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.GetInheritanceChain()).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.GetInheritanceChain()).Throws<ArgumentNullException>();
     }
 
     [Fact]
@@ -18,9 +18,9 @@ public class GetInheritanceChainExtensionTests
     {
         //assert
         typeof(object).GetInheritanceChain().IsEmpty();
-        typeof(object).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(object));
-        typeof(object).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(object));
-        typeof(object).GetInheritanceChain(self: true, root: true).Has(1).At(0).IsEqual(typeof(object));
+        typeof(object).GetInheritanceChain(self: true).Has(1).At(0).Is(typeof(object));
+        typeof(object).GetInheritanceChain(root: true).Has(1).At(0).Is(typeof(object));
+        typeof(object).GetInheritanceChain(self: true, root: true).Has(1).At(0).Is(typeof(object));
     }
 
     [Fact]
@@ -28,8 +28,8 @@ public class GetInheritanceChainExtensionTests
     {
         //assert
         typeof(Sample).GetInheritanceChain().IsEmpty();
-        typeof(Sample).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(Sample));
-        typeof(Sample).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(object));
+        typeof(Sample).GetInheritanceChain(self: true).Has(1).At(0).Is(typeof(Sample));
+        typeof(Sample).GetInheritanceChain(root: true).Has(1).At(0).Is(typeof(object));
         typeof(Sample).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new[] { typeof(Sample), typeof(object) });
     }
 
@@ -37,7 +37,7 @@ public class GetInheritanceChainExtensionTests
     public void GetInheritanceChain_Class_Inherited_Works()
     {
         //assert
-        typeof(Derived).GetInheritanceChain().Has(1).At(0).IsEqual(typeof(Sample));
+        typeof(Derived).GetInheritanceChain().Has(1).At(0).Is(typeof(Sample));
         typeof(Derived).GetInheritanceChain(self: true).Has(2).IsEqual(new[] { typeof(Derived), typeof(Sample) });
         typeof(Derived).GetInheritanceChain(root: true).Has(2).IsEqual(new[] { typeof(Sample), typeof(object) });
         typeof(Derived).GetInheritanceChain(self: true, root: true).Has(3).IsEqual(new[] { typeof(Derived), typeof(Sample), typeof(object) });
@@ -48,9 +48,9 @@ public class GetInheritanceChainExtensionTests
     {
         //assert
         typeof(ValueType).GetInheritanceChain().IsEmpty();
-        typeof(ValueType).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(ValueType));
-        typeof(ValueType).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(ValueType));
-        typeof(ValueType).GetInheritanceChain(self: true, root: true).Has(1).At(0).IsEqual(typeof(ValueType));
+        typeof(ValueType).GetInheritanceChain(self: true).Has(1).At(0).Is(typeof(ValueType));
+        typeof(ValueType).GetInheritanceChain(root: true).Has(1).At(0).Is(typeof(ValueType));
+        typeof(ValueType).GetInheritanceChain(self: true, root: true).Has(1).At(0).Is(typeof(ValueType));
     }
 
     [Fact]
@@ -58,8 +58,8 @@ public class GetInheritanceChainExtensionTests
     {
         //assert
         typeof(Point).GetInheritanceChain().IsEmpty();
-        typeof(Point).GetInheritanceChain(self: true).Has(1).At(0).IsEqual(typeof(Point));
-        typeof(Point).GetInheritanceChain(root: true).Has(1).At(0).IsEqual(typeof(ValueType));
+        typeof(Point).GetInheritanceChain(self: true).Has(1).At(0).Is(typeof(Point));
+        typeof(Point).GetInheritanceChain(root: true).Has(1).At(0).Is(typeof(ValueType));
         typeof(Point).GetInheritanceChain(self: true, root: true).Has(2).IsEqual(new[] { typeof(Point), typeof(ValueType) });
     }
 

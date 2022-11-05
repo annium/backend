@@ -18,7 +18,7 @@ public class AssignmentMapResolverTest
         var result = mapper.Map<B>(value);
 
         // assert
-        result.Name.IsEqual(value.Name);
+        result.Name.Is(value.Name);
     }
 
     [Fact]

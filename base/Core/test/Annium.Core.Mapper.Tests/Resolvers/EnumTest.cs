@@ -15,8 +15,8 @@ public class EnumTest
         var mapper = GetMapper();
 
         // assert
-        mapper.Map<string>(Sex.Male).IsEqual("Male");
-        mapper.Map<Sex>("female").IsEqual(Sex.Female);
+        mapper.Map<string>(Sex.Male).Is("Male");
+        mapper.Map<Sex>("female").Is(Sex.Female);
     }
 
     private IMapper GetMapper() => new ServiceContainer()

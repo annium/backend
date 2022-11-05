@@ -24,76 +24,76 @@ public class StringExtensionsTest
     [Fact]
     public void UpperFirst_WorksCorrectly()
     {
-        "".UpperFirst().IsEqual(string.Empty);
-        " ".UpperFirst().IsEqual(string.Empty);
-        " ab ".UpperFirst().IsEqual("Ab");
-        " aB ".UpperFirst().IsEqual("AB");
+        "".UpperFirst().Is(string.Empty);
+        " ".UpperFirst().Is(string.Empty);
+        " ab ".UpperFirst().Is("Ab");
+        " aB ".UpperFirst().Is("AB");
     }
 
     [Fact]
     public void LowerFirst_WorksCorrectly()
     {
-        "".LowerFirst().IsEqual(string.Empty);
-        " ".LowerFirst().IsEqual(string.Empty);
-        " AB ".LowerFirst().IsEqual("aB");
-        " Ab ".LowerFirst().IsEqual("ab");
+        "".LowerFirst().Is(string.Empty);
+        " ".LowerFirst().Is(string.Empty);
+        " AB ".LowerFirst().Is("aB");
+        " Ab ".LowerFirst().Is("ab");
     }
 
     [Fact]
     public void PascalCase_WorksCorrectly()
     {
-        "".PascalCase().IsEqual(string.Empty);
-        " ".PascalCase().IsEqual(string.Empty);
-        "0".PascalCase().IsEqual("0");
-        "A B".PascalCase().IsEqual("AB");
-        " - test that__".PascalCase().IsEqual("TestThat");
-        "Foo Bar".PascalCase().IsEqual("FooBar");
-        "_foo-bar_".PascalCase().IsEqual("FooBar");
-        "FOO_BAR".PascalCase().IsEqual("FooBar");
-        "FOo_BAr".PascalCase().IsEqual("FOoBAr");
-        "andThatBAR0a00KBar0KK12312".PascalCase().IsEqual("AndThatBar0A00KBar0Kk12312");
+        "".PascalCase().Is(string.Empty);
+        " ".PascalCase().Is(string.Empty);
+        "0".PascalCase().Is("0");
+        "A B".PascalCase().Is("AB");
+        " - test that__".PascalCase().Is("TestThat");
+        "Foo Bar".PascalCase().Is("FooBar");
+        "_foo-bar_".PascalCase().Is("FooBar");
+        "FOO_BAR".PascalCase().Is("FooBar");
+        "FOo_BAr".PascalCase().Is("FOoBAr");
+        "andThatBAR0a00KBar0KK12312".PascalCase().Is("AndThatBar0A00KBar0Kk12312");
     }
 
     [Fact]
     public void CamelCase_WorksCorrectly()
     {
-        "".CamelCase().IsEqual(string.Empty);
-        " ".CamelCase().IsEqual(string.Empty);
-        "A B".CamelCase().IsEqual("aB");
-        " - test that__".CamelCase().IsEqual("testThat");
-        "Foo Bar".CamelCase().IsEqual("fooBar");
-        "_foo-bar_".CamelCase().IsEqual("fooBar");
-        "FOO_BAR".CamelCase().IsEqual("fooBar");
-        "FOo_BAr".CamelCase().IsEqual("fOoBAr");
-        "andThatBAR0a00KBar0KK12312".CamelCase().IsEqual("andThatBar0A00KBar0Kk12312");
+        "".CamelCase().Is(string.Empty);
+        " ".CamelCase().Is(string.Empty);
+        "A B".CamelCase().Is("aB");
+        " - test that__".CamelCase().Is("testThat");
+        "Foo Bar".CamelCase().Is("fooBar");
+        "_foo-bar_".CamelCase().Is("fooBar");
+        "FOO_BAR".CamelCase().Is("fooBar");
+        "FOo_BAr".CamelCase().Is("fOoBAr");
+        "andThatBAR0a00KBar0KK12312".CamelCase().Is("andThatBar0A00KBar0Kk12312");
     }
 
     [Fact]
     public void KebabCase_WorksCorrectly()
     {
-        "".KebabCase().IsEqual(string.Empty);
-        " ".KebabCase().IsEqual(string.Empty);
-        "A B".KebabCase().IsEqual("a-b");
-        " - test that__".KebabCase().IsEqual("test-that");
-        "Foo Bar".KebabCase().IsEqual("foo-bar");
-        "_foo-bar_".KebabCase().IsEqual("foo-bar");
-        "FOO_BAR".KebabCase().IsEqual("foo-bar");
-        "FOo_BAr".KebabCase().IsEqual("f-oo-b-ar");
-        "andThatBAR0a00KBar0KK12312".KebabCase().IsEqual("and-that-bar0-a00-k-bar0-kk12312");
+        "".KebabCase().Is(string.Empty);
+        " ".KebabCase().Is(string.Empty);
+        "A B".KebabCase().Is("a-b");
+        " - test that__".KebabCase().Is("test-that");
+        "Foo Bar".KebabCase().Is("foo-bar");
+        "_foo-bar_".KebabCase().Is("foo-bar");
+        "FOO_BAR".KebabCase().Is("foo-bar");
+        "FOo_BAr".KebabCase().Is("f-oo-b-ar");
+        "andThatBAR0a00KBar0KK12312".KebabCase().Is("and-that-bar0-a00-k-bar0-kk12312");
     }
 
     [Fact]
     public void SnakeCase_WorksCorrectly()
     {
-        "".SnakeCase().IsEqual(string.Empty);
-        " ".SnakeCase().IsEqual(string.Empty);
-        "A B".SnakeCase().IsEqual("a_b");
-        " - test that__".SnakeCase().IsEqual("test_that");
-        "Foo Bar".SnakeCase().IsEqual("foo_bar");
-        "_foo-bar_".SnakeCase().IsEqual("foo_bar");
-        "FOO_BAR".SnakeCase().IsEqual("foo_bar");
-        "FOo_BAr".SnakeCase().IsEqual("f_oo_b_ar");
-        "andThatBAR0a00KBar0KK12312".SnakeCase().IsEqual("and_that_bar0_a00_k_bar0_kk12312");
+        "".SnakeCase().Is(string.Empty);
+        " ".SnakeCase().Is(string.Empty);
+        "A B".SnakeCase().Is("a_b");
+        " - test that__".SnakeCase().Is("test_that");
+        "Foo Bar".SnakeCase().Is("foo_bar");
+        "_foo-bar_".SnakeCase().Is("foo_bar");
+        "FOO_BAR".SnakeCase().Is("foo_bar");
+        "FOo_BAr".SnakeCase().Is("f_oo_b_ar");
+        "andThatBAR0a00KBar0KK12312".SnakeCase().Is("and_that_bar0_a00_k_bar0_kk12312");
     }
 
     [Fact]
@@ -106,8 +106,8 @@ public class StringExtensionsTest
     public void Repeat_WorksCorrectly()
     {
         // assert
-        "demo".Repeat(-2).IsEqual("demo");
-        "demo".Repeat(2).IsEqual("demodemo");
+        "demo".Repeat(-2).Is("demo");
+        "demo".Repeat(2).Is("demodemo");
     }
 
     [Fact]

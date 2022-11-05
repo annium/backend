@@ -17,8 +17,8 @@ public class RepackerTest
         var result = Repack<int?, int>(v => v ?? default);
 
         // assert
-        result(1).IsEqual(1);
-        result(null).IsEqual(0);
+        result(1).Is(1);
+        result(null).Is(0);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class RepackerTest
         var result = Repack<int, string>(v => v.ToString());
 
         // assert
-        result(1).IsEqual("1");
+        result(1).Is("1");
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class RepackerTest
         var result = Repack<int, int>(v => v);
 
         // assert
-        result(1).IsEqual(1);
+        result(1).Is(1);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class RepackerTest
         var result = Repack<string, int>(v => v.Length);
 
         // assert
-        result("asd").IsEqual(3);
+        result("asd").Is(3);
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class RepackerTest
         var result = Repack<int, string>(v => new string(' ', v));
 
         // assert
-        result(3).IsEqual("   ");
+        result(3).Is("   ");
     }
 
     [Fact]
@@ -72,9 +72,9 @@ public class RepackerTest
         );
 
         // assert
-        result("1").IsEqual("one");
-        result("2").IsEqual("two");
-        result("3").IsEqual("other");
+        result("1").Is("one");
+        result("2").Is("two");
+        result("3").Is("other");
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class RepackerTest
 
         // assert
         var ex = result("a");
-        ex.Message.IsEqual("a");
-        ex.Source.IsEqual("a");
+        ex.Message.Is("a");
+        ex.Source.Is("a");
     }
 
     [Fact]

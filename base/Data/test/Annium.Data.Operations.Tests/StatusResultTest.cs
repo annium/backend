@@ -12,7 +12,7 @@ public class StatusResultTest
         var result = Result.Status(Access.Allowed);
 
         // assert
-        result.Status.IsEqual(Access.Allowed);
+        result.Status.Is(Access.Allowed);
     }
 
     [Fact]
@@ -23,10 +23,10 @@ public class StatusResultTest
         var (status, data) = result;
 
         // assert
-        result.Status.IsEqual(Access.Allowed);
-        result.Data.IsEqual(5);
-        status.IsEqual(Access.Allowed);
-        data.IsEqual(5);
+        result.Status.Is(Access.Allowed);
+        result.Data.Is(5);
+        status.Is(Access.Allowed);
+        data.Is(5);
     }
 
     [Fact]
@@ -41,15 +41,15 @@ public class StatusResultTest
         var failedClone = failed.Copy();
 
         // assert
-        succeedClone.Status.IsEqual(Access.Allowed);
+        succeedClone.Status.Is(Access.Allowed);
         succeedClone.IsOk.IsTrue();
-        failedClone.Status.IsEqual(Access.Denied);
+        failedClone.Status.Is(Access.Denied);
         failedClone.HasErrors.IsTrue();
         failedClone.PlainErrors.Has(1);
-        failedClone.PlainErrors.At(0).IsEqual("plain");
+        failedClone.PlainErrors.At(0).Is("plain");
         failedClone.LabeledErrors.Has(1);
         failedClone.LabeledErrors.At("label").Has(1);
-        failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+        failedClone.LabeledErrors.At("label").At(0).Is("value");
     }
 
     [Fact]
@@ -64,17 +64,17 @@ public class StatusResultTest
         var failedClone = failed.Copy();
 
         // assert
-        succeedClone.Status.IsEqual(Access.Allowed);
+        succeedClone.Status.Is(Access.Allowed);
         succeedClone.IsOk.IsTrue();
-        succeedClone.Data.IsEqual("welcome");
-        failedClone.Status.IsEqual(Access.Denied);
+        succeedClone.Data.Is("welcome");
+        failedClone.Status.Is(Access.Denied);
         failedClone.HasErrors.IsTrue();
         failedClone.PlainErrors.Has(1);
-        failedClone.PlainErrors.At(0).IsEqual("plain");
+        failedClone.PlainErrors.At(0).Is("plain");
         failedClone.LabeledErrors.Has(1);
         failedClone.LabeledErrors.At("label").Has(1);
-        failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
-        failedClone.Data.IsEqual("goodbye");
+        failedClone.LabeledErrors.At("label").At(0).Is("value");
+        failedClone.Data.Is("goodbye");
     }
 
     private enum Access

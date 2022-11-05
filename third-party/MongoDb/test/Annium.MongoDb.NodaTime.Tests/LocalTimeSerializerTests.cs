@@ -21,7 +21,7 @@ public class LocalTimeSerializerTests
         obj.ToTestJson().Contains("'LocalTime' : '13:25:01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalTime.IsEqual(obj.LocalTime);
+        obj.LocalTime.Is(obj.LocalTime);
     }
 
     [Fact]

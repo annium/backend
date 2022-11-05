@@ -14,7 +14,7 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, rest) = arr;
-        x1.IsEqual(1);
+        x1.Is(1);
         rest.IsEqual(new[] { 2, 3, 4, 5, 6, 7, 8, 9, 10 });
     }
 
@@ -27,8 +27,8 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
+        x1.Is(1);
+        x2.Is(2);
         rest.IsEqual(new[] { 3, 4, 5, 6, 7, 8, 9, 10 });
     }
 
@@ -41,9 +41,9 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
         rest.IsEqual(new[] { 4, 5, 6, 7, 8, 9, 10 });
     }
 
@@ -56,10 +56,10 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, x4, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
-        x4.IsEqual(4);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
+        x4.Is(4);
         rest.IsEqual(new[] { 5, 6, 7, 8, 9, 10 });
     }
 
@@ -72,11 +72,11 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, x4, x5, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
-        x4.IsEqual(4);
-        x5.IsEqual(5);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
+        x4.Is(4);
+        x5.Is(5);
         rest.IsEqual(new[] { 6, 7, 8, 9, 10 });
     }
 
@@ -89,12 +89,12 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, x4, x5, x6, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
-        x4.IsEqual(4);
-        x5.IsEqual(5);
-        x6.IsEqual(6);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
+        x4.Is(4);
+        x5.Is(5);
+        x6.Is(6);
         rest.IsEqual(new[] { 7, 8, 9, 10 });
     }
 
@@ -107,13 +107,13 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, x4, x5, x6, x7, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
-        x4.IsEqual(4);
-        x5.IsEqual(5);
-        x6.IsEqual(6);
-        x7.IsEqual(7);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
+        x4.Is(4);
+        x5.Is(5);
+        x6.Is(6);
+        x7.Is(7);
         rest.IsEqual(new[] { 8, 9, 10 });
     }
 
@@ -126,14 +126,14 @@ public class ArrayExtensionsTest
         // act & assert
 
         var (x1, x2, x3, x4, x5, x6, x7, x8, rest) = arr;
-        x1.IsEqual(1);
-        x2.IsEqual(2);
-        x3.IsEqual(3);
-        x4.IsEqual(4);
-        x5.IsEqual(5);
-        x6.IsEqual(6);
-        x7.IsEqual(7);
-        x8.IsEqual(8);
+        x1.Is(1);
+        x2.Is(2);
+        x3.Is(3);
+        x4.Is(4);
+        x5.Is(5);
+        x6.Is(6);
+        x7.Is(7);
+        x8.Is(8);
         rest.IsEqual(new[] { 9, 10 });
     }
 }

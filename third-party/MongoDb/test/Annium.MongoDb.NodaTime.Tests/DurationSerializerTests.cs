@@ -21,7 +21,7 @@ public class DurationSerializerTests
         obj.ToTestJson().Contains("'Duration' : '0:00:00:34'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Duration.IsEqual(obj.Duration);
+        obj.Duration.Is(obj.Duration);
     }
 
     [Fact]

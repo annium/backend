@@ -26,9 +26,9 @@ public class ConfigurationBuilderTest
 
         // assert
         result.IsNotDefault();
-        result.Plain.IsEqual(10);
+        result.Plain.Is(10);
         result.Abstract.IsEqual(nested);
-        result.Enum.IsEqual(SomeEnum.Two);
-        nested.IsShallowEqual(new ConfigOne { Value = 14 });
+        result.Enum.Is(SomeEnum.Two);
+        nested.IsEqual(new ConfigOne { Value = 14 });
     }
 }

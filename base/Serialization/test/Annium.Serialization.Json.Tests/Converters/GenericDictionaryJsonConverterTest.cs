@@ -20,7 +20,7 @@ public class GenericDictionaryJsonConverterTest : TestBase
         var result = serializer.Serialize(source);
 
         // assert
-        result.IsEqual($@"{{""{key}"":""{value}""}}");
+        result.Is($@"{{""{key}"":""{value}""}}");
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class GenericDictionaryJsonConverterTest : TestBase
         var result = serializer.Serialize(source);
 
         // assert
-        result.IsEqual(@"{""{\""x\"":1,\""y\"":2}"":{""x"":3,""y"":4}}");
+        result.Is(@"{""{\""x\"":1,\""y\"":2}"":{""x"":3,""y"":4}}");
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class GenericDictionaryJsonConverterTest : TestBase
         var result = serializer.Deserialize<IReadOnlyDictionary<Guid, Guid>>(str);
 
         // assert
-        result.At(key).IsEqual(value);
+        result.At(key).Is(value);
     }
 
     [Fact]
@@ -70,7 +70,7 @@ public class GenericDictionaryJsonConverterTest : TestBase
         var result = serializer.Deserialize<IReadOnlyDictionary<Key, Key>>(str);
 
         // assert
-        result.At(key).IsEqual(value);
+        result.At(key).Is(value);
     }
 }
 

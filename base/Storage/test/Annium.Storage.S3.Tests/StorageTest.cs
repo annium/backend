@@ -43,7 +43,7 @@ public class StorageTest : IDisposable
 
         // assert
         keys.Has(1);
-        keys.At(0).IsEqual("demo");
+        keys.At(0).Is("demo");
     }
 
     [Fact(Skip = "Needs durable test basis")]
@@ -59,7 +59,7 @@ public class StorageTest : IDisposable
 
         // assert
         keys.Has(1);
-        keys.At(0).IsEqual("demo");
+        keys.At(0).Is("demo");
     }
 
     [Fact(Skip = "Needs durable test basis")]

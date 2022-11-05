@@ -19,8 +19,8 @@ public class MessagePackSerializerTests : TestBase
 
         // assert
         deserialized.IsNotDefault();
-        deserialized.FirstName.IsEqual(data.FirstName);
-        deserialized.LastName.IsEqual(data.LastName);
+        deserialized.FirstName.Is(data.FirstName);
+        deserialized.LastName.Is(data.LastName);
     }
 
     [MessagePackObject]

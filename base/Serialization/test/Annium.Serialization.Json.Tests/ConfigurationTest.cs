@@ -40,8 +40,8 @@ public class ConfigurationTest
 
         // assert
         sp.Resolve<ISerializer<string>>().Is(serializerDefault);
-        resultDefault.IsEqual(@"{""X"":1}");
-        resultA.IsEqual(@"{""x"":""1""}");
-        resultB.IsEqual(@"{""x"":1}");
+        resultDefault.Is(@"{""X"":1}");
+        resultA.Is(@"{""x"":""1""}");
+        resultB.Is(@"{""x"":1}");
     }
 }

@@ -21,7 +21,7 @@ public class ConstructorJsonConverterTest : TestBase
         var result = serializer.Serialize(x);
 
         // assert
-        result.IsEqual(@"{""value"":5,""isOdd"":false}");
+        result.Is(@"{""value"":5,""isOdd"":false}");
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ConstructorJsonConverterTest : TestBase
         var result = serializer.Serialize(x);
 
         // assert
-        result.IsEqual(@"{""one"":{""value"":2,""isOdd"":true},""two"":{""value"":3,""isOdd"":false}}");
+        result.Is(@"{""one"":{""value"":2,""isOdd"":true},""two"":{""value"":3,""isOdd"":false}}");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class ConstructorJsonConverterTest : TestBase
         var result = serializer.Serialize(x);
 
         // assert
-        result.IsEqual(@"[{""one"":{""value"":2,""isOdd"":true},""two"":{""value"":3,""isOdd"":false}},{""value"":1,""isOdd"":false}]");
+        result.Is(@"[{""one"":{""value"":2,""isOdd"":true},""two"":{""value"":3,""isOdd"":false}},{""value"":1,""isOdd"":false}]");
     }
 
     [Fact]
@@ -156,7 +156,7 @@ public class ConstructorJsonConverterTest : TestBase
         var result = serializer.Deserialize<IReadOnlyCollection<IX>>(str);
 
         // assert
-        result.IsEqual(x, "not equal");
+        result.IsEqual(x);
     }
 
     [Fact]
@@ -172,8 +172,8 @@ public class ConstructorJsonConverterTest : TestBase
 
         // assert
         result.Has(2);
-        result.At(0).As<ErrorMessage>().Message.IsEqual("error");
-        result.At(1).As<InfoMessage>().Message.IsEqual("info");
+        result.At(0).As<ErrorMessage>().Message.Is("error");
+        result.At(1).As<InfoMessage>().Message.Is("info");
     }
 
     [Fact]

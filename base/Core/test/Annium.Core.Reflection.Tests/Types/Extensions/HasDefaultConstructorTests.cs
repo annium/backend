@@ -12,7 +12,7 @@ public class HasDefaultConstructorTests
     public void HasDefaultConstructor_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.HasDefaultConstructor()).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.HasDefaultConstructor()).Throws<ArgumentNullException>();
     }
 
     [Fact]

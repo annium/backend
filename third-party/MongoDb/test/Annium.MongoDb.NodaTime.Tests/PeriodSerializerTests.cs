@@ -21,7 +21,7 @@ public class PeriodSerializerTests
         obj.ToTestJson().Contains("'Period' : 'PT34S'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Period.IsEqual(obj.Period);
+        obj.Period.Is(obj.Period);
     }
 
     [Fact]

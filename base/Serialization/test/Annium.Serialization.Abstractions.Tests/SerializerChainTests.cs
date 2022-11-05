@@ -28,7 +28,7 @@ public class SerializerChainTests
         var deserialized = serializer.Deserialize<Point>(serialized);
 
         // assert
-        deserialized.IsEqual(data);
+        deserialized.Is(data);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class SerializerChainTests
         var deserialized = serializer.Deserialize(serialized);
 
         // assert
-        deserialized.IsEqual(data);
+        deserialized.Is(data);
     }
 
     public struct Point

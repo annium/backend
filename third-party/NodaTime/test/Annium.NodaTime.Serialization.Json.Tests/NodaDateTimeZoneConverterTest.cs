@@ -16,7 +16,7 @@ public class NodaDateTimeZoneConverterTest
     {
         var dateTimeZone = DateTimeZoneProviders.Tzdb["America/Los_Angeles"];
         var json = JsonSerializer.Serialize(dateTimeZone, With(_converter));
-        json.IsEqual("\"America/Los_Angeles\"");
+        json.Is("\"America/Los_Angeles\"");
     }
 
     [Fact]
@@ -25,7 +25,7 @@ public class NodaDateTimeZoneConverterTest
         string json = "\"America/Los_Angeles\"";
         var dateTimeZone = JsonSerializer.Deserialize<DateTimeZone>(json, With(_converter));
         var expectedDateTimeZone = DateTimeZoneProviders.Tzdb["America/Los_Angeles"];
-        dateTimeZone.IsEqual(expectedDateTimeZone);
+        dateTimeZone.Is(expectedDateTimeZone);
     }
 
     [Fact]

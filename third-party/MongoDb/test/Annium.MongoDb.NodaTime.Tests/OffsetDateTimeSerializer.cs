@@ -21,7 +21,7 @@ public class OffsetDateTimeSerializerTests
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.OffsetDateTime.IsEqual(obj.OffsetDateTime);
+        obj.OffsetDateTime.Is(obj.OffsetDateTime);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class OffsetDateTimeSerializerTests
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.OffsetDateTime.IsEqual(obj.OffsetDateTime.WithCalendar(CalendarSystem.Iso));
+        obj.OffsetDateTime.Is(obj.OffsetDateTime.WithCalendar(CalendarSystem.Iso));
     }
 
     [Fact]

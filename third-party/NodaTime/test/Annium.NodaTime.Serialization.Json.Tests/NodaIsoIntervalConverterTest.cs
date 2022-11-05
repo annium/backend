@@ -43,7 +43,7 @@ public class NodaIsoIntervalConverterTest
         var startInstant = Instant.FromUtc(2012, 1, 2, 3, 4, 5) + Duration.FromMilliseconds(670);
         var endInstant = Instant.FromUtc(2013, 6, 7, 8, 9, 10) + Duration.FromTicks(1234567);
         var expectedInterval = new Interval(startInstant, endInstant);
-        interval.IsEqual(expectedInterval);
+        interval.Is(expectedInterval);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class NodaIsoIntervalConverterTest
         var testObject = new TestObject { Interval = interval };
 
         var json = JsonSerializer.Serialize(testObject, With(_converters));
-        json.IsEqual("{\"interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}");
+        json.Is("{\"interval\":\"2012-01-02T03:04:05Z/2013-06-07T08:09:10Z\"}");
     }
 
     [Fact]
@@ -71,7 +71,7 @@ public class NodaIsoIntervalConverterTest
         var startInstant = Instant.FromUtc(2012, 1, 2, 3, 4, 5);
         var endInstant = Instant.FromUtc(2013, 6, 7, 8, 9, 10);
         var expectedInterval = new Interval(startInstant, endInstant);
-        interval.IsEqual(expectedInterval);
+        interval.Is(expectedInterval);
     }
 
     public class TestObject

@@ -16,15 +16,15 @@ public class ComparableTest
         var c = new Money(2, 1);
 
         // assert
-        a.CompareTo(null !).IsEqual(1);
+        a.CompareTo(null !).Is(1);
         Wrap.It(() => a.CompareTo(10)).Throws<ArgumentException>();
-        a.CompareTo(a as object).IsEqual(0);
-        a.CompareTo(b as object).IsEqual(-1);
-        a.CompareTo(c as object).IsEqual(-1);
-        b.CompareTo(a as object).IsEqual(1);
-        b.CompareTo(c as object).IsEqual(-1);
-        c.CompareTo(a as object).IsEqual(1);
-        c.CompareTo(b as object).IsEqual(1);
+        a.CompareTo(a as object).Is(0);
+        a.CompareTo(b as object).Is(-1);
+        a.CompareTo(c as object).Is(-1);
+        b.CompareTo(a as object).Is(1);
+        b.CompareTo(c as object).Is(-1);
+        c.CompareTo(a as object).Is(1);
+        c.CompareTo(b as object).Is(1);
     }
 
     [Fact]
@@ -37,10 +37,10 @@ public class ComparableTest
         var c = new Money(2, 1);
 
         // assert
-        new[] { a, b, c, null }.Max().IsEqual(c);
+        new[] { a, b, c, null }.Max().Is(c);
         // reference comparison
         (a > d).IsFalse();
-        (null ! <= (null as Money) !).IsTrue();
+        (null ! <= (null as Money)!).IsTrue();
         // >
         (a > b).IsFalse();
         (null! > a).IsFalse();

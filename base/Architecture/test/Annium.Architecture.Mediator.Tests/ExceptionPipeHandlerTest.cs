@@ -20,9 +20,9 @@ public class ExceptionPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.UncaughtError);
+        result.Status.Is(OperationStatus.UncaughtError);
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("TEST EXCEPTION");
+        result.PlainErrors.At(0).Is("TEST EXCEPTION");
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ExceptionPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.Ok);
+        result.Status.Is(OperationStatus.Ok);
         result.IsOk.IsTrue();
     }
 

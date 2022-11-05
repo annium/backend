@@ -12,7 +12,7 @@ internal static class ServiceContainerExtensions
         int count
     )
     {
-        container.Count.IsEqual(count, $"Expected to have {count} descriptor registered, but found {container.Count}.");
+        container.Count.Is(count, $"Expected to have {count} descriptor registered, but found {container.Count}.");
     }
 
     public static void Has(
@@ -22,7 +22,7 @@ internal static class ServiceContainerExtensions
     )
     {
         var descriptors = container.Where(x => x.ServiceType == serviceType).ToArray();
-        descriptors.Length.IsEqual(count, $"Expected to have {count} {serviceType.FriendlyName()} descriptor registered, but found {descriptors.Length}.");
+        descriptors.Length.Is(count, $"Expected to have {count} {serviceType.FriendlyName()} descriptor registered, but found {descriptors.Length}.");
     }
 
     public static void HasScoped(this IServiceContainer container, Type serviceType, Type implementationType) =>
@@ -58,7 +58,7 @@ internal static class ServiceContainerExtensions
             .OfType<ITypeServiceDescriptor>()
             .SingleOrDefault(x => x.ImplementationType == implementationType);
         descriptor.IsNotDefault($"Not found {serviceType.FriendlyName()} -> {implementationType.FriendlyName()} descriptor");
-        descriptor!.Lifetime.IsEqual(
+        descriptor!.Lifetime.Is(
             lifetime,
             $"Descriptor {descriptor.ToReadableString()} is {descriptor.Lifetime}, but {lifetime} expected."
         );
@@ -70,9 +70,9 @@ internal static class ServiceContainerExtensions
             .GetDescriptors(serviceType)
             .OfType<IFactoryServiceDescriptor>()
             .ToArray();
-        descriptors.Length.IsEqual(count, $"Expected {count} {serviceType.FriendlyName()} descriptors, but found {descriptors.Length}");
+        descriptors.Length.Is(count, $"Expected {count} {serviceType.FriendlyName()} descriptors, but found {descriptors.Length}");
         foreach (var descriptor in descriptors)
-            descriptor.Lifetime.IsEqual(
+            descriptor.Lifetime.Is(
                 lifetime,
                 $"Descriptor {descriptor.ToReadableString()} is {descriptor.Lifetime}, but {lifetime} expected."
             );
@@ -84,9 +84,9 @@ internal static class ServiceContainerExtensions
             .GetDescriptors(typeof(Func<>).MakeGenericType(serviceType))
             .OfType<IFactoryServiceDescriptor>()
             .ToArray();
-        descriptors.Length.IsEqual(count, $"Expected {count} () => {serviceType.FriendlyName()} descriptors, but found {descriptors.Length}");
+        descriptors.Length.Is(count, $"Expected {count} () => {serviceType.FriendlyName()} descriptors, but found {descriptors.Length}");
         foreach (var descriptor in descriptors)
-            descriptor.Lifetime.IsEqual(
+            descriptor.Lifetime.Is(
                 lifetime,
                 $"Descriptor {descriptor.ToReadableString()} is {descriptor.Lifetime}, but {lifetime} expected."
             );

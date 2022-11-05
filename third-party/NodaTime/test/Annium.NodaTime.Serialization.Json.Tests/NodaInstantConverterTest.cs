@@ -13,7 +13,7 @@ public class NodaInstantConverterTest
     {
         var instant = Instant.FromUtc(2012, 1, 2, 3, 4, 5);
         var json = JsonSerializer.Serialize(instant, With(Converters.InstantConverter));
-        json.IsEqual("\"2012-01-02T03:04:05Z\"");
+        json.Is("\"2012-01-02T03:04:05Z\"");
     }
 
     // [Fact]
@@ -21,7 +21,7 @@ public class NodaInstantConverterTest
     // {
     //     Instant? instant = Instant.FromUtc(2012, 1, 2, 3, 4, 5);
     //     var json = JsonSerializer.Serialize(instant, With(Converters.InstantConverter));
-    //     json.IsEqual("\"2012-01-02T03:04:05Z\"");
+    //     json.Is("\"2012-01-02T03:04:05Z\"");
     // }
 
     // [Fact]
@@ -29,7 +29,7 @@ public class NodaInstantConverterTest
     // {
     //     Instant? instant = null;
     //     var json = JsonSerializer.Serialize(instant, With(Converters.InstantConverter));
-    //     json.IsEqual("null");
+    //     json.Is("null");
     // }
 
     [Fact]
@@ -37,7 +37,7 @@ public class NodaInstantConverterTest
     {
         string json = "\"2012-01-02T03:04:05Z\"";
         var instant = JsonSerializer.Deserialize<Instant>(json, With(Converters.InstantConverter));
-        instant.IsEqual(Instant.FromUtc(2012, 1, 2, 3, 4, 5));
+        instant.Is(Instant.FromUtc(2012, 1, 2, 3, 4, 5));
     }
 
     // [Fact]
@@ -45,7 +45,7 @@ public class NodaInstantConverterTest
     // {
     //     string json = "\"2012-01-02T03:04:05Z\"";
     //     var instant = JsonSerializer.Deserialize<Instant?>(json, With(Converters.InstantConverter));
-    //     instant.IsEqual(Instant.FromUtc(2012, 1, 2, 3, 4, 5));
+    //     instant.Is(Instant.FromUtc(2012, 1, 2, 3, 4, 5));
     // }
 
     // [Fact]

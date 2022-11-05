@@ -14,7 +14,7 @@ public class BooleanResultConverterTest
         var str = JsonSerializer.Serialize(Result.Success(), GetSettings());
 
         // assert
-        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class BooleanResultConverterTest
         var str = JsonSerializer.Serialize(Result.Success().Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""isSuccess"":true,""isFailure"":false,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -62,9 +62,9 @@ public class BooleanResultConverterTest
         result.IsSuccess.IsTrue();
         result.IsFailure.IsFalse();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class BooleanResultConverterTest
         var str = JsonSerializer.Serialize(Result.Success(5), GetSettings());
 
         // assert
-        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class BooleanResultConverterTest
         var str = JsonSerializer.Serialize(Result.Success(5).Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""isSuccess"":true,""isFailure"":false,""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -94,7 +94,7 @@ public class BooleanResultConverterTest
         var result = JsonSerializer.Deserialize<IBooleanResult<int>>("{}", GetSettings())!;
 
         // assert
-        result.Data.IsEqual(0);
+        result.Data.Is(0);
         result.IsSuccess.IsFalse();
         result.IsFailure.IsTrue();
     }
@@ -118,7 +118,7 @@ public class BooleanResultConverterTest
         var result = JsonSerializer.Deserialize<IBooleanResult<int>>(@"{""data"":5,""isSuccess"":true}", GetSettings())!;
 
         // assert
-        result.Data.IsEqual(5);
+        result.Data.Is(5);
         result.IsSuccess.IsTrue();
         result.IsFailure.IsFalse();
     }
@@ -131,13 +131,13 @@ public class BooleanResultConverterTest
             @"{""data"":5,""isSuccess"":true,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
 
         // assert
-        result.Data.IsEqual(5);
+        result.Data.Is(5);
         result.IsSuccess.IsTrue();
         result.IsFailure.IsFalse();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();

@@ -32,8 +32,8 @@ public class BaseTest
         var result = mapper.Map<E>(value);
 
         // assert
-        result.Inner!.Name.IsEqual(value.Inner!.Name);
-        result.Value.IsEqual(value.Value);
+        result.Inner!.Name.Is(value.Inner!.Name);
+        result.Value.Is(value.Value);
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class BaseTest
 
         // assert
         result.Inner.IsDefault();
-        result.Value.IsEqual(value.Value);
+        result.Value.Is(value.Value);
     }
 
     private IMapper GetMapper() => new ServiceContainer()

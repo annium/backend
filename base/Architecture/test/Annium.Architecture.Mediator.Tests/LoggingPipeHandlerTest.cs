@@ -20,7 +20,7 @@ public class LoggingPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.Ok);
+        result.Status.Is(OperationStatus.Ok);
         result.IsOk.IsTrue();
     }
 

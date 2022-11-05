@@ -20,7 +20,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(arr);
 
         // assert
-        result.IsEqual($@"[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}]");
+        result.Is($@"[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}]");
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(arr);
 
         // assert
-        result.IsEqual(@"[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}]");
+        result.Is(@"[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}]");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(arr);
 
         // assert
-        result.IsEqual(@"[{""a"":1},{""b"":2}]");
+        result.Is(@"[{""a"":1},{""b"":2}]");
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(container);
 
         // assert
-        result.IsEqual($@"{{""items"":[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}],""type"":""{container.Type}""}}");
+        result.Is($@"{{""items"":[{{""value"":1,""type"":""{a.Type}""}},{{""value"":2,""type"":""{b.Type}""}}],""type"":""{container.Type}""}}");
     }
 
     [Fact]
@@ -84,7 +84,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(container);
 
         // assert
-        result.IsEqual(@"{""items"":[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}],""type"":""a""}");
+        result.Is(@"{""items"":[{""value"":1,""type"":""a""},{""value"":2,""type"":""b""}],""type"":""a""}");
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class AbstractJsonConverterTest : TestBase
         var result = serializer.Serialize(container);
 
         // assert
-        result.IsEqual(@"{""data"":[{""a"":1},{""b"":2}]}");
+        result.Is(@"{""data"":[{""a"":1},{""b"":2}]}");
     }
 
     [Fact]
@@ -118,8 +118,8 @@ public class AbstractJsonConverterTest : TestBase
 
         // assert
         result.Has(2);
-        result.At(0).As<IdChildA>().Value.IsEqual(1);
-        result.At(1).As<IdChildB>().Value.IsEqual(2);
+        result.At(0).As<IdChildA>().Value.Is(1);
+        result.At(1).As<IdChildB>().Value.Is(2);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class AbstractJsonConverterTest : TestBase
 
         // assert
         result.Has(2);
-        result.At(0).As<KeyChildA>().Value.IsEqual(1);
-        result.At(1).As<KeyChildB>().Value.IsEqual(2);
+        result.At(0).As<KeyChildA>().Value.Is(1);
+        result.At(1).As<KeyChildB>().Value.Is(2);
     }
 
     [Fact]
@@ -156,8 +156,8 @@ public class AbstractJsonConverterTest : TestBase
 
         // assert
         result.Has(2);
-        result.At(0).As<ChildA>().A.IsEqual(1);
-        result.At(1).As<ChildB>().B.IsEqual(2);
+        result.At(0).As<ChildA>().A.Is(1);
+        result.At(1).As<ChildB>().B.Is(2);
     }
 
     [Fact]
@@ -176,8 +176,8 @@ public class AbstractJsonConverterTest : TestBase
         // assert
         var data = result.As<IdDataContainer<IdBase>>().Items;
         data.Has(2);
-        data.At(0).As<IdChildA>().Value.IsEqual(1);
-        data.At(1).As<IdChildB>().Value.IsEqual(2);
+        data.At(0).As<IdChildA>().Value.Is(1);
+        data.At(1).As<IdChildB>().Value.Is(2);
     }
 
     [Fact]
@@ -196,8 +196,8 @@ public class AbstractJsonConverterTest : TestBase
         // assert
         var data = result.As<KeyDataContainer<KeyBase>>().Items;
         data.Has(2);
-        data.At(0).As<KeyChildA>().Value.IsEqual(1);
-        data.At(1).As<KeyChildB>().Value.IsEqual(2);
+        data.At(0).As<KeyChildA>().Value.Is(1);
+        data.At(1).As<KeyChildB>().Value.Is(2);
     }
 
     [Fact]
@@ -216,8 +216,8 @@ public class AbstractJsonConverterTest : TestBase
         // assert
         var data = result.As<DataContainer<Base>>().Data;
         data.Has(2);
-        data.At(0).As<ChildA>().A.IsEqual(1);
-        data.At(1).As<ChildB>().B.IsEqual(2);
+        data.At(0).As<ChildA>().A.Is(1);
+        data.At(1).As<ChildB>().B.Is(2);
     }
 
     public abstract class IdBase

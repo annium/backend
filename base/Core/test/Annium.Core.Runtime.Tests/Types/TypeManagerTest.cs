@@ -30,8 +30,8 @@ public class TypeManagerTest
 
         // assert
         implementations.Has(2);
-        implementations.At(0).IsEqual(typeof(B));
-        implementations.At(1).IsEqual(typeof(C));
+        implementations.At(0).Is(typeof(B));
+        implementations.At(1).Is(typeof(C));
     }
 
     [Fact]
@@ -44,9 +44,9 @@ public class TypeManagerTest
 
         // assert
         implementations.Has(3);
-        implementations.At(0).IsEqual(typeof(GenericInterfaceDemoA<>));
-        implementations.At(1).IsEqual(typeof(GenericInterfaceDemoB<>));
-        implementations.At(2).IsEqual(typeof(GenericInterfaceDemoC));
+        implementations.At(0).Is(typeof(GenericInterfaceDemoA<>));
+        implementations.At(1).Is(typeof(GenericInterfaceDemoB<>));
+        implementations.At(2).Is(typeof(GenericInterfaceDemoC));
     }
 
     [Fact]
@@ -59,9 +59,9 @@ public class TypeManagerTest
 
         // assert
         implementations.Has(3);
-        implementations.At(0).IsEqual(typeof(GenericClassDemoA<>));
-        implementations.At(1).IsEqual(typeof(GenericClassDemoB<>));
-        implementations.At(2).IsEqual(typeof(GenericClassDemoC));
+        implementations.At(0).Is(typeof(GenericClassDemoA<>));
+        implementations.At(1).Is(typeof(GenericClassDemoB<>));
+        implementations.At(2).Is(typeof(GenericClassDemoC));
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public class TypeManagerTest
         var result = manager.Resolve(value, typeof(A));
 
         // assert
-        result.IsEqual(typeof(B));
+        result.Is(typeof(B));
     }
 
     [Fact]
@@ -88,7 +88,7 @@ public class TypeManagerTest
         var result = manager.ResolveBySignature(new[] { nameof(B.ForB) }, typeof(A), true);
 
         // assert
-        result.IsEqual(typeof(B));
+        result.Is(typeof(B));
     }
 
     [Fact]
@@ -124,7 +124,7 @@ public class TypeManagerTest
         var result = manager.ResolveByKey(key, typeof(D));
 
         // assert
-        result.IsEqual(typeof(E));
+        result.Is(typeof(E));
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class TypeManagerTest
         var result = manager.Resolve(source, typeof(H));
 
         // assert
-        result.IsEqual(typeof(K));
+        result.Is(typeof(K));
     }
 
     [Fact]
@@ -152,7 +152,7 @@ public class TypeManagerTest
         var result = manager.Resolve(source, typeof(D));
 
         // assert
-        result.IsEqual(typeof(E));
+        result.Is(typeof(E));
     }
 
     [Fact]
@@ -166,7 +166,7 @@ public class TypeManagerTest
         var result = manager.Resolve(source, typeof(A));
 
         // assert
-        result.IsEqual(typeof(B));
+        result.Is(typeof(B));
     }
 
     private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);

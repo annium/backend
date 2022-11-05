@@ -46,10 +46,10 @@ public class BooleanResultTest
         var (succeed, data) = result;
 
         // assert
-        result.Data.IsEqual(data);
+        result.Data.Is(data);
         result.IsSuccess.IsTrue();
         result.IsFailure.IsFalse();
-        data.IsEqual(5);
+        data.Is(5);
         succeed.IsTrue();
     }
 
@@ -61,10 +61,10 @@ public class BooleanResultTest
         var (succeed, data) = result;
 
         // assert
-        result.Data.IsEqual(data);
+        result.Data.Is(data);
         result.IsSuccess.IsTrue();
         result.IsFailure.IsFalse();
-        data.IsEqual(5);
+        data.Is(5);
         succeed.IsTrue();
     }
 
@@ -76,10 +76,10 @@ public class BooleanResultTest
         var (succeed, data) = result;
 
         // assert
-        result.Data.IsEqual(data);
+        result.Data.Is(data);
         result.IsSuccess.IsFalse();
         result.IsFailure.IsTrue();
-        data.IsEqual(5);
+        data.Is(5);
         succeed.IsFalse();
     }
 
@@ -100,10 +100,10 @@ public class BooleanResultTest
         failedClone.IsFailure.IsTrue();
         failedClone.HasErrors.IsTrue();
         failedClone.PlainErrors.Has(1);
-        failedClone.PlainErrors.At(0).IsEqual("plain");
+        failedClone.PlainErrors.At(0).Is("plain");
         failedClone.LabeledErrors.Has(1);
         failedClone.LabeledErrors.At("label").Has(1);
-        failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
+        failedClone.LabeledErrors.At("label").At(0).Is("value");
     }
 
     [Fact]
@@ -120,14 +120,14 @@ public class BooleanResultTest
         // assert
         succeedClone.IsSuccess.IsTrue();
         succeedClone.IsOk.IsTrue();
-        succeedClone.Data.IsEqual("x");
+        succeedClone.Data.Is("x");
         failedClone.IsFailure.IsTrue();
         failedClone.HasErrors.IsTrue();
         failedClone.PlainErrors.Has(1);
-        failedClone.PlainErrors.At(0).IsEqual("plain");
+        failedClone.PlainErrors.At(0).Is("plain");
         failedClone.LabeledErrors.Has(1);
         failedClone.LabeledErrors.At("label").Has(1);
-        failedClone.LabeledErrors.At("label").At(0).IsEqual("value");
-        failedClone.Data.IsEqual(10);
+        failedClone.LabeledErrors.At("label").At(0).Is("value");
+        failedClone.Data.Is(10);
     }
 }

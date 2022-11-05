@@ -33,10 +33,10 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
 
         // assert
         _messages.Has(1);
-        _messages.At(0).Instant.IsEqual(timeProvider.Now);
-        _messages.At(0).Level.IsEqual(LogLevel.Trace);
-        _messages.At(0).Source.IsEqual(typeof(BaseLoggerTest).FriendlyName());
-        _messages.At(0).Message.IsEqual("sample");
+        _messages.At(0).Instant.Is(timeProvider.Now);
+        _messages.At(0).Level.Is(LogLevel.Trace);
+        _messages.At(0).Source.Is(typeof(BaseLoggerTest).FriendlyName());
+        _messages.At(0).Message.Is("sample");
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Trace("sample");
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Trace);
+        _messages.At(0).Level.Is(LogLevel.Trace);
     }
 
     [Fact]
@@ -78,7 +78,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Debug("sample");
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Debug);
+        _messages.At(0).Level.Is(LogLevel.Debug);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Info("sample");
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Info);
+        _messages.At(0).Level.Is(LogLevel.Info);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Warn("sample");
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Warn);
+        _messages.At(0).Level.Is(LogLevel.Warn);
     }
 
     [Fact]
@@ -121,9 +121,9 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Error(exception);
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Error);
-        _messages.At(0).Message.IsEqual(exception.Message);
-        _messages.At(0).Exception.IsEqual(exception);
+        _messages.At(0).Level.Is(LogLevel.Error);
+        _messages.At(0).Message.Is(exception.Message);
+        _messages.At(0).Exception.Is(exception);
     }
 
     [Fact]
@@ -137,8 +137,8 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         subject.Log().Error("sample");
 
         // assert
-        _messages.At(0).Level.IsEqual(LogLevel.Error);
-        _messages.At(0).Message.IsEqual("sample");
+        _messages.At(0).Level.Is(LogLevel.Error);
+        _messages.At(0).Message.Is("sample");
     }
 
     private IServiceProvider GetProvider(LogLevel minLogLevel = LogLevel.Trace)

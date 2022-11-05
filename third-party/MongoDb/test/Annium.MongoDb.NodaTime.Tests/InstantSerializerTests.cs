@@ -22,7 +22,7 @@ public class InstantSerializerTests
         obj.ToTestJson().Contains("'Instant' : ISODate('2015-01-01T00:00:01Z')").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Instant.IsEqual(instant);
+        obj.Instant.Is(instant);
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class InstantSerializerTests
         obj.ToTestJson().Contains("'InstantNullable' : ISODate('2015-01-01T00:00:01Z')").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.InstantNullable.IsEqual(instant);
+        obj.InstantNullable.Is(instant);
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class InstantSerializerTests
         obj.ToTestJson().Contains("'InstantNullable' : null").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Instant.IsEqual(instant);
+        obj.Instant.Is(instant);
         obj.InstantNullable.IsDefault();
     }
 
@@ -56,7 +56,7 @@ public class InstantSerializerTests
 
         var doc = new BsonDocument(new BsonElement("Instant", "2015-01-01T01:00:01Z"));
         var obj = BsonSerializer.Deserialize<Test>(doc);
-        obj.Instant.IsEqual(instant);
+        obj.Instant.Is(instant);
     }
 
     [Fact]

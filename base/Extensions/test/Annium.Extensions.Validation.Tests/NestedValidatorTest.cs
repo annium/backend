@@ -18,8 +18,8 @@ public class NestedValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(2);
-        result.LabeledErrors.At(nameof(Foo.X)).At(0).IsEqual("Value is less, than given minimum");
-        result.LabeledErrors.At(nameof(Foo.Y)).At(0).IsEqual("Value is less, than given minimum");
+        result.LabeledErrors.At(nameof(Foo.X)).At(0).Is("Value is less, than given minimum");
+        result.LabeledErrors.At(nameof(Foo.Y)).At(0).Is("Value is less, than given minimum");
     }
 
     public class FooValidator : BarValidator<Foo>

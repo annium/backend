@@ -27,10 +27,10 @@ public class MediatorTest
         var response = await mediator.SendAsync<One>(request);
 
         // assert
-        response.GetHashCode().IsEqual(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
+        response.GetHashCode().Is(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
         logs.Has(2);
-        logs.At(0).Message.IsEqual(typeof(ClosedFinalHandler).FullName);
-        logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+        logs.At(0).Message.Is(typeof(ClosedFinalHandler).FullName);
+        logs.At(1).Message.Is(request.GetHashCode().ToString());
     }
 
     [Fact]
@@ -44,10 +44,10 @@ public class MediatorTest
         var response = await mediator.SendAsync<Base>(request);
 
         // assert
-        response.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        response.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
         logs.Has(2);
-        logs.At(0).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(1).Message.IsEqual(request.GetHashCode().ToString());
+        logs.At(0).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(1).Message.Is(request.GetHashCode().ToString());
     }
 
     [Fact]
@@ -67,14 +67,14 @@ public class MediatorTest
 
         // assert
         response.IsSuccess.IsTrue();
-        response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        response.Data.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
         logs.Has(6);
-        logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
-        logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
-        logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-        logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
-        logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+        logs.At(0).Message.Is($"Deserialize Request to {typeof(Two).FriendlyName()}");
+        logs.At(1).Message.Is($"Start {typeof(Two).FriendlyName()} validation");
+        logs.At(2).Message.Is($"Status of {typeof(Two).FriendlyName()} validation: {true}");
+        logs.At(3).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(4).Message.Is(request.GetHashCode().ToString());
+        logs.At(5).Message.Is($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
     }
 
     [Fact]
@@ -95,14 +95,14 @@ public class MediatorTest
 
         // assert
         response.IsSuccess.IsTrue();
-        response.Data.GetHashCode().IsEqual(new Base { Value = "one_two_three" }.GetHashCode());
+        response.Data.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
         logs.Has(6);
-        logs.At(0).Message.IsEqual($"Deserialize Request to {typeof(Two).FriendlyName()}");
-        logs.At(1).Message.IsEqual($"Start {typeof(Two).FriendlyName()} validation");
-        logs.At(2).Message.IsEqual($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-        logs.At(3).Message.IsEqual(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(4).Message.IsEqual(request.GetHashCode().ToString());
-        logs.At(5).Message.IsEqual($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
+        logs.At(0).Message.Is($"Deserialize Request to {typeof(Two).FriendlyName()}");
+        logs.At(1).Message.Is($"Start {typeof(Two).FriendlyName()} validation");
+        logs.At(2).Message.Is($"Status of {typeof(Two).FriendlyName()} validation: {true}");
+        logs.At(3).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
+        logs.At(4).Message.Is(request.GetHashCode().ToString());
+        logs.At(5).Message.Is($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
     }
 
     private ValueTuple<IMediator, IReadOnlyList<LogMessage<DefaultLogContext>>> GetMediator(Action<MediatorConfiguration> configure)
@@ -216,8 +216,8 @@ public class MediatorTest
         {
             this.Log().Trace($"Start {typeof(TRequest).FriendlyName()} validation");
             var result = _validate(request)
-                ? Result.Success(default(TResponse) !)
-                : Result.Failure(default(TResponse) !).Error("Validation failed");
+                ? Result.Success(default(TResponse)!)
+                : Result.Failure(default(TResponse)!).Error("Validation failed");
             this.Log().Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
             if (result.HasErrors)
                 return result;

@@ -30,7 +30,7 @@ public class ObjectCacheTests
         references.All(x => x.Value != null).IsTrue();
         references.GroupBy(x => x.Value).Has(1);
         logs.Has(1);
-        logs.ElementAt(0).IsEqual($"0 {Created}");
+        logs.ElementAt(0).Is($"0 {Created}");
     }
 
     [Fact]

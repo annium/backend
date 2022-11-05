@@ -83,7 +83,7 @@ public class ConvertersTest
         // Can't use AssertConversions here, as it doesn't round-trip
         var period = Period.FromDays(2) + Period.FromHours(3) + Period.FromMinutes(90);
         var json = JsonSerializer.Serialize(period, With(Converters.NormalizingIsoPeriodConverter));
-        json.IsEqual("\"P2DT4H30M\"");
+        json.Is("\"P2DT4H30M\"");
     }
 
     [Fact]
@@ -171,7 +171,7 @@ public class ConvertersTest
     public void Duration_ParsePartialFractionalSecondsWithTrailingZeroes()
     {
         var parsed = JsonSerializer.Deserialize<Duration>("\"25:10:00.1234000\"", With(Converters.DurationConverter));
-        (Duration.FromHours(25) + Duration.FromMinutes(10) + Duration.FromTicks(1234000)).IsEqual(parsed);
+        (Duration.FromHours(25) + Duration.FromMinutes(10) + Duration.FromTicks(1234000)).Is(parsed);
     }
 
     [Fact]

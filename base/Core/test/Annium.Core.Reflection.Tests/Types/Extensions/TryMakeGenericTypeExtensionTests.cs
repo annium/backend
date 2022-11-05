@@ -10,7 +10,7 @@ public class TryMakeGenericTypeExtensionTests
     public void TryMakeGenericType_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.TryMakeGenericType(out var result)).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.TryMakeGenericType(out var result)).Throws<ArgumentNullException>();
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class TryMakeGenericTypeExtensionTests
         result.IsDefault();
 
         typeof(Demo<>).TryMakeGenericType(out result, typeof(object)).IsTrue();
-        result.IsEqual(typeof(Demo<object>));
+        result.Is(typeof(Demo<object>));
     }
 
     private class Demo<T> where T : class

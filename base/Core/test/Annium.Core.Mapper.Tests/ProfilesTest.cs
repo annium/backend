@@ -24,10 +24,10 @@ public class ProfilesTest
 
         // assert
         result.Has(2);
-        result.At(0).As<ImageModel>().Image.IsEqual("img");
-        result.At(0).As<ImageModel>().Created.ToDateTimeUtc().IsEqual(date);
-        result.At(1).As<LinkModel>().Link.IsEqual("lnk");
-        result.At(1).As<LinkModel>().Created.IsEqual(instant.ToDateTimeUtc());
+        result.At(0).As<ImageModel>().Image.Is("img");
+        result.At(0).As<ImageModel>().Created.ToDateTimeUtc().Is(date);
+        result.At(1).As<LinkModel>().Link.Is("lnk");
+        result.At(1).As<LinkModel>().Created.Is(instant.ToDateTimeUtc());
     }
 
     private IMapper GetMapper() => new ServiceContainer()

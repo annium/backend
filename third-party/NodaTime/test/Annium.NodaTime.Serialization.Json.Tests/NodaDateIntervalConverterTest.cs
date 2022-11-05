@@ -30,7 +30,7 @@ public class NodaDateIntervalConverterTest
         var testObject = new TestObject { Interval = dateInterval };
 
         var json = JsonSerializer.Serialize(testObject, With(_converters));
-        json.IsEqual("{\"interval\":{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}}");
+        json.Is("{\"interval\":{\"start\":\"2012-01-02\",\"end\":\"2013-06-07\"}}");
     }
 
     [Fact]
@@ -45,7 +45,7 @@ public class NodaDateIntervalConverterTest
         var startLocalDate = new LocalDate(2012, 1, 2);
         var endLocalDate = new LocalDate(2013, 6, 7);
         var expectedInterval = new DateInterval(startLocalDate, endLocalDate);
-        interval.IsEqual(expectedInterval);
+        interval.Is(expectedInterval);
     }
 
     public class TestObject

@@ -21,7 +21,7 @@ public class LocalDateTimeSerializerTests
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalDateTime.IsEqual(obj.LocalDateTime);
+        obj.LocalDateTime.Is(obj.LocalDateTime);
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class LocalDateTimeSerializerTests
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalDateTime.IsEqual(obj.LocalDateTime.WithCalendar(CalendarSystem.Iso));
+        obj.LocalDateTime.Is(obj.LocalDateTime.WithCalendar(CalendarSystem.Iso));
     }
 
     [Fact]

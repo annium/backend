@@ -16,7 +16,7 @@ public class AsyncLazyTest
         var value = await lazy;
 
         // assert
-        value.IsEqual(10);
+        value.Is(10);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class AsyncLazyTest
         var value = await lazy;
 
         // assert
-        value.IsEqual(10);
+        value.Is(10);
     }
 
     [Fact]

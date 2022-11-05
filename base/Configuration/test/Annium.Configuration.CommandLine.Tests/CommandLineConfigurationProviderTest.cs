@@ -30,7 +30,7 @@ public class CommandLineConfigurationProviderTest
         // assert
         result.IsNotDefault();
         result.Flag.IsTrue();
-        result.Plain.IsEqual(7);
+        result.Plain.Is(7);
         result.Array.SequenceEqual(new[] { 4, 7 }).IsTrue();
         result.Nested.Plain.IsEqual(4);
         result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();

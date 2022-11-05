@@ -20,7 +20,7 @@ public class ComposerTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("Value is null");
+        result.PlainErrors.At(0).Is("Value is null");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class ComposerTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("nested").At(0).IsEqual("Value is null");
+        result.LabeledErrors.At("nested").At(0).Is("Value is null");
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class ComposerTest : TestBase
 
         // assert
         result.IsOk.IsTrue();
-        data.Name.IsEqual(nameof(Person.Name));
+        data.Name.Is(nameof(Person.Name));
     }
 
     [Fact]
@@ -65,8 +65,8 @@ public class ComposerTest : TestBase
 
         // assert
         result.IsOk.IsTrue();
-        data.Email.IsEqual(nameof(User.Email));
-        data.Login.IsEqual(nameof(User.Login));
+        data.Email.Is(nameof(User.Email));
+        data.Login.Is(nameof(User.Login));
     }
 
     [Fact]

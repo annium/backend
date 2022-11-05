@@ -21,7 +21,7 @@ public class CompositionPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.NotFound);
+        result.Status.Is(OperationStatus.NotFound);
         result.LabeledErrors.Has(2);
         result.LabeledErrors.At(nameof(LoginRequest.UserName)).Has(1);
         result.LabeledErrors.At(nameof(LoginRequest.Password)).Has(1);
@@ -38,10 +38,10 @@ public class CompositionPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.Ok);
+        result.Status.Is(OperationStatus.Ok);
         result.IsOk.IsTrue();
-        result.Data.UserName.IsEqual("username");
-        result.Data.Password.IsEqual("password");
+        result.Data.UserName.Is("username");
+        result.Data.Password.Is("password");
     }
 
     private class LoginRequest : IUserName, IPassword, IThrowing

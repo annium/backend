@@ -20,10 +20,10 @@ public class ConstructorMapResolverTest
         var arr = mapper.Map<B[]>(new[] { first, second });
 
         // assert
-        one.Name.IsEqual(first.Name);
+        one.Name.Is(first.Name);
         arr.Has(2);
-        arr.At(0).Name.IsEqual(first.Name);
-        arr.At(1).Name.IsEqual(second.Name);
+        arr.At(0).Name.Is(first.Name);
+        arr.At(1).Name.Is(second.Name);
     }
 
 

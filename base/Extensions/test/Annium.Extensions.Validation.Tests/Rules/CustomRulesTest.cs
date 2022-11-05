@@ -20,7 +20,7 @@ public class CustomRulesTest : TestBase
         resultGood.IsOk.IsTrue();
         resultBad.HasErrors.IsTrue();
         resultBad.LabeledErrors.Has(1);
-        resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).IsEqual("Value doesn't match condition");
+        resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).Is("Value doesn't match condition");
     }
 
     [Fact]
@@ -35,7 +35,7 @@ public class CustomRulesTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
+        result.LabeledErrors.At(nameof(Person.Name)).At(0).Is("Value is required");
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class CustomRulesTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual($"{nameof(Person.Name)} value is too short");
+        result.LabeledErrors.At(nameof(Person.Name)).At(0).Is($"{nameof(Person.Name)} value is too short");
     }
 
     private class Person

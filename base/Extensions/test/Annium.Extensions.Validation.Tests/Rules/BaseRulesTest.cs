@@ -20,7 +20,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Name)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
+        resultBad.LabeledErrors.At(nameof(Person.Name)).At(0).Is("Value is required");
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class BaseRulesTest : TestBase
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Nullable)).IsFalse();
         resultGood2.LabeledErrors.ContainsKey(nameof(Person.Nullable)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Nullable)).At(0).IsEqual("Value is required");
+        resultBad.LabeledErrors.At(nameof(Person.Nullable)).At(0).Is("Value is required");
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Age)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).IsEqual("Value is required");
+        resultBad.LabeledErrors.At(nameof(Person.Age)).At(0).Is("Value is required");
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Fixed)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Fixed)).At(0).IsEqual("Value is not equal to given");
+        resultBad.LabeledErrors.At(nameof(Person.Fixed)).At(0).Is("Value is not equal to given");
     }
 
     [Fact]
@@ -82,7 +82,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.OneOf)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.OneOf)).At(0).IsEqual("Value is not in given");
+        resultBad.LabeledErrors.At(nameof(Person.OneOf)).At(0).Is("Value is not in given");
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.SameAsName)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.SameAsName)).At(0).IsEqual("Value is not equal to given");
+        resultBad.LabeledErrors.At(nameof(Person.SameAsName)).At(0).Is("Value is not equal to given");
     }
 
     [Fact]
@@ -112,7 +112,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.NotFixed)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.NotFixed)).At(0).IsEqual("Value is equal to given");
+        resultBad.LabeledErrors.At(nameof(Person.NotFixed)).At(0).Is("Value is equal to given");
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.NotOneOf)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.NotOneOf)).At(0).IsEqual("Value is in given");
+        resultBad.LabeledErrors.At(nameof(Person.NotOneOf)).At(0).Is("Value is in given");
     }
 
     [Fact]
@@ -142,7 +142,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.NotSameAsName)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.NotSameAsName)).At(0).IsEqual("Value is equal to given");
+        resultBad.LabeledErrors.At(nameof(Person.NotSameAsName)).At(0).Is("Value is equal to given");
     }
 
     [Fact]
@@ -158,8 +158,8 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MinMaxLength)).IsFalse();
-        resultBadMin.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).IsEqual("Value length is less, than 2");
-        resultBadMax.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).IsEqual("Value length is greater, than 5");
+        resultBadMin.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).Is("Value length is less, than 2");
+        resultBadMax.LabeledErrors.At(nameof(Person.MinMaxLength)).At(0).Is("Value length is greater, than 5");
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MinLength)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MinLength)).At(0).IsEqual("Value length is less, than 2");
+        resultBad.LabeledErrors.At(nameof(Person.MinLength)).At(0).Is("Value length is less, than 2");
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MaxLength)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MaxLength)).At(0).IsEqual("Value length is greater, than 5");
+        resultBad.LabeledErrors.At(nameof(Person.MaxLength)).At(0).Is("Value length is greater, than 5");
     }
 
     [Fact]
@@ -205,8 +205,8 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Between)).IsFalse();
-        resultBadMin.LabeledErrors.At(nameof(Person.Between)).At(0).IsEqual("Value is less, than given minimum");
-        resultBadMax.LabeledErrors.At(nameof(Person.Between)).At(0).IsEqual("Value is greater, than given maximum");
+        resultBadMin.LabeledErrors.At(nameof(Person.Between)).At(0).Is("Value is less, than given minimum");
+        resultBadMax.LabeledErrors.At(nameof(Person.Between)).At(0).Is("Value is greater, than given maximum");
     }
 
     [Fact]
@@ -221,7 +221,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThan)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.LessThan)).At(0).IsEqual("Value is greater, than given maximum");
+        resultBad.LabeledErrors.At(nameof(Person.LessThan)).At(0).Is("Value is greater, than given maximum");
     }
 
     [Fact]
@@ -236,7 +236,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.LessThanOrEqual)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.LessThanOrEqual)).At(0).IsEqual("Value is greater, than given maximum");
+        resultBad.LabeledErrors.At(nameof(Person.LessThanOrEqual)).At(0).Is("Value is greater, than given maximum");
     }
 
     [Fact]
@@ -251,7 +251,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThan)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.GreaterThan)).At(0).IsEqual("Value is less, than given minimum");
+        resultBad.LabeledErrors.At(nameof(Person.GreaterThan)).At(0).Is("Value is less, than given minimum");
     }
 
     [Fact]
@@ -266,7 +266,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.GreaterThanOrEqual)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.GreaterThanOrEqual)).At(0).IsEqual("Value is less, than given minimum");
+        resultBad.LabeledErrors.At(nameof(Person.GreaterThanOrEqual)).At(0).Is("Value is less, than given minimum");
     }
 
     [Fact]
@@ -281,7 +281,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.RegexString)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.RegexString)).At(0).IsEqual("Value doesn't match specified regex");
+        resultBad.LabeledErrors.At(nameof(Person.RegexString)).At(0).Is("Value doesn't match specified regex");
     }
 
     [Fact]
@@ -296,7 +296,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.RegexInstance)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.RegexInstance)).At(0).IsEqual("Value doesn't match specified regex");
+        resultBad.LabeledErrors.At(nameof(Person.RegexInstance)).At(0).Is("Value doesn't match specified regex");
     }
 
     [Fact]
@@ -311,7 +311,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MustField)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MustField)).At(0).IsEqual("Value doesn't match condition");
+        resultBad.LabeledErrors.At(nameof(Person.MustField)).At(0).Is("Value doesn't match condition");
     }
 
     [Fact]
@@ -326,7 +326,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MustValueField)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MustValueField)).At(0).IsEqual("Value doesn't match condition");
+        resultBad.LabeledErrors.At(nameof(Person.MustValueField)).At(0).Is("Value doesn't match condition");
     }
 
     [Fact]
@@ -341,7 +341,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MustFieldAsync)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MustFieldAsync)).At(0).IsEqual("Value doesn't match condition");
+        resultBad.LabeledErrors.At(nameof(Person.MustFieldAsync)).At(0).Is("Value doesn't match condition");
     }
 
     [Fact]
@@ -356,7 +356,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.MustValueFieldAsync)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.MustValueFieldAsync)).At(0).IsEqual("Value doesn't match condition");
+        resultBad.LabeledErrors.At(nameof(Person.MustValueFieldAsync)).At(0).Is("Value doesn't match condition");
     }
 
     [Fact]
@@ -371,7 +371,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Email)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Email)).At(0).IsEqual("Value is not an email");
+        resultBad.LabeledErrors.At(nameof(Person.Email)).At(0).Is("Value is not an email");
     }
 
     [Fact]
@@ -386,7 +386,7 @@ public class BaseRulesTest : TestBase
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();
-        resultBad.LabeledErrors.At(nameof(Person.Enum)).At(0).IsEqual("Value is not in expected range");
+        resultBad.LabeledErrors.At(nameof(Person.Enum)).At(0).Is("Value is not in expected range");
     }
 
     private class Person

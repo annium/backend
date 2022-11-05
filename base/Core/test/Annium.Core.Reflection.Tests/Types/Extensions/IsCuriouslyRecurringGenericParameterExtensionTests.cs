@@ -11,7 +11,7 @@ public class IsCuriouslyRecurringGenericParameterExtensionTests
     public void IsCuriouslyRecurringGenericParameter_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.IsCuriouslyRecurringGenericParameter()).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.IsCuriouslyRecurringGenericParameter()).Throws<ArgumentNullException>();
     }
 
     [Fact]

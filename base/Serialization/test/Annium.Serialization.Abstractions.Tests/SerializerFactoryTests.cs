@@ -21,8 +21,8 @@ public class SerializerFactoryTests
         var deserialized = serializer.Deserialize<Point>(serialized);
 
         // assert
-        serialized.IsEqual(@"{""X"":1,""Y"":-1}");
-        deserialized.IsEqual(data);
+        serialized.Is(@"{""X"":1,""Y"":-1}");
+        deserialized.Is(data);
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public class SerializerFactoryTests
         var deserialized = serializer.Deserialize(serialized);
 
         // assert
-        serialized.IsEqual(@"{""X"":1,""Y"":-1}");
-        deserialized.IsEqual(data);
+        serialized.Is(@"{""X"":1,""Y"":-1}");
+        deserialized.Is(data);
     }
 
     public struct Point

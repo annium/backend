@@ -18,7 +18,7 @@ public class ValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("Value is null");
+        result.PlainErrors.At(0).Is("Value is null");
     }
 
     [Fact]
@@ -33,7 +33,7 @@ public class ValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("nested").At(0).IsEqual("Value is null");
+        result.LabeledErrors.At("nested").At(0).Is("Value is null");
     }
 
     [Fact]
@@ -48,7 +48,7 @@ public class ValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At(nameof(Person.Name)).At(0).IsEqual("Value is required");
+        result.LabeledErrors.At(nameof(Person.Name)).At(0).Is("Value is required");
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class ValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At($"nested.{nameof(Person.Name)}").At(0).IsEqual("Value is required");
+        result.LabeledErrors.At($"nested.{nameof(Person.Name)}").At(0).Is("Value is required");
     }
 
     [Fact]
@@ -78,8 +78,8 @@ public class ValidatorTest : TestBase
         // assert
         result.HasErrors.IsTrue();
         result.LabeledErrors.Has(2);
-        result.LabeledErrors.At(nameof(User.Email)).At(0).IsEqual("Value is required");
-        result.LabeledErrors.At(nameof(User.Login)).At(0).IsEqual("Value is required");
+        result.LabeledErrors.At(nameof(User.Email)).At(0).Is("Value is required");
+        result.LabeledErrors.At(nameof(User.Login)).At(0).Is("Value is required");
     }
 
     private class User : IEmail, ILogin

@@ -21,9 +21,9 @@ public class EnumerableMapResolverTest
 
         // assert
         one.Has(1);
-        one.At(0).Name.IsEqual(value[0].Name);
+        one.At(0).Name.Is(value[0].Name);
         two.Has(1);
-        two.At(0).Name.IsEqual(value[0].Name);
+        two.At(0).Name.Is(value[0].Name);
     }
 
     [Fact]
@@ -38,7 +38,7 @@ public class EnumerableMapResolverTest
 
         // assert
         result.Has(1);
-        result.At(0).Name.IsEqual(value[0].Name);
+        result.At(0).Name.Is(value[0].Name);
     }
 
     [Fact]
@@ -53,7 +53,7 @@ public class EnumerableMapResolverTest
 
         // assert
         result.Has(1);
-        result.At("one").Name.IsEqual(value["one"].Name);
+        result.At("one").Name.Is(value["one"].Name);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class EnumerableMapResolverTest
 
         // assert
         result.Has(1);
-        result.At(0).Name.IsEqual(value[0].Name);
+        result.At(0).Name.Is(value[0].Name);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class EnumerableMapResolverTest
 
         // assert
         result.Has(1);
-        result.At("one").Name.IsEqual(value["one"].Name);
+        result.At("one").Name.Is(value["one"].Name);
     }
 
     [Fact]
@@ -98,7 +98,7 @@ public class EnumerableMapResolverTest
 
         // assert
         result.Has(1);
-        result.At("one").Name.IsEqual(value["one"].Name);
+        result.At("one").Name.Is(value["one"].Name);
     }
 
     private IMapper GetMapper() => new ServiceContainer()

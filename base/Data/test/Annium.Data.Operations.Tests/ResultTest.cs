@@ -24,7 +24,7 @@ public class ResultTest
 
         // assert
         result.IsOk.IsTrue();
-        result.Data.IsEqual(5);
+        result.Data.Is(5);
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ResultTest
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
     }
 
     [Fact]
@@ -66,8 +66,8 @@ public class ResultTest
 
         // assert
         result.HasErrors.IsTrue();
-        result.LabeledErrors.Count.IsEqual(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("plain");
+        result.LabeledErrors.Count.Is(1);
+        result.LabeledErrors.At("label").At(0).Is("plain");
     }
 
     [Fact]
@@ -81,8 +81,8 @@ public class ResultTest
 
         // assert
         result.PlainErrors.Has(2);
-        result.PlainErrors.At(0).IsEqual("plain");
-        result.PlainErrors.At(1).IsEqual("another");
+        result.PlainErrors.At(0).Is("plain");
+        result.PlainErrors.At(1).Is("another");
     }
 
     [Fact]
@@ -96,8 +96,8 @@ public class ResultTest
 
         // assert
         result.PlainErrors.Has(2);
-        result.PlainErrors.At(0).IsEqual("plain");
-        result.PlainErrors.At(1).IsEqual("another");
+        result.PlainErrors.At(0).Is("plain");
+        result.PlainErrors.At(1).Is("another");
     }
 
     [Fact]
@@ -110,10 +110,10 @@ public class ResultTest
         result.Errors(("label", new[] { "plain" }), ("other", new[] { "prev" }), ("other", new[] { "another" }));
 
         // assert
-        result.LabeledErrors.Count.IsEqual(2);
-        result.LabeledErrors.At("label").At(0).IsEqual("plain");
-        result.LabeledErrors.At("other").At(0).IsEqual("prev");
-        result.LabeledErrors.At("other").At(1).IsEqual("another");
+        result.LabeledErrors.Count.Is(2);
+        result.LabeledErrors.At("label").At(0).Is("plain");
+        result.LabeledErrors.At("other").At(0).Is("prev");
+        result.LabeledErrors.At("other").At(1).Is("another");
     }
 
     [Fact]
@@ -126,9 +126,9 @@ public class ResultTest
         result.Errors(new Dictionary<string, IReadOnlyCollection<string>> { { "label", new[] { "plain" } }, { "other", new[] { "another" } } });
 
         // assert
-        result.LabeledErrors.Count.IsEqual(2);
-        result.LabeledErrors.At("label").At(0).IsEqual("plain");
-        result.LabeledErrors.At("other").At(0).IsEqual("another");
+        result.LabeledErrors.Count.Is(2);
+        result.LabeledErrors.At("label").At(0).Is("plain");
+        result.LabeledErrors.At("other").At(0).Is("another");
     }
 
     [Fact]
@@ -145,13 +145,13 @@ public class ResultTest
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(3);
-        result.PlainErrors.At(0).IsEqual("own");
-        result.PlainErrors.At(1).IsEqual("plain");
-        result.PlainErrors.At(2).IsEqual("another");
-        result.LabeledErrors.Count.IsEqual(3);
-        result.LabeledErrors.At("label").At(0).IsEqual("mine");
-        result.LabeledErrors.At("a").At(0).IsEqual("va");
-        result.LabeledErrors.At("b").At(0).IsEqual("vb");
+        result.PlainErrors.At(0).Is("own");
+        result.PlainErrors.At(1).Is("plain");
+        result.PlainErrors.At(2).Is("another");
+        result.LabeledErrors.Count.Is(3);
+        result.LabeledErrors.At("label").At(0).Is("mine");
+        result.LabeledErrors.At("a").At(0).Is("va");
+        result.LabeledErrors.At("b").At(0).Is("vb");
     }
 
     [Fact]
@@ -168,13 +168,13 @@ public class ResultTest
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(3);
-        result.PlainErrors.At(0).IsEqual("own");
-        result.PlainErrors.At(1).IsEqual("plain");
-        result.PlainErrors.At(2).IsEqual("another");
-        result.LabeledErrors.Count.IsEqual(3);
-        result.LabeledErrors.At("label").At(0).IsEqual("mine");
-        result.LabeledErrors.At("a").At(0).IsEqual("va");
-        result.LabeledErrors.At("b").At(0).IsEqual("vb");
+        result.PlainErrors.At(0).Is("own");
+        result.PlainErrors.At(1).Is("plain");
+        result.PlainErrors.At(2).Is("another");
+        result.LabeledErrors.Count.Is(3);
+        result.LabeledErrors.At("label").At(0).Is("mine");
+        result.LabeledErrors.At("a").At(0).Is("va");
+        result.LabeledErrors.At("b").At(0).Is("vb");
     }
 
     [Fact]
@@ -190,10 +190,10 @@ public class ResultTest
         clone.HasErrors.IsTrue();
         clone.HasErrors.IsTrue();
         clone.PlainErrors.Has(1);
-        clone.PlainErrors.At(0).IsEqual("plain");
+        clone.PlainErrors.At(0).Is("plain");
         clone.LabeledErrors.Has(1);
         clone.LabeledErrors.At("label").Has(1);
-        clone.LabeledErrors.At("label").At(0).IsEqual("value");
+        clone.LabeledErrors.At("label").At(0).Is("value");
     }
 
     [Fact]
@@ -206,14 +206,14 @@ public class ResultTest
         var clone = result.Copy();
 
         // assert
-        clone.Data.IsEqual(10);
+        clone.Data.Is(10);
         clone.HasErrors.IsTrue();
         clone.PlainErrors.Has(1);
-        clone.PlainErrors.At(0).IsEqual("plain");
+        clone.PlainErrors.At(0).Is("plain");
         clone.LabeledErrors.Has(1);
         clone.LabeledErrors.At("label").Has(1);
-        clone.LabeledErrors.At("label").At(0).IsEqual("value");
-        clone.Data.IsEqual(10);
+        clone.LabeledErrors.At("label").At(0).Is("value");
+        clone.Data.Is(10);
     }
 
     [Fact]
@@ -230,13 +230,13 @@ public class ResultTest
         // assert
         output.HasErrors.IsTrue();
         output.PlainErrors.Has(3);
-        output.PlainErrors.At(0).IsEqual("own");
-        output.PlainErrors.At(1).IsEqual("plain");
-        output.PlainErrors.At(2).IsEqual("another");
-        output.LabeledErrors.Count.IsEqual(3);
-        output.LabeledErrors.At("label").At(0).IsEqual("mine");
-        output.LabeledErrors.At("a").At(0).IsEqual("va");
-        output.LabeledErrors.At("b").At(0).IsEqual("vb");
+        output.PlainErrors.At(0).Is("own");
+        output.PlainErrors.At(1).Is("plain");
+        output.PlainErrors.At(2).Is("another");
+        output.LabeledErrors.Count.Is(3);
+        output.LabeledErrors.At("label").At(0).Is("mine");
+        output.LabeledErrors.At("a").At(0).Is("va");
+        output.LabeledErrors.At("b").At(0).Is("vb");
     }
 
     [Fact]
@@ -253,12 +253,12 @@ public class ResultTest
         // assert
         output.HasErrors.IsTrue();
         output.PlainErrors.Has(3);
-        output.PlainErrors.At(0).IsEqual("own");
-        output.PlainErrors.At(1).IsEqual("plain");
-        output.PlainErrors.At(2).IsEqual("another");
-        output.LabeledErrors.Count.IsEqual(3);
-        output.LabeledErrors.At("label").At(0).IsEqual("mine");
-        output.LabeledErrors.At("a").At(0).IsEqual("va");
-        output.LabeledErrors.At("b").At(0).IsEqual("vb");
+        output.PlainErrors.At(0).Is("own");
+        output.PlainErrors.At(1).Is("plain");
+        output.PlainErrors.At(2).Is("another");
+        output.LabeledErrors.Count.Is(3);
+        output.LabeledErrors.At("label").At(0).Is("mine");
+        output.LabeledErrors.At("a").At(0).Is("va");
+        output.LabeledErrors.At("b").At(0).Is("vb");
     }
 }

@@ -23,9 +23,9 @@ public class LocalizerTest
         var ru = localizer["test"];
 
         // assert
-        iv.IsEqual("test");
-        en.IsEqual("demo");
-        ru.IsEqual("демо");
+        iv.Is("test");
+        en.Is("demo");
+        ru.Is("демо");
     }
 
     [Fact]
@@ -42,9 +42,9 @@ public class LocalizerTest
         var ru = localizer["test params", 5];
 
         // assert
-        iv.IsEqual("test params");
-        en.IsEqual("demo 5");
-        ru.IsEqual("демо 5");
+        iv.Is("test params");
+        en.Is("demo 5");
+        ru.Is("демо 5");
     }
 
     [Fact]
@@ -61,9 +61,9 @@ public class LocalizerTest
         var ru = localizer["test"];
 
         // assert
-        iv.IsEqual("demo");
-        en.IsEqual("demo");
-        ru.IsEqual("demo");
+        iv.Is("demo");
+        en.Is("demo");
+        ru.Is("demo");
     }
 
     [Fact]
@@ -80,9 +80,9 @@ public class LocalizerTest
         var ru = localizer["test"];
 
         // assert
-        iv.IsEqual("test");
-        en.IsEqual("demo");
-        ru.IsEqual("демо");
+        iv.Is("test");
+        en.Is("demo");
+        ru.Is("демо");
     }
 
     private ILocalizer<LocalizerTest> GetLocalizer(Action<LocalizationOptions> configure)

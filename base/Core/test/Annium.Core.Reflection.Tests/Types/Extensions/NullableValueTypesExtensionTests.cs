@@ -10,14 +10,14 @@ public class NullableValueTypesExtensionTests
     public void IsNotNullableValueType_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.IsNotNullableValueType()).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.IsNotNullableValueType()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void IsNullableValueType_OfNull_Throws()
     {
         //assert
-        Wrap.It(() => (null as Type) !.IsNullableValueType()).Throws<ArgumentNullException>();
+        Wrap.It(() => (null as Type)!.IsNullableValueType()).Throws<ArgumentNullException>();
     }
 
     [Fact]

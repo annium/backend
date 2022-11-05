@@ -12,10 +12,10 @@ internal static class TestHelper
         var options = With(converters);
 
         var actual = JsonSerializer.Serialize(value, options);
-        actual.IsEqual(expected);
+        actual.Is(expected);
 
         var deserialized = JsonSerializer.Deserialize<T>(expected, options);
-        deserialized.IsEqual(value);
+        deserialized.Is(value);
     }
 
     internal static JsonSerializerOptions With(params JsonConverter[] converters)

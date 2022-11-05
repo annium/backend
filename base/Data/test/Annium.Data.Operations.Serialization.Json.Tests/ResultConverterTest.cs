@@ -14,7 +14,7 @@ public class ResultConverterTest
         var str = JsonSerializer.Serialize(Result.New(), GetSettings());
 
         // assert
-        str.IsEqual(@"{""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class ResultConverterTest
         var str = JsonSerializer.Serialize(Result.New().Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class ResultConverterTest
         var str = JsonSerializer.Serialize(Result.New(5), GetSettings());
 
         // assert
-        str.IsEqual(@"{""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""data"":5,""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class ResultConverterTest
         var str = JsonSerializer.Serialize(Result.New(5).Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""data"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -66,9 +66,9 @@ public class ResultConverterTest
         // assert
         result.HasErrors.IsTrue();
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     [Fact]
@@ -79,7 +79,7 @@ public class ResultConverterTest
 
         // assert
         result.IsOk.IsTrue();
-        result.Data.IsEqual(5);
+        result.Data.Is(5);
     }
 
     [Fact]
@@ -91,11 +91,11 @@ public class ResultConverterTest
 
         // assert
         result.HasErrors.IsTrue();
-        result.Data.IsEqual(5);
+        result.Data.Is(5);
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();

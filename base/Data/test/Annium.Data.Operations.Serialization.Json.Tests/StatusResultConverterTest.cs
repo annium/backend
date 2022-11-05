@@ -14,7 +14,7 @@ public class StatusResultConverterTest
         var str = JsonSerializer.Serialize(Result.Status(5), GetSettings());
 
         // assert
-        str.IsEqual(@"{""status"":5,""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""status"":5,""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public class StatusResultConverterTest
         var str = JsonSerializer.Serialize(Result.Status(5).Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""status"":5,""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -34,7 +34,7 @@ public class StatusResultConverterTest
         var result = JsonSerializer.Deserialize<IStatusResult<int>>("{}", GetSettings())!;
 
         // assert
-        result.Status.IsEqual(0);
+        result.Status.Is(0);
     }
 
     [Fact]
@@ -54,7 +54,7 @@ public class StatusResultConverterTest
         var result = JsonSerializer.Deserialize<IStatusResult<int>>(@"{""status"":5}", GetSettings())!;
 
         // assert
-        result.Status.IsEqual(5);
+        result.Status.Is(5);
     }
 
     [Fact]
@@ -67,11 +67,11 @@ public class StatusResultConverterTest
         )!;
 
         // assert
-        result.Status.IsEqual(5);
+        result.Status.Is(5);
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class StatusResultConverterTest
         var str = JsonSerializer.Serialize(Result.Status(5, "some"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[],""labeledErrors"":{}}");
+        str.Is(@"{""status"":5,""data"":""some"",""plainErrors"":[],""labeledErrors"":{}}");
     }
 
     [Fact]
@@ -91,7 +91,7 @@ public class StatusResultConverterTest
         var str = JsonSerializer.Serialize(Result.Status(5, "some").Error("plain").Error("label", "another"), GetSettings());
 
         // assert
-        str.IsEqual(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
+        str.Is(@"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}");
     }
 
     [Fact]
@@ -101,8 +101,8 @@ public class StatusResultConverterTest
         var result = JsonSerializer.Deserialize<IStatusResult<int, int>>("{}", GetSettings())!;
 
         // assert
-        result.Status.IsEqual(0);
-        result.Data.IsEqual(0);
+        result.Status.Is(0);
+        result.Data.Is(0);
     }
 
     [Fact]
@@ -123,8 +123,8 @@ public class StatusResultConverterTest
         var result = JsonSerializer.Deserialize<IStatusResult<int, string>>(@"{""status"":5,""data"":""some""}", GetSettings())!;
 
         // assert
-        result.Status.IsEqual(5);
-        result.Data.IsEqual("some");
+        result.Status.Is(5);
+        result.Data.Is("some");
     }
 
     [Fact]
@@ -135,12 +135,12 @@ public class StatusResultConverterTest
             @"{""status"":5,""data"":""some"",""plainErrors"":[""plain""],""labeledErrors"":{""label"":[""another""]}}", GetSettings())!;
 
         // assert
-        result.Status.IsEqual(5);
-        result.Data.IsEqual("some");
+        result.Status.Is(5);
+        result.Data.Is("some");
         result.PlainErrors.Has(1);
-        result.PlainErrors.At(0).IsEqual("plain");
+        result.PlainErrors.At(0).Is("plain");
         result.LabeledErrors.Has(1);
-        result.LabeledErrors.At("label").At(0).IsEqual("another");
+        result.LabeledErrors.At("label").At(0).Is("another");
     }
 
     private JsonSerializerOptions GetSettings() => new JsonSerializerOptions().ConfigureForOperations();

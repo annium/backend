@@ -21,7 +21,7 @@ public class ValidationPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.BadRequest);
+        result.Status.Is(OperationStatus.BadRequest);
         result.LabeledErrors.Has(2);
         result.LabeledErrors.At(nameof(LoginRequest.UserName)).Has(1);
         result.LabeledErrors.At(nameof(LoginRequest.Password)).Has(1);
@@ -38,7 +38,7 @@ public class ValidationPipeHandlerTest : TestBase
         var result = await mediator.SendAsync<IStatusResult<OperationStatus, LoginRequest>>(request);
 
         // assert
-        result.Status.IsEqual(OperationStatus.Ok);
+        result.Status.Is(OperationStatus.Ok);
         result.IsOk.IsTrue();
     }
 
