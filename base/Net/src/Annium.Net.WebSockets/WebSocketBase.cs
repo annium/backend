@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Extensions.Execution;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Internal;
@@ -129,12 +128,10 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             }
         });
 
-        await Wait.UntilAsync(() => _keepAliveMonitor != default! && Logger != default!, CancellationToken.None, pollDelay: 5);
-
         while (true)
         {
-            this.Log().Trace("wait until ready to receive data from socket");
             await _socketTcs.Task;
+            this.Log().Trace("start receiving data from socket");
 
             if (ctx.Ct.IsCancellationRequested)
             {
