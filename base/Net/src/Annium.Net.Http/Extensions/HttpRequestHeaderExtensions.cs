@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -11,4 +12,14 @@ public static class HttpRequestHeaderExtensions
 
     public static IHttpRequest BearerAuthorization(this IHttpRequest request, string token) =>
         request.Authorization(new AuthenticationHeaderValue("Bearer", token));
+
+    public static IHttpRequest Cookie(this IHttpRequest request, string name, string value) =>
+        request.Cookie(new Cookie(name, value));
+
+    public static IHttpRequest Cookie(this IHttpRequest request, Cookie cookie)
+    {
+        request.Headers.Add("Cookie", cookie.ToString());
+
+        return request;
+    }
 }
