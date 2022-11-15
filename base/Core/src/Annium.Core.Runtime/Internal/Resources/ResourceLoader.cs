@@ -14,7 +14,7 @@ internal class ResourceLoader : IResourceLoader
 
     public IReadOnlyCollection<IResource> Load(string prefix, Assembly assembly)
     {
-        prefix = $"{assembly.ShortName()}.{prefix}.";
+        prefix = $"{assembly.ShortName()}.{prefix}";
 
         var names = assembly.GetManifestResourceNames();
 
