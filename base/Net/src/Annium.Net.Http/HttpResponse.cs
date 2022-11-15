@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -23,6 +24,7 @@ public class HttpResponse : IHttpResponse
     public bool IsFailure { get; }
     public HttpStatusCode StatusCode { get; }
     public string StatusText { get; }
+    public Uri Uri { get; }
     public HttpResponseHeaders Headers { get; }
     public HttpContent Content { get; }
 
@@ -32,19 +34,9 @@ public class HttpResponse : IHttpResponse
         IsFailure = !message.IsSuccessStatusCode;
         StatusCode = message.StatusCode;
         StatusText = message.ReasonPhrase!;
+        Uri = message.RequestMessage!.RequestUri!;
         Headers = message.Headers;
         Content = message.Content;
-    }
-
-    public HttpResponse(HttpRequestException exception)
-    {
-        IsSuccess = false;
-        IsFailure = true;
-        StatusCode = HttpStatusCode.InternalServerError;
-        StatusText = exception.Message!;
-        var message = new HttpResponseMessage();
-        Headers = message.Headers;
-        Content = new StringContent(string.Empty);
     }
 
     internal HttpResponse(IHttpResponse response)
@@ -53,6 +45,7 @@ public class HttpResponse : IHttpResponse
         IsFailure = response.IsFailure;
         StatusCode = response.StatusCode;
         StatusText = response.StatusText;
+        Uri = response.Uri;
         Headers = response.Headers;
         Content = response.Content;
     }
