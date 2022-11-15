@@ -22,7 +22,7 @@ internal partial class HttpRequest : IHttpRequest
         HttpRequestOptions options
     );
 
-    private static readonly HttpClient DefaultClient = new();
+    private static readonly HttpClient DefaultClient = new(new HttpClientHandler { UseCookies = false });
 
     public HttpMethod Method { get; private set; } = HttpMethod.Get;
     public Uri Uri => BuildUri();
