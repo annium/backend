@@ -208,14 +208,15 @@ internal partial class HttpRequest : IHttpRequest
 
     private async Task<IHttpResponse> InternalRunAsync()
     {
-        var message = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
+        var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
 
         foreach (var (name, values) in _headers)
-            message.Headers.Add(name, values);
+            requestMessage.Headers.Add(name, values);
 
-        message.Content = Content;
+        requestMessage.Content = Content;
 
-        var response = new HttpResponse(await _client.SendAsync(message).ConfigureAwait(false));
+        var responseMessage = await _client.SendAsync(requestMessage).ConfigureAwait(false);
+        var response = new HttpResponse(responseMessage);
 
         if (response.IsFailure && _getFailureMessage != null)
         {
