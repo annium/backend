@@ -16,7 +16,7 @@ public class IntervalResolverTest
         var resolver = GetResolver();
 
         // act
-        var isMatch = resolver.GetMatcher(Interval.Minutely);
+        var isMatch = resolver.GetMatcher("* * * * *");
 
         // assert
         isMatch(GetInstant(2000, 1, 12, 5, 6, 15)).IsFalse();
@@ -31,7 +31,7 @@ public class IntervalResolverTest
         var resolver = GetResolver();
 
         // act
-        var isMatch = resolver.GetMatcher(Interval.Daily);
+        var isMatch = resolver.GetMatcher("0 0 * * *");
 
         // assert
         isMatch(GetInstant(2000, 1, 12, 5, 6, 0)).IsFalse();
