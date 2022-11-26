@@ -48,6 +48,7 @@ internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject<Scheduler>
             {
                 // wait till next minute start
                 var time = _timeProvider.Now.InUtc();
+                // TODO: implement subtraction of milliseconds from resolved time
                 await Task.Delay(
                     TimeSpan.FromMinutes(1) -
                     TimeSpan.FromSeconds(time.Second) -
