@@ -1,10 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Extensions.Execution;
 using Annium.Logging.Abstractions;
+using Annium.NodaTime.Extensions;
 using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal;
@@ -13,57 +13,50 @@ internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject<Scheduler>
 {
     public ILogger<Scheduler> Logger { get; }
     private readonly ITimeProvider _timeProvider;
-    private readonly IIntervalResolver _intervalResolver;
-    private readonly IDictionary<Func<Task>, Func<Instant, bool>> _handlers = new Dictionary<Func<Task>, Func<Instant, bool>>();
+    private readonly IIntervalParser _intervalParser;
     private readonly CancellationTokenSource _cts = new();
-    private readonly Task _runTask;
     private bool _isDisposed;
+    private readonly IBackgroundExecutor _executor;
 
     public Scheduler(
         ITimeProvider timeProvider,
-        IIntervalResolver intervalResolver,
+        IIntervalParser intervalParser,
         ILogger<Scheduler> logger
     )
     {
         Logger = logger;
         _timeProvider = timeProvider;
-        _intervalResolver = intervalResolver;
+        _intervalParser = intervalParser;
 
-        _runTask = Task.Run(async () => await Run(_cts.Token));
+        _executor = Executor.Background.Parallel<Scheduler>();
+        _executor.Start();
     }
 
     public IDisposable Schedule(Func<Task> handler, string interval)
     {
-        var isMatch = _intervalResolver.GetMatcher(interval);
-        _handlers.Add(handler, isMatch);
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(_cts.Token);
+        var resolveDelay = _intervalParser.GetDelayResolver(interval);
 
-        return Disposable.Create(() => _handlers.Remove(handler));
-    }
+        // warm up resolver
+        resolveDelay(_timeProvider.Now.InUtc().LocalDateTime);
 
-    private async Task Run(CancellationToken ct)
-    {
-        while (!ct.IsCancellationRequested)
+        _executor.Schedule(async () =>
         {
-            try
+            while (!cts.IsCancellationRequested)
             {
-                // wait till next minute start
-                var time = _timeProvider.Now.InUtc();
-                // TODO: implement subtraction of milliseconds from resolved time
-                await Task.Delay(
-                    TimeSpan.FromMinutes(1) -
-                    TimeSpan.FromSeconds(time.Second) -
-                    TimeSpan.FromMilliseconds(time.Millisecond),
-                    ct
-                );
+                var time = _timeProvider.Now.InUtc().LocalDateTime;
+                var delay = resolveDelay(time.CeilToSecond());
+                var ms = Duration.FromMilliseconds(1000 - time.Millisecond);
+                var total = (delay + ms).ToTimeSpan();
 
-                // run handlers
-                var instant = _timeProvider.Now;
-                await Task.WhenAll(_handlers.Where(e => e.Value(instant)).ToArray().Select(e => e.Key()));
+                await Task.Delay(total, cts.Token);
+
+                if (!cts.IsCancellationRequested)
+                    await handler();
             }
-            catch (OperationCanceledException)
-            {
-            }
-        }
+        });
+
+        return Disposable.Create(() => cts.Cancel());
     }
 
     public async ValueTask DisposeAsync()
@@ -76,11 +69,8 @@ internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject<Scheduler>
         _cts.Cancel();
         _cts.Dispose();
 
-        this.Log().Trace("clear handlers");
-        _handlers.Clear();
-
-        this.Log().Trace("await run task");
-        await _runTask;
+        this.Log().Trace("await executor");
+        await _executor.DisposeAsync();
 
         this.Log().Trace("done");
     }
