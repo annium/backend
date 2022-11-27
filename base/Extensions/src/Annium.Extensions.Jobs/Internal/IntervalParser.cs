@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using Annium.Core.Primitives;
+using Annium.NodaTime.Extensions;
 using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal;
@@ -24,111 +24,136 @@ internal class IntervalParser : IIntervalParser
         if (intervals[3] != EveryMoment && intervals[4] != EveryMoment)
             throw new ArgumentException($"Interval format {interval} must not have conditions on both day and day-of-week parts");
 
-        var dateTime = Expression.Variable(typeof(LocalDateTime), "x");
+        var dateTime = Expression.Parameter(typeof(LocalDateTime), "x");
         var expressions = new List<Expression>();
-        var parts = new[]
+
+        var result = Expression.Variable(typeof(Duration), "result");
+        // expressions.Add(result);
+        // expressions.Add(Expression.Assign(result, Expression.Constant(Duration.Zero)));
+
+        // seconds
+        HandleRepeatablePartExpression(
+            Property(dateTime, nameof(LocalDateTime.Second)),
+            FromLong(nameof(Duration.FromSeconds)),
+            "second", intervals[0], 0, 59, 60,
+            expressions.Add, result, Ceil(dateTime, nameof(LocalDateTimeExtensions.CeilToMinute)));
+
+        // minutes
+        HandleRepeatablePartExpression(
+            Property(dateTime, nameof(LocalDateTime.Minute)),
+            FromLong(nameof(Duration.FromMinutes)),
+            "minute", intervals[1], 0, 59, 60,
+            expressions.Add, result, Ceil(dateTime, nameof(LocalDateTimeExtensions.CeilToHour)));
+
+        // days
+        HandleRepeatablePartExpression(
+            Property(dateTime, nameof(LocalDateTime.Hour)),
+            FromInt(nameof(Duration.FromHours)),
+            "hour", intervals[2], 0, 23, 24,
+            expressions.Add, result, Ceil(dateTime, nameof(LocalDateTimeExtensions.CeilToDay)));
+
+        if (intervals[4] == EveryMoment)
         {
-            GetRepeatablePartExpression(
-                Property(dateTime, nameof(LocalDateTime.Second)),
-                FromLong(nameof(Duration.FromSeconds)),
-                "second", intervals[0], 0, 59, 60),
-            GetRepeatablePartExpression(
-                Property(dateTime, nameof(LocalDateTime.Minute)),
-                FromLong(nameof(Duration.FromMinutes)),
-                "minute", intervals[1], 0, 59, 60),
-            GetRepeatablePartExpression(
-                Property(dateTime, nameof(LocalDateTime.Hour)),
-                FromInt(nameof(Duration.FromHours)),
-                "hour", intervals[2], 0, 23, 24),
-            GetRepeatablePartExpression(
+            // day of month
+            HandleRepeatablePartExpression(
                 Property(dateTime, nameof(LocalDateTime.Day)),
                 FromInt(nameof(Duration.FromDays)),
-                "day", intervals[3], 0, 29, 30),
-            GetExactPartExpression(
+                "day", intervals[3], 0, 29, 30,
+                expressions.Add, result, null);
+        }
+        else
+        {
+            // day of week
+            HandleExactPartExpression(
                 Expression.Convert(Property(dateTime, nameof(LocalDateTime.DayOfWeek)), typeof(int)),
                 FromInt(nameof(Duration.FromDays)),
-                "day of week", intervals[4], 0, 6, 7)
-        }.OfType<Expression>().ToArray();
+                "day of week", intervals[4], 1, 7, 7,
+                expressions.Add, result, null);
+        }
 
-        Expression match = parts.Length == 0 ? Expression.Constant(Duration.Zero) : parts[0];
-        foreach (var part in parts.Skip(1))
-            match = Expression.Add(match, part);
+        var returnLabel = Expression.Label(typeof(Duration));
+        expressions.Add(Expression.Return(returnLabel, result));
+        expressions.Add(Expression.Label(returnLabel, result));
 
-        expressions.Add(match);
-
-        var expression = Expression.Lambda(Expression.Block(expressions), false, dateTime);
-        var resolver = (Func<LocalDateTime, Duration>) expression.Compile();
+        var lambda = Expression.Lambda(Expression.Block(new[] { result }, expressions), false, dateTime);
+        var resolver = (Func<LocalDateTime, Duration>) lambda.Compile();
 
         return resolver;
     }
 
-    private Expression? GetRepeatablePartExpression(
-        Expression property,
+    private void HandleRepeatablePartExpression(
+        Expression source,
         Func<Expression, Expression> from,
         string name,
         string interval,
-        uint min,
-        uint max,
-        uint size
+        int min,
+        int max,
+        int size,
+        Action<Expression> add,
+        Expression sum,
+        Expression? align
     )
     {
         // if every interval - return null
         if (interval == "*")
-            return null;
+            return;
 
         // if every X
-        if (TryAsModulo(property, from, name, interval, min, max, size, out var moduloExpression))
-            return moduloExpression;
+        if (TryAsModulo(source, from, name, interval, min, max, size, add, sum, align))
+            return;
 
         // if at constant X
-        if (TryAsConst(property, from, name, interval, min, max, size, out var constExpression))
-            return constExpression;
+        if (TryAsConst(source, from, name, interval, min, max, size, add, sum, align))
+            return;
 
         // if at one of X
-        if (TryAsList(property, from, name, interval, min, max, size, out var listExpression))
-            return listExpression;
+        if (TryAsList(source, from, name, interval, min, max, size, add, sum, align))
+            return;
 
         throw new InvalidOperationException($"Can't handle scheduler interval part '{interval}'");
     }
 
-    private Expression? GetExactPartExpression(
+    private void HandleExactPartExpression(
         Expression property,
         Func<Expression, Expression> from,
         string name,
         string interval,
-        uint min,
-        uint max,
-        uint size
+        int min,
+        int max,
+        int size,
+        Action<Expression> add,
+        Expression sum,
+        Expression? align
     )
     {
         // if every interval - return null
         if (interval == "*")
-            return null;
+            return;
 
         // if at constant X
-        if (TryAsConst(property, from, name, interval, min, max, size, out var constExpression))
-            return constExpression;
+        if (TryAsConst(property, from, name, interval, min, max, size, add, sum, align))
+            return;
 
         // if at one of X
-        if (TryAsList(property, from, name, interval, min, max, size, out var listExpression))
-            return listExpression;
+        if (TryAsList(property, from, name, interval, min, max, size, add, sum, align))
+            return;
 
         throw new InvalidOperationException($"Can't handle scheduler interval part '{interval}'");
     }
 
     private bool TryAsModulo(
-        Expression property,
+        Expression source,
         Func<Expression, Expression> from,
         string name,
         string interval,
-        uint min,
-        uint max,
-        uint size,
-        [NotNullWhen(true)] out Expression? result
+        int min,
+        int max,
+        int size,
+        Action<Expression> add,
+        Expression sum,
+        Expression? align
     )
     {
-        result = null;
-
         if (!interval.StartsWith("*/"))
             return false;
 
@@ -142,59 +167,65 @@ internal class IntervalParser : IIntervalParser
         if (size % value != 0)
             throw new ArgumentOutOfRangeException(nameof(interval), value, $"'{name}' modulo {value} is not acceptable for range {size}");
 
-        result = from(Expression.Condition(
-            Expression.Equal(Expression.Modulo(property, Expression.Constant(value)), Expression.Constant(0)),
+        var assignment = Expression.AddAssign(sum, from(Expression.Condition(
+            Expression.Equal(Expression.Modulo(source, Expression.Constant(value)), Expression.Constant(0)),
             Expression.Constant(0),
             Expression.Subtract(
                 Expression.Constant(value),
-                Expression.Modulo(property, Expression.Constant(value))
+                Expression.Modulo(source, Expression.Constant(value))
             )
-        ));
+        )));
+        add(assignment);
+        if (align is not null)
+            add(Expression.IfThen(Expression.GreaterThan(source, Expression.Constant(size - value)), align));
 
         return true;
     }
 
     private bool TryAsConst(
-        Expression property,
+        Expression source,
         Func<Expression, Expression> from,
         string name,
         string interval,
-        uint min,
-        uint max,
-        uint size,
-        [NotNullWhen(true)] out Expression? result
+        int min,
+        int max,
+        int size,
+        Action<Expression> add,
+        Expression sum,
+        Expression? align
     )
     {
-        result = null;
-
         if (!int.TryParse(interval, out var value))
             return false;
 
         if (value < min || value > max)
             throw new ArgumentOutOfRangeException(nameof(interval), value, $"'{name}' value {value} must be in [{min};{max}] range");
 
-        result = from(Expression.Condition(
-            Expression.LessThan(Expression.Constant(value), property),
-            Expression.Subtract(Expression.Constant(value + (int) size), property),
-            Expression.Subtract(Expression.Constant(value), property)
-        ));
+        var assignment = Expression.AddAssign(sum, from(Expression.Condition(
+            Expression.LessThan(Expression.Constant(value), source),
+            Expression.Subtract(Expression.Constant(value + size), source),
+            Expression.Subtract(Expression.Constant(value), source)
+        )));
+        add(assignment);
+        if (align is not null)
+            add(Expression.IfThen(Expression.GreaterThan(source, Expression.Constant(value)), align));
 
         return true;
     }
 
     private bool TryAsList(
-        Expression property,
+        Expression source,
         Func<Expression, Expression> from,
         string name,
         string interval,
-        uint min,
-        uint max,
-        uint size,
-        [NotNullWhen(true)] out Expression? result
+        int min,
+        int max,
+        int size,
+        Action<Expression> add,
+        Expression sum,
+        Expression? align
     )
     {
-        result = null;
-
         var values = new HashSet<int>();
         foreach (var raw in interval.Split(','))
         {
@@ -212,18 +243,21 @@ internal class IntervalParser : IIntervalParser
 
         var (last, rest) = values.OrderByDescending(x => x).ToArray();
         Expression res = Expression.Condition(
-            Expression.LessThan(property, Expression.Constant(last)),
-            Expression.Subtract(Expression.Constant(last), property),
-            Expression.Subtract(Expression.Constant(rest[^1] + (int) size), property)
+            Expression.LessThanOrEqual(source, Expression.Constant(last)),
+            Expression.Subtract(Expression.Constant(last), source),
+            Expression.Subtract(Expression.Constant(rest[^1] + size), source)
         );
         foreach (var point in rest)
             res = Expression.Condition(
-                Expression.LessThan(property, Expression.Constant(point)),
-                Expression.Subtract(Expression.Constant(point), property),
+                Expression.LessThanOrEqual(source, Expression.Constant(point)),
+                Expression.Subtract(Expression.Constant(point), source),
                 res
             );
 
-        result = from(res);
+        var assignment = Expression.AddAssign(sum, from(res));
+        add(assignment);
+        if (align is not null)
+            add(Expression.IfThen(Expression.GreaterThan(source, Expression.Constant(last)), align));
 
         return true;
     }
@@ -236,4 +270,7 @@ internal class IntervalParser : IIntervalParser
 
     private static Func<Expression, Expression> FromLong(string name) =>
         ex => Expression.Call(null, typeof(Duration).GetMethod(name, new[] { typeof(long) })!, Expression.Convert(ex, typeof(long)));
+
+    private static Expression Ceil(ParameterExpression ex, string name) =>
+        Expression.Assign(ex, Expression.Call(null, typeof(LocalDateTimeExtensions).GetMethod(name, new[] { ex.Type })!, ex));
 }
