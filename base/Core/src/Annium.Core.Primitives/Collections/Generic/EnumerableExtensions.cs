@@ -40,4 +40,13 @@ public static class EnumerableExtensions
     {
         return src.OrderBy(_ => Random.Next(0, 1) == 1);
     }
+
+    public static bool None<T>(this IEnumerable<T> src, Func<T, bool> predicate)
+    {
+        foreach (var element in src)
+            if (predicate(element))
+                return false;
+
+        return true;
+    }
 }
