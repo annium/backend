@@ -9,7 +9,7 @@ using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Http;
 
-public partial interface IHttpRequest
+public partial interface IHttpRequest : ILogSubject<IHttpRequest>
 {
     HttpMethod Method { get; }
     Uri Uri { get; }
@@ -18,7 +18,6 @@ public partial interface IHttpRequest
     HttpContent? Content { get; }
     bool IsEnsuringSuccess { get; }
     IHttpContentSerializer ContentSerializer { get; }
-    ILogger<IHttpRequest> Logger { get; }
     IHttpRequest Base(Uri baseUri);
     IHttpRequest Base(string baseUri);
     IHttpRequest UseClient(HttpClient client);
