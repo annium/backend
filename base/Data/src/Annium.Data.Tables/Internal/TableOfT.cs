@@ -17,9 +17,8 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
     {
         get
         {
-            using var _ = DataLocker.Lock();
-
-            return _table.Count;
+            lock (DataLocker)
+                return _table.Count;
         }
     }
 
@@ -27,9 +26,8 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
     {
         get
         {
-            using var _ = DataLocker.Lock();
-
-            return _table.ToDictionary();
+            lock (DataLocker)
+                return _table.ToDictionary();
         }
     }
 
@@ -56,51 +54,53 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
     {
         EnsurePermission(TablePermission.Init);
 
-        using var _ = DataLocker.Lock();
-
-        _table.Clear();
-
-        foreach (var entry in entries.Where(_isActive))
+        lock (DataLocker)
         {
-            var key = _getKey(entry);
-            _table[key] = entry;
-        }
+            _table.Clear();
 
-        AddEvent(ChangeEvent.Init(_table.Values.ToArray()));
+            foreach (var entry in entries.Where(_isActive))
+            {
+                var key = _getKey(entry);
+                _table[key] = entry;
+            }
+
+            AddEvent(ChangeEvent.Init(_table.Values.ToArray()));
+        }
     }
 
     public void Set(T entry)
     {
         var key = _getKey(entry);
 
-        using var _ = DataLocker.Lock();
+        lock (DataLocker)
+        {
+            var exists = _table.ContainsKey(key);
+            if (!exists)
+            {
+                EnsurePermission(TablePermission.Add);
+                var newValue = _table[key] = entry;
+                AddEvent(ChangeEvent.Add(newValue));
+            }
+            // exists and is inactive
+            else if (!_isActive(_table[key]))
+            {
+                EnsurePermission(TablePermission.Delete);
+                _table.Remove(key, out var item);
+                AddEvent(ChangeEvent.Delete(item!));
+            }
+            // exists and is active
+            else
+            {
+                EnsurePermission(TablePermission.Update);
+                var oldValue = _table[key].Copy();
+                var newValue = _table[key];
+                _update(newValue, entry);
+                if (!newValue.Equals(oldValue))
+                    AddEvent(ChangeEvent.Update(oldValue, newValue));
+            }
 
-        var exists = _table.ContainsKey(key);
-        if (!exists)
-        {
-            EnsurePermission(TablePermission.Add);
-            var newValue = _table[key] = entry;
-            AddEvent(ChangeEvent.Add(newValue));
+            Cleanup();
         }
-        // exists and is inactive
-        else if (!_isActive(_table[key]))
-        {
-            EnsurePermission(TablePermission.Delete);
-            _table.Remove(key, out var item);
-            AddEvent(ChangeEvent.Delete(item!));
-        }
-        // exists and is active
-        else
-        {
-            EnsurePermission(TablePermission.Update);
-            var oldValue = _table[key].Copy();
-            var newValue = _table[key];
-            _update(newValue, entry);
-            if (!newValue.Equals(oldValue))
-                AddEvent(ChangeEvent.Update(oldValue, newValue));
-        }
-
-        Cleanup();
     }
 
     public void Delete(T entry)
@@ -108,43 +108,44 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
         EnsurePermission(TablePermission.Delete);
         var key = _getKey(entry);
 
-        using var _ = DataLocker.Lock();
+        lock (DataLocker)
+        {
+            if (_table.Remove(key, out var item))
+                AddEvent(ChangeEvent.Delete(item));
 
-        if (_table.Remove(key, out var item))
-            AddEvent(ChangeEvent.Delete(item));
-
-        Cleanup();
+            Cleanup();
+        }
     }
 
     protected override IReadOnlyCollection<T> Get()
     {
-        using var _ = DataLocker.Lock();
-
-        return _table.Values.ToArray();
+        lock (DataLocker)
+            return _table.Values.ToArray();
     }
 
     private void Cleanup()
     {
         var removed = new List<T>();
 
-        using var _ = DataLocker.Lock();
-
-        var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
-        foreach (var entry in entries)
+        lock (DataLocker)
         {
-            var key = _getKey(entry);
-            _table.Remove(key, out var item);
-            removed.Add(item!);
-        }
+            var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
+            foreach (var entry in entries)
+            {
+                var key = _getKey(entry);
+                _table.Remove(key, out var item);
+                removed.Add(item!);
+            }
 
-        AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
+            AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
+        }
     }
 
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
 
-        using var _ = DataLocker.Lock();
-        _table.Clear();
+        lock (DataLocker)
+            _table.Clear();
     }
 }
