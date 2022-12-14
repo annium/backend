@@ -10,7 +10,7 @@ public static class TableSourceExtensions
     public static IDisposable MapWriteTo<TS, TD>(
         this IObservable<IChangeEvent<TS>> source,
         ITableSource<TD> target,
-        Func<TS, TD> map
+        Func<TS, TD?> map
     )
         where TD : IEquatable<TD>, ICopyable<TD> =>
         source.Subscribe(e => target.MapWrite(e, map));
@@ -18,7 +18,7 @@ public static class TableSourceExtensions
     public static IDisposable MapAppendTo<TS, TD>(
         this IObservable<IChangeEvent<TS>> source,
         ITableSource<TD> target,
-        Func<TS, TD> map
+        Func<TS, TD?> map
     )
         where TD : IEquatable<TD>, ICopyable<TD> =>
         source.Subscribe(e => target.MapAppend(e, map));
@@ -40,23 +40,29 @@ public static class TableSourceExtensions
     private static void MapWrite<TS, TD>(
         this ITableSource<TD> target,
         IChangeEvent<TS> e,
-        Func<TS, TD> map
+        Func<TS, TD?> map
     )
         where TD : IEquatable<TD>, ICopyable<TD>
     {
         switch (e)
         {
             case InitEvent<TS> init:
-                target.Init(init.Values.Select(map).ToArray());
+                target.Init(init.Values.Select(map).OfType<TD>().ToArray());
                 break;
             case AddEvent<TS> add:
-                target.Set(map(add.Value));
+                var addValue = map(add.Value);
+                if (addValue is not null)
+                    target.Set(addValue);
                 break;
             case UpdateEvent<TS> update:
-                target.Set(map(update.NewValue));
+                var updateValue = map(update.NewValue);
+                if (updateValue is not null)
+                    target.Set(updateValue);
                 break;
             case DeleteEvent<TS> delete:
-                target.Delete(map(delete.Value));
+                var deleteValue = map(delete.Value);
+                if (deleteValue is not null)
+                    target.Delete(deleteValue);
                 break;
         }
     }
@@ -64,7 +70,7 @@ public static class TableSourceExtensions
     private static void MapAppend<TS, TD>(
         this ITableSource<TD> target,
         IChangeEvent<TS> e,
-        Func<TS, TD> map
+        Func<TS, TD?> map
     )
         where TD : IEquatable<TD>, ICopyable<TD>
     {
@@ -72,16 +78,27 @@ public static class TableSourceExtensions
         {
             case InitEvent<TS> init:
                 foreach (var value in init.Values)
-                    target.Set(map(value));
+                {
+                    var initValue = map(value);
+                    if (initValue is not null)
+                        target.Set(initValue);
+                }
+
                 break;
             case AddEvent<TS> add:
-                target.Set(map(add.Value));
+                var addValue = map(add.Value);
+                if (addValue is not null)
+                    target.Set(addValue);
                 break;
             case UpdateEvent<TS> update:
-                target.Set(map(update.NewValue));
+                var updateValue = map(update.NewValue);
+                if (updateValue is not null)
+                    target.Set(updateValue);
                 break;
             case DeleteEvent<TS> delete:
-                target.Delete(map(delete.Value));
+                var deleteValue = map(delete.Value);
+                if (deleteValue is not null)
+                    target.Delete(deleteValue);
                 break;
         }
     }
