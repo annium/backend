@@ -7,6 +7,22 @@ namespace Annium.Data.Tables;
 
 public static class TableSourceExtensions
 {
+    public static IDisposable MapWriteTo<TS, TD>(
+        this IObservable<IChangeEvent<TS>> source,
+        ITableSource<TD> target,
+        Func<TS, TD> map
+    )
+        where TD : IEquatable<TD>, ICopyable<TD> =>
+        source.Subscribe(e => target.MapWrite(e, map));
+
+    public static IDisposable MapAppendTo<TS, TD>(
+        this IObservable<IChangeEvent<TS>> source,
+        ITableSource<TD> target,
+        Func<TS, TD> map
+    )
+        where TD : IEquatable<TD>, ICopyable<TD> =>
+        source.Subscribe(e => target.MapAppend(e, map));
+
     public static IDisposable WriteTo<T>(
         this IObservable<IChangeEvent<T>> source,
         ITableSource<T> target
@@ -21,7 +37,56 @@ public static class TableSourceExtensions
         where T : IEquatable<T>, ICopyable<T> =>
         source.Subscribe(target.Append);
 
-    public static void Write<T>(
+    private static void MapWrite<TS, TD>(
+        this ITableSource<TD> target,
+        IChangeEvent<TS> e,
+        Func<TS, TD> map
+    )
+        where TD : IEquatable<TD>, ICopyable<TD>
+    {
+        switch (e)
+        {
+            case InitEvent<TS> init:
+                target.Init(init.Values.Select(map).ToArray());
+                break;
+            case AddEvent<TS> add:
+                target.Set(map(add.Value));
+                break;
+            case UpdateEvent<TS> update:
+                target.Set(map(update.NewValue));
+                break;
+            case DeleteEvent<TS> delete:
+                target.Delete(map(delete.Value));
+                break;
+        }
+    }
+
+    private static void MapAppend<TS, TD>(
+        this ITableSource<TD> target,
+        IChangeEvent<TS> e,
+        Func<TS, TD> map
+    )
+        where TD : IEquatable<TD>, ICopyable<TD>
+    {
+        switch (e)
+        {
+            case InitEvent<TS> init:
+                foreach (var value in init.Values)
+                    target.Set(map(value));
+                break;
+            case AddEvent<TS> add:
+                target.Set(map(add.Value));
+                break;
+            case UpdateEvent<TS> update:
+                target.Set(map(update.NewValue));
+                break;
+            case DeleteEvent<TS> delete:
+                target.Delete(map(delete.Value));
+                break;
+        }
+    }
+
+    private static void Write<T>(
         this ITableSource<T> target,
         IChangeEvent<T> e
     )
@@ -44,7 +109,7 @@ public static class TableSourceExtensions
         }
     }
 
-    public static void Append<T>(
+    private static void Append<T>(
         this ITableSource<T> target,
         IChangeEvent<T> e
     )
