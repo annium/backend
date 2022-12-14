@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Channels;
@@ -38,7 +37,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject<TableBase<T>>
         _eventWriter = taskChannel.Writer;
         _eventReader = taskChannel.Reader;
 
-        _observable = CreateObservable(_observableCts.Token).TrackCompletion().ObserveOn(TaskPoolScheduler.Default);
+        _observable = CreateObservable(_observableCts.Token).TrackCompletion();
 
         Logger = logger;
     }
