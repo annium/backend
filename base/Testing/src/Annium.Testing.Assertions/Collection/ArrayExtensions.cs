@@ -51,4 +51,18 @@ public static class ArrayExtensions
 
         return value;
     }
+
+    public static T[] IsNotEmpty<T>(
+        this T[] value,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
+
+        var total = value.Length;
+        total.IsNot(0, $"{valueEx} expected to be not empty");
+
+        return value;
+    }
 }

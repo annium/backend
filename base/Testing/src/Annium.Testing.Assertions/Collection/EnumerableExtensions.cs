@@ -14,11 +14,10 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("key")] string keyEx = default!
     )
     {
-        var data = value.ToArray();
-        var total = data.Length;
-        (0 <= key && key < total).IsTrue($"{valueEx}[{key.Wrap(keyEx)}] is out of bounds [0,{total - 1}]");
+        var count = value.Count();
+        (0 <= key && key < count).IsTrue($"{valueEx}[{key.Wrap(keyEx)}] is out of bounds [0,{count - 1}]");
 
-        return data[key];
+        return value.ElementAt(key);
     }
 
     public static IEnumerable<T> Has<T>(
@@ -28,11 +27,10 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("count")] string countEx = default!
     )
     {
-        var data = value.ToArray();
-        var total = data.Length;
+        var total = value.Count();
         total.Is(count, $"{valueEx} count `{total}` != `{count.Wrap(countEx)}`");
 
-        return data;
+        return value;
     }
 
     public static IEnumerable<T> IsEmpty<T>(
@@ -40,10 +38,19 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
-        var data = value.ToArray();
-        var total = data.Length;
+        var total = value.Count();
         total.Is(0, $"{valueEx} expected to be empty, but has `{total}` items");
 
-        return data;
+        return value;
+    }
+
+    public static IEnumerable<T> IsNotEmpty<T>(
+        this IEnumerable<T> value,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
+    {
+        value.Any().IsTrue($"{valueEx} expected to be not empty");
+
+        return value;
     }
 }

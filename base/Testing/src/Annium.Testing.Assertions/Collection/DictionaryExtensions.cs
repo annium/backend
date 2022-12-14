@@ -102,4 +102,34 @@ public static class DictionaryExtensions
 
         return value;
     }
+
+    public static IDictionary<TKey, TValue> IsNotEmpty<TKey, TValue>(
+        this IDictionary<TKey, TValue> value,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
+        where TKey : notnull
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
+
+        var total = value.Count;
+        total.IsNot(0, $"{valueEx} expected to be not empty");
+
+        return value;
+    }
+
+    public static IReadOnlyDictionary<TKey, TValue> IsNotEmpty<TKey, TValue>(
+        this IReadOnlyDictionary<TKey, TValue> value,
+        [CallerArgumentExpression("value")] string valueEx = default!
+    )
+        where TKey : notnull
+    {
+        if (value is null)
+            throw new ArgumentNullException(nameof(value));
+
+        var total = value.Count;
+        total.IsNot(0, $"{valueEx} expected to be not empty");
+
+        return value;
+    }
 }
