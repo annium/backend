@@ -75,28 +75,20 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
         lock (DataLocker)
         {
             var exists = _table.ContainsKey(key);
-            if (!exists)
-            {
-                EnsurePermission(TablePermission.Add);
-                var newValue = _table[key] = entry;
-                AddEvent(ChangeEvent.Add(newValue));
-            }
-            // exists and is inactive
-            else if (!_isActive(_table[key]))
-            {
-                EnsurePermission(TablePermission.Delete);
-                _table.Remove(key, out var item);
-                AddEvent(ChangeEvent.Delete(item!));
-            }
-            // exists and is active
-            else
+            if (exists)
             {
                 EnsurePermission(TablePermission.Update);
                 var oldValue = _table[key].Copy();
                 var newValue = _table[key];
                 _update(newValue, entry);
-                if (!newValue.Equals(oldValue))
+                if (!newValue.Equals(oldValue) && _isActive(newValue))
                     AddEvent(ChangeEvent.Update(oldValue, newValue));
+            }
+            else
+            {
+                EnsurePermission(TablePermission.Add);
+                var newValue = _table[key] = entry;
+                AddEvent(ChangeEvent.Add(newValue));
             }
 
             Cleanup();
@@ -127,18 +119,15 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
     {
         var removed = new List<T>();
 
-        lock (DataLocker)
+        var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
+        foreach (var entry in entries)
         {
-            var entries = _table.Values.Except(_table.Values.Where(_isActive)).ToArray();
-            foreach (var entry in entries)
-            {
-                var key = _getKey(entry);
-                _table.Remove(key, out var item);
-                removed.Add(item!);
-            }
-
-            AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
+            var key = _getKey(entry);
+            _table.Remove(key, out var item);
+            removed.Add(item!);
         }
+
+        AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
     }
 
     public override async ValueTask DisposeAsync()

@@ -82,29 +82,21 @@ internal sealed class Table<TR, TW> : TableBase<TR>, ITable<TR, TW>
         lock (DataLocker)
         {
             var exists = _writeTable.ContainsKey(key);
-            if (!exists)
-            {
-                EnsurePermission(TablePermission.Add);
-                var newValue = _readTable[key] = _toRead(_writeTable[key] = entry);
-                AddEvent(ChangeEvent.Add(newValue));
-            }
-            // exists and is inactive
-            else if (!_isActive(_writeTable[key]))
-            {
-                EnsurePermission(TablePermission.Delete);
-                _writeTable.Remove(key);
-                _readTable.Remove(key, out var item);
-                AddEvent(ChangeEvent.Delete(item!));
-            }
-            // exists and is active
-            else
+            if (exists)
             {
                 EnsurePermission(TablePermission.Update);
                 var oldValue = _readTable[key];
                 _update(_writeTable[key], entry);
                 var newValue = _readTable[key] = _toRead(_writeTable[key]);
-                if (!newValue.Equals(oldValue))
+                if (!newValue.Equals(oldValue) && _isActive(_writeTable[key]))
                     AddEvent(ChangeEvent.Update(oldValue, newValue));
+            }
+            // exists and is active
+            else
+            {
+                EnsurePermission(TablePermission.Add);
+                var newValue = _readTable[key] = _toRead(_writeTable[key] = entry);
+                AddEvent(ChangeEvent.Add(newValue));
             }
 
             Cleanup();
@@ -138,20 +130,17 @@ internal sealed class Table<TR, TW> : TableBase<TR>, ITable<TR, TW>
     {
         var removed = new List<TR>();
 
-        lock (DataLocker)
+        var entries = _writeTable.Values.Except(_writeTable.Values.Where(_isActive)).ToArray();
+
+        foreach (var entry in entries)
         {
-            var entries = _writeTable.Values.Except(_writeTable.Values.Where(_isActive)).ToArray();
-
-            foreach (var entry in entries)
-            {
-                var key = _getKey(entry);
-                _writeTable.Remove(key);
-                _readTable.Remove(key, out var item);
-                removed.Add(item!);
-            }
-
-            AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
+            var key = _getKey(entry);
+            _writeTable.Remove(key);
+            _readTable.Remove(key, out var item);
+            removed.Add(item!);
         }
+
+        AddEvents(removed.Select(ChangeEvent.Delete).ToArray());
     }
 
     public override async ValueTask DisposeAsync()
