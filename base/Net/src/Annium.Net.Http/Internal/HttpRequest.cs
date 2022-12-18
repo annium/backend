@@ -221,7 +221,7 @@ internal partial class HttpRequest : IHttpRequest
         if (response.IsFailure && _getFailureMessage != null)
         {
             var failure = await _getFailureMessage(response).ConfigureAwait(false);
-            throw new HttpRequestException(failure);
+            throw new HttpRequestException(failure, null, response.StatusCode);
         }
 
         return response;
