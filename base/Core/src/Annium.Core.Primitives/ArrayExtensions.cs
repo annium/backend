@@ -63,7 +63,8 @@ public static class ArrayExtensions
     }
 
     public static void Deconstruct<T>(this T[] array, out T first, out T second, out T third, out T fourth, out T fifth, out T sixth, out T seventh,
-        out T[] rest)
+        out T[] rest
+    )
     {
         first = array[0];
         second = array[1];
@@ -76,7 +77,8 @@ public static class ArrayExtensions
     }
 
     public static void Deconstruct<T>(this T[] array, out T first, out T second, out T third, out T fourth, out T fifth, out T sixth, out T seventh,
-        out T eighth, out T[] rest)
+        out T eighth, out T[] rest
+    )
     {
         first = array[0];
         second = array[1];

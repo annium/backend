@@ -19,7 +19,7 @@ internal class Serializer
         Instance = configuration.Format switch
         {
             SerializationFormat.Binary => binarySerializer,
-            SerializationFormat.Text => textSerializer,
+            SerializationFormat.Text   => textSerializer,
             _ => throw new NotImplementedException(
                 $"Serialization format {configuration.Format} is not implemented"
             )
@@ -29,7 +29,7 @@ internal class Serializer
     public T Deserialize<T>(SocketMessage message) => Instance switch
     {
         ISerializer<ReadOnlyMemory<byte>> x => x.Deserialize<T>(message.Data),
-        ISerializer<string> x => x.Deserialize<T>(Encoding.UTF8.GetString(message.Data.Span)),
-        _ => throw new NotImplementedException()
+        ISerializer<string> x               => x.Deserialize<T>(Encoding.UTF8.GetString(message.Data.Span)),
+        _                                   => throw new NotImplementedException()
     };
 }

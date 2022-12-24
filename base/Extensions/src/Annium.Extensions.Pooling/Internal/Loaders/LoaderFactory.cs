@@ -12,7 +12,7 @@ internal static class LoaderFactory
     ) => mode switch
     {
         PoolLoadMode.Eager => new EagerLoader<T>(factory, storage),
-        PoolLoadMode.Lazy => new LazyLoader<T>(factory, storage),
-        _ => throw new NotImplementedException($"Unsupported load mode {mode}"),
+        PoolLoadMode.Lazy  => new LazyLoader<T>(factory, storage),
+        _                  => throw new NotImplementedException($"Unsupported load mode {mode}"),
     };
 }

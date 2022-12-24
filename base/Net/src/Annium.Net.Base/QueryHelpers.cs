@@ -100,7 +100,8 @@ public static class QueryHelpers
     /// <exception cref="ArgumentNullException"><paramref name="queryString"/> is <c>null</c>.</exception>
     public static string AddQueryString(
         string uri,
-        IEnumerable<KeyValuePair<string, string?>> queryString)
+        IEnumerable<KeyValuePair<string, string?>> queryString
+    )
     {
         if (uri == null)
         {

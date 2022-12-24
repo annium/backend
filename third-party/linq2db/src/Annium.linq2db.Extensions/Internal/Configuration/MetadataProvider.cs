@@ -35,8 +35,8 @@ internal static class MetadataProvider
         var memberType = member switch
         {
             PropertyInfo property => property.PropertyType,
-            FieldInfo field => field.FieldType,
-            _ => throw new InvalidOperationException($"Member {member} is not supported")
+            FieldInfo field       => field.FieldType,
+            _                     => throw new InvalidOperationException($"Member {member} is not supported")
         };
         var column = schema.GetAttribute<ColumnAttribute>(type, member);
 

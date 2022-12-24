@@ -23,6 +23,6 @@ internal static class TestingConfigurationReader
     {
         "debug" => LogLevel.Debug,
         "trace" => LogLevel.Trace,
-        _ => LogLevel.Info,
+        _       => LogLevel.Info,
     };
 }

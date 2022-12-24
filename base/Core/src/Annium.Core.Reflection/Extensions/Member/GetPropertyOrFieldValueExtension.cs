@@ -10,6 +10,6 @@ public static class GetPropertyOrFieldValueExtension
         PropertyInfo property => property.GetGetMethod()?.Invoke(target, Array.Empty<object>())
             ?? throw new InvalidOperationException($"property {member} is not readable"),
         FieldInfo field => field.GetValue(target),
-        _ => throw new InvalidOperationException($"{member} is neither readable property nor field")
+        _               => throw new InvalidOperationException($"{member} is neither readable property nor field")
     };
 }

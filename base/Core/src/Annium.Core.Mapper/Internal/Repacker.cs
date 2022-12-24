@@ -15,19 +15,19 @@ internal class Repacker : IRepacker
 
         return ex switch
         {
-            BinaryExpression binary => Binary(binary)(source),
+            BinaryExpression binary           => Binary(binary)(source),
             ConditionalExpression conditional => Conditional(conditional)(source),
-            ConstantExpression constant => constant,
-            LambdaExpression lambda => Lambda(lambda)(source),
-            ListInitExpression listInit => ListInit(listInit)(source),
-            MemberExpression member => Member(member)(source),
-            MemberInitExpression memberInit => MemberInit(memberInit)(source),
-            MethodCallExpression call => MethodCall(call)(source),
-            NewExpression @new => New(@new)(source),
-            NewArrayExpression newArray => NewArray(newArray)(source),
-            ParameterExpression _ => source,
-            UnaryExpression unary => Unary(unary)(source),
-            _ => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
+            ConstantExpression constant       => constant,
+            LambdaExpression lambda           => Lambda(lambda)(source),
+            ListInitExpression listInit       => ListInit(listInit)(source),
+            MemberExpression member           => Member(member)(source),
+            MemberInitExpression memberInit   => MemberInit(memberInit)(source),
+            MethodCallExpression call         => MethodCall(call)(source),
+            NewExpression @new                => New(@new)(source),
+            NewArrayExpression newArray       => NewArray(newArray)(source),
+            ParameterExpression _             => source,
+            UnaryExpression unary             => Unary(unary)(source),
+            _                                 => throw new InvalidOperationException($"Can't repack {ex.NodeType} expression"),
         };
     };
 
