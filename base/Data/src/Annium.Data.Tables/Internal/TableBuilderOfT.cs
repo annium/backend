@@ -8,7 +8,8 @@ internal class TableBuilder<T> : ITableBuilder<T>
 {
     private TablePermission _permissions;
     private Expression<Func<T, object>>? _getKey;
-    private Func<T, T, bool>? _update;
+    private Func<T, T, bool>? _hasChanged;
+    private Action<T, T>? _update;
     private Func<T, bool>? _isActive;
     private readonly ILogger<Table<T>> _logger;
 
@@ -33,8 +34,9 @@ internal class TableBuilder<T> : ITableBuilder<T>
         return this;
     }
 
-    public ITableBuilder<T> UpdateWith(Func<T, T, bool> update)
+    public ITableBuilder<T> UpdateWith(Func<T, T, bool> hasChanged, Action<T, T> update)
     {
+        _hasChanged = hasChanged;
         _update = update;
 
         return this;
@@ -54,9 +56,10 @@ internal class TableBuilder<T> : ITableBuilder<T>
             throw new InvalidOperationException($"Table<{typeof(T).Name},{typeof(T).Name}> must have key");
 
         var getKey = TableHelper.BuildGetKey(_getKey);
+        var hasChanged = _hasChanged ?? ((_, _) => true);
         var update = _update ?? TableHelper.BuildUpdate<T>(_permissions);
         var isActive = _isActive ?? (_ => true);
 
-        return new Table<T>(_permissions, getKey, update, isActive, _logger);
+        return new Table<T>(_permissions, getKey, hasChanged, update, isActive, _logger);
     }
 }

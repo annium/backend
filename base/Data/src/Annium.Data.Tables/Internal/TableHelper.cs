@@ -24,10 +24,10 @@ internal static class TableHelper
         return (Func<T, int>) lambda.Compile();
     }
 
-    public static Func<T, T, bool> BuildUpdate<T>(TablePermission permissions)
+    public static Action<T, T> BuildUpdate<T>(TablePermission permissions)
     {
         if (!permissions.HasFlag(TablePermission.Update))
-            return (_, _) => false;
+            return (_, _) => { };
 
         var row = Expression.Parameter(typeof(T), "row");
         var upd = Expression.Parameter(typeof(T), "upd");
@@ -49,14 +49,9 @@ internal static class TableHelper
                 Expression.NotEqual(updValue, Expression.Constant(null)),
                 Expression.Assign(rowValue, updValue)
             );
-        }).ToList();
+        }).ToArray();
 
-        var returnLabel = Expression.Label(typeof(bool));
-        var result = Expression.Constant(true);
-        expressions.Add(Expression.Return(returnLabel, result));
-        expressions.Add(Expression.Label(returnLabel, result));
-
-        var lambda = Expression.Lambda<Func<T, T, bool>>(
+        var lambda = Expression.Lambda<Action<T, T>>(
             Expression.Block(expressions),
             row, upd
         );

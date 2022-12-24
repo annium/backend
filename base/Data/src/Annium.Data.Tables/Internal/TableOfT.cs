@@ -29,18 +29,21 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
 
     private readonly Dictionary<int, T> _table = new();
     private readonly Func<T, int> _getKey;
-    private readonly Func<T, T, bool> _update;
+    private readonly Func<T, T, bool> _hasChanged;
+    private readonly Action<T, T> _update;
     private readonly Func<T, bool> _isActive;
 
     public Table(
         TablePermission permissions,
         Func<T, int> getKey,
-        Func<T, T, bool> update,
+        Func<T, T, bool> hasChanged,
+        Action<T, T> update,
         Func<T, bool> isActive,
         ILogger<Table<T>> logger
     ) : base(permissions, logger)
     {
         _getKey = getKey;
+        _hasChanged = hasChanged;
         _update = update;
         _isActive = isActive;
     }
@@ -76,9 +79,13 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
             {
                 EnsurePermission(TablePermission.Update);
                 var value = _table[key];
-                var hasChanged = _update(value, entry);
-                if (hasChanged && _isActive(value))
-                    AddEvent(ChangeEvent.Update(value));
+                var hasChanged = _hasChanged(value, entry);
+                if (hasChanged)
+                {
+                    _update(value, entry);
+                    if (_isActive(value))
+                        AddEvent(ChangeEvent.Update(value));
+                }
             }
             else
             {
