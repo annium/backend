@@ -11,6 +11,7 @@ public static class TableSourceExtensions
         ITableSource<TD> target,
         Func<TS, TD?> map
     )
+        where TD : notnull
         => source.Subscribe(e => target.MapWrite(e, map));
 
     public static IDisposable MapAppendTo<TS, TD>(
@@ -18,6 +19,7 @@ public static class TableSourceExtensions
         ITableSource<TD> target,
         Func<TS, TD?> map
     )
+        where TD : notnull
         => source.Subscribe(e => target.MapAppend(e, map));
 
     private static void MapWrite<TS, TD>(
@@ -25,6 +27,7 @@ public static class TableSourceExtensions
         IChangeEvent<TS> e,
         Func<TS, TD?> map
     )
+        where TD : notnull
     {
         switch (e)
         {
@@ -54,6 +57,7 @@ public static class TableSourceExtensions
         IChangeEvent<TS> e,
         Func<TS, TD?> map
     )
+        where TD : notnull
     {
         switch (e)
         {
@@ -88,6 +92,7 @@ public static class TableSourceExtensions
         this ITableSource<T> target,
         IReadOnlyCollection<T> values
     )
+        where T : notnull
     {
         var source = target.Source;
         var data = values.ToDictionary(target.GetKey, x => x);
@@ -107,6 +112,7 @@ public static class TableSourceExtensions
         this ITableSource<T> target,
         IReadOnlyCollection<T> values
     )
+        where T : notnull
     {
         var source = target.Source;
         var data = values.ToDictionary(target.GetKey, x => x);
