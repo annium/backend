@@ -19,13 +19,6 @@ internal class TableFactory : ITableFactory
         _loggerFactory = loggerFactory;
     }
 
-    public ITableBuilder<TR, TW> New<TR, TW>()
-        where TR : IEquatable<TR>, ICopyable<TR>
-        where TW : notnull
-    {
-        return new TableBuilder<TR, TW>(_mapper, _loggerFactory.Get<Table<TR, TW>>());
-    }
-
     public ITableBuilder<T> New<T>()
         where T : IEquatable<T>, ICopyable<T>
     {
