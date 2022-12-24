@@ -5,7 +5,6 @@ using Annium.Logging.Abstractions;
 namespace Annium.Data.Tables.Internal;
 
 internal class TableBuilder<T> : ITableBuilder<T>
-    where T : IEquatable<T>
 {
     private TablePermission _permissions;
     private Expression<Func<T, object>>? _getKey;

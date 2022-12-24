@@ -1,4 +1,3 @@
-using System;
 using Annium.Core.Mapper;
 using Annium.Logging.Abstractions;
 
@@ -19,7 +18,6 @@ internal class TableFactory : ITableFactory
     }
 
     public ITableBuilder<T> New<T>()
-        where T : IEquatable<T>
     {
         return new TableBuilder<T>(_loggerFactory.Get<Table<T>>());
     }

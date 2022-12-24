@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 namespace Annium.Data.Tables;
 
 public interface ITableBuilder<T>
-    where T : IEquatable<T>
 {
     ITableBuilder<T> Allow(TablePermission permissions);
     ITableBuilder<T> Key(Expression<Func<T, object>> getKey);

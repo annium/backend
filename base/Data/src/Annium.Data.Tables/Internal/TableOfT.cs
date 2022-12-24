@@ -8,7 +8,6 @@ using Annium.Logging.Abstractions;
 namespace Annium.Data.Tables.Internal;
 
 internal sealed class Table<T> : TableBase<T>, ITable<T>
-    where T : IEquatable<T>
 {
     public override int Count
     {

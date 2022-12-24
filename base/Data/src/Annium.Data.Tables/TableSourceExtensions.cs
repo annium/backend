@@ -11,23 +11,20 @@ public static class TableSourceExtensions
         ITableSource<TD> target,
         Func<TS, TD?> map
     )
-        where TD : IEquatable<TD> =>
-        source.Subscribe(e => target.MapWrite(e, map));
+        => source.Subscribe(e => target.MapWrite(e, map));
 
     public static IDisposable MapAppendTo<TS, TD>(
         this IObservable<IChangeEvent<TS>> source,
         ITableSource<TD> target,
         Func<TS, TD?> map
     )
-        where TD : IEquatable<TD> =>
-        source.Subscribe(e => target.MapAppend(e, map));
+        => source.Subscribe(e => target.MapAppend(e, map));
 
     private static void MapWrite<TS, TD>(
         this ITableSource<TD> target,
         IChangeEvent<TS> e,
         Func<TS, TD?> map
     )
-        where TD : IEquatable<TD>
     {
         switch (e)
         {
@@ -57,7 +54,6 @@ public static class TableSourceExtensions
         IChangeEvent<TS> e,
         Func<TS, TD?> map
     )
-        where TD : IEquatable<TD>
     {
         switch (e)
         {
@@ -92,7 +88,6 @@ public static class TableSourceExtensions
         this ITableSource<T> target,
         IReadOnlyCollection<T> values
     )
-        where T : IEquatable<T>
     {
         var source = target.Source;
         var data = values.ToDictionary(target.GetKey, x => x);
@@ -112,7 +107,6 @@ public static class TableSourceExtensions
         this ITableSource<T> target,
         IReadOnlyCollection<T> values
     )
-        where T : IEquatable<T>
     {
         var source = target.Source;
         var data = values.ToDictionary(target.GetKey, x => x);
