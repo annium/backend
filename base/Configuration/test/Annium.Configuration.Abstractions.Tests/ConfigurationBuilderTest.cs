@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
-using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 

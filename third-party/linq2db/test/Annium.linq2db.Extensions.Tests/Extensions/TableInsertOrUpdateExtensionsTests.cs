@@ -6,7 +6,6 @@ using Annium.linq2db.Extensions.Tests.Db.Models;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
-using LinqToDB.Mapping;
 using Xunit;
 
 namespace Annium.linq2db.Extensions.Tests.Extensions;
