@@ -16,7 +16,7 @@ internal static class TableHelper
 
         var method = typeof(HashCode).GetMethods()
             .Single(x => x.Name == nameof(HashCode.Combine) && x.GetParameters().Length == expressions.Length)
-            .MakeGenericMethod(expressions.Select(x => x.ReturnType).ToArray())!;
+            .MakeGenericMethod(expressions.Select(x => x.ReturnType).ToArray());
         var body = Expression.Call(null!, method, expressions.Select(x => x.Body).ToArray());
 
         var lambda = Expression.Lambda(body, getKeyExpression.Parameters);
@@ -24,10 +24,10 @@ internal static class TableHelper
         return (Func<T, int>) lambda.Compile();
     }
 
-    public static Action<T, T> BuildUpdate<T>(TablePermission permissions)
+    public static Func<T, T, bool> BuildUpdate<T>(TablePermission permissions)
     {
         if (!permissions.HasFlag(TablePermission.Update))
-            return (x, y) => { };
+            return (_, _) => false;
 
         var row = Expression.Parameter(typeof(T), "row");
         var upd = Expression.Parameter(typeof(T), "upd");
@@ -35,7 +35,7 @@ internal static class TableHelper
         if (properties.Length == 0)
             throw new InvalidOperationException($"Table write type {typeof(T).Name} has no writable properties.");
 
-        var statements = properties.Select<PropertyInfo, Expression>(prop =>
+        var expressions = properties.Select<PropertyInfo, Expression>(prop =>
         {
             var rowValue = Expression.Property(row, prop);
             var updValue = Expression.Property(upd, prop);
@@ -49,10 +49,15 @@ internal static class TableHelper
                 Expression.NotEqual(updValue, Expression.Constant(null)),
                 Expression.Assign(rowValue, updValue)
             );
-        }).ToArray();
+        }).ToList();
 
-        var lambda = Expression.Lambda<Action<T, T>>(
-            Expression.Block(statements),
+        var returnLabel = Expression.Label(typeof(bool));
+        var result = Expression.Constant(true);
+        expressions.Add(Expression.Return(returnLabel, result));
+        expressions.Add(Expression.Label(returnLabel, result));
+
+        var lambda = Expression.Lambda<Func<T, T, bool>>(
+            Expression.Block(expressions),
             row, upd
         );
 

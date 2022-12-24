@@ -1,6 +1,5 @@
 using System;
 using Annium.Core.Mapper;
-using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
@@ -20,7 +19,7 @@ internal class TableFactory : ITableFactory
     }
 
     public ITableBuilder<T> New<T>()
-        where T : IEquatable<T>, ICopyable<T>
+        where T : IEquatable<T>
     {
         return new TableBuilder<T>(_loggerFactory.Get<Table<T>>());
     }

@@ -11,7 +11,7 @@ using Annium.Logging.Abstractions;
 namespace Annium.Data.Tables.Internal;
 
 internal abstract class TableBase<T> : ITableView<T>, ILogSubject<TableBase<T>>
-    where T : IEquatable<T>, ICopyable<T>
+    where T : IEquatable<T>
 {
     public ILogger<TableBase<T>> Logger { get; }
     public abstract int Count { get; }

@@ -41,14 +41,13 @@ public class ChangeEventSerializationTests
     {
         // arrange
         var serializer = GetSerializer();
-        var e = ChangeEvent.Update(2, 3);
+        var e = ChangeEvent.Update(3);
 
         // act
         var back = serializer.Deserialize<IChangeEvent<int>>(serializer.Serialize(e));
 
         // assert
-        back.As<UpdateEvent<int>>().OldValue.Is(2);
-        back.As<UpdateEvent<int>>().NewValue.Is(3);
+        back.As<UpdateEvent<int>>().Value.Is(3);
     }
 
     [Fact]

@@ -52,8 +52,7 @@ public class TableSourceExtensionsTests : TestBase
         // appears when init is run on source
         log.At(2).As<InitEvent<Sample>>().Values.IsEqual(new[] { new Sample(1, "3"), new Sample(2, "4") });
         log.At(3).As<AddEvent<Sample>>().Value.IsEqual(new Sample(3, "6")); // 6, not 5, because added entity is passed by reference
-        log.At(4).As<UpdateEvent<Sample>>().OldValue.IsEqual(new Sample(3, "5"));
-        log.At(4).As<UpdateEvent<Sample>>().NewValue.IsEqual(new Sample(3, "6"));
+        log.At(4).As<UpdateEvent<Sample>>().Value.IsEqual(new Sample(3, "6"));
         log.At(5).As<DeleteEvent<Sample>>().Value.IsEqual(new Sample(3, "6"));
     }
 
@@ -92,13 +91,10 @@ public class TableSourceExtensionsTests : TestBase
         log.At(1).As<AddEvent<Sample>>().Value.IsEqual(new Sample(1, "3")); // 3, not 2, because added entity is passed by reference
         log.At(2).As<AddEvent<Sample>>().Value.IsEqual(new Sample(2, "4")); // 4, not 3, because added entity is passed by reference
         // appears when init is run on source
-        log.At(3).As<UpdateEvent<Sample>>().OldValue.IsEqual(new Sample(1, "2"));
-        log.At(3).As<UpdateEvent<Sample>>().NewValue.IsEqual(new Sample(1, "3"));
-        log.At(4).As<UpdateEvent<Sample>>().OldValue.IsEqual(new Sample(2, "3"));
-        log.At(4).As<UpdateEvent<Sample>>().NewValue.IsEqual(new Sample(2, "4"));
+        log.At(3).As<UpdateEvent<Sample>>().Value.IsEqual(new Sample(1, "3"));
+        log.At(4).As<UpdateEvent<Sample>>().Value.IsEqual(new Sample(2, "4"));
         log.At(5).As<AddEvent<Sample>>().Value.IsEqual(new Sample(3, "6")); // 6, not 5, because added entity is passed by reference
-        log.At(6).As<UpdateEvent<Sample>>().OldValue.IsEqual(new Sample(3, "5"));
-        log.At(6).As<UpdateEvent<Sample>>().NewValue.IsEqual(new Sample(3, "6"));
+        log.At(6).As<UpdateEvent<Sample>>().Value.IsEqual(new Sample(3, "6"));
         log.At(7).As<DeleteEvent<Sample>>().Value.IsEqual(new Sample(3, "6"));
     }
 
@@ -153,7 +149,7 @@ public class TableSourceExtensionsTests : TestBase
         await Task.Delay(100);
         log.Has(4);
         log.At(1).IsEqual(ChangeEvent.Delete(initValues[1]));
-        log.At(2).IsEqual(ChangeEvent.Update(initValues[0], syncValues[0]));
+        log.At(2).IsEqual(ChangeEvent.Update(syncValues[0]));
         log.At(3).IsEqual(ChangeEvent.Add(syncValues[1]));
     }
 }

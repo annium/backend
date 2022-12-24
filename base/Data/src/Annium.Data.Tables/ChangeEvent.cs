@@ -7,7 +7,7 @@ public static class ChangeEvent
 {
     public static IChangeEvent<T> Init<T>(IReadOnlyCollection<T> values) => new InitEvent<T>(values);
     public static IChangeEvent<T> Add<T>(T value) => new AddEvent<T>(value);
-    public static IChangeEvent<T> Update<T>(T oldValue, T newValue) => new UpdateEvent<T>(oldValue, newValue);
+    public static IChangeEvent<T> Update<T>(T value) => new UpdateEvent<T>(value);
     public static IChangeEvent<T> Delete<T>(T value) => new DeleteEvent<T>(value);
 }
 
@@ -40,16 +40,14 @@ public class AddEvent<T> : IChangeEvent<T>
 public class UpdateEvent<T> : IChangeEvent<T>
 {
     public string Tid => GetType().GetIdString();
-    public T OldValue { get; }
-    public T NewValue { get; }
+    public T Value { get; }
 
-    internal UpdateEvent(T oldValue, T newValue)
+    internal UpdateEvent(T value)
     {
-        OldValue = oldValue;
-        NewValue = newValue;
+        Value = value;
     }
 
-    public override string ToString() => $"Update {typeof(T).Name} {OldValue} -> {NewValue}";
+    public override string ToString() => $"Update {typeof(T).Name} {Value}";
 }
 
 public class DeleteEvent<T> : IChangeEvent<T>

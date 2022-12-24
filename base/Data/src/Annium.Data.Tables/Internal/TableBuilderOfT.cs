@@ -1,16 +1,15 @@
 using System;
 using System.Linq.Expressions;
-using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
 internal class TableBuilder<T> : ITableBuilder<T>
-    where T : IEquatable<T>, ICopyable<T>
+    where T : IEquatable<T>
 {
     private TablePermission _permissions;
     private Expression<Func<T, object>>? _getKey;
-    private Action<T, T>? _update;
+    private Func<T, T, bool>? _update;
     private Func<T, bool>? _isActive;
     private readonly ILogger<Table<T>> _logger;
 
@@ -35,7 +34,7 @@ internal class TableBuilder<T> : ITableBuilder<T>
         return this;
     }
 
-    public ITableBuilder<T> UpdateWith(Action<T, T> update)
+    public ITableBuilder<T> UpdateWith(Func<T, T, bool> update)
     {
         _update = update;
 

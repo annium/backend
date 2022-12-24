@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 using Annium.Core.Primitives.Collections.Generic;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
 internal sealed class Table<T> : TableBase<T>, ITable<T>
-    where T : IEquatable<T>, ICopyable<T>
+    where T : IEquatable<T>
 {
     public override int Count
     {
@@ -31,13 +30,13 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
 
     private readonly Dictionary<int, T> _table = new();
     private readonly Func<T, int> _getKey;
-    private readonly Action<T, T> _update;
+    private readonly Func<T, T, bool> _update;
     private readonly Func<T, bool> _isActive;
 
     public Table(
         TablePermission permissions,
         Func<T, int> getKey,
-        Action<T, T> update,
+        Func<T, T, bool> update,
         Func<T, bool> isActive,
         ILogger<Table<T>> logger
     ) : base(permissions, logger)
@@ -77,17 +76,16 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
             if (exists)
             {
                 EnsurePermission(TablePermission.Update);
-                var oldValue = _table[key].Copy();
-                var newValue = _table[key];
-                _update(newValue, entry);
-                if (!newValue.Equals(oldValue) && _isActive(newValue))
-                    AddEvent(ChangeEvent.Update(oldValue, newValue));
+                var value = _table[key];
+                var hasChanged = _update(value, entry);
+                if (hasChanged && _isActive(value))
+                    AddEvent(ChangeEvent.Update(value));
             }
             else
             {
                 EnsurePermission(TablePermission.Add);
-                var newValue = _table[key] = entry;
-                AddEvent(ChangeEvent.Add(newValue));
+                var value = _table[key] = entry;
+                AddEvent(ChangeEvent.Add(value));
             }
 
             Cleanup();
