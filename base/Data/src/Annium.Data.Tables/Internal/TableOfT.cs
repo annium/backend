@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using Annium.Core.Primitives.Collections.Generic;
 using Annium.Logging.Abstractions;
-using static Annium.Data.Tables.Internal.TableHelper;
 
 namespace Annium.Data.Tables.Internal;
 
@@ -38,13 +36,14 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
 
     public Table(
         TablePermission permissions,
-        Expression<Func<T, object>> key,
+        Func<T, int> getKey,
+        Action<T, T> update,
         Func<T, bool> isActive,
         ILogger<Table<T>> logger
     ) : base(permissions, logger)
     {
-        _getKey = BuildGetKey(key);
-        _update = BuildUpdate<T>(permissions);
+        _getKey = getKey;
+        _update = update;
         _isActive = isActive;
     }
 

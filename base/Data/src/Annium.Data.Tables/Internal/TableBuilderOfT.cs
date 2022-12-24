@@ -10,6 +10,7 @@ internal class TableBuilder<T> : ITableBuilder<T>
 {
     private TablePermission _permissions;
     private Expression<Func<T, object>>? _getKey;
+    private Action<T, T>? _update;
     private Func<T, bool>? _isActive;
     private readonly ILogger<Table<T>> _logger;
 
@@ -34,6 +35,13 @@ internal class TableBuilder<T> : ITableBuilder<T>
         return this;
     }
 
+    public ITableBuilder<T> UpdateWith(Action<T, T> update)
+    {
+        _update = update;
+
+        return this;
+    }
+
     public ITableBuilder<T> Keep(Func<T, bool> isActive)
     {
         _isActive = isActive;
@@ -47,11 +55,10 @@ internal class TableBuilder<T> : ITableBuilder<T>
         if (_getKey is null)
             throw new InvalidOperationException($"Table<{typeof(T).Name},{typeof(T).Name}> must have key");
 
-        return new Table<T>(
-            _permissions,
-            _getKey,
-            _isActive ?? (_ => true),
-            _logger
-        );
+        var getKey = TableHelper.BuildGetKey(_getKey);
+        var update = _update ?? TableHelper.BuildUpdate<T>(_permissions);
+        var isActive = _isActive ?? (_ => true);
+
+        return new Table<T>(_permissions, getKey, update, isActive, _logger);
     }
 }

@@ -9,6 +9,7 @@ public interface ITableBuilder<T>
 {
     ITableBuilder<T> Allow(TablePermission permissions);
     ITableBuilder<T> Key(Expression<Func<T, object>> getKey);
+    ITableBuilder<T> UpdateWith(Action<T, T> update);
     ITableBuilder<T> Keep(Func<T, bool> isActive);
     ITable<T> Build();
 }
