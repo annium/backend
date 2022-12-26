@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Shell;
@@ -14,7 +13,7 @@ var (provider, ct) = entry;
 var shell = provider.Resolve<IShell>();
 var ls = await shell
     .Cmd("ls")
-    .Configure(new ProcessStartInfo { WorkingDirectory = "/" })
+    .Configure(x => x.WorkingDirectory = "/")
     .RunAsync(ct);
 
 Console.WriteLine(ls.IsSuccess);

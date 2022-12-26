@@ -27,9 +27,9 @@ internal class ShellInstance : IShellInstance, ILogSubject<ShellInstance>
         _startInfo = new ProcessStartInfo();
     }
 
-    public IShellInstance Configure(ProcessStartInfo startInfo)
+    public IShellInstance Configure(Action<ProcessStartInfo> configure)
     {
-        _startInfo = startInfo;
+        configure(_startInfo);
 
         return this;
     }

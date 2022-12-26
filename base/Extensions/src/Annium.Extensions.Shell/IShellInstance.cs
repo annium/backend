@@ -7,7 +7,7 @@ namespace Annium.Extensions.Shell;
 
 public interface IShellInstance
 {
-    IShellInstance Configure(ProcessStartInfo startInfo);
+    IShellInstance Configure(Action<ProcessStartInfo> configure);
 
     IShellInstance Pipe(bool pipe);
 
