@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Primitives;
 using Annium.Core.Primitives.Collections.Generic;
 
 namespace Annium.Extensions.CommandLine;
@@ -81,5 +82,35 @@ public static class Cli
         Console.WriteLine();
 
         return string.Join(string.Empty, result.Reverse());
+    }
+
+    public static void WriteColored(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
+    {
+        using var _ = SetColors(foreground, background);
+        Console.Write(text);
+    }
+
+    public static void WriteLineColored(string text, ConsoleColor? foreground = null, ConsoleColor? background = null)
+    {
+        using var _ = SetColors(foreground, background);
+        Console.WriteLine(text);
+    }
+
+    public static IDisposable SetColors(ConsoleColor? foreground = null, ConsoleColor? background = null)
+    {
+        var originalBackground = Console.BackgroundColor;
+        if (background.HasValue)
+            Console.BackgroundColor = background.Value;
+
+        var originalForeground = Console.ForegroundColor;
+        if (foreground.HasValue)
+            Console.ForegroundColor = foreground.Value;
+
+
+        return Disposable.Create(() =>
+        {
+            Console.BackgroundColor = originalBackground;
+            Console.ForegroundColor = originalForeground;
+        });
     }
 }
