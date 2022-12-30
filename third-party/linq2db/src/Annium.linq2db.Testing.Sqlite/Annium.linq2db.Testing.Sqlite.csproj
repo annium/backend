@@ -15,7 +15,7 @@
         <ProjectReference Include="../Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="dbup-sqlite" Version="4.6.0" />
-        <PackageReference Include="Microsoft.Data.Sqlite" Version="6.0.8" />
+        <PackageReference Include="dbup-sqlite" Version="5.0.8" />
+        <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.1" />
     </ItemGroup>
 </Project>
