@@ -18,7 +18,7 @@ public class DecimalExtensionsTest
         // assert
         a.DiffFrom(a).IsDefault();
         a.DiffFrom(b).Is(2m);
-        a.DiffFrom(c).Is(System.Decimal.MaxValue);
+        a.DiffFrom(c).Is(decimal.MaxValue);
         a.DiffFrom(d).Is(0.01m);
         a.DiffFrom(e).Is(1.99m);
         0m.DiffFrom(0m).Is(0m);

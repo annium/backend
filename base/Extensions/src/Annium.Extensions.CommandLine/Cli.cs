@@ -12,7 +12,7 @@ public static class Cli
     {
         Console.SetCursorPosition(0, 0);
         var clr = Enumerable.Range(0, Console.WindowHeight)
-            .Select(_ => new String(' ', Console.WindowWidth))
+            .Select(_ => new string(' ', Console.WindowWidth))
             .Join(Environment.NewLine);
         Console.Write(clr);
         Console.SetCursorPosition(0, 0);
