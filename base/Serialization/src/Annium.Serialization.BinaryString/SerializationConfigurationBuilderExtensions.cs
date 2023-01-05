@@ -1,7 +1,8 @@
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.BinaryString.Internal;
+using Constants = Annium.Serialization.BinaryString.Constants;
 
-namespace Annium.Serialization.BinaryString;
+namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions
 {

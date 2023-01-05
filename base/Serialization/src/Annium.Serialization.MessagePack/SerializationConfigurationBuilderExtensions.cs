@@ -1,8 +1,9 @@
 using System;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.MessagePack.Internal;
+using Constants = Annium.Serialization.MessagePack.Constants;
 
-namespace Annium.Serialization.MessagePack;
+namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions
 {

@@ -3,8 +3,9 @@ using System.Collections.Concurrent;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Yaml.Internal;
 using YamlDotNet.Serialization;
+using Constants = Annium.Serialization.Yaml.Constants;
 
-namespace Annium.Serialization.Yaml;
+namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions
 {

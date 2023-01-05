@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json.Internal;
+using Constants = Annium.Serialization.Json.Constants;
 
-namespace Annium.Serialization.Json;
+namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions
 {
