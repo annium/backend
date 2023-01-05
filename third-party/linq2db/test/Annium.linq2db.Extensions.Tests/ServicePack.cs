@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions.Tests.Db;
+using Annium.Serialization.Json;
 
 namespace Annium.linq2db.Extensions.Tests;
 
@@ -11,8 +12,7 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntime(Assembly.GetExecutingAssembly());
         container.AddTestingSqlite<Connection>(Assembly.GetExecutingAssembly());
-        container.AddJsonSerializers()
-            .Configure(opts => opts.UseCamelCaseNamingPolicy())
-            .SetDefault();
+        container.AddSerializers()
+            .WithJson(opts => opts.UseCamelCaseNamingPolicy());
     }
 }

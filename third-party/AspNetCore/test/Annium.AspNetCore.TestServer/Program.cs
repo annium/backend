@@ -12,7 +12,7 @@ app.UseExceptionMiddleware();
 app.UseWebSocketsServer();
 app.UseRouting();
 app.UseCorsDefaults();
-app.UseEndpoints(endpoints => endpoints.MapControllers());
+app.MapControllers();
 
 await app.RunAsync();
 

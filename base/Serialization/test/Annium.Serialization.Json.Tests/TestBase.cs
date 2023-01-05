@@ -12,13 +12,12 @@ public class TestBase
         var container = new ServiceContainer();
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddJsonSerializers()
-            .Configure(opts =>
+        container.AddSerializers()
+            .WithJson(opts =>
             {
                 opts.UseCamelCaseNamingPolicy();
                 configure(opts);
-            })
-            .SetDefault();
+            });
         container.AddLogging();
 
         var provider = container.BuildServiceProvider();

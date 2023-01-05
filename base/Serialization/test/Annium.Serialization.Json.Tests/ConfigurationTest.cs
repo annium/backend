@@ -17,14 +17,14 @@ public class ConfigurationTest
         container.AddTime().WithRealTime().SetDefault();
         container.AddLogging();
         // default
-        container.AddJsonSerializers().SetDefault();
+        container.AddSerializers().WithJson(isDefault: true);
         // custom
-        container.AddJsonSerializers("a").Configure(x =>
+        container.AddSerializers("a").WithJson(x =>
         {
             x.UseCamelCaseNamingPolicy();
             x.NumberHandling = JsonNumberHandling.WriteAsString;
         });
-        container.AddJsonSerializers("b").Configure(x => x.UseCamelCaseNamingPolicy());
+        container.AddSerializers("b").WithJson(x => x.UseCamelCaseNamingPolicy());
         var sp = container.BuildServiceProvider();
         sp.UseLogging(x => x.UseInMemory());
 

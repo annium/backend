@@ -1,5 +1,6 @@
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Annium.Testing;
 using Xunit;
 
@@ -69,7 +70,7 @@ public class ChangeEventSerializationTests
         var container = new ServiceContainer();
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddJsonSerializers().SetDefault();
+        container.AddSerializers().WithJson(isDefault: true);
         container.AddLogging();
 
         var sp = container.BuildServiceProvider();

@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Serialization.Json;
 
 namespace Demo.Infrastructure.WebSockets.Client;
 
@@ -14,12 +15,11 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddJsonSerializers()
-            .Configure(opts => opts
+        container.AddSerializers()
+            .WithJson(opts => opts
                 .ConfigureForOperations()
                 .ConfigureForNodaTime()
-            )
-            .SetDefault();
+            );
         container.AddLogging();
         container.AddMapper();
         container.AddArguments();

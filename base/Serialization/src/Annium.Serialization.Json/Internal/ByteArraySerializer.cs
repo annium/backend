@@ -11,10 +11,10 @@ internal class ByteArraySerializer : ISerializer<byte[]>
     private readonly JsonSerializerOptions _options;
 
     public ByteArraySerializer(
-        OptionsContainer options
+        JsonSerializerOptions options
     )
     {
-        _options = options.Value;
+        _options = options;
     }
 
     public T Deserialize<T>(byte[] value)

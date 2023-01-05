@@ -6,6 +6,7 @@ using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Annium.Testing;
 using Xunit;
 
@@ -37,7 +38,7 @@ public class JsonConfigurationProviderTest
             var container = new ServiceContainer();
             container.AddRuntime(GetType().Assembly);
             container.AddTime().WithRealTime().SetDefault();
-            container.AddJsonSerializers().SetDefault();
+            container.AddSerializers().WithJson(isDefault: true);
             container.AddLogging();
             var serializer = container.BuildServiceProvider()
                 .Resolve<ISerializer<string>>();

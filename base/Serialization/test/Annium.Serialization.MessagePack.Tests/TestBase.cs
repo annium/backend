@@ -6,12 +6,19 @@ namespace Annium.Serialization.MessagePack.Tests;
 
 public class TestBase
 {
-    protected ISerializer<ReadOnlyMemory<byte>> GetSerializer() => new ServiceContainer()
-        .AddRuntime(GetType().Assembly)
-        .AddMessagePackSerializer()
-        .AddTime().WithManagedTime().SetDefault()
-        .AddLogging()
-        .BuildServiceProvider()
-        .UseLogging(x => x.UseInMemory())
-        .ResolveSerializer<ReadOnlyMemory<byte>>(Abstractions.Constants.DefaultKey, Constants.MediaType);
+    protected ISerializer<ReadOnlyMemory<byte>> GetSerializer()
+    {
+        var container = new ServiceContainer();
+        container.AddRuntime(GetType().Assembly);
+        container.AddSerializers().WithMessagePack();
+        container.AddTime().WithManagedTime().SetDefault();
+        container.AddLogging();
+
+        var sp = container.BuildServiceProvider();
+        sp.UseLogging(x => x.UseInMemory());
+
+        var serializer = sp.ResolveSerializer<ReadOnlyMemory<byte>>(Abstractions.Constants.DefaultKey, Constants.MediaType);
+
+        return serializer;
+    }
 }

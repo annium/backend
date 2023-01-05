@@ -3,6 +3,7 @@ using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.MessageBus.Node;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 
 namespace Demo.Infrastructure.MessageBus.EchoServer;
 
@@ -13,7 +14,7 @@ internal class ServicePack : ServicePackBase
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
         container.AddLogging();
-        container.AddJsonSerializers().SetDefault();
+        container.AddSerializers().WithJson();
         container.AddMapper();
         container.AddConfiguration<EndpointsConfiguration>(x => x.AddYamlFile("cfg_local.yml"));
         container.AddNetMQMessageBus((sp, opts) => opts

@@ -1,17 +1,18 @@
 namespace Annium.Serialization.Abstractions;
 
-public record SerializerKey
+public record struct SerializerKey
 {
-    public static SerializerKey Create(string key, string type) => new(key, type);
-    public static SerializerKey CreateDefault(string type) => new(Constants.DefaultKey, type);
+    public static SerializerKey Create(string key, string mediaType) => new(key, mediaType);
+    public static SerializerKey CreateDefault(string mediaType) => new(Constants.DefaultKey, mediaType);
     public string Key { get; }
-    public string Type { get; }
+    public string MediaType { get; }
+    public bool IsDefault => Key == Constants.DefaultKey;
 
-    private SerializerKey(string key, string type)
+    private SerializerKey(string key, string mediaType)
     {
         Key = key;
-        Type = type;
+        MediaType = mediaType;
     }
 
-    public override string ToString() => $"{Key}:{Type}";
+    public override string ToString() => $"{Key}:{MediaType}";
 }

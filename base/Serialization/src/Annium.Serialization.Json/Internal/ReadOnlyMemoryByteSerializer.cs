@@ -11,10 +11,10 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>
     private readonly JsonSerializerOptions _options;
 
     public ReadOnlyMemoryByteSerializer(
-        OptionsContainer options
+        JsonSerializerOptions options
     )
     {
-        _options = options.Value;
+        _options = options;
     }
 
     public T Deserialize<T>(ReadOnlyMemory<byte> value)

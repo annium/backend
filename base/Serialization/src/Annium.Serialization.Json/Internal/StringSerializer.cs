@@ -10,10 +10,10 @@ internal class StringSerializer : ISerializer<string>
     private readonly JsonSerializerOptions _options;
 
     public StringSerializer(
-        OptionsContainer options
+        JsonSerializerOptions options
     )
     {
-        _options = options.Value;
+        _options = options;
     }
 
     public T Deserialize<T>(string value)

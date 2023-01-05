@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Annium.Testing;
 using Xunit;
 
@@ -55,7 +56,7 @@ public class InMemoryMessageBusTest
         var container = new ServiceContainer();
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddJsonSerializers().SetDefault();
+        container.AddSerializers().WithJson(isDefault: true);
         container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
         container.AddLogging();
 

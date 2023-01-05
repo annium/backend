@@ -2,6 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Seq;
+using Annium.Serialization.Json;
 
 namespace Demo.Logging;
 
@@ -15,7 +16,7 @@ internal class ServicePack : ServicePackBase
         container.AddLogging();
         container.AddMapper();
         container.AddArguments();
-        container.AddJsonSerializers().SetDefault();
+        container.AddSerializers().WithJson();
         container.AddHttpRequestFactory().SetDefault();
 
         // commands

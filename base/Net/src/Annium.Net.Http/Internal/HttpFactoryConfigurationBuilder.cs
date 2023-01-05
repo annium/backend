@@ -19,7 +19,7 @@ internal class HttpFactoryConfigurationBuilder : IHttpFactoryConfigurationBuilde
         {
             var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>()
                 .Where(x => x.Key.Key == _key)
-                .ToIndex(x => x.Key.Type, x => x.Value);
+                .ToIndex(x => x.Key.MediaType, x => x.Value);
 
             return new HttpContentSerializer(serializers);
         }).AsKeyed<IHttpContentSerializer, string>(_key).Singleton();
