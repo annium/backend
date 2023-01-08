@@ -1,7 +1,7 @@
 using System;
-using Annium.Logging.Abstractions;
 using Annium.Logging.Shared;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
+using Microsoft.Extensions.Logging;
+using LogLevel = Annium.Logging.Abstractions.LogLevel;
 using MicrosoftEventId = Microsoft.Extensions.Logging.EventId;
 using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 

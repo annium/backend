@@ -1,6 +1,5 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Serialization.Json;
 
 namespace Demo.Infrastructure.WebSockets.Client;
 

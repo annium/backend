@@ -2,7 +2,6 @@ using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions.Tests.Db;
-using Annium.Serialization.Json;
 
 namespace Annium.linq2db.Extensions.Tests;
 

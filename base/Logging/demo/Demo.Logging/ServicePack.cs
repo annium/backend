@@ -2,7 +2,6 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
 using Annium.Logging.Seq;
-using Annium.Serialization.Json;
 
 namespace Demo.Logging;
 

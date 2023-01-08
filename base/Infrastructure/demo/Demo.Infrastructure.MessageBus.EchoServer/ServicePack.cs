@@ -3,7 +3,6 @@ using Annium.Configuration.Abstractions;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.MessageBus.Node;
 using Annium.Serialization.Abstractions;
-using Annium.Serialization.Json;
 
 namespace Demo.Infrastructure.MessageBus.EchoServer;
 

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
+using Annium.Core.Primitives;
 
 namespace Annium.Extensions.Reactive.Internal.Creation.Instance;
 
@@ -24,7 +25,7 @@ internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObserva
         lock (Lock)
             Subscribers.Add(observer);
 
-        return Core.Primitives.Disposable.Create(() =>
+        return Disposable.Create(() =>
         {
             lock (Lock)
                 Subscribers.Remove(observer);

@@ -4,7 +4,6 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
-using Annium.Serialization.Json;
 using YamlDotNet.Serialization;
 
 TestBuilder();
