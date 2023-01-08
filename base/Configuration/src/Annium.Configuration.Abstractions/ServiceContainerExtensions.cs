@@ -13,6 +13,19 @@ public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddConfiguration<T>(
         this IServiceContainer container,
+        T configuration
+    )
+        where T : class, new()
+    {
+        container.Add(configuration).AsSelf().Singleton();
+
+        Register(container, typeof(T));
+
+        return container;
+    }
+
+    public static IServiceContainer AddConfiguration<T>(
+        this IServiceContainer container,
         Action<IConfigurationContainer> configure
     )
         where T : class, new()
@@ -75,7 +88,6 @@ public static class ServiceContainerExtensions
             Register(container, type, property);
     }
 
-
     private static void Register(
         IServiceContainer container,
         Type type,
@@ -92,11 +104,7 @@ public static class ServiceContainerExtensions
     private static IReadOnlyCollection<PropertyInfo> GetRegisteredProperties(Type type) => type
         .GetProperties()
         .Where(x =>
-            x.CanRead &&
-            !x.PropertyType.IsEnum &&
-            !x.PropertyType.IsValueType &&
-            !x.PropertyType.IsPrimitive &&
-            !x.PropertyType.IsDerivedFrom(typeof(IEnumerable<>))
+            x.CanRead && !x.PropertyType.IsEnum && !x.PropertyType.IsValueType && !x.PropertyType.IsPrimitive && !x.PropertyType.IsDerivedFrom(typeof(IEnumerable<>))
         )
         .ToArray();
 }
