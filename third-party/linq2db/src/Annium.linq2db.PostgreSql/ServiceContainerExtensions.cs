@@ -4,9 +4,10 @@ using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.PostgreSql;
 using Annium.Logging.Abstractions;
-using LinqToDB;
 using LinqToDB.Configuration;
+using LinqToDB.DataProvider.PostgreSQL;
 using LinqToDB.Mapping;
+using Npgsql;
 
 namespace Annium.Core.DependencyInjection;
 
@@ -35,7 +36,9 @@ public static class ServiceContainerExtensions
         container.Add(sp =>
         {
             var builder = new LinqToDBConnectionOptionsBuilder();
-            builder.UseConnectionString(ProviderName.PostgreSQL95, string.Join(
+
+            // connection string setup
+            var connectionString = string.Join(
                 ';',
                 $"Host={cfg.Host}",
                 $"Port={cfg.Port}",
@@ -49,8 +52,16 @@ public static class ServiceContainerExtensions
                 "ConnectionLifetime=180",
                 "MinPoolSize=5",
                 "MaxPoolSize=1000"
-            ));
+            );
+            builder.UsePostgreSQL(connectionString, PostgreSQLVersion.v15);
 
+            // configure data source and NodaTime
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+            dataSourceBuilder.UseNodaTime();
+            var dataSource = dataSourceBuilder.Build();
+            builder.UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), dataSource.CreateConnection);
+
+            // configure mapping
             var mappingSchema = new MappingSchema();
             mappingSchema
                 .ApplyConfigurations(sp)
@@ -58,6 +69,8 @@ public static class ServiceContainerExtensions
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
             builder.UseMappingSchema(mappingSchema);
+
+            // add logging
             builder.UseLogging<TConnection>(sp);
 
             var options = builder.Build();
