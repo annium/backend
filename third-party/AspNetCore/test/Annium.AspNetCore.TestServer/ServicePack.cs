@@ -7,7 +7,7 @@ public class ServicePack : ServicePackBase
 {
     public ServicePack()
     {
-        Console.WriteLine(nameof(TestServicePack));
+        Console.WriteLine(nameof(ServicePack));
         Add<BaseServicePack>();
     }
 }
