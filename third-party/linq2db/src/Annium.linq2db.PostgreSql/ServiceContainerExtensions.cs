@@ -14,45 +14,70 @@ namespace Annium.Core.DependencyInjection;
 public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddPostgreSql<TConnection>(
-        this IServiceContainer container,
-        IPostgreSqlConfiguration cfg
+        this IServiceContainer container
     )
         where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
-        return container
-            .AddPostgreSql<TConnection>(
-                cfg,
+        return container.AddPostgreSql<TConnection>(
+                sp => sp.Resolve<PostgreSqlConfiguration>(),
                 (_, _) => { }
             );
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
-        IPostgreSqlConfiguration cfg,
+        Action<IServiceProvider, MappingSchema> configure
+    )
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+    {
+        return container
+            .AddPostgreSql<TConnection>(
+                sp => sp.Resolve<PostgreSqlConfiguration>(),
+                configure
+            );
+    }
+
+    public static IServiceContainer AddPostgreSql<TConnection>(
+        this IServiceContainer container,
+        PostgreSqlConfiguration cfg
+    )
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+    {
+        return container
+            .AddPostgreSql<TConnection>(
+                _ => cfg,
+                (_, _) => { }
+            );
+    }
+
+    public static IServiceContainer AddPostgreSql<TConnection>(
+        this IServiceContainer container,
+        PostgreSqlConfiguration cfg,
+        Action<IServiceProvider, MappingSchema> configure
+    )
+        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+    {
+        return container
+            .AddPostgreSql<TConnection>(
+                _ => cfg,
+                configure
+            );
+    }
+
+    private static IServiceContainer AddPostgreSql<TConnection>(
+        this IServiceContainer container,
+        Func<IServiceProvider, PostgreSqlConfiguration> getCfg,
         Action<IServiceProvider, MappingSchema> configure
     )
         where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
         container.Add(sp =>
         {
+            var cfg = getCfg(sp);
             var builder = new LinqToDBConnectionOptionsBuilder();
 
             // connection string setup
-            var connectionString = string.Join(
-                ';',
-                $"Host={cfg.Host}",
-                $"Port={cfg.Port}",
-                $"Database={cfg.Database}",
-                $"Username={cfg.User}",
-                $"Password={cfg.Password}",
-                "SSL Mode=Prefer",
-                "Trust Server Certificate=true",
-                "Keepalive=30",
-                "Tcp Keepalive=true",
-                "ConnectionLifetime=180",
-                "MinPoolSize=5",
-                "MaxPoolSize=1000"
-            );
+            var connectionString = cfg.ConnectionString;
             builder.UsePostgreSQL(connectionString, PostgreSQLVersion.v15);
 
             // configure data source and NodaTime
