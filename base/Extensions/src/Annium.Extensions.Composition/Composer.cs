@@ -19,14 +19,15 @@ public abstract class Composer<TValue> : ICompositionContainer<TValue> where TVa
         new Dictionary<PropertyInfo, IRuleContainer<TValue>>();
 
     protected IRuleBuilder<TValue, TField> Field<TField>(
-        Expression<Func<TValue, TField>> targetAccessor
+        Expression<Func<TValue, TField>> targetAccessor,
+        bool allowDefault = false
     )
     {
         var target = TypeHelper.ResolveProperty(targetAccessor);
         var targetSetter = target.GetSetMethod(true) ??
             throw new ArgumentException("Target property has no setter", nameof(targetAccessor));
 
-        var rule = new RuleContainer<TValue, TField>(targetSetter);
+        var rule = new RuleContainer<TValue, TField>(targetSetter, allowDefault);
 
         _rules[target] = rule;
 

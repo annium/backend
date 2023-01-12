@@ -13,10 +13,12 @@ internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRu
     private bool _allowDefault;
 
     public RuleContainer(
-        MethodInfo setTarget
+        MethodInfo setTarget,
+        bool allowDefault
     )
     {
         _setTarget = setTarget;
+        _allowDefault = allowDefault;
     }
 
     public IRuleBuilder<TValue, TField> When(Func<CompositionContext<TValue>, bool> check)
@@ -34,25 +36,21 @@ internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRu
     }
 
     public void LoadWith(
-        Func<CompositionContext<TValue>, TField> load,
-        string message = "",
-        bool allowDefault = false
+        Func<CompositionContext<TValue>, TField?> load,
+        string message = ""
     )
     {
         _load = load;
         _message = message;
-        _allowDefault = allowDefault;
     }
 
     public void LoadWith(
-        Func<CompositionContext<TValue>, Task<TField>> load,
-        string message = "",
-        bool allowDefault = false
+        Func<CompositionContext<TValue>, Task<TField?>> load,
+        string message = ""
     )
     {
         _load = load;
         _message = message;
-        _allowDefault = allowDefault;
     }
 
     public async Task ComposeAsync(CompositionContext<TValue> context, TValue value)
@@ -75,10 +73,10 @@ internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRu
         _                                                  => true,
     };
 
-    private async Task<TField> LoadAsync(CompositionContext<TValue> context) => _load switch
+    private async Task<TField?> LoadAsync(CompositionContext<TValue> context) => _load switch
     {
-        Func<CompositionContext<TValue>, TField> load       => load(context),
-        Func<CompositionContext<TValue>, Task<TField>> load => await load(context),
+        Func<CompositionContext<TValue>, TField?> load       => load(context),
+        Func<CompositionContext<TValue>, Task<TField?>> load => await load(context),
         _                                                   => throw new InvalidOperationException($"{context.Field} has no {nameof(LoadWith)} defined."),
     };
 }

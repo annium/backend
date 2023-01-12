@@ -9,7 +9,7 @@ public interface IRuleBuilder<TValue, TField>
 
     IRuleBuilder<TValue, TField> When(Func<CompositionContext<TValue>, Task<bool>> check);
 
-    void LoadWith(Func<CompositionContext<TValue>, TField> load, string message = "", bool allowDefault = false);
+    void LoadWith(Func<CompositionContext<TValue>, TField?> load, string message = "");
 
-    void LoadWith(Func<CompositionContext<TValue>, Task<TField>> load, string message = "", bool allowDefault = false);
+    void LoadWith(Func<CompositionContext<TValue>, Task<TField?>> load, string message = "");
 }
