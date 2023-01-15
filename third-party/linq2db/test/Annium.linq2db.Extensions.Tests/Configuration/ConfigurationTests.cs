@@ -21,6 +21,6 @@ public class ConfigurationTests : TestBase
         var databaseMetadata = conn.MappingSchema.Describe();
 
         // assert
-        databaseMetadata.Tables.Has(2);
+        databaseMetadata.Tables.Has(3);
     }
 }

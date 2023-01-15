@@ -1,6 +1,6 @@
-CREATE TABLE companies (
-  id uuid NOT NULL,
-  name text NOT NULL,
-  metadata text NOT NULL,
-  CONSTRAINT pk_companies PRIMARY KEY (id)
+create table companies (
+  id uuid not null,
+  name text not null,
+  metadata text not null,
+  constraint pk_companies primary key (id)
 );

@@ -10,6 +10,7 @@ internal sealed class Connection : DataConnectionBase, ILogSubject<Connection>
     public ILogger<Connection> Logger { get; }
     public ITable<Company> Companies { get; }
     public ITable<Employee> Employees { get; }
+    public ITable<CompanyEmployee> CompanyEmployees { get; }
 
     public Connection(
         Config<Connection> config,
@@ -19,5 +20,6 @@ internal sealed class Connection : DataConnectionBase, ILogSubject<Connection>
         Logger = logger;
         Companies = this.GetTable<Company>();
         Employees = this.GetTable<Employee>();
+        CompanyEmployees = this.GetTable<CompanyEmployee>();
     }
 }

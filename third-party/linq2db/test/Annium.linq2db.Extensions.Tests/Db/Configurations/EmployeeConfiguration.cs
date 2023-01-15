@@ -11,6 +11,8 @@ internal class EmployeeConfiguration : IEntityConfiguration<Employee>
         builder.HasTableName("employees");
         builder.HasPrimaryKey(x => x.Id);
         builder.Property(x => x.Id).IsColumn();
-        builder.Association(x => x.Company, x => x.CompanyId, x => x.Id, false);
+        builder.Property(x => x.Name).IsColumn();
+        builder.Association(x => x.Chief, x => x.ChiefId, x => x!.Id);
+        builder.Association(x => x.Subordinates, x => x.Id, x => x!.ChiefId);
     }
 }

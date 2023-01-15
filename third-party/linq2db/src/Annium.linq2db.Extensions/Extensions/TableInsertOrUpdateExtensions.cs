@@ -60,7 +60,7 @@ public static class TableSaveExtensions
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
-                return Expression.Bind(c.Member, Expression.Constant(memberValue));
+                return Expression.Bind(c.Member, Expression.Constant(memberValue, c.Type));
             })
             .ToArray();
 
@@ -82,7 +82,7 @@ public static class TableSaveExtensions
             .Select(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
-                return Expression.Equal(Expression.PropertyOrField(param, c.Member.Name), Expression.Constant(memberValue));
+                return Expression.Equal(Expression.PropertyOrField(param, c.Member.Name), Expression.Constant(memberValue, c.Type));
             })
             .Aggregate(Expression.AndAlso);
 
@@ -97,7 +97,7 @@ public static class TableSaveExtensions
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
-                return Expression.Bind(c.Member, Expression.Constant(memberValue));
+                return Expression.Bind(c.Member, Expression.Constant(memberValue, c.Type));
             })
             .ToArray();
 

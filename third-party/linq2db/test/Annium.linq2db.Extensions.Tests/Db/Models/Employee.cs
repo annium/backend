@@ -1,18 +1,39 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Annium.linq2db.Extensions.Tests.Db.Models;
 
 internal sealed record Employee
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
-    public Guid CompanyId { get; private init; }
-    public Company Company { get; private init; }
     public string Name { get; private init; } = string.Empty;
+    public Guid? ChiefId { get; private set; }
+    public Employee? Chief { get; private set; }
 
-    public Employee(Company company, string name)
+    public IReadOnlyCollection<Employee> Subordinates
     {
-        CompanyId = company.Id;
-        Company = company;
+        get => _subordinates;
+        private init => _subordinates = value.ToList();
+    }
+
+    private readonly List<Employee> _subordinates = new();
+
+    public Employee(string name, Employee? chief)
+    {
+        Id = Guid.NewGuid();
         Name = name;
+        ChiefId = chief?.Id;
+        Chief = chief;
+    }
+
+    private Employee()
+    {
+    }
+
+    public void SetChief(Employee? chief)
+    {
+        ChiefId = chief?.Id;
+        Chief = chief;
     }
 }

@@ -1,7 +1,7 @@
-CREATE TABLE employees (
-  id uuid NOT NULL,
-  company_id uuid NOT NULL,
-  name text NOT NULL,
-  CONSTRAINT pk_employees PRIMARY KEY (id),
-  CONSTRAINT fk_employees_companies_company_id FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE RESTRICT
+create table employees (
+  id uuid not null,
+  chief_id uuid null,
+  name text not null,
+  constraint pk_employees primary key (id),
+  constraint fk_employees_employees_chief_id foreign key (chief_id) references employees(id) on delete restrict
 );
