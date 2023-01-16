@@ -19,9 +19,9 @@ public static class ServiceContainerExtensions
         where TConnection : DataConnectionBase, ILogSubject<TConnection>
     {
         return container.AddPostgreSql<TConnection>(
-                sp => sp.Resolve<PostgreSqlConfiguration>(),
-                (_, _) => { }
-            );
+            sp => sp.Resolve<PostgreSqlConfiguration>(),
+            (_, _) => { }
+        );
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
@@ -76,11 +76,8 @@ public static class ServiceContainerExtensions
             var cfg = getCfg(sp);
             var builder = new LinqToDBConnectionOptionsBuilder();
 
-            // connection string setup
-            var connectionString = cfg.ConnectionString;
-            builder.UsePostgreSQL(connectionString, PostgreSQLVersion.v15);
-
             // configure data source and NodaTime
+            var connectionString = cfg.ConnectionString;
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataSourceBuilder.UseNodaTime();
             var dataSource = dataSourceBuilder.Build();
