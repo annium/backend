@@ -7,12 +7,11 @@ namespace Annium.Configuration.Abstractions;
 
 public static class ConfigurationBuilderExtensions
 {
-    public static TContainer AddJsonFile<TContainer>(
-        this TContainer container,
+    public static IConfigurationContainer AddJsonFile(
+        this IConfigurationContainer container,
         string path,
         bool optional = false
     )
-        where TContainer : IConfigurationContainer
     {
         path = Path.GetFullPath(path);
         if (!File.Exists(path))
@@ -29,12 +28,11 @@ public static class ConfigurationBuilderExtensions
         return container;
     }
 
-    public static async Task<TContainer> AddRemoteJson<TContainer>(
-        this TContainer container,
+    public static async Task<IConfigurationContainer> AddRemoteJson(
+        this IConfigurationContainer container,
         string uri,
         bool optional = false
     )
-        where TContainer : IConfigurationContainer
     {
         var client = new HttpClient();
         var message = new HttpRequestMessage(HttpMethod.Get, uri);
