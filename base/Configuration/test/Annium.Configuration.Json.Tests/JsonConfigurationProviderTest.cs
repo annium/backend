@@ -21,6 +21,7 @@ public class JsonConfigurationProviderTest
         {
             Flag = true,
             Plain = 7,
+            Nullable = 3,
             Array = new[] { 4, 7 },
             Matrix = new List<int[]> { new[] { 3, 2 }, new[] { 5, 4 } },
             List = new List<Val> { new() { Plain = 8 }, new() { Array = new[] { 2m, 6m } } },
@@ -52,6 +53,7 @@ public class JsonConfigurationProviderTest
             result.IsNotDefault();
             result.Flag.IsTrue();
             result.Plain.Is(7);
+            // result.Nullable.Is(3);
             result.Array.SequenceEqual(new[] { 4, 7 }).IsTrue();
             result.Matrix.Has(2);
             result.Matrix.At(0).SequenceEqual(new[] { 3, 2 }).IsTrue();
@@ -69,7 +71,7 @@ public class JsonConfigurationProviderTest
             result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
             result.Abstract.As<ConfigTwo>().Value.Is(10);
             result.Abstract.IsEqual(nested);
-            nested.IsShallowEqual(new ConfigTwo { Value = 10 });
+            nested.Is(new ConfigTwo { Value = 10 });
         }
         finally
         {

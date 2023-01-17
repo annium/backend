@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Mapper;
 using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Configuration.Abstractions.Internal;
@@ -35,7 +36,7 @@ internal class ConfigurationProcessor<T>
 
     private object? Process(Type type)
     {
-        if (type.IsEnum || _mapper.HasMap(string.Empty, type))
+        if (type.IsEnum || type.IsNullableValueType() || _mapper.HasMap(string.Empty, type))
             return ProcessValue(type);
         if (type.IsGenericType &&
             type.GetGenericTypeDefinition() == typeof(Dictionary<,>))
@@ -133,10 +134,10 @@ internal class ConfigurationProcessor<T>
 
     private object? ProcessValue(Type type)
     {
-        if (_config.TryGetValue(Path, out var value))
-            return _mapper.Map(value, type);
+        if (!_config.TryGetValue(Path, out var value))
+            throw new ArgumentException($"Key {string.Join('.', Path)} not found in configuration.");
 
-        throw new ArgumentException($"Key {string.Join('.', Path)} not found in configuration.");
+        return _mapper.Map(value, Nullable.GetUnderlyingType(type) ?? type);
     }
 
     private string[] GetDescendants()

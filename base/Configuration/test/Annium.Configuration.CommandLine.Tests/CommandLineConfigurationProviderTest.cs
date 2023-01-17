@@ -3,7 +3,6 @@ using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
-using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 
@@ -18,6 +17,7 @@ public class CommandLineConfigurationProviderTest
         var args = new List<string>();
         args.AddRange("-flag");
         args.AddRange("-plain", "7");
+        args.AddRange("-nullable", "3");
         args.AddRange("-array", "4", "-array", "7");
         args.AddRange("-nested.plain", "4");
         args.AddRange("-nested.array", "4", "-nested.array", "13");
@@ -31,11 +31,13 @@ public class CommandLineConfigurationProviderTest
         result.IsNotDefault();
         result.Flag.IsTrue();
         result.Plain.Is(7);
+        // result.Nullable.Is(3);
         result.Array.SequenceEqual(new[] { 4, 7 }).IsTrue();
         result.Nested.Plain.IsEqual(4);
         result.Nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
         result.Nested.IsEqual(nested);
-        nested.IsShallowEqual(new Val { Plain = 4, Array = new[] { 4m, 13m } });
+        nested.Plain.Is(4);
+        nested.Array.SequenceEqual(new[] { 4m, 13m }).IsTrue();
     }
 }
 

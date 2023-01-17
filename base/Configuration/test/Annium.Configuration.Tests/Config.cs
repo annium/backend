@@ -5,10 +5,11 @@ using Annium.Core.Runtime.Types;
 
 namespace Annium.Configuration.Tests;
 
-public class Config
+public sealed record Config
 {
     public bool Flag { get; set; }
     public int Plain { get; set; }
+    public decimal? Nullable { get; set; }
     public int[] Array { get; set; } = System.Array.Empty<int>();
     public List<int[]> Matrix { get; set; } = new();
     public List<Val> List { get; set; } = new();
@@ -20,21 +21,21 @@ public class Config
     public ValueTuple<string, int> Tuple { get; set; }
 }
 
-public class Val
+public sealed record Val
 {
     public int Plain { get; set; }
 
     public decimal[] Array { get; set; } = System.Array.Empty<decimal>();
 }
 
-public abstract class SomeConfig
+public abstract record SomeConfig
 {
     [ResolutionKey]
     public string Type { get; protected set; } = string.Empty;
 }
 
 [ResolutionKeyValue(nameof(ConfigOne))]
-public class ConfigOne : SomeConfig
+public sealed record ConfigOne : SomeConfig
 {
     public uint Value { get; set; }
 
@@ -45,7 +46,7 @@ public class ConfigOne : SomeConfig
 }
 
 [ResolutionKeyValue(nameof(ConfigTwo))]
-public class ConfigTwo : SomeConfig
+public sealed record ConfigTwo : SomeConfig
 {
     public long Value { get; set; }
 
