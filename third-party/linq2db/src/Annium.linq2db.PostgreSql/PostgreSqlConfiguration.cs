@@ -1,6 +1,6 @@
 namespace Annium.linq2db.PostgreSql;
 
-public class PostgreSqlConfiguration
+public record PostgreSqlConfiguration
 {
     public string Host { get; set; } = string.Empty;
     public int Port { get; set; }
