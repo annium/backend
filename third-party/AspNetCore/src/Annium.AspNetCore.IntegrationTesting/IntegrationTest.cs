@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting;
 
-public class IntegrationTest : IAsyncDisposable
+public abstract class IntegrationTest : IAsyncDisposable
 {
     #region host configuration
 
