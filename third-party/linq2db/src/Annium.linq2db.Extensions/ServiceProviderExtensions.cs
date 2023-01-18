@@ -11,7 +11,7 @@ public static class ServiceProviderExtensions
     public static IServiceProvider UseConnectionTracing<TConnection>(
         this IServiceProvider provider
     )
-        where TConnection : DataConnectionBase
+        where TConnection : DataConnection
     {
         DataConnection.TurnTraceSwitchOn();
         DataConnection.WriteTraceLine = (message, displayName, traceLevel) => Console.WriteLine($"{MapTraceLevel(traceLevel)} {message} {displayName}");

@@ -2,10 +2,11 @@ using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Extensions.Tests.Db.Models;
 using Annium.Logging.Abstractions;
 using LinqToDB;
+using LinqToDB.Data;
 
 namespace Annium.linq2db.Extensions.Tests.Db;
 
-internal sealed class Connection : DataConnectionBase, ILogSubject<Connection>
+internal sealed class Connection : DataConnection, ILogSubject<Connection>
 {
     public ILogger<Connection> Logger { get; }
     public ITable<Company> Companies { get; }

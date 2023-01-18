@@ -5,6 +5,7 @@ using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.PostgreSql;
 using Annium.Logging.Abstractions;
 using LinqToDB.Configuration;
+using LinqToDB.Data;
 using LinqToDB.DataProvider.PostgreSQL;
 using LinqToDB.Mapping;
 using Npgsql;
@@ -16,7 +17,7 @@ public static class ServiceContainerExtensions
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container.AddPostgreSql<TConnection>(
             sp => sp.Resolve<PostgreSqlConfiguration>(),
@@ -28,7 +29,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Action<IServiceProvider, MappingSchema> configure
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -41,7 +42,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         PostgreSqlConfiguration cfg
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -55,7 +56,7 @@ public static class ServiceContainerExtensions
         PostgreSqlConfiguration cfg,
         Action<IServiceProvider, MappingSchema> configure
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -69,7 +70,7 @@ public static class ServiceContainerExtensions
         Func<IServiceProvider, PostgreSqlConfiguration> getCfg,
         Action<IServiceProvider, MappingSchema> configure
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         container.Add(sp =>
         {

@@ -1,16 +1,16 @@
 using System;
 using System.Diagnostics;
 using Annium.Core.DependencyInjection;
-using Annium.linq2db.Extensions.Models;
 using Annium.Logging.Abstractions;
 using LinqToDB.Configuration;
+using LinqToDB.Data;
 
 namespace Annium.linq2db.Extensions.Configuration;
 
 public static class LinqToDBConnectionOptionsBuilderExtensions
 {
     public static LinqToDBConnectionOptionsBuilder UseLogging<TConnection>(this LinqToDBConnectionOptionsBuilder builder, IServiceProvider sp)
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         var logSubject = sp.Resolve<ILogSubject<TConnection>>();
 

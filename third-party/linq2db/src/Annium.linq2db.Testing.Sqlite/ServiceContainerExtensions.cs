@@ -7,6 +7,7 @@ using Annium.linq2db.Testing.Sqlite.Internal;
 using Annium.Logging.Abstractions;
 using LinqToDB;
 using LinqToDB.Configuration;
+using LinqToDB.Data;
 using LinqToDB.Mapping;
 
 namespace Annium.Core.DependencyInjection;
@@ -17,7 +18,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         Assembly migrationsAssembly
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddTestingSqlite<TConnection>(
@@ -31,7 +32,7 @@ public static class ServiceContainerExtensions
         Assembly migrationsAssembly,
         Action<IServiceProvider, MappingSchema> configure
     )
-        where TConnection : DataConnectionBase, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject<TConnection>
     {
         container.Add(_ =>
         {
