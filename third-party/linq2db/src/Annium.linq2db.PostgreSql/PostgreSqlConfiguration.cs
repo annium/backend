@@ -20,7 +20,7 @@ public record PostgreSqlConfiguration
         "Keepalive=30",
         "Tcp Keepalive=true",
         "ConnectionLifetime=180",
-        "MinPoolSize=5",
-        "MaxPoolSize=1000"
+        "Minimum Pool Size=100",
+        "Maximum Pool Size=1000"
     );
 }
