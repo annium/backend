@@ -1,23 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
 using Xunit;
 
 namespace Annium.Storage.S3.Tests;
 
-public class StorageTest : IDisposable
+public class StorageTest : IAsyncDisposable
 {
     private readonly string _directory;
+    private const string FileName = "demo.txt";
 
     public StorageTest()
     {
-        _directory = $"/storage_test/{Guid.NewGuid().ToString()}/";
+        _directory = $"/storage_test/{Guid.NewGuid().ToString()}";
     }
 
     [Fact(Skip = "Needs durable test basis")]
@@ -36,14 +35,14 @@ public class StorageTest : IDisposable
         // arrange
         var storage = await GetStorage();
         var blob = GenerateBlob();
-        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        await storage.UploadAsync(new MemoryStream(blob), FileName);
 
         // act
         var keys = await storage.ListAsync();
 
         // assert
         keys.Has(1);
-        keys.At(0).Is("demo");
+        keys.At(0).Is(FileName);
     }
 
     [Fact(Skip = "Needs durable test basis")]
@@ -54,12 +53,12 @@ public class StorageTest : IDisposable
         var blob = GenerateBlob();
 
         // act
-        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        await storage.UploadAsync(new MemoryStream(blob), FileName);
         var keys = await storage.ListAsync();
 
         // assert
         keys.Has(1);
-        keys.At(0).Is("demo");
+        keys.At(0).Is(FileName);
     }
 
     [Fact(Skip = "Needs durable test basis")]
@@ -72,7 +71,7 @@ public class StorageTest : IDisposable
         var e = new Exception();
         try
         {
-            await storage.DownloadAsync("demo");
+            await storage.DownloadAsync(FileName);
         }
         catch (Exception ex)
         {
@@ -88,13 +87,13 @@ public class StorageTest : IDisposable
         // arrange
         var storage = await GetStorage();
         var blob = GenerateBlob();
-        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        await storage.UploadAsync(new MemoryStream(blob), FileName);
 
         // act
         byte[] result;
         using (var ms = new MemoryStream())
         {
-            await (await storage.DownloadAsync("demo")).CopyToAsync(ms);
+            await (await storage.DownloadAsync(FileName)).CopyToAsync(ms);
             result = ms.ToArray();
         }
 
@@ -128,11 +127,11 @@ public class StorageTest : IDisposable
         // arrange
         var storage = await GetStorage();
         var blob = GenerateBlob();
-        await storage.UploadAsync(new MemoryStream(blob), "demo");
+        await storage.UploadAsync(new MemoryStream(blob), FileName);
 
         // act
-        var first = await storage.DeleteAsync("demo");
-        var second = await storage.DeleteAsync("demo");
+        var first = await storage.DeleteAsync(FileName);
+        var second = await storage.DeleteAsync(FileName);
 
         // assert
         first.IsTrue();
@@ -152,9 +151,9 @@ public class StorageTest : IDisposable
 
         var factory = provider.Resolve<IStorageFactory>();
         var configuration = new Configuration();
-        configuration.Server = "https://server-address.com";
-        configuration.AccessKey = "access-key";
-        configuration.AccessSecret = "access-secret";
+        configuration.Server = "https://s3.yandexcloud.net";
+        configuration.AccessKey = "YCAJEoZt5_iy39ldI0y62gdME";
+        configuration.AccessSecret = "YCMlxyUBNX37JFy9_0h5_kqXcDH-BO6kTKdznQ-n";
         configuration.Region = "us-east-1";
         configuration.Bucket = "annium.tests";
         configuration.Directory = _directory;
@@ -165,12 +164,12 @@ public class StorageTest : IDisposable
         return storage;
     }
 
-    private byte[] GenerateBlob() => Encoding.UTF8.GetBytes("sample text file");
+    private byte[] GenerateBlob() => "sample text file"u8.ToArray();
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        var storage = GetStorage().Result;
-        foreach (var item in storage.ListAsync().Result)
-            storage.DeleteAsync(item).Await();
+        var storage = await GetStorage();
+        foreach (var item in await storage.ListAsync())
+            await storage.DeleteAsync(item);
     }
 }
