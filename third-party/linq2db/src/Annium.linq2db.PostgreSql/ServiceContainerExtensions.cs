@@ -15,60 +15,69 @@ namespace Annium.Core.DependencyInjection;
 public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddPostgreSql<TConnection>(
-        this IServiceContainer container
+        this IServiceContainer container,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
         where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container.AddPostgreSql<TConnection>(
             sp => sp.Resolve<PostgreSqlConfiguration>(),
-            (_, _) => { }
+            (_, _) => { },
+            lifetime
         );
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
-        Action<IServiceProvider, MappingSchema> configure
+        Action<IServiceProvider, MappingSchema> configure,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
         where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddPostgreSql<TConnection>(
                 sp => sp.Resolve<PostgreSqlConfiguration>(),
-                configure
-            );
-    }
-
-    public static IServiceContainer AddPostgreSql<TConnection>(
-        this IServiceContainer container,
-        PostgreSqlConfiguration cfg
-    )
-        where TConnection : DataConnection, ILogSubject<TConnection>
-    {
-        return container
-            .AddPostgreSql<TConnection>(
-                _ => cfg,
-                (_, _) => { }
+                configure,
+                lifetime
             );
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
         PostgreSqlConfiguration cfg,
-        Action<IServiceProvider, MappingSchema> configure
+        ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
         where TConnection : DataConnection, ILogSubject<TConnection>
     {
         return container
             .AddPostgreSql<TConnection>(
                 _ => cfg,
-                configure
+                (_, _) => { },
+                lifetime
+            );
+    }
+
+    public static IServiceContainer AddPostgreSql<TConnection>(
+        this IServiceContainer container,
+        PostgreSqlConfiguration cfg,
+        Action<IServiceProvider, MappingSchema> configure,
+        ServiceLifetime lifetime = ServiceLifetime.Scoped
+    )
+        where TConnection : DataConnection, ILogSubject<TConnection>
+    {
+        return container
+            .AddPostgreSql<TConnection>(
+                _ => cfg,
+                configure,
+                lifetime
             );
     }
 
     private static IServiceContainer AddPostgreSql<TConnection>(
         this IServiceContainer container,
         Func<IServiceProvider, PostgreSqlConfiguration> getCfg,
-        Action<IServiceProvider, MappingSchema> configure
+        Action<IServiceProvider, MappingSchema> configure,
+        ServiceLifetime lifetime
     )
         where TConnection : DataConnection, ILogSubject<TConnection>
     {
@@ -101,7 +110,7 @@ public static class ServiceContainerExtensions
             return new Config<TConnection>(options);
         }).AsSelf().Singleton();
 
-        container.Add<TConnection>().AsSelf().Transient();
+        container.Add<TConnection>().AsSelf().In(lifetime);
 
         container.AddEntityConfigurations();
 
