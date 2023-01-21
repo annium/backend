@@ -5,13 +5,14 @@ using Annium.Configuration.Json.Internal;
 
 namespace Annium.Configuration.Abstractions;
 
-public static class ConfigurationBuilderExtensions
+public static class ConfigurationContainerExtensions
 {
-    public static IConfigurationContainer AddJsonFile(
-        this IConfigurationContainer container,
+    public static TContainer AddJsonFile<TContainer>(
+        this TContainer container,
         string path,
         bool optional = false
     )
+        where TContainer : IConfigurationContainer
     {
         path = Path.GetFullPath(path);
         if (!File.Exists(path))
@@ -28,11 +29,12 @@ public static class ConfigurationBuilderExtensions
         return container;
     }
 
-    public static async Task<IConfigurationContainer> AddRemoteJson(
-        this IConfigurationContainer container,
+    public static async Task<TContainer> AddRemoteJson<TContainer>(
+        this TContainer container,
         string uri,
         bool optional = false
     )
+        where TContainer : IConfigurationContainer
     {
         var client = new HttpClient();
         var message = new HttpRequestMessage(HttpMethod.Get, uri);
