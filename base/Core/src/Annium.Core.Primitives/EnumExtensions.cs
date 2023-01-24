@@ -46,7 +46,7 @@ public static class EnumExtensions
 
     #endregion
 
-    #region parse width default
+    #region parse with default
 
     public static T ParseEnum<T>(this string str, T defaultValue)
         where T : struct, Enum

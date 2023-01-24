@@ -19,7 +19,7 @@ public class EnumJsonConverterFactory : JsonConverterFactory
         var parseAttribute = typeToConvert.GetTypeInfo().GetCustomAttribute<EnumParseAttribute>();
         var configuration = Activator.CreateInstance(
             typeof(EnumJsonConverterConfiguration<>).MakeGenericType(typeToConvert),
-            parseAttribute?.Separator ?? " ",
+            parseAttribute?.Separator ?? ",",
             parseAttribute?.DefaultValue
         )!;
 
