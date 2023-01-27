@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Annium.Core.Primitives;
 
@@ -35,19 +36,33 @@ public static class TypeExtensions
     private static string BuildFriendlyName(Type type)
     {
         if (type.IsGenericParameter || !type.IsGenericType)
-            return type.Name;
+            return CleanupFileLocalName(type.Name);
 
         if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
             return $"{Nullable.GetUnderlyingType(type)!.FriendlyName()}?";
 
-        var name = type.GetGenericTypeDefinition().Name;
-        var tickIndex = name.IndexOf('`');
-        if (tickIndex >= 0)
-            name = name[..tickIndex];
+        var name = CleanupGenericName(CleanupFileLocalName(type.GetGenericTypeDefinition().Name));
         var arguments = type.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
         return $"{name}<{string.Join(", ", arguments)}>";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string CleanupFileLocalName(string x)
+        {
+            var separatorIndex = x.IndexOf("__", StringComparison.Ordinal);
+
+            return x.Contains('<') ? x[(separatorIndex + 2)..] : x;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static string CleanupGenericName(string x)
+        {
+            var tickIndex = x.IndexOf('`');
+
+            return tickIndex >= 0 ? x[..tickIndex] : x;
+        }
     }
+
 
     public static bool IsEnumerable(this Type type)
     {
