@@ -104,7 +104,8 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
         return RunTestsAsync(assembly, tests, frameworkHandle);
     }
 
-    private Task RunTestsAsync(Assembly assembly,
+    private Task RunTestsAsync(
+        Assembly assembly,
         IEnumerable<Test> tests,
         IFrameworkHandle frameworkHandle
     )

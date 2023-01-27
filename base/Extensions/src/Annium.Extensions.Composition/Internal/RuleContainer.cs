@@ -77,6 +77,6 @@ internal class RuleContainer<TValue, TField> : IRuleBuilder<TValue, TField>, IRu
     {
         Func<CompositionContext<TValue>, TField?> load       => load(context),
         Func<CompositionContext<TValue>, Task<TField?>> load => await load(context),
-        _                                                   => throw new InvalidOperationException($"{context.Field} has no {nameof(LoadWith)} defined."),
+        _                                                    => throw new InvalidOperationException($"{context.Field} has no {nameof(LoadWith)} defined."),
     };
 }
