@@ -16,7 +16,7 @@ public class EnumJsonConverterTest : TestBase
         // act
         var a1 = serializer.Deserialize<A>(@"""y""");
         var a2 = serializer.Deserialize<A>(@"1");
-        var b1 = serializer.Deserialize<B>(@"""Y z""");
+        var b1 = serializer.Deserialize<B>(@"""Y, z""");
         var b2 = serializer.Deserialize<B>(@"3");
         var c1 = serializer.Deserialize<C>(@"""Y, Z,X""");
         var c2 = serializer.Deserialize<C>(@"""J""");
