@@ -20,7 +20,6 @@ public static class LogExtensions
     {
         var subject = obj is null ? "null" : $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
         var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
-        var msg = string.IsNullOrWhiteSpace(message) ? string.Empty : $" >> {message}";
-        Log.Trace(subject, $"{msg}{trace}", callerFilePath, member, line);
+        Log.Trace(subject, $"{message}{trace}", callerFilePath, member, line);
     }
 }
