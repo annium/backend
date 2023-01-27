@@ -30,23 +30,23 @@ public static class TypeExtensions
         }
     );
 
-    public static string FriendlyName(this Type value)
+    public static string FriendlyName(this Type value) => TypeNames.GetOrAdd(value, BuildFriendlyName);
+
+    private static string BuildFriendlyName(Type type)
     {
-        if (TypeNames.TryGetValue(value, out var name))
-            return name;
+        if (type.IsGenericParameter || !type.IsGenericType)
+            return type.Name;
 
-        if (value.IsGenericParameter || !value.IsGenericType)
-            return TypeNames[value] = value.Name;
+        if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
+            return $"{Nullable.GetUnderlyingType(type)!.FriendlyName()}?";
 
-        if (value.GetGenericTypeDefinition() == typeof(Nullable<>))
-            return TypeNames[value] = $"{Nullable.GetUnderlyingType(value)!.FriendlyName()}?";
+        var name = type.GetGenericTypeDefinition().Name;
+        var tickIndex = name.IndexOf('`');
+        if (tickIndex >= 0)
+            name = name[..tickIndex];
+        var arguments = type.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
 
-        name = value.GetGenericTypeDefinition().Name;
-        if (name.IndexOf('`') >= 0)
-            name = name.Substring(0, name.IndexOf('`'));
-        var arguments = value.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
-
-        return TypeNames.AddOrUpdate(value, $"{name}<{string.Join(", ", arguments)}>", (_, x) => x);
+        return $"{name}<{string.Join(", ", arguments)}>";
     }
 
     public static bool IsEnumerable(this Type type)
@@ -54,16 +54,11 @@ public static class TypeExtensions
         if (type == typeof(string))
             return false;
 
-        return type.IsArray
-            || type == typeof(IEnumerable)
-            || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
+        return type.IsArray || type == typeof(IEnumerable) || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
     }
 
     public static object? DefaultValue(this Type type)
     {
-        if (type.GetTypeInfo().IsValueType)
-            return Activator.CreateInstance(type);
-
-        return null;
+        return type.GetTypeInfo().IsValueType ? Activator.CreateInstance(type) : null;
     }
 }
