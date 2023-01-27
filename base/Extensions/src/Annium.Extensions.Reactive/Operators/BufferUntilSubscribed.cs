@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -16,8 +17,8 @@ public static class BufferUntilSubscribedOperatorExtensions
     {
         var ctx = new BufferContext<T>(source);
 
-        source.Subscribe(x => ctx.Process(x, null), e => ctx.Process(default!, e), ctx.DataCt);
-        source.Subscribe(delegate { }, ctx.Complete, ctx.CompletionCt);
+        source.SubscribeOn(TaskPoolScheduler.Default).Subscribe(x => ctx.Process(x, null), e => ctx.Process(default!, e), ctx.DataCt);
+        source.SubscribeOn(TaskPoolScheduler.Default).Subscribe(delegate { }, ctx.Complete, ctx.CompletionCt);
 
         ctx.Trace("create observable");
 

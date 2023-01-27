@@ -8,22 +8,29 @@ namespace Annium.Extensions.Reactive.Internal.Creation.Instance;
 
 internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObservable<T>
 {
+    private readonly Func<ObserverContext<T>, Task<Func<Task>>> _factory;
+    private readonly bool _isAsync;
+    private readonly CancellationToken _ct;
+
     internal StaticObservableInstance(
         Func<ObserverContext<T>, Task<Func<Task>>> factory,
         bool isAsync,
         CancellationToken ct
     )
     {
-        if (isAsync)
-            Task.Run(() => RunAsync(factory, ct));
-        else
-            RunAsync(factory, ct).GetAwaiter();
+        _factory = factory;
+        _isAsync = isAsync;
+        _ct = ct;
     }
 
     public IDisposable Subscribe(IObserver<T> observer)
     {
         lock (Lock)
+        {
             Subscribers.Add(observer);
+            if (Subscribers.Count == 1)
+                Start();
+        }
 
         return Disposable.Create(() =>
         {
@@ -32,16 +39,22 @@ internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObserva
         });
     }
 
+    private void Start()
+    {
+        if (_isAsync)
+            Task.Run(RunAsync, _ct);
+        else
+            RunAsync().GetAwaiter();
+    }
+
     private async Task RunAsync(
-        Func<ObserverContext<T>, Task<Func<Task>>> factory,
-        CancellationToken ct
     )
     {
-        var ctx = GetObserverContext(ct);
+        var ctx = GetObserverContext(_ct);
         try
         {
             this.Trace("start, run factory");
-            var disposeAsync = await factory(ctx);
+            var disposeAsync = await _factory(ctx);
             this.Trace("init disposal");
             InitDisposal();
             this.Trace("dispose");

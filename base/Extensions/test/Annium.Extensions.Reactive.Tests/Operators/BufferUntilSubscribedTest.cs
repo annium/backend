@@ -17,15 +17,24 @@ public class BufferUntilSubscribedTest
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+        var observable = ObservableExt.StaticSyncInstance<string>(async ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
                 await Task.Delay(10, CancellationToken.None);
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return () => Task.CompletedTask;
@@ -34,7 +43,7 @@ public class BufferUntilSubscribedTest
         // act
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     [Fact]
@@ -44,15 +53,24 @@ public class BufferUntilSubscribedTest
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+        var observable = ObservableExt.StaticSyncInstance<string>(async ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
                 await Task.Delay(10, CancellationToken.None);
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return () => Task.CompletedTask;
@@ -62,7 +80,7 @@ public class BufferUntilSubscribedTest
         await Task.Delay(100, CancellationToken.None);
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     [Fact]
@@ -72,15 +90,24 @@ public class BufferUntilSubscribedTest
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+        var observable = ObservableExt.StaticSyncInstance<string>(async ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
                 await Task.Delay(1, CancellationToken.None);
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return () => Task.CompletedTask;
@@ -89,7 +116,7 @@ public class BufferUntilSubscribedTest
         // act
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     [Fact]
@@ -99,15 +126,24 @@ public class BufferUntilSubscribedTest
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(async ctx =>
+        var observable = ObservableExt.StaticSyncInstance<string>(async ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
                 await Task.Delay(1, CancellationToken.None);
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return () => Task.CompletedTask;
@@ -117,7 +153,7 @@ public class BufferUntilSubscribedTest
         await Task.Delay(20, CancellationToken.None);
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     [Fact]
@@ -130,11 +166,19 @@ public class BufferUntilSubscribedTest
         var observable = ObservableExt.StaticAsyncInstance<string>(ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
@@ -143,7 +187,7 @@ public class BufferUntilSubscribedTest
         // act
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     [Fact]
@@ -153,14 +197,22 @@ public class BufferUntilSubscribedTest
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(ctx =>
+        var observable = ObservableExt.StaticSyncInstance<string>(ctx =>
         {
             var i = 0;
-            while (!ctx.Ct.IsCancellationRequested)
+            while (i < 10)
             {
-                ctx.OnNext((i++).ToString());
-                if (i == 2)
-                    ctx.OnError(new Exception(i.ToString()));
+                var val = i.ToString();
+                WriteLine($"Next: {val}");
+                ctx.OnNext(val);
+
+                if (val == "2")
+                {
+                    WriteLine($"Error: {val}");
+                    ctx.OnError(new Exception(val));
+                }
+
+                i++;
             }
 
             return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
@@ -170,7 +222,7 @@ public class BufferUntilSubscribedTest
         await Task.Delay(10, CancellationToken.None);
         await Capture(observable, writeLog);
 
-        log.IsEqual(new[] { "d: 0", "d: 1", "e: 2", "c" });
+        log.IsEqual(new[] { "d: 0", "d: 1", "d: 2", "e: 2", "c" });
     }
 
     private Task Capture(IObservable<string> observable, Action<string> log) => observable
@@ -197,4 +249,6 @@ public class BufferUntilSubscribedTest
             log.Add(value);
         });
     }
+
+    private static void WriteLine(string message) => Console.WriteLine(message);
 }
