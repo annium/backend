@@ -14,7 +14,7 @@ public static class Log
     private const string LogVar = "ANNIUM_LOG";
     private static bool Enabled { get; }
     public static Action<string> Write { get; set; }
-    private static List<string> Filter { get; }
+    private static IReadOnlyCollection<string> Filter { get; }
     private static DateTime Since { get; }
     private static Func<string> GetLogTime { get; set; }
 
