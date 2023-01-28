@@ -29,6 +29,7 @@ public class WebSocketPerfTest : IntegrationTestBase
 
         // arrange
         await using var client = await GetClient();
+        Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - client arranged");
 
         // act
         var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));

@@ -41,6 +41,9 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
         var wsClient = _appFactory.Server.CreateWebSocketClient();
         var ws = await wsClient.ConnectAsync(wsUri, CancellationToken.None);
 
+        // delay before returning socket to let server init ReceiveAsync
+        await Task.Delay(50);
+
         var clientFactory = Resolve<Func<WebSocket, TWebSocketClient>>();
         var client = clientFactory(ws);
         _disposable += client;
