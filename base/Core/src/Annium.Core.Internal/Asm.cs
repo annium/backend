@@ -12,3 +12,5 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Annium.Extensions.Reactive")]
 // BackgroundLogScheduler
 [assembly: InternalsVisibleTo("Annium.Logging.Shared")]
+// ClientWebSocket, WebSocket, WebSocketBase
+[assembly: InternalsVisibleTo("Annium.Net.WebSockets")]
