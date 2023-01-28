@@ -5,8 +5,8 @@ using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
-using Annium.Logging.Abstractions;
 
 namespace Annium.Net.WebSockets.Internal;
 
@@ -16,8 +16,7 @@ internal static class Configurator
         IObservable<SocketMessage> observable,
         Encoding encoding,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-        WebSocketBaseOptions options,
-        ILoggerFactory loggerFactory
+        WebSocketBaseOptions options
     )
     {
         IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
@@ -29,7 +28,7 @@ internal static class Configurator
         {
             var opts = options.ActiveKeepAlive;
             keepAliveFrames.Add(opts.PongFrame);
-            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, loggerFactory.Get<KeepAliveMonitor>());
+            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts);
         }
 
         // if passive - listen pings, respond with pongs
@@ -37,7 +36,7 @@ internal static class Configurator
         {
             var opts = options.PassiveKeepAlive;
             keepAliveFrames.Add(opts.PingFrame);
-            var logSubject = new PingPongSubject(loggerFactory.Get<PingPongSubject>());
+            var pingPong = new PingPong();
             disposable += observable
                 .Where(x =>
                     x.Type == WebSocketMessageType.Binary &&
@@ -46,7 +45,7 @@ internal static class Configurator
                 )
                 .DoParallelAsync(async _ =>
                 {
-                    logSubject.Log().Trace("KeepAlive: ping -> pong");
+                    pingPong.Trace("KeepAlive: ping -> pong");
                     await send(opts.PongFrame);
                 })
                 .Subscribe();
@@ -92,16 +91,6 @@ internal static class Configurator
             disposable
         );
     }
-
-    private class PingPongSubject : ILogSubject<PingPongSubject>
-    {
-        public ILogger<PingPongSubject> Logger { get; }
-
-        public PingPongSubject(ILogger<PingPongSubject> logger)
-        {
-            Logger = logger;
-        }
-    }
 }
 
 internal sealed record Configuration(
@@ -111,3 +100,5 @@ internal sealed record Configuration(
     IObservable<string> TextObservable,
     IDisposable Disposable
 );
+
+file sealed record PingPong;

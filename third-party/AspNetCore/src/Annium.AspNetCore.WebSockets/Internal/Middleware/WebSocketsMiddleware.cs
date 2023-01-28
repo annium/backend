@@ -19,7 +19,6 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
     private readonly RequestDelegate _next;
     private readonly ICoordinator _coordinator;
     private readonly ServerConfiguration _cfg;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly Helper _helper;
 
     public WebSocketsMiddleware(
@@ -28,14 +27,12 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
         ServerConfiguration cfg,
         IHostApplicationLifetime applicationLifetime,
         IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILoggerFactory loggerFactory,
         ILogger<WebSocketsMiddleware> logger
     )
     {
         _next = next;
         _coordinator = coordinator;
         _cfg = cfg;
-        _loggerFactory = loggerFactory;
         applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
         Logger = logger;
         _helper = new Helper(
@@ -67,7 +64,7 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
             this.Log().Trace("accept");
             var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
             this.Log().Trace("create socket");
-            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _loggerFactory);
+            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions);
             this.Log().Trace("handle");
             await _coordinator.HandleAsync(socket);
         }

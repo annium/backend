@@ -2,37 +2,37 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Logging.Abstractions;
+using Annium.Core.Internal;
+using Annium.Net.WebSockets.Internal;
 using NodaTime;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket, ILogSubject<ClientWebSocket>
+public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket
 {
-    public new ILogger<ClientWebSocket> Logger { get; }
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
     public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
     private readonly ClientWebSocketOptions _options;
     private Uri? _uri;
 
     public ClientWebSocket(
-        ClientWebSocketOptions options,
-        ILoggerFactory loggerFactory
+        ClientWebSocketOptions options
     ) : base(
         new NativeClientWebSocket(),
-        options,
         Extensions.Execution.Executor.Background.Parallel<ClientWebSocket>(),
-        loggerFactory
+        options,
+        new WebSocketConfig
+        {
+            ResumeImmediately = false
+        }
     )
     {
-        Logger = loggerFactory.Get<ClientWebSocket>();
         _options = options;
     }
 
     public ClientWebSocket(
-        ILoggerFactory loggerFactory
-    ) : this(new ClientWebSocketOptions(), loggerFactory)
+    ) : this(new ClientWebSocketOptions())
     {
     }
 
@@ -41,10 +41,10 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public async Task DisconnectAsync()
     {
-        this.Log().Trace("cancel receive, if pending, in {state}", Socket.State);
+        this.Trace($"cancel receive, if pending, in {Socket.State}");
         PauseObservable();
 
-        this.Log().Trace("invoke ConnectionLost in {state}", Socket.State);
+        this.Trace($"invoke ConnectionLost in {Socket.State}");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -54,36 +54,36 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
                 Socket.State == WebSocketState.Open
             )
             {
-                this.Log().Trace("disconnect");
+                this.Trace("disconnect");
                 await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
             }
             else
-                this.Log().Trace("already disconnected");
+                this.Trace("already disconnected");
         }
         catch (WebSocketException)
         {
-            this.Log().Trace(nameof(WebSocketException));
+            this.Trace(nameof(WebSocketException));
         }
     }
 
     protected override async Task OnConnectionLostAsync()
     {
-        this.Log().Trace("invoke ConnectionLost");
+        this.Trace("invoke ConnectionLost");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         if (_options.ReconnectTimeout != Duration.MaxValue)
         {
-            this.Log().Trace("try reconnect");
+            this.Trace("try reconnect");
             await Task.Delay(_options.ReconnectTimeout.ToTimeSpan());
             await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
         }
         else
-            this.Log().Trace("no reconnect");
+            this.Trace("no reconnect");
     }
 
     private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
     {
-        this.Log().Trace($"connect to {uri}");
+        this.Trace($"connect to {uri}");
 
         _uri = uri;
         do
@@ -91,12 +91,12 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
             try
             {
                 Socket = new NativeClientWebSocket();
-                this.Log().Trace("try connect");
+                this.Trace("try connect");
                 await Socket.ConnectAsync(uri, ct);
             }
             catch (WebSocketException)
             {
-                this.Log().Trace("connection failed");
+                this.Trace("connection failed");
                 Socket.Dispose();
                 await Task.Delay(timeout.ToTimeSpan(), ct);
             }
@@ -107,27 +107,27 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
         if (Socket.State is WebSocketState.Open or WebSocketState.CloseSent)
         {
-            this.Log().Trace("connected");
+            this.Trace("connected");
             ResumeObservable();
 
-            this.Log().Trace("invoke ConnectionRestored");
+            this.Trace("invoke ConnectionRestored");
             Executor.Schedule(() => ConnectionRestored.Invoke());
         }
         else
-            this.Log().Trace("connected");
+            this.Trace("connected");
     }
 
     public override async ValueTask DisposeAsync()
     {
-        this.Log().Trace("start in {state}", Socket.State);
+        this.Trace($"start in {Socket.State}");
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
-            this.Log().Trace("invoke ConnectionLost");
+            this.Trace("invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
         }
 
         await DisposeBaseAsync();
 
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 }

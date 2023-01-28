@@ -8,22 +8,21 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Extensions.Execution;
-using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets;
 
 // TODO: rewrite as generic socket wrapper
-public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket, ILogSubject<WebSocketBase<TNativeSocket>>
+public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket
     where TNativeSocket : NativeWebSocket
 {
     private const int BufferSize = 65536;
 
     public WebSocketState State => Socket.State;
-    public ILogger<WebSocketBase<TNativeSocket>> Logger { get; }
     protected TNativeSocket Socket { get; set; }
     protected IBackgroundExecutor Executor { get; }
     private TaskCompletionSource<object> _socketTcs = new();
@@ -40,28 +39,30 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     internal WebSocketBase(
         TNativeSocket socket,
-        WebSocketBaseOptions options,
         IBackgroundExecutor executor,
-        ILoggerFactory loggerFactory
+        WebSocketBaseOptions options,
+        WebSocketConfig config
     )
     {
         Socket = socket;
-
         Executor = executor;
-        Logger = loggerFactory.Get<WebSocketBase<TNativeSocket>>();
-        Executor.Start();
 
         // start socket observable
         _observable = CreateSocketObservable(_observableCts.Token)
             .TrackCompletion();
 
         // resolve components from configuration
-        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, loggerFactory);
+        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options);
         _keepAliveMonitor = cfg.KeepAliveMonitor;
         _messageObservable = cfg.MessageObservable;
         _binaryObservable = cfg.BinaryObservable;
         _textObservable = cfg.TextObservable;
         _disposable += cfg.Disposable;
+
+        if (config.ResumeImmediately)
+            ResumeObservable();
+
+        Executor.Start();
     }
 
     public IObservable<Unit> Send(string data, CancellationToken ct = default) =>
@@ -78,21 +79,21 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     protected void ResumeObservable()
     {
-        this.Log().Trace("start");
+        this.Trace("start");
         _socketTcs.SetResult(default!);
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 
     protected void PauseObservable()
     {
         if (_receiveCts.IsCancellationRequested)
-            this.Log().Trace("receive cts is already disposed");
+            this.Trace("receive cts is already disposed");
         else
         {
-            this.Log().Trace("cancel and dispose receive cts");
+            this.Trace("cancel and dispose receive cts");
             _receiveCts.Cancel();
             _receiveCts.Dispose();
-            this.Log().Trace("canceled and disposed receive cts");
+            this.Trace("canceled and disposed receive cts");
         }
     }
 
@@ -117,13 +118,14 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     private IObservable<SocketMessage> CreateSocketObservable(CancellationToken ct) => ObservableExt.StaticSyncInstance<SocketMessage>(async ctx =>
     {
+        this.Trace("create observable");
         await using var _ = ctx.Ct.Register(() =>
         {
             if (_socketTcs.Task.IsCompleted)
-                this.Log().Trace("observable disposing - socket tcs already released");
+                this.Trace("observable disposing - socket tcs already released");
             else
             {
-                this.Log().Trace("observable disposing - release socket tcs");
+                this.Trace("observable disposing - release socket tcs");
                 _socketTcs.SetResult(default!);
             }
         });
@@ -131,60 +133,60 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         while (true)
         {
             await _socketTcs.Task;
-            this.Log().Trace("start receiving data from socket");
+            this.Trace("start receiving data from socket");
 
             if (ctx.Ct.IsCancellationRequested)
             {
-                this.Log().Trace("disposing, break");
+                this.Trace("disposing, break");
                 break;
             }
 
-            this.Log().Trace("start, rent buffer");
+            this.Trace("start, rent buffer");
             var pool = ArrayPool<byte>.Shared;
             var buffer = pool.Rent(BufferSize);
 
             try
             {
-                this.Log().Trace("resume keepAlive monitor");
+                this.Trace("resume keepAlive monitor");
                 _keepAliveMonitor.Resume();
 
-                this.Log().Trace("create receive cts, bound to keepAliveMonitor token");
+                this.Trace("create receive cts, bound to keepAliveMonitor token");
                 _receiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
                 // run polling
-                this.Log().Trace("start polling");
+                this.Trace("start polling");
                 while (true)
                 {
                     // keep receiving while Opened
                     if (await ReceiveAsync(ctx, buffer) == Status.Opened)
                         continue;
 
-                    this.Log().Trace("receive ended with Status.Closed - break receive cycle");
+                    this.Trace("receive ended with Status.Closed - break receive cycle");
                     break;
                 }
 
                 // either ct canceled or cycle break due to socket closed
-                this.Log().Trace("end polling");
+                this.Trace("end polling");
             }
             catch (Exception e)
             {
-                this.Log().Trace($"exception {e}");
+                this.Trace($"exception {e}");
             }
 
-            this.Log().Trace("return buffer");
+            this.Trace("return buffer");
             pool.Return(buffer);
 
             if (ctx.Ct.IsCancellationRequested)
             {
-                this.Log().Trace("disposing, break");
+                this.Trace("disposing, break");
                 break;
             }
 
-            this.Log().Trace("refresh socket tcs");
+            this.Trace("refresh socket tcs");
             _socketTcs = new TaskCompletionSource<object>();
         }
 
-        this.Log().Trace("done");
+        this.Trace("done");
 
         return () => Task.CompletedTask;
     }, ct);
@@ -200,14 +202,20 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         {
             result = await ReceiveChunkAsync(buffer);
             if (result is null)
+            {
+                this.Trace("result is empty - assume socket is closed");
                 return Status.Closed;
+            }
 
             // if closing - handle disconnect
             if (result.Value.MessageType == WebSocketMessageType.Close)
             {
-                this.Log().Trace("received close message");
+                this.Trace("received close message");
                 if (await HandleConnectionLost() == Status.Closed)
+                {
+                    this.Trace("connection closed after connection lost by close message");
                     return Status.Closed;
+                }
             }
 
             stream.Write(buffer[..result.Value.Count].Span);
@@ -229,9 +237,12 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         //  remote party closed connection w/o handshake
         catch (WebSocketException e)
         {
-            this.Log().Trace($"{nameof(WebSocketException)} {e}");
+            this.Trace($"{nameof(WebSocketException)} {e}");
             if (await HandleConnectionLost() == Status.Closed)
+            {
+                this.Trace("connection closed after connection lost by WebSocket exception");
                 return null;
+            }
         }
         // token was canceled, no message received - will retry
         catch (OperationCanceledException)
@@ -239,19 +250,22 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             // Operation canceled either by disconnect, or by disposal
             if (!_keepAliveMonitor.Token.IsCancellationRequested)
             {
-                this.Log().Trace($"{nameof(OperationCanceledException)} by disconnect or disposal");
+                this.Trace($"{nameof(OperationCanceledException)} by disconnect or disposal");
                 HandleDisconnected();
 
                 return null;
             }
 
-            this.Log().Trace($"{nameof(OperationCanceledException)} by keepAlive");
+            this.Trace($"{nameof(OperationCanceledException)} by keepAlive");
             if (await HandleConnectionLost() == Status.Closed)
+            {
+                this.Trace("connection closed after connection lost by keepAlive");
                 return null;
+            }
         }
         catch (Exception e)
         {
-            this.Log().Trace($"exception {e}");
+            this.Trace($"exception {e}");
             // unexpected case
             throw;
         }
@@ -261,33 +275,33 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     private async Task<Status> HandleConnectionLost()
     {
-        this.Log().Trace("pause keepAlive");
+        this.Trace("pause keepAlive");
         _keepAliveMonitor.Pause();
 
-        this.Log().Trace("refresh socket tcs");
+        this.Trace("refresh socket tcs");
         _socketTcs = new TaskCompletionSource<object>();
 
-        this.Log().Trace($"{nameof(OnConnectionLostAsync)} - start in {State} state");
+        this.Trace($"{nameof(OnConnectionLostAsync)} - start in {State} state");
         await OnConnectionLostAsync().ConfigureAwait(false);
-        this.Log().Trace($"{nameof(OnConnectionLostAsync)} - complete");
+        this.Trace($"{nameof(OnConnectionLostAsync)} - complete");
 
         // if after disconnect handling not connected - set completed and break
         if (State is WebSocketState.CloseReceived or WebSocketState.Closed or WebSocketState.Aborted)
         {
-            this.Log().Trace("closed");
+            this.Trace("closed");
             return Status.Closed;
         }
 
         _keepAliveMonitor.Resume();
         _receiveCts = CancellationTokenSource.CreateLinkedTokenSource(_keepAliveMonitor.Token);
 
-        this.Log().Trace("opened");
+        this.Trace("opened");
         return Status.Opened;
     }
 
     private void HandleDisconnected()
     {
-        this.Log().Trace("pause keepAlive");
+        this.Trace("pause keepAlive");
         _keepAliveMonitor.Pause();
     }
 
@@ -298,19 +312,19 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
     protected async ValueTask DisposeBaseAsync()
     {
-        this.Log().Trace("pause observable");
+        this.Trace("pause observable");
         PauseObservable();
-        this.Log().Trace("dispose bundle");
+        this.Trace("dispose bundle");
         await _disposable.DisposeAsync();
-        this.Log().Trace("cancel observable cts");
+        this.Trace("cancel observable cts");
         _observableCts.Cancel();
-        this.Log().Trace("await observable");
+        this.Trace("await observable");
         await _observable.WhenCompleted();
-        this.Log().Trace("dispose executor");
+        this.Trace("dispose executor");
         await Executor.DisposeAsync();
-        this.Log().Trace("dispose socket");
+        this.Trace("dispose socket");
         await Socket.DisposeAsync();
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 
     private enum Status

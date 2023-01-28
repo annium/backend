@@ -3,7 +3,6 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
 using Microsoft.AspNetCore.Http;
 
@@ -11,15 +10,12 @@ namespace Demo.Net.WebSockets.Server;
 
 public class WebSocketEchoMiddleware
 {
-    private readonly ILoggerFactory _loggerFactory;
     private readonly RequestDelegate _next;
 
     public WebSocketEchoMiddleware(
-        ILoggerFactory loggerFactory,
         RequestDelegate next
     )
     {
-        _loggerFactory = loggerFactory;
         _next = next;
     }
 
@@ -38,7 +34,7 @@ public class WebSocketEchoMiddleware
             return;
         }
 
-        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _loggerFactory);
+        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync());
 
         if (path == "/ws/echo")
             await Echo(ws);
@@ -51,21 +47,20 @@ public class WebSocketEchoMiddleware
     {
         var tcs = new TaskCompletionSource<object>();
 
-        ws.ListenText().Subscribe(
-            async x =>
+        ws.ListenText()
+            .DoSequentialAsync(async x =>
             {
                 Console.WriteLine($"In:  '{x}'");
                 await ws.Send(x, CancellationToken.None);
                 Console.WriteLine($"Out: '{x}'");
-            },
-            async () =>
+            })
+            .SubscribeAsync(async () =>
             {
                 Console.WriteLine("Close");
                 await ws.DisconnectAsync();
                 Console.WriteLine("Closed");
                 tcs.TrySetResult(new object());
-            }
-        );
+            });
 
         return tcs.Task;
     }
