@@ -18,23 +18,20 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ILogSubject
     public override string Description { get; } = "socket sink (to listen broadcasts)";
     public ILogger<SinkCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
-    private readonly ILoggerFactory _loggerFactory;
 
     public SinkCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILoggerFactory loggerFactory
+        ILogger<SinkCommand> logger
     )
     {
         _serializer = serializer;
-        _loggerFactory = loggerFactory;
-        Logger = loggerFactory.Get<SinkCommand>();
+        Logger = logger;
     }
 
     public override async Task HandleAsync(SinkCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory
+            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) }
         );
         ws.ConnectionLost += () =>
         {

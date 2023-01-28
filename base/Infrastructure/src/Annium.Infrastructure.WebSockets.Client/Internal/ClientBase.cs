@@ -310,6 +310,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBas
             // if not arrived and not expired - cancel
             if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
             {
+                this.Log().Trace($"request {request.Rid} - cancel operation");
                 cts.Cancel();
                 tcs.TrySetException(new OperationCanceledException(ct));
             }
@@ -319,6 +320,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBas
             // if not arrived and not canceled - expire
             if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
             {
+                this.Log().Trace($"request {request.Rid} - cancel by timeout");
                 tcs.TrySetException(new TimeoutException());
             }
         });
@@ -379,5 +381,5 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBas
             this.Log().Trace($"dismiss unknown response {response.Tid}#{response.Rid}");
     }
 
-    private record RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
+    private record struct RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
 }

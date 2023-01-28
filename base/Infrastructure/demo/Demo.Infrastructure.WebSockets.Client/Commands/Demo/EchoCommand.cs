@@ -16,21 +16,18 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject
     public override string Id { get; } = "echo";
     public override string Description { get; } = "test echo flow";
     public ILogger<EchoCommand> Logger { get; }
-    private readonly ILoggerFactory _loggerFactory;
 
     public EchoCommand(
-        ILoggerFactory loggerFactory
+        ILogger<EchoCommand> logger
     )
     {
-        _loggerFactory = loggerFactory;
-        Logger = loggerFactory.Get<EchoCommand>();
+        Logger = logger;
     }
 
     public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory
+            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) }
         );
         ws.ConnectionLost += () =>
         {

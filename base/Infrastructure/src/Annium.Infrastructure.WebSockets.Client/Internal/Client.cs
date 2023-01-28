@@ -24,7 +24,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject<Client
         IClientConfiguration configuration,
         ILoggerFactory loggerFactory
     ) : base(
-        new ClientWebSocket(configuration.WebSocketOptions, loggerFactory),
+        new ClientWebSocket(configuration.WebSocketOptions),
         timeProvider,
         serializer,
         configuration,

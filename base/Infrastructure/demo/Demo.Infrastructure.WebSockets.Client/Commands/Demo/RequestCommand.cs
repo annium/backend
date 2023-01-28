@@ -24,23 +24,20 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogS
     public override string Description { get; } = "test demo flow";
     public ILogger<RequestCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
-    private readonly ILoggerFactory _loggerFactory;
 
     public RequestCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILoggerFactory loggerFactory
+        ILogger<RequestCommand> logger
     )
     {
         _serializer = serializer;
-        _loggerFactory = loggerFactory;
-        Logger = loggerFactory.Get<RequestCommand>();
+        Logger = logger;
     }
 
     public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _loggerFactory
+            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) }
         );
         ws.ConnectionLost += () =>
         {

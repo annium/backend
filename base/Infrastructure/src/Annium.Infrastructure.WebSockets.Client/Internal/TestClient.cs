@@ -19,7 +19,7 @@ internal class TestClient : ClientBase<WebSocket>, ITestClient, ILogSubject<Test
         ITestClientConfiguration configuration,
         ILoggerFactory loggerFactory
     ) : base(
-        new WebSocket(socket, configuration.WebSocketOptions, loggerFactory),
+        new WebSocket(socket, configuration.WebSocketOptions),
         timeProvider,
         serializer,
         configuration,
