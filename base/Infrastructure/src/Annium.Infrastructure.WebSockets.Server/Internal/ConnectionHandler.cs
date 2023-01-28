@@ -54,7 +54,11 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject<Connect
             tcs.Task.ContinueWith(_ => this.Log().Trace($"cn {cnId} - listen ended"), CancellationToken.None).GetAwaiter();
 
             // immediately subscribe to cancellation
-            ct.Register(() => tcs.TrySetResult());
+            ct.Register(() =>
+            {
+                this.Log().Trace($"cn {cnId} - complete tcs due to cancellation");
+                tcs.TrySetResult();
+            });
 
             // use derived cts for socket subscription
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -76,9 +80,14 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject<Connect
                         this.Log().Trace($"cn {cnId} - handle error");
                         cts.Cancel();
                         this.Log().Error(e);
+                        this.Log().Trace($"cn {cnId} - complete tcs due to error");
                         tcs.TrySetResult();
                     },
-                    () => tcs.TrySetResult(),
+                    () =>
+                    {
+                        this.Log().Trace($"cn {cnId} - complete tcs due to socket closed");
+                        tcs.TrySetResult();
+                    },
                     cts.Token
                 );
 
