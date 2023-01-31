@@ -21,20 +21,16 @@ public static class Wait
     /// <returns>
     ///     <see cref="Task" />.
     /// </returns>
-    public static async Task WhileAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
+    public static async Task WhileAsync(Func<bool> condition, CancellationToken ct, int pollDelay = 25)
     {
-        while (condition() && !ct.IsCancellationRequested)
+        while (condition() &&
+            !ct.IsCancellationRequested)
             await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
     }
 
-    public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
-        => WhileAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
-
-    public static Task WhileAsync(Func<bool> condition, int ms = int.MaxValue)
-        => WhileAsync(condition, new CancellationTokenSource(ms).Token);
-
-    public static Task WhileAsync(Func<bool> condition)
-        => WhileAsync(condition, CancellationToken.None);
+    public static Task WhileAsync(Func<bool> condition, int ms, int pollDelay) => WhileAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
+    public static Task WhileAsync(Func<bool> condition, int ms) => WhileAsync(condition, new CancellationTokenSource(ms).Token);
+    public static Task WhileAsync(Func<bool> condition) => WhileAsync(condition, CancellationToken.None);
 
     /// <summary>
     ///     Awaits until condition is true or task is canceled.
@@ -51,18 +47,14 @@ public static class Wait
     /// <returns>
     ///     <see cref="Task" />.
     /// </returns>
-    public static async Task UntilAsync(Func<bool> condition, CancellationToken ct = default, int pollDelay = 25)
+    public static async Task UntilAsync(Func<bool> condition, CancellationToken ct, int pollDelay = 25)
     {
-        while (!condition() && !ct.IsCancellationRequested)
+        while (!condition() &&
+            !ct.IsCancellationRequested)
             await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
     }
 
-    public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue, int pollDelay = 25)
-        => UntilAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
-
-    public static Task UntilAsync(Func<bool> condition, int ms = int.MaxValue)
-        => UntilAsync(condition, new CancellationTokenSource(ms).Token);
-
-    public static Task UntilAsync(Func<bool> condition)
-        => UntilAsync(condition, CancellationToken.None);
+    public static Task UntilAsync(Func<bool> condition, int ms, int pollDelay) => UntilAsync(condition, new CancellationTokenSource(ms).Token, pollDelay);
+    public static Task UntilAsync(Func<bool> condition, int ms) => UntilAsync(condition, new CancellationTokenSource(ms).Token);
+    public static Task UntilAsync(Func<bool> condition) => UntilAsync(condition, CancellationToken.None);
 }
