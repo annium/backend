@@ -66,18 +66,7 @@ internal class ConstructorJsonConverter<T> : JsonConverter<T>
         }
 
         var args = parameters
-            .Select((x, i) =>
-            {
-                if (x is not null)
-                    return x;
-
-                if (options.DefaultIgnoreCondition == JsonIgnoreCondition.WhenWritingNull)
-                    return _parameters[i].Type.DefaultValue();
-
-                throw new JsonException(
-                    $"Can't invoke constructor of '{_constructor.DeclaringType!.FriendlyName()}' with empty parameter '{_parameters[i].Name}'"
-                );
-            })
+            .Select((x, i) => x ?? _parameters[i].Type.DefaultValue())
             .ToArray();
         var result = _constructor.Invoke(args);
         foreach (var (property, val) in properties)
