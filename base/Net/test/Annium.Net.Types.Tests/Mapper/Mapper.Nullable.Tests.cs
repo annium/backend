@@ -1,12 +1,12 @@
-using Annium.Net.Types.Internal.Map;
+using Annium.Net.Types.Internal.Mappers;
 using Annium.Net.Types.Models;
 using Annium.Testing;
 using Namotion.Reflection;
 using Xunit;
 
-namespace Annium.Net.Types.Tests.Internal.Mapper;
+namespace Annium.Net.Types.Tests.Mapper;
 
-public class MapNullableTests
+public class MapperNullableTests : TestBase
 {
     [Fact]
     public void Nullable_Struct()
@@ -15,7 +15,7 @@ public class MapNullableTests
         var target = typeof(int?).ToContextualType();
 
         // act
-        var model = Map.ToModel(target).As<NullableModel>();
+        var model = Map(target).As<NullableModel>();
 
         // assert
         model.Name.Is($"{BaseType.Int}?");
@@ -28,7 +28,7 @@ public class MapNullableTests
         var target = typeof(RecordWithNullable).GetProperty(nameof(RecordWithNullable.Value))!.ToContextualProperty().PropertyType;
 
         // act
-        var model = Map.ToModel(target).As<NullableModel>();
+        var model = Map(target).As<NullableModel>();
 
         // assert
         model.Name.Is($"{BaseType.String}?");

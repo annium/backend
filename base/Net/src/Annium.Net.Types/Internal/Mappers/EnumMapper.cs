@@ -1,15 +1,16 @@
 using System;
 using System.Collections.Generic;
+using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
 
-namespace Annium.Net.Types.Internal.Map;
+namespace Annium.Net.Types.Internal.Mappers;
 
-internal static partial class Map
+internal static class EnumMapper
 {
-    private static ITypeModel? ToEnum(ContextualType type)
+    public static ITypeModel? Map(ContextualType type)
     {
         if (!type.Type.IsEnum)
             return null;
@@ -23,7 +24,7 @@ internal static partial class Map
             values[names[i++]] = Convert.ToInt64(value);
 
         var model = new EnumModel(type.GetNamespace(), type.Type.FriendlyName(), values);
-        Console.WriteLine($"Mapped {type} -> {model}");
+        Log.Trace($"Mapped {type} -> {model}");
 
         return model;
     }

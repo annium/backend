@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Annium.Net.Types.Models;
 
-namespace Annium.Net.Types.Models;
+namespace Annium.Net.Types.Internal.Models;
 
-public class StructModelBuilder
+internal class StructModelBuilder
 {
     public static StructModelBuilder Init(Namespace @namespace, string name) => new(@namespace, name);
 

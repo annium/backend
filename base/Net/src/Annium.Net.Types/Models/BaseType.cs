@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.Primitives;
 using Annium.Net.Types.Extensions;
+using Annium.Net.Types.Internal.Models;
 using NodaTime;
 
 namespace Annium.Net.Types.Models;

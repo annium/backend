@@ -1,18 +1,19 @@
 using System;
+using Annium.Core.Internal;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
 
-namespace Annium.Net.Types.Internal.Map;
+namespace Annium.Net.Types.Internal.Mappers;
 
-internal static partial class Map
+internal static class GenericParameterMapper
 {
-    private static ITypeModel? ToGenericParameter(ContextualType type)
+    public static ITypeModel? Map(ContextualType type)
     {
         if (!type.Type.IsGenericParameter)
             return null;
 
         var model = new GenericParameterModel(type.TypeName);
-        Console.WriteLine($"Mapped {type} -> {model}");
+        Log.Trace($"Mapped {type} -> {model}");
 
         return model;
     }

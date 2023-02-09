@@ -1,6 +1,6 @@
 // ReSharper disable NotAccessedPositionalProperty.Local
 
-namespace Annium.Net.Types.Tests.Internal.Mapper;
+namespace Annium.Net.Types.Tests.Mapper;
 
 public class MapTests
 {

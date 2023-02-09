@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.Primitives;
+using Namotion.Reflection;
 
-namespace Annium.Net.Types.Internal.Map;
+namespace Annium.Net.Types;
 
-internal static partial class Map
+public static partial class MapperConfig
 {
     private static readonly HashSet<Type> Ignored = new();
 
@@ -40,5 +41,5 @@ internal static partial class Map
             throw new ArgumentException($"Type {type.FriendlyName()} is already ignored");
     }
 
-    private static bool IsIgnoredType(Type type) => Ignored.Contains(type.IsGenericType ? type.GetGenericTypeDefinition() : type);
+    internal static bool IsIgnored(ContextualType type) => Ignored.Contains(type.Type.IsGenericType ? type.Type.GetGenericTypeDefinition() : type);
 }
