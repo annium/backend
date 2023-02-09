@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.Primitives;
-using Annium.Net.Types.Extensions;
-using Annium.Net.Types.Internal.Models;
 using NodaTime;
 
 namespace Annium.Net.Types.Models;
 
 public static class BaseType
 {
-    private static readonly Dictionary<Type, StructModel> BaseTypes = new();
+    private static readonly Dictionary<Type, ModelRef> BaseTypes = new();
     public const string Object = "object";
     public const string Bool = "bool";
     public const string String = "string";
@@ -58,7 +56,7 @@ public static class BaseType
         Register(typeof(void), Void);
     }
 
-    public static StructModel? GetFor(Type type) => BaseTypes.GetValueOrDefault(type);
+    public static ModelRef? GetFor(Type type) => BaseTypes.GetValueOrDefault(type);
 
     public static void Register<T>(string name) => Register(typeof(T), name);
 
@@ -73,7 +71,7 @@ public static class BaseType
         if (type.IsGenericTypeParameter)
             throw new ArgumentException($"Type {type.FriendlyName()} is generic type parameter");
 
-        if (!BaseTypes.TryAdd(type, StructModelBuilder.Init(type.GetNamespace(), name).Build()))
+        if (!BaseTypes.TryAdd(type, new ModelRef(name)))
             throw new ArgumentException($"Type {type.FriendlyName()} is already registered");
     }
 }

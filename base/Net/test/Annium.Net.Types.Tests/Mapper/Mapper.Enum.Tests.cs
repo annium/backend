@@ -15,9 +15,13 @@ public class MapperEnumTests : TestBase
         var target = typeof(SimpleEnum).ToContextualType();
 
         // act
-        var model = Map(target).As<EnumModel>();
+        var modelRef = Map(target);
 
         // assert
+        modelRef.Namespace.Is(typeof(SimpleEnum).GetNamespace().ToString());
+        modelRef.Name.Is(nameof(SimpleEnum));
+        Models.Has(1);
+        var model = Models.At(0).As<EnumModel>();
         model.Namespace.Is(typeof(SimpleEnum).GetNamespace());
         model.Name.Is(nameof(SimpleEnum));
         model.Values.Has(2);

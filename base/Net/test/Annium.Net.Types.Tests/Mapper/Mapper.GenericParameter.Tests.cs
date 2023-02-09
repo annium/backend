@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Annium.Net.Types.Models;
 using Annium.Testing;
 using Namotion.Reflection;
 using Xunit;
@@ -15,9 +14,10 @@ public class MapperGenericParameterTests : TestBase
         var target = typeof(List<>).GetGenericArguments()[0].ToContextualType();
 
         // act
-        var model = Map(target).As<NullableModel>().Type.As<GenericParameterModel>();
+        var modelRef = Map(target);
 
         // assert
-        model.Name.Is(target.Type.Name);
+        modelRef.HasNamespace.IsFalse();
+        modelRef.Name.Is(target.Type.Name);
     }
 }

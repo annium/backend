@@ -13,10 +13,11 @@ public class MapperBaseTypeTests : TestBase
         var target = typeof(int).ToContextualType();
 
         // act
-        var model = Map(target);
+        var modelRef = Map(target);
 
         // assert
-        model.Name.Is("int");
+        modelRef.HasNamespace.IsFalse();
+        modelRef.Name.Is(Net.Types.Models.BaseType.Int);
         Models.IsEmpty();
     }
 }

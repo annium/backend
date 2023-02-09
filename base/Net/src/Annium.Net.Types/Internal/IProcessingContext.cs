@@ -8,6 +8,8 @@ internal interface IProcessingContext
 {
     void Process(ContextualType type, Nullability nullability);
     void Process(ContextualType type);
+    ModelRef GetRef(ContextualType type, Nullability nullability);
     ModelRef GetRef(ContextualType type);
-    void Register(Type typeType, TypeModelBase model);
+    ModelRef RequireRef(ContextualType type);
+    void Register(Type type, TypeModelBase model);
 }
