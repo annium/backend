@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Annium.Net.Types.Internal.Mappers;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
 
@@ -7,20 +6,18 @@ namespace Annium.Net.Types.Internal;
 
 internal class ModelMapper : IModelMapper
 {
-    private readonly MapperContext _ctx;
+    private readonly ProcessingContext _ctx;
 
     public ModelMapper()
     {
-        _ctx = new MapperContext(this);
+        _ctx = new ProcessingContext();
     }
 
-    public ITypeModel Map(ContextualType type)
+    public ModelRef Map(ContextualType type)
     {
-        _ctx.Init(type);
-        var model = CoreMapper.Map(type, _ctx);
-        _ctx.Register(type, model);
+        _ctx.Process(type);
 
-        return model;
+        return _ctx.GetRef(type);
     }
 
     public IReadOnlyCollection<ITypeModel> GetModels() => _ctx.GetModels();

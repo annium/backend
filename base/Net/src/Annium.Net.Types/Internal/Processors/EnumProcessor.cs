@@ -1,22 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Annium.Core.Internal;
 using Annium.Core.Primitives;
 using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
 
-namespace Annium.Net.Types.Internal.Mappers;
+namespace Annium.Net.Types.Internal.Processors;
 
-internal static class EnumMapper
+internal static class EnumProcessor
 {
-    public static ITypeModel? Map(ContextualType type)
+    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.Type.IsEnum)
-            return null;
+            return false;
 
-        var names = Enum.GetNames(type);
-        var rawValues = Enum.GetValuesAsUnderlyingType(type);
+        var names = Enum.GetNames(type.Type);
+        var rawValues = Enum.GetValuesAsUnderlyingType(type.Type);
 
         var values = new Dictionary<string, long>();
         var i = 0;
@@ -24,8 +23,8 @@ internal static class EnumMapper
             values[names[i++]] = Convert.ToInt64(value);
 
         var model = new EnumModel(type.GetNamespace(), type.Type.FriendlyName(), values);
-        Log.Trace($"Mapped {type} -> {model}");
+        ctx.Register(type.Type, model);
 
-        return model;
+        return true;
     }
 }

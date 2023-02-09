@@ -1,5 +1,3 @@
-using Annium.Net.Types.Extensions;
-using Annium.Net.Types.Models;
 using Annium.Testing;
 using Namotion.Reflection;
 using Xunit;
@@ -15,10 +13,10 @@ public class MapperBaseTypeTests : TestBase
         var target = typeof(int).ToContextualType();
 
         // act
-        var model = Map(target).As<StructModel>();
+        var model = Map(target);
 
         // assert
-        model.Namespace.Is(target.GetNamespace());
         model.Name.Is("int");
+        Models.IsEmpty();
     }
 }

@@ -7,7 +7,7 @@ namespace Annium.Net.Types.Tests.Mapper;
 
 public abstract class TestBase
 {
-    public IReadOnlyCollection<ITypeModel> Models => _mapper.GetModels();
+    protected IReadOnlyCollection<ITypeModel> Models => _mapper.GetModels();
     private readonly IModelMapper _mapper;
 
     protected TestBase()
@@ -18,5 +18,5 @@ public abstract class TestBase
             .Resolve<IModelMapper>();
     }
 
-    public ITypeModel Map(ContextualType type) => _mapper.Map(type);
+    protected ModelRef Map(ContextualType type) => _mapper.Map(type);
 }

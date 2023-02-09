@@ -10,9 +10,9 @@ internal class StructModelBuilder
 
     private readonly Namespace _namespace;
     private readonly string _name;
-    private IReadOnlyList<ITypeModel> _genericArguments = Array.Empty<ITypeModel>();
-    private StructModel? _base;
-    private IReadOnlyList<StructModel> _interfaces = Array.Empty<StructModel>();
+    private IReadOnlyList<ModelRef> _genericArguments = Array.Empty<ModelRef>();
+    private ModelRef? _base;
+    private IReadOnlyList<ModelRef> _interfaces = Array.Empty<ModelRef>();
     private IReadOnlyList<FieldModel> _fields = Array.Empty<FieldModel>();
 
     private StructModelBuilder(Namespace @namespace, string name)
@@ -21,21 +21,21 @@ internal class StructModelBuilder
         _name = name;
     }
 
-    public StructModelBuilder GenericArguments(IReadOnlyList<ITypeModel> args)
+    public StructModelBuilder GenericArguments(IReadOnlyList<ModelRef> args)
     {
         _genericArguments = args;
 
         return this;
     }
 
-    public StructModelBuilder Base(StructModel baseType)
+    public StructModelBuilder Base(ModelRef baseType)
     {
         _base = baseType;
 
         return this;
     }
 
-    public StructModelBuilder Interfaces(IReadOnlyList<StructModel> interfaces)
+    public StructModelBuilder Interfaces(IReadOnlyList<ModelRef> interfaces)
     {
         _interfaces = interfaces;
 

@@ -6,7 +6,7 @@ public sealed record EnumModel(
     Namespace Namespace,
     string Name,
     IReadOnlyDictionary<string, long> Values
-) : TypeModelBase(Namespace, Name, false)
+) : TypeModelBase(Namespace, Name)
 {
     public override string ToString() => $"enum {Namespace}.{Name}";
 }
