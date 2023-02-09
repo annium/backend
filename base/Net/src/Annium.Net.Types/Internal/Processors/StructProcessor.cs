@@ -12,17 +12,17 @@ internal static class StructProcessor
 {
     public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        Process(type, ctx);
+        ProcessType(type, ctx);
 
         var pure = type.Type.GetPure();
-        var model = Build(pure.ToContextualType(), ctx);
+        var model = BuildModel(pure.ToContextualType(), ctx);
 
         ctx.Register(pure, model);
 
         return true;
     }
 
-    private static void Process(ContextualType type, IProcessingContext ctx)
+    private static void ProcessType(ContextualType type, IProcessingContext ctx)
     {
         foreach (var argumentType in type.GenericArguments)
             ctx.Process(argumentType);
@@ -40,7 +40,7 @@ internal static class StructProcessor
             ctx.Process(member.AccessorType);
     }
 
-    private static StructModel Build(ContextualType type, IProcessingContext ctx)
+    private static StructModel BuildModel(ContextualType type, IProcessingContext ctx)
     {
         var name = type.Type.FriendlyName();
         if (type.Type.IsGenericType)

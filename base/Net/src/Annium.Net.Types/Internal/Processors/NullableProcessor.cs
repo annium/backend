@@ -12,7 +12,7 @@ internal static class NullableProcessor
             if (nullability is Nullability.NotNullable)
                 return false;
 
-            ctx.Process(type, nullability);
+            ctx.Process(type, Nullability.NotNullable);
 
             return true;
         }
