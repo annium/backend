@@ -1,7 +1,9 @@
+using Annium.Net.Types.Refs;
+
 namespace Annium.Net.Types.Models;
 
 public sealed record FieldModel(
-    ModelRef Type,
+    IRef Type,
     string Name
 )
 {
