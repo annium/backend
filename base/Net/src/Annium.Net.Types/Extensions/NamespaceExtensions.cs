@@ -2,13 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Net.Types.Models;
-using Namotion.Reflection;
 
 namespace Annium.Net.Types.Extensions;
 
 public static class NamespaceExtensions
 {
-    public static Namespace GetNamespace(this ContextualType type) => type.Type.GetNamespace();
     public static Namespace GetNamespace(this Type type) => type.Namespace!.ToNamespace();
     public static Namespace ToNamespace(this string ns) => Namespace.New(ns.ToNamespaceArray());
     public static Namespace ToNamespace(this IEnumerable<string> ns) => Namespace.New(ns);
