@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using Annium.linq2db.Extensions.Models;
 using Annium.Logging.Abstractions;
 using LinqToDB.Data;
 

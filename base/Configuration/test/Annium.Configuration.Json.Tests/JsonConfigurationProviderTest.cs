@@ -4,7 +4,6 @@ using System.Linq;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
-using Annium.Data.Models.Extensions;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
 using Xunit;

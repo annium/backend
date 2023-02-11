@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Extensions;
 using Annium.linq2db.Extensions.Tests.Db;
