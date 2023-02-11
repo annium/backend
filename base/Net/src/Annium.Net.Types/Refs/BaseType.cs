@@ -22,7 +22,6 @@ public static class BaseType
     public const string TimeSpan = "timeSpan";
     public const string YearMonth = "yearMonth";
     public const string Void = "void";
-    public const string Promise = "promise";
 
     internal static BaseTypeRef? GetRefFor(Type type) => MapperConfig.GetBaseTypeRefFor(type);
 }

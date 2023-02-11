@@ -8,4 +8,5 @@ public enum RefType
     Array,
     Record,
     Struct,
+    Promise
 }

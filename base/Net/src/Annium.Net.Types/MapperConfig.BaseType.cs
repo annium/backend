@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Annium.Core.Primitives;
 using Annium.Net.Types.Refs;
 using NodaTime;
@@ -38,8 +37,6 @@ public static partial class MapperConfig
         RegisterBaseType<Period>(BaseType.TimeSpan);
         RegisterBaseType<YearMonth>(BaseType.YearMonth);
         RegisterBaseType(typeof(void), BaseType.Void);
-        RegisterBaseType(typeof(Task), BaseType.Promise);
-        RegisterBaseType(typeof(ValueTask), BaseType.Promise);
     }
 
     public static void RegisterBaseType<T>(string name) => RegisterBaseType(typeof(T), name);
