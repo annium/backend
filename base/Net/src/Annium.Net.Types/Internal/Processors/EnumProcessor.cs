@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Annium.Core.Primitives;
-using Annium.Net.Types.Extensions;
+using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
 
@@ -22,7 +21,7 @@ internal static class EnumProcessor
         foreach (var value in rawValues)
             values[names[i++]] = Convert.ToInt64(value);
 
-        var model = new EnumModel(type.GetNamespace(), type.Type.FriendlyName(), values);
+        var model = new EnumModel(type.GetNamespace(), type.FriendlyName(), values);
         ctx.Register(type.Type, model);
 
         return true;

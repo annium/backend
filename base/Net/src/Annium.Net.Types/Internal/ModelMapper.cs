@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Annium.Net.Types.Models;
+using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal;
@@ -13,12 +14,12 @@ internal class ModelMapper : IModelMapper
         _ctx = new ProcessingContext();
     }
 
-    public ModelRef Map(ContextualType type)
+    public IRef Map(ContextualType type)
     {
         _ctx.Process(type);
 
         return _ctx.GetRef(type);
     }
 
-    public IReadOnlyCollection<TypeModelBase> GetModels() => _ctx.GetModels();
+    public IReadOnlyCollection<ModelBase> GetModels() => _ctx.GetModels();
 }

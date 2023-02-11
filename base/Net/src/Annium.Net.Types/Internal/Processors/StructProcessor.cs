@@ -1,6 +1,4 @@
 using System.Linq;
-using Annium.Core.Primitives;
-using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Internal.Models;
 using Annium.Net.Types.Models;
@@ -42,7 +40,7 @@ internal static class StructProcessor
 
     private static StructModel BuildModel(ContextualType type, IProcessingContext ctx)
     {
-        var name = type.Type.FriendlyName();
+        var name = type.FriendlyName();
         if (type.Type.IsGenericType)
             name = name[..name.IndexOf('<')];
 

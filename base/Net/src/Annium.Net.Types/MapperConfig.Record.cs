@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Annium.Core.Primitives;
-using Annium.Core.Reflection;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
@@ -9,7 +9,8 @@ namespace Annium.Net.Types;
 
 public static partial class MapperConfig
 {
-    internal static readonly Type BaseRecordType = typeof(IEnumerable<>).MakeGenericType(typeof(KeyValuePair<,>));
+    internal static readonly Type BaseRecordValueType = typeof(KeyValuePair<,>);
+    private static readonly Type BaseRecordType = typeof(IEnumerable<>).MakeGenericType(BaseRecordValueType);
     private static readonly HashSet<Type> RecordTypes = new();
 
     private static void RegisterRecords()
@@ -24,7 +25,8 @@ public static partial class MapperConfig
         if (type != type.TryGetPure())
             throw new ArgumentException($"Can't register type {type.FriendlyName()} as Record type");
 
-        if (type != BaseRecordType && !type.IsDerivedFrom(BaseRecordType))
+        var arrayImplementation = type.GetInterfaces().SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == BaseArrayType);
+        if (arrayImplementation is null || !arrayImplementation.IsGenericType || arrayImplementation.GetGenericArguments()[0].GetGenericTypeDefinition() != BaseRecordValueType)
             throw new ArgumentException($"Type {type.FriendlyName()} doesn't implement {BaseRecordType.FriendlyName()}");
 
         if (!RecordTypes.Add(type))

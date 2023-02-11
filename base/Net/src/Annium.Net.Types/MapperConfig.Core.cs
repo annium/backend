@@ -4,6 +4,7 @@ public static partial class MapperConfig
 {
     static MapperConfig()
     {
+        RegisterBaseTypes();
         RegisterIgnored();
         RegisterArrays();
         RegisterRecords();

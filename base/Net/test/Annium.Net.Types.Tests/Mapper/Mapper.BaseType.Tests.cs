@@ -1,3 +1,4 @@
+using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
 using Xunit;
@@ -13,11 +14,10 @@ public class MapperBaseTypeTests : TestBase
         var target = typeof(int).ToContextualType();
 
         // act
-        var modelRef = Map(target);
+        var modelRef = Map(target).As<BaseTypeRef>();
 
         // assert
-        modelRef.HasNamespace.IsFalse();
-        modelRef.Name.Is(Net.Types.Models.BaseType.Int);
+        modelRef.Name.Is(Refs.BaseType.Int);
         Models.IsEmpty();
     }
 }

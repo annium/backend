@@ -9,7 +9,7 @@ internal static class NullableProcessor
     {
         if (!type.IsValueType)
         {
-            if (nullability is Nullability.NotNullable)
+            if (nullability is Nullability.Unknown or Nullability.NotNullable)
                 return false;
 
             ctx.Process(type, Nullability.NotNullable);

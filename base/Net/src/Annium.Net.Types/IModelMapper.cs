@@ -1,11 +1,12 @@
 using System.Collections.Generic;
 using Annium.Net.Types.Models;
+using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types;
 
 public interface IModelMapper
 {
-    ModelRef Map(ContextualType type);
-    IReadOnlyCollection<TypeModelBase> GetModels();
+    IRef Map(ContextualType type);
+    IReadOnlyCollection<ModelBase> GetModels();
 }

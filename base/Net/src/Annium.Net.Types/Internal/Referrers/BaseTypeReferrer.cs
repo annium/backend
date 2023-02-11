@@ -1,12 +1,12 @@
-using Annium.Net.Types.Models;
+using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
 internal static class BaseTypeReferrer
 {
-    public static ModelRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        return BaseType.GetFor(type.Type);
+        return BaseType.GetRefFor(type.Type);
     }
 }

@@ -1,6 +1,5 @@
 using System.Threading.Tasks;
-using Annium.Net.Types.Extensions;
-using Annium.Net.Types.Models;
+using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
 using Xunit;
@@ -13,27 +12,50 @@ public class MapperSpecialTests : TestBase
     public void Task_Generic_Nullable()
     {
         // arrange
-        var target = typeof(Task<string?>).ToContextualType();
+        var target = typeof(Sample).ToContextualType().GetProperty(nameof(Sample.NullableTask))!.AccessorType;
 
         // act
-        var model = Map(target).As<NullableModel>().As<StructModel>();
+        var modelRef = Map(target);
 
         // assert
-        model.Namespace.Is(typeof(string).GetNamespace());
-        model.Name.Is($"{BaseType.String}?");
+        modelRef
+            .As<PromiseRef>().Value
+            .As<NullableRef>().Value
+            .As<BaseTypeRef>().Name.Is(BaseType.String);
+        Models.IsEmpty();
     }
 
     [Fact]
     public void Task_Generic_NotNullable()
     {
         // arrange
-        var target = typeof(Task<string>).ToContextualType();
+        var target = typeof(Sample).ToContextualType().GetProperty(nameof(Sample.NotNullableTask))!.AccessorType;
 
         // act
-        var model = Map(target).As<NullableModel>().As<StructModel>();
+        var modelRef = Map(target);
 
         // assert
-        model.Namespace.Is(typeof(string).GetNamespace());
-        model.Name.Is(BaseType.String);
+        modelRef
+            .As<PromiseRef>().Value
+            .As<BaseTypeRef>().Name.Is(BaseType.String);
+        Models.IsEmpty();
+    }
+
+    [Fact]
+    public void Task_NonGeneric()
+    {
+        // arrange
+        var target = typeof(Task).ToContextualType();
+
+        // act
+        var modelRef = Map(target);
+
+        // assert
+        modelRef
+            .As<PromiseRef>().Value
+            .IsDefault();
+        Models.IsEmpty();
     }
 }
+
+file record Sample(Task<string?> NullableTask, Task<string> NotNullableTask);
