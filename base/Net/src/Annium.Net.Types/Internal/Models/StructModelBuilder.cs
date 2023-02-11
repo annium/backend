@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Annium.Net.Types.Models;
+using Annium.Net.Types.Refs;
 
 namespace Annium.Net.Types.Internal.Models;
 
@@ -10,9 +11,9 @@ internal class StructModelBuilder
 
     private readonly Namespace _namespace;
     private readonly string _name;
-    private IReadOnlyList<ModelRef> _genericArguments = Array.Empty<ModelRef>();
-    private ModelRef? _base;
-    private IReadOnlyList<ModelRef> _interfaces = Array.Empty<ModelRef>();
+    private IReadOnlyList<IRef> _genericArguments = Array.Empty<IRef>();
+    private IRef? _base;
+    private IReadOnlyList<IRef> _interfaces = Array.Empty<IRef>();
     private IReadOnlyList<FieldModel> _fields = Array.Empty<FieldModel>();
 
     private StructModelBuilder(Namespace @namespace, string name)
@@ -21,21 +22,21 @@ internal class StructModelBuilder
         _name = name;
     }
 
-    public StructModelBuilder GenericArguments(IReadOnlyList<ModelRef> args)
+    public StructModelBuilder GenericArguments(IReadOnlyList<IRef> args)
     {
         _genericArguments = args;
 
         return this;
     }
 
-    public StructModelBuilder Base(ModelRef baseType)
+    public StructModelBuilder Base(IRef baseType)
     {
         _base = baseType;
 
         return this;
     }
 
-    public StructModelBuilder Interfaces(IReadOnlyList<ModelRef> interfaces)
+    public StructModelBuilder Interfaces(IReadOnlyList<IRef> interfaces)
     {
         _interfaces = interfaces;
 
