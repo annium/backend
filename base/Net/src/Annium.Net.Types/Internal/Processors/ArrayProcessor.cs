@@ -1,6 +1,4 @@
-using System;
-using Annium.Core.Reflection;
-using Annium.Net.Types.Internal.Extensions;
+using Annium.Net.Types.Internal.Helpers;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
@@ -12,11 +10,8 @@ internal static class ArrayProcessor
         if (!MapperConfig.IsArray(type))
             return false;
 
-        var elementType = type.Type.IsArray
-            ? type.Type.GetElementType()?.ToContextualType()
-            : type.Type.GetTargetImplementation(MapperConfig.BaseArrayType)?.ToContextualType().GenericArguments[0];
-
-        ctx.Process(elementType ?? throw new InvalidOperationException($"Failed to resolve element type of {type.FriendlyName()}"));
+        var elementType = ArrayHelper.ResolveElementType(type);
+        ctx.Process(elementType);
 
         return true;
     }

@@ -1,6 +1,4 @@
-using System;
-using Annium.Core.Reflection;
-using Annium.Net.Types.Internal.Extensions;
+using Annium.Net.Types.Internal.Helpers;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
@@ -13,11 +11,8 @@ internal static class ArrayReferrer
         if (!MapperConfig.IsArray(type))
             return null;
 
-        var elementType = type.Type.IsArray
-            ? type.Type.GetElementType()?.ToContextualType()
-            : type.Type.GetTargetImplementation(MapperConfig.BaseArrayType)?.ToContextualType().GenericArguments[0];
-
-        var valueRef = ctx.GetRef(elementType ?? throw new InvalidOperationException($"Failed to resolve element type of {type.FriendlyName()}"));
+        var elementType = ArrayHelper.ResolveElementType(type);
+        var valueRef = ctx.GetRef(elementType);
 
         return new ArrayRef(valueRef);
     }

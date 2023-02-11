@@ -39,6 +39,6 @@ public static partial class MapperConfig
 
     internal static bool IsArray(ContextualType type)
     {
-        return type.Type.IsArray || !ArrayTypes.Contains(type.Type.GetPure());
+        return type.Type.IsArray || ArrayTypes.Contains(type.Type.GetPure());
     }
 }
