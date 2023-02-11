@@ -20,8 +20,8 @@ internal static class Processor
             BaseTypeProcessor.Process,
             EnumProcessor.Process,
             SpecialProcessor.Process,
-            ArrayProcessor.Process,
             RecordProcessor.Process,
+            ArrayProcessor.Process,
             StructProcessor.Process,
         };
 

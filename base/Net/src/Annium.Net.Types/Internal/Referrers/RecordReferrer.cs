@@ -1,6 +1,4 @@
-using System;
-using Annium.Core.Reflection;
-using Annium.Net.Types.Internal.Extensions;
+using Annium.Net.Types.Internal.Helpers;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
@@ -13,11 +11,10 @@ internal static class RecordReferrer
         if (!MapperConfig.IsRecord(type))
             return null;
 
-        var args = type.Type.GetTargetImplementation(MapperConfig.BaseArrayType)?.ToContextualType().GenericArguments[0].GenericArguments
-            ?? throw new InvalidOperationException($"Failed to resolve key/value types of {type.FriendlyName()}");
+        var (keyType, valueType) = RecordHelper.ResolveElementType(type);
 
-        var keyRef = ctx.GetRef(args[0]);
-        var valueRef = ctx.GetRef(args[1]);
+        var keyRef = ctx.GetRef(keyType);
+        var valueRef = ctx.GetRef(valueType);
 
         return new RecordRef(keyRef, valueRef);
     }
