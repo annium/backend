@@ -12,11 +12,13 @@ internal static class ArrayHelper
         ContextualType? elementType;
         if (type.Type.IsArray)
             elementType = type.Type.GetElementType()?.ToContextualType();
+        else if (type.Type.IsGenericType && type.Type.GetGenericTypeDefinition() == MapperConfig.BaseArrayType)
+            elementType = type.GetGenericArguments()[0];
         else
         {
             var arrayImplementation = type.GetInterfaces()
                 .SingleOrDefault(x => x.Type.IsGenericType && x.Type.GetGenericTypeDefinition() == MapperConfig.BaseArrayType);
-            elementType = arrayImplementation?.GenericArguments[0];
+            elementType = arrayImplementation?.GetGenericArguments()[0];
         }
 
         return elementType ?? throw new InvalidOperationException($"Failed to resolve element type of {type.FriendlyName()}");
