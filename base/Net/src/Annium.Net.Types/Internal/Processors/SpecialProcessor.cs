@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
@@ -17,8 +18,8 @@ internal static class SpecialProcessor
     {
         if (definition == typeof(Task<>) || definition == typeof(ValueTask<>))
         {
-            var arg = type.GenericArguments[0];
-            ctx.Process(arg);
+            var typeGenericArguments = type.GetGenericArguments();
+            ctx.Process(typeGenericArguments[0]);
             return true;
         }
 

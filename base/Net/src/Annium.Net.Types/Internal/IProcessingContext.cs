@@ -12,5 +12,6 @@ internal interface IProcessingContext
     IRef GetRef(ContextualType type, Nullability nullability);
     IRef GetRef(ContextualType type);
     IRef RequireRef(ContextualType type);
+    bool IsRegistered(Type type);
     void Register(Type type, ModelBase model);
 }

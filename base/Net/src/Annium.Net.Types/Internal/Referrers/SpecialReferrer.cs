@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
@@ -18,8 +19,8 @@ internal static class SpecialReferrer
     {
         if (definition == typeof(Task<>) || definition == typeof(ValueTask<>))
         {
-            var arg = type.GenericArguments[0];
-            return new PromiseRef(ctx.GetRef(arg));
+            var typeGenericArguments = type.GetGenericArguments();
+            return new PromiseRef(ctx.GetRef(typeGenericArguments[0]));
         }
 
         return null;

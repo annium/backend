@@ -15,7 +15,8 @@ internal static class StructReferrer
         if (type.Type.IsGenericType)
             name = name[..name.IndexOf('<')];
 
-        var genericArguments = type.GenericArguments.Select(ctx.GetRef).ToArray();
+        var typeGenericArguments = type.GetGenericArguments();
+        var genericArguments = typeGenericArguments.Select(ctx.GetRef).ToArray();
         var modelRef = new StructRef(baseRef.Namespace, name, genericArguments);
 
         return modelRef;
