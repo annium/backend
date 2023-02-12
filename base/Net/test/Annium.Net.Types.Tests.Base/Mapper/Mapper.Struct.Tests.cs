@@ -58,7 +58,7 @@ public abstract class MapperStructTestsBase : TestBase
             .As<ArrayRef>().Value
             .As<BaseTypeRef>().Name.Is(BaseType.String);
 
-        Models.Has(3);
+        Models.Has(5);
         var structModel = Models.At(0).As<StructModel>();
         structModel.Namespace.Is(typeof(Struct<,>).GetNamespace());
         structModel.Name.Is(nameof(Struct<object, object>));
@@ -83,7 +83,7 @@ public abstract class MapperStructTestsBase : TestBase
                 new GenericParameterRef("T2")
             )
         ));
-        structModel.Fields.Has(6);
+        structModel.Fields.Has(8);
         structModel.Fields.At(0).Is(new FieldModel(
             new BaseTypeRef(BaseType.String),
             nameof(Struct<int, int>.Name)
@@ -114,6 +114,14 @@ public abstract class MapperStructTestsBase : TestBase
                 )
             ),
             nameof(Struct<int, int>.Items)
+        ));
+        structModel.Fields.At(6).Is(new FieldModel(
+            new NullableRef(new StructRef(typeof(EmptyStruct).GetNamespace().ToString(), nameof(EmptyStruct))),
+            nameof(Struct<int, int>.Option)
+        ));
+        structModel.Fields.At(7).Is(new FieldModel(
+            new ArrayRef(new StructRef(typeof(EmptyRecord).GetNamespace().ToString(), nameof(EmptyRecord))),
+            nameof(Struct<int, int>.Records)
         ));
 
         var multi = Models.At(1).As<InterfaceModel>();
@@ -158,6 +166,20 @@ public abstract class MapperStructTestsBase : TestBase
             ),
             nameof(IUno<int>.Items)
         ));
+
+        var emptyStruct = Models.At(3).As<StructModel>();
+        emptyStruct.Namespace.Is(typeof(EmptyStruct).GetNamespace());
+        emptyStruct.Name.Is(nameof(EmptyStruct));
+        emptyStruct.Args.IsEmpty();
+        emptyStruct.Interfaces.IsEmpty();
+        emptyStruct.Fields.IsEmpty();
+
+        var emptyRecord = Models.At(4).As<StructModel>();
+        emptyRecord.Namespace.Is(typeof(EmptyRecord).GetNamespace());
+        emptyRecord.Name.Is(nameof(EmptyRecord));
+        emptyRecord.Args.IsEmpty();
+        emptyRecord.Interfaces.IsEmpty();
+        emptyRecord.Fields.IsEmpty();
     }
 }
 
@@ -190,7 +212,9 @@ file record struct Struct<T1, T2>(
     T2[] Data,
     IDictionary<string, T1?> Values,
     int? Ttl,
-    List<Struct<T1, T2>> Items
+    List<Struct<T1, T2>> Items,
+    EmptyStruct? Option,
+    IEnumerable<EmptyRecord> Records
 ) : IMulti<T2, T1>, IUno<Struct<T1, T2>>
     where T1 : notnull
     where T2 : notnull;
