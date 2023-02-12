@@ -2,7 +2,7 @@ using System;
 using Annium.Net.Types.Tests.Base.Mapper;
 using Xunit;
 
-namespace Annium.Net.Types.Tests.Mapper;
+namespace Annium.Net.Types.Serialization.Json.Tests.Mapper;
 
 public class MapperInterfaceTests : MapperInterfaceTestsBase
 {

@@ -2,14 +2,16 @@ using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
+using Annium.Net.Types.Tests.Base.Mapper;
 using Annium.Serialization.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Serialization.Json.Tests.Mapper;
 
-public abstract class TestBase
+internal class TestProvider : ITestProvider
 {
-    protected IReadOnlyCollection<IModel> Models
+    public IReadOnlyCollection<IModel> Models
     {
         get
         {
@@ -19,22 +21,23 @@ public abstract class TestBase
         }
     }
 
-    private readonly IModelMapper _mapper;
-    private readonly ISerializer<string> _serializer;
+    private IModelMapper _mapper = default!;
+    private ISerializer<string> _serializer = default!;
 
-    protected TestBase()
+    public void ConfigureContainer(ServiceContainer container)
     {
-        var container = new ServiceContainer();
         container.AddRuntime(GetType().Assembly);
-        container.AddModelMapper();
         container.AddSerializers()
             .WithJson(opts => { opts.ConfigureForNetTypes(); }, isDefault: true);
-        var sp = container.BuildServiceProvider();
+    }
+
+    public void Setup(ServiceProvider sp)
+    {
         _mapper = sp.Resolve<IModelMapper>();
         _serializer = sp.Resolve<ISerializer<string>>();
     }
 
-    protected IRef Map(ContextualType type)
+    public IRef Map(ContextualType type)
     {
         var originalRef = _mapper.Map(type);
         var raw = _serializer.Serialize(originalRef);
