@@ -23,6 +23,7 @@ internal static class Processor
             SpecialProcessor.Process,
             RecordProcessor.Process,
             ArrayProcessor.Process,
+            InterfaceProcessor.Process,
             StructProcessor.Process,
         };
 

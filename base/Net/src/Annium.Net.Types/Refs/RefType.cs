@@ -9,5 +9,6 @@ public enum RefType
     Array,
     Record,
     Struct,
+    Interface,
     Promise,
 }

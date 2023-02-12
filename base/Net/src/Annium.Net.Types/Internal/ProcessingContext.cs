@@ -24,9 +24,10 @@ internal sealed record ProcessingContext : IProcessingContext
 
         return model switch
         {
-            EnumModel x   => new EnumRef(x.Namespace.ToString(), x.Name),
-            StructModel x => new StructRef(x.Namespace.ToString(), x.Name, x.Args.ToArray()),
-            _             => throw new ArgumentOutOfRangeException($"Unexpected model {model}")
+            EnumModel x      => new EnumRef(x.Namespace.ToString(), x.Name),
+            InterfaceModel x => new InterfaceRef(x.Namespace.ToString(), x.Name, x.Args.ToArray()),
+            StructModel x    => new StructRef(x.Namespace.ToString(), x.Name, x.Args.ToArray()),
+            _                => throw new ArgumentOutOfRangeException($"Unexpected model {model}")
         };
     }
 

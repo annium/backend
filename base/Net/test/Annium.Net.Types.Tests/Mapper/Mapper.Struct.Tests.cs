@@ -14,7 +14,6 @@ public class MapperStructTests : TestBase
 {
     [Theory]
     [InlineData(typeof(EmptyStruct))]
-    [InlineData(typeof(IEmptyInterface))]
     [InlineData(typeof(EmptyRecord))]
     public void Empty(Type type)
     {
@@ -69,13 +68,13 @@ public class MapperStructTests : TestBase
         structModel.Args.At(1).Is(new GenericParameterRef("T2"));
         structModel.Base.IsDefault();
         structModel.Interfaces.Has(2);
-        structModel.Interfaces.At(0).Is(new StructRef(
+        structModel.Interfaces.At(0).Is(new InterfaceRef(
             typeof(IMulti<,>).GetNamespace().ToString(),
             nameof(IMulti<object, object>),
             new GenericParameterRef("T2"),
             new GenericParameterRef("T1")
         ));
-        structModel.Interfaces.At(1).Is(new StructRef(
+        structModel.Interfaces.At(1).Is(new InterfaceRef(
             typeof(Struct<,>).GetNamespace().ToString(),
             nameof(IUno<object>),
             new StructRef(
@@ -118,13 +117,12 @@ public class MapperStructTests : TestBase
             nameof(Struct<int, int>.Items)
         ));
 
-        var multi = Models.At(1).As<StructModel>();
+        var multi = Models.At(1).As<InterfaceModel>();
         multi.Namespace.Is(typeof(IMulti<,>).GetNamespace());
         multi.Name.Is(nameof(IMulti<object, object>));
         multi.Args.Has(2);
         multi.Args.At(0).Is(new GenericParameterRef("T1"));
         multi.Args.At(1).Is(new GenericParameterRef("T2"));
-        multi.Base.IsDefault();
         multi.Interfaces.IsEmpty();
         multi.Fields.Has(4);
         multi.Fields.At(0).Is(new FieldModel(
@@ -144,12 +142,11 @@ public class MapperStructTests : TestBase
             nameof(IMulti<int, int>.Values)
         ));
 
-        var uno = Models.At(2).As<StructModel>();
+        var uno = Models.At(2).As<InterfaceModel>();
         uno.Namespace.Is(typeof(IUno<>).GetNamespace());
         uno.Name.Is(nameof(IUno<int>));
         uno.Args.Has(1);
         uno.Args.At(0).Is(new GenericParameterRef("T"));
-        uno.Base.IsDefault();
         uno.Interfaces.IsEmpty();
         uno.Fields.Has(2);
         uno.Fields.At(0).Is(new FieldModel(
@@ -166,10 +163,6 @@ public class MapperStructTests : TestBase
 }
 
 file struct EmptyStruct
-{
-}
-
-file interface IEmptyInterface
 {
 }
 

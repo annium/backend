@@ -25,6 +25,7 @@ internal static class Referrer
             SpecialReferrer.GetRef,
             RecordReferrer.GetRef,
             ArrayReferrer.GetRef,
+            InterfaceReferrer.GetRef,
             StructReferrer.GetRef,
         };
 
