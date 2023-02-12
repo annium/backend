@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
@@ -32,7 +33,7 @@ internal static class Processor
 
     public static void Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        Log.Trace($"Process {type}");
+        Log.Trace($"Process {type.FriendlyName()}");
 
         foreach (var handler in Handlers)
         {
@@ -40,7 +41,7 @@ internal static class Processor
             if (!result)
                 continue;
 
-            Log.Trace($"Processed {type} via {handler.Method.DeclaringType!.FriendlyName()}");
+            Log.Trace($"Processed {type.FriendlyName()} via {handler.Method.DeclaringType!.FriendlyName()}");
             return;
         }
     }

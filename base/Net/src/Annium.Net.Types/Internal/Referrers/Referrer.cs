@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.Internal;
 using Annium.Core.Primitives;
+using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
@@ -34,7 +35,7 @@ internal static class Referrer
 
     public static IRef GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        Log.Trace($"Resolve {type} ref");
+        Log.Trace($"Resolve {type.FriendlyName()} ref");
 
         foreach (var handler in Handlers)
         {
@@ -42,10 +43,10 @@ internal static class Referrer
             if (result is null)
                 continue;
 
-            Log.Trace($"Resolved {type} ref as {result} via {handler.Method.DeclaringType!.FriendlyName()}");
+            Log.Trace($"Resolved {type.FriendlyName()} ref as {result} via {handler.Method.DeclaringType!.FriendlyName()}");
             return result;
         }
 
-        throw new InvalidOperationException($"Failed to resolve {type} ref");
+        throw new InvalidOperationException($"Failed to resolve {type.FriendlyName()} ref");
     }
 }
