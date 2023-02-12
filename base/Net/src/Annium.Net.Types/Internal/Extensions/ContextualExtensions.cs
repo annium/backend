@@ -13,6 +13,13 @@ internal static class ContextualExtensions
     public static string FriendlyName(this ContextualType type) => type.Type.FriendlyName();
     public static Namespace GetNamespace(this ContextualType type) => type.Type.GetNamespace();
 
+    public static ContextualType[] GetGenericArguments(this ContextualType type)
+    {
+        return type.Type is { IsGenericType: true, IsGenericTypeDefinition: true }
+            ? type.Type.GetGenericArguments().Select(x => x.ToContextualType()).ToArray()
+            : type.GenericArguments;
+    }
+
     public static IReadOnlyCollection<ContextualType> GetInterfaces(this ContextualType type) => type.Type.GetInterfaces()
         .Select(x => x.ToContextualType())
         .ToArray();
