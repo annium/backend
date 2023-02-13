@@ -17,7 +17,7 @@ internal class StructProcessor : IProcessor
         if (ctx.IsRegistered(pure.Type))
             return true;
 
-        var model = this.InitModel(pure, (ns, name) => new StructModel(ns, name));
+        var model = this.InitModel(pure, static (ns, name) => new StructModel(ns, name));
         ctx.Register(pure.Type, model);
 
         ProcessType(type, ctx);
