@@ -5,7 +5,7 @@ using Annium.Core.Runtime.Types;
 namespace Annium.Net.Types.Refs;
 
 [ResolutionKeyValue(RefType.Interface)]
-public sealed record InterfaceRef(string Namespace, string Name, params IRef[] Args) : IRef
+public sealed record InterfaceRef(string Namespace, string Name, params IRef[] Args) : IModelRef
 {
     public RefType Type => RefType.Interface;
     public override int GetHashCode() => HashCode.Combine(Namespace, Name, HashCodeSeq.Combine(Args));
