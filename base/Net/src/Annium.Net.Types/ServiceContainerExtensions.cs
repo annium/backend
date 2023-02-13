@@ -16,6 +16,7 @@ public static class ServiceContainerExtensions
 
         // add processors
         container.Add<Processor>().AsSelf().Singleton();
+        container.Add<IProcessor, GenericTypeProcessor>().Singleton();
         container.Add<IProcessor, IgnoredProcessor>().Singleton();
         container.Add<IProcessor, NullableProcessor>().Singleton();
         container.Add<IProcessor, GenericParameterProcessor>().Singleton();
