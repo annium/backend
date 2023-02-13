@@ -13,25 +13,23 @@ internal class InterfaceProcessor : IProcessor
         if (!type.Type.IsInterface)
             return false;
 
-        var pure = type.Type.GetPure().ToContextualType();
-        if (ctx.IsRegistered(pure.Type))
+        if (ctx.IsRegistered(type.Type))
         {
             this.Trace($"Process {type.FriendlyName()} - skip, already registered");
             return true;
         }
 
-        var model = this.InitModel(pure, static (ns, name) => new InterfaceModel(ns, name));
-        ctx.Register(pure.Type, model);
+        var model = this.InitModel(type, static (ns, name) => new InterfaceModel(ns, name));
+        ctx.Register(type.Type, model);
 
         ProcessType(type, ctx);
-        CompleteModel(pure, model, ctx);
+        CompleteModel(type, model, ctx);
 
         return true;
     }
 
     private void ProcessType(ContextualType type, IProcessingContext ctx)
     {
-        this.ProcessGenericArguments(type, ctx);
         this.ProcessInterfaces(type, ctx);
         this.ProcessMembers(type, ctx);
     }

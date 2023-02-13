@@ -25,17 +25,6 @@ internal static class ProcessorExtensions
         return model;
     }
 
-    public static void ProcessGenericArguments(this IProcessor processor, ContextualType type, IProcessingContext ctx)
-    {
-        processor.Trace($"Process {type.FriendlyName()} generic arguments");
-        var typeGenericArguments = type.GetGenericArguments();
-        foreach (var argumentType in typeGenericArguments)
-        {
-            processor.Trace($"Process {type.FriendlyName()} generic argument {argumentType.FriendlyName()}");
-            ctx.Process(argumentType);
-        }
-    }
-
     public static void ProcessBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Process {type.FriendlyName()} base type");
