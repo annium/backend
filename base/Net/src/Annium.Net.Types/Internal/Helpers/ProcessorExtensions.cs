@@ -22,13 +22,40 @@ internal static class ProcessorExtensions
         return model;
     }
 
-    public static void ProcessType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    public static void ProcessGenericArguments(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         var typeGenericArguments = type.GetGenericArguments();
         foreach (var argumentType in typeGenericArguments)
         {
             processor.Trace($"Process {type.FriendlyName()} generic argument {argumentType.FriendlyName()}");
             ctx.Process(argumentType);
+        }
+    }
+
+    public static void ProcessBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    {
+        if (type.BaseType is null)
+            return;
+
+        processor.Trace($"Process {type.FriendlyName()} base type {type.BaseType.FriendlyName()}");
+        ctx.Process(type.BaseType);
+    }
+
+    public static void ProcessInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    {
+        foreach (var @interface in type.GetInterfaces())
+        {
+            processor.Trace($"Process {type.FriendlyName()} interface {@interface.FriendlyName()}");
+            ctx.Process(@interface);
+        }
+    }
+
+    public static void ProcessMembers(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    {
+        foreach (var member in type.GetMembers())
+        {
+            processor.Trace($"Process {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name}");
+            ctx.Process(member.AccessorType);
         }
     }
 }

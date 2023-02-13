@@ -31,24 +31,9 @@ internal class InterfaceProcessor : IProcessor
 
     private void ProcessType(ContextualType type, IProcessingContext ctx)
     {
-        var typeGenericArguments = type.GetGenericArguments();
-        foreach (var argumentType in typeGenericArguments)
-        {
-            this.Trace($"Process {type.FriendlyName()} generic argument {argumentType.FriendlyName()}");
-            ctx.Process(argumentType);
-        }
-
-        foreach (var @interface in type.GetInterfaces())
-        {
-            this.Trace($"Process {type.FriendlyName()} interface {@interface.FriendlyName()}");
-            ctx.Process(@interface);
-        }
-
-        foreach (var member in type.GetMembers())
-        {
-            this.Trace($"Process {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name}");
-            ctx.Process(member.AccessorType);
-        }
+        this.ProcessGenericArguments(type, ctx);
+        this.ProcessInterfaces(type, ctx);
+        this.ProcessMembers(type, ctx);
     }
 
     private void CompleteModel(ContextualType type, InterfaceModel model, IProcessingContext ctx)
