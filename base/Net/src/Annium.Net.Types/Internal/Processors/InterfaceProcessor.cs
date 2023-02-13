@@ -38,25 +38,8 @@ internal class InterfaceProcessor : IProcessor
             ctx.Process(argumentType);
         }
 
-        if (type.BaseType is not null)
-        {
-            if (MapperConfig.IsIgnored(type.BaseType))
-                this.Trace($"Process ignore {type.FriendlyName()} base type {type.BaseType.FriendlyName()}");
-            else
-            {
-                this.Trace($"Process {type.FriendlyName()} base type {type.BaseType.FriendlyName()}");
-                ctx.Process(type.BaseType);
-            }
-        }
-
         foreach (var @interface in type.GetInterfaces())
         {
-            if (MapperConfig.IsIgnored(@interface))
-            {
-                this.Trace($"Process ignore {type.FriendlyName()} interface {@interface.FriendlyName()}");
-                continue;
-            }
-
             this.Trace($"Process {type.FriendlyName()} interface {@interface.FriendlyName()}");
             ctx.Process(@interface);
         }
