@@ -9,14 +9,22 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal;
 
-internal sealed record ProcessingContext : IProcessingContext
+internal sealed record ProcessingContext : IMapperProcessingContext
 {
     private readonly Dictionary<Type, ModelBase> _models = new();
+    private readonly Processor _processor;
+    private readonly Referrer _referrer;
 
-    public void Process(ContextualType type) => Processor.Process(type, this);
-    public void Process(ContextualType type, Nullability nullability) => Processor.Process(type, nullability, this);
-    public IRef GetRef(ContextualType type) => Referrer.GetRef(type, this);
-    public IRef GetRef(ContextualType type, Nullability nullability) => Referrer.GetRef(type, nullability, this);
+    public ProcessingContext(Processor processor, Referrer referrer)
+    {
+        _processor = processor;
+        _referrer = referrer;
+    }
+
+    public void Process(ContextualType type) => _processor.Process(type, this);
+    public void Process(ContextualType type, Nullability nullability) => _processor.Process(type, nullability, this);
+    public IRef GetRef(ContextualType type) => _referrer.GetRef(type, this);
+    public IRef GetRef(ContextualType type, Nullability nullability) => _referrer.GetRef(type, nullability, this);
 
     public IRef RequireRef(ContextualType type)
     {

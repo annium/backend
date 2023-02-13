@@ -3,9 +3,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class NullableProcessor
+internal class NullableProcessor : IProcessor
 {
-    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.IsValueType)
         {

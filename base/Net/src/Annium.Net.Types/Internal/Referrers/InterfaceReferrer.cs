@@ -5,9 +5,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class InterfaceReferrer
+internal class InterfaceReferrer : IReferrer
 {
-    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.Type.IsInterface)
             return null;

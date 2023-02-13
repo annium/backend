@@ -1,9 +1,15 @@
 using System;
+using System.Collections.Generic;
 using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal;
+
+internal interface IMapperProcessingContext : IProcessingContext
+{
+    IReadOnlyCollection<ModelBase> GetModels();
+}
 
 internal interface IProcessingContext
 {

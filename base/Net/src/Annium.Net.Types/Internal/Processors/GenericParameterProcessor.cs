@@ -2,9 +2,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class GenericParameterProcessor
+internal class GenericParameterProcessor : IProcessor
 {
-    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         return type.Type.IsGenericParameter;
     }

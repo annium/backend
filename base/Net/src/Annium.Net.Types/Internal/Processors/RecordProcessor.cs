@@ -3,9 +3,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class RecordProcessor
+internal class RecordProcessor : IProcessor
 {
-    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!MapperConfig.IsRecord(type))
             return false;

@@ -3,9 +3,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class BaseTypeReferrer
+internal class BaseTypeReferrer : IReferrer
 {
-    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         return BaseType.GetRefFor(type.Type);
     }

@@ -6,9 +6,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class EnumProcessor
+internal class EnumProcessor : IProcessor
 {
-    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.Type.IsEnum)
             return false;

@@ -4,9 +4,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class NullableReferrer
+internal class NullableReferrer : IReferrer
 {
-    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.IsValueType)
             return nullability is Nullability.Unknown or Nullability.NotNullable ? null : new NullableRef(ctx.GetRef(type, Nullability.NotNullable));

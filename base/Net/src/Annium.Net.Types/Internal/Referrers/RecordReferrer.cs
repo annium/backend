@@ -4,9 +4,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class RecordReferrer
+internal class RecordReferrer : IReferrer
 {
-    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!MapperConfig.IsRecord(type))
             return null;

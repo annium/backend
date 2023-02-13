@@ -6,9 +6,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class SpecialReferrer
+internal class SpecialReferrer : IReferrer
 {
-    public static IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         return type.Type.IsGenericType
             ? ProcessGeneric(type, type.Type.GetGenericTypeDefinition(), ctx)

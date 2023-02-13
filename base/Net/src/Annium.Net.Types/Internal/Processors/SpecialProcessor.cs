@@ -5,9 +5,9 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class SpecialProcessor
+internal class SpecialProcessor : IProcessor
 {
-    public static bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         return type.Type.IsGenericType
             ? ProcessGeneric(type, type.Type.GetGenericTypeDefinition(), ctx)

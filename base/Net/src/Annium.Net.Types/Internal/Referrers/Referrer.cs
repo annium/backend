@@ -8,43 +8,28 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal static class Referrer
+internal class Referrer
 {
-    private delegate IRef? Handler(ContextualType type, Nullability nullability, IProcessingContext ctx);
+    private readonly IEnumerable<IReferrer> _referrers;
 
-    private static readonly IReadOnlyList<Handler> Handlers;
-
-    static Referrer()
+    public Referrer(IEnumerable<IReferrer> referrers)
     {
-        var handlers = new List<Handler>
-        {
-            NullableReferrer.GetRef,
-            GenericParameterReferrer.GetRef,
-            BaseTypeReferrer.GetRef,
-            EnumReferrer.GetRef,
-            SpecialReferrer.GetRef,
-            RecordReferrer.GetRef,
-            ArrayReferrer.GetRef,
-            InterfaceReferrer.GetRef,
-            StructReferrer.GetRef,
-        };
-
-        Handlers = handlers;
+        _referrers = referrers;
     }
 
-    public static IRef GetRef(ContextualType type, IProcessingContext ctx) => GetRef(type, type.Nullability, ctx);
+    public IRef GetRef(ContextualType type, IProcessingContext ctx) => GetRef(type, type.Nullability, ctx);
 
-    public static IRef GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public IRef GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        Log.Trace($"Resolve {type.FriendlyName()} ref");
+        this.Trace($"Resolve {type.FriendlyName()} ref");
 
-        foreach (var handler in Handlers)
+        foreach (var referrer in _referrers)
         {
-            var result = handler(type, nullability, ctx);
+            var result = referrer.GetRef(type, nullability, ctx);
             if (result is null)
                 continue;
 
-            Log.Trace($"Resolved {type.FriendlyName()} ref as {result} via {handler.Method.DeclaringType!.FriendlyName()}");
+            this.Trace($"Resolved {type.FriendlyName()} ref as {result} via {referrer.GetType().FriendlyName()}");
             return result;
         }
 

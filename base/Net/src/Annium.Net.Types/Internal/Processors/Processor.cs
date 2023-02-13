@@ -6,43 +6,28 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal static class Processor
+internal class Processor
 {
-    private delegate bool Handler(ContextualType type, Nullability nullability, IProcessingContext ctx);
+    private readonly IEnumerable<IProcessor> _processors;
 
-    private static readonly IReadOnlyList<Handler> Handlers;
-
-    static Processor()
+    public Processor(IEnumerable<IProcessor> processors)
     {
-        var handlers = new List<Handler>
-        {
-            NullableProcessor.Process,
-            GenericParameterProcessor.Process,
-            BaseTypeProcessor.Process,
-            EnumProcessor.Process,
-            SpecialProcessor.Process,
-            RecordProcessor.Process,
-            ArrayProcessor.Process,
-            InterfaceProcessor.Process,
-            StructProcessor.Process,
-        };
-
-        Handlers = handlers;
+        _processors = processors;
     }
 
-    public static void Process(ContextualType type, IProcessingContext ctx) => Process(type, type.Nullability, ctx);
+    public void Process(ContextualType type, IProcessingContext ctx) => Process(type, type.Nullability, ctx);
 
-    public static void Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
+    public void Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        Log.Trace($"Process {type.FriendlyName()}");
+        this.Trace($"Process {type.FriendlyName()}");
 
-        foreach (var handler in Handlers)
+        foreach (var processor in _processors)
         {
-            var result = handler(type, nullability, ctx);
+            var result = processor.Process(type, nullability, ctx);
             if (!result)
                 continue;
 
-            Log.Trace($"Processed {type.FriendlyName()} via {handler.Method.DeclaringType!.FriendlyName()}");
+            this.Trace($"Processed {type.FriendlyName()} via {processor.GetType().FriendlyName()}");
             return;
         }
     }

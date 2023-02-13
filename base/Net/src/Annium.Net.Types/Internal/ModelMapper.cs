@@ -7,11 +7,11 @@ namespace Annium.Net.Types.Internal;
 
 internal class ModelMapper : IModelMapper
 {
-    private readonly ProcessingContext _ctx;
+    private readonly IMapperProcessingContext _ctx;
 
-    public ModelMapper()
+    public ModelMapper(IMapperProcessingContext ctx)
     {
-        _ctx = new ProcessingContext();
+        _ctx = ctx;
     }
 
     public IRef Map(ContextualType type)
