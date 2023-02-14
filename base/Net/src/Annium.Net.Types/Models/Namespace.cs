@@ -1,14 +1,12 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Annium.Core.Primitives;
 using Annium.Net.Types.Extensions;
 
 namespace Annium.Net.Types.Models;
 
-public sealed record Namespace : IEnumerable<string>
+public sealed record Namespace : IReadOnlyList<string>
 {
     #region static
 
@@ -19,6 +17,8 @@ public sealed record Namespace : IEnumerable<string>
 
     #region instance
 
+    public int Count => _parts.Count;
+    public string this[int index] => _parts[index];
     private readonly IReadOnlyList<string> _parts;
 
     private Namespace(IReadOnlyList<string> parts)
@@ -26,30 +26,8 @@ public sealed record Namespace : IEnumerable<string>
         _parts = parts;
     }
 
-    public bool StartsWith(Namespace ns)
-    {
-        if (ns._parts.Count > _parts.Count)
-            return false;
-
-        for (var i = 0; i < ns._parts.Count; i++)
-            if (_parts[i] != ns._parts[i])
-                return false;
-
-        return true;
-    }
-
-    public Namespace From(Namespace ns)
-    {
-        if (!StartsWith(ns))
-            throw new ArgumentException($"Namespace {this} doesn't contain namespace {ns}");
-
-        return new Namespace(_parts.Skip(ns._parts.Count).ToArray());
-    }
-
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     public IEnumerator<string> GetEnumerator() => _parts.GetEnumerator();
-
-    public string ToPath(string basePath) => Path.Combine(basePath, Path.Combine(_parts.ToArray()));
 
     public override string ToString() => _parts.ToNamespaceString();
 
@@ -61,6 +39,13 @@ public sealed record Namespace : IEnumerable<string>
     }
 
     public override int GetHashCode() => HashCodeSeq.Combine(_parts);
+
+    #endregion
+
+    #region operators
+
+    public static implicit operator Namespace(string value) => value.ToNamespace();
+    public static implicit operator string(Namespace value) => value.ToString();
 
     #endregion
 }
