@@ -34,6 +34,13 @@ public class NamespaceExtensionsTest
     }
 
     [Fact]
+    public void Append()
+    {
+        "a.b".ToNamespace().Append("c").Is("a.b.c".ToNamespace());
+        "a.b".ToNamespace().Append("").Is("a.b".ToNamespace());
+    }
+
+    [Fact]
     public void ToPath()
     {
         "a.b".ToNamespace().ToPath("c").Is(Path.Combine("c", "a", "b"));
