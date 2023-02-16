@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
@@ -8,36 +10,62 @@ namespace Annium.Net.Types;
 
 public static partial class MapperConfig
 {
-    private static readonly HashSet<Type> Ignored = new();
+    private static readonly Dictionary<Type, IgnoreConfig> Ignored = new();
 
     private static void RegisterIgnored()
     {
         // basic types
-        RegisterIgnored(typeof(object));
-        RegisterIgnored(typeof(ValueType));
+        RegisterIgnored(typeof(object), ignoreDerived: false);
+        RegisterIgnored(typeof(ValueType), ignoreDerived: false);
         // enumerable interfaces
-        RegisterIgnored(typeof(IEnumerable<>));
-        RegisterIgnored(typeof(ICollection<>));
-        RegisterIgnored(typeof(IReadOnlyCollection<>));
+        RegisterIgnored(typeof(IEnumerable<>), ignoreDerived: false);
+        RegisterIgnored(typeof(ICollection<>), ignoreDerived: false);
+        RegisterIgnored(typeof(IReadOnlyCollection<>), ignoreDerived: false);
         // dictionary interfaces
-        RegisterIgnored(typeof(IReadOnlyDictionary<,>));
-        RegisterIgnored(typeof(IDictionary<,>));
+        RegisterIgnored(typeof(IReadOnlyDictionary<,>), ignoreDerived: false);
+        RegisterIgnored(typeof(IDictionary<,>), ignoreDerived: false);
         // base type interfaces
-        RegisterIgnored(typeof(IComparable<>));
-        RegisterIgnored(typeof(IEquatable<>));
+        RegisterIgnored(typeof(IComparable<>), ignoreDerived: false);
+        RegisterIgnored(typeof(IEquatable<>), ignoreDerived: false);
         // low-level interfaces
-        RegisterIgnored(typeof(ISpanParsable<>));
-        RegisterIgnored(typeof(IParsable<>));
+        RegisterIgnored(typeof(ISpanParsable<>), ignoreDerived: false);
+        RegisterIgnored(typeof(IParsable<>), ignoreDerived: false);
+        // tasks
+        RegisterIgnored(typeof(Task), ignoreDerived: true);
+        RegisterIgnored(typeof(Task<>), ignoreDerived: true);
+        RegisterIgnored(typeof(ValueTask), ignoreDerived: true);
+        RegisterIgnored(typeof(ValueTask<>), ignoreDerived: true);
     }
 
-    public static void RegisterIgnored(Type type)
+    public static void RegisterIgnored(Type type, bool ignoreDerived)
     {
         if (type != type.TryGetPure())
             throw new ArgumentException($"Can't register type {type.FriendlyName()} as ignored type");
 
-        if (!Ignored.Add(type))
+        if (!Ignored.TryAdd(type, new IgnoreConfig(ignoreDerived)))
             throw new ArgumentException($"Type {type.FriendlyName()} is already ignored");
     }
 
-    internal static bool IsIgnored(ContextualType type) => Ignored.Contains(type.Type.GetPure());
+    internal static bool IsIgnored(ContextualType type)
+    {
+        var pure = type.Type.GetPure();
+
+        return Ignored.ContainsKey(pure) || IsDerivedIgnored(pure);
+    }
+
+    private static bool IsDerivedIgnored(Type type)
+    {
+        foreach (var (ignored, config) in Ignored)
+        {
+            if (ignored is { IsClass: false, IsInterface: false } || !config.IgnoreDerived)
+                continue;
+
+            if (type.IsDerivedFrom(ignored))
+                return true;
+        }
+
+        return false;
+    }
+
+    private record IgnoreConfig(bool IgnoreDerived);
 }

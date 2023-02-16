@@ -22,7 +22,6 @@ public static class ServiceContainerExtensions
         container.Add<IProcessor, GenericParameterProcessor>().Singleton();
         container.Add<IProcessor, BaseTypeProcessor>().Singleton();
         container.Add<IProcessor, EnumProcessor>().Singleton();
-        container.Add<IProcessor, SpecialProcessor>().Singleton();
         container.Add<IProcessor, RecordProcessor>().Singleton();
         container.Add<IProcessor, ArrayProcessor>().Singleton();
         container.Add<IProcessor, InterfaceProcessor>().Singleton();
