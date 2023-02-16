@@ -21,6 +21,8 @@ public static partial class MapperConfig
         RegisterBaseType<uint>(BaseType.UInt);
         RegisterBaseType<long>(BaseType.Long);
         RegisterBaseType<ulong>(BaseType.ULong);
+        RegisterBaseType<float>(BaseType.Float);
+        RegisterBaseType<double>(BaseType.Double);
         RegisterBaseType<decimal>(BaseType.Decimal);
         RegisterBaseType<Guid>(BaseType.Guid);
         RegisterBaseType<DateTime>(BaseType.DateTime);

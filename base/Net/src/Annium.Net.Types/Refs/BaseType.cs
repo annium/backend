@@ -13,6 +13,8 @@ public static class BaseType
     public const string UInt = "uint";
     public const string Long = "long";
     public const string ULong = "ulong";
+    public const string Float = "float";
+    public const string Double = "double";
     public const string Decimal = "decimal";
     public const string Guid = "guid";
     public const string DateTime = "dateTime";
