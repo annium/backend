@@ -35,6 +35,8 @@ public static partial class MapperConfig
         RegisterIgnored(typeof(Task<>), ignoreDerived: true);
         RegisterIgnored(typeof(ValueTask), ignoreDerived: true);
         RegisterIgnored(typeof(ValueTask<>), ignoreDerived: true);
+        // custom basic interfaces
+        RegisterIgnored(typeof(ICopyable<>), ignoreDerived: false);
     }
 
     public static void RegisterIgnored(Type type, bool ignoreDerived)
