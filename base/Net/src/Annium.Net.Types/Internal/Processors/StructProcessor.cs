@@ -30,6 +30,7 @@ internal class StructProcessor : IProcessor
         this.ProcessBaseType(type, ctx);
         this.ProcessInterfaces(type, ctx);
         this.ProcessMembers(type, ctx);
+        this.ProcessImplementations(type, ctx);
     }
 
     private void CompleteModel(ContextualType type, StructModel model, IProcessingContext ctx)

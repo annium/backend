@@ -15,6 +15,7 @@ internal class TestProvider : ITestProvider
 
     public void ConfigureContainer(ServiceContainer container)
     {
+        container.AddRuntime(GetType().Assembly);
     }
 
     public void Setup(ServiceProvider sp)

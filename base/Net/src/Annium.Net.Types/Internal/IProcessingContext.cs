@@ -13,6 +13,7 @@ internal interface IMapperProcessingContext : IProcessingContext
 
 internal interface IProcessingContext
 {
+    IReadOnlyCollection<ContextualType> GetImplementations(ContextualType type);
     void Process(ContextualType type, Nullability nullability);
     void Process(ContextualType type);
     IRef GetRef(ContextualType type, Nullability nullability);

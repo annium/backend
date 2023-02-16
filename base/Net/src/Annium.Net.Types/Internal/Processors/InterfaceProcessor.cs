@@ -32,6 +32,7 @@ internal class InterfaceProcessor : IProcessor
     {
         this.ProcessInterfaces(type, ctx);
         this.ProcessMembers(type, ctx);
+        this.ProcessImplementations(type, ctx);
     }
 
     private void CompleteModel(ContextualType type, InterfaceModel model, IProcessingContext ctx)

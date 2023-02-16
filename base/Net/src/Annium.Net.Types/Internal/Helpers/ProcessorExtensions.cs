@@ -25,6 +25,21 @@ internal static class ProcessorExtensions
         return model;
     }
 
+    public static void ProcessImplementations(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    {
+        processor.Trace($"Process {type.FriendlyName()} implementations");
+        var implementations = ctx.GetImplementations(type);
+        if (implementations.Count == 0)
+        {
+            processor.Trace($"Process {type.FriendlyName()} implementations - no implementations");
+            return;
+        }
+
+        processor.Trace($"Process {type.FriendlyName()} {implementations.Count} implementation(s)");
+        foreach (var implementation in implementations)
+            ctx.Process(implementation);
+    }
+
     public static void ProcessBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Process {type.FriendlyName()} base type");

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Core.Runtime.Types;
 using Annium.Net.Types.Internal.Processors;
 using Annium.Net.Types.Internal.Referrers;
 using Annium.Net.Types.Models;
@@ -14,12 +15,23 @@ internal sealed record ProcessingContext : IMapperProcessingContext
     private readonly Dictionary<Type, ModelBase> _models = new();
     private readonly Processor _processor;
     private readonly Referrer _referrer;
+    private readonly ITypeManager _typeManager;
 
-    public ProcessingContext(Processor processor, Referrer referrer)
+    public ProcessingContext(
+        Processor processor,
+        Referrer referrer,
+        ITypeManager typeManager
+    )
     {
         _processor = processor;
         _referrer = referrer;
+        _typeManager = typeManager;
     }
+
+    public IReadOnlyCollection<ContextualType> GetImplementations(ContextualType type) => _typeManager
+        .GetImplementations(type.Type)
+        .Select(x => x.ToContextualType())
+        .ToArray();
 
     public void Process(ContextualType type) => _processor.Process(type, this);
     public void Process(ContextualType type, Nullability nullability) => _processor.Process(type, nullability, this);
