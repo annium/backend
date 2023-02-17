@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Primitives;
+using Annium.Core.Primitives.Linq;
 using Annium.Core.Reflection;
 using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Models;
@@ -29,6 +30,18 @@ internal static class ContextualExtensions
     public static IReadOnlyCollection<ContextualType> GetInterfaces(this ContextualType type) => type.Type.GetInterfaces()
         .Select(x => x.ToContextualType())
         .ToArray();
+
+    public static IReadOnlyCollection<ContextualAccessorInfo> GetOwnMembers(this ContextualType type)
+    {
+        var members = type.GetMembers();
+        if (type.BaseType is null)
+            return members;
+
+        var baseMembers = type.BaseType.GetMembers().Select(x => x.Name).ToHashSet();
+        var ownMembers = members.WhereNot(x => baseMembers.Contains(x.Name)).ToArray();
+
+        return ownMembers;
+    }
 
     public static IReadOnlyCollection<ContextualAccessorInfo> GetMembers(this ContextualType type) => type.GetProperties()
         .Concat(type.GetFields())

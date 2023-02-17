@@ -63,7 +63,7 @@ internal static class ProcessorExtensions
     public static void ProcessMembers(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Process {type.FriendlyName()} members");
-        foreach (var member in type.GetMembers())
+        foreach (var member in type.GetOwnMembers())
         {
             processor.Trace($"Process {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name}");
             ctx.Process(member.AccessorType);
@@ -127,7 +127,7 @@ internal static class ProcessorExtensions
     public static IReadOnlyList<FieldModel> ResolveFields(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Resolve {type.FriendlyName()} field models");
-        var fields = type.GetMembers()
+        var fields = type.GetOwnMembers()
             .Select(member =>
             {
                 processor.Trace($"Resolve {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name} ref");
