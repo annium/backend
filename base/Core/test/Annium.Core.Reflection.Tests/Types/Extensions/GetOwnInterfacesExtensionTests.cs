@@ -18,11 +18,11 @@ public class GetOwnInterfacesExtensionTests
     {
         //assert
         typeof(Derived).GetOwnInterfaces().IsEqual(new[] { typeof(IDerived) });
-        typeof(Base).GetOwnInterfaces().IsEqual(new[] { typeof(IBase), typeof(IInner), typeof(IShared) });
+        typeof(Base).GetOwnInterfaces().IsEqual(new[] { typeof(IBase), typeof(IShared) });
         typeof(IBase).GetOwnInterfaces().IsEqual(new[] { typeof(IInner) });
     }
 
-    private class Derived : Base, IDerived, IShared
+    private class Derived : Base, IDerived
     {
     }
 

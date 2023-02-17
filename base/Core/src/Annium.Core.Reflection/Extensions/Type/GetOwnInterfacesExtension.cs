@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Annium.Core.Primitives;
 
 namespace Annium.Core.Reflection;
 
@@ -10,15 +11,13 @@ public static class GetOwnInterfacesExtension
         if (type is null)
             throw new ArgumentNullException(nameof(type));
 
-        if (type.BaseType == null)
-            return type.GetInterfaces();
+        if (type is { IsValueType: false, IsClass: false, IsInterface: false })
+            throw new ArgumentException(nameof(type), $"Can't collect inherited interfaces of {type.FriendlyName()}");
 
-        var interfaces = type.GetInterfaces();
-        var baseInterfaces = type.BaseType.GetInterfaces();
+        var inheritedInterfaces = type.GetInheritedInterfaces();
+        var allInterfaces = type.GetInterfaces();
+        var ownInterfaces = allInterfaces.Except(inheritedInterfaces).ToArray();
 
-        return interfaces
-            .Where(i => !baseInterfaces.Contains(i))
-            .OrderBy(i => i.Name)
-            .ToArray();
+        return ownInterfaces;
     }
 }
