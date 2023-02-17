@@ -1,5 +1,5 @@
 using System.Linq;
-using Annium.Core.Primitives.Collections.Generic;
+using Annium.Core.Primitives.Linq;
 using Annium.Testing;
 using Xunit;
 

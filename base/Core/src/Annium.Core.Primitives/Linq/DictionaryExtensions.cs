@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Annium.Core.Primitives.Collections.Generic;
+namespace Annium.Core.Primitives.Linq;
 
 public static class DictionaryExtensions
 {

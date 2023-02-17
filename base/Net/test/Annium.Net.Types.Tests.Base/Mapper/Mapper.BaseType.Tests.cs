@@ -19,7 +19,7 @@ public abstract class MapperBaseTypeTestsBase : TestBase
         var modelRef = Map(target).As<BaseTypeRef>();
 
         // assert
-        modelRef.Name.Is(Refs.BaseType.Int);
+        modelRef.Name.Is(BaseType.Int);
         Models.IsEmpty();
     }
 }
