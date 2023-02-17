@@ -10,22 +10,22 @@ public sealed record StructModel(
     string Name
 ) : IGenericModel
 {
-    public IReadOnlyList<IRef> Args { get; private set; } = Array.Empty<IRef>();
-    public IRef? Base { get; private set; }
-    public IReadOnlyList<IRef> Interfaces { get; private set; } = Array.Empty<IRef>();
+    public IReadOnlyList<GenericParameterRef> Args { get; private set; } = Array.Empty<GenericParameterRef>();
+    public StructRef? Base { get; private set; }
+    public IReadOnlyList<InterfaceRef> Interfaces { get; private set; } = Array.Empty<InterfaceRef>();
     public IReadOnlyList<FieldModel> Fields { get; private set; } = Array.Empty<FieldModel>();
 
-    public void SetArgs(IReadOnlyList<IRef> args)
+    public void SetArgs(IReadOnlyList<GenericParameterRef> args)
     {
         Args = args;
     }
 
-    public void SetBase(IRef @base)
+    public void SetBase(StructRef @base)
     {
         Base = @base;
     }
 
-    public void SetInterfaces(IReadOnlyList<IRef> interfaces)
+    public void SetInterfaces(IReadOnlyList<InterfaceRef> interfaces)
     {
         Interfaces = interfaces;
     }
