@@ -16,7 +16,7 @@ internal class TestProvider : ITestProvider
         get
         {
             var raw = _serializer.Serialize(_mapper.GetModels());
-            var models = _serializer.Deserialize<IReadOnlyCollection<ModelBase>>(raw);
+            var models = _serializer.Deserialize<IReadOnlyCollection<IModel>>(raw);
             return models;
         }
     }

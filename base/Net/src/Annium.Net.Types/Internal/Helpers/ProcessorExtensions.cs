@@ -13,7 +13,7 @@ namespace Annium.Net.Types.Internal.Helpers;
 internal static class ProcessorExtensions
 {
     public static TModel InitModel<TModel>(this IProcessor processor, ContextualType type, Func<Namespace, string, TModel> factory)
-        where TModel : ModelBase
+        where TModel : IModel
     {
         var name = type.FriendlyName();
         if (type.Type.IsGenericType)

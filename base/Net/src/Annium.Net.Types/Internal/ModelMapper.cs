@@ -21,5 +21,5 @@ internal class ModelMapper : IModelMapper
         return _ctx.GetRef(type);
     }
 
-    public IReadOnlyCollection<ModelBase> GetModels() => _ctx.GetModels();
+    public IReadOnlyCollection<IModel> GetModels() => _ctx.GetModels();
 }

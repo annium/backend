@@ -8,5 +8,5 @@ namespace Annium.Net.Types;
 public interface IModelMapper
 {
     IRef Map(ContextualType type);
-    IReadOnlyCollection<ModelBase> GetModels();
+    IReadOnlyCollection<IModel> GetModels();
 }

@@ -7,7 +7,7 @@ namespace Annium.Net.Types.Models;
 public sealed record InterfaceModel(
     Namespace Namespace,
     string Name
-) : ModelBase(Namespace, Name)
+) : IModel
 {
     public IReadOnlyList<IRef> Args { get; private set; } = Array.Empty<IRef>();
     public IReadOnlyList<IRef> Interfaces { get; private set; } = Array.Empty<IRef>();

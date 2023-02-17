@@ -8,7 +8,7 @@ namespace Annium.Net.Types.Internal;
 
 internal interface IMapperProcessingContext : IProcessingContext
 {
-    IReadOnlyCollection<ModelBase> GetModels();
+    IReadOnlyCollection<IModel> GetModels();
 }
 
 internal interface IProcessingContext
@@ -20,5 +20,5 @@ internal interface IProcessingContext
     IRef GetRef(ContextualType type);
     IRef RequireRef(ContextualType type);
     bool IsRegistered(Type type);
-    void Register(Type type, ModelBase model);
+    void Register(Type type, IModel model);
 }

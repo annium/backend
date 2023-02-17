@@ -12,7 +12,7 @@ namespace Annium.Net.Types.Internal;
 
 internal sealed record ProcessingContext : IMapperProcessingContext
 {
-    private readonly Dictionary<Type, ModelBase> _models = new();
+    private readonly Dictionary<Type, IModel> _models = new();
     private readonly Processor _processor;
     private readonly Referrer _referrer;
     private readonly ITypeManager _typeManager;
@@ -56,10 +56,10 @@ internal sealed record ProcessingContext : IMapperProcessingContext
         return _models.ContainsKey(type);
     }
 
-    public void Register(Type type, ModelBase model)
+    public void Register(Type type, IModel model)
     {
         _models.TryAdd(type, model);
     }
 
-    public IReadOnlyCollection<ModelBase> GetModels() => _models.Values.ToArray();
+    public IReadOnlyCollection<IModel> GetModels() => _models.Values.ToArray();
 }
