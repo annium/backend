@@ -12,6 +12,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Core.Internal/Annium.Core.Internal.csproj" />
+        <ProjectReference Include="../Annium.Core.Primitives/Annium.Core.Primitives.csproj" />
     </ItemGroup>
 </Project>
