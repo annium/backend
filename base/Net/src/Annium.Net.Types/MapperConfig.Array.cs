@@ -37,8 +37,10 @@ public static partial class MapperConfig
             throw new ArgumentException($"Type {type.FriendlyName()} is already registered as array type");
     }
 
-    internal static bool IsArray(ContextualType type)
+    public static bool IsArray(Type type)
     {
-        return type.Type.IsArray || ArrayTypes.Contains(type.Type.GetPure());
+        return type.IsArray || ArrayTypes.Contains(type.GetPure());
     }
+
+    internal static bool IsArray(ContextualType type) => IsArray(type.Type);
 }

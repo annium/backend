@@ -48,12 +48,14 @@ public static partial class MapperConfig
             throw new ArgumentException($"Type {type.FriendlyName()} is already ignored");
     }
 
-    internal static bool IsIgnored(ContextualType type)
+    public static bool IsIgnored(Type type)
     {
-        var pure = type.Type.GetPure();
+        var pure = type.GetPure();
 
         return Ignored.ContainsKey(pure) || IsDerivedIgnored(pure);
     }
+
+    internal static bool IsIgnored(ContextualType type) => IsIgnored(type.Type);
 
     private static bool IsDerivedIgnored(Type type)
     {

@@ -35,8 +35,10 @@ public static partial class MapperConfig
             throw new ArgumentException($"Type {type.FriendlyName()} is already registered as Record type");
     }
 
-    internal static bool IsRecord(ContextualType type)
+    public static bool IsRecord(Type type)
     {
-        return RecordTypes.Contains(type.Type.GetPure());
+        return RecordTypes.Contains(type.GetPure());
     }
+
+    internal static bool IsRecord(ContextualType type) => IsRecord(type.Type);
 }

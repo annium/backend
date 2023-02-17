@@ -58,5 +58,6 @@ public static partial class MapperConfig
             throw new ArgumentException($"Type {type.FriendlyName()} is already registered");
     }
 
+    public static bool IsBaseType(Type type) => BaseTypes.GetValueOrDefault(type) is not null;
     internal static BaseTypeRef? GetBaseTypeRefFor(Type type) => BaseTypes.GetValueOrDefault(type);
 }
