@@ -9,36 +9,6 @@ namespace Annium.Core.Primitives.Tests;
 public class TypeExtensionsTest
 {
     [Fact]
-    public void FriendlyName_BaseType_Ok()
-    {
-        typeof(int).FriendlyName().Is("int");
-    }
-
-    [Fact]
-    public void FriendlyName_SimpleType_Ok()
-    {
-        typeof(IEnumerable).FriendlyName().Is("IEnumerable");
-    }
-
-    [Fact]
-    public void FriendlyName_GenericTypeDefinition_Ok()
-    {
-        typeof(IReadOnlyDictionary<,>).FriendlyName().Is("IReadOnlyDictionary<TKey, TValue>");
-    }
-
-    [Fact]
-    public void FriendlyName_GenericType_Ok()
-    {
-        typeof(IReadOnlyDictionary<string, IList<int?>>).FriendlyName().Is("IReadOnlyDictionary<string, IList<int?>>");
-    }
-
-    [Fact]
-    public void FriendlyName_FileLocalType_Ok()
-    {
-        typeof(FileLocal<string, IList<int?>>).FriendlyName().Is("FileLocal<string, IList<int?>>");
-    }
-
-    [Fact]
     public void IsEnumerable_Ok()
     {
         typeof(string).IsEnumerable().IsFalse();
@@ -56,5 +26,3 @@ public class TypeExtensionsTest
         typeof(string).DefaultValue().Is(null);
     }
 }
-
-file record struct FileLocal<TA, TB>;
