@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Primitives;
+using Annium.Core.Reflection;
 using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;
@@ -20,6 +21,10 @@ internal static class ContextualExtensions
             ? type.Type.GetGenericArguments().Select(x => x.ToContextualType()).ToArray()
             : type.GenericArguments;
     }
+
+    public static IReadOnlyCollection<ContextualType> GetOwnInterfaces(this ContextualType type) => type.Type.GetOwnInterfaces()
+        .Select(x => x.ToContextualType())
+        .ToArray();
 
     public static IReadOnlyCollection<ContextualType> GetInterfaces(this ContextualType type) => type.Type.GetInterfaces()
         .Select(x => x.ToContextualType())

@@ -53,7 +53,7 @@ internal static class ProcessorExtensions
     public static void ProcessInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Process {type.FriendlyName()} interfaces");
-        foreach (var @interface in type.GetInterfaces())
+        foreach (var @interface in type.GetOwnInterfaces())
         {
             processor.Trace($"Process {type.FriendlyName()} interface {@interface.FriendlyName()}");
             ctx.Process(@interface);
@@ -107,8 +107,9 @@ internal static class ProcessorExtensions
     public static IReadOnlyList<InterfaceRef> ResolveInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Resolve {type.FriendlyName()} interface refs");
-        var interfaces = new List<InterfaceRef>(type.GetInterfaces().Count);
-        foreach (var @interface in type.GetInterfaces())
+        var interfaces = type.GetOwnInterfaces();
+        var interfaceRefs = new List<InterfaceRef>(interfaces.Count);
+        foreach (var @interface in interfaces)
         {
             if (MapperConfig.IsIgnored(@interface))
             {
@@ -117,10 +118,10 @@ internal static class ProcessorExtensions
             }
 
             processor.Trace($"Resolve {type.FriendlyName()} interface {@interface.FriendlyName()} ref");
-            interfaces.Add((InterfaceRef) ctx.GetRef(@interface));
+            interfaceRefs.Add((InterfaceRef) ctx.GetRef(@interface));
         }
 
-        return interfaces;
+        return interfaceRefs;
     }
 
     public static IReadOnlyList<FieldModel> ResolveFields(this IProcessor processor, ContextualType type, IProcessingContext ctx)
