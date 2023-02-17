@@ -36,8 +36,8 @@ internal static class ContextualExtensions
         .ToArray();
 
     private static IReadOnlyCollection<MemberInfo> GetProperties(this ContextualType type) => type.Type
-        .GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 
     private static IReadOnlyCollection<MemberInfo> GetFields(this ContextualType type) => type.Type
-        .GetFields(BindingFlags.Public | BindingFlags.Instance);
+        .GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
 }
