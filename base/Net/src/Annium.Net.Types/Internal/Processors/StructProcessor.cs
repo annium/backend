@@ -16,7 +16,7 @@ internal class StructProcessor : IProcessor
             return true;
         }
 
-        var model = this.InitModel(type, static (ns, name) => new StructModel(ns, name));
+        var model = this.InitModel(type, static (ns, isAbstract, name) => new StructModel(ns, isAbstract, name));
         ctx.Register(type.Type, model);
 
         ProcessType(type, ctx);

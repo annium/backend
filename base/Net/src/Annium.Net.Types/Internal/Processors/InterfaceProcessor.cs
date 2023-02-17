@@ -19,7 +19,7 @@ internal class InterfaceProcessor : IProcessor
             return true;
         }
 
-        var model = this.InitModel(type, static (ns, name) => new InterfaceModel(ns, name));
+        var model = this.InitModel(type, static (ns, _, name) => new InterfaceModel(ns, name));
         ctx.Register(type.Type, model);
 
         ProcessType(type, ctx);

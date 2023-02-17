@@ -75,7 +75,7 @@ public class ModelRefExtensionsTest
 
     private static StructModel BuildStruct(Type type)
     {
-        var model = new StructModel(type.Namespace!.ToNamespace(), type.PureName());
+        var model = new StructModel(type.Namespace!.ToNamespace(), type.IsAbstract, type.PureName());
         model.SetArgs(Enumerable.Range(0, type.IsGenericType ? type.GetGenericArguments().Length : 0).Select(i => new GenericParameterRef($"T{i}")).ToArray());
 
         return model;

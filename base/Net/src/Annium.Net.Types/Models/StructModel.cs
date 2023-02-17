@@ -6,6 +6,7 @@ namespace Annium.Net.Types.Models;
 
 public sealed record StructModel(
     Namespace Namespace,
+    bool IsAbstract,
     string Name
 ) : IGenericModel
 {

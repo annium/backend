@@ -12,11 +12,11 @@ namespace Annium.Net.Types.Internal.Helpers;
 
 internal static class ProcessorExtensions
 {
-    public static TModel InitModel<TModel>(this IProcessor processor, ContextualType type, Func<Namespace, string, TModel> factory)
+    public static TModel InitModel<TModel>(this IProcessor processor, ContextualType type, Func<Namespace, bool, string, TModel> factory)
         where TModel : IModel
     {
         var name = type.PureName();
-        var model = factory(type.GetNamespace(), name);
+        var model = factory(type.GetNamespace(), type.Type.IsAbstract, name);
         processor.Trace($"Initialized {type.FriendlyName()} model as {model}");
 
         return model;
