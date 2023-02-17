@@ -15,10 +15,7 @@ internal static class ReferrerExtensions
     {
         var pure = type.Type.GetPure().ToContextualType();
         var baseRef = (TRef) ctx.RequireRef(pure);
-        var name = type.FriendlyName();
-        if (type.Type.IsGenericType)
-            name = name[..name.IndexOf('<')];
-
+        var name = type.PureName();
         var typeGenericArguments = type.GetGenericArguments();
         var genericArguments = typeGenericArguments.Select(ctx.GetRef).ToArray();
         var modelRef = factory(baseRef.Namespace, name, genericArguments);

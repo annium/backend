@@ -11,6 +11,7 @@ namespace Annium.Net.Types.Internal.Extensions;
 internal static class ContextualExtensions
 {
     public static string FriendlyName(this ContextualType type) => type.Type.FriendlyName();
+    public static string PureName(this ContextualType type) => type.Type.PureName();
     public static Namespace GetNamespace(this ContextualType type) => type.Type.GetNamespace();
 
     public static ContextualType[] GetGenericArguments(this ContextualType type)
