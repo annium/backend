@@ -238,7 +238,7 @@ public static class ResolveGenericArgumentsByImplementationExtension
     {
         // find interface, that is implementation of target's generic definition
         var targetBase = target.GetGenericTypeDefinition();
-        var implementation = type.GetOwnInterfaces()
+        var implementation = type.GetInterfaces()
             .FirstOrDefault(i => i.IsGenericType && i.GetGenericTypeDefinition() == targetBase);
 
         // implementation is generic interface type with same base definition, as target
