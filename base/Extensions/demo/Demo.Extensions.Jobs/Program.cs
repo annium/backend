@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
-using Annium.Core.Primitives.Threading;
 using Annium.Extensions.Jobs;
+using Annium.Threading;
 using Demo.Extensions.Jobs;
 
 await using var entry = Entrypoint.Default

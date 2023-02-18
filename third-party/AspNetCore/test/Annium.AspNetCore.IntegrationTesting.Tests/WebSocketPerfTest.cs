@@ -9,9 +9,9 @@ using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Core.Internal;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Data.Operations;
 using Annium.Testing;
+using Annium.Threading.Tasks;
 using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;

@@ -4,9 +4,9 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
+using Annium.Threading.Tasks;
 using Xunit;
 
 namespace Annium.Infrastructure.MessageBus.Node.Tests;

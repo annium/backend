@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Annium.Core.Primitives;
 using Annium.Logging.Shared;
 using Annium.Logging.Shared.Internal;
 

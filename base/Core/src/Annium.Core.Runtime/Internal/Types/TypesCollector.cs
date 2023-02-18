@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Annium.Core.Internal;
-using Annium.Core.Primitives.Reflection;
+using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 

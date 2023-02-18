@@ -5,7 +5,6 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.linq2db.Extensions.Configuration.Metadata;
 using Annium.linq2db.Extensions.Internal.Configuration;

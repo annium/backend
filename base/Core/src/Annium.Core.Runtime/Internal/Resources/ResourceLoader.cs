@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Primitives.Reflection;
 using Annium.Core.Runtime.Resources;
+using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Resources;
 

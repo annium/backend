@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Annium.Core.Primitives;
 
 namespace Annium.Core.Mapper.Internal.Resolvers;
 

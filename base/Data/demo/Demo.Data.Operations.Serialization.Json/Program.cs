@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Annium;
 using Annium.Core.Entrypoint;
-using Annium.Core.Primitives;
 using Annium.Data.Operations;
 
 await using var entry = Entrypoint.Default.Setup();

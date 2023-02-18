@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Serialization.Json.Internal;

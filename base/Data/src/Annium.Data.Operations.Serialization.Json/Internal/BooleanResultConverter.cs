@@ -1,7 +1,6 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Annium.Core.Primitives;
 using X = Annium.Data.Operations.IBooleanResult;
 
 namespace Annium.Data.Operations.Serialization.Json.Internal;

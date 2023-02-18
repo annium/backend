@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Extensions.Arguments.Internal;
+using Annium.Threading.Tasks;
 
 namespace Annium.Extensions.Arguments;
 

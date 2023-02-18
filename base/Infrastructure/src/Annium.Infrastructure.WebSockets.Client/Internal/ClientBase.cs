@@ -8,13 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
-using Annium.Core.Primitives;
-using Annium.Core.Primitives.Threading;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;
+using Annium.Threading;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 

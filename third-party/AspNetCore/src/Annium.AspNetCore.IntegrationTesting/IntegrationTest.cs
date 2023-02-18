@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting.Internal;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting;

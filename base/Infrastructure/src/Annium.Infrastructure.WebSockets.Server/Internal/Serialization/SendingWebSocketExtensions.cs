@@ -1,7 +1,6 @@
 using System;
 using System.Reactive;
 using System.Threading;
-using Annium.Core.Primitives;
 using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 

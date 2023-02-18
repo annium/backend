@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Core.Mediator;
-using Annium.Core.Primitives;
 using Annium.Data.Operations;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Requests;

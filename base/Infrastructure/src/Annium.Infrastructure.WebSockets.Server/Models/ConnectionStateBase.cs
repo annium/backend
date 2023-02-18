@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 
 namespace Annium.Infrastructure.WebSockets.Server.Models;
@@ -15,7 +14,7 @@ public abstract class ConnectionStateBase : IAsyncDisposable
 
     public Guid ConnectionId { get; private set; }
 
-    protected AsyncDisposableBox Disposable = Core.Primitives.Disposable.AsyncBox();
+    protected AsyncDisposableBox Disposable = Annium.Disposable.AsyncBox();
 
     private readonly ManualResetEventSlim _gate = new(true);
 
@@ -35,7 +34,7 @@ public abstract class ConnectionStateBase : IAsyncDisposable
     public IDisposable Lock()
     {
         _gate.Wait();
-        return Core.Primitives.Disposable.Create(_gate.Set);
+        return Annium.Disposable.Create(_gate.Set);
     }
 
     public async ValueTask DisposeAsync()

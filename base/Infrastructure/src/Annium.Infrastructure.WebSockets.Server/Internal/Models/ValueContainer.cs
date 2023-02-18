@@ -2,7 +2,6 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;

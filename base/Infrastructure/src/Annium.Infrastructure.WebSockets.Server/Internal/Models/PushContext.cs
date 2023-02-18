@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
-using Annium.Core.Primitives;
 using Annium.Extensions.Execution;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Models;

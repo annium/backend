@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Primitives;
-using Annium.Core.Primitives.Linq;
 using Annium.Core.Reflection;
+using Annium.Linq;
 using Annium.Net.Types.Extensions;
 using Annium.Net.Types.Models;
 using Namotion.Reflection;

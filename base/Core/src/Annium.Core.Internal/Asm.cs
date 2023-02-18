@@ -1,9 +1,9 @@
 using System.Runtime.CompilerServices;
 
+// DisposableBox
+[assembly: InternalsVisibleTo("Annium")]
 // Entry
 [assembly: InternalsVisibleTo("Annium.Core.Entrypoint")]
-// DisposableBox
-[assembly: InternalsVisibleTo("Annium.Core.Primitives")]
 // TypeManagerInstance, AssembliesCollector
 [assembly: InternalsVisibleTo("Annium.Core.Runtime")]
 // SequentialBackgroundExecutor, ParallelBackgroundExecutor

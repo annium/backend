@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Annium.Configuration.Abstractions;
-using Annium.Core.Primitives;
 
 namespace Annium.Configuration.CommandLine.Internal;
 

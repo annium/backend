@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets;

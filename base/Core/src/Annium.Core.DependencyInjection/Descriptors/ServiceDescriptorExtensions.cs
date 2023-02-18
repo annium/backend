@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.Primitives;
 using MicrosoftServiceDescriptor = Microsoft.Extensions.DependencyInjection.ServiceDescriptor;
 using MicrosoftServiceLifetime = Microsoft.Extensions.DependencyInjection.ServiceLifetime;
 

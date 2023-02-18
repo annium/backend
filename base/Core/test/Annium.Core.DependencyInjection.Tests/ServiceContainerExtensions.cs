@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using Annium.Core.Primitives;
 using Annium.Testing;
 
 namespace Annium.Core.DependencyInjection.Tests;

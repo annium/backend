@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Annium.Core.Primitives;
 using Annium.Serialization.Json.Attributes;
 
 namespace Annium.Serialization.Json.Internal.Converters;

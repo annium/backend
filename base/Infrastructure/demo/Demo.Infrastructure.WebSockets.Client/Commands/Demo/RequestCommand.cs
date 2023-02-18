@@ -4,7 +4,7 @@ using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
+using Annium;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;

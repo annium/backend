@@ -4,7 +4,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.Net.WebSockets.Internal;

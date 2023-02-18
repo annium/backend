@@ -1,5 +1,4 @@
 using Annium.Core.Mediator;
-using Annium.Core.Primitives;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Models;
 

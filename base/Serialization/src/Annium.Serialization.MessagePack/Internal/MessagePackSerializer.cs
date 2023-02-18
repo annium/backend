@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using Annium.Core.Primitives;
 using Annium.Serialization.Abstractions;
 using MessagePack;
 

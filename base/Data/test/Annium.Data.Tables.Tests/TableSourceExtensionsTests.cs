@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;

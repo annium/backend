@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
-using Annium.Core.Primitives.Threading.Tasks;
 using Annium.Testing;
 using Annium.Testing.Lib;
+using Annium.Threading.Tasks;
 using Xunit;
 
 namespace Annium.Data.Tables.Tests;

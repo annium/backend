@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Internal;
-using Annium.Core.Primitives;
 using Annium.Extensions.Execution;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;

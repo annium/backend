@@ -1,6 +1,5 @@
 using System;
 using System.Text.Json;
-using Annium.Core.Primitives;
 using NodaTime;
 
 namespace Annium.NodaTime.Serialization.Json.Internal.Converters;

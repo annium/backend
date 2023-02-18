@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Core.Primitives;
 using Annium.Core.Reflection;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Infrastructure.WebSockets.Server.Handlers;

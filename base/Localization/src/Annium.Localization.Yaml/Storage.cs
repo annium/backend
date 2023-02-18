@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using Annium.Core.Primitives.Reflection;
 using Annium.Localization.Abstractions;
+using Annium.Reflection;
 using YamlDotNet.Serialization;
 
 namespace Annium.Localization.Yaml;

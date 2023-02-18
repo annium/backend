@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 using Annium.Net.Base;
 using Microsoft.Extensions.Primitives;

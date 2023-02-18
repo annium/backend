@@ -4,7 +4,6 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Annium.Core.Primitives;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 

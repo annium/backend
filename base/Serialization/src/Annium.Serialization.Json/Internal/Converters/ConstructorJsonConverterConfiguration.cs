@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Annium.Core.Primitives;
 
 namespace Annium.Serialization.Json.Internal.Converters;
 

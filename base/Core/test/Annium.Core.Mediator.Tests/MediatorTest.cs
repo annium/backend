@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Primitives;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Annium.Logging.InMemory;

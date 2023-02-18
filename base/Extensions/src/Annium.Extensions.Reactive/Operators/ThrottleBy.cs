@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Reactive.Linq;
-using Annium.Core.Primitives;
+using Annium;
 using NodaTime;
 
 namespace System;

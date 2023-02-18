@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.Primitives;
 
 namespace Annium.Core.Mediator.Internal;
 

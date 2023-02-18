@@ -1,5 +1,4 @@
 using System;
-using Annium.Core.Primitives;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB;

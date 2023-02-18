@@ -1,4 +1,3 @@
-using Annium.Core.Primitives;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
