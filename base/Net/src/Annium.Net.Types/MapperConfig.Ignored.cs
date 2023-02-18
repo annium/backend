@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Reflection;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
@@ -9,66 +9,46 @@ namespace Annium.Net.Types;
 
 public static partial class MapperConfig
 {
-    private static readonly Dictionary<Type, IgnoreConfig> Ignored = new();
+    private static readonly List<Predicate<Type>> Ignored = new();
 
     private static void RegisterIgnored()
     {
         // basic types
-        RegisterIgnored(typeof(object), ignoreDerived: false);
-        RegisterIgnored(typeof(ValueType), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(object)));
+        RegisterIgnored(Match.Is(typeof(ValueType)));
         // enumerable interfaces
-        RegisterIgnored(typeof(IEnumerable<>), ignoreDerived: false);
-        RegisterIgnored(typeof(ICollection<>), ignoreDerived: false);
-        RegisterIgnored(typeof(IReadOnlyCollection<>), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(IEnumerable<>)));
+        RegisterIgnored(Match.Is(typeof(ICollection<>)));
+        RegisterIgnored(Match.Is(typeof(IReadOnlyCollection<>)));
         // dictionary interfaces
-        RegisterIgnored(typeof(IReadOnlyDictionary<,>), ignoreDerived: false);
-        RegisterIgnored(typeof(IDictionary<,>), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(IReadOnlyDictionary<,>)));
+        RegisterIgnored(Match.Is(typeof(IDictionary<,>)));
         // base type interfaces
-        RegisterIgnored(typeof(IComparable<>), ignoreDerived: false);
-        RegisterIgnored(typeof(IEquatable<>), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(IComparable<>)));
+        RegisterIgnored(Match.Is(typeof(IEquatable<>)));
         // low-level interfaces
-        RegisterIgnored(typeof(ISpanParsable<>), ignoreDerived: false);
-        RegisterIgnored(typeof(IParsable<>), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(ISpanParsable<>)));
+        RegisterIgnored(Match.Is(typeof(IParsable<>)));
         // tasks
-        RegisterIgnored(typeof(Task), ignoreDerived: true);
-        RegisterIgnored(typeof(Task<>), ignoreDerived: true);
-        RegisterIgnored(typeof(ValueTask), ignoreDerived: true);
-        RegisterIgnored(typeof(ValueTask<>), ignoreDerived: true);
+        RegisterIgnored(Match.IsDerivedFrom(typeof(Task)));
+        RegisterIgnored(Match.IsDerivedFrom(typeof(Task<>)));
+        RegisterIgnored(Match.Is(typeof(ValueTask)));
+        RegisterIgnored(Match.Is(typeof(ValueTask<>)));
         // custom basic interfaces
-        RegisterIgnored(typeof(ICopyable<>), ignoreDerived: false);
+        RegisterIgnored(Match.Is(typeof(ICopyable<>)));
     }
 
-    public static void RegisterIgnored(Type type, bool ignoreDerived)
+    public static void RegisterIgnored(Predicate<Type> matcher)
     {
-        if (type != type.TryGetPure())
-            throw new ArgumentException($"Can't register type {type.FriendlyName()} as ignored type");
-
-        if (!Ignored.TryAdd(type, new IgnoreConfig(ignoreDerived)))
-            throw new ArgumentException($"Type {type.FriendlyName()} is already ignored");
+        Ignored.Add(matcher);
     }
 
     public static bool IsIgnored(Type type)
     {
         var pure = type.GetPure();
 
-        return Ignored.ContainsKey(pure) || IsDerivedIgnored(pure);
+        return Ignored.Any(match => match(pure));
     }
 
     internal static bool IsIgnored(ContextualType type) => IsIgnored(type.Type);
-
-    private static bool IsDerivedIgnored(Type type)
-    {
-        foreach (var (ignored, config) in Ignored)
-        {
-            if (ignored is { IsClass: false, IsInterface: false } || !config.IgnoreDerived)
-                continue;
-
-            if (type.IsDerivedFrom(ignored))
-                return true;
-        }
-
-        return false;
-    }
-
-    private record IgnoreConfig(bool IgnoreDerived);
 }
