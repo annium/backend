@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace Annium.Core.Primitives;
@@ -15,24 +16,43 @@ public static class TypeArrayExtensions
         return type.IsArray || type == typeof(IEnumerable) || type.GetInterfaces().Any(x => x == typeof(IEnumerable));
     }
 
-    public static bool IsArrayLike(this Type type) => type.TryGetArrayElementType() is not null;
-    public static Type GetArrayElementType(this Type type) => type.TryGetArrayElementType() ?? throw new InvalidOperationException($"Type {type.FriendlyName()} is not array-like type");
+    public static bool IsArrayLike(this Type type) => type.TryGetArrayElementType(out _);
 
-    public static Type? TryGetArrayElementType(this Type type)
+    public static Type GetArrayElementType(this Type type)
     {
+        if (type.TryGetArrayElementType(out var elementType))
+            return elementType;
+
+        throw new InvalidOperationException($"Type {type.FriendlyName()} is not array-like type");
+    }
+
+    public static bool TryGetArrayElementType(
+        this Type type,
+        [NotNullWhen(true)] out Type? elementType
+    )
+    {
+        elementType = null;
         if (type == typeof(string))
-            return null;
+            return false;
 
         if (type.IsArray)
-            return type.GetElementType();
+        {
+            elementType = type.GetElementType();
+
+            return elementType is not null;
+        }
 
         if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
-            return type.GetGenericArguments()[0];
+        {
+            elementType = type.GetGenericArguments()[0];
+
+            return true;
+        }
 
         var arrayImplementation = type.GetInterfaces()
             .SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
-        var elementType = arrayImplementation?.GetGenericArguments()[0];
+        elementType = arrayImplementation?.GetGenericArguments()[0];
 
-        return elementType;
+        return elementType is not null;
     }
 }

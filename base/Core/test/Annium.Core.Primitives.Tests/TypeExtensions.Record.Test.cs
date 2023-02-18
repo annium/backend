@@ -11,12 +11,13 @@ public class TypeRecordExtensionsTest
     [Fact]
     public void TryGetRecordElementTypes_Ok()
     {
-        typeof(string).TryGetRecordElementTypes().IsDefault();
-        typeof(Array).TryGetRecordElementTypes().IsDefault();
-        typeof(string[]).TryGetRecordElementTypes().IsDefault();
-        typeof(IEnumerable).TryGetRecordElementTypes().IsDefault();
-        typeof(IEnumerable<int>).TryGetRecordElementTypes().IsDefault();
-        typeof(IReadOnlyDictionary<int, string>).TryGetRecordElementTypes().IsNotDefault();
-        typeof(IReadOnlyDictionary<int, string>).TryGetRecordElementTypes().Is((typeof(int), typeof(string)));
+        typeof(string).TryGetRecordElementTypes(out _, out _).IsFalse();
+        typeof(Array).TryGetRecordElementTypes(out _, out _).IsFalse();
+        typeof(string[]).TryGetRecordElementTypes(out _, out _).IsFalse();
+        typeof(IEnumerable).TryGetRecordElementTypes(out _, out _).IsFalse();
+        typeof(IEnumerable<int>).TryGetRecordElementTypes(out _, out _).IsFalse();
+        typeof(IReadOnlyDictionary<int, string>).TryGetRecordElementTypes(out var keyType, out var valueType).IsTrue();
+        keyType.Is(typeof(int));
+        valueType.Is(typeof(string));
     }
 }

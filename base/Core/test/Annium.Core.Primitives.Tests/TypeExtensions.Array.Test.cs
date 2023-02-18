@@ -21,12 +21,14 @@ public class TypeArrayExtensionsTest
     [Fact]
     public void TryGetArrayElementType_Ok()
     {
-        typeof(string).TryGetArrayElementType().IsDefault();
-        typeof(Array).TryGetArrayElementType().IsDefault();
-        typeof(string[]).TryGetArrayElementType().Is(typeof(string));
-        typeof(IEnumerable).TryGetArrayElementType().IsDefault();
-        typeof(IEnumerable<int>).TryGetArrayElementType().Is(typeof(int));
-        typeof(IReadOnlyDictionary<,>).TryGetArrayElementType().IsNotDefault();
-        typeof(IReadOnlyDictionary<,>).TryGetArrayElementType()?.GetGenericTypeDefinition().Is(typeof(KeyValuePair<,>));
+        typeof(string).TryGetArrayElementType(out _).IsFalse();
+        typeof(Array).TryGetArrayElementType(out _).IsFalse();
+        typeof(string[]).TryGetArrayElementType(out var elementType).IsTrue();
+        elementType.Is(typeof(string));
+        typeof(IEnumerable).TryGetArrayElementType(out _).IsFalse();
+        typeof(IEnumerable<int>).TryGetArrayElementType(out elementType).IsTrue();
+        elementType.Is(typeof(int));
+        typeof(IReadOnlyDictionary<,>).TryGetArrayElementType(out elementType).IsTrue();
+        elementType!.GetGenericTypeDefinition().Is(typeof(KeyValuePair<,>));
     }
 }
