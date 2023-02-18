@@ -67,6 +67,7 @@ public class CompositionPipeHandlerTest : TestBase
         bool IsComposedSuccessfully { get; set; }
     }
 
+    // ReSharper disable once UnusedType.Local
     private class UserNameComposer : Composer<IUserName>
     {
         public UserNameComposer()
@@ -75,6 +76,7 @@ public class CompositionPipeHandlerTest : TestBase
         }
     }
 
+    // ReSharper disable once UnusedType.Local
     private class PasswordComposer : Composer<IPassword>
     {
         public PasswordComposer()

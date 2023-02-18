@@ -1,6 +1,7 @@
 using Annium.Architecture.Http.Internal.PipeHandlers.Request;
 using Annium.Architecture.Http.Internal.PipeHandlers.RequestResponse;
 
+// ReSharper disable CheckNamespace
 namespace Annium.Core.Mediator;
 
 public static class MediatorConfigurationExtensions

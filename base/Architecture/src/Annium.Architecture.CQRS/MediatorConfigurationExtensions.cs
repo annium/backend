@@ -2,6 +2,7 @@ using Annium.Architecture.CQRS.Commands;
 using Annium.Architecture.CQRS.Queries;
 using Annium.Core.Runtime.Types;
 
+// ReSharper disable CheckNamespace
 namespace Annium.Core.Mediator;
 
 public static class MediatorConfigurationExtensions

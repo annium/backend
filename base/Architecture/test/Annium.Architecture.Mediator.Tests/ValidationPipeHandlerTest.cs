@@ -59,6 +59,7 @@ public class ValidationPipeHandlerTest : TestBase
         string Password { get; }
     }
 
+    // ReSharper disable once UnusedType.Local
     private class UserNameValidator : Validator<IUserName>
     {
         public UserNameValidator()
@@ -67,6 +68,7 @@ public class ValidationPipeHandlerTest : TestBase
         }
     }
 
+    // ReSharper disable once UnusedType.Local
     private class PasswordValidator : Validator<IPassword>
     {
         public PasswordValidator()

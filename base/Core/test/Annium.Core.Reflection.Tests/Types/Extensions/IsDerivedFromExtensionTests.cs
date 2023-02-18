@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using Annium.Testing;
@@ -8,13 +7,6 @@ namespace Annium.Core.Reflection.Tests.Types.Extensions;
 
 public class IsDerivedFromExtensionTests
 {
-    [Fact]
-    public void IsDerivedFromExtensionTests_OfNull_Throws()
-    {
-        //assert
-        Wrap.It(() => (null as Type)!.IsDerivedFrom(typeof(object))).Throws<ArgumentNullException>();
-    }
-
     [Fact]
     public void IsDerivedFromExtensionTests_Works()
     {

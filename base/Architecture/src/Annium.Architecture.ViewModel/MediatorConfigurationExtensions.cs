@@ -1,5 +1,6 @@
 using Annium.Architecture.ViewModel.Internal.PipeHandlers.Request;
 
+// ReSharper disable CheckNamespace
 namespace Annium.Core.Mediator;
 
 public static class MediatorConfigurationExtensions
