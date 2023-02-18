@@ -10,13 +10,13 @@ public class FactoryRegistrationTest : TestBase
     {
         // arrange
         var a = new A();
-        _container.Add(_ => new D(a)).AsSelf().Singleton();
+        Container.Add(_ => new D(a)).AsSelf().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingletonTypeFactory(typeof(D));
+        Container.HasSingletonTypeFactory(typeof(D));
         var d = Get<D>();
         d.A.Is(a);
         Get<D>().Is(d);
@@ -27,13 +27,13 @@ public class FactoryRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(_ => instance).As<C>().Singleton();
+        Container.Add(_ => instance).As<C>().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingletonTypeFactory(typeof(C));
+        Container.HasSingletonTypeFactory(typeof(C));
         Get<C>().Is(instance);
     }
 
@@ -42,13 +42,13 @@ public class FactoryRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(_ => instance).AsInterfaces().Singleton();
+        Container.Add(_ => instance).AsInterfaces().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingletonTypeFactory(typeof(IX));
+        Container.HasSingletonTypeFactory(typeof(IX));
         Get<IX>().Is(instance);
     }
 
@@ -57,7 +57,7 @@ public class FactoryRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(_ => instance).AsKeyedSelf(nameof(D)).Singleton();
+        Container.Add(_ => instance).AsKeyedSelf(nameof(D)).Singleton();
 
         // act
         Build();
@@ -71,7 +71,7 @@ public class FactoryRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(_ => instance).AsKeyed<C, string>(nameof(C)).Singleton();
+        Container.Add(_ => instance).AsKeyed<C, string>(nameof(C)).Singleton();
 
         // act
         Build();

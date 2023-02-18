@@ -1,6 +1,7 @@
 using Annium.Extensions.Arguments;
 using Annium.Extensions.Arguments.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

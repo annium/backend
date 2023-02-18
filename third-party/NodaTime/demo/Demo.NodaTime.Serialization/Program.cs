@@ -7,14 +7,15 @@ using NodaTime;
 
 await using var entry = Entrypoint.Default.Setup();
 
-var converters = new[] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };
+var convertersList = new[] { Converters.IsoDateIntervalConverter, Converters.LocalDateConverter };
 var startLocalDate = new LocalDate(2012, 1, 2);
 var endLocalDate = new LocalDate(2013, 6, 7);
 var dateInterval = new DateInterval(startLocalDate, endLocalDate);
 
 var testObject = new TestObject { Interval = dateInterval };
 
-var json = JsonSerializer.Serialize(testObject, With(converters));
+// ReSharper disable once UnusedVariable
+var json = JsonSerializer.Serialize(testObject, With(convertersList));
 
 JsonSerializerOptions With(params JsonConverter[] converters)
 {

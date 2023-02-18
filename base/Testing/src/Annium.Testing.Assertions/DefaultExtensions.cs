@@ -4,6 +4,7 @@ using Annium.Core.Mapper;
 using Annium.Data.Models.Extensions;
 using Annium.Testing.Assertions.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Testing;
 
 public static class ValueExtensions

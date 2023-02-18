@@ -1,6 +1,7 @@
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class WebHostBuilderExtensions

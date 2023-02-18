@@ -16,4 +16,5 @@ AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase> co
 var str = serializer.Serialize(container);
 
 // act
+// ReSharper disable once UnusedVariable
 var result = serializer.Deserialize<AbstractJsonConverterTest.KeyBaseContainer<AbstractJsonConverterTest.KeyBase>>(str);

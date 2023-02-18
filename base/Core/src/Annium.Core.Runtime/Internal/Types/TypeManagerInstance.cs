@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Debug;
-using Annium.Internal;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
@@ -106,7 +105,7 @@ internal class TypeManagerInstance : ITypeManager
         if (string.IsNullOrWhiteSpace(id))
             throw new InvalidEnumArgumentException("Id must not be default");
 
-        return _ids.FirstOrDefault(x => x.Key.Id == id).Key;
+        return _ids.Keys.FirstOrDefault(x => x.Id == id);
     }
 
     /// <summary>
@@ -251,7 +250,7 @@ internal class TypeManagerInstance : ITypeManager
         baseType = baseType.IsGenericType ? baseType.GetGenericTypeDefinition() : baseType;
         var node = _hierarchy.FirstOrDefault(x => x.Key.Type == baseType);
 
-        return node.Key is null ? Array.Empty<Descendant>() : node.Value.ToArray();
+        return node.Key == null! ? Array.Empty<Descendant>() : node.Value.ToArray();
     }
 
     /// <summary>

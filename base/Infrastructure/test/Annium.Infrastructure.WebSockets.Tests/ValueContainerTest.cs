@@ -5,6 +5,8 @@ using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Testing;
 using Xunit;
 
+// ReSharper disable UnusedType.Local
+
 namespace Annium.Infrastructure.WebSockets.Tests;
 
 public class ValueContainerTest

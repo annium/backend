@@ -27,7 +27,7 @@ public class ObjectCacheTests
 
         // assert
         references.Has(10);
-        references.All(x => x.Value != null).IsTrue();
+        references.All(x => x.Value != default!).IsTrue();
         references.GroupBy(x => x.Value).Has(1);
         logs.Has(1);
         logs.ElementAt(0).Is($"0 {Created}");

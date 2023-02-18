@@ -15,7 +15,7 @@ public class HelperTest
         var time = "01.01.2021 08:00";
 
         // act
-        var (message, data) = Helper.Process("Log-in by {user} at {time}", new[] { user, time });
+        var (message, data) = Helper.Process("Log-in by {user} at {time}", new object[] { user, time });
 
         // assert
         message.Is("Log-in by alex at 01.01.2021 08:00");
@@ -32,7 +32,7 @@ public class HelperTest
         var time = "01.01.2021 08:00";
 
         // act
-        var (message, data) = Helper.Process("{user}{time}", new[] { user, time });
+        var (message, data) = Helper.Process("{user}{time}", new object[] { user, time });
 
         // assert
         message.Is("alex01.01.2021 08:00");
@@ -56,7 +56,7 @@ public class HelperTest
     public void Nested_WithData_Works()
     {
         // act
-        var (message, data) = Helper.Process("some {{nested} data} here", new[] { "demo" });
+        var (message, data) = Helper.Process("some {{nested} data} here", new object[] { "demo" });
 
         // assert
         message.Is("some demo here");

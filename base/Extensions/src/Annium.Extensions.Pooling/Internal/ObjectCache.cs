@@ -9,7 +9,7 @@ namespace Annium.Extensions.Pooling.Internal;
 
 internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject<ObjectCache<TKey, TValue>>
     where TKey : notnull
-    where TValue : notnull
+    where TValue : class
 {
     private readonly ObjectCacheProvider<TKey, TValue> _provider;
     public ILogger<ObjectCache<TKey, TValue>> Logger { get; }
@@ -121,10 +121,11 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
 
     private sealed record CacheEntry : IAsyncDisposable
     {
-        public TValue Value { get; private set; } = default!;
+        public TValue Value => _value ?? throw new InvalidOperationException("Value is not set");
         public bool HasReferences => _references != 0;
 
         private readonly AutoResetEvent _gate = new(initialState: false);
+        private TValue? _value;
         private uint _references;
 
         public Task WaitAsync() => Task.Run(() => _gate.WaitOne());
@@ -133,8 +134,8 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
 
         public void SetValue(TValue value)
         {
-            if (Value?.Equals(default) ?? true)
-                Value = value;
+            if (_value is null)
+                _value = value;
             else
                 throw new InvalidOperationException("Can't change CacheEntry Value");
         }

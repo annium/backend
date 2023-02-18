@@ -3,6 +3,7 @@ using System.Diagnostics;
 using Annium.Logging.Abstractions;
 using LinqToDB.Data;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceProviderExtensions

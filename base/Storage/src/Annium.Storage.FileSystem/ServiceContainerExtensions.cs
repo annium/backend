@@ -4,6 +4,7 @@ using Annium.Storage.Abstractions;
 using Annium.Storage.FileSystem;
 using FsStorage = Annium.Storage.FileSystem.Storage;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using Annium.Extensions.Arguments.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Extensions.Arguments;
 
 public abstract class Command<T> : CommandBase

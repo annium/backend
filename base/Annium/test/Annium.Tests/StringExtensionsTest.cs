@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 using Annium.Testing;
 using Xunit;
 
@@ -173,18 +172,5 @@ public class StringExtensionsTest
         result.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
         tryResult.IsTrue();
         byteArray.AsSpan().SequenceEqual(new byte[] { 7, 220, 34 }).IsTrue();
-    }
-
-    [Flags]
-    private enum TestEnum
-    {
-        [Description("empty")]
-        None,
-
-        [Description("a")]
-        One,
-
-        [Description("b")]
-        Two
     }
 }

@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using Annium;
 using Annium.Core.Entrypoint;
 using Annium.Data.Operations;
+// ReSharper disable UnusedVariable
 
 await using var entry = Entrypoint.Default.Setup();
 

@@ -4,6 +4,7 @@ using System.Linq;
 using Annium.Core.DependencyInjection.Internal.Builders.Registrations;
 using Annium.Core.DependencyInjection.Internal.Container;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class IndexExtensions

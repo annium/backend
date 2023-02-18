@@ -3,6 +3,7 @@ using Annium.Core.Reflection;
 using IBuilderBase = Annium.Core.DependencyInjection.IBulkRegistrationBuilderBase;
 using IBuilderTarget = Annium.Core.DependencyInjection.IBulkRegistrationBuilderTarget;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class BulkRegistrationBuilderExtensions

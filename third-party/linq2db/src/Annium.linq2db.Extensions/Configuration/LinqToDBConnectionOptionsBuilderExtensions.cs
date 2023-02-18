@@ -7,6 +7,7 @@ using LinqToDB.Data;
 
 namespace Annium.linq2db.Extensions.Configuration;
 
+// ReSharper disable once InconsistentNaming
 public static class LinqToDBConnectionOptionsBuilderExtensions
 {
     public static LinqToDBConnectionOptionsBuilder UseLogging<TConnection>(this LinqToDBConnectionOptionsBuilder builder, IServiceProvider sp)

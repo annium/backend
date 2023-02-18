@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+// ReSharper disable ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+// ReSharper disable ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+// ReSharper disable once CheckNamespace
 namespace Annium.Extensions.Validation;
 
 public static class BaseRuleExtensions
@@ -189,7 +192,7 @@ public static class BaseRuleExtensions
         string message = ""
     ) => rule.Add((context, value) =>
     {
-        if (value != null && !regex.IsMatch(value))
+        if (value is not null && !regex.IsMatch(value))
             context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
     });
 
@@ -201,7 +204,7 @@ public static class BaseRuleExtensions
     {
         var re = new Regex(regex,
             RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture);
-        if (value != null && !re.IsMatch(value))
+        if (value is not null && !re.IsMatch(value))
             context.Error(string.IsNullOrEmpty(message) ? "Value doesn't match specified regex" : message);
     });
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -114,7 +115,7 @@ public static class EnumExtensions
             var value = (ValueType) item.GetValue(null)!;
 
             result.Add(item.Name.ToLowerInvariant(), value);
-            result.Add(Convert.ChangeType(value, underlyingType)!.ToString()!, value);
+            result.Add(Convert.ChangeType(value, underlyingType).ToString()!, value);
 
             var descriptionAttribute = item.GetCustomAttribute<DescriptionAttribute>();
             if (descriptionAttribute != null)
@@ -133,7 +134,7 @@ public static class EnumExtensions
     {
         var values = ParseValuesCache.GetOrAdd(typeof(T), ParseValues);
 
-        var val = (ValueType) Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)))!;
+        var val = (ValueType) Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)));
         if (values.Contains(val))
         {
             value = (T) val;
@@ -164,7 +165,7 @@ public static class EnumExtensions
                 .Select(x => (long) Convert.ChangeType(x.GetValue(null)!, typeof(long)))
                 .OrderBy(x => x)
                 .ToArray();
-            var max = values.Aggregate(0L, (result, value) => result | value);
+            var max = values.Aggregate(0L, static (res, value) => res | value);
 
             for (var i = values[0]; i <= max; i++)
                 result.Add((ValueType) Convert.ChangeType(i, valueType));
@@ -177,6 +178,7 @@ public static class EnumExtensions
 
     # region helpers
 
+    [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
     private static T CastValues<T>(IReadOnlyCollection<T> values)
         where T : struct, Enum
     {

@@ -17,7 +17,7 @@ public static class LogExtensions
     )
         where T : class
     {
-        var subject = obj is null ? "null" : $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
+        var subject = $"{obj.GetType().FriendlyName()}#{obj.GetId()}";
         var trace = withTrace ? $"{Environment.NewLine}{Environment.StackTrace}" : string.Empty;
         Log.Trace(subject, $"{message}{trace}", callerFilePath, member, line);
     }

@@ -33,7 +33,7 @@ internal class Mediator : IMediator
 
         // use scoped service provider
         await using var scope = _provider.CreateAsyncScope();
-        return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request!, ct);
+        return (TResponse) await ChainExecutor.ExecuteAsync(scope.ServiceProvider, chain, request, ct);
     }
 
     public async Task<TResponse> SendAsync<TResponse>(
@@ -46,7 +46,7 @@ internal class Mediator : IMediator
         var chain = GetChain(request.GetType(), typeof(TResponse));
 
         // use given service provider
-        return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request!, ct);
+        return (TResponse) await ChainExecutor.ExecuteAsync(serviceProvider, chain, request, ct);
     }
 
     private IReadOnlyList<ChainElement> GetChain(Type input, Type output)

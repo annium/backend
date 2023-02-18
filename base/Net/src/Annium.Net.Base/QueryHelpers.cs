@@ -87,7 +87,7 @@ public static class QueryHelpers
         }
 
         return AddQueryString(uri,
-            queryString.SelectMany(kvp => kvp.Value, (kvp, v) => KeyValuePair.Create<string, string?>(kvp.Key, v)));
+            queryString.SelectMany(kvp => kvp.Value, (kvp, v) => KeyValuePair.Create(kvp.Key, v)));
     }
 
     /// <summary>

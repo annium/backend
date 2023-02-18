@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
+// ReSharper disable UnusedType.Local
+
 namespace Annium.Extensions.Validation.Tests;
 
 public class ValidatorTest : TestBase

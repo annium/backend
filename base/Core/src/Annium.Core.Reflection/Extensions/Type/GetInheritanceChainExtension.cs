@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class GetInheritanceChainExtension
@@ -30,9 +31,9 @@ public static class GetInheritanceChainExtension
         if (type.IsClass)
         {
             if (type.BaseType != null)
-                while (type!.BaseType != typeof(object))
+                while (type.BaseType != typeof(object))
                 {
-                    chain.Add(type!.BaseType!);
+                    chain.Add(type.BaseType!);
                     type = type.BaseType!;
                 }
 

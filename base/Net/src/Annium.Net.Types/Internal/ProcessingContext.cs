@@ -8,6 +8,8 @@ using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
+// ReSharper disable CoVariantArrayConversion
+
 namespace Annium.Net.Types.Internal;
 
 internal sealed record ProcessingContext : IMapperProcessingContext

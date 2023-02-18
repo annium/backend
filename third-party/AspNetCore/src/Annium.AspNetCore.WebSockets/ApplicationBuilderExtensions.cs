@@ -1,6 +1,7 @@
 using Annium.AspNetCore.WebSockets.Internal.Middleware;
 using Microsoft.AspNetCore.Builder;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ApplicationBuilderExtensions

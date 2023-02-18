@@ -1,4 +1,5 @@
-﻿namespace Annium.Testing;
+﻿// ReSharper disable once CheckNamespace
+namespace Annium.Testing;
 
 public interface ILocatedAttribute
 {

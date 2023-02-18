@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Annium.Configuration.Json.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Configuration.Abstractions;
 
 public static class ConfigurationContainerExtensions

@@ -34,7 +34,3 @@ public abstract class MapperInterfaceTestsBase : TestBase
         model.Fields.IsEmpty();
     }
 }
-
-file interface IEmptyInterface
-{
-}

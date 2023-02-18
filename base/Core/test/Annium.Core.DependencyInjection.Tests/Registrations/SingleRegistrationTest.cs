@@ -10,13 +10,13 @@ public class SingleRegistrationTest : TestBase
     public void AsSelf_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsSelf().Singleton();
+        Container.Add(typeof(B)).AsSelf().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingleton(typeof(B), typeof(B));
         Get<B>().AsExact<B>();
     }
 
@@ -24,13 +24,13 @@ public class SingleRegistrationTest : TestBase
     public void As_Works()
     {
         // arrange
-        _container.Add(typeof(B)).As(typeof(A)).Singleton();
+        Container.Add(typeof(B)).As(typeof(A)).Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingletonTypeFactory(typeof(A));
+        Container.HasSingletonTypeFactory(typeof(A));
         Get<A>().Is(Get<B>());
     }
 
@@ -38,7 +38,7 @@ public class SingleRegistrationTest : TestBase
     public void AsInterfaces_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsInterfaces().Singleton();
+        Container.Add(typeof(B)).AsInterfaces().Singleton();
 
         // act
         Build();
@@ -52,7 +52,7 @@ public class SingleRegistrationTest : TestBase
     public void AsKeyedSelf_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsKeyedSelf(nameof(B)).Singleton();
+        Container.Add(typeof(B)).AsKeyedSelf(nameof(B)).Singleton();
 
         // act
         Build();
@@ -65,7 +65,7 @@ public class SingleRegistrationTest : TestBase
     public void AsKeyed_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsKeyed(typeof(A), nameof(B)).Singleton();
+        Container.Add(typeof(B)).AsKeyed(typeof(A), nameof(B)).Singleton();
 
         // act
         Build();
@@ -78,7 +78,7 @@ public class SingleRegistrationTest : TestBase
     public void AsSelfFactory_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsSelfFactory().Singleton();
+        Container.Add(typeof(B)).AsSelfFactory().Singleton();
 
         // act
         Build();
@@ -91,7 +91,7 @@ public class SingleRegistrationTest : TestBase
     public void AsFactory_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsFactory<A>().Singleton();
+        Container.Add(typeof(B)).AsFactory<A>().Singleton();
 
         // act
         Build();
@@ -104,7 +104,7 @@ public class SingleRegistrationTest : TestBase
     public void AsKeyedSelfFactory_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsKeyedSelfFactory(nameof(B)).Singleton();
+        Container.Add(typeof(B)).AsKeyedSelfFactory(nameof(B)).Singleton();
 
         // act
         Build();
@@ -117,7 +117,7 @@ public class SingleRegistrationTest : TestBase
     public void AsKeyedFactory_Works()
     {
         // arrange
-        _container.Add(typeof(B)).AsKeyedFactory(typeof(A), nameof(B)).Singleton();
+        Container.Add(typeof(B)).AsKeyedFactory(typeof(A), nameof(B)).Singleton();
 
         // act
         Build();

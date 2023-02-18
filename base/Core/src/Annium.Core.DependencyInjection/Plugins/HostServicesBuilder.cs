@@ -1,6 +1,7 @@
 using System;
 using Annium.Core.DependencyInjection.Internal.Packs;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 /// <summary>

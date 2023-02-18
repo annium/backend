@@ -36,7 +36,7 @@ public abstract class Comparable<T> : Equatable<T>, IComparable<T>, IComparable 
 
     public static bool operator <=(Comparable<T> a, Comparable<T> b) => Compare(a, b) <= 0;
 
-    private static int Compare(IComparable a, IComparable b)
+    private static int Compare(IComparable? a, IComparable? b)
     {
         if (ReferenceEquals(a, b)) return 0;
         if (a is null) return -1;

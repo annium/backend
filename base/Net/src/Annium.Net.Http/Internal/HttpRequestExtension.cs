@@ -23,14 +23,14 @@ internal partial class HttpRequest
 
     public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, Task<IHttpResponse>> middleware)
     {
-        _middlewares.Add((next, request, options) => middleware(next));
+        _middlewares.Add((next, _, _) => middleware(next));
 
         return this;
     }
 
     public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, Task<IHttpResponse>> middleware)
     {
-        _middlewares.Add((next, request, options) => middleware(next, request));
+        _middlewares.Add((next, request, _) => middleware(next, request));
 
         return this;
     }

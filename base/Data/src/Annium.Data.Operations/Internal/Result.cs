@@ -1,4 +1,4 @@
-namespace Annium.Data.Operations.Implementations;
+namespace Annium.Data.Operations.Internal;
 
 internal sealed record Result<TD> : ResultBase<IResult<TD>>, IResult<TD>
 {

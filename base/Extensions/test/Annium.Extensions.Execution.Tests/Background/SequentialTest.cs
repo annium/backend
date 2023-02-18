@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Internal;
 using Annium.Testing;
 using Xunit;
+
+// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.Extensions.Execution.Tests.Background;
 

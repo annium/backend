@@ -32,6 +32,7 @@ public class ServicePack : ServicePackBase
         provider.UseLogging(route =>
         {
             var cfg = provider.Resolve<TestingConfiguration>();
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
             if (cfg is null)
                 route.UseConsole();
             else

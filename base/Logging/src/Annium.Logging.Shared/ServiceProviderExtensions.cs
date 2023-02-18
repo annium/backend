@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Annium.Logging.Shared;
 using Annium.Logging.Shared.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceProviderExtensions

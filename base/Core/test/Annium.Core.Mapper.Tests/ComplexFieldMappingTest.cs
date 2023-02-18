@@ -14,7 +14,7 @@ public class ComplexFieldMappingTest
         // arrange
         var mapper = GetMapper();
         var serialized = JsonSerializer.Serialize(new { Name = "Alex", Age = 20 });
-        var value = new A { Serialized = serialized };
+        var value = new A { SerializedValue = serialized };
 
         // act
         var result = mapper.Map<B>(value);
@@ -30,7 +30,7 @@ public class ComplexFieldMappingTest
         });
         restored.IsShallowEqual(new A
         {
-            Serialized = serialized,
+            SerializedValue = serialized,
         });
     }
 
@@ -40,7 +40,7 @@ public class ComplexFieldMappingTest
         // arrange
         var mapper = GetMapper();
         var serialized = JsonSerializer.Serialize(new { Name = "Alex", Age = 20 });
-        var value = new A { Serialized = serialized };
+        var value = new A { SerializedValue = serialized };
 
         // act
         var result = mapper.Map<C>(value);
@@ -50,7 +50,7 @@ public class ComplexFieldMappingTest
         result.IsShallowEqual(new C(0, 0, "Alex", 20));
         restored.IsShallowEqual(new A
         {
-            Serialized = serialized,
+            SerializedValue = serialized,
         });
     }
 
@@ -65,19 +65,19 @@ public class ComplexFieldMappingTest
     {
         p.Map<A, B>()
             .Ignore(x => new { x.IgnoredA, x.IgnoredB })
-            .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default(JsonSerializerOptions)));
+            .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.SerializedValue, default(JsonSerializerOptions)));
         p.Map<B, A>()
-            .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
+            .For(x => x.SerializedValue, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
         p.Map<A, C>()
             .Ignore(x => new { x.IgnoredA, x.IgnoredB })
-            .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.Serialized, default(JsonSerializerOptions)));
+            .For(x => new { x.Name, x.Age }, x => JsonSerializer.Deserialize<Serialized>(x.SerializedValue, default(JsonSerializerOptions)));
         p.Map<C, A>()
-            .For(x => x.Serialized, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
+            .For(x => x.SerializedValue, x => JsonSerializer.Serialize(new { x.Name, x.Age }, default(JsonSerializerOptions)));
     }
 
     private class A
     {
-        public string Serialized { get; set; } = string.Empty;
+        public string SerializedValue { get; set; } = string.Empty;
     }
 
     private class B

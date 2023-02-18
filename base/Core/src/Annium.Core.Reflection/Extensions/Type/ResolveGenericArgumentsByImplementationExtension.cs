@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class ResolveGenericArgumentsByImplementationExtension

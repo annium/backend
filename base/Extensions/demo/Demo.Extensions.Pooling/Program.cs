@@ -20,11 +20,12 @@ IObjectCache<uint, Item> CreateCache()
     var container = new ServiceContainer();
     container.AddTime().WithRealTime().SetDefault();
 
+    // ReSharper disable once CollectionNeverQueried.Local
     var logs = new List<string>();
 
     void Log(string message)
     {
-        lock (logs!) logs.Add(message);
+        lock (logs) logs.Add(message);
     }
 
     var sp = container
@@ -33,6 +34,7 @@ IObjectCache<uint, Item> CreateCache()
         .Add<Action<string>>(Log).AsSelf().Singleton()
         .BuildServiceProvider()
         .UseLogging(route => route.UseConsole());
+    // ReSharper disable once VariableHidesOuterVariable
     var cache = sp.Resolve<IObjectCache<uint, Item>>();
 
     return cache;

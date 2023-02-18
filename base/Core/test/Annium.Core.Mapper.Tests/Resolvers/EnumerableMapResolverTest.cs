@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
@@ -64,7 +65,7 @@ public class EnumerableMapResolverTest
         var value = new[] { new A { Name = "name" } };
 
         // act
-        var result = mapper.Map<IEnumerable<B>>(value);
+        var result = mapper.Map<IEnumerable<B>>(value).ToArray();
 
         // assert
         result.Has(1);

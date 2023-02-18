@@ -16,7 +16,7 @@ public static class TypeManager
     )
     {
         var key = new CacheKey(assembly);
-        return Instances.GetOrAdd(key, key => new TypeManagerInstance(key.Assembly));
+        return Instances.GetOrAdd(key, k => new TypeManagerInstance(k.Assembly));
     }
 
     public static void Release(Assembly assembly)

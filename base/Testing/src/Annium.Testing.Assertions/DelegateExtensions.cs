@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Testing;
 
 public static class DelegateExtensions
@@ -23,6 +24,6 @@ public static class DelegateExtensions
         throw new AssertionFailedException($"{value.DelegateEx} has not thrown {typeof(TException).FriendlyName()}");
     }
 
-    private static TException Is<TException>(this Exception value) where TException : Exception =>
+    private static TException Is<TException>(this Exception? value) where TException : Exception =>
         value.As<TException>($"Returned result is type `{value?.GetType()}`, not derived from expected type `{typeof(TException)}`");
 }

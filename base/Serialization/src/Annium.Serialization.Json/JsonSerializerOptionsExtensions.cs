@@ -9,6 +9,7 @@ using Annium.Core.Runtime.Types;
 using Annium.Serialization.Json.Converters;
 using Annium.Serialization.Json.Internal.Options;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class JsonSerializerOptionsExtensions

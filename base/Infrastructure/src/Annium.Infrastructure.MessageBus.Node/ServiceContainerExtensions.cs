@@ -4,6 +4,9 @@ using Annium.Infrastructure.MessageBus.Node.Internal;
 using Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 using Annium.Infrastructure.MessageBus.Node.Transport;
 
+// ReSharper disable InconsistentNaming
+
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

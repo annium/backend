@@ -1,5 +1,6 @@
 using Annium.linq2db.Extensions.Configuration;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

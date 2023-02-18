@@ -20,7 +20,7 @@ internal class MessageBusServer : IMessageBusServer
         Func<IMessageBusRequestContext<TRequest, TResponse>, Task> process
     ) => _node
         .Listen<MessageBusEnvelope<TRequest>>()
-        .Subscribe(async x =>
+        .DoSequentialAsync(async x =>
         {
             try
             {
@@ -33,5 +33,6 @@ internal class MessageBusServer : IMessageBusServer
             {
                 await _node.Send(MessageBusEnvelope.Error(x.Id, e.Message));
             }
-        });
+        })
+        .Subscribe();
 }

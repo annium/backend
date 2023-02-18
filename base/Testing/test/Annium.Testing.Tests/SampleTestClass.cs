@@ -5,6 +5,7 @@ namespace Annium.Testing.Tests;
 
 public class SampleTestClass : IDisposable
 {
+    // ReSharper disable once UnusedParameter.Local
     public SampleTestClass(FixtureSample fixture)
     {
         Console.WriteLine("Create SampleTestClass");

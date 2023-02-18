@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Data.Models.Extensions;
 
 public static partial class IsShallowEqualExtensions

@@ -6,6 +6,7 @@ using Annium.NodaTime.Serialization.Json;
 using NodaTime;
 using NodaTime.Xml;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class JsonSerializerOptionsExtensions

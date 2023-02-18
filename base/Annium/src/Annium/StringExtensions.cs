@@ -38,33 +38,33 @@ public static class StringExtensions
 
     public static string PascalCase(this string value)
     {
-        return Compound(value, PascalCase);
+        return Compound(value, PascalCaseInternal);
 
-        static string PascalCase(string result, string word) =>
+        static string PascalCaseInternal(string result, string word) =>
             result + word.ToLowerInvariant().UpperFirst();
     }
 
     public static string CamelCase(this string value)
     {
-        return Compound(value, CamelCase);
+        return Compound(value, CamelCaseInternal);
 
-        static string CamelCase(string result, string word) =>
+        static string CamelCaseInternal(string result, string word) =>
             result + (result == string.Empty ? word.ToLowerInvariant().LowerFirst() : word.ToLowerInvariant().UpperFirst());
     }
 
     public static string KebabCase(this string value)
     {
-        return Compound(value, KebabCase);
+        return Compound(value, KebabCaseInternal);
 
-        static string KebabCase(string result, string word) =>
+        static string KebabCaseInternal(string result, string word) =>
             result + (result == string.Empty ? string.Empty : "-") + word.ToLowerInvariant();
     }
 
     public static string SnakeCase(this string value)
     {
-        return Compound(value, SnakeCase);
+        return Compound(value, SnakeCaseInternal);
 
-        static string SnakeCase(string result, string word) =>
+        static string SnakeCaseInternal(string result, string word) =>
             result + (result == string.Empty ? string.Empty : "_") + word.ToLowerInvariant();
     }
 
@@ -212,18 +212,20 @@ public static class StringExtensions
     private static string Compound(string value, Func<string, string, string> callback)
     {
         value = Preprocess(value);
-        if (string.IsNullOrEmpty(value)) return value;
+        if (string.IsNullOrEmpty(value))
+            return value;
 
         return ToWords(value).Aggregate(string.Empty, callback);
     }
 
-    private static string Preprocess(string value) => value?.Trim() ?? string.Empty;
+    private static string Preprocess(string value) => value.Trim();
 
     private static Symbol GetSymbol(char c)
     {
         if (char.IsUpper(c)) return Symbol.Upper;
         if (char.IsLower(c)) return Symbol.Lower;
         if (char.IsDigit(c)) return Symbol.Digit;
+
         return Symbol.Other;
     }
 

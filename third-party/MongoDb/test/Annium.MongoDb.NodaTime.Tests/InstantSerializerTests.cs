@@ -65,8 +65,8 @@ public class InstantSerializerTests
         var doc = new BsonDocument(new BsonElement("Instant", new BsonBoolean(false)));
         Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
 
-        doc = new BsonDocument(new BsonElement("Instant", new BsonInt32(1)));
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
+        var doc2 = new BsonDocument(new BsonElement("Instant", new BsonInt32(1)));
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(doc2)).Throws<FormatException>();
     }
 
     [Fact]

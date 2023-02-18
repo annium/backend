@@ -2,6 +2,7 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Net.Http;
 
 public static class HttpRequestContentExtensions

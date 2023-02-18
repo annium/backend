@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.Linq.Expressions;
 using Annium.Core.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace System.Reactive.Linq;
 
 public static class NotificationExtensions

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection.Tests.Types.Extensions.GetTargetImplementation;
 
 public class ParentOther<T1, T2> : Base<T1[], T2, bool, IEnumerable<T1[]>>, IParentOther<T1, T2> where T2 : struct

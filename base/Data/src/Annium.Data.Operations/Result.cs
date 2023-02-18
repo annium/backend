@@ -1,18 +1,18 @@
 using System.Collections.Generic;
-using Annium.Data.Operations.Implementations;
+using Annium.Data.Operations.Internal;
 
 namespace Annium.Data.Operations;
 
 public static class Result
 {
-    public static IResult Join(params IResult[] results) =>
-        new Implementations.Result().Join(results);
+    public static IResult Join(params IResultBase[] results) =>
+        new Internal.Result().Join(results);
 
-    public static IResult Join(IReadOnlyCollection<IResult> results) =>
-        new Implementations.Result().Join(results);
+    public static IResult Join(IReadOnlyCollection<IResultBase> results) =>
+        new Internal.Result().Join(results);
 
     public static IResult New() =>
-        new Implementations.Result();
+        new Internal.Result();
 
     public static IResult<TD> New<TD>(TD data) =>
         new Result<TD>(data);

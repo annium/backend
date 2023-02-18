@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public static class SubscribeAsyncOperatorExtensions

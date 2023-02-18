@@ -1,5 +1,6 @@
 using System;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class IsNotNullableValueTypeExtension

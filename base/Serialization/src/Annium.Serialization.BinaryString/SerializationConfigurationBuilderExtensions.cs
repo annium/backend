@@ -2,6 +2,7 @@ using Annium.Serialization.Abstractions;
 using Annium.Serialization.BinaryString.Internal;
 using Constants = Annium.Serialization.BinaryString.Constants;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions

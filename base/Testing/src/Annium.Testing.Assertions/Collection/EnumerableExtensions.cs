@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Annium.Testing.Assertions.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Testing;
 
 public static class EnumerableExtensions
@@ -14,10 +15,10 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("key")] string keyEx = default!
     )
     {
-        var count = value.Count();
-        (0 <= key && key < count).IsTrue($"{valueEx}[{key.Wrap(keyEx)}] is out of bounds [0,{count - 1}]");
+        var val = value.ToArray();
+        (0 <= key && key < val.Length).IsTrue($"{valueEx}[{key.Wrap(keyEx)}] is out of bounds [0,{val.Length - 1}]");
 
-        return value.ElementAt(key);
+        return val[key];
     }
 
     public static IEnumerable<T> Has<T>(
@@ -27,10 +28,10 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("count")] string countEx = default!
     )
     {
-        var total = value.Count();
-        total.Is(count, $"{valueEx} count `{total}` != `{count.Wrap(countEx)}`");
+        var val = value.ToArray();
+        val.Length.Is(count, $"{valueEx} count `{val.Length}` != `{count.Wrap(countEx)}`");
 
-        return value;
+        return val;
     }
 
     public static IEnumerable<T> IsEmpty<T>(
@@ -38,10 +39,10 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
-        var total = value.Count();
-        total.Is(0, $"{valueEx} expected to be empty, but has `{total}` items");
+        var val = value.ToArray();
+        val.Length.Is(0, $"{valueEx} expected to be empty, but has `{val.Length}` items");
 
-        return value;
+        return val;
     }
 
     public static IEnumerable<T> IsNotEmpty<T>(
@@ -49,8 +50,9 @@ public static class EnumerableExtensions
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
-        value.Any().IsTrue($"{valueEx} expected to be not empty");
+        var val = value.ToArray();
+        val.Length.IsGreater(0, $"{valueEx} expected to be not empty");
 
-        return value;
+        return val;
     }
 }

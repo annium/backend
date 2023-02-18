@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class ResolveByImplementationsExtension
@@ -16,8 +17,8 @@ public static class ResolveByImplementationsExtension
             // TODO: fix
             return type;
 
-        var args = type.ResolveGenericArgumentsByImplentations(targets);
-        if (args is null || args.Any(arg => arg is null))
+        var args = type.ResolveGenericArgumentsByImplementations(targets);
+        if (args is null)
             return null;
 
         if (type.IsGenericParameter)

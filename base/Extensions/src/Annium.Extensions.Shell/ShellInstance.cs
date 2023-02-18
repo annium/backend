@@ -147,9 +147,9 @@ internal class ShellInstance : IShellInstance, ILogSubject<ShellInstance>
             exitHandled = true;
 
             if (killed)
-                tcs!.TrySetCanceled();
+                tcs.TrySetCanceled();
             else
-                tcs!.TrySetResult(GetResult(process));
+                tcs.TrySetResult(GetResult(process));
             try
             {
                 process.Dispose();

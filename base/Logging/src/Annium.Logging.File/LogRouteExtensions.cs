@@ -3,6 +3,7 @@ using Annium.Logging.File;
 using Annium.Logging.File.Internal;
 using Annium.Logging.Shared;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class LogRouteExtensions

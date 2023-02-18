@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Annium.Core.Reflection.Extensions;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class GetAllPropertiesExtension

@@ -13,7 +13,7 @@ public class LocalizerTest
     public void Localization_Base_Works()
     {
         // arrange
-        var localizer = GetLocalizer(opts => { });
+        var localizer = GetLocalizer(_ => { });
 
         // act
         var iv = localizer["test"];
@@ -32,7 +32,7 @@ public class LocalizerTest
     public void Localization_WithParams_Works()
     {
         // arrange
-        var localizer = GetLocalizer(opts => { });
+        var localizer = GetLocalizer(_ => { });
 
         // act
         var iv = localizer["test params", 5];

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Data.Models.Extensions;
 
 public static partial class IsShallowEqualExtensions
@@ -12,9 +13,7 @@ public static partial class IsShallowEqualExtensions
     {
         var methods = type.GetMethods()
             .Where(x =>
-                x.IsPublic &&
-                !x.IsStatic &&
-                x.Name == nameof(Equals) &&
+                x is { IsPublic: true, IsStatic: false, Name: nameof(Equals) } &&
                 x.GetParameters().Length == 1
             )
             .ToArray();
@@ -34,7 +33,6 @@ public static partial class IsShallowEqualExtensions
 
         var returnTarget = Expression.Label(typeof(bool));
 
-        var vars = new List<ParameterExpression>();
         var expressions = new List<Expression>();
 
         if (type.IsClass)
@@ -46,6 +44,6 @@ public static partial class IsShallowEqualExtensions
 
         expressions.Add(Expression.Label(returnTarget, equalsExpression));
 
-        return Expression.Lambda(Expression.Block(vars, expressions), parameters);
+        return Expression.Lambda(Expression.Block(new List<ParameterExpression>(), expressions), parameters);
     }
 }

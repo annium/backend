@@ -150,20 +150,17 @@ internal class MapBuilder : IMapBuilder
     {
         public static Entry Create() => new();
 
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        public bool HasConfiguration => Configuration is not null;
-        public IMapConfiguration Configuration { get; private set; } = default!;
-        public object MappingLock = new();
-
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        public bool HasConfiguration => _configuration is not null;
+        public IMapConfiguration Configuration => _configuration ?? throw new InvalidOperationException("Configuration is not set");
+        public readonly object MappingLock = new();
         public bool HasMapping => _mapping is not null;
-        public Mapping Mapping => _mapping.Value;
-        public object MapLock = new();
-
-        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-        public bool HasMap => Map is not null;
-        public Delegate Map { get; private set; } = default!;
-        private Lazy<Mapping> _mapping = default!;
+        public Mapping Mapping => _mapping?.Value ?? throw new InvalidOperationException("Mapping is not set");
+        public readonly object MapLock = new();
+        public bool HasMap => _map is not null;
+        public Delegate Map => _map ?? throw new InvalidOperationException("Map is not set");
+        private IMapConfiguration? _configuration;
+        private Lazy<Mapping>? _mapping;
+        private Delegate? _map;
 
         private Entry()
         {
@@ -174,7 +171,7 @@ internal class MapBuilder : IMapBuilder
             if (HasConfiguration)
                 throw new InvalidOperationException("Configuration already set");
 
-            Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         public void SetMapping(Func<Mapping> mapping)
@@ -190,7 +187,7 @@ internal class MapBuilder : IMapBuilder
             if (HasMap)
                 throw new InvalidOperationException("Map already set");
 
-            Map = map ?? throw new ArgumentNullException(nameof(map));
+            _map = map ?? throw new ArgumentNullException(nameof(map));
         }
     }
 }

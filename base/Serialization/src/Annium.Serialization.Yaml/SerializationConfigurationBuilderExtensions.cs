@@ -5,6 +5,7 @@ using Annium.Serialization.Yaml.Internal;
 using YamlDotNet.Serialization;
 using Constants = Annium.Serialization.Yaml.Constants;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions

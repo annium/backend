@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Annium.Linq;
 
-namespace Annium.Data.Operations.Implementations;
+namespace Annium.Data.Operations.Internal;
 
 internal abstract record ResultBase<T> : IResultBase<T>, IResultBase, ICopyable<T>
     where T : class, IResultBase<T>

@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Annium.Configuration.CommandLine.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Configuration.Abstractions;
 
 public static class ConfigurationContainerExtensions

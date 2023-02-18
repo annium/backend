@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.DependencyInjection;
 using AsyncServiceScope = Annium.Core.DependencyInjection.Internal.Container.AsyncServiceScope;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceProviderExtensions

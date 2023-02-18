@@ -75,7 +75,7 @@ internal class ObjectConfigurationProvider : ConfigurationProviderBase
         var type = value.GetType();
         var dictionaryType = type.GetTargetImplementation(typeof(IDictionary<,>)) ?? type.GetTargetImplementation(typeof(IReadOnlyDictionary<,>));
         var keyType = dictionaryType!.GetGenericArguments()[0];
-        var valueType = dictionaryType!.GetGenericArguments()[1];
+        var valueType = dictionaryType.GetGenericArguments()[1];
         var keyValueType = typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType);
         var getKey = keyValueType.GetProperty(nameof(KeyValuePair<object, object>.Key))!.GetMethod!;
         var getValue = keyValueType.GetProperty(nameof(KeyValuePair<object, object>.Value))!.GetMethod!;

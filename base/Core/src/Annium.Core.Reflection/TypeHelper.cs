@@ -14,7 +14,7 @@ public static class TypeHelper
                 .Select(x => Expression.Lambda(x, map.Parameters))
                 .ToArray();
 
-        return new[] { map };
+        return new LambdaExpression[] { map };
     }
 
     public static PropertyInfo[] ResolveProperties<T>(Expression<Func<T, object>> map)

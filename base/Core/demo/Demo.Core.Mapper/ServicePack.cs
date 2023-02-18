@@ -2,7 +2,7 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper;
 
-namespace Demo.Extensions.Mapping;
+namespace Demo.Core.Mapper;
 
 internal class ServicePack : ServicePackBase
 {

@@ -18,7 +18,7 @@ public abstract class PatternSerializer<TValue> : SerializerBase<TValue>
         Func<TValue, TValue> valueConverter
     ) : this(pattern)
     {
-        _valueConverter = valueConverter ?? (v => v);
+        _valueConverter = valueConverter;
     }
 
     protected PatternSerializer(

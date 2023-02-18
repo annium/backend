@@ -1,6 +1,7 @@
 using System;
 using System.Net.Http;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Net.Http;
 
 public static class HttpRequestMethodExtensions

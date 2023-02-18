@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using Annium.Core.Mapper;
 using Annium.Core.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Data.Models.Extensions;
 
 public static partial class IsShallowEqualExtensions

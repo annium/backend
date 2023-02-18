@@ -1,5 +1,6 @@
 using Annium.Net.Mail;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

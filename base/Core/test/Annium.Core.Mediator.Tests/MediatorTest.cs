@@ -131,12 +131,12 @@ public class MediatorTest
         return (provider.Resolve<IMediator>(), logHandler.Logs);
     }
 
-    internal class ConversionHandler<TRequest, TResponse> :
+    private class ConversionHandler<TRequest, TResponse> :
         IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
         ILogSubject<ConversionHandler<TRequest, TResponse>>
     {
-        private static readonly JsonSerializerOptions
-            Options = new JsonSerializerOptions().ConfigureForOperations();
+        private readonly JsonSerializerOptions
+            _options = new JsonSerializerOptions().ConfigureForOperations();
 
         public ILogger<ConversionHandler<TRequest, TResponse>> Logger { get; }
 
@@ -154,44 +154,44 @@ public class MediatorTest
         )
         {
             this.Log().Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
-            var payload = JsonSerializer.Deserialize<TRequest>(request.Value, Options)!;
+            var payload = JsonSerializer.Deserialize<TRequest>(request.Value, _options)!;
 
             var result = await next(payload, ct);
 
             this.Log().Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
-            return new Response<TResponse>(JsonSerializer.Serialize(result, Options));
+            return new Response<TResponse>(JsonSerializer.Serialize(result, _options));
         }
     }
 
-    internal class Request<T>
+    private class Request<T>
     {
-        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+        private readonly JsonSerializerOptions _options = new JsonSerializerOptions().ConfigureForOperations();
 
         public string Value { get; }
 
         public Request(T value)
         {
-            Value = JsonSerializer.Serialize(value, Options);
+            Value = JsonSerializer.Serialize(value, _options);
         }
     }
 
-    internal class Response<T> : IResponse
+    private class Response<T> : IResponse
     {
-        private static readonly JsonSerializerOptions Options = new JsonSerializerOptions().ConfigureForOperations();
+        private readonly JsonSerializerOptions _options = new JsonSerializerOptions().ConfigureForOperations();
 
         public T Value { get; }
 
         public Response(string value)
         {
-            Value = JsonSerializer.Deserialize<T>(value, Options)!;
+            Value = JsonSerializer.Deserialize<T>(value, _options)!;
         }
     }
 
-    internal interface IResponse
+    private interface IResponse
     {
     }
 
-    internal class ValidationHandler<TRequest, TResponse> :
+    private class ValidationHandler<TRequest, TResponse> :
         IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
         ILogSubject<ValidationHandler<TRequest, TResponse>>
     {
@@ -277,37 +277,24 @@ public class MediatorTest
         }
     }
 
-    private class Authored<T>
-    {
-        public int AuthorId { get; set; }
-        public T Entity { get; set; } = default !;
-
-        public override int GetHashCode() => 13 * AuthorId.GetHashCode() + Entity!.GetHashCode();
-    }
-
     private class Base
     {
-        public string? Value { get; set; }
+        public string? Value { get; init; }
 
-        public override int GetHashCode() => Value!.GetHashCode();
+        public override int GetHashCode() => Value?.GetHashCode() ?? 0;
     }
 
     private class One : Base
     {
-        public long First { get; set; }
+        public long First { get; init; }
 
         public override int GetHashCode() => 7 * base.GetHashCode() + First.GetHashCode();
     }
 
     private class Two : Base
     {
-        public int Second { get; set; }
+        public int Second { get; init; }
 
         public override int GetHashCode() => 11 * base.GetHashCode() + Second.GetHashCode();
-    }
-
-    private interface IBase
-    {
-        string Value { get; set; }
     }
 }

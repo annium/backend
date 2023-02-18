@@ -1,6 +1,7 @@
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public static class CatchAsyncOperatorExtensions

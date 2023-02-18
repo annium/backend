@@ -44,11 +44,6 @@ public class DictionaryAssignmentMapResolverTest
             );
     }
 
-    private class A
-    {
-        public string Serialized { get; set; } = string.Empty;
-    }
-
     private class C
     {
         public int IgnoredA { get; set; }

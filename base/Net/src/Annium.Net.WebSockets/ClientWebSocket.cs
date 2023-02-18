@@ -3,7 +3,6 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Internal;
 using Annium.Net.WebSockets.Internal;
 using NodaTime;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;

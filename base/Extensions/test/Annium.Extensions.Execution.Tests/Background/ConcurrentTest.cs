@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Internal;
 using Annium.Testing;
 using Xunit;
+
+// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
@@ -14,7 +15,6 @@ public class ConcurrentTest
 {
     [Theory]
     [MemberData(nameof(GetRange))]
-    // ReSharper disable once xUnit1026
     public async Task ConcurrentExecutor_Works(int index)
     {
         Log.SetTestMode();

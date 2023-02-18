@@ -5,6 +5,7 @@ using System.Threading;
 using Annium.Core.DependencyInjection;
 using Annium.Extensions.Arguments.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Extensions.Arguments;
 
 public abstract class Group : CommandBase

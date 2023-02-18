@@ -1,5 +1,6 @@
 ﻿using System;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Extensions.Arguments;
 
 [AttributeUsage(AttributeTargets.Property)]

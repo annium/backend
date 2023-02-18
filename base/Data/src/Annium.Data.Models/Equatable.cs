@@ -10,7 +10,7 @@ public abstract class Equatable<T> : IEquatable<T> where T : Equatable<T>
 
     public override bool Equals(object? obj) => Equals((T) obj!);
 
-    public static bool operator ==(Equatable<T> a, Equatable<T> b)
+    public static bool operator ==(Equatable<T>? a, Equatable<T>? b)
     {
         // If both are null, or both are same instance, return true.
         if (ReferenceEquals(a, b))

@@ -60,6 +60,7 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
                 {
                     var cts = new CancellationTokenSource(TimeSpan.FromMinutes(1));
                     var value = await Fetch<int>(new CreateOrderRequest(), cts.Token);
+                    // ReSharper disable once AccessToModifiedClosure
                     Interlocked.Add(ref counter, value.Data);
                 })
         );
@@ -81,10 +82,10 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
         if (client.IsConnected)
             await client.DisconnectAsync();
 
-        async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken ct)
+        async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken token)
         {
             // this.Log().Debug($">>> {request}");
-            var result = await client!.FetchAsync<T>(request, ct);
+            var result = await client.FetchAsync<T>(request, token);
             // this.Log().Debug($"<<< {result}");
             return result;
         }

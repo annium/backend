@@ -6,6 +6,8 @@ using Annium.Core.Reflection;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Core.Runtime.Types;
 
+// ReSharper disable UnusedVariable
+
 await using var entry = Entrypoint.Default.Setup();
 
 var typeManager = TypeManager.GetInstance(typeof(Program).Assembly);

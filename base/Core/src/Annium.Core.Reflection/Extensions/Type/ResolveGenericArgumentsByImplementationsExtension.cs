@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 internal static class ResolveGenericArgumentsByImplementationsExtension
 {
-    public static Type[]? ResolveGenericArgumentsByImplentations(this Type type, params Type[] targets)
+    public static Type[]? ResolveGenericArgumentsByImplementations(this Type type, params Type[] targets)
     {
         var argsMatrix = targets
             .Select(t =>
@@ -27,10 +28,7 @@ internal static class ResolveGenericArgumentsByImplementationsExtension
                 var arg = args[i];
                 var otherArg = argsSet[i];
 
-                if (otherArg is null)
-                    continue;
-
-                if (arg is null || arg == otherArg)
+                if (arg == otherArg)
                     args[i] = otherArg;
                 else
                     return null;

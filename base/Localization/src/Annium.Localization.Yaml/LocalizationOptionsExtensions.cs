@@ -1,6 +1,7 @@
 using Annium.Localization.Abstractions;
 using Annium.Localization.Yaml;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class LocalizationOptionsExtensions

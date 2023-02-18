@@ -427,6 +427,7 @@ public class BaseRulesTest : TestBase
         Info = 4,
     }
 
+    // ReSharper disable once UnusedType.Local
     private class PersonValidator : Validator<Person>
     {
         public PersonValidator()

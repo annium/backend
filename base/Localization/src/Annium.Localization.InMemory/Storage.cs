@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Annium.Localization.Abstractions;
 
-namespace Annium.Localization.InMemoryStorage;
+namespace Annium.Localization.InMemory;
 
 internal class Storage : ILocaleStorage
 {

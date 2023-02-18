@@ -1,6 +1,7 @@
 using System;
 using System.Reflection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
 
 public static class HasDefaultConstructorExtension

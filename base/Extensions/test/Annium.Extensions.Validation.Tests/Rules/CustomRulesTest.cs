@@ -59,6 +59,7 @@ public class CustomRulesTest : TestBase
         public uint? Age { get; set; }
     }
 
+    // ReSharper disable once UnusedType.Local
     private class PersonValidator : Validator<Person>
     {
         public PersonValidator()

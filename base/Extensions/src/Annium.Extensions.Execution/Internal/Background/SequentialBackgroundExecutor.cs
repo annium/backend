@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Internal;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 

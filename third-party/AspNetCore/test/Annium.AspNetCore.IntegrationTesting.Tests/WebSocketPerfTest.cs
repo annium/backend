@@ -10,10 +10,12 @@ using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
 using Annium.Debug;
-using Annium.Internal;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
+
+// ReSharper disable AccessToDisposedClosure
+// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
@@ -67,7 +69,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         var set = new HashSet<string>(responses);
         set.Has(range.Length);
         foreach (var x in range)
-            set.Contains(x);
+            set.Contains(x).IsTrue();
 
         Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
     }

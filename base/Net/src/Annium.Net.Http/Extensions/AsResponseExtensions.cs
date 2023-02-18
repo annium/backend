@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Annium.Data.Operations;
 using Annium.Net.Http.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Net.Http;
 
 public static class AsResponseExtensions

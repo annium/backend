@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium;
 using Annium.Debug;
-using Annium.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public static class TrackCompletionOperatorExtensions

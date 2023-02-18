@@ -26,7 +26,7 @@ public class DemoClient
         EchoRequest request,
         string defaultValue,
         CancellationToken ct = default
-    ) => _client.FetchAsync<string>(request, defaultValue, ct);
+    ) => _client.FetchAsync(request, defaultValue, ct);
 
 
     public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeFirstAsync(

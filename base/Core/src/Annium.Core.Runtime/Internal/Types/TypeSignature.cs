@@ -50,13 +50,13 @@ internal sealed class TypeSignature : IEquatable<TypeSignature>
 
     public bool Equals(TypeSignature? obj) => GetHashCode() == obj?.GetHashCode();
 
-    public override bool Equals(object? obj) => Equals((TypeSignature) obj!);
+    public override bool Equals(object? obj) => obj is TypeSignature sign && Equals(sign);
 
     public override int GetHashCode() => HashCode.Combine(_signature);
 
     public override string ToString() => string.Join(", ", _signature);
 
-    public static bool operator ==(TypeSignature a, TypeSignature b)
+    public static bool operator ==(TypeSignature? a, TypeSignature? b)
     {
         // If both are null, or both are same instance, return true.
         if (ReferenceEquals(a, b))

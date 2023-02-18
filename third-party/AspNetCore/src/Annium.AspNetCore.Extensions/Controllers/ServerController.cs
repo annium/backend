@@ -5,6 +5,7 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.AspNetCore.Extensions;
 
 public class ServerController : ControllerBase

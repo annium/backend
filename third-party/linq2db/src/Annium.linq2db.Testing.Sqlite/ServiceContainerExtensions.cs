@@ -10,6 +10,7 @@ using LinqToDB.Configuration;
 using LinqToDB.Data;
 using LinqToDB.Mapping;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

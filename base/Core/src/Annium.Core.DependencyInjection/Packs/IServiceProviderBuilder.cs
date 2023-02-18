@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public interface IServiceProviderBuilder

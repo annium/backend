@@ -213,6 +213,7 @@ public class TypeManagerTest
     }
 
     [ResolutionKeyValue(nameof(F))]
+    // ReSharper disable once UnusedType.Local
     private class G : D
     {
         public G() : base(nameof(F))
@@ -224,10 +225,6 @@ public class TypeManagerTest
     {
         [ResolutionId]
         public string Type => GetType().GetIdString();
-    }
-
-    private class J : H
-    {
     }
 
     private class K : H

@@ -6,6 +6,7 @@ using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json.Internal;
 using Constants = Annium.Serialization.Json.Constants;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class SerializationConfigurationBuilderExtensions

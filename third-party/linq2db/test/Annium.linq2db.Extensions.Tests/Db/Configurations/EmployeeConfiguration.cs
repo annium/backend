@@ -13,6 +13,6 @@ internal class EmployeeConfiguration : IEntityConfiguration<Employee>
         builder.Property(x => x.Id).IsColumn();
         builder.Property(x => x.Name).IsColumn();
         builder.Association(x => x.Chief, x => x.ChiefId, x => x!.Id);
-        builder.Association(x => x.Subordinates, x => x.Id, x => x!.ChiefId);
+        builder.Association(x => x.Subordinates, x => x.Id, x => x.ChiefId);
     }
 }

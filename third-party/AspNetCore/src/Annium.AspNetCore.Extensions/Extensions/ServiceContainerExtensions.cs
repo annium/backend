@@ -1,5 +1,6 @@
 using Annium.Architecture.Http.Profiles;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions

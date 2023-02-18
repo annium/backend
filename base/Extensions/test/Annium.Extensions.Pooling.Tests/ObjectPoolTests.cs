@@ -25,6 +25,7 @@ public class ObjectPoolTests
 
         // act
         await Run(pool);
+        pool.Dispose();
 
         // assert
         // as eager - all workers Created
@@ -44,6 +45,7 @@ public class ObjectPoolTests
 
         // act
         await Run(pool);
+        pool.Dispose();
 
         // assert
         // all job is done
@@ -62,7 +64,7 @@ public class ObjectPoolTests
 
         void Log(string message)
         {
-            lock (logs!) logs.Add(message);
+            lock (logs) logs.Add(message);
         }
 
         var sp = new ServiceContainer()
@@ -75,7 +77,7 @@ public class ObjectPoolTests
         return (pool, logs);
     }
 
-    private async Task Run(
+    private static async Task Run(
         IObjectPool<Item> pool
     )
     {
@@ -85,8 +87,6 @@ public class ObjectPoolTests
             item.ExecuteAction(i);
             pool.Return(item);
         })));
-
-        pool.Dispose();
     }
 
     private class Item : IDisposable

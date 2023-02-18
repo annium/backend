@@ -10,4 +10,5 @@ await using var entry = Entrypoint.Default
 var composer = entry.Provider.Resolve<IComposer<User>>();
 
 var value = new User();
+// ReSharper disable once UnusedVariable
 var result = await composer.ComposeAsync(value);

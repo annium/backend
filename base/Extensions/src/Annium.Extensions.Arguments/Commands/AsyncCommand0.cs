@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments.Internal;
 using Annium.Threading.Tasks;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Extensions.Arguments;
 
 public abstract class AsyncCommand : CommandBase

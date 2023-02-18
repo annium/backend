@@ -1,7 +1,6 @@
 using System.Runtime.CompilerServices;
 using System.Text;
 using Annium.Debug;
-using Annium.Internal;
 using NodaTime;
 
 namespace Annium.Logging.Shared;

@@ -31,7 +31,7 @@ public abstract record TypeId
         if (laIndex < 0 || raIndex < 0 || raIndex < laIndex)
             throw new ArgumentException($"String id '{id}' has invalid format");
 
-        var name = id.Substring(0, laIndex);
+        var name = id[..laIndex];
         var baseId = tm.GetTypeId(name);
         if (baseId is null)
             return null;

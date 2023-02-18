@@ -50,8 +50,10 @@ Wrap(() =>
         TrackingWeakReference.Get(plugin).Collected += () =>
         {
             Console.WriteLine($"PLUGIN {name} COLLECTED");
+            // ReSharper disable once AccessToModifiedClosure
             loaded--;
             if (loaded == 0)
+                // ReSharper disable once AccessToDisposedClosure
                 gate.Set();
         };
     }

@@ -4,6 +4,8 @@ using Annium.Data.Models.Extensions;
 using Annium.Testing;
 using Xunit;
 
+// ReSharper disable UnusedType.Local
+
 namespace Annium.Extensions.Composition.Tests;
 
 public class ComposerTest : TestBase
@@ -144,7 +146,7 @@ public class ComposerTest : TestBase
         public PersonComposer()
         {
             Field(p => p.Name).LoadWith(ctx => ctx.Label);
-            Field(p => p.User).When(p => p.Root.UserId.HasValue).LoadWith(ctx => new User { Email = nameof(User.Email), Login = nameof(User.Login) });
+            Field(p => p.User).When(p => p.Root.UserId.HasValue).LoadWith(_ => new User { Email = nameof(User.Email), Login = nameof(User.Login) });
         }
     }
 

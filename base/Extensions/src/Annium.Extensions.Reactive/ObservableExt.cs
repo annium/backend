@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Reactive.Internal.Creation.Instance;
 
+// ReSharper disable once CheckNamespace
 namespace System.Reactive.Linq;
 
 public static class ObservableExt

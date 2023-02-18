@@ -10,6 +10,7 @@ namespace Annium.Serialization.Json.Internal.Converters;
 
 internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
 {
+    // ReSharper disable once StaticMemberInGenericType
     private static readonly IReadOnlyList<object?> Members;
 
     static ObjectArrayJsonConverter()

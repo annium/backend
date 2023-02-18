@@ -2,6 +2,7 @@ using System;
 using Annium.Core.DependencyInjection.Internal.Packs;
 using Microsoft.Extensions.DependencyInjection;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBuilder>

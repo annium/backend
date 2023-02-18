@@ -1,5 +1,6 @@
 using System.Threading;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public sealed record ObserverContext<T> : IObserver<T>

@@ -40,7 +40,7 @@ internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : cl
         _localizer = serviceProvider.Resolve<ILocalizer<TValue>>();
     }
 
-    public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue value, string label = "")
+    public async Task<IStatusResult<OperationStatus>> ComposeAsync(TValue? value, string label = "")
     {
         var hasLabel = !string.IsNullOrWhiteSpace(label);
 

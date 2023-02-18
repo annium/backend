@@ -6,8 +6,8 @@ using System.Threading;
 using Annium;
 using Annium.Debug;
 using Annium.Extensions.Reactive.Internal;
-using Annium.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public static class BufferUntilSubscribedOperatorExtensions

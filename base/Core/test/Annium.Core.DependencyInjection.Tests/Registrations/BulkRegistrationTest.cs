@@ -12,27 +12,27 @@ public class BulkRegistrationTest : TestBase
     public void Where_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).Where(x => x == typeof(A)).AsSelf().Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).Where(x => x == typeof(A)).AsSelf().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(A), typeof(A));
     }
 
     [Fact]
     public void AsSelf_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsSelf().Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsSelf().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
         Get<A>().AsExact<A>();
         Get<B>().AsExact<B>();
     }
@@ -41,15 +41,15 @@ public class BulkRegistrationTest : TestBase
     public void As_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).As(typeof(A)).Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).As(typeof(A)).Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
-        _container.HasSingletonTypeFactory(typeof(A));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingletonTypeFactory(typeof(A));
         Get<A>().Is(Get<B>());
         Get<IEnumerable<A>>().At(0).AsExact<A>();
         Get<IEnumerable<A>>().At(1).AsExact<B>();
@@ -59,7 +59,7 @@ public class BulkRegistrationTest : TestBase
     public void AsInterfaces_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsInterfaces().Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsInterfaces().Singleton();
 
         // act
         Build();
@@ -74,14 +74,14 @@ public class BulkRegistrationTest : TestBase
     public void AsKeyedSelf_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedSelf(x => x.Name).Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedSelf(x => x.Name).Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
         Get<A>().AsExact<A>();
         Get<B>().AsExact<B>();
         Get<IIndex<string, A>>()[nameof(A)].Is(Get<A>());
@@ -92,7 +92,7 @@ public class BulkRegistrationTest : TestBase
     public void AsKeyed_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyed(typeof(A), x => x.Name).Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyed(typeof(A), x => x.Name).Singleton();
 
         // act
         Build();
@@ -107,16 +107,16 @@ public class BulkRegistrationTest : TestBase
     public void AsSelfFactory_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsSelfFactory().Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsSelfFactory().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
-        _container.HasSingletonFuncFactory(typeof(A));
-        _container.HasSingletonFuncFactory(typeof(B));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingletonFuncFactory(typeof(A));
+        Container.HasSingletonFuncFactory(typeof(B));
         Get<Func<A>>()().Is(Get<A>());
         Get<Func<B>>()().Is(Get<B>());
     }
@@ -125,15 +125,15 @@ public class BulkRegistrationTest : TestBase
     public void AsFactory_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsFactory<A>().Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsFactory<A>().Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
-        _container.HasSingletonFuncFactory(typeof(A), 2);
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingletonFuncFactory(typeof(A), 2);
         Get<IEnumerable<Func<A>>>().At(0)().AsExact<A>();
         Get<IEnumerable<Func<A>>>().At(1)().AsExact<B>();
     }
@@ -142,14 +142,14 @@ public class BulkRegistrationTest : TestBase
     public void AsKeyedSelfFactory_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedSelfFactory(x => x.Name).Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedSelfFactory(x => x.Name).Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
         Get<IIndex<string, Func<A>>>()[nameof(A)]().AsExact<A>();
         Get<IIndex<string, Func<B>>>()[nameof(B)]().AsExact<B>();
     }
@@ -158,14 +158,14 @@ public class BulkRegistrationTest : TestBase
     public void AsKeyedFactory_Works()
     {
         // arrange
-        _container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedFactory(typeof(A), x => x.Name).Singleton();
+        Container.Add(new[] { typeof(A), typeof(B) }.AsEnumerable()).AsKeyedFactory(typeof(A), x => x.Name).Singleton();
 
         // act
         Build();
 
         // assert
-        _container.HasSingleton(typeof(A), typeof(A));
-        _container.HasSingleton(typeof(B), typeof(B));
+        Container.HasSingleton(typeof(A), typeof(A));
+        Container.HasSingleton(typeof(B), typeof(B));
         var index = Get<IIndex<string, Func<A>>>();
         index[nameof(A)]().AsExact<A>();
         index[nameof(B)]().AsExact<B>();

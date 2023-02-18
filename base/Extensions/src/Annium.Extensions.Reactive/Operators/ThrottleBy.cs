@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using Annium;
 using NodaTime;
 
+// ReSharper disable once CheckNamespace
 namespace System;
 
 public static class ThrottleByOperatorExtensions

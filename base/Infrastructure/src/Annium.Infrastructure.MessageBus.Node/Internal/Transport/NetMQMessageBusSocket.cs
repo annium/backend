@@ -9,6 +9,7 @@ using NetMQ.Sockets;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 
+// ReSharper disable once InconsistentNaming
 internal class NetMQMessageBusSocket : IMessageBusSocket
 {
     private readonly PublisherSocket _publisher;

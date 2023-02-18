@@ -11,7 +11,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsSelf().Singleton();
+        Container.Add(instance).AsSelf().Singleton();
 
         // act
         Build();
@@ -25,7 +25,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).As(typeof(A)).Singleton();
+        Container.Add(instance).As(typeof(A)).Singleton();
 
         // act
         Build();
@@ -38,7 +38,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsSelf().AsInterfaces().Singleton();
+        Container.Add(instance).AsSelf().AsInterfaces().Singleton();
 
         // act
         Build();
@@ -53,7 +53,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsKeyedSelf(nameof(D)).Singleton();
+        Container.Add(instance).AsKeyedSelf(nameof(D)).Singleton();
 
         // act
         Build();
@@ -67,7 +67,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsKeyed<C, string>(nameof(D)).Singleton();
+        Container.Add(instance).AsKeyed<C, string>(nameof(D)).Singleton();
 
         // act
         Build();
@@ -81,7 +81,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsSelfFactory().Singleton();
+        Container.Add(instance).AsSelfFactory().Singleton();
 
         // act
         Build();
@@ -95,7 +95,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsFactory<C>().Singleton();
+        Container.Add(instance).AsFactory<C>().Singleton();
 
         // act
         Build();
@@ -109,7 +109,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsKeyedSelfFactory(nameof(D)).Singleton();
+        Container.Add(instance).AsKeyedSelfFactory(nameof(D)).Singleton();
 
         // act
         Build();
@@ -123,7 +123,7 @@ public class InstanceRegistrationTest : TestBase
     {
         // arrange
         var instance = new D(new A());
-        _container.Add(instance).AsKeyedFactory<C, string>(nameof(C)).Singleton();
+        Container.Add(instance).AsKeyedFactory<C, string>(nameof(C)).Singleton();
 
         // act
         Build();
@@ -141,6 +141,7 @@ public class InstanceRegistrationTest : TestBase
 
     private class C : IC
     {
+        // ReSharper disable once UnusedParameter.Local
         protected C(A _)
         {
         }

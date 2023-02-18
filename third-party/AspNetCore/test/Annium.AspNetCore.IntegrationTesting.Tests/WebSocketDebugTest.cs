@@ -9,10 +9,11 @@ using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
 using Annium.Debug;
-using Annium.Internal;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
+
+// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 

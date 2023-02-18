@@ -1,6 +1,7 @@
 using Annium.Extensions.Pooling;
 using Annium.Extensions.Pooling.Internal;
 
+// ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
@@ -10,7 +11,7 @@ public static class ServiceContainerExtensions
         ServiceLifetime lifetime
     )
         where TKey : notnull
-        where TValue : notnull
+        where TValue : class
         where TProvider : ObjectCacheProvider<TKey, TValue>
     {
         container.Add<ObjectCacheProvider<TKey, TValue>, TProvider>().In(lifetime);

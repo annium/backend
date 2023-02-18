@@ -20,7 +20,7 @@ internal sealed class NodaPatternConverter<T> : ConverterBase<T>
     /// </summary>
     /// <param name="pattern">The pattern to use for parsing and formatting.</param>
     /// <exception cref="ArgumentNullException"><paramref name="pattern"/> is null.</exception>
-    public NodaPatternConverter(IPattern<T> pattern) : this(pattern, x => { })
+    public NodaPatternConverter(IPattern<T> pattern) : this(pattern, _ => { })
     {
     }
 
