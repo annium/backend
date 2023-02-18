@@ -7,7 +7,7 @@ internal class RecordProcessor : IProcessor
 {
     public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        if (!MapperConfig.IsRecord(type))
+        if (!ctx.Config.IsRecord(type))
             return false;
 
         var (keyType, valueType) = RecordHelper.ResolveElementType(type);

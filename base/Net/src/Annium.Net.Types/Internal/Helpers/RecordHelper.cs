@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Annium.Net.Types.Internal.Config;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 

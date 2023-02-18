@@ -8,7 +8,7 @@ internal class ArrayReferrer : IReferrer
 {
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        if (!MapperConfig.IsArray(type))
+        if (!ctx.Config.IsArray(type))
             return null;
 
         var elementType = ArrayHelper.ResolveElementType(type);

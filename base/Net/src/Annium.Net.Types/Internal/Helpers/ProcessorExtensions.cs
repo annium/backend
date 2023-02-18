@@ -93,7 +93,7 @@ internal static class ProcessorExtensions
             return null;
         }
 
-        if (MapperConfig.IsIgnored(type.BaseType))
+        if (ctx.Config.IsIgnored(type.BaseType))
         {
             processor.Trace($"Resolve ignore {type.FriendlyName()} base type {type.BaseType.FriendlyName()} ref");
             return null;
@@ -111,7 +111,7 @@ internal static class ProcessorExtensions
         var interfaceRefs = new List<InterfaceRef>(interfaces.Count);
         foreach (var @interface in interfaces)
         {
-            if (MapperConfig.IsIgnored(@interface))
+            if (ctx.Config.IsIgnored(@interface))
             {
                 processor.Trace($"Resolve ignore {type.FriendlyName()} interface {@interface.FriendlyName()} ref");
                 continue;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Annium.Net.Types.Internal.Config;
 using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
@@ -13,6 +14,7 @@ internal interface IMapperProcessingContext : IProcessingContext
 
 internal interface IProcessingContext
 {
+    IMapperConfigInternal Config { get; }
     IReadOnlyCollection<ContextualType> GetImplementations(ContextualType type);
     void Process(ContextualType type, Nullability nullability);
     void Process(ContextualType type);

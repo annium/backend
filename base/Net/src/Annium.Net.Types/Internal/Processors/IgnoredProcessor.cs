@@ -6,6 +6,6 @@ internal class IgnoredProcessor : IProcessor
 {
     public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        return MapperConfig.IsIgnored(type);
+        return ctx.Config.IsIgnored(type);
     }
 }

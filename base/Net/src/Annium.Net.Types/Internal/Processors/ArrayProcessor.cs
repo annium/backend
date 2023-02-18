@@ -7,7 +7,7 @@ internal class ArrayProcessor : IProcessor
 {
     public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        if (!MapperConfig.IsArray(type))
+        if (!ctx.Config.IsArray(type))
             return false;
 
         var elementType = ArrayHelper.ResolveElementType(type);

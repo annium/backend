@@ -8,7 +8,7 @@ internal class RecordReferrer : IReferrer
 {
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        if (!MapperConfig.IsRecord(type))
+        if (!ctx.Config.IsRecord(type))
             return null;
 
         var (keyType, valueType) = RecordHelper.ResolveElementType(type);

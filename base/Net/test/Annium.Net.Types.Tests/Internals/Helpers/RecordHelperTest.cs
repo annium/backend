@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Annium.Net.Types.Internal.Config;
 using Annium.Net.Types.Internal.Helpers;
 using Annium.Testing;
 using Namotion.Reflection;

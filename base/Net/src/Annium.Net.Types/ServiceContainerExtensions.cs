@@ -1,16 +1,28 @@
-// ReSharper disable CheckNamespace
-
 using Annium.Net.Types;
 using Annium.Net.Types.Internal;
+using Annium.Net.Types.Internal.Config;
 using Annium.Net.Types.Internal.Processors;
 using Annium.Net.Types.Internal.Referrers;
 
+// ReSharper disable CheckNamespace
 namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddModelMapper(this IServiceContainer container)
     {
+        container.Add<MapperConfig>().AsSelf().Singleton();
+        container.Add<IMapperConfigInternal>(sp =>
+        {
+            var config = sp.Resolve<MapperConfig>();
+            config.RegisterBaseTypes();
+            config.RegisterIgnored();
+            config.RegisterArrays();
+            config.RegisterRecords();
+
+            return config;
+        }).AsSelf().Singleton();
+        container.Add<IMapperConfig>(sp => sp.Resolve<IMapperConfigInternal>()).AsSelf().Singleton();
         container.Add<IModelMapper, ModelMapper>().Transient();
         container.Add<IMapperProcessingContext, ProcessingContext>().Transient();
 

@@ -7,6 +7,6 @@ internal class BaseTypeReferrer : IReferrer
 {
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        return BaseType.GetRefFor(type.Type);
+        return ctx.Config.GetBaseTypeRefFor(type.Type);
     }
 }
