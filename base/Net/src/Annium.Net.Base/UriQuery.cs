@@ -71,7 +71,7 @@ public sealed record UriQuery : IDictionary<string, StringValues>, IReadOnlyDict
         var code = 0;
 
         foreach (var (key, value) in _data.ToArray())
-            code ^= HashCode.Combine(key, HashCodeSeq.Combine(value));
+            code ^= HashCode.Combine(key, HashCodeSeq.Combine(value.OfType<string>()));
 
         return code;
     }

@@ -1,3 +1,4 @@
+#pragma warning disable EF1001
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -5,7 +6,6 @@ using Annium.Data.Models;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using EntityMaterializerSourceBase = Microsoft.EntityFrameworkCore.Query.Internal.EntityMaterializerSource;
-
 
 namespace Annium.EntityFrameworkCore.Extensions.Internal;
 
@@ -39,3 +39,4 @@ internal class EntityMaterializerSource : EntityMaterializerSourceBase
         return Expression.Block(new[] { instanceVariable }, blockExpressions);
     }
 }
+#pragma warning restore EF1001

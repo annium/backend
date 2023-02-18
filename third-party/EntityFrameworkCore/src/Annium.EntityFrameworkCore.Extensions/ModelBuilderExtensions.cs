@@ -30,7 +30,7 @@ public static class ModelBuilderExtensions
             entity.SetSchema(entity.GetSchema()?.SnakeCase());
 
             foreach (var property in entity.GetProperties())
-                property.SetColumnName(property.GetColumnBaseName().SnakeCase());
+                property.SetColumnName(property.GetColumnName().SnakeCase());
 
             foreach (var key in entity.GetKeys())
                 key.SetName(key.GetName()?.SnakeCase());
@@ -39,7 +39,7 @@ public static class ModelBuilderExtensions
                 key.SetConstraintName(key.GetConstraintName()?.SnakeCase());
 
             foreach (var key in entity.GetIndexes())
-                key.SetDatabaseName(key.GetDatabaseName().SnakeCase());
+                key.SetDatabaseName(key.GetDatabaseName()?.SnakeCase());
         }
     }
 

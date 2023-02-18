@@ -19,13 +19,9 @@ public struct KeyValueAccumulator
     /// </summary>
     public void Append(string key, string value)
     {
-        if (_accumulator == null)
-        {
-            _accumulator = new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
-        }
+        _accumulator ??= new Dictionary<string, StringValues>(StringComparer.OrdinalIgnoreCase);
 
-        StringValues values;
-        if (_accumulator.TryGetValue(key, out values))
+        if (_accumulator.TryGetValue(key, out var values))
         {
             if (values.Count == 0)
             {
@@ -41,19 +37,16 @@ public struct KeyValueAccumulator
             {
                 // Third value for this key
                 // Add zero count entry and move to data to expanding list dictionary
-                _accumulator[key] = default(StringValues);
+                _accumulator[key] = default;
 
-                if (_expandingAccumulator == null)
-                {
-                    _expandingAccumulator = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
-                }
+                _expandingAccumulator ??= new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
 
                 // Already 3 entries so use starting allocated as 8; then use List's expansion mechanism for more
                 var list = new List<string>(8);
                 var array = values.ToArray();
 
-                list.Add(array[0]);
-                list.Add(array[1]);
+                list.Add(array[0] ?? string.Empty);
+                list.Add(array[1] ?? string.Empty);
                 list.Add(value);
 
                 _expandingAccumulator[key] = list;

@@ -21,7 +21,7 @@ internal class LoggingBridge : ILogger
         _source = source;
     }
 
-    public IDisposable BeginScope<TState>(TState state) => null!;
+    public IDisposable BeginScope<TState>(TState state) where TState : notnull => Disposable.Empty;
 
     public bool IsEnabled(MicrosoftLogLevel logLevel) => true;
 
