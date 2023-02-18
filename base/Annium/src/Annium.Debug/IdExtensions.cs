@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Annium.Diagnostics.Debug;
+namespace Annium.Debug;
 
 public static class IdExtensions
 {

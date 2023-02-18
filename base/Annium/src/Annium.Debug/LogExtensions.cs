@@ -1,7 +1,6 @@
 using System;
 using System.Runtime.CompilerServices;
 using Annium.Debug.Internal;
-using Annium.Diagnostics.Debug;
 
 namespace Annium.Debug;
 

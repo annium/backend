@@ -1,4 +1,4 @@
-using Annium.Diagnostics.Debug;
+using Annium.Debug;
 
 namespace Annium;
 
