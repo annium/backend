@@ -1,9 +1,9 @@
 using System.Linq;
-using Annium.Collections.Generic;
+using Annium.Linq;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Collections.Tests.Generic.Extensions;
+namespace Annium.Tests.Linq;
 
 public class SortedListExtensionsTest
 {

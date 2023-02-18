@@ -4,7 +4,7 @@ using Annium.Testing;
 using Annium.Threading;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests.Threading;
+namespace Annium.Tests.Threading;
 
 public class CancellationTokenExtensionsTest
 {

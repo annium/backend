@@ -1,6 +1,7 @@
 using System.Collections.Generic;
+using Annium.Collections.Generic;
 
-namespace Annium.Collections.Generic;
+namespace Annium.Linq;
 
 public static class ReadOnlyListExtensions
 {

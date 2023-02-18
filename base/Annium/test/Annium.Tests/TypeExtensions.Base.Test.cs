@@ -1,7 +1,7 @@
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests;
+namespace Annium.Tests;
 
 public class TypeBaseExtensionsTest
 {

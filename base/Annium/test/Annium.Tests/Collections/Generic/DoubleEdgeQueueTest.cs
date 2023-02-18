@@ -4,7 +4,7 @@ using Annium.Collections.Generic;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Collections.Tests.Generic;
+namespace Annium.Tests.Collections.Generic;
 
 public class DoubleEdgeQueueTest
 {

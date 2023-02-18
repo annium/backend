@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Xunit;
 
-namespace Annium.Collections.Tests.Generic;
+namespace Annium.Tests.Collections.Generic;
 
 public class ExpiringDictionaryTest
 {

@@ -12,7 +12,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Collections/src/Annium.Collections/Annium.Collections.csproj" />
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
         <ProjectReference Include="../Annium.Infrastructure.WebSockets.Domain/Annium.Infrastructure.WebSockets.Domain.csproj" />
         <ProjectReference Include="../../../Net/src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />

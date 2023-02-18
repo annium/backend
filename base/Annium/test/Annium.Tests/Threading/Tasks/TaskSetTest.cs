@@ -3,7 +3,7 @@ using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests.Threading.Tasks;
+namespace Annium.Tests.Threading.Tasks;
 
 public class TaskSetTest
 {

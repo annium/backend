@@ -3,7 +3,7 @@ using Annium.Linq;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Primitives.Tests;
+namespace Annium.Tests.Collections.Generic;
 
 public class EnumerableExtensionsTest
 {
