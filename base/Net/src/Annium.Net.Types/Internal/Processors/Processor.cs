@@ -1,5 +1,6 @@
 using System.Collections.Generic;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 

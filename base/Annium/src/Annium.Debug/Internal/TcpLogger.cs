@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Internal.Internal;
+namespace Annium.Debug.Internal;
 
 internal class TcpLogger
 {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 
-namespace Annium.Core.Internal.Internal;
+namespace Annium.Debug.Internal;
 
 // ReSharper disable once InconsistentNaming
 // this one is copy pasted, since no project references are all allowed

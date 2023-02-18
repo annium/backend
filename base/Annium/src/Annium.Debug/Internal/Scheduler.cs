@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Core.Internal.Internal;
+namespace Annium.Debug.Internal;
 
 internal class Scheduler
 {

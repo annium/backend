@@ -1,9 +1,9 @@
 using System;
 using System.Runtime.CompilerServices;
-using Annium.Core.Internal.Internal;
+using Annium.Debug.Internal;
 using Annium.Diagnostics.Debug;
 
-namespace Annium.Core.Internal;
+namespace Annium.Debug;
 
 public static class LogExtensions
 {

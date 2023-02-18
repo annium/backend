@@ -5,9 +5,9 @@ using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
-using Annium.Core.Internal.Internal;
+using Annium.Debug.Internal;
 
-namespace Annium.Core.Internal;
+namespace Annium.Debug;
 
 public static class Log
 {

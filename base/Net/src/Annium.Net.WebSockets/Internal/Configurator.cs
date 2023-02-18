@@ -5,7 +5,8 @@ using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 
 namespace Annium.Net.WebSockets.Internal;
 

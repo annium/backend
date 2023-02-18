@@ -1,4 +1,4 @@
-namespace Annium.Core.Internal;
+namespace Annium.Debug;
 
 public enum LogDevice
 {

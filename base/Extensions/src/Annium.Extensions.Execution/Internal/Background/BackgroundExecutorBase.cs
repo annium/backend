@@ -2,7 +2,8 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 

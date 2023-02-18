@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace Annium.Core.Internal.Internal;
+namespace Annium.Debug.Internal;
 
 internal static class TypeExtensions
 {

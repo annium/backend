@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 using Annium.Testing;
 using Xunit;
 

@@ -3,7 +3,8 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 
 namespace System;
 

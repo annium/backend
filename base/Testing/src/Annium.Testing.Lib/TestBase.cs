@@ -1,6 +1,7 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 
 namespace Annium.Testing.Lib;
 

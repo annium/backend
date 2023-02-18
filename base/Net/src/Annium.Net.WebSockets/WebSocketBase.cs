@@ -8,8 +8,9 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Internal;
+using Annium.Debug;
 using Annium.Extensions.Execution;
+using Annium.Internal;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Core.Internal;
+using Annium.Debug;
+using Annium.Internal;
 using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Internal.Processors;
 using Annium.Net.Types.Models;
