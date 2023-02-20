@@ -4,16 +4,16 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
-public abstract class MapperKnownTestsBase : TestBase
+public abstract class MapperExcludedTestsBase : TestBase
 {
-    protected MapperKnownTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperExcludedTestsBase(ITestProvider testProvider) : base(testProvider)
     {
     }
 
-    public void Known_Base()
+    public void Excluded_Base()
     {
         // arrange
-        Config.RegisterKnown(Match.Is(typeof(Sample)));
+        Config.Exclude(Match.Is(typeof(Sample)));
         var target = typeof(Sample).ToContextualType();
 
         // act

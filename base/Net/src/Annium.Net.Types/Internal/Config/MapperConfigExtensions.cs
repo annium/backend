@@ -9,74 +9,74 @@ namespace Annium.Net.Types.Internal.Config;
 
 internal static class MapperConfigExtensions
 {
-    public static IMapperConfig RegisterBaseTypes(this IMapperConfig cfg) => cfg
-        .RegisterBaseType(typeof(object), BaseType.Object)
-        .RegisterBaseType(typeof(bool), BaseType.Bool)
-        .RegisterBaseType(typeof(string), BaseType.String)
-        .RegisterBaseType(typeof(byte), BaseType.Byte)
-        .RegisterBaseType(typeof(sbyte), BaseType.SByte)
-        .RegisterBaseType(typeof(int), BaseType.Int)
-        .RegisterBaseType(typeof(uint), BaseType.UInt)
-        .RegisterBaseType(typeof(long), BaseType.Long)
-        .RegisterBaseType(typeof(ulong), BaseType.ULong)
-        .RegisterBaseType(typeof(float), BaseType.Float)
-        .RegisterBaseType(typeof(double), BaseType.Double)
-        .RegisterBaseType(typeof(decimal), BaseType.Decimal)
-        .RegisterBaseType(typeof(Guid), BaseType.Guid)
-        .RegisterBaseType(typeof(DateTime), BaseType.DateTime)
-        .RegisterBaseType(typeof(DateTimeOffset), BaseType.DateTimeOffset)
-        .RegisterBaseType(typeof(DateOnly), BaseType.Date)
-        .RegisterBaseType(typeof(TimeOnly), BaseType.Time)
-        .RegisterBaseType(typeof(TimeSpan), BaseType.TimeSpan)
-        .RegisterBaseType(typeof(Instant), BaseType.DateTimeOffset)
-        .RegisterBaseType(typeof(LocalDate), BaseType.Date)
-        .RegisterBaseType(typeof(LocalTime), BaseType.Time)
-        .RegisterBaseType(typeof(LocalDateTime), BaseType.DateTime)
-        .RegisterBaseType(typeof(ZonedDateTime), BaseType.DateTimeOffset)
-        .RegisterBaseType(typeof(Duration), BaseType.TimeSpan)
-        .RegisterBaseType(typeof(Period), BaseType.TimeSpan)
-        .RegisterBaseType(typeof(YearMonth), BaseType.YearMonth)
-        .RegisterBaseType(typeof(void), BaseType.Void);
+    public static IMapperConfig SetBaseTypes(this IMapperConfig cfg) => cfg
+        .SetBaseType(typeof(object), BaseType.Object)
+        .SetBaseType(typeof(bool), BaseType.Bool)
+        .SetBaseType(typeof(string), BaseType.String)
+        .SetBaseType(typeof(byte), BaseType.Byte)
+        .SetBaseType(typeof(sbyte), BaseType.SByte)
+        .SetBaseType(typeof(int), BaseType.Int)
+        .SetBaseType(typeof(uint), BaseType.UInt)
+        .SetBaseType(typeof(long), BaseType.Long)
+        .SetBaseType(typeof(ulong), BaseType.ULong)
+        .SetBaseType(typeof(float), BaseType.Float)
+        .SetBaseType(typeof(double), BaseType.Double)
+        .SetBaseType(typeof(decimal), BaseType.Decimal)
+        .SetBaseType(typeof(Guid), BaseType.Guid)
+        .SetBaseType(typeof(DateTime), BaseType.DateTime)
+        .SetBaseType(typeof(DateTimeOffset), BaseType.DateTimeOffset)
+        .SetBaseType(typeof(DateOnly), BaseType.Date)
+        .SetBaseType(typeof(TimeOnly), BaseType.Time)
+        .SetBaseType(typeof(TimeSpan), BaseType.TimeSpan)
+        .SetBaseType(typeof(Instant), BaseType.DateTimeOffset)
+        .SetBaseType(typeof(LocalDate), BaseType.Date)
+        .SetBaseType(typeof(LocalTime), BaseType.Time)
+        .SetBaseType(typeof(LocalDateTime), BaseType.DateTime)
+        .SetBaseType(typeof(ZonedDateTime), BaseType.DateTimeOffset)
+        .SetBaseType(typeof(Duration), BaseType.TimeSpan)
+        .SetBaseType(typeof(Period), BaseType.TimeSpan)
+        .SetBaseType(typeof(YearMonth), BaseType.YearMonth)
+        .SetBaseType(typeof(void), BaseType.Void);
 
-    public static IMapperConfig RegisterIgnored(this IMapperConfig cfg) => cfg
+    public static IMapperConfig Ignore(this IMapperConfig cfg) => cfg
         // basic types
-        .RegisterIgnored(Match.Is(typeof(object)))
-        .RegisterIgnored(Match.Is(typeof(ValueType)))
+        .Ignore(Match.Is(typeof(object)))
+        .Ignore(Match.Is(typeof(ValueType)))
         // enumerable interfaces
-        .RegisterIgnored(Match.Is(typeof(IEnumerable<>)))
-        .RegisterIgnored(Match.Is(typeof(ICollection<>)))
-        .RegisterIgnored(Match.Is(typeof(IReadOnlyCollection<>)))
+        .Ignore(Match.Is(typeof(IEnumerable<>)))
+        .Ignore(Match.Is(typeof(ICollection<>)))
+        .Ignore(Match.Is(typeof(IReadOnlyCollection<>)))
         // dictionary interfaces
-        .RegisterIgnored(Match.Is(typeof(IReadOnlyDictionary<,>)))
-        .RegisterIgnored(Match.Is(typeof(IDictionary<,>)))
+        .Ignore(Match.Is(typeof(IReadOnlyDictionary<,>)))
+        .Ignore(Match.Is(typeof(IDictionary<,>)))
         // base type interfaces
-        .RegisterIgnored(Match.Is(typeof(IComparable<>)))
-        .RegisterIgnored(Match.Is(typeof(IEquatable<>)))
+        .Ignore(Match.Is(typeof(IComparable<>)))
+        .Ignore(Match.Is(typeof(IEquatable<>)))
         // low-level interfaces
-        .RegisterIgnored(Match.Is(typeof(ISpanParsable<>)))
-        .RegisterIgnored(Match.Is(typeof(IParsable<>)))
+        .Ignore(Match.Is(typeof(ISpanParsable<>)))
+        .Ignore(Match.Is(typeof(IParsable<>)))
         // tasks
-        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task), self: true))
-        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task<>), self: true))
-        .RegisterIgnored(Match.Is(typeof(ValueTask)))
-        .RegisterIgnored(Match.Is(typeof(ValueTask<>)))
+        .Ignore(Match.IsDerivedFrom(typeof(Task), self: true))
+        .Ignore(Match.IsDerivedFrom(typeof(Task<>), self: true))
+        .Ignore(Match.Is(typeof(ValueTask)))
+        .Ignore(Match.Is(typeof(ValueTask<>)))
         // custom basic interfaces
-        .RegisterIgnored(Match.Is(typeof(ICopyable<>)));
+        .Ignore(Match.Is(typeof(ICopyable<>)));
 
     public static IMapperConfig RegisterArrays(this IMapperConfig cfg) => cfg
-        .RegisterArray(typeof(IEnumerable<>))
-        .RegisterArray(typeof(IReadOnlyCollection<>))
-        .RegisterArray(typeof(ICollection<>))
-        .RegisterArray(typeof(IReadOnlyList<>))
-        .RegisterArray(typeof(IList<>))
-        .RegisterArray(typeof(IReadOnlySet<>))
-        .RegisterArray(typeof(ISet<>))
-        .RegisterArray(typeof(List<>))
-        .RegisterArray(typeof(HashSet<>));
+        .SetArray(typeof(IEnumerable<>))
+        .SetArray(typeof(IReadOnlyCollection<>))
+        .SetArray(typeof(ICollection<>))
+        .SetArray(typeof(IReadOnlyList<>))
+        .SetArray(typeof(IList<>))
+        .SetArray(typeof(IReadOnlySet<>))
+        .SetArray(typeof(ISet<>))
+        .SetArray(typeof(List<>))
+        .SetArray(typeof(HashSet<>));
 
     public static IMapperConfig RegisterRecords(this IMapperConfig cfg) => cfg
-        .RegisterRecord(typeof(IDictionary<,>))
-        .RegisterRecord(typeof(IReadOnlyDictionary<,>))
-        .RegisterRecord(typeof(Dictionary<,>))
-        .RegisterRecord(typeof(ImmutableDictionary<,>));
+        .SetRecord(typeof(IDictionary<,>))
+        .SetRecord(typeof(IReadOnlyDictionary<,>))
+        .SetRecord(typeof(Dictionary<,>))
+        .SetRecord(typeof(ImmutableDictionary<,>));
 }

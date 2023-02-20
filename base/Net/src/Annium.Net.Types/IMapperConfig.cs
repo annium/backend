@@ -6,35 +6,35 @@ public interface IMapperConfig
 {
     #region base
 
-    IMapperConfig RegisterBaseType(Type type, string name);
+    IMapperConfig SetBaseType(Type type, string name);
     bool IsBaseType(Type type);
 
     #endregion
 
-    #region ignored
+    #region ignore
 
-    IMapperConfig RegisterIgnored(Predicate<Type> matcher);
+    IMapperConfig Ignore(Predicate<Type> matcher);
     bool IsIgnored(Type type);
 
     #endregion
 
-    #region known
+    #region exclude
 
-    IMapperConfig RegisterKnown(Predicate<Type> matcher);
-    bool IsKnown(Type type);
+    IMapperConfig Exclude(Predicate<Type> matcher);
+    bool IsExcluded(Type type);
 
     #endregion
 
     #region array
 
-    IMapperConfig RegisterArray(Type type);
+    IMapperConfig SetArray(Type type);
     bool IsArray(Type type);
 
     #endregion
 
     #region record
 
-    IMapperConfig RegisterRecord(Type type);
+    IMapperConfig SetRecord(Type type);
     bool IsRecord(Type type);
 
     #endregion

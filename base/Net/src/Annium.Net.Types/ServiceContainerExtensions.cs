@@ -15,8 +15,8 @@ public static class ServiceContainerExtensions
         container.Add<IMapperConfigInternal>(sp =>
         {
             var config = sp.Resolve<MapperConfig>();
-            config.RegisterBaseTypes();
-            config.RegisterIgnored();
+            config.SetBaseTypes();
+            config.Ignore();
             config.RegisterArrays();
             config.RegisterRecords();
 
@@ -30,7 +30,7 @@ public static class ServiceContainerExtensions
         container.Add<Processor>().AsSelf().Singleton();
         container.Add<IProcessor, GenericTypeProcessor>().Singleton();
         container.Add<IProcessor, IgnoredProcessor>().Singleton();
-        container.Add<IProcessor, KnownProcessor>().Singleton();
+        container.Add<IProcessor, ExcludedProcessor>().Singleton();
         container.Add<IProcessor, NullableProcessor>().Singleton();
         container.Add<IProcessor, GenericParameterProcessor>().Singleton();
         container.Add<IProcessor, BaseTypeProcessor>().Singleton();
@@ -43,7 +43,7 @@ public static class ServiceContainerExtensions
         // add referrers
         container.Add<Referrer>().AsSelf().Singleton();
         container.Add<IReferrer, NullableReferrer>().Singleton();
-        container.Add<IReferrer, KnownReferrer>().Singleton();
+        container.Add<IReferrer, ExcludedReferrer>().Singleton();
         container.Add<IReferrer, GenericParameterReferrer>().Singleton();
         container.Add<IReferrer, BaseTypeReferrer>().Singleton();
         container.Add<IReferrer, EnumReferrer>().Singleton();

@@ -4,7 +4,7 @@ using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal class KnownReferrer : IReferrer
+internal class ExcludedReferrer : IReferrer
 {
     private static StructRef BuildStructRef(string ns, string name, IRef[] args) => new(ns, name, args);
     private static InterfaceRef BuildInterfaceRef(string ns, string name, IRef[] args) => new(ns, name, args);
@@ -12,7 +12,7 @@ internal class KnownReferrer : IReferrer
 
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        if (!ctx.Config.IsKnown(type))
+        if (!ctx.Config.IsExcluded(type))
             return null;
 
         if (type.Type.IsEnum)
