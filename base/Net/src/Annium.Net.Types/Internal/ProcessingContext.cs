@@ -20,6 +20,7 @@ internal sealed record ProcessingContext : IMapperProcessingContext
     private readonly Processor _processor;
     private readonly Referrer _referrer;
     private readonly ITypeManager _typeManager;
+    private Lazy<None> _processIncluded;
 
     public ProcessingContext(
         IMapperConfigInternal config,
@@ -32,6 +33,7 @@ internal sealed record ProcessingContext : IMapperProcessingContext
         _processor = processor;
         _referrer = referrer;
         _typeManager = typeManager;
+        _processIncluded = new Lazy<None>(ProcessIncluded);
     }
 
     public IReadOnlyCollection<ContextualType> GetImplementations(ContextualType type) => _typeManager
@@ -67,5 +69,18 @@ internal sealed record ProcessingContext : IMapperProcessingContext
         _models.TryAdd(type, model);
     }
 
-    public IReadOnlyCollection<IModel> GetModels() => _models.Values.ToArray();
+    public IReadOnlyCollection<IModel> GetModels()
+    {
+        var _ = _processIncluded.Value;
+
+        return _models.Values.ToArray();
+    }
+
+    private None ProcessIncluded()
+    {
+        foreach (var type in Config.Included)
+            Process(type.ToContextualType());
+
+        return None.Default;
+    }
 }

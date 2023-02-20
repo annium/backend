@@ -18,6 +18,12 @@ public interface IMapperConfig
 
     #endregion
 
+    #region include
+
+    IMapperConfig Include(Type type);
+
+    #endregion
+
     #region exclude
 
     IMapperConfig Exclude(Predicate<Type> matcher);

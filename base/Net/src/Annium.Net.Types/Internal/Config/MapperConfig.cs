@@ -58,6 +58,24 @@ internal class MapperConfig : IMapperConfigInternal
 
     #endregion
 
+    #region include
+
+    public IReadOnlyCollection<Type> Included => _included;
+    private readonly HashSet<Type> _included = new();
+
+    public IMapperConfig Include(Type type)
+    {
+        if (type != type.TryGetPure())
+            throw new ArgumentException($"Can't register type {type.FriendlyName()} as included");
+
+        if (!_included.Add(type))
+            throw new ArgumentException($"Type {type.FriendlyName()} is already registered as included");
+
+        return this;
+    }
+
+    #endregion
+
     #region excluded
 
     private readonly List<Predicate<Type>> _excluded = new();
