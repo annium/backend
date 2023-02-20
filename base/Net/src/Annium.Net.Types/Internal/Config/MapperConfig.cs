@@ -90,7 +90,7 @@ internal class MapperConfig : IMapperConfigInternal
         if (type != type.TryGetPure())
             throw new ArgumentException($"Can't register type {type.FriendlyName()} as array type");
 
-        if (type != BaseArrayType && !type.IsDerivedFrom(BaseArrayType))
+        if (!type.IsDerivedFrom(BaseArrayType, self: true))
             throw new ArgumentException($"Type {type.FriendlyName()} doesn't implement {BaseArrayType.FriendlyName()}");
 
         if (!_arrayTypes.Add(type))

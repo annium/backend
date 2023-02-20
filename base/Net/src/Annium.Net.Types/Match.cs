@@ -9,8 +9,8 @@ public static class Match
     public static Predicate<Type> Is(Type target) => type =>
         type == target;
 
-    public static Predicate<Type> IsDerivedFrom(Type target) => type =>
-        type.IsDerivedFrom(target);
+    public static Predicate<Type> IsDerivedFrom(Type target, bool self = false) => type =>
+        type.IsDerivedFrom(target, self);
 
     public static Predicate<Type> NamespaceIs(string ns) => type =>
         type.Namespace == ns;

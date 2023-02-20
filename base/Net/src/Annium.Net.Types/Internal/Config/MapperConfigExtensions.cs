@@ -56,8 +56,8 @@ internal static class MapperConfigExtensions
         .RegisterIgnored(Match.Is(typeof(ISpanParsable<>)))
         .RegisterIgnored(Match.Is(typeof(IParsable<>)))
         // tasks
-        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task)))
-        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task<>)))
+        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task), self: true))
+        .RegisterIgnored(Match.IsDerivedFrom(typeof(Task<>), self: true))
         .RegisterIgnored(Match.Is(typeof(ValueTask)))
         .RegisterIgnored(Match.Is(typeof(ValueTask<>)))
         // custom basic interfaces
