@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Pooling;
+using Demo.Extensions.Pooling;
 
 await using var entry = Entrypoint.Default.Setup();
 
@@ -40,58 +41,61 @@ IObjectCache<uint, Item> CreateCache()
     return cache;
 }
 
-class ItemProvider : ObjectCacheProvider<uint, Item>
+namespace Demo.Extensions.Pooling
 {
-    private readonly Action<string> _log;
-    public override bool HasCreate => true;
-    public override bool HasExternalCreate => false;
-
-    public ItemProvider(
-        Action<string> log
-    )
+    class ItemProvider : ObjectCacheProvider<uint, Item>
     {
-        _log = log;
+        private readonly Action<string> _log;
+        public override bool HasCreate => true;
+        public override bool HasExternalCreate => false;
+
+        public ItemProvider(
+            Action<string> log
+        )
+        {
+            _log = log;
+        }
+
+        public override async Task<Item> CreateAsync(uint id, CancellationToken ct)
+        {
+            await Task.Delay(10);
+            return new Item(id, _log);
+        }
+
+        public override Task SuspendAsync(Item value) => value.Suspend();
+        public override Task ResumeAsync(Item value) => value.Resume();
     }
 
-    public override async Task<Item> CreateAsync(uint id, CancellationToken ct)
+    class Item : IDisposable
     {
-        await Task.Delay(10);
-        return new Item(id, _log);
-    }
+        private readonly uint _id;
+        private readonly Action<string> _log;
 
-    public override Task SuspendAsync(Item value) => value.Suspend();
-    public override Task ResumeAsync(Item value) => value.Resume();
-}
+        public Item(
+            uint id,
+            Action<string> log
+        )
+        {
+            _id = id;
+            _log = log;
+            log($"{id} Created");
+        }
 
-class Item : IDisposable
-{
-    private readonly uint _id;
-    private readonly Action<string> _log;
+        public async Task Suspend()
+        {
+            await Task.Delay(10);
+            _log($"{_id} Suspended");
+        }
 
-    public Item(
-        uint id,
-        Action<string> log
-    )
-    {
-        _id = id;
-        _log = log;
-        log($"{id} Created");
-    }
+        public async Task Resume()
+        {
+            await Task.Delay(10);
+            _log($"{_id} Resumed");
+        }
 
-    public async Task Suspend()
-    {
-        await Task.Delay(10);
-        _log($"{_id} Suspended");
-    }
-
-    public async Task Resume()
-    {
-        await Task.Delay(10);
-        _log($"{_id} Resumed");
-    }
-
-    public void Dispose()
-    {
-        _log($"{_id} Disposed");
+        public void Dispose()
+        {
+            _log($"{_id} Disposed");
+        }
     }
 }

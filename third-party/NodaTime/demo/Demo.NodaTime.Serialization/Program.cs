@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Annium.Core.Entrypoint;
 using Annium.NodaTime.Serialization.Json;
+using Demo.NodaTime.Serialization;
 using NodaTime;
 
 await using var entry = Entrypoint.Default.Setup();
@@ -31,7 +32,10 @@ JsonSerializerOptions With(params JsonConverter[] converters)
     return options;
 }
 
-public class TestObject
+namespace Demo.NodaTime.Serialization
 {
-    public DateInterval Interval { get; set; } = null!;
+    public class TestObject
+    {
+        public DateInterval Interval { get; set; } = null!;
+    }
 }

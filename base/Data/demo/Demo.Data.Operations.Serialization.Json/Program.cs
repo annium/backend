@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using Annium;
 using Annium.Core.Entrypoint;
 using Annium.Data.Operations;
+using Demo.Data.Operations.Serialization.Json;
+
 // ReSharper disable UnusedVariable
 
 await using var entry = Entrypoint.Default.Setup();
@@ -22,107 +24,110 @@ var str = JsonSerializer.Serialize(result, opts);
 Console.WriteLine(str);
 var source = JsonSerializer.Deserialize<IResult>(str, opts);
 
-public class ResultConverter : ResultConverterBase<IResult>
+namespace Demo.Data.Operations.Serialization.Json
 {
-    protected override bool IsConvertibleInterface(Type type) => type == typeof(IResult);
-
-    public override IResult Read(
-        ref Utf8JsonReader reader,
-        Type typeToConvert,
-        JsonSerializerOptions options
-    )
+    public class ResultConverter : ResultConverterBase<IResult>
     {
-        var value = Result.New();
+        protected override bool IsConvertibleInterface(Type type) => type == typeof(IResult);
 
-        ReadErrors(ref reader, value, options);
-
-        return value;
-    }
-
-    public override void Write(
-        Utf8JsonWriter writer,
-        IResult value,
-        JsonSerializerOptions options
-    )
-    {
-        writer.WriteStartObject();
-
-        WriteErrors(writer, value, options);
-
-        writer.WriteEndObject();
-    }
-}
-
-public abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase<T>, IResultBase
-{
-    public override bool CanConvert(Type objectType)
-    {
-        return objectType.IsInterface
-            ? IsConvertibleInterface(objectType)
-            : objectType.GetInterfaces().Any(IsConvertibleInterface);
-    }
-
-    protected abstract bool IsConvertibleInterface(Type type);
-
-    protected Type GetImplementation(Type type)
-    {
-        if (type.IsInterface)
-            return type;
-
-        return type.GetInterfaces()
-            .First(IsConvertibleInterface);
-    }
-
-    protected void ReadErrors(
-        ref Utf8JsonReader reader,
-        T value,
-        JsonSerializerOptions options
-    )
-    {
-        while (reader.Read())
+        public override IResult Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        )
         {
-            if (reader.TokenType == JsonTokenType.PropertyName)
-            {
-                var name = reader.GetString()!;
+            var value = Result.New();
 
-                if (name.Equals(nameof(IResultBase.PlainErrors), StringComparison.InvariantCultureIgnoreCase))
-                    value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!);
-                else if (name.Equals(nameof(IResultBase.LabeledErrors),
-                    StringComparison.InvariantCultureIgnoreCase))
-                    value.Errors(
-                        JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(
-                            ref reader,
-                            options
-                        )!
-                    );
-            }
+            ReadErrors(ref reader, value, options);
+
+            return value;
         }
 
-        // var str = reader.GetString();
+        public override void Write(
+            Utf8JsonWriter writer,
+            IResult value,
+            JsonSerializerOptions options
+        )
+        {
+            writer.WriteStartObject();
 
-        // if (obj.Get(nameof(IResultBase.PlainErrors)) is JArray plainErrors)
-        //     result.GetType()
-        //     .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(ICollection<string>) })!
-        //     .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
+            WriteErrors(writer, value, options);
 
-        // if (obj.Get(nameof(IResultBase.LabeledErrors)) is JObject labeledErrors)
-        //     result.GetType()
-        //     .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })!
-        //     .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
-
-        // static JsonException getException() => new JsonException($"Can't deserialize {typeof(T)} from JSON");
+            writer.WriteEndObject();
+        }
     }
 
-    protected void WriteErrors(
-        Utf8JsonWriter writer,
-        T value,
-        JsonSerializerOptions options
-    )
+    public abstract class ResultConverterBase<T> : JsonConverter<T> where T : IResultBase<T>, IResultBase
     {
-        writer.WritePropertyName(nameof(IResultBase.PlainErrors).CamelCase());
-        JsonSerializer.Serialize(writer, value.PlainErrors, options);
+        public override bool CanConvert(Type objectType)
+        {
+            return objectType.IsInterface
+                ? IsConvertibleInterface(objectType)
+                : objectType.GetInterfaces().Any(IsConvertibleInterface);
+        }
 
-        writer.WritePropertyName(nameof(IResultBase.LabeledErrors).CamelCase());
-        JsonSerializer.Serialize(writer, value.LabeledErrors, options);
+        protected abstract bool IsConvertibleInterface(Type type);
+
+        protected Type GetImplementation(Type type)
+        {
+            if (type.IsInterface)
+                return type;
+
+            return type.GetInterfaces()
+                .First(IsConvertibleInterface);
+        }
+
+        protected void ReadErrors(
+            ref Utf8JsonReader reader,
+            T value,
+            JsonSerializerOptions options
+        )
+        {
+            while (reader.Read())
+            {
+                if (reader.TokenType == JsonTokenType.PropertyName)
+                {
+                    var name = reader.GetString()!;
+
+                    if (name.Equals(nameof(IResultBase.PlainErrors), StringComparison.InvariantCultureIgnoreCase))
+                        value.Errors(JsonSerializer.Deserialize<IReadOnlyCollection<string>>(ref reader, options)!);
+                    else if (name.Equals(nameof(IResultBase.LabeledErrors),
+                        StringComparison.InvariantCultureIgnoreCase))
+                        value.Errors(
+                            JsonSerializer.Deserialize<IReadOnlyDictionary<string, IReadOnlyCollection<string>>>(
+                                ref reader,
+                                options
+                            )!
+                        );
+                }
+            }
+
+            // var str = reader.GetString();
+
+            // if (obj.Get(nameof(IResultBase.PlainErrors)) is JArray plainErrors)
+            //     result.GetType()
+            //     .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(ICollection<string>) })!
+            //     .Invoke(result, new [] { plainErrors.ToObject<string[]>().ToList() });
+
+            // if (obj.Get(nameof(IResultBase.LabeledErrors)) is JObject labeledErrors)
+            //     result.GetType()
+            //     .GetMethod(nameof(IResultBase<object>.Errors), new [] { typeof(IReadOnlyCollection<KeyValuePair<string, IEnumerable<string>>>) })!
+            //     .Invoke(result, new [] { labeledErrors.ToObject<Dictionary<string, string[]>>().ToDictionary(p => p.Key, p => p.Value as IEnumerable<string>) });
+
+            // static JsonException getException() => new JsonException($"Can't deserialize {typeof(T)} from JSON");
+        }
+
+        protected void WriteErrors(
+            Utf8JsonWriter writer,
+            T value,
+            JsonSerializerOptions options
+        )
+        {
+            writer.WritePropertyName(nameof(IResultBase.PlainErrors).CamelCase());
+            JsonSerializer.Serialize(writer, value.PlainErrors, options);
+
+            writer.WritePropertyName(nameof(IResultBase.LabeledErrors).CamelCase());
+            JsonSerializer.Serialize(writer, value.LabeledErrors, options);
+        }
     }
 }

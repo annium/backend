@@ -16,6 +16,9 @@ app.MapControllers();
 
 await app.RunAsync();
 
-public partial class Program
+namespace Annium.AspNetCore.TestServer
 {
+    public partial class Program
+    {
+    }
 }

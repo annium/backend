@@ -4,6 +4,7 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
+using Demo.Configuration;
 using YamlDotNet.Serialization;
 
 TestBuilder();
@@ -100,10 +101,13 @@ void TestYaml()
 }
 
 
-internal static class ListExtensions
+namespace Demo.Configuration
 {
-    public static void AddRange<T>(this List<T> list, params T[] values)
+    internal static class ListExtensions
     {
-        list.AddRange(values);
+        public static void AddRange<T>(this List<T> list, params T[] values)
+        {
+            list.AddRange(values);
+        }
     }
 }

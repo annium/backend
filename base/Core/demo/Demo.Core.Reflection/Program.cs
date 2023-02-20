@@ -5,6 +5,7 @@ using Annium.Core.Entrypoint;
 using Annium.Core.Reflection;
 using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Core.Runtime.Types;
+using Demo.Core.Reflection;
 
 // ReSharper disable UnusedVariable
 
@@ -19,14 +20,17 @@ var properties = TypeHelper.ResolveProperties<B>(x => new { x.InnerOne.One, x.In
 var impl = typeManager.GetImplementations(typeof(MemberExpression));
 var result = typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplementation(typeof(IGeneric<IGeneric<bool, IGeneric<bool, int>>>));
 
-class B
+namespace Demo.Core.Reflection
 {
-    public A InnerOne { get; set; } = null!;
-    public A InnerTwo { get; set; } = null!;
-}
+    class B
+    {
+        public A InnerOne { get; set; } = null!;
+        public A InnerTwo { get; set; } = null!;
+    }
 
-class A
-{
-    public string One { get; set; } = null!;
-    public string Two { get; set; } = null!;
+    class A
+    {
+        public string One { get; set; } = null!;
+        public string Two { get; set; } = null!;
+    }
 }
