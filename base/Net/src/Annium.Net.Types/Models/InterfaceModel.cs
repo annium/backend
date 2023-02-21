@@ -9,16 +9,16 @@ public sealed record InterfaceModel(
     string Name
 ) : IGenericModel
 {
-    public IReadOnlyList<GenericParameterRef> Args { get; private set; } = Array.Empty<GenericParameterRef>();
-    public IReadOnlyList<InterfaceRef> Interfaces { get; private set; } = Array.Empty<InterfaceRef>();
+    public IReadOnlyList<IRef> Args { get; private set; } = Array.Empty<IRef>();
+    public IReadOnlyList<IRef> Interfaces { get; private set; } = Array.Empty<IRef>();
     public IReadOnlyList<FieldModel> Fields { get; private set; } = Array.Empty<FieldModel>();
 
-    public void SetArgs(IReadOnlyList<GenericParameterRef> args)
+    public void SetArgs(IReadOnlyList<IRef> args)
     {
         Args = args;
     }
 
-    public void SetInterfaces(IReadOnlyList<InterfaceRef> interfaces)
+    public void SetInterfaces(IReadOnlyList<IRef> interfaces)
     {
         Interfaces = interfaces;
     }

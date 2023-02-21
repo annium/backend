@@ -5,6 +5,6 @@ namespace Annium.Net.Types.Models;
 
 public interface IGenericModel : IModel
 {
-    IReadOnlyList<GenericParameterRef> Args { get; }
+    IReadOnlyList<IRef> Args { get; }
     IReadOnlyList<FieldModel> Fields { get; }
 }

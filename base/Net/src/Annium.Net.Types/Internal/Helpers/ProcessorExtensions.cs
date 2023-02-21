@@ -70,21 +70,21 @@ internal static class ProcessorExtensions
         }
     }
 
-    public static IReadOnlyList<GenericParameterRef> ResolveGenericArguments(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    public static IReadOnlyList<IRef> ResolveGenericArguments(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Resolve {type.FriendlyName()} generic argument refs");
         var typeGenericArguments = type.GetGenericArguments();
-        var genericArguments = new List<GenericParameterRef>(typeGenericArguments.Length);
+        var genericArguments = new List<IRef>(typeGenericArguments.Length);
         foreach (var genericArgument in typeGenericArguments)
         {
             processor.Trace($"Resolve {type.FriendlyName()} generic argument {genericArgument.FriendlyName()} ref");
-            genericArguments.Add((GenericParameterRef) ctx.GetRef(genericArgument));
+            genericArguments.Add(ctx.GetRef(genericArgument));
         }
 
         return genericArguments;
     }
 
-    public static StructRef? ResolveBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    public static IRef? ResolveBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Resolve {type.FriendlyName()} base type ref");
         if (type.BaseType is null)
@@ -101,14 +101,14 @@ internal static class ProcessorExtensions
 
         processor.Trace($"Resolve {type.FriendlyName()} base type {type.BaseType.FriendlyName()} ref");
 
-        return (StructRef) ctx.GetRef(type.BaseType);
+        return ctx.GetRef(type.BaseType);
     }
 
-    public static IReadOnlyList<InterfaceRef> ResolveInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
+    public static IReadOnlyList<IRef> ResolveInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
         processor.Trace($"Resolve {type.FriendlyName()} interface refs");
         var interfaces = type.GetOwnInterfaces();
-        var interfaceRefs = new List<InterfaceRef>(interfaces.Count);
+        var interfaceRefs = new List<IRef>(interfaces.Count);
         foreach (var @interface in interfaces)
         {
             if (ctx.Config.IsIgnored(@interface))
@@ -118,7 +118,7 @@ internal static class ProcessorExtensions
             }
 
             processor.Trace($"Resolve {type.FriendlyName()} interface {@interface.FriendlyName()} ref");
-            interfaceRefs.Add((InterfaceRef) ctx.GetRef(@interface));
+            interfaceRefs.Add(ctx.GetRef(@interface));
         }
 
         return interfaceRefs;
