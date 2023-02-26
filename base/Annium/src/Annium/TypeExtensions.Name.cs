@@ -50,8 +50,8 @@ public static class TypeNameExtensions
         if (type.IsGenericParameter || !type.IsGenericType)
             return CleanupFileLocalName(type.Name);
 
-        if (type.GetGenericTypeDefinition() == typeof(Nullable<>))
-            return $"{Nullable.GetUnderlyingType(type)!.FriendlyName()}?";
+        if (Nullable.GetUnderlyingType(type) is { } nullableUnderlyingType)
+            return $"{nullableUnderlyingType.FriendlyName()}?";
 
         var name = CleanupGenericName(CleanupFileLocalName(type.GetGenericTypeDefinition().Name));
         var arguments = type.GetGenericArguments().Select(x => x.FriendlyName()).ToArray();
