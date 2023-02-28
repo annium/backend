@@ -23,8 +23,7 @@ public static class Wait
     /// </returns>
     public static async Task WhileAsync(Func<bool> condition, CancellationToken ct, int pollDelay = 25)
     {
-        while (condition() &&
-            !ct.IsCancellationRequested)
+        while (condition() && !ct.IsCancellationRequested)
             await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
     }
 
@@ -49,8 +48,7 @@ public static class Wait
     /// </returns>
     public static async Task UntilAsync(Func<bool> condition, CancellationToken ct, int pollDelay = 25)
     {
-        while (!condition() &&
-            !ct.IsCancellationRequested)
+        while (!condition() && !ct.IsCancellationRequested)
             await Task.Delay(pollDelay, CancellationToken.None).ConfigureAwait(true);
     }
 

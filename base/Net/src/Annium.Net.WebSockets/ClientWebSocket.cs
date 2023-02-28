@@ -100,7 +100,8 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
                 Socket.Dispose();
                 await Task.Delay(timeout.ToTimeSpan(), ct);
             }
-        } while (
+        }
+        while (
             !ct.IsCancellationRequested &&
             Socket.State is not (WebSocketState.Open or WebSocketState.CloseSent)
         );

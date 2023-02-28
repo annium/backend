@@ -64,7 +64,8 @@ internal class ValidationExecutor<TValue> : IValidator<TValue>
 
             // go next stage, if there was any run on current
             stage++;
-        } while (ranStage);
+        }
+        while (ranStage);
 
         return result;
     }

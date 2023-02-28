@@ -218,7 +218,8 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket
             }
 
             stream.Write(buffer[..result.Value.Count].Span);
-        } while (!result.Value.EndOfMessage);
+        }
+        while (!result.Value.EndOfMessage);
 
         ctx.OnNext(new SocketMessage(result.Value.MessageType, stream.ToArray()));
 

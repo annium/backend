@@ -68,7 +68,7 @@ public class RepackerTest
         var result = Repack<string, string>(v =>
             v == "1" ? "one" :
             v == "2" ? "two" :
-                       "other"
+            "other"
         );
 
         // assert
