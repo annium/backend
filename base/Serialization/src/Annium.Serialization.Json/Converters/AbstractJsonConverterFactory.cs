@@ -23,7 +23,7 @@ public class AbstractJsonConverterFactory : JsonConverterFactory
     public override bool CanConvert(Type objectType)
     {
         // if object type is not interface and object type is not abstract class
-        if (!objectType.IsInterface && !(objectType.IsClass && objectType.IsAbstract))
+        if (!objectType.IsInterface && objectType is not { IsClass: true, IsAbstract: true })
             return false;
 
         // if implements IEnumerable - likely will be serialized as Json Array, so not suitable for type resolution
@@ -33,16 +33,15 @@ public class AbstractJsonConverterFactory : JsonConverterFactory
             ))
             return false;
 
-        return _typeManager.HasImplementations(
-            objectType.IsGenericType ? objectType.GetGenericTypeDefinition() : objectType
-        );
+        var targetType = objectType.IsGenericType ? objectType.GetGenericTypeDefinition() : objectType;
+
+        return _typeManager.HasImplementations(targetType);
     }
 
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
     {
-        return (JsonConverter) Activator.CreateInstance(
-            typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert),
-            _typeManager
-        )!;
+        var converterType = typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert);
+
+        return (JsonConverter) Activator.CreateInstance(converterType, _typeManager)!;
     }
 }

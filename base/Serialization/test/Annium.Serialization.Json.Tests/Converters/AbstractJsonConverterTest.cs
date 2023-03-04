@@ -40,6 +40,20 @@ public class AbstractJsonConverterTest : TestBase
     }
 
     [Fact]
+    public void Serialization_InterfaceToStruct_Works()
+    {
+        // arrange
+        var serializer = GetSerializer();
+        IValue a = new SomeValue(2);
+
+        // act
+        var result = serializer.Serialize(a);
+
+        // assert
+        result.Is(@"{""x"":2}");
+    }
+
+    [Fact]
     public void Serialization_SignaturePlain_Works()
     {
         // arrange
@@ -139,6 +153,21 @@ public class AbstractJsonConverterTest : TestBase
         result.Has(2);
         result.At(0).As<KeyChildA>().Value.Is(1);
         result.At(1).As<KeyChildB>().Value.Is(2);
+    }
+
+    [Fact]
+    public void Deserialization_InterfaceToStruct_Works()
+    {
+        // arrange
+        var serializer = GetSerializer();
+        IValue a = new SomeValue(2);
+        var str = serializer.Serialize(a);
+
+        // act
+        var result = serializer.Deserialize<IValue>(str);
+
+        // assert
+        result.As<SomeValue>().X.Is(2);
     }
 
     [Fact]
@@ -334,5 +363,11 @@ public class AbstractJsonConverterTest : TestBase
     public class DemoContainer<T> : BaseContainer<T>
     {
         public T[] Demo { get; set; } = Array.Empty<T>();
+    }
+
+    public record struct SomeValue(int X) : IValue;
+
+    public interface IValue
+    {
     }
 }
