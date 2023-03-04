@@ -13,14 +13,14 @@ internal static class HierarchyBuilder
         var result = new Dictionary<Type, HashSet<Type>>();
         var descendantsRegistry = new Dictionary<Type, Descendant>();
 
-        // only classes and interfaces can have/be descendants
+        // only classes, structs and interfaces can have/be descendants
         var classes = types.Where(x => x.IsClass).ToArray();
         foreach (var type in classes)
             CollectClassAncestors(type, Register);
 
-        var interfaces = types.Where(x => x.IsInterface).ToArray();
-        foreach (var type in interfaces)
-            CollectInterfaceAncestors(type, Register);
+        var structsAndInterfaces = types.Where(x => x.IsValueType || x.IsInterface).ToArray();
+        foreach (var type in structsAndInterfaces)
+            CollectStructOrInterfaceAncestors(type, Register);
 
         return result.ToDictionary(
             x => new Ancestor(x.Key),
@@ -58,7 +58,7 @@ internal static class HierarchyBuilder
         }
     }
 
-    private static void CollectInterfaceAncestors(Type type, RegisterAncestor register)
+    private static void CollectStructOrInterfaceAncestors(Type type, RegisterAncestor register)
     {
         foreach (var ancestor in type.GetInterfaces())
             register(ancestor, type);

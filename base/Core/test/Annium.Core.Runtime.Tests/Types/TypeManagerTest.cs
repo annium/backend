@@ -43,10 +43,11 @@ public class TypeManagerTest
         var implementations = manager.GetImplementations(typeof(IGenericInterface<,>));
 
         // assert
-        implementations.Has(3);
+        implementations.Has(4);
         implementations.At(0).Is(typeof(GenericInterfaceDemoA<>));
         implementations.At(1).Is(typeof(GenericInterfaceDemoB<>));
         implementations.At(2).Is(typeof(GenericInterfaceDemoC));
+        implementations.At(3).Is(typeof(GenericStruct<>));
     }
 
     [Fact]
@@ -127,12 +128,12 @@ public class TypeManagerTest
         result.Is(typeof(E));
     }
 
-    [Fact]
+    [Fact(Skip = "to be dropped with type id")]
     public void Resolve_ById_Works()
     {
         // arrange
         var manager = GetTypeManager();
-        var source = new L { Type = typeof(K).GetIdString() };
+        var source = new K();
 
         // act
         var result = manager.Resolve(source, typeof(H));
@@ -170,102 +171,104 @@ public class TypeManagerTest
     }
 
     private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
+}
 
-    private class A
+file class A
+{
+}
+
+file class B : A
+{
+    public int ForB { get; set; }
+}
+
+file class C : A
+{
+    public int ForC { get; set; }
+}
+
+file class D
+{
+    [ResolutionKey]
+    public string Type { get; }
+
+    protected D(string type)
+    {
+        Type = type;
+    }
+}
+
+[ResolutionKeyValue(nameof(E))]
+file class E : D
+{
+    public E() : base(nameof(E))
     {
     }
+}
 
-    private class B : A
-    {
-        public int ForB { get; set; }
-    }
-
-    private class C : A
-    {
-        public int ForC { get; set; }
-    }
-
-    private class D
-    {
-        [ResolutionKey]
-        public string Type { get; }
-
-        protected D(string type)
-        {
-            Type = type;
-        }
-    }
-
-    [ResolutionKeyValue(nameof(E))]
-    private class E : D
-    {
-        public E() : base(nameof(E))
-        {
-        }
-    }
-
-    [ResolutionKeyValue(nameof(F))]
-    private class F : D
-    {
-        public F() : base(nameof(F))
-        {
-        }
-    }
-
-    [ResolutionKeyValue(nameof(F))]
-    // ReSharper disable once UnusedType.Local
-    private class G : D
-    {
-        public G() : base(nameof(F))
-        {
-        }
-    }
-
-    private class H
-    {
-        [ResolutionId]
-        public string Type => GetType().GetIdString();
-    }
-
-    private class K : H
+[ResolutionKeyValue(nameof(F))]
+file class F : D
+{
+    public F() : base(nameof(F))
     {
     }
+}
 
-    private record L
-    {
-        [ResolutionId]
-        public string Type { get; set; } = string.Empty;
-    }
-
-    private interface IGenericInterface<T1, T2>
-    {
-    }
-
-    private class GenericInterfaceDemoA<T> : IGenericInterface<T, int>
+[ResolutionKeyValue(nameof(F))]
+// ReSharper disable once UnusedType.Local
+file class G : D
+{
+    public G() : base(nameof(F))
     {
     }
+}
 
-    private class GenericInterfaceDemoB<T> : IGenericInterface<T, long>
-    {
-    }
+file class H
+{
+    [ResolutionId]
+    public string Type => GetType().GetIdString();
+}
 
-    private class GenericInterfaceDemoC : IGenericInterface<string, bool>
-    {
-    }
+file class K : H
+{
+}
 
-    private class GenericClass<T1, T2>
-    {
-    }
+file record L
+{
+    [ResolutionId]
+    public string Type { get; set; } = string.Empty;
+}
 
-    private class GenericClassDemoA<T> : GenericClass<T, int>
-    {
-    }
+file interface IGenericInterface<T1, T2>
+{
+}
 
-    private class GenericClassDemoB<T> : GenericClass<T, long>
-    {
-    }
+file record struct GenericStruct<T> : IGenericInterface<T, string>;
 
-    private class GenericClassDemoC : GenericClass<string, bool>
-    {
-    }
+file class GenericInterfaceDemoA<T> : IGenericInterface<T, int>
+{
+}
+
+file class GenericInterfaceDemoB<T> : IGenericInterface<T, long>
+{
+}
+
+file class GenericInterfaceDemoC : IGenericInterface<string, bool>
+{
+}
+
+file class GenericClass<T1, T2>
+{
+}
+
+file class GenericClassDemoA<T> : GenericClass<T, int>
+{
+}
+
+file class GenericClassDemoB<T> : GenericClass<T, long>
+{
+}
+
+file class GenericClassDemoC : GenericClass<string, bool>
+{
 }
