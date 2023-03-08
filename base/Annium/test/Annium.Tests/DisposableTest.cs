@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
@@ -35,20 +34,33 @@ public class DisposableTest
         // act
         var disposable = Disposable.Create(() => ++calls);
         var asyncDisposable = Disposable.Create(() => Task.FromResult(++calls));
-        Action dispose = () => ++calls;
-        Func<Task> asyncDispose = () => Task.FromResult(++calls);
+        void Dispose() => ++calls;
+        Task AsyncDispose() => Task.FromResult(++calls);
         box += disposable;
         box -= disposable;
         box += asyncDisposable;
         box -= asyncDisposable;
-        box += dispose;
-        box -= dispose;
-        box += asyncDispose;
-        box -= asyncDispose;
+        box += Dispose;
+        box -= Dispose;
+        box += AsyncDispose;
+        box -= AsyncDispose;
         await box.DisposeAsync();
 
         // assert
         calls.Is(0);
+    }
+
+    [Fact]
+    public async Task AsyncDisposable_Reset_Works()
+    {
+        // arrange
+        var box = Disposable.AsyncBox();
+
+        // act
+        await box.DisposeAndResetAsync();
+
+        // assert
+        box.IsDisposed.IsFalse();
     }
 
     [Fact]
@@ -76,14 +88,27 @@ public class DisposableTest
 
         // act
         var disposable = Disposable.Create(() => ++calls);
-        Action dispose = () => ++calls;
+        void Dispose() => ++calls;
         box += disposable;
         box -= disposable;
-        box += dispose;
-        box -= dispose;
+        box += Dispose;
+        box -= Dispose;
         box.Dispose();
 
         // assert
         calls.Is(0);
+    }
+
+    [Fact]
+    public void Disposable_Reset_Works()
+    {
+        // arrange
+        var box = Disposable.Box();
+
+        // act
+        box.DisposeAndReset();
+
+        // assert
+        box.IsDisposed.IsFalse();
     }
 }

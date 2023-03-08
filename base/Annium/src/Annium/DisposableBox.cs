@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Debug;
 
@@ -14,6 +13,12 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
 
     internal AsyncDisposableBox()
     {
+    }
+
+    public async ValueTask DisposeAndResetAsync()
+    {
+        await DisposeAsync();
+        Reset();
     }
 
     public async ValueTask DisposeAsync()
@@ -64,6 +69,12 @@ public sealed class DisposableBox : DisposableBoxBase<DisposableBox>, IDisposabl
     {
     }
 
+    public void DisposeAndReset()
+    {
+        Dispose();
+        Reset();
+    }
+
     public void Dispose()
     {
         this.Trace("start");
@@ -88,13 +99,6 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
     protected readonly List<Action> SyncDisposes = new();
     private readonly object _locker = new();
 
-    public void EnsureNotDisposed()
-    {
-        if (IsDisposed)
-            throw new ObjectDisposedException(typeof(TBox).Name);
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected TBox Add<T>(List<T> entries, T item)
     {
         EnsureNotDisposed();
@@ -108,7 +112,6 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         return (TBox) this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected TBox Add<T>(List<T> entries, IEnumerable<T> items)
     {
         EnsureNotDisposed();
@@ -123,7 +126,6 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         return (TBox) this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected TBox Remove<T>(List<T> entries, T item)
     {
         EnsureNotDisposed();
@@ -137,7 +139,6 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         return (TBox) this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected TBox Remove<T>(List<T> entries, IEnumerable<T> items)
     {
         EnsureNotDisposed();
@@ -152,7 +153,6 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         return (TBox) this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected IReadOnlyCollection<T> Pull<T>(List<T> entries)
     {
         var slice = entries.ToArray();
@@ -189,5 +189,22 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
                 entry();
                 this.Trace($"dispose {entry.GetFullId()} - done");
             }
+    }
+
+    protected void Reset()
+    {
+        lock (_locker)
+        {
+            if (!IsDisposed)
+                throw new InvalidOperationException($"Can't reset {typeof(TBox).FriendlyName()} - it's not disposed");
+
+            IsDisposed = false;
+        }
+    }
+
+    private void EnsureNotDisposed()
+    {
+        if (IsDisposed)
+            throw new ObjectDisposedException(typeof(TBox).Name);
     }
 }
