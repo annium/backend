@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Core.Runtime.Types;
 
-[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+[AttributeUsage(AttributeTargets.Class)]
 public class ResolutionKeyValueAttribute : Attribute
 {
     public object Key { get; }
