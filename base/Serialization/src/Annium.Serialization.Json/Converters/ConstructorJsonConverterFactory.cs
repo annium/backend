@@ -75,7 +75,7 @@ public class ConstructorJsonConverterFactory : JsonConverterFactory
                 return new ConstructorJsonConverterConfiguration.ParameterItem(x.ParameterType, name);
             })
             .ToList();
-        var properties = type.GetAllProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+        var properties = type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
             .Where(x => x.CanWrite)
             .ToArray();
 
