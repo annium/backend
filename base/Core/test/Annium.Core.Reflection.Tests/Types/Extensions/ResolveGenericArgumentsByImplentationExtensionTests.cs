@@ -121,7 +121,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
         //assert
         typeof(IParameterClassConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(ClassBase))!
-            .IsEqual(new[] { typeof(IParameterClassConstraint<>).GetGenericArguments()[0] });
+            .IsEqual(new[] { typeof(ClassBase) });
     }
 
     [Fact]
@@ -167,7 +167,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
         //assert
         typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(ValueTuple))!
-            .IsEqual(new[] { typeof(IParameterStructConstraint<>).GetGenericArguments()[0] });
+            .IsEqual(new[] { typeof(ValueTuple) });
     }
 
     [Fact]
@@ -213,7 +213,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
         //assert
         typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!
-            .IsEqual(new[] { typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0] });
+            .IsEqual(new[] { typeof(IEnumerable) });
     }
 
     [Fact]

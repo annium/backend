@@ -148,7 +148,7 @@ public static class ResolveGenericArgumentsByImplementationExtension
         var meetsConstraints = type.GetGenericParameterConstraints()
             .All(constraint => constraint.ResolveGenericArgumentsByImplementation(target) != null);
 
-        return meetsConstraints ? new[] { type } : null;
+        return meetsConstraints ? new[] { target } : null;
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
@@ -171,7 +171,7 @@ public static class ResolveGenericArgumentsByImplementationExtension
         var meetsConstraints = type.GetGenericParameterConstraints()
             .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
 
-        return meetsConstraints ? new[] { type } : null;
+        return meetsConstraints ? new[] { target } : null;
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
@@ -194,7 +194,7 @@ public static class ResolveGenericArgumentsByImplementationExtension
         var meetsConstraints = type.GetGenericParameterConstraints()
             .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
 
-        return meetsConstraints ? new[] { type } : null;
+        return meetsConstraints ? new[] { target } : null;
     }
 
     private static Type[]? ResolveClassArgumentsByGenericParameter(this Type type, Type target)
