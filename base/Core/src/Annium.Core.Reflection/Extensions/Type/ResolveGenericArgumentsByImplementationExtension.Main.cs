@@ -86,7 +86,7 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             return type.ResolveInterfaceArgumentsByGenericParameter(target);
 
         if (target.IsClass)
-            return type.ResolveInterfaceArgumentsByGenericParameter(target);
+            return null;
 
         if (target.IsValueType)
             return null;

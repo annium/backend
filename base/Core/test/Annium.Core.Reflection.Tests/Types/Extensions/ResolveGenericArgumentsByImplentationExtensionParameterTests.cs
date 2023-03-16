@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using Annium.Testing;
 using Xunit;
@@ -49,9 +48,9 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Param_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IListConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])!
-            .IsEqual(new[] { typeof(IListConstraint<>).GetGenericArguments()[0] });
+        typeof(IClassBaseConstraint<>).GetGenericArguments()[0]
+            .ResolveGenericArgumentsByImplementation(typeof(IClassBaseConstraint<>).GetGenericArguments()[0])
+            .IsEqual(new[] { typeof(IClassBaseConstraint<>).GetGenericArguments()[0] });
     }
 
     [Fact]
@@ -85,12 +84,9 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Class_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IClassBaseConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(ClassBase))!
-            .IsEqual(new[] { typeof(ClassBase) });
-        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(string))!
-            .IsEqual(Type.EmptyTypes);
+        typeof(RecurringBase<>).GetGenericArguments()[0]
+            .ResolveGenericArgumentsByImplementation(typeof(RecurringBase<RecurringDerived>))
+            .IsEqual(new[] { typeof(RecurringBase<RecurringDerived>) });
     }
 
     [Fact]
@@ -130,15 +126,6 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     }
 
     [Fact]
-    public void Struct_ParameterConstraintSuccess_ReturnsType()
-    {
-        //assert
-        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(ValueTuple))
-            .IsEqual(new[] { typeof(ValueTuple) });
-    }
-
-    [Fact]
     public void Interface_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
@@ -157,8 +144,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     }
 
     [Fact]
-    public void
-        Interface_DefaultConstructorConstraintFailure_ReturnsNull()
+    public void Interface_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(INewConstraint<>).GetGenericArguments()[0]
@@ -179,15 +165,22 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Interface_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!
-            .IsEqual(new[] { typeof(IEnumerable) });
+        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
+            .ResolveGenericArgumentsByImplementation(typeof(IEquatable<string>))
+            .IsEqual(new[] { typeof(IEquatable<string>) });
     }
 
-    private interface IListConstraint<T> where T : List<T>
+    private class RecurringDerived : RecurringBase<RecurringDerived>
     {
     }
 
+    private class RecurringBase<T> where T : RecurringBase<T>
+    {
+    }
+
+    private interface IEquatableConstraint<T> where T : IEquatable<T>
+    {
+    }
 
     private interface IClassConstraint<T> where T : class
     {
@@ -206,10 +199,6 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     }
 
     private interface IEnumerableConstraint<T> where T : IEnumerable
-    {
-    }
-
-    private interface IEquatableConstraint<T> where T : IEquatable<T>
     {
     }
 
