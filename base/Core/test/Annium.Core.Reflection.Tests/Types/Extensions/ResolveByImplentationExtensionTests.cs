@@ -11,7 +11,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void TypeNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.ResolveByImplementation(typeof(byte)))
             .Throws<ArgumentNullException>();
     }
@@ -19,7 +19,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void TargetNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => typeof(byte).ResolveByImplementation((null as Type)!))
             .Throws<ArgumentNullException>();
     }
@@ -27,7 +27,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void Defined_Assignable_ReturnsType()
     {
-        //assert
+        // assert
         typeof(MemoryStream)
             .ResolveByImplementation(typeof(Stream))
             .Is(typeof(MemoryStream));
@@ -36,7 +36,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void Defined_NotAssignable_ReturnsType()
     {
-        //assert
+        // assert
         typeof(FileInfo)
             .ResolveByImplementation(typeof(Stream))
             .IsDefault();
@@ -45,7 +45,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void Generic_NotResolved_ReturnsNull()
     {
-        //assert
+        // assert
         typeof(List<>)
             .ResolveByImplementation(typeof(Stream))
             .IsDefault();
@@ -54,7 +54,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void GenericParameter_ReturnsParameter()
     {
-        //assert
+        // assert
         typeof(List<>).GetGenericArguments()[0]
             .ResolveByImplementation(typeof(int))
             .Is(typeof(int));
@@ -63,7 +63,7 @@ public class ResolveByImplementationExtensionTests
     [Fact]
     public void GenericType_ReturnsType()
     {
-        //assert
+        // assert
         typeof(List<>)
             .ResolveByImplementation(typeof(IEnumerable<int>))
             .Is(typeof(List<int>));

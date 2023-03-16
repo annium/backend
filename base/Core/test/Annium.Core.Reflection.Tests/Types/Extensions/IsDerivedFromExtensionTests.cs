@@ -10,7 +10,7 @@ public class IsDerivedFromExtensionTests
     [Fact]
     public void IsDerivedFromExtensionTests_Works()
     {
-        //assert
+        // assert
         typeof(bool).IsDerivedFrom(typeof(object)).IsTrue();
         typeof(IEnumerable<>).IsDerivedFrom(typeof(IEnumerable)).IsTrue();
         typeof(IEnumerable<>).IsDerivedFrom(typeof(IEnumerable<>), self: false).IsFalse();

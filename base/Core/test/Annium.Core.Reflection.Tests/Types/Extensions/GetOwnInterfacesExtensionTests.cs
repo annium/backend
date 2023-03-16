@@ -9,14 +9,14 @@ public class GetOwnInterfacesExtensionTests
     [Fact]
     public void GetOwnInterfaces_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.GetOwnInterfaces()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void GetOwnInterfaces_Works()
     {
-        //assert
+        // assert
         typeof(Derived).GetOwnInterfaces().IsEqual(new[] { typeof(IDerived) });
         typeof(Base).GetOwnInterfaces().IsEqual(new[] { typeof(IBase), typeof(IShared) });
         typeof(IBase).GetOwnInterfaces().IsEqual(new[] { typeof(IInner) });

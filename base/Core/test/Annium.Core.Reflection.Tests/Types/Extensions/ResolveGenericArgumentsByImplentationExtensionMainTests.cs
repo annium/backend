@@ -9,7 +9,7 @@ public class ResolveGenericArgumentsByImplementationExtensionMainTests
     [Fact]
     public void TypeNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.ResolveGenericArgumentsByImplementation(typeof(bool)))
             .Throws<ArgumentNullException>();
     }
@@ -17,7 +17,7 @@ public class ResolveGenericArgumentsByImplementationExtensionMainTests
     [Fact]
     public void TargetNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => typeof(bool).ResolveGenericArgumentsByImplementation(null!))
             .Throws<ArgumentNullException>();
     }

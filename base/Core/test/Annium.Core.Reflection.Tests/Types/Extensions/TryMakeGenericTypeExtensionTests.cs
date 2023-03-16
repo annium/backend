@@ -9,14 +9,14 @@ public class TryMakeGenericTypeExtensionTests
     [Fact]
     public void TryMakeGenericType_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.TryMakeGenericType(out _)).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void ITryMakeGenericType_Works()
     {
-        //assert
+        // assert
         typeof(Demo<>).TryMakeGenericType(out Type? result).IsFalse();
         result.IsDefault();
 

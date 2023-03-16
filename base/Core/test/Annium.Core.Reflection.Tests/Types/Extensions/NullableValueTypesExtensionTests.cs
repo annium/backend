@@ -9,21 +9,21 @@ public class NullableValueTypesExtensionTests
     [Fact]
     public void IsNotNullableValueType_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.IsNotNullableValueType()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void IsNullableValueType_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.IsNullableValueType()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void IsNotNullableValueType_Works()
     {
-        //assert
+        // assert
         typeof(object).IsNotNullableValueType().IsFalse();
         typeof(bool).IsNotNullableValueType().IsTrue();
         typeof(bool?).IsNotNullableValueType().IsFalse();
@@ -32,7 +32,7 @@ public class NullableValueTypesExtensionTests
     [Fact]
     public void IsNullableValueType_Works()
     {
-        //assert
+        // assert
         typeof(object).IsNullableValueType().IsFalse();
         typeof(bool).IsNullableValueType().IsFalse();
         typeof(bool?).IsNullableValueType().IsTrue();

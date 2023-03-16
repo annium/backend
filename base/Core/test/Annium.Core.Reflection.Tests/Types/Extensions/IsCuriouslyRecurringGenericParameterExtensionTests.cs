@@ -10,14 +10,14 @@ public class IsCuriouslyRecurringGenericParameterExtensionTests
     [Fact]
     public void IsCuriouslyRecurringGenericParameter_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.IsCuriouslyRecurringGenericParameter()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void IsCuriouslyRecurringGenericParameter_Works()
     {
-        //assert
+        // assert
         typeof(bool).IsCuriouslyRecurringGenericParameter().IsFalse();
         typeof(IEnumerable<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsFalse();
         typeof(Demo<>).GetGenericArguments()[0].IsCuriouslyRecurringGenericParameter().IsTrue();

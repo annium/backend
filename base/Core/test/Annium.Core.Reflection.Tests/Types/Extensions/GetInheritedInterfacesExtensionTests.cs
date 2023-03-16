@@ -9,14 +9,14 @@ public class GetInheritedInterfacesExtensionTests
     [Fact]
     public void GetInheritedInterfaces_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.GetInheritedInterfaces()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void GetInheritedInterfaces_Works()
     {
-        //assert
+        // assert
         typeof(Derived).GetInheritedInterfaces().IsEqual(new[] { typeof(IBase), typeof(IInner), typeof(IShared) });
         typeof(Base).GetInheritedInterfaces().IsEqual(new[] { typeof(IInner) });
         typeof(IBase).GetInheritedInterfaces().IsEmpty();

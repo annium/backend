@@ -11,14 +11,14 @@ public class HasDefaultConstructorTests
     [Fact]
     public void HasDefaultConstructor_OfNull_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => (null as Type)!.HasDefaultConstructor()).Throws<ArgumentNullException>();
     }
 
     [Fact]
     public void HasDefaultConstructor_Class_Works()
     {
-        //assert
+        // assert
         typeof(object).HasDefaultConstructor().IsTrue();
         typeof(FileInfo).HasDefaultConstructor().IsFalse();
     }
@@ -26,7 +26,7 @@ public class HasDefaultConstructorTests
     [Fact]
     public void HasDefaultConstructor_Struct_Works()
     {
-        //assert
+        // assert
         typeof(long).HasDefaultConstructor().IsTrue();
         typeof(ValueTuple<>).HasDefaultConstructor().IsFalse();
     }
@@ -34,7 +34,7 @@ public class HasDefaultConstructorTests
     [Fact]
     public void HasDefaultConstructor_Other_Throws()
     {
-        //assert
+        // assert
         Wrap.It(() => typeof(IEnumerable).HasDefaultConstructor()).Throws<ArgumentException>();
     }
 }
