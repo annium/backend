@@ -62,7 +62,7 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             return null;
 
         // return target, if all parameter constraints are implemented
-        return type.ResolveByGenericParameterConstraints(target);
+        return target.CanBeUsedAs(type) ? new[] { target } : null;
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
@@ -82,7 +82,7 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             return null;
 
         // return target, if all parameter constraints are implemented
-        return type.ResolveByGenericParameterConstraints(target);
+        return target.CanBeUsedAs(type) ? new[] { target } : null;
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
@@ -102,23 +102,6 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             return null;
 
         // return target, if all parameter constraints are implemented
-        return type.ResolveByGenericParameterConstraints(target);
-    }
-}
-
-file static class Helper
-{
-    public static Type[]? ResolveByGenericParameterConstraints(this Type type, Type target)
-    {
-        var typeConstraints = type.GetGenericParameterConstraints();
-
-        foreach (var typeConstraint in typeConstraints)
-        {
-            var constraintArgs = typeConstraint.ResolveGenericArgumentsByImplementation(target);
-            if (constraintArgs is null)
-                return null;
-        }
-
-        return new[] { target };
+        return target.CanBeUsedAs(type) ? new[] { target } : null;
     }
 }
