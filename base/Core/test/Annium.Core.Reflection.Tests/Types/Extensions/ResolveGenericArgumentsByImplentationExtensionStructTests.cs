@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Testing;
 using Xunit;
 
@@ -75,7 +74,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])
+            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])
             .IsDefault();
     }
 
@@ -84,7 +83,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(IBase<,,,>).GetGenericArguments()[3]
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])!
+            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])!
             .IsEqual(new[] { typeof(IBase<,,,>).GetGenericArguments()[3] });
     }
 
@@ -110,7 +109,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfClass_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(FileInfo))
             .IsDefault();
     }
@@ -119,7 +118,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfClass_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterClassConstraint<>).GetGenericArguments()[0]
+        typeof(IClassBaseConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(ClassBase))!
             .IsEqual(new[] { typeof(ClassBase) });
     }
@@ -156,7 +155,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfStruct_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(bool))
             .IsDefault();
     }
@@ -165,7 +164,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfStruct_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
+        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(ValueTuple))!
             .IsEqual(new[] { typeof(ValueTuple) });
     }
@@ -202,7 +201,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfInterface_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
+        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))
             .IsDefault();
     }
@@ -211,7 +210,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     public void ParamOfInterface_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!
             .IsEqual(new[] { typeof(IEnumerable) });
     }
@@ -239,7 +238,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(CustomDictionary<,>)
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])
+            .ResolveGenericArgumentsByImplementation(typeof(IClassBaseConstraint<>).GetGenericArguments()[0])
             .IsDefault();
     }
 
@@ -248,7 +247,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(ClassSimple)
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])!
+            .ResolveGenericArgumentsByImplementation(typeof(IClassBaseConstraint<>).GetGenericArguments()[0])!
             .IsEqual(Type.EmptyTypes);
     }
 
@@ -340,7 +339,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(ValueTuple<>)
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])
+            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])
             .IsDefault();
     }
 
@@ -350,7 +349,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
         //assert
         typeof(StructEnumerable)
             .ResolveGenericArgumentsByImplementation(
-                typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])!
+                typeof(IEnumerableConstraint<>).GetGenericArguments()[0])!
             .IsEqual(Type.EmptyTypes);
     }
 
@@ -420,7 +419,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
     {
         //assert
         typeof(IEnumerable<>)
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterClassConstraint<>).GetGenericArguments()[0])
+            .ResolveGenericArgumentsByImplementation(typeof(IClassBaseConstraint<>).GetGenericArguments()[0])
             .IsDefault();
     }
 
@@ -430,7 +429,7 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
         //assert
         typeof(IEnumerable<>)
             .ResolveGenericArgumentsByImplementation(
-                typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])!
+                typeof(IEnumerableConstraint<>).GetGenericArguments()[0])!
             .IsEqual(new[] { typeof(IEnumerable<>).GetGenericArguments()[0] });
     }
 
@@ -469,5 +468,125 @@ public class ResolveGenericArgumentsByImplementationExtensionStructTests
             {
                 typeof(IGeneric<bool, IGeneric<bool, int>>), typeof(bool), typeof(IGeneric<bool, int>), typeof(int)
             });
+    }
+
+    private class ParentOther<T1, T2> : Base<T1[], T2, bool, IEnumerable<T1[]>>, IParentOther<T1, T2> where T2 : struct
+    {
+    }
+
+    private class ParentTwo<T1, T2> : ParentOne<T1, IReadOnlyList<T2>>, IParentTwo<T1, T2> where T1 : struct where T2 : IEnumerable
+    {
+    }
+
+    private class ParentOne<T1, T2> : Base<List<T2>, T1, int, IEnumerable<List<T2>>>, IParentOne<T1, T2> where T1 : struct
+    {
+    }
+
+    private class Base<T1, T2, T3, T4> : IBase<T1, T2, T3, T4> where T1 : class where T2 : struct where T4 : IEnumerable<T1>
+    {
+    }
+
+    private class ParentDictionary<T1, T2> : CustomDictionary<T2, T1> where T2 : notnull
+    {
+    }
+
+    private class CustomDictionary<T1, T2> : Dictionary<T1, T2> where T1 : notnull
+    {
+    }
+
+    private class ClassParametrized<T> : ClassBase
+    {
+        public T X { get; }
+
+        public ClassParametrized(T x)
+        {
+            X = x;
+        }
+    }
+
+    private class ClassSimple : ClassBase
+    {
+    }
+
+    public struct BaseStruct<T1, T2, T3, T4> : IBase<T1, T2, T3, T4> where T1 : class where T2 : struct where T4 : IEnumerable<T1>
+    {
+    }
+
+    private interface IParentOther<T1, T2> : IBase<T1[], T2, bool, IEnumerable<T1[]>> where T2 : struct
+    {
+    }
+
+    private interface IParentTwo<T1, T2> : IParentOne<T1, IReadOnlyList<T2>> where T1 : struct where T2 : IEnumerable
+    {
+    }
+
+    private interface IParentOne<T1, T2> : IBase<List<T2>, T1, int, IEnumerable<List<T2>>> where T1 : struct
+    {
+    }
+
+    private interface IBase<T1, T2, T3, T4> where T1 : class where T2 : struct where T4 : IEnumerable<T1>
+    {
+    }
+
+    public struct StructParamatered
+    {
+        public int X { get; }
+
+        public StructParamatered(int x)
+        {
+            X = x;
+        }
+    }
+
+    public struct StructParamaterless
+    {
+    }
+
+    private struct StructEnumerable : IEnumerable
+    {
+        public IEnumerator GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    private class ConstrainedComplex<T1, T2, T3, T4> : IGeneric<T1> where T1 : IGeneric<T2, T3> where T3 : IGeneric<T2, T4>
+    {
+    }
+
+    private interface IGeneric<T>
+    {
+    }
+
+    private interface IGeneric<T1, T2>
+    {
+    }
+
+    private interface IClassConstraint<T> where T : class
+    {
+    }
+
+    private interface IStructConstraint<T> where T : struct
+    {
+    }
+
+    private interface INewConstraint<T> where T : new()
+    {
+    }
+
+    private interface IClassBaseConstraint<T> where T : ClassBase
+    {
+    }
+
+    private interface IEnumerableConstraint<T> where T : IEnumerable
+    {
+    }
+
+    private interface IEquatableConstraint<T> where T : IEquatable<T>
+    {
+    }
+
+    private class ClassBase
+    {
     }
 }

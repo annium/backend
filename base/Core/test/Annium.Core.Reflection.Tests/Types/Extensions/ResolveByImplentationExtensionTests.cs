@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Testing;
 using Xunit;
 
