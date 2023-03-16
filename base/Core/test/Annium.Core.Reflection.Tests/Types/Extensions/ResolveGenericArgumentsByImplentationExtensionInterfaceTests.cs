@@ -8,10 +8,10 @@ using Xunit;
 
 namespace Annium.Core.Reflection.Tests.Types.Extensions;
 
-public class ResolveGenericArgumentsByImplementationExtensionTests
+public class ResolveGenericArgumentsByImplementationExtensionInterfaceTests
 {
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_OfNull_Throws()
+    public void OfNull_Throws()
     {
         //assert
         Wrap.It(() => (null as Type)!.ResolveGenericArgumentsByImplementation(typeof(bool)))
@@ -21,14 +21,14 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_TypeNotGeneric_ReturnEmptyTypes()
+    public void TypeNotGeneric_ReturnEmptyTypes()
     {
         //assert
         typeof(Array).ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!.Is(Type.EmptyTypes);
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_TypeDefined_ReturnsTypeArguments()
+    public void TypeDefined_ReturnsTypeArguments()
     {
         //assert
         typeof(List<int>).ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!.IsEqual(
@@ -36,7 +36,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_TargetNotGeneric_ReturnsTypeArguments()
+    public void TargetNotGeneric_ReturnsTypeArguments()
     {
         //assert
         typeof(List<>).ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!.IsEqual(new[]
@@ -44,7 +44,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
+    public void ParamOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IStructConstraint<>).GetGenericArguments()[0]
@@ -53,7 +53,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfParam_StructTypeConstraintFailure_ReturnsNull()
+    public void ParamOfParam_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
@@ -62,7 +62,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
+    public void ParamOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
@@ -71,7 +71,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfParam_ParameterConstraintFailure_ReturnsNull()
+    public void ParamOfParam_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
@@ -80,7 +80,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfParam_ParameterConstraintSuccess_ReturnsType()
+    public void ParamOfParam_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(IBase<,,,>).GetGenericArguments()[3]
@@ -89,7 +89,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfClass_StructTypeConstraintFailure_ReturnsNull()
+    public void ParamOfClass_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IStructConstraint<>).GetGenericArguments()[0]
@@ -98,7 +98,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfClass_DefaultConstructorConstraintFailure_ReturnsNull()
+    public void ParamOfClass_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(INewConstraint<>).GetGenericArguments()[0]
@@ -107,7 +107,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfClass_ParameterConstraintFailure_ReturnsNull()
+    public void ParamOfClass_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
@@ -116,7 +116,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfClass_ParameterConstraintSuccess_ReturnsType()
+    public void ParamOfClass_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(IParameterClassConstraint<>).GetGenericArguments()[0]
@@ -125,7 +125,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfStruct_ReferenceTypeConstraintFailure_ReturnsNull()
+    public void ParamOfStruct_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
@@ -134,7 +134,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfStruct_StructTypeConstraintFailure_ReturnsNull()
+    public void ParamOfStruct_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IStructConstraint<>).GetGenericArguments()[0]
@@ -144,7 +144,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
 
     [Fact]
     public void
-        ResolveGenericArgumentsByImplementation_ParamOfStruct_DefaultConstructorConstraintFailure_ReturnsNull()
+        ParamOfStruct_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(INewConstraint<>).GetGenericArguments()[0]
@@ -153,7 +153,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfStruct_ParameterConstraintFailure_ReturnsNull()
+    public void ParamOfStruct_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
@@ -162,7 +162,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfStruct_ParameterConstraintSuccess_ReturnsType()
+    public void ParamOfStruct_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
@@ -171,7 +171,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfInterface_ReferenceTypeConstraintFailure_ReturnsNull()
+    public void ParamOfInterface_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
@@ -180,7 +180,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfInterface_StructTypeConstraintFailure_ReturnsNull()
+    public void ParamOfInterface_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IStructConstraint<>).GetGenericArguments()[0]
@@ -190,7 +190,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
 
     [Fact]
     public void
-        ResolveGenericArgumentsByImplementation_ParamOfInterface_DefaultConstructorConstraintFailure_ReturnsNull()
+        ParamOfInterface_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(INewConstraint<>).GetGenericArguments()[0]
@@ -199,7 +199,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfInterface_ParameterConstraintFailure_ReturnsNull()
+    public void ParamOfInterface_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IParameterStructConstraint<>).GetGenericArguments()[0]
@@ -208,7 +208,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ParamOfInterface_ParameterConstraintSuccess_ReturnsType()
+    public void ParamOfInterface_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
@@ -217,7 +217,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfParam_StructTypeConstraintFailure_ReturnsNull()
+    public void ClassOfParam_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(List<>)
@@ -226,7 +226,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
+    public void ClassOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(ClassParametrized<>)
@@ -235,7 +235,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintFailure_ReturnsNull()
+    public void ClassOfParam_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(CustomDictionary<,>)
@@ -244,7 +244,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfParam_ParameterConstraintSuccess_ReturnsType()
+    public void ClassOfParam_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(ClassSimple)
@@ -253,7 +253,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfClass_SameGenericDefinition_BuildArgs()
+    public void ClassOfClass_SameGenericDefinition_BuildArgs()
     {
         //assert
         typeof(List<>).ResolveGenericArgumentsByImplementation(typeof(List<int>))!
@@ -261,7 +261,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfClass_NullBaseType_ReturnsNull()
+    public void ClassOfClass_NullBaseType_ReturnsNull()
     {
         //assert
         typeof(HashSet<>).ResolveGenericArgumentsByImplementation(typeof(List<int>))
@@ -269,7 +269,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfClass_NotGenericBaseType_ReturnsNull()
+    public void ClassOfClass_NotGenericBaseType_ReturnsNull()
     {
         //assert
         typeof(ClassParametrized<>).ResolveGenericArgumentsByImplementation(typeof(List<int>))
@@ -277,7 +277,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfClass_BaseTypeSameGenericDefinition_BuildArgs()
+    public void ClassOfClass_BaseTypeSameGenericDefinition_BuildArgs()
     {
         //assert
         typeof(CustomDictionary<,>).ResolveGenericArgumentsByImplementation(typeof(Dictionary<int, bool>))!
@@ -285,7 +285,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfClass_DifferentGenericDefinition_ResolvesBase()
+    public void ClassOfClass_DifferentGenericDefinition_ResolvesBase()
     {
         //assert
         typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplementation(typeof(Dictionary<int, bool>))!
@@ -293,7 +293,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfInterface_WithImplementation_BuildsArgs()
+    public void ClassOfInterface_WithImplementation_BuildsArgs()
     {
         //assert
         typeof(Dictionary<,>).ResolveGenericArgumentsByImplementation(typeof(IReadOnlyDictionary<int, bool>))!
@@ -301,7 +301,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfInterface_NoImplementation_NoBaseType_ReturnsNull()
+    public void ClassOfInterface_NoImplementation_NoBaseType_ReturnsNull()
     {
         //assert
         typeof(List<>).ResolveGenericArgumentsByImplementation(typeof(IEquatable<int>))
@@ -309,7 +309,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_ClassOfInterface_NoImplementation_WithBaseType_ResolvesBase()
+    public void ClassOfInterface_NoImplementation_WithBaseType_ResolvesBase()
     {
         //assert
         typeof(ParentDictionary<,>).ResolveGenericArgumentsByImplementation(typeof(IReadOnlyDictionary<int, bool>))!
@@ -317,7 +317,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
+    public void StructOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(ValueTuple<>)
@@ -327,7 +327,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
 
     [Fact]
     public void
-        ResolveGenericArgumentsByImplementation_StructOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
+        StructOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(ValueTuple<>)
@@ -336,7 +336,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfParam_ParameterConstraintFailure_ReturnsNull()
+    public void StructOfParam_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(ValueTuple<>)
@@ -345,7 +345,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfParam_ParameterConstraintSuccess_ReturnsType()
+    public void StructOfParam_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(StructEnumerable)
@@ -355,7 +355,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfStruct_SameGenericDefinition_BuildArgs()
+    public void StructOfStruct_SameGenericDefinition_BuildArgs()
     {
         //assert
         typeof(ValueTuple<,>).ResolveGenericArgumentsByImplementation(typeof(ValueTuple<int, bool>))!
@@ -363,7 +363,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfStruct_DifferentGenericDefinition_ReturnsNull()
+    public void StructOfStruct_DifferentGenericDefinition_ReturnsNull()
     {
         //assert
         typeof(ValueTuple<,>).ResolveGenericArgumentsByImplementation(typeof(ValueTuple<int, string, bool>))
@@ -371,7 +371,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfInterface_NoImplementation_ReturnsNull()
+    public void StructOfInterface_NoImplementation_ReturnsNull()
     {
         //assert
         typeof(ValueTuple<,>).ResolveGenericArgumentsByImplementation(typeof(IEquatable<bool>))
@@ -379,7 +379,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_StructOfInterface_WithImplementation_BuildArgs()
+    public void StructOfInterface_WithImplementation_BuildArgs()
     {
         //assert
         typeof(BaseStruct<,,,>).ResolveGenericArgumentsByImplementation(
@@ -388,7 +388,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
+    public void InterfaceOfParam_ReferenceTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IEnumerable<>)
@@ -397,7 +397,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfParam_StructTypeConstraintFailure_ReturnsNull()
+    public void InterfaceOfParam_StructTypeConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IEnumerable<>)
@@ -407,7 +407,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
 
     [Fact]
     public void
-        ResolveGenericArgumentsByImplementation_InterfaceOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
+        InterfaceOfParam_DefaultConstructorConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IEnumerable<>)
@@ -416,7 +416,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfParam_ParameterConstraintFailure_ReturnsNull()
+    public void InterfaceOfParam_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
         typeof(IEnumerable<>)
@@ -425,7 +425,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfParam_ParameterConstraintSuccess_ReturnsType()
+    public void InterfaceOfParam_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
         typeof(IEnumerable<>)
@@ -435,7 +435,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfInterface_SameGenericDefinition_BuildsArgs()
+    public void InterfaceOfInterface_SameGenericDefinition_BuildsArgs()
     {
         //assert
         typeof(IEquatable<>).ResolveGenericArgumentsByImplementation(typeof(IEquatable<bool>))!
@@ -443,7 +443,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfInterface_NoImplementation_ReturnsNull()
+    public void InterfaceOfInterface_NoImplementation_ReturnsNull()
     {
         //assert
         typeof(IEnumerable<>).ResolveGenericArgumentsByImplementation(typeof(IEquatable<bool>))
@@ -451,7 +451,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_InterfaceOfInterface_WithImplementation_BuildArgs()
+    public void InterfaceOfInterface_WithImplementation_BuildArgs()
     {
         //assert
         typeof(IParentOther<,>).ResolveGenericArgumentsByImplementation(
@@ -460,7 +460,7 @@ public class ResolveGenericArgumentsByImplementationExtensionTests
     }
 
     [Fact]
-    public void ResolveGenericArgumentsByImplementation_BuildArgs_InferByDefinitions()
+    public void BuildArgs_InferByDefinitions()
     {
         //assert
         typeof(ConstrainedComplex<,,,>).ResolveGenericArgumentsByImplementation(
