@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Reflection;
 
 // ReSharper disable once CheckNamespace
@@ -62,11 +61,8 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
         if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !target.HasDefaultConstructor())
             return null;
 
-        // ensure all parameter constraints are implemented
-        var meetsConstraints = type.GetGenericParameterConstraints()
-            .All(constraint => constraint.ResolveGenericArgumentsByImplementation(target) != null);
-
-        return meetsConstraints ? new[] { target } : null;
+        // return target, if all parameter constraints are implemented
+        return type.ResolveByGenericParameterConstraints(target);
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
@@ -85,11 +81,8 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
         if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !target.HasDefaultConstructor())
             return null;
 
-        // ensure all parameter constraints are implemented
-        var meetsConstraints = type.GetGenericParameterConstraints()
-            .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
-
-        return meetsConstraints ? new[] { target } : null;
+        // return target, if all parameter constraints are implemented
+        return type.ResolveByGenericParameterConstraints(target);
     }
 
     private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
@@ -108,10 +101,24 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
         if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
             return null;
 
-        // ensure all parameter constraints are implemented
-        var meetsConstraints = type.GetGenericParameterConstraints()
-            .All(constraint => target.ResolveGenericArgumentsByImplementation(constraint) != null);
+        // return target, if all parameter constraints are implemented
+        return type.ResolveByGenericParameterConstraints(target);
+    }
+}
 
-        return meetsConstraints ? new[] { target } : null;
+file static class Helper
+{
+    public static Type[]? ResolveByGenericParameterConstraints(this Type type, Type target)
+    {
+        var typeConstraints = type.GetGenericParameterConstraints();
+
+        foreach (var typeConstraint in typeConstraints)
+        {
+            var constraintArgs = typeConstraint.ResolveGenericArgumentsByImplementation(target);
+            if (constraintArgs is null)
+                return null;
+        }
+
+        return new[] { target };
     }
 }

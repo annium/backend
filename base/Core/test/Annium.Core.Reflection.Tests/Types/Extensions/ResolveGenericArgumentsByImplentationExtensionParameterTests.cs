@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using Annium.Core.Reflection.Tests.Types.Extensions.ResolveGenericArgumentsByImplementation;
 using Annium.Testing;
 using Xunit;
 
@@ -42,7 +41,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     {
         //assert
         typeof(IClassConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])
+            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])
             .IsDefault();
     }
 
@@ -51,7 +50,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     {
         //assert
         typeof(IListConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0])!
+            .ResolveGenericArgumentsByImplementation(typeof(IEnumerableConstraint<>).GetGenericArguments()[0])!
             .IsEqual(new[] { typeof(IListConstraint<>).GetGenericArguments()[0] });
     }
 
@@ -77,7 +76,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Class_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(FileInfo))
             .IsDefault();
     }
@@ -86,9 +85,12 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Class_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterClassConstraint<>).GetGenericArguments()[0]
+        typeof(IClassBaseConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(ClassBase))!
             .IsEqual(new[] { typeof(ClassBase) });
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
+            .ResolveGenericArgumentsByImplementation(typeof(string))!
+            .IsEqual(Type.EmptyTypes);
     }
 
     [Fact]
@@ -122,7 +124,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Struct_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(bool))
             .IsDefault();
     }
@@ -131,8 +133,8 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Struct_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterCuriouslyRecurringConstraint<>).GetGenericArguments()[0]
-            .ResolveGenericArgumentsByImplementation(typeof(ValueTuple))!
+        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
+            .ResolveGenericArgumentsByImplementation(typeof(ValueTuple))
             .IsEqual(new[] { typeof(ValueTuple) });
     }
 
@@ -168,7 +170,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Interface_ParameterConstraintFailure_ReturnsNull()
     {
         //assert
-        typeof(IParameterCuriouslyRecurringConstraint<>).GetGenericArguments()[0]
+        typeof(IEquatableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))
             .IsDefault();
     }
@@ -177,7 +179,7 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     public void Interface_ParameterConstraintSuccess_ReturnsType()
     {
         //assert
-        typeof(IParameterInterfaceConstraint<>).GetGenericArguments()[0]
+        typeof(IEnumerableConstraint<>).GetGenericArguments()[0]
             .ResolveGenericArgumentsByImplementation(typeof(IEnumerable))!
             .IsEqual(new[] { typeof(IEnumerable) });
     }
@@ -199,15 +201,19 @@ public class ResolveGenericArgumentsByImplementationExtensionParameterTests
     {
     }
 
-    private interface IParameterClassConstraint<T> where T : ClassBase
+    private interface IClassBaseConstraint<T> where T : ClassBase
     {
     }
 
-    private interface IParameterInterfaceConstraint<T> where T : IEnumerable
+    private interface IEnumerableConstraint<T> where T : IEnumerable
     {
     }
 
-    private interface IParameterCuriouslyRecurringConstraint<T> where T : IEquatable<T>
+    private interface IEquatableConstraint<T> where T : IEquatable<T>
+    {
+    }
+
+    private class ClassBase
     {
     }
 }
