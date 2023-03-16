@@ -12,17 +12,19 @@ public static class ResolveByImplementationExtension
         if (type is null)
             throw new ArgumentNullException(nameof(type));
 
+        if (target is null)
+            throw new ArgumentNullException(nameof(target));
+
         // if type is defined - no need for resolution
         if (!type.ContainsGenericParameters)
-            // TODO: fix
-            return type;
+            return target.IsAssignableFrom(type) ? type : null;
 
         var args = type.ResolveGenericArgumentsByImplementation(target);
         if (args is null)
             return null;
 
         if (type.IsGenericParameter)
-            return args.FirstOrDefault();
+            return args.SingleOrDefault();
 
         if (!type.GetGenericTypeDefinition().TryMakeGenericType(out var result, args))
             return null;
