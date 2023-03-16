@@ -9,25 +9,6 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
 {
     private static Type[]? ResolveInterfaceArgumentsByGenericParameter(this Type type, Type target)
     {
-        if (!type.IsGenericParameter)
-        {
-            // if type is not generic - return empty array, meaning successful resolution
-            if (!type.IsGenericType)
-                return type.GetTargetImplementation(target) is null ? null : Type.EmptyTypes;
-
-            // if type is defined - return it's arguments
-            if (!type.ContainsGenericParameters)
-                return type.GetTargetImplementation(target) is null ? null : type.GetGenericArguments();
-        }
-
-        // if target is not generic - return type's generic arguments, if target is implemented
-        if (!type.IsGenericParameter && target is { IsGenericParameter: false, IsGenericType: false })
-            return target.IsAssignableFrom(type) ? type.GetGenericArguments() : null;
-
-        // as of here:
-        // - type is open generic type with generic parameters
-        // - target is open/defined generic type with/without generic parameters
-
         var attrs = target.GenericParameterAttributes;
 
         // if reference type constraint
@@ -42,28 +23,21 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
         if (attrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
             return null;
 
-        // ensure all parameter constraints are implemented
-        var meetsConstraints = target.GetGenericParameterConstraints()
-            .All(constraint => type.ResolveGenericArgumentsByImplementation(constraint) != null);
-
-        return meetsConstraints ? type.GetGenericArguments() : null;
+        return type.CanBeUsedAsParameter(target) ? type.GetGenericArguments() : null;
     }
 
     private static Type[]? ResolveInterfaceArgumentsByInterface(this Type type, Type target)
     {
-        if (!type.IsGenericParameter)
-        {
-            // if type is not generic - return empty array, meaning successful resolution
-            if (!type.IsGenericType)
-                return type.GetTargetImplementation(target) is null ? null : Type.EmptyTypes;
+        // if type is not generic - check target implementation and return empty types if implementation is available
+        if (!type.IsGenericType)
+            return type.GetTargetImplementation(target) is null ? null : Type.EmptyTypes;
 
-            // if type is defined - return it's arguments
-            if (!type.ContainsGenericParameters)
-                return type.GetTargetImplementation(target) is null ? null : type.GetGenericArguments();
-        }
+        // if type is defined generic - check target implementation and return it's arguments if implementation is available
+        if (!type.ContainsGenericParameters)
+            return type.GetTargetImplementation(target) is null ? null : type.GetGenericArguments();
 
         // if target is not generic - return type's generic arguments, if target is implemented
-        if (!type.IsGenericParameter && target is { IsGenericParameter: false, IsGenericType: false })
+        if (!target.IsGenericType)
             return target.IsAssignableFrom(type) ? type.GetGenericArguments() : null;
 
         // as of here:

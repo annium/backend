@@ -91,4 +91,18 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
 
         return true;
     }
+
+    private static bool CanBeUsedAsParameter(this Type type, Type parameter)
+    {
+        var constraints = parameter.GetGenericParameterConstraints();
+
+        foreach (var constraint in constraints)
+        {
+            var constraintArgs = type.ResolveGenericArgumentsByImplementation(constraint);
+            if (constraintArgs is null)
+                return false;
+        }
+
+        return true;
+    }
 }
