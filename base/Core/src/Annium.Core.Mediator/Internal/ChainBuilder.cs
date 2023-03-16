@@ -96,7 +96,6 @@ internal class ChainBuilder : ILogSubject<ChainBuilder>
     private Type? ResolveHandler(Type input, Type output, Handler handler)
     {
         var requestIn = input.GetTargetImplementation(handler.RequestIn);
-        // var responseOut = handler.ResponseOut.ResolveByImplementations(output);
         var responseOut = output.GetTargetImplementation(handler.ResponseOut);
 
         if (requestIn is null || responseOut is null)
