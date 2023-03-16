@@ -15,10 +15,13 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
 
         if (type.IsGenericParameter)
             return type.ResolveGenericParameterArgumentsByTarget(target);
+
         if (type.IsClass)
             return type.ResolveClassArgumentsByTarget(target);
+
         if (type.IsValueType)
             return type.ResolveStructArgumentsByByTarget(target);
+
         if (type.IsInterface)
             return type.ResolveInterfaceArgumentsByTarget(target);
 
@@ -30,10 +33,13 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
     {
         if (target.IsGenericParameter)
             return type.ResolveGenericParameterArgumentsByGenericParameter(target);
+
         if (target.IsClass)
             return type.ResolveGenericParameterArgumentsByClass(target);
+
         if (target.IsValueType)
             return type.ResolveGenericParameterArgumentsByStruct(target);
+
         if (target.IsInterface)
             return type.ResolveGenericParameterArgumentsByInterface(target);
 
@@ -44,10 +50,13 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
     {
         if (target.IsGenericParameter)
             return type.ResolveClassArgumentsByGenericParameter(target);
+
         if (target.IsClass)
             return type.ResolveClassArgumentsByClass(target);
+
         if (target.IsValueType)
             return null;
+
         if (target.IsInterface)
             return type.ResolveClassArgumentsByInterface(target);
 
@@ -58,10 +67,13 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
     {
         if (target.IsGenericParameter)
             return type.ResolveStructArgumentsByGenericParameter(target);
+
         if (target.IsClass)
             return null;
+
         if (target.IsValueType)
             return type.ResolveStructArgumentsByStruct(target);
+
         if (target.IsInterface)
             return type.ResolveStructArgumentsByInterface(target);
 
@@ -72,10 +84,13 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
     {
         if (target.IsGenericParameter)
             return type.ResolveInterfaceArgumentsByGenericParameter(target);
+
         if (target.IsClass)
-            return null;
+            return type.ResolveInterfaceArgumentsByGenericParameter(target);
+
         if (target.IsValueType)
             return null;
+
         if (target.IsInterface)
             return type.ResolveInterfaceArgumentsByInterface(target);
 
