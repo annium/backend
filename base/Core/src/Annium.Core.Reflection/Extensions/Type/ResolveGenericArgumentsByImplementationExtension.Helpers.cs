@@ -105,4 +105,38 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
 
         return true;
     }
+
+    private static bool TryGetTargetImplementation(this Type type, Type target, out Type[]? args)
+    {
+        // if type is not generic - check target implementation and return empty types if implementation is available
+        if (!type.IsGenericType)
+        {
+            args = type.GetTargetImplementation(target) is null ? null : Type.EmptyTypes;
+            return true;
+        }
+
+        // if type is defined generic - check target implementation and return it's arguments if implementation is available
+        if (!type.ContainsGenericParameters)
+        {
+            args = type.GetTargetImplementation(target) is null ? null : type.GetGenericArguments();
+            return true;
+        }
+
+        args = null;
+        return false;
+    }
+
+    private static bool TryCheckAssignableFrom(this Type type, Type target, out Type[]? args)
+    {
+        // is expected to be used only on generic type
+        // if target is not generic - return type's generic arguments, if target is implemented
+        if (!target.IsGenericType)
+        {
+            args = target.IsAssignableFrom(type) ? type.GetGenericArguments() : null;
+            return true;
+        }
+
+        args = null;
+        return false;
+    }
 }
