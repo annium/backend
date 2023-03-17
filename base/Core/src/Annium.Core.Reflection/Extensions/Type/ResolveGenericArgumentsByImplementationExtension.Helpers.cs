@@ -6,19 +6,6 @@ namespace Annium.Core.Reflection;
 
 public static partial class ResolveGenericArgumentsByImplementationExtension
 {
-    private static Type[]? ResolveBase(Type type, Type target)
-    {
-        var unboundBaseType = type.GetUnboundBaseType();
-        var baseArgs = unboundBaseType!.ResolveGenericArgumentsByImplementation(target);
-        if (baseArgs is null)
-            return null;
-
-        if (!type.BaseType!.GetGenericTypeDefinition().TryMakeGenericType(out var baseImplementation, baseArgs))
-            return null;
-
-        return type.ResolveGenericArgumentsByImplementation(baseImplementation!);
-    }
-
     private static Type[]? BuildArgs(Type type, Type source, Type target)
     {
         var args = type.GetGenericArguments();
