@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
@@ -15,16 +14,6 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
         // as of here:
         // - type is open generic type with generic parameters
         // - target is open/defined generic type with/without generic parameters
-
-        var attrs = target.GenericParameterAttributes;
-
-        // if not nullable value type constraint is not presented
-        if (attrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
-            return null;
-
-        // if default parameter constraint is not presented
-        if (attrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !type.HasDefaultConstructor())
-            return null;
 
         return type.CanBeUsedAsParameter(target) ? type.GetGenericArguments() : null;
     }

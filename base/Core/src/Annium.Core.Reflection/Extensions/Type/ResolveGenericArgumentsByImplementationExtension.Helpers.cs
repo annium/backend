@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.Reflection;
@@ -81,6 +82,20 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
 
     private static bool CanBeUsedAsParameter(this Type type, Type parameter)
     {
+        var parameterAttrs = parameter.GenericParameterAttributes;
+
+        // check reference type constraint
+        if (parameterAttrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint) && !type.IsClass)
+            return false;
+
+        // check not nullable value type constraint
+        if (parameterAttrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint) && !type.IsNotNullableValueType())
+            return false;
+
+        // check default parameter constraint
+        if (parameterAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !(type.IsConstructable() && type.HasDefaultConstructor()))
+            return false;
+
         var constraints = parameter.GetGenericParameterConstraints();
 
         foreach (var constraint in constraints)

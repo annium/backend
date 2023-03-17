@@ -27,14 +27,40 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             return null;
 
         // ensure all parameter constraints are implemented
-        var typeConstraints = type.GetGenericParameterConstraints();
+        return Helper.ParameterMeetsConstraints(type, target) ? new[] { type } : null;
+    }
+
+    private static Type[]? ResolveGenericParameterArgumentsByClass(this Type type, Type target)
+    {
+        // return target, if all parameter constraints are implemented
+        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
+    }
+
+    private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
+    {
+        // return target, if all parameter constraints are implemented
+        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
+    }
+
+    private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
+    {
+        // return target, if all parameter constraints are implemented
+        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
+    }
+}
+
+file class Helper
+{
+    public static bool ParameterMeetsConstraints(Type source, Type target)
+    {
+        var sourceConstraints = source.GetGenericParameterConstraints();
         var targetConstraints = target.GetGenericParameterConstraints();
         foreach (var targetConstraint in targetConstraints)
         {
             var meetsConstraint = false;
-            foreach (var typeConstraint in typeConstraints)
+            foreach (var sourceConstraint in sourceConstraints)
             {
-                var constraintArgs = typeConstraint.ResolveGenericArgumentsByImplementation(targetConstraint);
+                var constraintArgs = sourceConstraint.ResolveGenericArgumentsByImplementation(targetConstraint);
                 if (constraintArgs is null)
                     continue;
 
@@ -43,65 +69,9 @@ public static partial class ResolveGenericArgumentsByImplementationExtension
             }
 
             if (!meetsConstraint)
-                return null;
+                return false;
         }
 
-        return new[] { type };
-    }
-
-    private static Type[]? ResolveGenericParameterArgumentsByClass(this Type type, Type target)
-    {
-        var typeAttrs = type.GenericParameterAttributes;
-
-        // if not nullable value type constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
-            return null;
-
-        // if default parameter constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !target.HasDefaultConstructor())
-            return null;
-
-        // return target, if all parameter constraints are implemented
-        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
-    }
-
-    private static Type[]? ResolveGenericParameterArgumentsByStruct(this Type type, Type target)
-    {
-        var typeAttrs = type.GenericParameterAttributes;
-
-        // if reference type constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
-            return null;
-
-        // if not nullable value type constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint) && !target.IsNotNullableValueType())
-            return null;
-
-        // if default parameter constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint) && !target.HasDefaultConstructor())
-            return null;
-
-        // return target, if all parameter constraints are implemented
-        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
-    }
-
-    private static Type[]? ResolveGenericParameterArgumentsByInterface(this Type type, Type target)
-    {
-        var typeAttrs = type.GenericParameterAttributes;
-
-        // if reference type constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.ReferenceTypeConstraint))
-            return null;
-
-        // if not nullable value type constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.NotNullableValueTypeConstraint))
-            return null;
-
-        // if default parameter constraint is not presented
-        if (typeAttrs.HasFlag(GenericParameterAttributes.DefaultConstructorConstraint))
-            return null;
-
-        // return target, if all parameter constraints are implemented
-        return target.CanBeUsedAsParameter(type) ? new[] { target } : null;
+        return true;
     }
 }
