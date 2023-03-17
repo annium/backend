@@ -2,7 +2,7 @@ using System;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Reflection.Tests.Types;
+namespace Annium.Core.Reflection.Tests;
 
 public class TypeHelperTest
 {

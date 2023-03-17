@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Core.Reflection.Tests.Types.Extensions;
+namespace Annium.Core.Reflection.Tests.Extensions.Types;
 
 public class ResolveGenericArgumentsByImplementationExtensionInterfaceTests
 {
