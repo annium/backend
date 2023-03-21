@@ -99,7 +99,7 @@ internal class MapBuilder : IMapBuilder
 
     private Mapping BuildMapping(Type src, Type tgt, IMapConfiguration cfg)
     {
-        var mapResolver = _mapResolvers.OrderBy(x => x.Order).FirstOrDefault(x => x.CanResolveMap(src, tgt));
+        var mapResolver = _mapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
         if (mapResolver is not null)
             return mapResolver.ResolveMap(src, tgt, cfg, _context);
 

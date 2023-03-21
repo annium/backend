@@ -32,12 +32,12 @@ public static class ServiceContainerExtensions
         )).AsSelf().Singleton();
 
         // register resolvers
-        container.Add<IMapResolver, AssignmentMapResolver>().Singleton();
-        container.Add<IMapResolver, ConstructorMapResolver>().Singleton();
-        container.Add<IMapResolver, DictionaryAssignmentMapResolver>().Singleton();
-        container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();
         container.Add<IMapResolver, EnumerableMapResolver>().Singleton();
         container.Add<IMapResolver, ResolutionMapResolver>().Singleton();
+        container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();
+        container.Add<IMapResolver, ConstructorMapResolver>().Singleton();
+        container.Add<IMapResolver, DictionaryAssignmentMapResolver>().Singleton();
+        container.Add<IMapResolver, AssignmentMapResolver>().Singleton();
 
         // add default profile
         container.AddProfileInstance(new EmptyProfile());

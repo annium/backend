@@ -7,8 +7,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers;
 
 internal class EnumerableMapResolver : IMapResolver
 {
-    public int Order => 500;
-
     public bool CanResolveMap(Type src, Type tgt)
     {
         return src.GetEnumerableElementType() != null && tgt.GetEnumerableElementType() != null;

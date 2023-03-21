@@ -7,7 +7,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers;
 
 internal class ResolutionMapResolver : IMapResolver
 {
-    public int Order => 1000;
     private readonly ITypeManager _typeManager;
 
     public ResolutionMapResolver(ITypeManager typeManager)

@@ -8,7 +8,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers;
 
 internal class DictionaryAssignmentMapResolver : IMapResolver
 {
-    public int Order => 1900;
     private readonly IRepacker _repacker;
 
     public DictionaryAssignmentMapResolver(IRepacker repacker)

@@ -7,7 +7,6 @@ namespace Annium.Core.Mapper.Internal.Resolvers;
 
 internal class ConstructorMapResolver : IMapResolver
 {
-    public int Order => 1500;
     private readonly IRepacker _repacker;
 
     public ConstructorMapResolver(IRepacker repacker)
