@@ -9,6 +9,8 @@ namespace Annium.linq2db.Extensions.Internal.Configuration;
 
 internal static class MetadataProvider
 {
+    private static readonly BindingFlags ColumnMemberFlags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
     public static DatabaseMetadata Describe(MappingSchema schema, MetadataFlags flags)
     {
         var types = schema.GetDefinedTypes();
@@ -22,7 +24,11 @@ internal static class MetadataProvider
     {
         var table = schema.GetAttribute<TableAttribute>(type)!;
 
-        var columns = type.GetProperties().Concat<MemberInfo>(type.GetFields())
+        var properties = type.GetProperties(ColumnMemberFlags);
+        var fields = type.GetFields(ColumnMemberFlags);
+        var members = properties.Concat<MemberInfo>(fields).ToArray();
+
+        var columns = members
             .Select(x => Build(schema, type, x, flags))
             .OfType<ColumnMetadata>()
             .ToDictionary(x => x.Member);
@@ -35,8 +41,8 @@ internal static class MetadataProvider
         var memberType = member switch
         {
             PropertyInfo property => property.PropertyType,
-            FieldInfo field       => field.FieldType,
-            _                     => throw new InvalidOperationException($"Member {member} is not supported")
+            FieldInfo field => field.FieldType,
+            _ => throw new InvalidOperationException($"Member {member} is not supported")
         };
         var column = schema.GetAttribute<ColumnAttribute>(type, member);
 
