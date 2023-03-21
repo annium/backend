@@ -32,6 +32,7 @@ public static class ServiceContainerExtensions
         )).AsSelf().Singleton();
 
         // register resolvers
+        container.Add<IMapResolver, InstanceOfMapResolver>().Singleton();
         container.Add<IMapResolver, EnumerableMapResolver>().Singleton();
         container.Add<IMapResolver, ResolutionMapResolver>().Singleton();
         container.Add<IMapResolver, DictionaryConstructorMapResolver>().Singleton();

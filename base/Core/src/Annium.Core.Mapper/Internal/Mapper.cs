@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Annium.Core.Reflection;
 
 namespace Annium.Core.Mapper.Internal;
 
@@ -39,10 +40,15 @@ internal class Mapper : IMapper
             throw new ArgumentNullException(nameof(type));
 
         if (source is null)
-            return Activator.CreateInstance(type)!;
+        {
+            if (!type.IsConstructable())
+                throw new InvalidOperationException($"Can't convert null to {type.FriendlyName()}, that is not constructable");
 
-        if (type.IsInstanceOfType(source))
-            return source;
+            if (!type.HasDefaultConstructor())
+                throw new InvalidOperationException($"Can't convert null to {type.FriendlyName()}, that has no default constructor");
+
+            return Activator.CreateInstance(type)!;
+        }
 
         var map = _mapBuilder.GetMap(source.GetType(), type);
 

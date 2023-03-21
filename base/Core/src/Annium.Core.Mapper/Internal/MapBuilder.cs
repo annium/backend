@@ -82,9 +82,6 @@ internal class MapBuilder : IMapBuilder
 
     private Mapping ResolveMapping(Type src, Type tgt)
     {
-        if (src == tgt)
-            return ex => ex;
-
         var entry = GetEntry((src, tgt));
         lock (entry.MappingLock)
         {
