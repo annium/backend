@@ -28,9 +28,9 @@ public class AbstractJsonConverterFactory : JsonConverterFactory
 
         // if implements IEnumerable - likely will be serialized as Json Array, so not suitable for type resolution
         if (objectType.GetInterfaces().Any(
-                x => x == typeof(IEnumerable) ||
-                    x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
-            ))
+            x => x == typeof(IEnumerable) ||
+                x.IsGenericType && x.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+        ))
             return false;
 
         var targetType = objectType.IsGenericType ? objectType.GetGenericTypeDefinition() : objectType;
