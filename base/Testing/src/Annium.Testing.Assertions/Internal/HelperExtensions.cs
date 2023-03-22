@@ -1,15 +1,27 @@
+using System.Runtime.CompilerServices;
 using System.Text.Json;
 
 namespace Annium.Testing.Assertions.Internal;
 
 internal static class HelperExtensions
 {
-    public static string Str<T>(this T value) => JsonSerializer.Serialize(value);
-
     public static string Wrap<T>(this T value, string ex)
     {
-        var v = JsonSerializer.Serialize(value);
+        var v = value.Stringify();
 
         return v == ex ? v : $"{ex} ({v})";
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    private static string Stringify<T>(this T value)
+    {
+        try
+        {
+            return JsonSerializer.Serialize(value);
+        }
+        catch
+        {
+            return value?.ToString() ?? "null";
+        }
     }
 }
