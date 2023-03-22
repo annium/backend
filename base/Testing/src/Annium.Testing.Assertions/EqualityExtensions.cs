@@ -16,7 +16,7 @@ public static class EqualityExtensions
     )
     {
         if (!EqualityComparer<T>.Default.Equals(value, data))
-            throw new AssertionFailedException(message ?? $"{valueEx} ({value.Str()}) != {dataEx} ({data.Str()})");
+            throw new AssertionFailedException(message ?? $"{value.Wrap(valueEx)} != {data.Wrap(dataEx)}");
     }
 
     public static void IsNot<T>(
@@ -28,6 +28,6 @@ public static class EqualityExtensions
     )
     {
         if (EqualityComparer<T>.Default.Equals(value, data))
-            throw new AssertionFailedException(message ?? $"{valueEx} ({value.Str()}) == {dataEx} ({data.Str()})");
+            throw new AssertionFailedException(message ?? $"{value.Wrap(valueEx)} == {data.Wrap(dataEx)}");
     }
 }
