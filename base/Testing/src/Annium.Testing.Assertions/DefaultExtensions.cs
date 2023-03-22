@@ -12,12 +12,10 @@ public static class ValueExtensions
     public static T IsDefault<T>(
         this T value,
         string? message = null,
-        IMapper? mapper = default,
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
-        if (!value.IsShallowEqual(default(T)!, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
-            throw new AssertionFailedException(message ?? $"{value.Wrap(valueEx)} is not default");
+        value.Is(default, $"{value.Wrap(valueEx)} is not default");
 
         return value;
     }
@@ -25,12 +23,10 @@ public static class ValueExtensions
     public static T IsNotDefault<T>(
         this T value,
         string? message = null,
-        IMapper? mapper = default,
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
-        if (value.IsShallowEqual(default(T)!, mapper ?? Mapper.GetFor(Assembly.GetCallingAssembly())))
-            throw new AssertionFailedException(message ?? $"{value.Wrap(valueEx)} is default");
+        value.IsNot(default, $"{value.Wrap(valueEx)} is default");
 
         return value;
     }
