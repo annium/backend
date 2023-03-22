@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using AgileObjects.ReadableExpressions;
 using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
+using Annium.Debug;
 
 namespace Annium.Core.Mapper.Internal;
 
@@ -66,13 +68,17 @@ internal class MapBuilder : IMapBuilder
         lock (entry.MapLock)
         {
             if (entry.HasMap)
+            {
+                this.Trace($"Use existing map for {src.FriendlyName()} -> {tgt.FriendlyName()}");
                 return entry.Map;
+            }
 
             var param = Expression.Parameter(src);
             var mapping = ResolveMapping(src, tgt);
 
             var result = Expression.Lambda(mapping(param), param);
-            // var str = result.ToReadableString();
+            var resultView = result.ToReadableString();
+            this.Trace($"Resolved map for {src.FriendlyName()} -> {tgt.FriendlyName()} to: {Environment.NewLine}{resultView}");
 
             entry.SetMap(result.Compile());
         }
@@ -86,7 +92,10 @@ internal class MapBuilder : IMapBuilder
         lock (entry.MappingLock)
         {
             if (entry.HasMapping)
+            {
+                this.Trace($"Use existing mapping for {src.FriendlyName()} -> {tgt.FriendlyName()}");
                 return entry.Mapping;
+            }
 
             entry.SetMapping(() => BuildMapping(src, tgt, entry.HasConfiguration ? entry.Configuration : MapConfiguration.Empty));
         }
@@ -98,7 +107,10 @@ internal class MapBuilder : IMapBuilder
     {
         var mapResolver = _mapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
         if (mapResolver is not null)
+        {
+            this.Trace($"Build mapping for {src.FriendlyName()} -> {tgt.FriendlyName()} with {mapResolver.GetType().FriendlyName()}");
             return mapResolver.ResolveMap(src, tgt, cfg, _context);
+        }
 
         throw new MappingException(src, tgt, "No map found.");
     }
@@ -139,6 +151,7 @@ internal class MapBuilder : IMapBuilder
             if (_entries.TryGetValue(key, out var entry))
                 return entry;
 
+            this.Trace($"Create entry for {key.Item1.FriendlyName()} -> {key.Item2.FriendlyName()}");
             return _entries[key] = Entry.Create();
         }
     }
