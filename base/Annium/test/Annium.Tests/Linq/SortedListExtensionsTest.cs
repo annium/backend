@@ -41,6 +41,25 @@ public class SortedListExtensionsTest
     }
 
     [Fact]
+    public void FindIndex()
+    {
+        // arrange
+        var data = Enumerable.Range(1, 5).ToSortedList(x => x);
+
+        // act & assert - by key
+        data.FindIndex(0).Is(-1);
+        data.FindIndex(1).Is(0);
+        data.FindIndex(5).Is(4);
+        data.FindIndex(6).Is(-1);
+
+        // act & assert - by value predicate
+        data.FindIndex(x => x == 0).Is(-1);
+        data.FindIndex(x => x == 1).Is(0);
+        data.FindIndex(x => x == 5).Is(4);
+        data.FindIndex(x => x == 6).Is(-1);
+    }
+
+    [Fact]
     public void GetChunks()
     {
         // arrange
