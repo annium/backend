@@ -3,8 +3,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Reflection;
 using Annium.linq2db.Extensions.Configuration.Metadata;
+using Annium.Reflection;
 using LinqToDB;
 
 namespace Annium.linq2db.Extensions.Extensions;

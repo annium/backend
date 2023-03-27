@@ -5,9 +5,9 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Core.DependencyInjection;
-using Annium.Core.Reflection;
 using Annium.Data.Operations;
 using Annium.Localization.Abstractions;
+using Annium.Reflection;
 
 namespace Annium.Extensions.Composition.Internal;
 

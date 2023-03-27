@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Annium.Core.Reflection;
 using Annium.Core.Runtime.Types;
+using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 

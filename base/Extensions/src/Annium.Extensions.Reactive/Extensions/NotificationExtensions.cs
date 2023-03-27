@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.Linq.Expressions;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace System.Reactive.Linq;

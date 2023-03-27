@@ -1,5 +1,5 @@
 using System;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 using IBuilderBase = Annium.Core.DependencyInjection.IBulkRegistrationBuilderBase;
 using IBuilderTarget = Annium.Core.DependencyInjection.IBulkRegistrationBuilderTarget;
 

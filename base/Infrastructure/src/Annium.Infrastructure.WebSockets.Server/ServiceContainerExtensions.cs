@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Core.Reflection;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Infrastructure.WebSockets.Server.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal;
@@ -10,6 +9,7 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;

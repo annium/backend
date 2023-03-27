@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using Annium.Core.Mapper;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Data.Models.Extensions;

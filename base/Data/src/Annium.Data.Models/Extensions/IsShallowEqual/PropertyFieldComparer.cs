@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Annium.Core.Mapper;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Data.Models.Extensions;

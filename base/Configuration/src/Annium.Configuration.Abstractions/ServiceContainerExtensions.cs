@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Configuration.Abstractions;
 using Annium.Configuration.Abstractions.Internal;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;

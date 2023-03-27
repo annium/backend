@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 

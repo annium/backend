@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 namespace Annium.Infrastructure.WebSockets.Server.Models;
 

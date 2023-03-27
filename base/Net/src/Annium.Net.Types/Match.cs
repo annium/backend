@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Annium.Core.Reflection;
+using Annium.Reflection;
 
 namespace Annium.Net.Types;
 
