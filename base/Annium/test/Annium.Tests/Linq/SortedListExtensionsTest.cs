@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Annium.Linq;
 using Annium.Testing;
@@ -7,6 +8,49 @@ namespace Annium.Tests.Linq;
 
 public class SortedListExtensionsTest
 {
+    [Fact]
+    public void AddRange()
+    {
+        // arrange
+        var data = Enumerable.Range(1, 5).Reverse().ToSortedList(x => x);
+
+        // act & assert - duplicate throws
+        Wrap.It(() => data.AddRange(Enumerable.Range(5, 7).ToDictionary(x => x)))
+            .Throws<InvalidOperationException>()
+            .Reports("duplicate key 5");
+
+        // act
+        data.AddRange(Enumerable.Range(6, 2).ToDictionary(x => x, x => x - 2));
+
+        // assert
+        data.Count.Is(7);
+        data.Keys.IsEqual(Enumerable.Range(1, 7));
+        data.Values.IsEqual(new[] { 1, 2, 3, 4, 5, 4, 5 });
+    }
+
+    [Fact]
+    public void SetRange()
+    {
+        // arrange
+        var data = Enumerable.Range(5, 5).Reverse().ToSortedList(x => x);
+
+        // act
+        data.SetRange(Enumerable.Range(9, 3).Reverse().ToDictionary(x => x, x => x - 2));
+
+        // assert
+        data.Count.Is(7);
+        data.Keys.IsEqual(Enumerable.Range(5, 7));
+        data.Values.IsEqual(new[] { 5, 6, 7, 8, 7, 8, 9 });
+
+        // act
+        data.SetRange(Enumerable.Range(3, 3).Reverse().ToDictionary(x => x, x => x + 10));
+
+        // assert
+        data.Count.Is(9);
+        data.Keys.IsEqual(Enumerable.Range(3, 9));
+        data.Values.IsEqual(new[] { 13, 14, 15, 6, 7, 8, 7, 8, 9 });
+    }
+
     [Fact]
     public void GetRange()
     {
