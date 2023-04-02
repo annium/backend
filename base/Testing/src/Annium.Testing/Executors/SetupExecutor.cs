@@ -7,7 +7,7 @@ public class SetupExecutor : ITestExecutor, ILogSubject<SetupExecutor>
 {
     public ILogger<SetupExecutor> Logger { get; }
 
-    public uint Order { get; } = 2;
+    public uint Order => 2;
 
     public SetupExecutor(
         ILogger<SetupExecutor> logger

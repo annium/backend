@@ -9,10 +9,10 @@ using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<SubUnsubCommand>
+internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<SubUnsubCommand>
 {
-    public override string Id { get; } = "sub-unsub";
-    public override string Description => $"test {Id} flow";
+    public static string Id => "sub-unsub";
+    public static string Description => $"test {Id} flow";
     public ILogger<SubUnsubCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 

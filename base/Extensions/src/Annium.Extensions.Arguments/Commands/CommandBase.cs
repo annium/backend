@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 
 // ReSharper disable once CheckNamespace
@@ -5,16 +6,13 @@ namespace Annium.Extensions.Arguments;
 
 public abstract class CommandBase
 {
-    public abstract string Id { get; }
+    internal Root Root => _root ?? throw new InvalidOperationException("Root is not set");
+    private Root? _root;
 
-    public abstract string Description { get; }
-
-    internal Root? Root { get; private set; }
-
-    public abstract void Process(string command, string[] args, CancellationToken ct);
+    public abstract void Process(string id, string description, string[] args, CancellationToken ct);
 
     internal void SetRoot(Root root)
     {
-        Root = root;
+        _root = root;
     }
 }

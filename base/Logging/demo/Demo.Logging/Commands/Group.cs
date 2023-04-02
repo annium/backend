@@ -1,9 +1,11 @@
+using Annium.Extensions.Arguments;
+
 namespace Demo.Logging.Commands;
 
-internal class Group : Annium.Extensions.Arguments.Group
+internal class Group : Annium.Extensions.Arguments.Group, ICommandDescriptor
 {
-    public override string Id { get; } = "";
-    public override string Description { get; } = "log toolkit";
+    public static string Id => "";
+    public static string Description => "log toolkit";
 
     public Group()
     {

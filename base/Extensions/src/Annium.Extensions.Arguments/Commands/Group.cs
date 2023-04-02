@@ -10,48 +10,49 @@ namespace Annium.Extensions.Arguments;
 
 public abstract class Group : CommandBase
 {
-    private readonly List<Type> _commands = new();
+    private static readonly string ConfigurationTypesName = typeof(IConfigurationTypes<>).PureName();
+    private readonly List<CommandInfo> _commands = new();
 
     public Group Add<T>()
-        where T : CommandBase
+        where T : CommandBase, ICommandDescriptor
     {
-        _commands.Add(typeof(T));
+        var configurationTypes = typeof(T).GetInterfaces().SingleOrDefault(x => x.PureName() == ConfigurationTypesName)?.GetGenericArguments() ?? Type.EmptyTypes;
+        _commands.Add(new CommandInfo(T.Id, T.Description, typeof(T), configurationTypes));
 
         return this;
     }
 
-    public override void Process(string command, string[] args, CancellationToken ct)
+    public override void Process(string id, string description, string[] args, CancellationToken ct)
     {
-        var root = Root!;
-        var commands = _commands.Select(root.Provider.Resolve).OfType<CommandBase>().ToArray();
-        CommandBase? cmd;
+        var (provider, configurationBuilder, helpBuilder) = Root;
+        CommandInfo? cmdInfo;
 
         // if any args - try to find command by id and execute it
         if (args.Length > 0)
         {
             // find command to execute by id
-            var id = args[0];
-            cmd = commands.FirstOrDefault(e => e.Id == id);
-            if (cmd != null)
+            var childId = args[0];
+            cmdInfo = _commands.FirstOrDefault(e => e.Id == childId);
+            if (cmdInfo != null)
             {
-                cmd.SetRoot(root);
-                cmd.Process($"{command} {id}".Trim(), args.Skip(1).ToArray(), ct);
+                var cmd = provider.Resolve(cmdInfo.Type).CastTo<CommandBase>();
+                cmd.SetRoot(Root);
+                cmd.Process($"{id} {childId}".Trim(), cmdInfo.Description, args.Skip(1).ToArray(), ct);
                 return;
             }
         }
 
         // if no command found, or no args - try to find default command and execute it
-        cmd = commands.FirstOrDefault(e => e.Id == string.Empty);
-        if (cmd != null)
+        cmdInfo = _commands.FirstOrDefault(e => e.Id == string.Empty);
+        if (cmdInfo != null)
         {
-            cmd.SetRoot(root);
-            cmd.Process(command, args, ct);
+            var cmd = provider.Resolve(cmdInfo.Type).CastTo<CommandBase>();
+            cmd.SetRoot(Root);
+            cmd.Process(id, cmdInfo.Description, args, ct);
             return;
         }
 
-        if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
-        {
-            Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, commands));
-        }
+        if (configurationBuilder.Build<HelpConfiguration>(args).Help)
+            Console.WriteLine(helpBuilder.BuildHelp(id, description, _commands));
     }
 }

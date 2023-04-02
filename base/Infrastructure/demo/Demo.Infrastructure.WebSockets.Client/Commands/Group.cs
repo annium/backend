@@ -1,9 +1,11 @@
+using Annium.Extensions.Arguments;
+
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class Group : Annium.Extensions.Arguments.Group
+internal class Group : Annium.Extensions.Arguments.Group, ICommandDescriptor
 {
-    public override string Id { get; } = "ws";
-    public override string Description { get; } = "ws toolkit";
+    public static string Id => "ws";
+    public static string Description => "ws toolkit";
 
     public Group()
     {

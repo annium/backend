@@ -5,7 +5,7 @@ namespace Annium.Extensions.Arguments.Internal;
 
 internal interface IHelpBuilder
 {
-    string BuildHelp(string command, string description, IReadOnlyCollection<CommandBase> commands);
+    string BuildHelp(string id, string description, IReadOnlyCollection<CommandInfo> commands);
 
-    string BuildHelp(string command, string description, params Type[] configurationTypes);
+    string BuildHelp(string id, string description, params Type[] configurationTypes);
 }

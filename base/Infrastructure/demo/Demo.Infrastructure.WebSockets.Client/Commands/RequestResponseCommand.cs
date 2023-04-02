@@ -13,10 +13,10 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<RequestResponseCommand>
+internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestResponseCommand>
 {
-    public override string Id { get; } = "request-response";
-    public override string Description => $"test {Id} flow";
+    public static string Id => "request-response";
+    public static string Description => $"test {Id} flow";
     public ILogger<RequestResponseCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 

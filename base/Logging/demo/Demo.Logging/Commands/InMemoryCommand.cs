@@ -5,10 +5,10 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Logging.Commands;
 
-internal class InMemoryCommand : AsyncCommand, ILogSubject<InMemoryCommand>
+internal class InMemoryCommand : AsyncCommand, ICommandDescriptor, ILogSubject<InMemoryCommand>
 {
-    public override string Id { get; } = "in-memory";
-    public override string Description => $"test {Id} log handler";
+    public static string Id => "in-memory";
+    public static string Description => $"test {Id} log handler";
     public ILogger<InMemoryCommand> Logger { get; }
 
     public InMemoryCommand(

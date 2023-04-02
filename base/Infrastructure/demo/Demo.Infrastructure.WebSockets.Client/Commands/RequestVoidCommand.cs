@@ -7,10 +7,10 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<RequestVoidCommand>
+internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestVoidCommand>
 {
-    public override string Id { get; } = "request-void";
-    public override string Description => $"test {Id} flow";
+    public static string Id => "request-void";
+    public static string Description => $"test {Id} flow";
     public ILogger<RequestVoidCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 

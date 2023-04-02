@@ -5,7 +5,7 @@ namespace Annium.Testing.Executors;
 
 public class AfterExecutor : ITestExecutor, ILogSubject<AfterExecutor>
 {
-    public uint Order { get; } = 5;
+    public uint Order => 5;
     public ILogger<AfterExecutor> Logger { get; }
     private readonly MethodExecutor _executor;
 

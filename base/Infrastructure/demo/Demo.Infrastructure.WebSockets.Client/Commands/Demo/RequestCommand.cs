@@ -18,10 +18,10 @@ using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ILogSubject<RequestCommand>
+internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestCommand>
 {
-    public override string Id { get; } = "request";
-    public override string Description { get; } = "test demo flow";
+    public static string Id => "request";
+    public static string Description => "test demo flow";
     public ILogger<RequestCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 

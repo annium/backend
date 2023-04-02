@@ -29,6 +29,6 @@ public record PassiveKeepAlive
 {
     public static PassiveKeepAlive Create() => new();
 
-    public ReadOnlyMemory<byte> PingFrame { get; } = Constants.PingFrame;
-    public ReadOnlyMemory<byte> PongFrame { get; } = Constants.PongFrame;
+    public ReadOnlyMemory<byte> PingFrame => Constants.PingFrame;
+    public ReadOnlyMemory<byte> PongFrame => Constants.PongFrame;
 }

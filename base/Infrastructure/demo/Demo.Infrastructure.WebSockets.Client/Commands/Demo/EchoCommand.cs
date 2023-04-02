@@ -11,10 +11,10 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ILogSubject<EchoCommand>
+internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDescriptor, ILogSubject<EchoCommand>
 {
-    public override string Id { get; } = "echo";
-    public override string Description { get; } = "test echo flow";
+    public static string Id => "echo";
+    public static string Description => "test echo flow";
     public ILogger<EchoCommand> Logger { get; }
 
     public EchoCommand(

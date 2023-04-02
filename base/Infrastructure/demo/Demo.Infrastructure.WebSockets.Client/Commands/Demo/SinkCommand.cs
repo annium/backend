@@ -12,10 +12,10 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ILogSubject<SinkCommand>
+internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDescriptor, ILogSubject<SinkCommand>
 {
-    public override string Id { get; } = "sink";
-    public override string Description { get; } = "socket sink (to listen broadcasts)";
+    public static string Id => "sink";
+    public static string Description => "socket sink (to listen broadcasts)";
     public ILogger<SinkCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 

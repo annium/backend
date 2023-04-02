@@ -10,16 +10,15 @@ public abstract class Command<T> : CommandBase
 {
     public abstract void Handle(T cfg, CancellationToken ct);
 
-    public override void Process(string command, string[] args, CancellationToken ct)
+    public override void Process(string id, string description, string[] args, CancellationToken ct)
     {
-        var root = Root!;
-        if (root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
+        if (Root.ConfigurationBuilder.Build<HelpConfiguration>(args).Help)
         {
-            Console.WriteLine(root.HelpBuilder.BuildHelp(command, Description, typeof(T)));
+            Console.WriteLine(Root.HelpBuilder.BuildHelp(id, description, typeof(T)));
             return;
         }
 
-        var cfg = root.ConfigurationBuilder.Build<T>(args);
+        var cfg = Root.ConfigurationBuilder.Build<T>(args);
 
         Handle(cfg, ct);
     }

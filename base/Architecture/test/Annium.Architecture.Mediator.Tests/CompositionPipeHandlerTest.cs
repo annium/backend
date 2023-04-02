@@ -49,7 +49,7 @@ public class CompositionPipeHandlerTest : TestBase
         public bool IsComposedSuccessfully { get; set; }
         public string UserName { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public bool Throw { get; } = false;
+        public bool Throw => false;
     }
 
     private interface IUserName : IFakeComposed

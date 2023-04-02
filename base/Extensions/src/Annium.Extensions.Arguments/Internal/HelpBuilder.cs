@@ -16,13 +16,13 @@ internal class HelpBuilder : IHelpBuilder
         _configurationProcessor = configurationProcessor;
     }
 
-    public string BuildHelp(string command, string description, IReadOnlyCollection<CommandBase> commands)
+    public string BuildHelp(string id, string description, IReadOnlyCollection<CommandInfo> commands)
     {
         var sb = new StringBuilder();
 
         // usage string
         sb.AppendLine();
-        sb.AppendLine($"Usage: {command} <command> [...arguments]");
+        sb.AppendLine($"Usage: {id} <command> [...arguments]");
 
         // description
         sb.AppendLine();
@@ -38,7 +38,7 @@ internal class HelpBuilder : IHelpBuilder
         return sb.ToString();
     }
 
-    public string BuildHelp(string command, string description, params Type[] configurationTypes)
+    public string BuildHelp(string id, string description, params Type[] configurationTypes)
     {
         var sb = new StringBuilder();
 
@@ -49,7 +49,7 @@ internal class HelpBuilder : IHelpBuilder
 
         // usage string
         sb.AppendLine();
-        sb.Append($"Usage: {command}".Trim());
+        sb.Append($"Usage: {id}".Trim());
         if (positions.Count > 0)
             foreach (var (position, isRequired) in positions)
                 sb.Append($" {Usage(position, isRequired)}");

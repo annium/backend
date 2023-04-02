@@ -6,7 +6,7 @@ namespace Annium.Testing.Executors;
 public class BeforeExecutor : ITestExecutor, ILogSubject<BeforeExecutor>
 {
     public ILogger<BeforeExecutor> Logger { get; }
-    public uint Order { get; } = 3;
+    public uint Order => 3;
     private readonly MethodExecutor _executor;
 
     public BeforeExecutor(

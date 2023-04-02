@@ -7,10 +7,10 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ILogSubject<KeepAliveCommand>
+internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<KeepAliveCommand>
 {
-    public override string Id { get; } = "keep-alive";
-    public override string Description => $"test {Id} flow";
+    public static string Id => "keep-alive";
+    public static string Description => $"test {Id} flow";
     public ILogger<KeepAliveCommand> Logger { get; }
     private readonly IClientFactory _clientFactory;
 
