@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Annium.Debug.Internal;
 
@@ -6,6 +7,7 @@ namespace Annium.Debug;
 
 public static class LogExtensions
 {
+    [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Trace<T>(
         this T obj,

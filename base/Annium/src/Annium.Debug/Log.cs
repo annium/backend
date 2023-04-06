@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -29,6 +30,7 @@ public static class Log
 
     public static TimeSpan ToRelativeLogTime(DateTime dt) => dt - Since;
 
+    [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Trace(
         string subject,
@@ -48,6 +50,7 @@ public static class Log
             );
     }
 
+    [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void Trace(
         string message,
