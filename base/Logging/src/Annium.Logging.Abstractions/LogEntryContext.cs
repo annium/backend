@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Annium.Logging.Abstractions;
 
@@ -28,9 +29,11 @@ public readonly ref struct LogEntryContext<T>
     public void Log(LogLevel level, string message, params object[] data) =>
         _logger.Log(_subject, _file, _member, _line, level, message, data);
 
+    [Conditional("LOG_TRACE")]
     public void Trace(string message, params object[] data) =>
         _logger.Log(_subject, _file, _member, _line, LogLevel.Trace, message, data);
 
+    [Conditional("LOG_DEBUG")]
     public void Debug(string message, params object[] data) =>
         _logger.Log(_subject, _file, _member, _line, LogLevel.Debug, message, data);
 

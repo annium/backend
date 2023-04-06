@@ -15,7 +15,7 @@ internal class ServicePack : ServicePackBase
         container.AddLogging();
         container.AddMapper();
         container.AddArguments();
-        container.AddSerializers().WithJson();
+        container.AddSerializers().WithJson(isDefault: true);
         container.AddHttpRequestFactory().SetDefault();
 
         // commands
@@ -27,19 +27,25 @@ internal class ServicePack : ServicePackBase
 
     public override void Setup(IServiceProvider provider)
     {
+        // provider.UseLogging(route => route.UseConsole());
         provider.UseLogging(route => route
-            .For(m => m.Level == LogLevel.Info).UseSeq(
-                new SeqConfiguration
-                {
-                    Endpoint = new Uri("http://localhost:5341"),
-                    ApiKey = "rtLlglmGD5ffTOujuROD",
-                    Project = "logging-demo",
-                    BufferTime = TimeSpan.FromMilliseconds(50),
-                    BufferCount = 1
-                }
-            )
+                .For(m => m.Level == LogLevel.Info).UseSeq(
+                    new SeqConfiguration
+                    {
+                        Endpoint = new Uri("http://localhost:5341"),
+                        ApiKey = "rtLlglmGD5ffTOujuROD",
+                        Project = "logging-demo",
+                        BufferTime = TimeSpan.FromMilliseconds(50),
+                        BufferCount = 1
+                    }
+                )
+#if LOG_DEBUG
             .For(m => m.Level == LogLevel.Debug).UseConsole()
+#endif
+#if LOG_TRACE
+            .For(m => m.Level == LogLevel.Trace).UseConsole()
             .For(m => m.Level == LogLevel.Trace).UseInMemory()
+#endif
         );
     }
 }

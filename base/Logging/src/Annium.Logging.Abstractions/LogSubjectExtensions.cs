@@ -1,9 +1,11 @@
+using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
 namespace Annium.Logging.Abstractions;
 
 public static class LogSubjectExtensions
 {
+    [Pure]
     public static LogEntryContext<T> Log<T>(
         this T subject,
         [CallerFilePath] string file = "",
