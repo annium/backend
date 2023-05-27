@@ -28,12 +28,12 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         var timeProvider = provider.Resolve<ITimeProvider>();
 
         // act
-        subject.Log().Trace("sample");
+        subject.Log().Info("sample");
 
         // assert
         _messages.Has(1);
         _messages.At(0).Instant.Is(timeProvider.Now);
-        _messages.At(0).Level.Is(LogLevel.Trace);
+        _messages.At(0).Level.Is(LogLevel.Info);
         _messages.At(0).Source.Is(typeof(BaseLoggerTest).FriendlyName());
         _messages.At(0).Message.Is("sample");
     }
@@ -42,11 +42,11 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     public void Log_InvalidLevel_OmitsLogEntry()
     {
         // arrange
-        var provider = GetProvider(LogLevel.Debug);
+        var provider = GetProvider(LogLevel.Warn);
         var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
         // act
-        subject.Log().Trace("sample");
+        subject.Log().Info("sample");
 
         // assert
         _messages.IsEmpty();
@@ -60,10 +60,10 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
         // act
-        subject.Log().Trace("sample");
+        subject.Log().Info("sample");
 
         // assert
-        _messages.At(0).Level.Is(LogLevel.Trace);
+        _messages.At(0).Level.Is(LogLevel.Info);
     }
 
     [Fact]
@@ -74,10 +74,10 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
 
         // act
-        subject.Log().Debug("sample");
+        subject.Log().Warn("sample");
 
         // assert
-        _messages.At(0).Level.Is(LogLevel.Debug);
+        _messages.At(0).Level.Is(LogLevel.Warn);
     }
 
     [Fact]

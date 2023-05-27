@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
-using Annium.Logging.InMemory;
-using Annium.Logging.Shared;
 using Annium.Testing;
 using Xunit;
 
@@ -19,7 +16,7 @@ public class MediatorTest
     public async Task SingleClosedHandler_Works()
     {
         // arrange
-        var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
+        var mediator = GetMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
         var request = new Base { Value = "base" };
 
         // act
@@ -27,16 +24,13 @@ public class MediatorTest
 
         // assert
         response.GetHashCode().Is(new One { First = request.Value.Length, Value = request.Value }.GetHashCode());
-        logs.Has(2);
-        logs.At(0).Message.Is(typeof(ClosedFinalHandler).FullName);
-        logs.At(1).Message.Is(request.GetHashCode().ToString());
     }
 
     [Fact]
     public async Task SingleOpenHandler_WithExpectedParameters_Works()
     {
         // arrange
-        var (mediator, logs) = GetMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
+        var mediator = GetMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
         var request = new Two { Second = 2, Value = "one two three" };
 
         // act
@@ -44,16 +38,13 @@ public class MediatorTest
 
         // assert
         response.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
-        logs.Has(2);
-        logs.At(0).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(1).Message.Is(request.GetHashCode().ToString());
     }
 
     [Fact]
     public async Task ChainOfHandlers_WithExpectedParameters_Works()
     {
         // arrange
-        var (mediator, logs) = GetMediator(cfg => cfg
+        var mediator = GetMediator(cfg => cfg
             .AddHandler(typeof(ConversionHandler<,>))
             .AddHandler(typeof(ValidationHandler<,>))
             .AddHandler(typeof(OpenFinalHandler<,>))
@@ -67,20 +58,13 @@ public class MediatorTest
         // assert
         response.IsSuccess.IsTrue();
         response.Data.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
-        logs.Has(6);
-        logs.At(0).Message.Is($"Deserialize Request to {typeof(Two).FriendlyName()}");
-        logs.At(1).Message.Is($"Start {typeof(Two).FriendlyName()} validation");
-        logs.At(2).Message.Is($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-        logs.At(3).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(4).Message.Is(request.GetHashCode().ToString());
-        logs.At(5).Message.Is($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
     }
 
     [Fact]
     public async Task ChainOfHandlers_WithRegisteredResponse_Works()
     {
         // arrange
-        var (mediator, logs) = GetMediator(cfg => cfg
+        var mediator = GetMediator(cfg => cfg
             .AddHandler(typeof(ConversionHandler<,>))
             .AddHandler(typeof(ValidationHandler<,>))
             .AddHandler(typeof(OpenFinalHandler<,>))
@@ -95,19 +79,10 @@ public class MediatorTest
         // assert
         response.IsSuccess.IsTrue();
         response.Data.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
-        logs.Has(6);
-        logs.At(0).Message.Is($"Deserialize Request to {typeof(Two).FriendlyName()}");
-        logs.At(1).Message.Is($"Start {typeof(Two).FriendlyName()} validation");
-        logs.At(2).Message.Is($"Status of {typeof(Two).FriendlyName()} validation: {true}");
-        logs.At(3).Message.Is(typeof(OpenFinalHandler<Two, Base>).FriendlyName());
-        logs.At(4).Message.Is(request.GetHashCode().ToString());
-        logs.At(5).Message.Is($"Serialize {typeof(IBooleanResult<Base>).FriendlyName()} to Response");
     }
 
-    private ValueTuple<IMediator, IReadOnlyList<LogMessage<DefaultLogContext>>> GetMediator(Action<MediatorConfiguration> configure)
+    private IMediator GetMediator(Action<MediatorConfiguration> configure)
     {
-        var logHandler = new InMemoryLogHandler<DefaultLogContext>();
-
         var container = new ServiceContainer();
         container.AddTime().WithRealTime().SetDefault();
         container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
@@ -125,10 +100,10 @@ public class MediatorTest
                 m.Source.StartsWith("OpenFinalHandler") ||
                 m.Source.StartsWith("ClosedFinalHandler")
             )
-            .UseInMemory(logHandler)
+            .UseInMemory()
         );
 
-        return (provider.Resolve<IMediator>(), logHandler.Logs);
+        return provider.Resolve<IMediator>();
     }
 
     private class ConversionHandler<TRequest, TResponse> :

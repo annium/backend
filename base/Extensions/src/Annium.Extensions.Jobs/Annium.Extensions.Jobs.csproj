@@ -13,6 +13,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Extensions.Execution/Annium.Extensions.Execution.csproj" />
-        <ProjectReference Include="../../../../third-party/NodaTime/src/Annium.NodaTime.Extensions/Annium.NodaTime.Extensions.csproj" />
+        <ProjectReference Include="../../../../integrations/NodaTime/src/Annium.NodaTime.Extensions/Annium.NodaTime.Extensions.csproj" />
     </ItemGroup>
 </Project>
