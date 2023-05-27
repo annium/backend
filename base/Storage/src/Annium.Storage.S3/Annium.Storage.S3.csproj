@@ -15,6 +15,6 @@
         <ProjectReference Include="../Annium.Storage.Abstractions/Annium.Storage.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="AWSSDK.S3" Version="3.7.103" />
+        <PackageReference Include="AWSSDK.S3" Version="3.7.104" />
     </ItemGroup>
 </Project>

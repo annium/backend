@@ -18,6 +18,6 @@
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Abstractions/Annium.Serialization.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="System.Reactive" Version="5.0.0" />
+        <PackageReference Include="System.Reactive" Version="6.0.0" />
     </ItemGroup>
 </Project>
