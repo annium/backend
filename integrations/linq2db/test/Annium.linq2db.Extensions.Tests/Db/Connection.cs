@@ -1,4 +1,3 @@
-using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Extensions.Tests.Db.Models;
 using Annium.Logging.Abstractions;
 using LinqToDB;
@@ -14,7 +13,7 @@ internal sealed class Connection : DataConnection, ILogSubject<Connection>
     public ITable<CompanyEmployee> CompanyEmployees { get; }
 
     public Connection(
-        Config<Connection> config,
+        DataOptions<Connection> config,
         ILogger<Connection> logger
     ) : base(config.Options)
     {

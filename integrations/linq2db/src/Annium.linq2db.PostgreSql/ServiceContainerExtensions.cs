@@ -1,10 +1,9 @@
 using System;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
-using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.PostgreSql;
 using Annium.Logging.Abstractions;
-using LinqToDB.Configuration;
+using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.PostgreSQL;
 using LinqToDB.Mapping;
@@ -85,14 +84,14 @@ public static class ServiceContainerExtensions
         container.Add(sp =>
         {
             var cfg = getCfg(sp);
-            var builder = new LinqToDBConnectionOptionsBuilder();
+            var options = new DataOptions();
 
             // configure data source and NodaTime
             var connectionString = cfg.ConnectionString;
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataSourceBuilder.UseNodaTime();
             var dataSource = dataSourceBuilder.Build();
-            builder.UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), dataSource.CreateConnection);
+            options.UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), _ => dataSource.CreateConnection());
 
             // configure mapping
             var mappingSchema = new MappingSchema();
@@ -101,14 +100,14 @@ public static class ServiceContainerExtensions
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
-            builder.UseMappingSchema(mappingSchema);
+            options.UseMappingSchema(mappingSchema);
 
             // add logging
-            builder.UseLogging<TConnection>(sp);
+            options.UseLogging<TConnection>(sp);
 
-            var options = builder.Build();
+            // var options = builder.Build();
 
-            return new Config<TConnection>(options);
+            return new DataOptions<TConnection>(options);
         }).AsSelf().Singleton();
 
         container.Add<TConnection>().AsSelf().In(lifetime);

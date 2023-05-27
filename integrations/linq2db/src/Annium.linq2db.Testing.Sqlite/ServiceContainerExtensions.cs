@@ -2,11 +2,9 @@ using System;
 using System.Reflection;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
-using Annium.linq2db.Extensions.Models;
 using Annium.linq2db.Testing.Sqlite.Internal;
 using Annium.Logging.Abstractions;
 using LinqToDB;
-using LinqToDB.Configuration;
 using LinqToDB.Data;
 using LinqToDB.Mapping;
 
@@ -46,10 +44,7 @@ public static class ServiceContainerExtensions
 
         container.Add(sp =>
         {
-            var builder = new LinqToDBConnectionOptionsBuilder();
-
             var connectionString = sp.Resolve<TestingSqliteReference>().ConnectionString;
-            builder.UseConnectionString(ProviderName.SQLiteMS, connectionString);
 
             var mappingSchema = new MappingSchema();
             mappingSchema
@@ -57,12 +52,13 @@ public static class ServiceContainerExtensions
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
-            builder.UseMappingSchema(mappingSchema);
-            builder.UseLogging<TConnection>(sp);
 
-            var options = builder.Build();
+            var options = new DataOptions()
+                .UseConnectionString(ProviderName.SQLiteMS, connectionString)
+                .UseMappingSchema(mappingSchema)
+                .UseLogging<TConnection>(sp);
 
-            return new Config<TConnection>(options);
+            return new DataOptions<TConnection>(options);
         }).AsSelf().Singleton();
 
         container.Add<TConnection>().AsSelf().Transient();

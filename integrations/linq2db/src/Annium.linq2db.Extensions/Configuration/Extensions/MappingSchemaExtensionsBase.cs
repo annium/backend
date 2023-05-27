@@ -49,7 +49,7 @@ public static class MappingSchemaExtensionsBase
     public static MappingSchema ApplyConfigurations(this MappingSchema schema, IServiceProvider sp)
     {
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
-        var fluentMappingBuilder = schema.GetFluentMappingBuilder();
+        var mappingBuilder = new FluentMappingBuilder(schema);
 
         var configurations = sp.Resolve<IEnumerable<IEntityConfiguration>>().ToImmutableHashSet();
         foreach (var configuration in configurations)
@@ -60,11 +60,13 @@ public static class MappingSchemaExtensionsBase
 
             var entityType = configurationType.GenericTypeArguments.Single();
             var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
-                .Invoke(fluentMappingBuilder, new object?[] { null })!;
+                .Invoke(mappingBuilder, new object?[] { null })!;
             var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
                 .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
             configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }
+
+        mappingBuilder.Build();
 
         schema.IncludeAssociationKeysAsColumns();
         schema.MarkNotColumnsExplicitly();

@@ -27,12 +27,12 @@ public static class MappingSchemaExtensions
         return schema.Configure(db =>
         {
             var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
-            var fluentMappingBuilder = schema.GetFluentMappingBuilder();
+            var mappingBuilder = new FluentMappingBuilder(schema);
 
             foreach (var table in db.Tables.Values)
             {
                 var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(table.Type)
-                    .Invoke(fluentMappingBuilder, new object?[] { null })!;
+                    .Invoke(mappingBuilder, new object?[] { null })!;
                 var getPropertyMappingBuilder = entityMappingBuilder.GetType().GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
 
                 foreach (var column in table.Columns.Values)
@@ -69,6 +69,8 @@ public static class MappingSchemaExtensions
                     hasConversionFunc.Invoke(propertyMappingBuilder, new object[] { serializeFn, deserializeFn, false });
                 }
             }
+
+            mappingBuilder.Build();
         }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
     }
 }

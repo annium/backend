@@ -11,7 +11,7 @@ internal static class MappingSchemaExtensions
 {
     public static MappingSchema IncludeAssociationKeysAsColumns(this MappingSchema schema) => schema.Configure(db =>
     {
-        var fluentBuilder = schema.GetFluentMappingBuilder();
+        var mappingBuilder = new FluentMappingBuilder(schema);
 
         foreach (var table in db.Tables.Values)
         foreach (var column in table.Columns.Values)
@@ -26,19 +26,21 @@ internal static class MappingSchemaExtensions
 
             // set as basic column
             if (isForeignKey)
-                fluentBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
+                mappingBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
         }
+
+        mappingBuilder.Build();
     }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
 
     public static MappingSchema MarkNotColumnsExplicitly(this MappingSchema schema) => schema.Configure(db =>
     {
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
-        var fluentMappingBuilder = schema.GetFluentMappingBuilder();
+        var mappingBuilder = new FluentMappingBuilder(schema);
 
         foreach (var table in db.Tables.Values)
         {
             var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(table.Type)
-                .Invoke(fluentMappingBuilder, new object?[] { null })!;
+                .Invoke(mappingBuilder, new object?[] { null })!;
             var getPropertyMappingBuilder = entityMappingBuilder.GetType().GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
 
             foreach (var column in table.Columns.Values)
@@ -60,5 +62,7 @@ internal static class MappingSchemaExtensions
                 isNotColumn.Invoke(propertyMappingBuilder, Array.Empty<object>());
             }
         }
+
+        mappingBuilder.Build();
     }, MetadataFlags.IncludeMembersNotMarkedAsColumns);
 }
