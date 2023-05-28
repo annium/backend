@@ -2,24 +2,22 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Extensions;
-using Annium.linq2db.Extensions.Tests.Db;
-using Annium.linq2db.Extensions.Tests.Db.Models;
+using Annium.linq2db.Tests.Lib.Db;
+using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
-using Xunit;
 
-namespace Annium.linq2db.Extensions.Tests;
+namespace Annium.linq2db.Tests.Lib;
 
-public class IntegrationTests : TestBase
+public class IntegrationTestsBase : TestBase
 {
-    public IntegrationTests()
+    public IntegrationTestsBase()
     {
-        AddServicePack<ServicePack>();
+        AddServicePack<LibServicePack>();
     }
 
-    [Fact]
-    public async Task EndToEnd()
+    public async Task EndToEnd_Base()
     {
         // arrange
         await using var conn = Get<Connection>();

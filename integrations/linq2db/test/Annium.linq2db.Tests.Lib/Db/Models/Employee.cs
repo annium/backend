@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Annium.linq2db.Extensions.Tests.Db.Models;
+namespace Annium.linq2db.Tests.Lib.Db.Models;
 
-internal sealed record Employee
+public sealed record Employee
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public string Name { get; private init; } = string.Empty;

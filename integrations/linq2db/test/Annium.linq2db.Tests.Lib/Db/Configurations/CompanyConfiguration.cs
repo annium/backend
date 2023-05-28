@@ -1,9 +1,9 @@
 using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Tests.Db.Models;
+using Annium.linq2db.Tests.Lib.Db.Models;
 using LinqToDB;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Tests.Db.Configurations;
+namespace Annium.linq2db.Tests.Lib.Db.Configurations;
 
 internal class CompanyConfiguration : IEntityConfiguration<Company>
 {

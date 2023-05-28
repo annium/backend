@@ -1,8 +1,8 @@
 using System;
 
-namespace Annium.linq2db.Extensions.Tests.Db.Models;
+namespace Annium.linq2db.Tests.Lib.Db.Models;
 
-internal sealed record CompanyEmployee
+public sealed record CompanyEmployee
 {
     public Guid CompanyId { get; private init; }
     public Company Company { get; private init; } = default!;

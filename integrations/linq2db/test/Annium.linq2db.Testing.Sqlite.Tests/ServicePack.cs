@@ -1,17 +1,14 @@
 using System;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
-using Annium.linq2db.Extensions.Tests.Db;
+using Annium.linq2db.Tests.Lib.Db;
 
-namespace Annium.linq2db.Extensions.Tests;
+namespace Annium.linq2db.Testing.Sqlite.Tests;
 
 internal class ServicePack : ServicePackBase
 {
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
-        container.AddRuntime(Assembly.GetExecutingAssembly());
         container.AddTestingSqlite<Connection>(Assembly.GetExecutingAssembly());
-        container.AddSerializers()
-            .WithJson(opts => opts.UseCamelCaseNamingPolicy());
     }
 }

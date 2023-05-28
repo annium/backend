@@ -1,3 +1,3 @@
-namespace Annium.linq2db.Extensions.Tests.Db.Models;
+namespace Annium.linq2db.Tests.Lib.Db.Models;
 
 public sealed record CompanyMetadata(string Address);

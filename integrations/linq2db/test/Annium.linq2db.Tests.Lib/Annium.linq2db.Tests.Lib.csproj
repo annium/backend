@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>Annium.linq2db.Tests.Lib</PackageId>
+        <PackageVersion>0.1.0</PackageVersion>
+        <Description>Annium.linq2db.Tests.Lib</Description>
+        <TargetFramework>net7.0</TargetFramework>
+        <OutputType>Library</OutputType>
+        <DebugType>portable</DebugType>
+        <LangVersion>11.0</LangVersion>
+        <WarningsAsErrors>true</WarningsAsErrors>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../../../../base/Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
+        <ProjectReference Include="../../src/Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
+        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
+    </ItemGroup>
+</Project>

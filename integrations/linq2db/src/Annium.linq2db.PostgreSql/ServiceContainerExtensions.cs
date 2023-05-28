@@ -84,14 +84,12 @@ public static class ServiceContainerExtensions
         container.Add(sp =>
         {
             var cfg = getCfg(sp);
-            var options = new DataOptions();
 
             // configure data source and NodaTime
             var connectionString = cfg.ConnectionString;
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
             dataSourceBuilder.UseNodaTime();
             var dataSource = dataSourceBuilder.Build();
-            options.UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), _ => dataSource.CreateConnection());
 
             // configure mapping
             var mappingSchema = new MappingSchema();
@@ -100,12 +98,11 @@ public static class ServiceContainerExtensions
                 .UseSnakeCaseColumns()
                 .UseJsonSupport(sp);
             configure(sp, mappingSchema);
-            options.UseMappingSchema(mappingSchema);
 
-            // add logging
-            options.UseLogging<TConnection>(sp);
-
-            // var options = builder.Build();
+            var options = new DataOptions()
+                .UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), _ => dataSource.CreateConnection())
+                .UseMappingSchema(mappingSchema)
+                .UseLogging<TConnection>(sp);
 
             return new DataOptions<TConnection>(options);
         }).AsSelf().Singleton();

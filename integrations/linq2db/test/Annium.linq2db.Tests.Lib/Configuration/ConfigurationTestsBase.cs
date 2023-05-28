@@ -1,20 +1,18 @@
 using Annium.linq2db.Extensions.Configuration.Extensions;
-using Annium.linq2db.Extensions.Tests.Db;
+using Annium.linq2db.Tests.Lib.Db;
 using Annium.Testing;
 using Annium.Testing.Lib;
-using Xunit;
 
-namespace Annium.linq2db.Extensions.Tests.Configuration;
+namespace Annium.linq2db.Tests.Lib.Configuration;
 
-public class ConfigurationTests : TestBase
+public class ConfigurationTestsBase : TestBase
 {
-    public ConfigurationTests()
+    protected ConfigurationTestsBase()
     {
-        AddServicePack<ServicePack>();
+        AddServicePack<LibServicePack>();
     }
 
-    [Fact]
-    public void Metadata_IsValid()
+    protected void Metadata_IsValid_Base()
     {
         // arrange
         using var conn = Get<Connection>();
