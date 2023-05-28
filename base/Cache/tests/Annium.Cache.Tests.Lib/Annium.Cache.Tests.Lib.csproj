@@ -1,17 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Cache.Redis</PackageId>
+        <PackageId>Annium.Cache.Tests.Lib</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Cache.Redis</Description>
+        <Description>Annium.Cache.Tests.Lib</Description>
         <TargetFramework>net7.0</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>11.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>true</IsPackable>
+        <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj" />
+        <ProjectReference Include="../../src/Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj"/>
+        <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj"/>
     </ItemGroup>
 </Project>

@@ -11,4 +11,7 @@
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <ProjectReference Include="../Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj" />
+    </ItemGroup>
 </Project>
