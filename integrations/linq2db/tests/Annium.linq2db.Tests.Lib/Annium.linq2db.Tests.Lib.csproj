@@ -12,8 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
         <ProjectReference Include="../../src/Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
+        <ProjectReference Include="../../../../base/Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
         <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
         <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
     </ItemGroup>
