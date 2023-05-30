@@ -12,6 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../base/Extensions/src/Annium.Extensions.Execution/Annium.Extensions.Execution.csproj" />
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="StackExchange.Redis" Version="2.6.111" />
     </ItemGroup>
 </Project>
