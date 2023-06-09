@@ -14,6 +14,7 @@ public class FixedIndexedQueueTest
         var queue = new FixedIndexedQueue<int>(3);
 
         // act & assert
+        queue.Capacity.Is(3);
 
         // initial fill
         queue.Add(1);
