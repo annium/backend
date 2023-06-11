@@ -173,6 +173,17 @@ public class BulkRegistrationTest : TestBase
 
     private sealed class B : A, IB
     {
+        public static void Reset()
+        {
+            InstancesCount = 0;
+        }
+
+        public static int InstancesCount { get; private set; }
+
+        public B()
+        {
+            InstancesCount++;
+        }
     }
 
     private class A : IA

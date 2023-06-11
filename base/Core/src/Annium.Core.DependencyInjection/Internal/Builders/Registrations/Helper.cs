@@ -52,7 +52,11 @@ internal static class Helper
     }
 
     public static Expression KeyValue(Type keyType, Type valueType, object key, Expression value) =>
-        Expression.New(KeyValueConstructor(keyType, valueType), Expression.Constant(key), value);
+        Expression.New(
+            KeyValueConstructor(keyType, valueType),
+            Expression.Constant(key),
+            Expression.Lambda(value)
+        );
 
     public static Expression Resolve(ParameterExpression sp, Type type)
     {
@@ -71,7 +75,11 @@ internal static class Helper
 
     private static MethodInfo GetRequiredService(Type type) => GetRequiredServiceMethod.MakeGenericMethod(type);
 
-    private static ConstructorInfo KeyValueConstructor(Type keyType, Type valueType) => typeof(KeyValue<,>)
-        .MakeGenericType(keyType, valueType)
-        .GetConstructor(new[] { keyType, valueType })!;
+    private static ConstructorInfo KeyValueConstructor(Type keyType, Type valueType)
+    {
+        var type = typeof(KeyValue<,>).MakeGenericType(keyType, valueType);
+
+        return type.GetConstructor(new[] { keyType, typeof(Func<>).MakeGenericType(valueType) })
+            ?? throw new MissingMethodException($"Failed to find {type.FriendlyName()} constructor");
+    }
 }

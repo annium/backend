@@ -52,26 +52,34 @@ public class SingleRegistrationTest : TestBase
     public void AsKeyedSelf_Works()
     {
         // arrange
+        B.Reset();
         Container.Add(typeof(B)).AsKeyedSelf(nameof(B)).Singleton();
 
         // act
         Build();
 
         // assert
-        Get<IIndex<string, B>>()[nameof(B)].Is(Get<B>());
+        var index = Get<IIndex<string, B>>();
+        B.InstancesCount.Is(0);
+        index[nameof(B)].Is(Get<B>());
+        B.InstancesCount.Is(1);
     }
 
     [Fact]
     public void AsKeyed_Works()
     {
         // arrange
+        B.Reset();
         Container.Add(typeof(B)).AsKeyed(typeof(A), nameof(B)).Singleton();
 
         // act
         Build();
 
         // assert
-        Get<IIndex<string, A>>()[nameof(B)].Is(Get<B>());
+        var index = Get<IIndex<string, A>>();
+        B.InstancesCount.Is(0);
+        index[nameof(B)].Is(Get<B>());
+        B.InstancesCount.Is(1);
     }
 
     [Fact]
@@ -128,6 +136,17 @@ public class SingleRegistrationTest : TestBase
 
     private sealed class B : A, IB
     {
+        public static void Reset()
+        {
+            InstancesCount = 0;
+        }
+
+        public static int InstancesCount { get; private set; }
+
+        public B()
+        {
+            InstancesCount++;
+        }
     }
 
     private class A : IA
