@@ -59,4 +59,17 @@ public class FixedIndexedQueueTest
         var list = queue.ToArray();
         list.IsEqual(new[] { 5, 6, 7 });
     }
+
+    [Fact]
+    public void Create()
+    {
+        // arrange
+        var queue = new FixedIndexedQueue<int>(new[] { 1, 2 });
+
+        // act & assert
+        queue.Capacity.Is(2);
+        queue.Count.Is(2);
+        queue[0].Is(1);
+        queue[1].Is(2);
+    }
 }

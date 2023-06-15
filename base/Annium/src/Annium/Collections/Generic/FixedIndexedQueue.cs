@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Annium.Collections.Generic;
 
@@ -17,6 +18,13 @@ public class FixedIndexedQueue<T> : IFixedIndexedQueue<T>
         Capacity = capacity;
         _maxIndex = capacity - 1;
         _data = new T[capacity];
+    }
+
+    public FixedIndexedQueue(IReadOnlyCollection<T> data)
+    {
+        Capacity = Count = data.Count;
+        _maxIndex = data.Count - 1;
+        _data = data.ToArray();
     }
 
     public T this[int index]
