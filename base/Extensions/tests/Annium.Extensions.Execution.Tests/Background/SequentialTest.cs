@@ -27,21 +27,23 @@ public class SequentialTest
 
         // act
         // schedule batch of work
-        foreach (var i in Enumerable.Range(0, 20))
+        foreach (var i in Enumerable.Range(0, 10))
             executor.Schedule(async () =>
             {
-                await Task.Delay(1);
                 queue.Enqueue(i);
+                await Helper.AsyncFastWork();
+                queue.Enqueue(i + 10);
             });
-        queue.Count.Is(0);
+        queue.IsEmpty();
         // run executor
         executor.Start();
         // schedule another batch of work
-        foreach (var i in Enumerable.Range(20, 20))
+        foreach (var i in Enumerable.Range(20, 10))
             executor.Schedule(async () =>
             {
-                await Task.Delay(1);
                 queue.Enqueue(i);
+                await Helper.AsyncFastWork();
+                queue.Enqueue(i + 10);
             });
 
         // assert
@@ -53,7 +55,10 @@ public class SequentialTest
         Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
         queue.Count.Is(40);
-        queue.ToArray().IsEqual(Enumerable.Range(0, 40).ToArray());
+        var sequence = Enumerable.Range(0, 10).SelectMany(x => new[] { x, x + 10 })
+            .Concat(Enumerable.Range(20, 10).SelectMany(x => new[] { x, x + 10 }))
+            .ToArray();
+        queue.ToArray().IsEqual(sequence);
 
         Console.WriteLine($"done {index}");
     }

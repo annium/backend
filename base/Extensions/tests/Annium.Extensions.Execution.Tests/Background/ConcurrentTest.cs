@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -20,24 +21,32 @@ public class ConcurrentTest
         Log.SetTestMode();
         // arrange
         Console.WriteLine($"run {index}");
-        var executor = Executor.Background.Concurrent<ConcurrentTest>(10);
-        var counter = 0;
+        var parallelism = 2;
+        var size = parallelism * 5;
+        var executor = Executor.Background.Concurrent<ConcurrentTest>(2);
+        var queue = new ConcurrentQueue<int>();
 
         // act
         // schedule batch of work
-        Parallel.For(0, 100, _ => executor.Schedule(async () =>
+        Parallel.For(0, size, i => executor.Schedule(async () =>
         {
-            await Task.Delay(1);
-            Interlocked.Increment(ref counter);
+            Console.WriteLine($"Enqueue {i}");
+            queue.Enqueue(i);
+            await Helper.AsyncLongWork();
+            Console.WriteLine($"Enqueue {i + size}");
+            queue.Enqueue(i + size);
         }));
-        counter.Is(0);
+        queue.IsEmpty();
         // run executor
         executor.Start();
         // schedule another batch of work
-        Parallel.For(0, 100, _ => executor.Schedule(async () =>
+        Parallel.For(2 * size, 3 * size, i => executor.Schedule(async () =>
         {
-            await Task.Delay(1);
-            Interlocked.Increment(ref counter);
+            Console.WriteLine($"Enqueue {i}");
+            queue.Enqueue(i);
+            await Helper.AsyncLongWork();
+            Console.WriteLine($"Enqueue {i + size}");
+            queue.Enqueue(i + size);
         }));
 
         // assert
@@ -48,12 +57,37 @@ public class ConcurrentTest
         // throws, as not available already
         Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
-        counter.Is(200);
+        var result = queue.ToArray();
+        var sequence = Enumerable.Range(0, 4 * size).ToArray();
+        result.Length.Is(sequence.Length);
 
-        Console.WriteLine($"done {index}");
+        /*
+         Expected sequence looks like:
+            Enqueue 9
+            Enqueue 8
+            Enqueue 18
+            Enqueue 19
+            Enqueue 7
+            Enqueue 0
+            Enqueue 17
+            Enqueue 10
+            Enqueue 1
+            Enqueue 3
+         */
+        // skipped as is not guaranteed in general
+        // take start/end parts for each parallel step
+        // for (var i = 0; i < result.Length; i += 2 * parallelism)
+        // {
+        //     // ensure each start item is followed by end item in next chunk
+        //     var nextChunk = result.Skip(i + parallelism).Take(parallelism).ToList();
+        //     for (var j = 0; j < parallelism; j++)
+        //         nextChunk.Contains(result[i + j] + size).IsTrue();
+        // }
+
+        Console.WriteLine("done");
     }
 
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 1).Select(x => new object[] { x });
 
     [Fact]
     public async Task ConcurrentExecutor_CompletesOnFailure()

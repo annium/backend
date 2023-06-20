@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -21,23 +22,25 @@ public class ParallelTest
         // arrange
         Console.WriteLine($"run {index}");
         var executor = Executor.Background.Parallel<ParallelTest>();
-        var counter = 0;
+        var queue = new ConcurrentQueue<int>();
 
         // act
         // schedule batch of work
-        Parallel.For(0, 100, _ => executor.Schedule(async () =>
+        Parallel.For(0, 10, i => executor.Schedule(async () =>
         {
-            await Task.Delay(10);
-            Interlocked.Increment(ref counter);
+            queue.Enqueue(i);
+            await Helper.AsyncLongWork();
+            queue.Enqueue(i + 10);
         }));
-        counter.Is(0);
+        queue.IsEmpty();
         // run executor
         executor.Start();
         // schedule another batch of work
-        Parallel.For(0, 100, _ => executor.Schedule(async () =>
+        Parallel.For(20, 30, i => executor.Schedule(async () =>
         {
-            await Task.Delay(10);
-            Interlocked.Increment(ref counter);
+            queue.Enqueue(i);
+            await Helper.AsyncLongWork();
+            queue.Enqueue(i + 10);
         }));
 
         // assert
@@ -48,9 +51,16 @@ public class ParallelTest
         // throws, as not available already
         Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
-        counter.Is(200);
+        var sequence = Enumerable.Range(0, 10).SelectMany(x => new[] { x, x + 10 })
+            .Concat(Enumerable.Range(20, 10).SelectMany(x => new[] { x, x + 10 }))
+            .ToArray();
+        var result = queue.ToArray();
+        result.IsNotEqual(sequence);
+        result.Length.Is(sequence.Length);
+        foreach (var num in sequence)
+            result.Contains(num).IsTrue();
 
-        Console.WriteLine($"done");
+        Console.WriteLine("done");
     }
 
     public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
