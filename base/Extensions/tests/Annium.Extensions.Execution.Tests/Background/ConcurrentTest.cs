@@ -21,18 +21,18 @@ public class ConcurrentTest
         Log.SetTestMode();
         // arrange
         Console.WriteLine($"run {index}");
-        var parallelism = 2;
+        var parallelism = 20;
         var size = parallelism * 5;
-        var executor = Executor.Background.Concurrent<ConcurrentTest>(2);
+        var executor = Executor.Background.Concurrent<ConcurrentTest>((uint) parallelism);
         var queue = new ConcurrentQueue<int>();
 
         // act
         // schedule batch of work
-        Parallel.For(0, size, i => executor.Schedule(async () =>
+        Parallel.For(0, size, i => executor.Schedule(() =>
         {
             Console.WriteLine($"Enqueue {i}");
             queue.Enqueue(i);
-            await Helper.AsyncLongWork();
+            Helper.SyncLongWork();
             Console.WriteLine($"Enqueue {i + size}");
             queue.Enqueue(i + size);
         }));
@@ -40,11 +40,11 @@ public class ConcurrentTest
         // run executor
         executor.Start();
         // schedule another batch of work
-        Parallel.For(2 * size, 3 * size, i => executor.Schedule(async () =>
+        Parallel.For(2 * size, 3 * size, i => executor.Schedule(() =>
         {
             Console.WriteLine($"Enqueue {i}");
             queue.Enqueue(i);
-            await Helper.AsyncLongWork();
+            Helper.SyncLongWork();
             Console.WriteLine($"Enqueue {i + size}");
             queue.Enqueue(i + size);
         }));
