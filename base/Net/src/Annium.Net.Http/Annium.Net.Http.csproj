@@ -12,10 +12,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
-        <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
         <ProjectReference Include="../../../../integrations/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
+        <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Abstractions/Annium.Serialization.Abstractions.csproj" />
+        <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="System.Reactive" Version="6.0.0" />

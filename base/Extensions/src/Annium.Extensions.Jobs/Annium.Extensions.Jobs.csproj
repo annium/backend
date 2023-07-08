@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Extensions.Execution/Annium.Extensions.Execution.csproj" />
         <ProjectReference Include="../../../../integrations/NodaTime/src/Annium.NodaTime.Extensions/Annium.NodaTime.Extensions.csproj" />
+        <ProjectReference Include="../Annium.Extensions.Execution/Annium.Extensions.Execution.csproj" />
     </ItemGroup>
 </Project>

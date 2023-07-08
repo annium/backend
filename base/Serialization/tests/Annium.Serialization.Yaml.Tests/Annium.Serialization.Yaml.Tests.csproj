@@ -12,8 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Serialization.Yaml/Annium.Serialization.Yaml.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Serialization.Yaml/Annium.Serialization.Yaml.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

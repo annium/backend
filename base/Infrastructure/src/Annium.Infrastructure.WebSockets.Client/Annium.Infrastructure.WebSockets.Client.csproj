@@ -13,8 +13,8 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Data/src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
-        <ProjectReference Include="../Annium.Infrastructure.WebSockets.Domain/Annium.Infrastructure.WebSockets.Domain.csproj" />
         <ProjectReference Include="../../../Net/src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
+        <ProjectReference Include="../Annium.Infrastructure.WebSockets.Domain/Annium.Infrastructure.WebSockets.Domain.csproj" />
     </ItemGroup>
 </Project>

@@ -12,11 +12,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../integrations/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Arguments/Annium.Extensions.Arguments.csproj" />
-        <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Client/Annium.Infrastructure.WebSockets.Client.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
-        <ProjectReference Include="../../../../integrations/NodaTime/src/Annium.NodaTime.Serialization.Json/Annium.NodaTime.Serialization.Json.csproj" />
+        <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Client/Annium.Infrastructure.WebSockets.Client.csproj" />
         <ProjectReference Include="../Demo.Infrastructure.WebSockets.Domain/Demo.Infrastructure.WebSockets.Domain.csproj" />
     </ItemGroup>
 </Project>

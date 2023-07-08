@@ -13,9 +13,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
         <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Client/Annium.Infrastructure.WebSockets.Client.csproj" />
         <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Server/Annium.Infrastructure.WebSockets.Server.csproj" />
-        <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

@@ -13,9 +13,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Configuration.Tests/Annium.Configuration.Tests.csproj" />
-        <ProjectReference Include="../../src/Annium.Configuration.Yaml/Annium.Configuration.Yaml.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Configuration.Yaml/Annium.Configuration.Yaml.csproj" />
+        <ProjectReference Include="../Annium.Configuration.Tests/Annium.Configuration.Tests.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

@@ -13,9 +13,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
         <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
         <ProjectReference Include="../Annium.AspNetCore.TestServer/Annium.AspNetCore.TestServer.csproj" />
-        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

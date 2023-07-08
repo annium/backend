@@ -12,8 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Abstractions/Annium.Logging.Abstractions.csproj" />
+        <ProjectReference Include="../Annium.Core.Runtime/Annium.Core.Runtime.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="AgileObjects.ReadableExpressions" Version="4.0.0" />

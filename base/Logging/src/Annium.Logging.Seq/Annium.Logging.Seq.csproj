@@ -12,7 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Logging.Shared/Annium.Logging.Shared.csproj" />
         <ProjectReference Include="../../../Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
+        <ProjectReference Include="../Annium.Logging.Shared/Annium.Logging.Shared.csproj" />
     </ItemGroup>
 </Project>

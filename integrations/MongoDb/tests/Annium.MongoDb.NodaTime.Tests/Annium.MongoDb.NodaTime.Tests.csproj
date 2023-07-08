@@ -13,8 +13,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.MongoDb.NodaTime/Annium.MongoDb.NodaTime.csproj" />
         <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.MongoDb.NodaTime/Annium.MongoDb.NodaTime.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

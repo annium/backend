@@ -13,9 +13,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Extensions.Composition/Annium.Extensions.Composition.csproj" />
         <ProjectReference Include="../../../Localization/src/Annium.Localization.InMemory/Annium.Localization.InMemory.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Extensions.Composition/Annium.Extensions.Composition.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

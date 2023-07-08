@@ -13,8 +13,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Data.Operations.Serialization.Json/Annium.Data.Operations.Serialization.Json.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

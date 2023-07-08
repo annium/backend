@@ -13,10 +13,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Architecture.Mediator/Annium.Architecture.Mediator.csproj" />
         <ProjectReference Include="../../../Localization/src/Annium.Localization.InMemory/Annium.Localization.InMemory.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.InMemory/Annium.Logging.InMemory.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Architecture.Mediator/Annium.Architecture.Mediator.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
