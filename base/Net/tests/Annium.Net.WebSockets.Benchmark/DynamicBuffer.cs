@@ -3,7 +3,7 @@ using System.Buffers;
 
 namespace Annium.Net.WebSockets.Benchmark;
 
-public struct DynamicBuffer<T> : IDisposable
+internal struct DynamicBuffer<T> : IDisposable
     where T : struct
 {
     private T[] _buffer;
@@ -60,11 +60,11 @@ public struct DynamicBuffer<T> : IDisposable
     /// Wrap buffer free space as ArraySegment
     /// </summary>
     /// <returns>Buffer free space as ArraySegment</returns>
-    public ArraySegment<T> AsFreeSpaceArraySegment()
+    public Memory<T> AsFreeSpaceMemory()
     {
         EnsureNotDisposed();
 
-        return new ArraySegment<T>(_buffer, _dataLength, _buffer.Length - _dataLength);
+        return new Memory<T>(_buffer, _dataLength, _buffer.Length - _dataLength);
     }
 
     /// <summary>
