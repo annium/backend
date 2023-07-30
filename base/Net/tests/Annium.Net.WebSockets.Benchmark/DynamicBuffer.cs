@@ -71,11 +71,11 @@ internal struct DynamicBuffer<T> : IDisposable
     /// Wrap buffer data as ReadOnlySpan
     /// </summary>
     /// <returns>Buffer data as ReadOnlySpan</returns>
-    public ReadOnlyMemory<T> AsDataReadOnlyMemory()
+    public ReadOnlySpan<T> AsDataReadOnlySpan()
     {
         EnsureNotDisposed();
 
-        return new ReadOnlyMemory<T>(_buffer, 0, _dataLength);
+        return new ReadOnlySpan<T>(_buffer, 0, _dataLength);
     }
 
     public void Dispose()

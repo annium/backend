@@ -98,9 +98,9 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         }
 
         if (receiveResult.MessageType is WebSocketMessageType.Text)
-            TextReceived(buffer.AsDataReadOnlyMemory());
+            TextReceived(buffer.AsDataReadOnlySpan());
         else
-            BinaryReceived(buffer.AsDataReadOnlyMemory());
+            BinaryReceived(buffer.AsDataReadOnlySpan());
 
         return (false, WebSocketCloseStatus.Empty);
     }

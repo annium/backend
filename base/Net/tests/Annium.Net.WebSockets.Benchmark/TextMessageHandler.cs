@@ -2,4 +2,4 @@ using System;
 
 namespace Annium.Net.WebSockets.Benchmark;
 
-public delegate void TextMessageHandler(ReadOnlyMemory<byte> text);
+public delegate void TextMessageHandler(ReadOnlySpan<byte> text);
