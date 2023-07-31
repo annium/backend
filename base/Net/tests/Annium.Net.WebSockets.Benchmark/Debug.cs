@@ -9,7 +9,7 @@ using Annium.Threading.Tasks;
 
 namespace Annium.Net.WebSockets.Benchmark;
 
-public static class Debug
+internal static class Debug
 {
     public static async Task RunAsync()
     {
@@ -21,8 +21,7 @@ public static class Debug
         var cts = new CancellationTokenSource();
 
         // server
-        var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, 9898));
-        server.OnConnected += ws => executor.Schedule(async () => await HandleClient(new ManagedWebSocket(ws)));
+        var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, 9898), "/", HandleClient);
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token));
 
         // client
@@ -52,8 +51,10 @@ public static class Debug
         Trace("done");
     }
 
-    private static async Task HandleClient(ManagedWebSocket clientSocket)
+    private static async Task HandleClient(WebSocket rawSocket, CancellationToken ct)
     {
+        var clientSocket = new ManagedWebSocket(rawSocket);
+
         // create channel to decouple read/write flow
         var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();
 

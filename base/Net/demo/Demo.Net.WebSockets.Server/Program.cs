@@ -1,16 +1,16 @@
-using Annium.Core.DependencyInjection;
-using Demo.Net.WebSockets.Server;
-using Microsoft.AspNetCore.Builder;
+using System.Net;
+using System.Net.WebSockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Annium.Core.Entrypoint;
+using Annium.Net.WebSockets;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseServicePack<ServicePack>();
-builder.Logging.ConfigureLoggingBridge();
-builder.WebHost.UseKestrelDefaults();
+await using var entry = Entrypoint.Default.Setup();
 
-var app = builder.Build();
+var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, 9898), "/", HandleClient);
+await server.RunAsync(entry.Ct);
 
-app.UseWebSockets();
-app.UseMiddleware<WebSocketEchoMiddleware>();
-app.UseRouting();
-
-await app.RunAsync();
+static async Task HandleClient(WebSocket rawSocket, CancellationToken ct)
+{
+    await rawSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+}

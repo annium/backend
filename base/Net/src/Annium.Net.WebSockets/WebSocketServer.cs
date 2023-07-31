@@ -3,18 +3,19 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Extensions.Execution;
 
 namespace Annium.Net.WebSockets;
 
-public delegate void HandleClientConnected(WebSocket socket);
-
 public class WebSocketServer
 {
-    public event HandleClientConnected OnConnected = delegate { };
+    private readonly Func<WebSocket, CancellationToken, Task> _handleClient;
     private readonly HttpListener _listener;
+    private readonly IBackgroundExecutor _executor = Executor.Background.Parallel<WebSocketServer>();
 
-    public WebSocketServer(IPEndPoint endpoint, string path = "/")
+    public WebSocketServer(IPEndPoint endpoint, string path, Func<WebSocket, CancellationToken, Task> handleClient)
     {
+        _handleClient = handleClient;
         _listener = new HttpListener();
         _listener.Prefixes.Add($"http://{endpoint}{path}");
     }
@@ -24,47 +25,55 @@ public class WebSocketServer
         if (_listener.IsListening)
             throw new InvalidOperationException("Server is already started");
 
+        _executor.Start(ct);
         _listener.Start();
-        ct.Register(_listener.Stop);
 
         while (!ct.IsCancellationRequested)
         {
             HttpListenerContext listenerContext;
             try
             {
-                listenerContext = await _listener.GetContextAsync();
+                // await for connection
+                listenerContext = await _listener.GetContextAsync().WaitAsync(ct);
             }
-            catch (ObjectDisposedException)
+            catch (OperationCanceledException)
             {
                 break;
             }
 
-            HandleRequest(listenerContext);
+            // schedule connection handling
+            _executor.Schedule(async () => await HandleRequest(listenerContext, ct).ConfigureAwait(false));
         }
 
+        // when cancelled - await connections processing and stop listener
+        await _executor.DisposeAsync().ConfigureAwait(false);
         _listener.Stop();
     }
 
 
-    private void HandleRequest(HttpListenerContext listenerContext) => Task.Run(async () =>
+    private async Task HandleRequest(HttpListenerContext listenerContext, CancellationToken ct)
     {
-        if (listenerContext.Request.IsWebSocketRequest)
-        {
-            try
-            {
-                var webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
-                OnConnected(webSocketContext.WebSocket);
-            }
-            catch (Exception)
-            {
-                listenerContext.Response.StatusCode = 500;
-                listenerContext.Response.Close();
-            }
-        }
-        else
+        if (!listenerContext.Request.IsWebSocketRequest)
         {
             listenerContext.Response.StatusCode = 400;
             listenerContext.Response.Close();
+            return;
         }
-    });
+
+        try
+        {
+            var webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
+            await _handleClient(webSocketContext.WebSocket, ct).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            listenerContext.Response.StatusCode = 200;
+            listenerContext.Response.Close();
+        }
+        catch (Exception)
+        {
+            listenerContext.Response.StatusCode = 500;
+            listenerContext.Response.Close();
+        }
+    }
 }

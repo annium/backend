@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 using Annium.Net.WebSockets.Obsolete;
 using Microsoft.AspNetCore.Http;
 
-namespace Demo.Net.WebSockets.Server;
+namespace Demo.Net.WebSockets.Server.Obsolete;
 
+[Obsolete]
 public class WebSocketEchoMiddleware
 {
     private readonly RequestDelegate _next;

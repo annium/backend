@@ -1,8 +1,9 @@
 using System;
 using Annium.Core.DependencyInjection;
 
-namespace Demo.Net.WebSockets.Server;
+namespace Demo.Net.WebSockets.Server.Obsolete;
 
+[Obsolete]
 internal class ServicePack : ServicePackBase
 {
     public override void Configure(IServiceContainer container)
