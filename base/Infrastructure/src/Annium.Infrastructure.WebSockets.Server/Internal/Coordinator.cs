@@ -5,7 +5,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 
 // ReSharper disable AccessToDisposedClosure
 

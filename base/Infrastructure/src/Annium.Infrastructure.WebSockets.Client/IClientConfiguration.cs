@@ -1,6 +1,6 @@
 using System;
 using Annium.Infrastructure.WebSockets.Domain;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using NodaTime;
 
 namespace Annium.Infrastructure.WebSockets.Client;

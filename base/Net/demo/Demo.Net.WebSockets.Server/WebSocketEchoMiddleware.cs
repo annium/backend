@@ -3,7 +3,7 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using Microsoft.AspNetCore.Http;
 
 namespace Demo.Net.WebSockets.Server;

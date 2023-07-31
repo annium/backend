@@ -6,8 +6,9 @@ using Annium.Debug;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Obsolete;
 
+[Obsolete]
 public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 {
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;

@@ -13,9 +13,10 @@ using Annium.Extensions.Execution;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Obsolete;
 
 // TODO: rewrite as generic socket wrapper
+[Obsolete]
 public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket
     where TNativeSocket : NativeWebSocket
 {

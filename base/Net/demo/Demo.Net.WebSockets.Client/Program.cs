@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.Entrypoint;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 
 await using var entry = Entrypoint.Default.Setup();
 

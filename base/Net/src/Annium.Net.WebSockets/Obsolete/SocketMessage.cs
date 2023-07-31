@@ -1,8 +1,9 @@
 using System;
 using System.Net.WebSockets;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Obsolete;
 
+[Obsolete]
 public readonly struct SocketMessage
 {
     public WebSocketMessageType Type { get; }

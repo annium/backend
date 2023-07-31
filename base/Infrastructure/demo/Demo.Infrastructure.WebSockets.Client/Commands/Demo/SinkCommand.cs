@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using Annium.Serialization.Abstractions;
 using NodaTime;
 

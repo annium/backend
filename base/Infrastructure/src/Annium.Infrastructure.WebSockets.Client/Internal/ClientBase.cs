@@ -12,7 +12,7 @@ using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using Annium.Threading;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;

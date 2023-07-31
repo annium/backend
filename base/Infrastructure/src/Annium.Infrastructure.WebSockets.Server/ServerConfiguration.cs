@@ -1,5 +1,5 @@
 using Annium.Infrastructure.WebSockets.Domain;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server;
 

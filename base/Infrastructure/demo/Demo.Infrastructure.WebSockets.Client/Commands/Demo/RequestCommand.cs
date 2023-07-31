@@ -8,13 +8,13 @@ using Annium;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using Annium.Serialization.Abstractions;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
 using NodaTime;
-using ClientWebSocket = Annium.Net.WebSockets.ClientWebSocket;
-using ClientWebSocketOptions = Annium.Net.WebSockets.ClientWebSocketOptions;
+using ClientWebSocket = Annium.Net.WebSockets.Obsolete.ClientWebSocket;
+using ClientWebSocketOptions = Annium.Net.WebSockets.Obsolete.ClientWebSocketOptions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 

@@ -2,14 +2,16 @@ using System;
 using Annium.Net.WebSockets.Internal;
 using NodaTime;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Obsolete;
 
+[Obsolete]
 public record WebSocketBaseOptions
 {
     public ActiveKeepAlive? ActiveKeepAlive { get; set; }
     public PassiveKeepAlive? PassiveKeepAlive { get; set; }
 }
 
+[Obsolete]
 public record ActiveKeepAlive : PassiveKeepAlive
 {
     public static ActiveKeepAlive Create(
@@ -25,6 +27,7 @@ public record ActiveKeepAlive : PassiveKeepAlive
     public uint Retries { get; init; }
 }
 
+[Obsolete]
 public record PassiveKeepAlive
 {
     public static PassiveKeepAlive Create() => new();

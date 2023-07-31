@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using Annium.Debug;
+using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Net.WebSockets.Internal;
 

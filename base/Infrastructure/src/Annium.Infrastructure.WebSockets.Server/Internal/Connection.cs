@@ -2,8 +2,8 @@ using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
-using Annium.Net.WebSockets;
-using WebSocket = Annium.Net.WebSockets.WebSocket;
+using Annium.Net.WebSockets.Obsolete;
+using WebSocket = Annium.Net.WebSockets.Obsolete.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 

@@ -7,8 +7,9 @@ using Annium.Net.WebSockets.Internal;
 using NodaTime;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Obsolete;
 
+[Obsolete]
 public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebSocket
 {
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;

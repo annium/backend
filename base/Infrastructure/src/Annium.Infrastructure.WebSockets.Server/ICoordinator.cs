@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server;
 

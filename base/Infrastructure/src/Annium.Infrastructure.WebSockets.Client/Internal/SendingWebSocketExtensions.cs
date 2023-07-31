@@ -1,7 +1,7 @@
 using System;
 using System.Reactive;
 using System.Threading;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Obsolete;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
