@@ -20,12 +20,12 @@ public static class Debug
 
         var cts = new CancellationTokenSource();
 
-// server
+        // server
         var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, 9898));
         server.OnConnected += ws => executor.Schedule(async () => await HandleClient(new ManagedWebSocket(ws)));
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token));
 
-// client
+        // client
         var socket = new System.Net.WebSockets.ClientWebSocket();
         var client = new ManagedWebSocket(socket);
         var messageCount = 1_000_000L;
@@ -52,7 +52,7 @@ public static class Debug
         Trace("done");
     }
 
-    static async Task HandleClient(ManagedWebSocket clientSocket)
+    private static async Task HandleClient(ManagedWebSocket clientSocket)
     {
         // create channel to decouple read/write flow
         var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();
@@ -75,7 +75,7 @@ public static class Debug
         await echoTask;
     }
 
-    static async Task RunEchoAsync(ChannelReader<ReadOnlyMemory<byte>> reader, ManagedWebSocket clientSocket, CancellationToken ct)
+    private static async Task RunEchoAsync(ChannelReader<ReadOnlyMemory<byte>> reader, ManagedWebSocket clientSocket, CancellationToken ct)
     {
         try
         {
@@ -105,7 +105,7 @@ public static class Debug
         }
     }
 
-    static void Trace(string msg)
+    private static void Trace(string msg)
     {
         Console.WriteLine($"[{DateTime.Now:HH:mm:ss.fff}] {msg}");
     }

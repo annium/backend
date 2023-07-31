@@ -4,7 +4,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Net.WebSockets.Benchmark;
+namespace Annium.Net.WebSockets;
 
 public delegate void HandleClientConnected(WebSocket socket);
 

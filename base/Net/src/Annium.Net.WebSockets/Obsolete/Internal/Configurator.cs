@@ -6,10 +6,10 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using Annium.Debug;
-using Annium.Net.WebSockets.Obsolete;
 
-namespace Annium.Net.WebSockets.Internal;
+namespace Annium.Net.WebSockets.Obsolete.Internal;
 
+[Obsolete]
 internal static class Configurator
 {
     public static Configuration GetConfiguration(

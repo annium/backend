@@ -1,7 +1,7 @@
 using System;
 using System.Buffers;
 
-namespace Annium.Net.WebSockets.Benchmark;
+namespace Annium.Net.WebSockets;
 
 internal struct DynamicBuffer<T> : IDisposable
     where T : struct

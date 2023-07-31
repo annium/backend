@@ -3,7 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Net.WebSockets.Internal;
+using Annium.Net.WebSockets.Obsolete.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets.Obsolete;

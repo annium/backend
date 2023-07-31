@@ -1,7 +1,8 @@
 using System;
 
-namespace Annium.Net.WebSockets.Internal;
+namespace Annium.Net.WebSockets.Obsolete.Internal;
 
+[Obsolete]
 internal static class Constants
 {
     /// <summary>

@@ -1,6 +1,6 @@
 using System.Net.WebSockets;
 
-namespace Annium.Net.WebSockets.Benchmark;
+namespace Annium.Net.WebSockets;
 
 internal readonly struct ReceiveResult
 {

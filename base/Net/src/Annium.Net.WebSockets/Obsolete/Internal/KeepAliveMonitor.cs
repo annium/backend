@@ -4,11 +4,11 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using Annium.Debug;
-using Annium.Net.WebSockets.Obsolete;
 using NodaTime;
 
-namespace Annium.Net.WebSockets.Internal;
+namespace Annium.Net.WebSockets.Obsolete.Internal;
 
+[Obsolete]
 internal class KeepAliveMonitor : IKeepAliveMonitor
 {
     public CancellationToken Token => _cts.Token;

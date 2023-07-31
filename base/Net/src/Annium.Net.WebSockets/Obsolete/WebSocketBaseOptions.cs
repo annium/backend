@@ -1,5 +1,5 @@
 using System;
-using Annium.Net.WebSockets.Internal;
+using Annium.Net.WebSockets.Obsolete.Internal;
 using NodaTime;
 
 namespace Annium.Net.WebSockets.Obsolete;
