@@ -77,7 +77,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         while (true)
         {
             // read chunk into buffer
-            receiveResult = await ReceiveChunkAsync(buffer, ct);
+            receiveResult = await ReceiveChunkAsync(buffer, ct).ConfigureAwait(false);
 
             // if close received - return false, indicating socket is closed
             if (receiveResult.MessageType is WebSocketMessageType.Close)
@@ -111,7 +111,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
     {
         try
         {
-            var result = await _socket.ReceiveAsync(buffer.AsFreeSpaceMemory(), ct);
+            var result = await _socket.ReceiveAsync(buffer.AsFreeSpaceMemory(), ct).ConfigureAwait(false);
 
             return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketCloseStatus.Empty);
         }

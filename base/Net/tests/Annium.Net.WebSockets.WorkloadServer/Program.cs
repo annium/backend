@@ -23,7 +23,7 @@ async Task HandleClient(WebSocket rawSocket, CancellationToken ct)
 
     ReadOnlyMemory<byte> workloadMessageBytes = Encoding.UTF8.GetBytes(workloadMessage).AsMemory();
     for (var i = 0; i < totalMessages; i++)
-        await clientSocket.SendTextAsync(workloadMessageBytes);
+        await clientSocket.SendTextAsync(workloadMessageBytes).ConfigureAwait(false);
 
     await rawSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
 }
