@@ -7,8 +7,8 @@ namespace Annium.Net.WebSockets;
 
 public class ServerWebSocket : IServerWebSocket
 {
-    public event TextMessageHandler TextReceived = delegate { };
-    public event BinaryMessageHandler BinaryReceived = delegate { };
+    public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
+    public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
 
     public Task DisconnectAsync()
     {

@@ -7,8 +7,8 @@ namespace Annium.Net.WebSockets;
 
 public class ClientWebSocket : IClientWebSocket
 {
-    public event TextMessageHandler? TextReceived;
-    public event BinaryMessageHandler? BinaryReceived;
+    public event Action<ReadOnlyMemory<byte>> TextReceived;
+    public event Action<ReadOnlyMemory<byte>> BinaryReceived;
 
     public Task ConnectAsync(Uri uri, CancellationToken ct)
     {

@@ -3,13 +3,14 @@ using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Net.WebSockets;
 
 public class ManagedWebSocket : ISendingReceivingWebSocket
 {
-    public event TextMessageHandler TextReceived = delegate { };
-    public event BinaryMessageHandler BinaryReceived = delegate { };
+    public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
+    public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     private readonly WebSocket _socket;
     private readonly int _bufferSize;
 
@@ -98,9 +99,9 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         }
 
         if (receiveResult.MessageType is WebSocketMessageType.Text)
-            TextReceived(buffer.AsDataReadOnlySpan());
+            TextReceived(buffer.AsDataReadOnlyMemory());
         else
-            BinaryReceived(buffer.AsDataReadOnlySpan());
+            BinaryReceived(buffer.AsDataReadOnlyMemory());
 
         return (false, WebSocketCloseStatus.Empty);
     }

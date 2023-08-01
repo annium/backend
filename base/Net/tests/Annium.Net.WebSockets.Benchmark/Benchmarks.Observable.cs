@@ -23,7 +23,7 @@ public partial class Benchmarks
 
         _observableSocket = new System.Net.WebSockets.ClientWebSocket();
         var client = new ManagedWebSocket(_observableSocket);
-        client.TextReceived += HandleMessage_Observable;
+        client.ObserveText().Subscribe(HandleMessage_Observable);
         _observableSocket.ConnectAsync(new Uri($"ws://127.0.0.1:{Constants.Port}/"), CancellationToken.None).GetAwaiter().GetResult();
         _observableListenTask = client.ListenAsync(_observableCts.Token);
     }
@@ -42,7 +42,7 @@ public partial class Benchmarks
         _observableGate.Wait();
     }
 
-    private void HandleMessage_Observable(ReadOnlySpan<byte> data)
+    private void HandleMessage_Observable(ReadOnlyMemory<byte> data)
     {
         if (Interlocked.Decrement(ref _observableEventCount) > 0)
         {

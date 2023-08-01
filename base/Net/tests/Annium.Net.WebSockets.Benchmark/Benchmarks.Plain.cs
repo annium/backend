@@ -37,13 +37,13 @@ public partial class Benchmarks
         _plainListenTask.Wait();
     }
 
-    [Benchmark]
+    [Benchmark(Baseline = true)]
     public void Plain()
     {
         _plainGate.Wait();
     }
 
-    private void HandleMessage_Plain(ReadOnlySpan<byte> data)
+    private void HandleMessage_Plain(ReadOnlyMemory<byte> data)
     {
         if (Interlocked.Decrement(ref _plainEventCount) > 0)
         {

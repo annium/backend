@@ -1,3 +1,4 @@
+using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +10,12 @@ public interface IReceivingWebSocket
     /// <summary>
     /// Event is invoked, when text message arrives
     /// </summary>
-    event TextMessageHandler TextReceived;
+    event Action<ReadOnlyMemory<byte>> TextReceived;
 
     /// <summary>
     /// Event is invoked, when binary message arrives
     /// </summary>
-    event BinaryMessageHandler BinaryReceived;
+    event Action<ReadOnlyMemory<byte>> BinaryReceived;
 
     /// <summary>
     /// Start listening until websocket is closed
