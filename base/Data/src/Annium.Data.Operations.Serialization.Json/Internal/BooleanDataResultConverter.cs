@@ -63,7 +63,7 @@ internal class BooleanDataResultConverterFactory : ResultConverterBaseFactory
     {
         var typeArgs = GetImplementation(typeToConvert).GetGenericArguments();
 
-        return (JsonConverter) Activator.CreateInstance(typeof(BooleanDataResultConverter<>).MakeGenericType(typeArgs[0]))!;
+        return (JsonConverter)Activator.CreateInstance(typeof(BooleanDataResultConverter<>).MakeGenericType(typeArgs[0]))!;
     }
 
     protected override bool IsConvertibleInterface(Type type) =>

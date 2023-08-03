@@ -63,7 +63,7 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
             }
 
         sw.Stop();
-        this.Log().Debug($"Messages sent: {value}. Rate: {Math.Floor((double) value / sw.ElapsedMilliseconds * 1000)}rps");
+        this.Log().Debug($"Messages sent: {value}. Rate: {Math.Floor((double)value / sw.ElapsedMilliseconds * 1000)}rps");
 
         if (!cfg.Kill)
         {

@@ -42,6 +42,6 @@ public class AbstractJsonConverterFactory : JsonConverterFactory
     {
         var converterType = typeof(AbstractJsonConverter<>).MakeGenericType(typeToConvert);
 
-        return (JsonConverter) Activator.CreateInstance(converterType, _typeManager)!;
+        return (JsonConverter)Activator.CreateInstance(converterType, _typeManager)!;
     }
 }

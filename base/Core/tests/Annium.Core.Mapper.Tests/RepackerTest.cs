@@ -129,6 +129,6 @@ public class RepackerTest
 
         var param = Expression.Parameter(typeof(TS));
 
-        return ((Expression<Func<TS, TR>>) repacker.Repack(ex)(param)).Compile();
+        return ((Expression<Func<TS, TR>>)repacker.Repack(ex)(param)).Compile();
     }
 }

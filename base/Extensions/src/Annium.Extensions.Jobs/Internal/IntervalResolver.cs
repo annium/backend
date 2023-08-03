@@ -56,7 +56,7 @@ internal class IntervalResolver : IIntervalResolver
             instant
         );
 
-        return (Func<Instant, bool>) expression.Compile();
+        return (Func<Instant, bool>)expression.Compile();
     }
 
     private Expression? GetPartExpression(string name, string part, uint min, uint max, Expression getPart)
@@ -68,7 +68,7 @@ internal class IntervalResolver : IIntervalResolver
         // if const - test equality
         if (uint.TryParse(part, out var value))
             if (value >= min && value <= max)
-                return Expression.Equal(getPart, Expression.Constant((int) value));
+                return Expression.Equal(getPart, Expression.Constant((int)value));
             else
                 throw new ArgumentOutOfRangeException(nameof(part), value, $"'{name}' must be in [{min};{max}] range");
 
@@ -79,11 +79,11 @@ internal class IntervalResolver : IIntervalResolver
             if (values.Any(v => v < min || v > max))
                 throw new ArgumentOutOfRangeException(nameof(part), $"'{name}' must be in [{min};{max}] range");
 
-            var result = Expression.Equal(getPart, Expression.Constant((int) values[0]));
+            var result = Expression.Equal(getPart, Expression.Constant((int)values[0]));
             foreach (var orValue in values.Skip(1))
                 result = Expression.Or(
                     result,
-                    Expression.Equal(getPart, Expression.Constant((int) orValue))
+                    Expression.Equal(getPart, Expression.Constant((int)orValue))
                 );
 
             return result;

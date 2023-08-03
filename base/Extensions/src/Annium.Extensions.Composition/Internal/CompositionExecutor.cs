@@ -28,7 +28,7 @@ internal class CompositionExecutor<TValue> : IComposer<TValue> where TValue : cl
     )
     {
         _composers = ComposerSets
-            .Select(s => (IEnumerable<ICompositionContainer<TValue>>) serviceProvider.Resolve(s))
+            .Select(s => (IEnumerable<ICompositionContainer<TValue>>)serviceProvider.Resolve(s))
             .SelectMany(v => v)
             .ToArray();
 

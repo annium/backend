@@ -24,7 +24,7 @@ internal static class HierarchyBuilder
 
         return result.ToDictionary(
             x => new Ancestor(x.Key),
-            x => (IReadOnlyCollection<Descendant>) x.Value.Select(xx => descendantsRegistry[xx]).ToArray()
+            x => (IReadOnlyCollection<Descendant>)x.Value.Select(xx => descendantsRegistry[xx]).ToArray()
         );
 
         void Register(Type ancestor, Type descendant)

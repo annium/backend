@@ -91,7 +91,7 @@ public class StorageTest
         }
 
         // assert
-        ((Span<byte>) result).SequenceEqual((Span<byte>) blob).IsTrue();
+        ((Span<byte>)result).SequenceEqual((Span<byte>)blob).IsTrue();
     }
 
     [Fact]

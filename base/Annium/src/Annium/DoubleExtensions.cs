@@ -14,11 +14,11 @@ public static class DoubleExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int FloorInt32(this double value) =>
-        (int) Math.Floor(value);
+        (int)Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long FloorInt64(this double value) =>
-        (long) Math.Floor(value);
+        (long)Math.Floor(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Floor(this double value) =>
@@ -26,19 +26,19 @@ public static class DoubleExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this double value) =>
-        (int) Math.Round(value);
+        (int)Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int RoundInt32(this double value, MidpointRounding mode) =>
-        (int) Math.Round(value, mode);
+        (int)Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this double value) =>
-        (long) Math.Round(value);
+        (long)Math.Round(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long RoundInt64(this double value, MidpointRounding mode) =>
-        (long) Math.Round(value, mode);
+        (long)Math.Round(value, mode);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Round(this double value) =>
@@ -58,11 +58,11 @@ public static class DoubleExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int CeilInt32(this double value) =>
-        (int) Math.Ceiling(value);
+        (int)Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long CeilInt64(this double value) =>
-        (long) Math.Ceiling(value);
+        (long)Math.Ceiling(value);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static double Ceil(this double value) =>

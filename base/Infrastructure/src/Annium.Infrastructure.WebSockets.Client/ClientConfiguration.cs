@@ -81,20 +81,20 @@ public abstract class ClientConfigurationBase<TConfiguration> : IClientConfigura
     {
         Format = SerializationFormat.Binary;
 
-        return (TConfiguration) this;
+        return (TConfiguration)this;
     }
 
     public TConfiguration UseTextFormat()
     {
         Format = SerializationFormat.Text;
 
-        return (TConfiguration) this;
+        return (TConfiguration)this;
     }
 
     public TConfiguration WithResponseTimeout(uint timeout)
     {
         ResponseTimeout = Duration.FromSeconds(timeout);
 
-        return (TConfiguration) this;
+        return (TConfiguration)this;
     }
 }

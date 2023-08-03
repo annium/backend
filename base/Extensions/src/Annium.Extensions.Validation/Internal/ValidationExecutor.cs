@@ -26,7 +26,7 @@ internal class ValidationExecutor<TValue> : IValidator<TValue>
     )
     {
         _validators = ValidatorSets
-            .Select(s => (IEnumerable<IValidationContainer<TValue>>) serviceProvider.Resolve(s))
+            .Select(s => (IEnumerable<IValidationContainer<TValue>>)serviceProvider.Resolve(s))
             .SelectMany(v => v)
             .ToArray();
 

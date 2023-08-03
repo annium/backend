@@ -75,7 +75,7 @@ internal class IntervalParser : IIntervalParser
         expressions.Add(Expression.Label(returnLabel, result));
 
         var lambda = Expression.Lambda(Expression.Block(new[] { result }, expressions), false, dateTime);
-        var resolver = (Func<LocalDateTime, Duration>) lambda.Compile();
+        var resolver = (Func<LocalDateTime, Duration>)lambda.Compile();
 
         return resolver;
     }

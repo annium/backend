@@ -66,11 +66,11 @@ internal class MessagePackSerializer : ISerializer<ReadOnlyMemory<byte>>
         }
         catch (MessagePackSerializationException e)
         {
-            throw new MessagePackSerializationException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
+            throw new MessagePackSerializationException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object)"null"}", e);
         }
         catch (Exception e)
         {
-            throw new Exception($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
+            throw new Exception($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object)"null"}", e);
         }
     }
 }

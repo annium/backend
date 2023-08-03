@@ -29,8 +29,8 @@ internal class EntityMaterializerSource : EntityMaterializerSourceBase
 
         var onMaterializedMethod = clrType.GetMethod(nameof(IMaterializable.OnMaterialized))!;
 
-        var blockExpressions = new List<Expression>(((BlockExpression) baseExpression).Expressions);
-        var instanceVariable = (ParameterExpression) blockExpressions.Last();
+        var blockExpressions = new List<Expression>(((BlockExpression)baseExpression).Expressions);
+        var instanceVariable = (ParameterExpression)blockExpressions.Last();
 
         var onMaterializedExpression = Expression.Call(instanceVariable, onMaterializedMethod);
 

@@ -8,7 +8,7 @@ public static class ByteExtensions
 
     public static string ToHexString(this byte[] value) => ToHexString(value.AsMemory());
 
-    public static string ToHexString(this Memory<byte> value) => ToHexString((ReadOnlyMemory<byte>) value);
+    public static string ToHexString(this Memory<byte> value) => ToHexString((ReadOnlyMemory<byte>)value);
 
     public static string ToHexString(this ReadOnlyMemory<byte> value)
     {

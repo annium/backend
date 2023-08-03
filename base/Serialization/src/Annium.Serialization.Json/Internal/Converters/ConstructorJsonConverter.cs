@@ -71,7 +71,7 @@ internal class ConstructorJsonConverter<T> : JsonConverter<T>
         foreach (var (property, val) in properties)
             property.SetValue(result, val);
 
-        return (T) result;
+        return (T)result;
     }
 
     public override void Write(

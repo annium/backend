@@ -18,7 +18,7 @@ public class TestResultConverter
     {
         var result = new MsTestResult(_testConverter.Convert(assembly, test))
         {
-            Outcome = (MsTestOutcome) testResult.Outcome,
+            Outcome = (MsTestOutcome)testResult.Outcome,
             ErrorMessage = testResult.Failure?.Message,
             ErrorStackTrace = testResult.Failure?.StackTrace,
             DisplayName = test.DisplayName,

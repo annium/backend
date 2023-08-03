@@ -43,7 +43,7 @@ public static class SortedListRangeExtensions
         var versionField = type.GetField("version", flags)!;
         var capacityProperty = type.GetProperty("Capacity")!;
         var ensureCapacity = type.GetMethod("EnsureCapacity", flags)!;
-        var comparer = (IComparer<TKey>) type.GetField("comparer", flags)!.GetValue(source)!;
+        var comparer = (IComparer<TKey>)type.GetField("comparer", flags)!.GetValue(source)!;
 
         // get source data
         var sourceKeys = keysField.GetPropertyOrFieldValue<TKey[]>(source)!;

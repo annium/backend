@@ -94,7 +94,7 @@ internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
         if (reader.TokenType != JsonTokenType.EndArray)
             throw new JsonException("Expected array end");
 
-        return (T) value;
+        return (T)value;
     }
 
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)

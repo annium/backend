@@ -23,7 +23,7 @@ public class ConcurrentTest
         Console.WriteLine($"run {index}");
         var parallelism = 20;
         var size = parallelism * 5;
-        var executor = Executor.Background.Concurrent<ConcurrentTest>((uint) parallelism);
+        var executor = Executor.Background.Concurrent<ConcurrentTest>((uint)parallelism);
         var queue = new ConcurrentQueue<int>();
 
         // act

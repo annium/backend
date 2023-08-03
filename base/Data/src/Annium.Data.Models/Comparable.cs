@@ -11,7 +11,7 @@ public abstract class Comparable<T> : Equatable<T>, IComparable<T>, IComparable 
 
         foreach (var accessor in GetComparables())
         {
-            var value = Compare(accessor((T) this), accessor(other));
+            var value = Compare(accessor((T)this), accessor(other));
             if (value != 0)
                 return value;
         }

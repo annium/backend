@@ -22,11 +22,11 @@ internal class StorageFactory : IStorageFactory
 
         var factoryType = typeof(Func<,>).MakeGenericType(configuration.GetType(), typeof(IStorage));
 
-        var factory = (Delegate) _provider.Resolve(factoryType);
+        var factory = (Delegate)_provider.Resolve(factoryType);
 
         try
         {
-            return (IStorage) factory.DynamicInvoke(configuration)!;
+            return (IStorage)factory.DynamicInvoke(configuration)!;
         }
         catch (TargetInvocationException ex)
         {

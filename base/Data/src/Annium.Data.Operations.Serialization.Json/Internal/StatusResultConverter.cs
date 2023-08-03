@@ -51,7 +51,7 @@ internal class StatusResultConverterFactory : ResultConverterBaseFactory
     {
         var typeArgs = GetImplementation(typeToConvert).GetGenericArguments();
 
-        return (JsonConverter) Activator.CreateInstance(typeof(StatusResultConverter<>).MakeGenericType(typeArgs[0]))!;
+        return (JsonConverter)Activator.CreateInstance(typeof(StatusResultConverter<>).MakeGenericType(typeArgs[0]))!;
     }
 
     protected override bool IsConvertibleInterface(Type type) =>

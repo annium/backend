@@ -25,7 +25,7 @@ internal class YamlConfigurationProvider : ConfigurationProviderBase
         if (stream.Documents.Count == 0)
             return Data;
 
-        Process((YamlMappingNode) stream.Documents[0].RootNode);
+        Process((YamlMappingNode)stream.Documents[0].RootNode);
 
         return Data;
     }
@@ -34,14 +34,14 @@ internal class YamlConfigurationProvider : ConfigurationProviderBase
     {
         foreach (var (key, value) in node.Children)
         {
-            Context.Push(((YamlScalarNode) key).Value!);
+            Context.Push(((YamlScalarNode)key).Value!);
 
             if (value is YamlMappingNode map)
                 Process(map);
             else if (value is YamlSequenceNode seq)
                 Process(seq);
             else
-                Process((YamlScalarNode) value);
+                Process((YamlScalarNode)value);
 
             Context.Pop();
         }
@@ -59,7 +59,7 @@ internal class YamlConfigurationProvider : ConfigurationProviderBase
             else if (item is YamlSequenceNode seq)
                 Process(seq);
             else
-                Process((YamlScalarNode) item);
+                Process((YamlScalarNode)item);
 
             Context.Pop();
             index++;

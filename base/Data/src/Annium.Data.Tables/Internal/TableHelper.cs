@@ -21,7 +21,7 @@ internal static class TableHelper
 
         var lambda = Expression.Lambda(body, getKeyExpression.Parameters);
 
-        return (Func<T, int>) lambda.Compile();
+        return (Func<T, int>)lambda.Compile();
     }
 
     public static Action<T, T> BuildUpdate<T>(TablePermission permissions)

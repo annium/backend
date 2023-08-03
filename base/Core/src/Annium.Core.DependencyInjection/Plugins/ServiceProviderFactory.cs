@@ -29,6 +29,6 @@ public class ServiceProviderFactory : IServiceProviderFactory<IServiceProviderBu
 
     public IServiceProvider CreateServiceProvider(IServiceProviderBuilder container)
     {
-        return ((ServiceProviderBuilder) container).Build();
+        return ((ServiceProviderBuilder)container).Build();
     }
 }

@@ -72,11 +72,11 @@ internal class ReadOnlyMemoryByteSerializer : ISerializer<ReadOnlyMemory<byte>>
         }
         catch (JsonException e)
         {
-            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e.Path, e.LineNumber, e.BytePositionInLine, e);
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object)"null"}", e.Path, e.LineNumber, e.BytePositionInLine, e);
         }
         catch (Exception e)
         {
-            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object) "null"}", e);
+            throw new JsonException($"Failed to serialize {value} as {value?.GetType().FriendlyName() ?? (object)"null"}", e);
         }
     }
 }
