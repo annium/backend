@@ -15,5 +15,5 @@ public static class RandomExtensions
         return values[random.Next(0, values.Length)];
     }
 
-    public static decimal NextDecimal(this Random random) => (decimal) random.NextDouble();
+    public static decimal NextDecimal(this Random random) => (decimal)random.NextDouble();
 }

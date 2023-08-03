@@ -192,7 +192,7 @@ internal class TypeManagerInstance : ITypeManager
             // instance may not belong to hierarchy of baseType, so need to perform lookup for real property reference
             resolutionIdProperty = ResolveResolutionIdProperty(instance, resolutionIdProperty);
 
-            var id = (string) resolutionIdProperty.GetValue(instance)!;
+            var id = (string)resolutionIdProperty.GetValue(instance)!;
 
             return ResolveById(id);
         }

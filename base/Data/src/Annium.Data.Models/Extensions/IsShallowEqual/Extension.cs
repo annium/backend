@@ -73,7 +73,7 @@ public static partial class IsShallowEqualExtensions
 
         try
         {
-            return (bool) comparer.DynamicInvoke(comparable, data)!;
+            return (bool)comparer.DynamicInvoke(comparable, data)!;
         }
         catch (TargetInvocationException ex) when (ex.InnerException != null)
         {

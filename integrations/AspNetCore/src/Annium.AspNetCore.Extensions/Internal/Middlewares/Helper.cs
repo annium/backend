@@ -22,7 +22,7 @@ internal class Helper
 
     public Task WriteResponse(HttpContext context, HttpStatusCode status, IResultBase result)
     {
-        context.Response.StatusCode = (int) status;
+        context.Response.StatusCode = (int)status;
         context.Response.ContentType = _mediaType;
 
         return context.Response.WriteAsync(_serializer.Serialize(result));

@@ -160,7 +160,7 @@ public static class StringExtensions
             if (!lookup.TryGetValue(c2, out var b2))
                 throw new OverflowException($"{c2} is not a valid hex character");
 
-            byteArray[i / 2] = (byte) ((b1 << 4) + b2);
+            byteArray[i / 2] = (byte)((b1 << 4) + b2);
         }
 
         return byteArray;
@@ -181,7 +181,7 @@ public static class StringExtensions
             var c2 = str[i + 1];
 
             if (lookup.TryGetValue(c1, out var b1) && lookup.TryGetValue(c2, out var b2))
-                array[i / 2] = (byte) ((b1 << 4) + b2);
+                array[i / 2] = (byte)((b1 << 4) + b2);
             else
                 return false;
         }

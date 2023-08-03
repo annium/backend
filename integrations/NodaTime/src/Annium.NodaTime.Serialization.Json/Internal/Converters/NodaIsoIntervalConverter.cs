@@ -28,8 +28,8 @@ internal sealed class NodaIsoIntervalConverter : ConverterBase<Interval>
         var startText = text.Substring(0, slash);
         var endText = text.Substring(slash + 1);
         var pattern = InstantPattern.ExtendedIso;
-        var start = startText == "" ? (Instant?) null : pattern.Parse(startText).Value;
-        var end = endText == "" ? (Instant?) null : pattern.Parse(endText).Value;
+        var start = startText == "" ? (Instant?)null : pattern.Parse(startText).Value;
+        var end = endText == "" ? (Instant?)null : pattern.Parse(endText).Value;
 
         return new Interval(start, end);
     }

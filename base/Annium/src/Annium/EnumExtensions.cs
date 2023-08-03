@@ -40,7 +40,7 @@ public static class EnumExtensions
             .ToList();
 
         if (values.Count == 0)
-            return (T) (ValueType) 0;
+            return (T)(ValueType)0;
 
         return CastValues(values);
     }
@@ -93,7 +93,7 @@ public static class EnumExtensions
 
         if (map.TryGetValue(label.ToLowerInvariant(), out var val))
         {
-            value = (T) val;
+            value = (T)val;
             return true;
         }
 
@@ -112,7 +112,7 @@ public static class EnumExtensions
 
         foreach (var item in type.GetFields().Where(x => x.IsStatic))
         {
-            var value = (ValueType) item.GetValue(null)!;
+            var value = (ValueType)item.GetValue(null)!;
 
             result.Add(item.Name.ToLowerInvariant(), value);
             result.Add(Convert.ChangeType(value, underlyingType).ToString()!, value);
@@ -134,10 +134,10 @@ public static class EnumExtensions
     {
         var values = ParseValuesCache.GetOrAdd(typeof(T), ParseValues);
 
-        var val = (ValueType) Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)));
+        var val = (ValueType)Convert.ChangeType(raw, Enum.GetUnderlyingType(typeof(T)));
         if (values.Contains(val))
         {
-            value = (T) val;
+            value = (T)val;
             return true;
         }
 
@@ -157,18 +157,18 @@ public static class EnumExtensions
         // if not flags - simply add all values
         if (type.GetCustomAttribute<FlagsAttribute>() is null)
             foreach (var item in type.GetFields().Where(x => x.IsStatic))
-                result.Add((ValueType) Convert.ChangeType(item.GetValue(null)!, valueType));
+                result.Add((ValueType)Convert.ChangeType(item.GetValue(null)!, valueType));
         else
         {
             var values = type.GetFields()
                 .Where(x => x.IsStatic)
-                .Select(x => (long) Convert.ChangeType(x.GetValue(null)!, typeof(long)))
+                .Select(x => (long)Convert.ChangeType(x.GetValue(null)!, typeof(long)))
                 .OrderBy(x => x)
                 .ToArray();
             var max = values.Aggregate(0L, static (res, value) => res | value);
 
             for (var i = values[0]; i <= max; i++)
-                result.Add((ValueType) Convert.ChangeType(i, valueType));
+                result.Add((ValueType)Convert.ChangeType(i, valueType));
         }
 
         return result;
@@ -186,12 +186,12 @@ public static class EnumExtensions
 
         return typeCode switch
         {
-            TypeCode.Byte   => (T) (ValueType) values.Cast<byte>().Aggregate(0, (a, v) => a | v),
-            TypeCode.UInt16 => (T) (ValueType) values.Cast<ushort>().Aggregate(0, (a, v) => a | v),
-            TypeCode.Int32  => (T) (ValueType) values.Cast<int>().Aggregate(0, (a, v) => a | v),
-            TypeCode.UInt32 => (T) (ValueType) values.Cast<uint>().Aggregate(0U, (a, v) => a | v),
-            TypeCode.Int64  => (T) (ValueType) values.Cast<long>().Aggregate(0L, (a, v) => a | v),
-            TypeCode.UInt64 => (T) (ValueType) values.Cast<ulong>().Aggregate(0UL, (a, v) => a | v),
+            TypeCode.Byte   => (T)(ValueType)values.Cast<byte>().Aggregate(0, (a, v) => a | v),
+            TypeCode.UInt16 => (T)(ValueType)values.Cast<ushort>().Aggregate(0, (a, v) => a | v),
+            TypeCode.Int32  => (T)(ValueType)values.Cast<int>().Aggregate(0, (a, v) => a | v),
+            TypeCode.UInt32 => (T)(ValueType)values.Cast<uint>().Aggregate(0U, (a, v) => a | v),
+            TypeCode.Int64  => (T)(ValueType)values.Cast<long>().Aggregate(0L, (a, v) => a | v),
+            TypeCode.UInt64 => (T)(ValueType)values.Cast<ulong>().Aggregate(0UL, (a, v) => a | v),
             _               => throw new ArgumentException($"'{typeCode}' based Flags Enum is not supported"),
         };
     }

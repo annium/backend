@@ -80,7 +80,7 @@ internal class ObjectConfigurationProvider : ConfigurationProviderBase
         var getKey = keyValueType.GetProperty(nameof(KeyValuePair<object, object>.Key))!.GetMethod!;
         var getValue = keyValueType.GetProperty(nameof(KeyValuePair<object, object>.Value))!.GetMethod!;
 
-        foreach (var item in (IEnumerable) value)
+        foreach (var item in (IEnumerable)value)
         {
             var itemValue = getValue.Invoke(item, Array.Empty<object>());
             if (itemValue is null)
@@ -97,7 +97,7 @@ internal class ObjectConfigurationProvider : ConfigurationProviderBase
     {
         var index = 0;
 
-        foreach (var item in (IEnumerable) value)
+        foreach (var item in (IEnumerable)value)
         {
             if (item is null)
                 continue;

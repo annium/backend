@@ -72,7 +72,7 @@ internal static class AssembliesCollector
         {
             Log.Trace($"{name.Name} - matched");
             addMatchedAssembly(assembly);
-            var dependencies = (Assembly[]) autoScanned.GetType()
+            var dependencies = (Assembly[])autoScanned.GetType()
                 .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
                 .GetValue(autoScanned)!;
             foreach (var dependency in dependencies)

@@ -382,7 +382,7 @@ public class BaseRulesTest : TestBase
 
         // act
         var resultGood = await validator.ValidateAsync(new Person { Enum = LogLevel.Debug | LogLevel.Info });
-        var resultBad = await validator.ValidateAsync(new Person { Enum = (LogLevel) 8 });
+        var resultBad = await validator.ValidateAsync(new Person { Enum = (LogLevel)8 });
 
         // assert
         resultGood.LabeledErrors.ContainsKey(nameof(Person.Enum)).IsFalse();

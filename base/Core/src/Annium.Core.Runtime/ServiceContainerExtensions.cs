@@ -43,7 +43,7 @@ public static class ServiceContainerExtensions
 
         var descriptor = descriptors[0];
         if (descriptor is IInstanceServiceDescriptor instanceDescriptor)
-            return (ITypeManager) instanceDescriptor.ImplementationInstance;
+            return (ITypeManager)instanceDescriptor.ImplementationInstance;
 
         throw new InvalidOperationException($"{nameof(ITypeManager)} must be registered with instance.");
     }

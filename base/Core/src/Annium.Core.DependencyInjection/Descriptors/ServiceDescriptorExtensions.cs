@@ -17,8 +17,8 @@ public static class ServiceDescriptorExtensions
 
     public static MicrosoftServiceDescriptor ToMicrosoft(this IServiceDescriptor descriptor) => descriptor switch
     {
-        ITypeServiceDescriptor x     => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationType, (MicrosoftServiceLifetime) x.Lifetime),
-        IFactoryServiceDescriptor x  => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationFactory, (MicrosoftServiceLifetime) x.Lifetime),
+        ITypeServiceDescriptor x     => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationType, (MicrosoftServiceLifetime)x.Lifetime),
+        IFactoryServiceDescriptor x  => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationFactory, (MicrosoftServiceLifetime)x.Lifetime),
         IInstanceServiceDescriptor x => new MicrosoftServiceDescriptor(x.ServiceType, x.ImplementationInstance),
         _                            => throw new NotSupportedException($"{descriptor.GetType().FriendlyName()} is not supported")
     };

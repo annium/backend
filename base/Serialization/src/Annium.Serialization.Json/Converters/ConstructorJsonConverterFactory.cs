@@ -22,7 +22,7 @@ public class ConstructorJsonConverterFactory : JsonConverterFactory
     {
         var configuration = _configurations[typeToConvert] ?? throw new ArgumentException($"Type {typeToConvert.FriendlyName()} configuration is missing");
 
-        return (JsonConverter) Activator.CreateInstance(
+        return (JsonConverter)Activator.CreateInstance(
             typeof(ConstructorJsonConverter<>).MakeGenericType(typeToConvert),
             configuration.Constructor,
             configuration.Parameters,

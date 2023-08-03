@@ -26,6 +26,6 @@ public class EnumJsonConverterFactory : JsonConverterFactory
         var flagsAttribute = typeToConvert.GetTypeInfo().GetCustomAttribute<FlagsAttribute>();
         var converterType = flagsAttribute is null ? typeof(EnumJsonConverter<>) : typeof(FlagsEnumJsonConverter<>);
 
-        return (JsonConverter) Activator.CreateInstance(converterType.MakeGenericType(typeToConvert), configuration)!;
+        return (JsonConverter)Activator.CreateInstance(converterType.MakeGenericType(typeToConvert), configuration)!;
     }
 }

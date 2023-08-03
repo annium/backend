@@ -30,7 +30,7 @@ public class WebSocketEchoMiddleware
 
         if (!context.WebSockets.IsWebSocketRequest)
         {
-            context.Response.StatusCode = (int) HttpStatusCode.BadRequest;
+            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
             return;
         }
 

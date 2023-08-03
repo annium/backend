@@ -63,7 +63,7 @@ public static class QueryHelpers
             throw new ArgumentNullException(nameof(queryString));
         }
 
-        return AddQueryString(uri, (IEnumerable<KeyValuePair<string, string?>>) queryString);
+        return AddQueryString(uri, (IEnumerable<KeyValuePair<string, string?>>)queryString);
     }
 
     /// <summary>

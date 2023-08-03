@@ -85,7 +85,7 @@ internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
     )
     {
         _sp = sp;
-        _initiator = new AsyncLazy<TValue>((Func<Task<TValue>>) LoadValueAsync);
+        _initiator = new AsyncLazy<TValue>((Func<Task<TValue>>)LoadValueAsync);
         _value = default!;
     }
 

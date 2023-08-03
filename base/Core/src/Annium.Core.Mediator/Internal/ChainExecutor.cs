@@ -28,7 +28,7 @@ internal static class ChainExecutor
         var handleMethodName = hasNext ? Constants.FinalHandlerHandleAsyncName : Constants.PipeHandlerHandleAsyncName;
         var handleMethod = handler.GetMethod(handleMethodName, parameters.Select(p => p.GetType()).ToArray())!;
         var result = handleMethod.Invoke(provider.Resolve(handler), parameters.ToArray())!;
-        await (Task) result;
+        await (Task)result;
 
         return result.GetType().GetProperty(nameof(Task<int>.Result))!.GetGetMethod()!.Invoke(result, Array.Empty<object>())!;
     }

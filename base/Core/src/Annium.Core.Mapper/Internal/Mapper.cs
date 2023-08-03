@@ -31,7 +31,7 @@ internal class Mapper : IMapper
         if (source is null)
             return default!;
 
-        return (T) Map(source, typeof(T));
+        return (T)Map(source, typeof(T));
     }
 
     public object Map(object? source, Type type)

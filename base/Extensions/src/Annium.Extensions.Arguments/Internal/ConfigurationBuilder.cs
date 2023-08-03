@@ -121,7 +121,7 @@ internal class ConfigurationBuilder : IConfigurationBuilder
                 continue;
 
             var type = property.PropertyType.GetElementType()!;
-            var array = (IList) Array.CreateInstance(type, raw.Length);
+            var array = (IList)Array.CreateInstance(type, raw.Length);
             for (var i = 0; i < array.Count; i++)
                 array[i] = GetValue(property, type, raw[i]);
 

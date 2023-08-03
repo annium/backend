@@ -18,8 +18,8 @@ public static class PeriodExtensions
 
     public static Period FloorTo(this Period m, Period d)
     {
-        var mt = (long) m.ToDuration().TotalTicks;
-        var dt = (long) d.ToDuration().TotalTicks;
+        var mt = (long)m.ToDuration().TotalTicks;
+        var dt = (long)d.ToDuration().TotalTicks;
 
         return Period.FromTicks(mt - mt % dt);
     }
@@ -38,8 +38,8 @@ public static class PeriodExtensions
 
     public static Period RoundTo(this Period m, Period d)
     {
-        var mt = (long) m.ToDuration().TotalTicks;
-        var dt = (long) d.ToDuration().TotalTicks;
+        var mt = (long)m.ToDuration().TotalTicks;
+        var dt = (long)d.ToDuration().TotalTicks;
         var diff = mt % dt;
 
         return Period.FromTicks(mt - diff + (dt > diff * 2L ? 0L : dt));
@@ -59,8 +59,8 @@ public static class PeriodExtensions
 
     public static Period CeilTo(this Period m, Period d)
     {
-        var mt = (long) m.ToDuration().TotalTicks;
-        var dt = (long) d.ToDuration().TotalTicks;
+        var mt = (long)m.ToDuration().TotalTicks;
+        var dt = (long)d.ToDuration().TotalTicks;
 
         return Period.FromTicks(mt + dt - mt % dt);
     }

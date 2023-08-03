@@ -48,7 +48,7 @@ internal static class Helper
         var body = getBody(sp);
         var function = Expression.Lambda(body, sp).Compile();
 
-        return ServiceDescriptor.Factory(serviceType, (Func<IServiceProvider, object>) function, lifetime);
+        return ServiceDescriptor.Factory(serviceType, (Func<IServiceProvider, object>)function, lifetime);
     }
 
     public static Expression KeyValue(Type keyType, Type valueType, object key, Expression value) =>

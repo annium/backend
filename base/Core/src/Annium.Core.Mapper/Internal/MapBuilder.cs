@@ -124,7 +124,7 @@ internal class MapBuilder : IMapBuilder
         foreach (var type in types)
         {
             var profile = _knownProfiles.SingleOrDefault(x => x.GetType() == type)
-                ?? (Profile) Activator.CreateInstance(type)!;
+                ?? (Profile)Activator.CreateInstance(type)!;
 
             AddEntriesFromProfile(profile);
         }

@@ -39,7 +39,7 @@ public static class ServiceContainerExtensions
             .AddDbContext<TContext>(builder =>
             {
                 var opts = builder.UseSqlite(cn).Options;
-                using var ctx = (DbContext) Activator.CreateInstance(typeof(TContext), opts)!;
+                using var ctx = (DbContext)Activator.CreateInstance(typeof(TContext), opts)!;
                 ctx.Database.EnsureCreated();
             });
 

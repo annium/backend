@@ -10,13 +10,13 @@ public static class ServiceDescriptor
     public static IServiceDescriptor From(MicrosoftServiceDescriptor descriptor)
     {
         if (descriptor.ImplementationType is not null)
-            return Type(descriptor.ServiceType, descriptor.ImplementationType, (ServiceLifetime) descriptor.Lifetime);
+            return Type(descriptor.ServiceType, descriptor.ImplementationType, (ServiceLifetime)descriptor.Lifetime);
 
         if (descriptor.ImplementationFactory is not null)
-            return Factory(descriptor.ServiceType, descriptor.ImplementationFactory, (ServiceLifetime) descriptor.Lifetime);
+            return Factory(descriptor.ServiceType, descriptor.ImplementationFactory, (ServiceLifetime)descriptor.Lifetime);
 
         if (descriptor.ImplementationInstance is not null)
-            return Instance(descriptor.ServiceType, descriptor.ImplementationInstance, (ServiceLifetime) descriptor.Lifetime);
+            return Instance(descriptor.ServiceType, descriptor.ImplementationInstance, (ServiceLifetime)descriptor.Lifetime);
 
         throw new NotSupportedException($"{descriptor} has unsupported configuration");
     }

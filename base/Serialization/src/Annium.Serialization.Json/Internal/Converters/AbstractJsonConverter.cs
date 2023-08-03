@@ -32,7 +32,7 @@ internal class AbstractJsonConverter<T> : JsonConverter<T>
         if (type is null)
             throw new SerializationException($"Can't resolve concrete type for {type} by {typeToConvert}");
 
-        return (T) JsonSerializer.Deserialize(doc.RootElement.GetRawText(), type, options)!;
+        return (T)JsonSerializer.Deserialize(doc.RootElement.GetRawText(), type, options)!;
     }
 
     public override void Write(

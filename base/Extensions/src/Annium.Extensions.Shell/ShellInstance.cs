@@ -163,7 +163,7 @@ internal class ShellInstance : IShellInstance, ILogSubject<ShellInstance>
         static void PipeOut(StreamReader src)
         {
             while (!src.EndOfStream)
-                Console.Write((char) src.Read());
+                Console.Write((char)src.Read());
         }
     }
 

@@ -35,7 +35,7 @@ internal class SerializerInstance<TValue> : ISerializer<TValue>
         _deserialize = deserialize;
     }
 
-    public T Deserialize<T>(TValue value) => (T) _deserialize(typeof(T), value)!;
+    public T Deserialize<T>(TValue value) => (T)_deserialize(typeof(T), value)!;
 
     public object? Deserialize(Type type, TValue value) => _deserialize(type, value);
 

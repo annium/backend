@@ -70,7 +70,7 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDes
         this.Log().Debug("Demo end");
 
         sw.Stop();
-        this.Log().Debug($"Messages received: {count}. Rate: {Math.Floor((double) count / sw.ElapsedMilliseconds * 1000)}rps");
+        this.Log().Debug($"Messages received: {count}. Rate: {Math.Floor((double)count / sw.ElapsedMilliseconds * 1000)}rps");
 
         this.Log().Debug("Disconnecting");
         await ws.DisconnectAsync();

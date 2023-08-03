@@ -109,7 +109,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
             entries.Add(item);
         }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     protected TBox Add<T>(List<T> entries, IEnumerable<T> items)
@@ -123,7 +123,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
                 entries.Add(item);
             }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     protected TBox Remove<T>(List<T> entries, T item)
@@ -136,7 +136,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
             entries.Remove(item);
         }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     protected TBox Remove<T>(List<T> entries, IEnumerable<T> items)
@@ -150,7 +150,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
                 entries.Remove(item);
             }
 
-        return (TBox) this;
+        return (TBox)this;
     }
 
     protected IReadOnlyCollection<T> Pull<T>(List<T> entries)

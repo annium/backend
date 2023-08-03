@@ -59,7 +59,7 @@ public abstract class ConnectionStateBase : IAsyncDisposable
 
         foreach (var (property, bind) in bindableProperties)
         {
-            var container = (IAsyncDisposable) property.GetValue(this)!;
+            var container = (IAsyncDisposable)property.GetValue(this)!;
             bind.Invoke(container, new object[] { this });
             Disposable += container;
         }

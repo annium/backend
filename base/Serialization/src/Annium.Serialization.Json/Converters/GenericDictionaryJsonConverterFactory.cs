@@ -21,7 +21,7 @@ public class GenericDictionaryJsonConverterFactory : JsonConverterFactory
     {
         var (key, value) = GetKeyValueType(typeToConvert)!.Value;
 
-        return (JsonConverter) Activator.CreateInstance(typeof(GenericDictionaryJsonConverter<,>).MakeGenericType(key, value))!;
+        return (JsonConverter)Activator.CreateInstance(typeof(GenericDictionaryJsonConverter<,>).MakeGenericType(key, value))!;
     }
 
     private static (Type, Type)? GetKeyValueType(Type type) => TypeResolutions.GetOrAdd(type, ResolveKeyValueType);

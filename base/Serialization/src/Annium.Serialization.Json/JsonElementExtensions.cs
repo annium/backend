@@ -10,7 +10,7 @@ public static class JsonElementExtensions
     {
         var value = document.Deserialize(typeof(T), options);
 
-        return value is null ? default : (T) value;
+        return value is null ? default : (T)value;
     }
 
     public static object? Deserialize(this JsonDocument document, Type valueType, JsonSerializerOptions? options = default)
@@ -24,7 +24,7 @@ public static class JsonElementExtensions
     {
         var value = element.Deserialize(typeof(T), options);
 
-        return value is null ? default : (T) value;
+        return value is null ? default : (T)value;
     }
 
     public static object? Deserialize(this JsonElement element, Type valueType, JsonSerializerOptions? options = default)
