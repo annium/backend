@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Annium.Extensions.Execution;
 using Annium.Threading.Tasks;
 
-namespace Annium.Net.WebSockets.Benchmark;
+namespace Annium.Net.WebSockets.Benchmark.Internal;
 
 internal static class Debug
 {

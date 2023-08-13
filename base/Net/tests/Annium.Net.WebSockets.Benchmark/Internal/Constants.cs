@@ -1,4 +1,4 @@
-namespace Annium.Net.WebSockets.Benchmark;
+namespace Annium.Net.WebSockets.Benchmark.Internal;
 
 internal static class Constants
 {

@@ -2,6 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Net.WebSockets.Benchmark.Internal;
 using BenchmarkDotNet.Attributes;
 
 namespace Annium.Net.WebSockets.Benchmark;
