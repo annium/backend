@@ -20,12 +20,12 @@ public class ClientWebSocket : IClientWebSocket
         throw new NotImplementedException();
     }
 
-    public ValueTask<bool> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
+    public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }
 
-    public ValueTask<bool> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
+    public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

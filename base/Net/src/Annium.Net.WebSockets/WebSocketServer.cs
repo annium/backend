@@ -53,26 +53,28 @@ public class WebSocketServer
 
     private async Task HandleRequest(HttpListenerContext listenerContext, CancellationToken ct)
     {
-        if (!listenerContext.Request.IsWebSocketRequest)
-        {
-            listenerContext.Response.StatusCode = 400;
-            listenerContext.Response.Close();
-            return;
-        }
-
+        var statusCode = 200;
         try
         {
+            if (!listenerContext.Request.IsWebSocketRequest)
+            {
+                statusCode = 400;
+                return;
+            }
+
             var webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
             await _handleClient(webSocketContext.WebSocket, ct).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
-            listenerContext.Response.StatusCode = 200;
-            listenerContext.Response.Close();
         }
         catch (Exception)
         {
-            listenerContext.Response.StatusCode = 500;
+            statusCode = 500;
+        }
+        finally
+        {
+            listenerContext.Response.StatusCode = statusCode;
             listenerContext.Response.Close();
         }
     }

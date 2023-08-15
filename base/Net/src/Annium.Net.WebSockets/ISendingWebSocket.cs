@@ -12,7 +12,7 @@ public interface ISendingWebSocket
     /// <param name="text">encoded text to be sent</param>
     /// <param name="ct">cancellation token</param>
     /// <returns>Whether sending was successful. If false is returned - either token was canceled or WebSocket exception occured. Any other exception is not caught</returns>
-    ValueTask<bool> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default);
+    ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default);
 
     /// <summary>
     /// Sends binary message over WebSocket
@@ -20,5 +20,5 @@ public interface ISendingWebSocket
     /// <param name="data">data to be sent</param>
     /// <param name="ct">cancellation token</param>
     /// <returns>Whether sending was successful. If false is returned - either token was canceled or WebSocket exception occured. Any other exception is not caught</returns>
-    ValueTask<bool> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default);
+    ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default);
 }
