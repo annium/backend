@@ -73,11 +73,6 @@ internal static class QueryHelpers
             scanIndex = delimiterIndex + 1;
         }
 
-        if (!accumulator.HasValues)
-        {
-            return null;
-        }
-
         return accumulator.GetResults();
     }
 }
