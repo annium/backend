@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Primitives;
 
-namespace Annium.Net.Base;
+namespace Annium.Net.Base.Internal;
 
 /// <summary>
 /// This API supports infrastructure and is not intended to be used
 /// directly from your code. This API may change or be removed in future releases.
 /// </summary>
-public struct KeyValueAccumulator
+internal struct KeyValueAccumulator
 {
     private Dictionary<string, StringValues> _accumulator;
     private Dictionary<string, List<string>> _expandingAccumulator;
@@ -71,13 +71,7 @@ public struct KeyValueAccumulator
     /// This API supports infrastructure and is not intended to be used
     /// directly from your code. This API may change or be removed in future releases.
     /// </summary>
-    public int KeyCount => _accumulator?.Count ?? 0;
-
-    /// <summary>
-    /// This API supports infrastructure and is not intended to be used
-    /// directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public int ValueCount { get; private set; }
+    private int ValueCount { get; set; }
 
     /// <summary>
     /// This API supports infrastructure and is not intended to be used
