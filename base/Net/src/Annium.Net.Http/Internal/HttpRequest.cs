@@ -37,7 +37,7 @@ internal partial class HttpRequest : IHttpRequest
     private readonly HttpRequestHeaders _headers;
     private readonly Dictionary<string, StringValues> _parameters = new();
     private Func<IHttpResponse, Task<string>>? _getFailureMessage;
-    private readonly IList<Middleware> _middlewares = new List<Middleware>();
+    private readonly List<Middleware> _middlewares = new();
 
     internal HttpRequest(
         IHttpContentSerializer httpContentSerializer,
@@ -74,7 +74,7 @@ internal partial class HttpRequest : IHttpRequest
         IReadOnlyDictionary<string, StringValues> parameters,
         HttpContent? content,
         Func<IHttpResponse, Task<string>>? getFailureMessage,
-        IList<Middleware> middlewares
+        List<Middleware> middlewares
     )
     {
         ContentSerializer = httpContentSerializer;
@@ -184,23 +184,22 @@ internal partial class HttpRequest : IHttpRequest
         );
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync() => InternalRunAsync(_middlewares.ToArray(), CancellationToken.None);
+    public Task<IHttpResponse> RunAsync() => InternalRunAsync(0, CancellationToken.None);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync(CancellationToken ct) => InternalRunAsync(_middlewares.ToArray(), ct);
+    public Task<IHttpResponse> RunAsync(CancellationToken ct) => InternalRunAsync(0, ct);
 
-    private async Task<IHttpResponse> InternalRunAsync(Middleware[] middlewares, CancellationToken ct)
+    private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
     {
         if (ct.IsCancellationRequested)
             return GetRequestCanceledResponse();
 
-        if (middlewares.Length == 0)
+        if (middlewareIndex >= _middlewares.Count)
             return await InternalRunAsync().ConfigureAwait(false);
 
-        var (middleware, rest) = middlewares;
-
-        Func<Task<IHttpResponse>> next = () => InternalRunAsync(rest, ct);
+        Func<Task<IHttpResponse>> next = () => InternalRunAsync(middlewareIndex + 1, ct);
         var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
+        var middleware = _middlewares[middlewareIndex];
 
         return await middleware(next, this, options).ConfigureAwait(false);
     }
