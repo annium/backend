@@ -17,13 +17,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         _                       => throw new NotSupportedException()
     };
 
-    public bool IsAvailable => Volatile.Read(ref _isAvailable) == 1;
-    protected bool IsStarted => Volatile.Read(ref _isStarted) == 1;
+    public bool IsAvailable => _state is State.Created or State.Started;
+    protected bool IsStarted => _state is State.Started;
 
-    private int _isAvailable = 1;
-    private int _isStarted;
-    private int _isStopped;
-    private int _isDisposed;
+    private State _state = State.Created;
 
     public void Schedule(Action task)
     {
@@ -205,8 +202,20 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
     {
         EnsureAvailable();
 
-        if (Interlocked.CompareExchange(ref _isStarted, 1, 0) == 1)
-            throw new InvalidOperationException("Executor is already running");
+        var sl = new SpinLock();
+        var lockTaken = false;
+        try
+        {
+            sl.Enter(ref lockTaken);
+            if (_state is not State.Created)
+                throw new InvalidOperationException("Executor has already started");
+            _state = State.Started;
+        }
+        finally
+        {
+            if (lockTaken)
+                sl.Exit();
+        }
 
         // change to state to unavailable
         ct.Register(Stop);
@@ -217,14 +226,26 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 
     public async ValueTask DisposeAsync()
     {
-        if (Interlocked.CompareExchange(ref _isDisposed, 1, 0) == 1)
+        var sl = new SpinLock();
+        var lockTaken = false;
+        try
         {
-            this.Trace("already disposed");
-            return;
+            sl.Enter(ref lockTaken);
+            if (_state is State.Disposed)
+            {
+                this.Trace("already disposed");
+                return;
+            }
+
+            _state = State.Disposed;
+        }
+        finally
+        {
+            if (lockTaken)
+                sl.Exit();
         }
 
         this.Trace("start");
-        EnsureAvailable();
         Stop();
         await HandleDisposeAsync();
         this.Trace("done");
@@ -255,25 +276,45 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void EnsureAvailable()
     {
-        if (Volatile.Read(ref _isAvailable) == 0)
+        if (!IsAvailable)
             throw new InvalidOperationException("Executor is not available already");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void Stop()
     {
-        if (Interlocked.CompareExchange(ref _isStopped, 1, 0) == 1)
+        var sl = new SpinLock();
+        var lockTaken = false;
+        try
         {
-            this.Trace("already stopped");
-            return;
+            sl.Enter(ref lockTaken);
+            if (_state is State.Stopped)
+            {
+                this.Trace("already stopped");
+                return;
+            }
+
+            _state = State.Stopped;
+        }
+        finally
+        {
+            if (lockTaken)
+                sl.Exit();
         }
 
         this.Trace("start");
-        Volatile.Write(ref _isAvailable, 0);
         HandleStop();
         this.Trace("done");
     }
 
-    private InvalidOperationException UnavailableException() =>
+    private static InvalidOperationException UnavailableException() =>
         new("Executor is not available already");
+
+    private enum State : byte
+    {
+        Created,
+        Started,
+        Stopped,
+        Disposed
+    }
 }
