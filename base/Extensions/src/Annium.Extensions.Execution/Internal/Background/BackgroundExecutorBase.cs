@@ -8,15 +8,6 @@ namespace Annium.Extensions.Execution.Internal.Background;
 
 internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 {
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected static Task RunTask(Delegate task) => task switch
-    {
-        Action execute          => Task.Run(execute),
-        Func<ValueTask> execute => Task.Run(async () => await execute().ConfigureAwait(false)),
-        Func<Task> execute      => Task.Run(async () => await execute().ConfigureAwait(false)),
-        _                       => throw new NotSupportedException()
-    };
-
     public bool IsAvailable => _state is State.Created or State.Started;
     protected bool IsStarted => _state is State.Started;
 
