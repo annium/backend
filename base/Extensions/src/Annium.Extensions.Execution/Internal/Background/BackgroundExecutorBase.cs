@@ -18,7 +18,17 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         ScheduleTask(task);
     }
 
+    public void Schedule(Action<CancellationToken> task)
+    {
+        ScheduleTask(task);
+    }
+
     public void Schedule(Func<ValueTask> task)
+    {
+        ScheduleTask(task);
+    }
+
+    public void Schedule(Func<CancellationToken, ValueTask> task)
     {
         ScheduleTask(task);
     }
@@ -28,7 +38,17 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         return TryScheduleTask(task);
     }
 
+    public bool TrySchedule(Action<CancellationToken> task)
+    {
+        return TryScheduleTask(task);
+    }
+
     public bool TrySchedule(Func<ValueTask> task)
+    {
+        return TryScheduleTask(task);
+    }
+
+    public bool TrySchedule(Func<CancellationToken, ValueTask> task)
     {
         return TryScheduleTask(task);
     }
@@ -42,6 +62,33 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             {
                 task();
                 tcs.SetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask ExecuteAsync(Action<CancellationToken> task)
+    {
+        var tcs = new TaskCompletionSource();
+        ScheduleTask(() =>
+        {
+            try
+            {
+                task(Ct);
+                tcs.SetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
             }
             catch (Exception e)
             {
@@ -60,6 +107,32 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             try
             {
                 tcs.SetResult(task());
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask<T> ExecuteAsync<T>(Func<CancellationToken, T> task)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        ScheduleTask(() =>
+        {
+            try
+            {
+                tcs.SetResult(task(Ct));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
             }
             catch (Exception e)
             {
@@ -80,6 +153,33 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
                 await task();
                 tcs.SetResult();
             }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask ExecuteAsync(Func<CancellationToken, ValueTask> task)
+    {
+        var tcs = new TaskCompletionSource();
+        ScheduleTask(async () =>
+        {
+            try
+            {
+                await task(Ct);
+                tcs.SetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
+            }
             catch (Exception e)
             {
                 tcs.SetException(e);
@@ -97,6 +197,32 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             try
             {
                 tcs.SetResult(await task());
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+
+        return await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask<T> ExecuteAsync<T>(Func<CancellationToken, ValueTask<T>> task)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        ScheduleTask(async () =>
+        {
+            try
+            {
+                tcs.SetResult(await task(Ct));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
             }
             catch (Exception e)
             {
@@ -117,6 +243,35 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
                 task();
                 tcs.SetResult();
             }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask TryExecuteAsync(Action<CancellationToken> task)
+    {
+        var tcs = new TaskCompletionSource();
+        var scheduled = TryScheduleTask(() =>
+        {
+            try
+            {
+                task(Ct);
+                tcs.SetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
+            }
             catch (Exception e)
             {
                 tcs.SetException(e);
@@ -136,6 +291,34 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             try
             {
                 tcs.SetResult(task());
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask<T> TryExecuteAsync<T>(Func<CancellationToken, T> task)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        var scheduled = TryScheduleTask(() =>
+        {
+            try
+            {
+                tcs.SetResult(task(Ct));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
             }
             catch (Exception e)
             {
@@ -158,6 +341,35 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
                 await task().ConfigureAwait(false);
                 tcs.SetResult();
             }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask TryExecuteAsync(Func<CancellationToken, ValueTask> task)
+    {
+        var tcs = new TaskCompletionSource();
+        var scheduled = TryScheduleTask(async () =>
+        {
+            try
+            {
+                await task(Ct).ConfigureAwait(false);
+                tcs.SetResult();
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
+            }
             catch (Exception e)
             {
                 tcs.SetException(e);
@@ -177,6 +389,34 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             try
             {
                 tcs.SetResult(await task().ConfigureAwait(false));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(CancellationToken.None);
+            }
+            catch (Exception e)
+            {
+                tcs.SetException(e);
+            }
+        });
+        if (!scheduled)
+            tcs.SetException(UnavailableException());
+
+        return await tcs.Task.ConfigureAwait(false);
+    }
+
+    public async ValueTask<T> TryExecuteAsync<T>(Func<CancellationToken, ValueTask<T>> task)
+    {
+        var tcs = new TaskCompletionSource<T>();
+        var scheduled = TryScheduleTask(async () =>
+        {
+            try
+            {
+                tcs.SetResult(await task(Ct).ConfigureAwait(false));
+            }
+            catch (OperationCanceledException)
+            {
+                tcs.SetCanceled(Ct);
             }
             catch (Exception e)
             {
