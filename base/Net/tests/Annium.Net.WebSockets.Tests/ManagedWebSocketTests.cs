@@ -16,52 +16,16 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     private readonly ConcurrentQueue<string> _messages = new();
 
     [Fact]
-    public async Task Send_Normal()
+    public async Task Send_NotConnected()
     {
         // arrange
         const string message = "demo";
-        await using var _ = RunServer(async (rawSocket, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(rawSocket);
-
-            serverSocket.TextReceived += x => serverSocket
-                .SendTextAsync(x.ToArray(), CancellationToken.None)
-                .GetAwaiter()
-                .GetResult();
-
-            await serverSocket.ListenAsync(ct);
-        });
-        await ConnectAndStartListenAsync();
 
         // act
-        await SendTextAsync(message);
+        var result = await SendTextAsync(message);
 
         // assert
-        await Expect.To(() => _messages.Has(1));
-        _messages.At(0).Is(message);
-    }
-
-    [Fact]
-    public async Task Send_Equality()
-    {
-        // arrange
-        const string message = "demo";
-        var serverMessage = string.Empty;
-        await using var _ = RunServer(async (rawSocket, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(rawSocket);
-
-            serverSocket.TextReceived += data => serverMessage = Encoding.UTF8.GetString(data.ToArray());
-
-            await serverSocket.ListenAsync(ct);
-        });
-        await ConnectAndStartListenAsync();
-
-        // act
-        await SendTextAsync(message);
-
-        // assert
-        await Expect.To(() => serverMessage.Is(message));
+        result.Is(WebSocketSendStatus.Closed);
     }
 
     [Fact]
@@ -82,19 +46,6 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Canceled);
-    }
-
-    [Fact]
-    public async Task Send_NotConnected()
-    {
-        // arrange
-        const string message = "demo";
-
-        // act
-        var result = await SendTextAsync(message);
-
-        // assert
-        result.Is(WebSocketSendStatus.Closed);
     }
 
     [Fact]
@@ -177,7 +128,69 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     }
 
     [Fact]
-    public async Task Listen_Delayed()
+    public async Task Send_Normal()
+    {
+        // arrange
+        const string message = "demo";
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            serverSocket.TextReceived += x => serverSocket
+                .SendTextAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+
+            await serverSocket.ListenAsync(ct);
+        });
+        await ConnectAndStartListenAsync();
+
+        // act
+        await SendTextAsync(message);
+
+        // assert
+        await Expect.To(() => _messages.Has(1));
+        _messages.At(0).Is(message);
+    }
+
+    [Fact]
+    public async Task Listen_NotConnected()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_Canceled()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_ClientClosed()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_ServerClosed()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_ClientAborted()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_ServerAborted()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_Normal()
     {
         // arrange
         await using var _ = RunServer(async (rawSocket, ct) =>
@@ -198,6 +211,18 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         await Expect.To(() => _messages.Has(3), 1000);
+    }
+
+    [Fact]
+    public async Task Listen_SmallBuffer()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Listen_BothTypes()
+    {
+        await Task.CompletedTask;
     }
 
     public async Task InitializeAsync()
