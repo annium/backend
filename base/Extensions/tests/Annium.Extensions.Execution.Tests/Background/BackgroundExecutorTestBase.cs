@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
@@ -7,7 +8,64 @@ namespace Annium.Extensions.Execution.Tests.Background;
 
 public abstract class BackgroundExecutorTestBase
 {
-    protected async Task Schedule_SyncAction_Base(IBackgroundExecutor executor)
+    private readonly IBackgroundExecutor _executor;
+
+    protected BackgroundExecutorTestBase(IBackgroundExecutor executor)
+    {
+        _executor = executor;
+    }
+
+    protected async Task HandlesFailure_Base()
+    {
+        Log.SetTestMode();
+
+        // arrange
+        var successes = 0;
+        var failures = 0;
+
+        // act
+        // schedule batch of work
+        Parallel.For(0, 10, i => _executor.Schedule(async () =>
+        {
+            await Task.Delay(10);
+            if (i % 5 == 0)
+            {
+                Interlocked.Increment(ref failures);
+                throw new Exception("Some failure");
+            }
+
+            Interlocked.Increment(ref successes);
+        }));
+        successes.Is(0);
+        failures.Is(0);
+        // run executor
+        _executor.Start();
+        // schedule another batch of work
+        Parallel.For(0, 10, i => _executor.Schedule(async () =>
+        {
+            await Task.Delay(10);
+            if (i % 5 == 0)
+            {
+                Interlocked.Increment(ref failures);
+                throw new Exception("Some failure");
+            }
+
+            Interlocked.Increment(ref successes);
+        }));
+
+        // assert
+        _executor.IsAvailable.IsTrue();
+        // init disposal
+        var disposalTask = _executor.DisposeAsync();
+        _executor.IsAvailable.IsFalse();
+        // throws, as not available already
+        Wrap.It(() => _executor.Schedule(() => { })).Throws<InvalidOperationException>();
+        await disposalTask;
+        successes.Is(16);
+        failures.Is(4);
+    }
+
+    protected async Task Schedule_SyncAction_Base()
     {
         Log.SetTestMode();
         // arrange
@@ -15,17 +73,17 @@ public abstract class BackgroundExecutorTestBase
         var success = false;
 
         // act
-        executor.Schedule(() => success = true);
+        _executor.Schedule(() => success = true);
 
         // run and dispose executor
-        executor.Start(cts.Token);
-        await executor.DisposeAsync();
+        _executor.Start(cts.Token);
+        await _executor.DisposeAsync();
 
         // assert
         success.IsTrue();
     }
 
-    protected async Task Schedule_SyncCancellableAction_Base(IBackgroundExecutor executor)
+    protected async Task Schedule_SyncCancellableAction_Base()
     {
         Log.SetTestMode();
         // arrange
@@ -33,17 +91,17 @@ public abstract class BackgroundExecutorTestBase
         var isCancelled = false;
 
         // act
-        executor.Schedule(ct => ct.Register(() => isCancelled = true));
+        _executor.Schedule(ct => ct.Register(() => isCancelled = true));
 
         // run and dispose executor
-        executor.Start(cts.Token);
-        await executor.DisposeAsync();
+        _executor.Start(cts.Token);
+        await _executor.DisposeAsync();
 
         // assert
         isCancelled.IsTrue();
     }
 
-    protected async Task Schedule_AsyncAction_Base(IBackgroundExecutor executor)
+    protected async Task Schedule_AsyncAction_Base()
     {
         Log.SetTestMode();
         // arrange
@@ -51,21 +109,21 @@ public abstract class BackgroundExecutorTestBase
         var success = false;
 
         // act
-        executor.Schedule(async () =>
+        _executor.Schedule(async () =>
         {
             await Task.Delay(50, CancellationToken.None);
             success = true;
         });
 
         // run and dispose executor
-        executor.Start(cts.Token);
-        await executor.DisposeAsync();
+        _executor.Start(cts.Token);
+        await _executor.DisposeAsync();
 
         // assert
         success.IsTrue();
     }
 
-    protected async Task Schedule_AsyncCancellableAction_Base(IBackgroundExecutor executor)
+    protected async Task Schedule_AsyncCancellableAction_Base()
     {
         Log.SetTestMode();
         // arrange
@@ -73,15 +131,15 @@ public abstract class BackgroundExecutorTestBase
         var isCancelled = false;
 
         // act
-        executor.Schedule(async ct =>
+        _executor.Schedule(async ct =>
         {
             await Task.Delay(50, CancellationToken.None);
             ct.Register(() => isCancelled = true);
         });
 
         // run and dispose executor
-        executor.Start(cts.Token);
-        await executor.DisposeAsync();
+        _executor.Start(cts.Token);
+        await _executor.DisposeAsync();
 
         // assert
         isCancelled.IsTrue();

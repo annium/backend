@@ -13,6 +13,11 @@ namespace Annium.Extensions.Execution.Tests.Background;
 
 public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 {
+    public SequentialBackgroundExecutorTests()
+        : base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>())
+    {
+    }
+
     [Theory]
     [MemberData(nameof(GetRange))]
     // ReSharper disable once xUnit1026
@@ -65,45 +70,34 @@ public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 
     public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 
+
     [Fact]
-    // ReSharper disable once xUnit1026
     public async Task HandlesFailure()
     {
-        Log.SetTestMode();
-
-        // arrange
-        var executor = Executor.Background.Sequential<SequentialBackgroundExecutorTests>();
-
-        // act
-        // run executor
-        executor.Start();
-        // init disposal
-        var disposalTask = executor.DisposeAsync();
-        executor.IsAvailable.IsFalse();
-        await disposalTask;
+        await HandlesFailure_Base();
     }
 
     [Fact]
     public async Task Schedule_SyncAction()
     {
-        await Schedule_SyncAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+        await Schedule_SyncAction_Base();
     }
 
     [Fact]
     public async Task Schedule_SyncCancellableAction()
     {
-        await Schedule_SyncCancellableAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+        await Schedule_SyncCancellableAction_Base();
     }
 
     [Fact]
     public async Task Schedule_AsyncAction()
     {
-        await Schedule_AsyncAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+        await Schedule_AsyncAction_Base();
     }
 
     [Fact]
     public async Task Schedule_AsyncCancellableAction()
     {
-        await Schedule_AsyncCancellableAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+        await Schedule_AsyncCancellableAction_Base();
     }
 }

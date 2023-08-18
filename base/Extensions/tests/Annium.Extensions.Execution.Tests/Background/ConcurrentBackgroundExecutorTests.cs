@@ -14,6 +14,11 @@ namespace Annium.Extensions.Execution.Tests.Background;
 
 public class ConcurrentBackgroundExecutorTests : BackgroundExecutorTestBase
 {
+    public ConcurrentBackgroundExecutorTests()
+        : base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>())
+    {
+    }
+
     [Theory]
     [MemberData(nameof(GetRange))]
     public async Task Works(int index)
@@ -92,75 +97,30 @@ public class ConcurrentBackgroundExecutorTests : BackgroundExecutorTestBase
     [Fact]
     public async Task HandlesFailure()
     {
-        Log.SetTestMode();
-        // arrange
-        var executor = Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>(10);
-        var successes = 0;
-        var failures = 0;
-
-        // act
-        // schedule batch of work
-        Parallel.For(1, 100, i => executor.Schedule(async () =>
-        {
-            await Task.Delay(10);
-            if (i % 90 == 0)
-            {
-                Interlocked.Increment(ref failures);
-                throw new Exception("Some parallel failure");
-            }
-
-            Interlocked.Increment(ref successes);
-        }));
-        successes.Is(0);
-        failures.Is(0);
-        // run executor
-        executor.Start();
-        // schedule another batch of work
-        Parallel.For(1, 100, i => executor.Schedule(async () =>
-        {
-            await Task.Delay(10);
-            if (i % 90 == 0)
-            {
-                Interlocked.Increment(ref failures);
-                throw new Exception("Some parallel failure");
-            }
-
-            Interlocked.Increment(ref successes);
-        }));
-
-        // assert
-        executor.IsAvailable.IsTrue();
-        // init disposal
-        var disposalTask = executor.DisposeAsync();
-        executor.IsAvailable.IsFalse();
-        // throws, as not available already
-        Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
-        await disposalTask;
-        successes.Is(196);
-        failures.Is(2);
+        await HandlesFailure_Base();
     }
 
     [Fact]
     public async Task Schedule_SyncAction()
     {
-        await Schedule_SyncAction_Base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>());
+        await Schedule_SyncAction_Base();
     }
 
     [Fact]
     public async Task Schedule_SyncCancellableAction()
     {
-        await Schedule_SyncCancellableAction_Base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>());
+        await Schedule_SyncCancellableAction_Base();
     }
 
     [Fact]
     public async Task Schedule_AsyncAction()
     {
-        await Schedule_AsyncAction_Base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>());
+        await Schedule_AsyncAction_Base();
     }
 
     [Fact]
     public async Task Schedule_AsyncCancellableAction()
     {
-        await Schedule_AsyncCancellableAction_Base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>());
+        await Schedule_AsyncCancellableAction_Base();
     }
 }
