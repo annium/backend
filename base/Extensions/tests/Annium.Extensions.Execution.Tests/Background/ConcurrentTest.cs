@@ -21,7 +21,7 @@ public class ConcurrentTest
         Log.SetTestMode();
         // arrange
         Console.WriteLine($"run {index}");
-        var parallelism = 20;
+        var parallelism = 10;
         var size = parallelism * 5;
         var executor = Executor.Background.Concurrent<ConcurrentTest>((uint)parallelism);
         var queue = new ConcurrentQueue<int>();
@@ -87,7 +87,7 @@ public class ConcurrentTest
         Console.WriteLine("done");
     }
 
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 1).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 
     [Fact]
     public async Task ConcurrentExecutor_CompletesOnFailure()

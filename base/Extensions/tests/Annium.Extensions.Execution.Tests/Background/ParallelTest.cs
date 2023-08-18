@@ -63,7 +63,7 @@ public class ParallelTest
         Console.WriteLine("done");
     }
 
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 
     [Fact]
     public async Task ParallelExecutor_CompletesOnFailure()

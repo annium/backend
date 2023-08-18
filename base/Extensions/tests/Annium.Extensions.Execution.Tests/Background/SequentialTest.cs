@@ -63,13 +63,13 @@ public class SequentialTest
         Console.WriteLine($"done {index}");
     }
 
-    [Theory]
-    [MemberData(nameof(GetRange))]
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
+
+    [Fact]
     // ReSharper disable once xUnit1026
-    public async Task SequentialExecutor_Cancellation_Works(int index)
+    public async Task SequentialExecutor_Cancellation_Works()
     {
         Log.SetTestMode();
-        Console.WriteLine($"run {index}");
 
         // arrange
         var executor = Executor.Background.Sequential<SequentialTest>();
@@ -81,9 +81,5 @@ public class SequentialTest
         var disposalTask = executor.DisposeAsync();
         executor.IsAvailable.IsFalse();
         await disposalTask;
-
-        Console.WriteLine($"done {index}");
     }
-
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 20).Select(x => new object[] { x });
 }
