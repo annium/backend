@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
@@ -13,6 +16,56 @@ public abstract class BackgroundExecutorTestBase
     protected BackgroundExecutorTestBase(IBackgroundExecutor executor)
     {
         _executor = executor;
+    }
+
+    protected async Task<IReadOnlyList<int>> Works_Base(int size)
+    {
+        Log.SetTestMode();
+
+        // run executor
+        _executor.Start();
+
+        // act
+        // schedule batch of work
+        var queue = new ConcurrentQueue<int>();
+        foreach (var i in Enumerable.Range(0, size))
+            _executor.Schedule(() =>
+            {
+                queue.Enqueue(i);
+                Helper.SyncLongWork();
+                queue.Enqueue(i + size);
+            });
+
+        // dispose to force processing finished
+        await _executor.DisposeAsync();
+
+        return queue.ToArray();
+    }
+
+    protected async Task Availability_Base()
+    {
+        Log.SetTestMode();
+
+        // act
+        // schedule batch of work
+        Parallel.For(0, 4, _ => _executor.Schedule(Helper.SyncLongWork));
+
+        // run executor
+        _executor.Start();
+
+        // assert
+        _executor.IsAvailable.IsTrue();
+
+        // init disposal
+        var disposalTask = _executor.DisposeAsync();
+
+        // assert
+        _executor.IsAvailable.IsFalse();
+        // throws, as not available already
+        Wrap.It(() => _executor.Schedule(() => { })).Throws<InvalidOperationException>();
+
+        // cleanup
+        await disposalTask;
     }
 
     protected async Task HandlesFailure_Base()

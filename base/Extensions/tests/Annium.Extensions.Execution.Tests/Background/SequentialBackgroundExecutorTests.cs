@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Testing;
 using Xunit;
-
-// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
@@ -18,58 +13,25 @@ public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
     {
     }
 
-    [Theory]
-    [MemberData(nameof(GetRange))]
-    // ReSharper disable once xUnit1026
-    public async Task Works(int index)
+    [Fact]
+    public async Task Works()
     {
-        Log.SetTestMode();
-        Console.WriteLine($"run {index}");
-
         // arrange
-        var executor = Executor.Background.Sequential<SequentialBackgroundExecutorTests>();
-        var queue = new ConcurrentQueue<int>();
+        var size = Environment.ProcessorCount * 2;
 
         // act
-        // schedule batch of work
-        foreach (var i in Enumerable.Range(0, 10))
-            executor.Schedule(async () =>
-            {
-                queue.Enqueue(i);
-                await Helper.AsyncFastWork();
-                queue.Enqueue(i + 10);
-            });
-        queue.IsEmpty();
-        // run executor
-        executor.Start();
-        // schedule another batch of work
-        foreach (var i in Enumerable.Range(20, 10))
-            executor.Schedule(async () =>
-            {
-                queue.Enqueue(i);
-                await Helper.AsyncFastWork();
-                queue.Enqueue(i + 10);
-            });
+        var result = await Works_Base(size);
 
         // assert
-        executor.IsAvailable.IsTrue();
-        // init disposal
-        var disposalTask = executor.DisposeAsync();
-        executor.IsAvailable.IsFalse();
-        // throws, as not available already
-        Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
-        await disposalTask;
-        queue.Count.Is(40);
-        var sequence = Enumerable.Range(0, 10).SelectMany(x => new[] { x, x + 10 })
-            .Concat(Enumerable.Range(20, 10).SelectMany(x => new[] { x, x + 10 }))
-            .ToArray();
-        queue.ToArray().IsEqual(sequence);
-
-        Console.WriteLine($"done {index}");
+        var sequence = Enumerable.Range(0, size).SelectMany(x => new[] { x, x + size }).ToArray();
+        result.IsEqual(sequence);
     }
 
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
-
+    [Fact]
+    public async Task Availability()
+    {
+        await Availability_Base();
+    }
 
     [Fact]
     public async Task HandlesFailure()
