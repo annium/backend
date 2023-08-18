@@ -16,7 +16,8 @@ internal class ParallelBackgroundExecutor<TSource> : BackgroundExecutorBase
 
     protected override void HandleStart()
     {
-        while (_backlog.TryTake(out var task)) ScheduleTask(task);
+        while (_backlog.TryTake(out var task))
+            ScheduleTaskCore(task);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

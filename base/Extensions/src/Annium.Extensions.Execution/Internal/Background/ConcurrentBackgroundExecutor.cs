@@ -23,7 +23,7 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
     protected override void HandleStart()
     {
         while (_backlog.TryTake(out var task))
-            ScheduleTask(task);
+            ScheduleTaskCore(task);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

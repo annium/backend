@@ -29,8 +29,10 @@ internal class BatchExecutor : IBatchExecutor
         {
             try
             {
-                if (handler is Func<Task> handleAsync) await handleAsync();
-                if (handler is Action handleSync) handleSync();
+                if (handler is Func<Task> handleAsync)
+                    await handleAsync();
+                if (handler is Action handleSync)
+                    handleSync();
             }
             catch (Exception exception)
             {

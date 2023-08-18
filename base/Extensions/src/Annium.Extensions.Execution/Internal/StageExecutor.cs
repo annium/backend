@@ -35,8 +35,10 @@ internal class StageExecutor : IStageExecutor
                 // count before stage run to include failed stage
                 i++;
 
-                if (commit is Func<Task> commitAsync) await commitAsync();
-                if (commit is Action commitSync) commitSync();
+                if (commit is Func<Task> commitAsync)
+                    await commitAsync();
+                if (commit is Action commitSync)
+                    commitSync();
             }
             catch (Exception exception)
             {
@@ -58,8 +60,10 @@ internal class StageExecutor : IStageExecutor
                 if (j++ == i && !rollbackFailed)
                     break;
 
-                if (rollback is Func<Task> rollbackAsync) await rollbackAsync();
-                if (rollback is Action rollbackSync) rollbackSync();
+                if (rollback is Func<Task> rollbackAsync)
+                    await rollbackAsync();
+                if (rollback is Action rollbackSync)
+                    rollbackSync();
             }
             catch (Exception exception)
             {

@@ -10,7 +10,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 {
     public bool IsAvailable => _state is State.Created or State.Started;
     protected bool IsStarted => _state is State.Started;
-
+    protected CancellationToken Ct = CancellationToken.None;
     private State _state = State.Created;
 
     public void Schedule(Action task)
@@ -33,7 +33,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         return TryScheduleTask(task);
     }
 
-    public Task ExecuteAsync(Action task)
+    public async ValueTask ExecuteAsync(Action task)
     {
         var tcs = new TaskCompletionSource();
         ScheduleTask(() =>
@@ -49,10 +49,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             }
         });
 
-        return tcs.Task;
+        await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task<T> ExecuteAsync<T>(Func<T> task)
+    public async ValueTask<T> ExecuteAsync<T>(Func<T> task)
     {
         var tcs = new TaskCompletionSource<T>();
         ScheduleTask(() =>
@@ -67,10 +67,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             }
         });
 
-        return tcs.Task;
+        return await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task ExecuteAsync(Func<ValueTask> task)
+    public async ValueTask ExecuteAsync(Func<ValueTask> task)
     {
         var tcs = new TaskCompletionSource();
         ScheduleTask(async () =>
@@ -86,10 +86,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             }
         });
 
-        return tcs.Task;
+        await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task<T> ExecuteAsync<T>(Func<ValueTask<T>> task)
+    public async ValueTask<T> ExecuteAsync<T>(Func<ValueTask<T>> task)
     {
         var tcs = new TaskCompletionSource<T>();
         ScheduleTask(async () =>
@@ -104,10 +104,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             }
         });
 
-        return tcs.Task;
+        return await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task TryExecuteAsync(Action task)
+    public async ValueTask TryExecuteAsync(Action task)
     {
         var tcs = new TaskCompletionSource();
         var scheduled = TryScheduleTask(() =>
@@ -125,10 +125,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         if (!scheduled)
             tcs.SetException(UnavailableException());
 
-        return tcs.Task;
+        await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task<T> TryExecuteAsync<T>(Func<T> task)
+    public async ValueTask<T> TryExecuteAsync<T>(Func<T> task)
     {
         var tcs = new TaskCompletionSource<T>();
         var scheduled = TryScheduleTask(() =>
@@ -145,17 +145,17 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         if (!scheduled)
             tcs.SetException(UnavailableException());
 
-        return tcs.Task;
+        return await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task TryExecuteAsync(Func<ValueTask> task)
+    public async ValueTask TryExecuteAsync(Func<ValueTask> task)
     {
         var tcs = new TaskCompletionSource();
         var scheduled = TryScheduleTask(async () =>
         {
             try
             {
-                await task();
+                await task().ConfigureAwait(false);
                 tcs.SetResult();
             }
             catch (Exception e)
@@ -166,17 +166,17 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         if (!scheduled)
             tcs.SetException(UnavailableException());
 
-        return tcs.Task;
+        await tcs.Task.ConfigureAwait(false);
     }
 
-    public Task<T> TryExecuteAsync<T>(Func<ValueTask<T>> task)
+    public async ValueTask<T> TryExecuteAsync<T>(Func<ValueTask<T>> task)
     {
         var tcs = new TaskCompletionSource<T>();
         var scheduled = TryScheduleTask(async () =>
         {
             try
             {
-                tcs.SetResult(await task());
+                tcs.SetResult(await task().ConfigureAwait(false));
             }
             catch (Exception e)
             {
@@ -186,7 +186,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         if (!scheduled)
             tcs.SetException(UnavailableException());
 
-        return tcs.Task;
+        return await tcs.Task.ConfigureAwait(false);
     }
 
     public void Start(CancellationToken ct = default)
@@ -209,6 +209,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         }
 
         // change to state to unavailable
+        Ct = ct;
         ct.Register(Stop);
 
         this.Trace("run");
@@ -261,6 +262,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             return false;
 
         ScheduleTaskCore(task);
+
         return true;
     }
 

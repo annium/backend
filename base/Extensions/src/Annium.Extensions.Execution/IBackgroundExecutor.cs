@@ -11,13 +11,13 @@ public interface IBackgroundExecutor : IAsyncDisposable
     void Schedule(Func<ValueTask> task);
     bool TrySchedule(Action task);
     bool TrySchedule(Func<ValueTask> task);
-    Task ExecuteAsync(Action task);
-    Task<T> ExecuteAsync<T>(Func<T> task);
-    Task ExecuteAsync(Func<ValueTask> task);
-    Task<T> ExecuteAsync<T>(Func<ValueTask<T>> task);
-    Task TryExecuteAsync(Action task);
-    Task<T> TryExecuteAsync<T>(Func<T> task);
-    Task TryExecuteAsync(Func<ValueTask> task);
-    Task<T> TryExecuteAsync<T>(Func<ValueTask<T>> task);
+    ValueTask ExecuteAsync(Action task);
+    ValueTask<T> ExecuteAsync<T>(Func<T> task);
+    ValueTask ExecuteAsync(Func<ValueTask> task);
+    ValueTask<T> ExecuteAsync<T>(Func<ValueTask<T>> task);
+    ValueTask TryExecuteAsync(Action task);
+    ValueTask<T> TryExecuteAsync<T>(Func<T> task);
+    ValueTask TryExecuteAsync(Func<ValueTask> task);
+    ValueTask<T> TryExecuteAsync<T>(Func<ValueTask<T>> task);
     void Start(CancellationToken ct = default);
 }

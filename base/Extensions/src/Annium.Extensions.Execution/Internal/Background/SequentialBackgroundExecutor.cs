@@ -37,16 +37,14 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
     protected override void HandleStop()
     {
         _cts.Cancel();
-        lock (_taskWriter)
-            _taskWriter.Complete();
+        _taskWriter.Complete();
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected override void ScheduleTaskCore(Delegate task)
     {
-        lock (_taskWriter)
-            if (!_taskWriter.TryWrite(task))
-                throw new InvalidOperationException("Task must have been scheduled");
+        if (!_taskWriter.TryWrite(task))
+            throw new InvalidOperationException("Task must have been scheduled");
     }
 
     protected override async ValueTask HandleDisposeAsync()
@@ -54,7 +52,7 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
         this.Trace($"wait for {Count} task(s) to finish");
         await _runTask;
         this.Trace("wait for reader completion");
-        await _taskReader.Completion;
+        await _taskReader.Completion.ConfigureAwait(false);
         _cts.Dispose();
     }
 
