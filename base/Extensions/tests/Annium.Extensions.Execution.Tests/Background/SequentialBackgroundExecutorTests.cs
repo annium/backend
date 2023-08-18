@@ -11,18 +11,18 @@ using Xunit;
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
-public class SequentialTest
+public class SequentialBackgroundExecutorTests
 {
     [Theory]
     [MemberData(nameof(GetRange))]
     // ReSharper disable once xUnit1026
-    public async Task SequentialExecutor_NormalFlow_Works(int index)
+    public async Task Works(int index)
     {
         Log.SetTestMode();
         Console.WriteLine($"run {index}");
 
         // arrange
-        var executor = Executor.Background.Sequential<SequentialTest>();
+        var executor = Executor.Background.Sequential<SequentialBackgroundExecutorTests>();
         var queue = new ConcurrentQueue<int>();
 
         // act
@@ -67,12 +67,12 @@ public class SequentialTest
 
     [Fact]
     // ReSharper disable once xUnit1026
-    public async Task SequentialExecutor_Cancellation_Works()
+    public async Task CancellationWorks()
     {
         Log.SetTestMode();
 
         // arrange
-        var executor = Executor.Background.Sequential<SequentialTest>();
+        var executor = Executor.Background.Sequential<SequentialBackgroundExecutorTests>();
 
         // act
         // run executor

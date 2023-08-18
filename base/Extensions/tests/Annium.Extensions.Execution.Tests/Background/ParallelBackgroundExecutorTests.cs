@@ -12,41 +12,35 @@ using Xunit;
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
-public class ConcurrentTest
+public class ParallelBackgroundExecutorTests
 {
     [Theory]
     [MemberData(nameof(GetRange))]
-    public async Task ConcurrentExecutor_Works(int index)
+    public async Task Works(int index)
     {
         Log.SetTestMode();
         // arrange
         Console.WriteLine($"run {index}");
-        var parallelism = 10;
-        var size = parallelism * 5;
-        var executor = Executor.Background.Concurrent<ConcurrentTest>((uint)parallelism);
+        var executor = Executor.Background.Parallel<ParallelBackgroundExecutorTests>();
         var queue = new ConcurrentQueue<int>();
 
         // act
         // schedule batch of work
-        Parallel.For(0, size, i => executor.Schedule(() =>
+        Parallel.For(0, 10, i => executor.Schedule(async () =>
         {
-            Console.WriteLine($"Enqueue {i}");
             queue.Enqueue(i);
-            Helper.SyncLongWork();
-            Console.WriteLine($"Enqueue {i + size}");
-            queue.Enqueue(i + size);
+            await Helper.AsyncLongWork();
+            queue.Enqueue(i + 10);
         }));
         queue.IsEmpty();
         // run executor
         executor.Start();
         // schedule another batch of work
-        Parallel.For(2 * size, 3 * size, i => executor.Schedule(() =>
+        Parallel.For(20, 30, i => executor.Schedule(async () =>
         {
-            Console.WriteLine($"Enqueue {i}");
             queue.Enqueue(i);
-            Helper.SyncLongWork();
-            Console.WriteLine($"Enqueue {i + size}");
-            queue.Enqueue(i + size);
+            await Helper.AsyncLongWork();
+            queue.Enqueue(i + 10);
         }));
 
         // assert
@@ -57,32 +51,14 @@ public class ConcurrentTest
         // throws, as not available already
         Wrap.It(() => executor.Schedule(() => { })).Throws<InvalidOperationException>();
         await disposalTask;
+        var sequence = Enumerable.Range(0, 10).SelectMany(x => new[] { x, x + 10 })
+            .Concat(Enumerable.Range(20, 10).SelectMany(x => new[] { x, x + 10 }))
+            .ToArray();
         var result = queue.ToArray();
-        var sequence = Enumerable.Range(0, 4 * size).ToArray();
+        result.IsNotEqual(sequence);
         result.Length.Is(sequence.Length);
-
-        /*
-         Expected sequence looks like:
-            Enqueue 9
-            Enqueue 8
-            Enqueue 18
-            Enqueue 19
-            Enqueue 7
-            Enqueue 0
-            Enqueue 17
-            Enqueue 10
-            Enqueue 1
-            Enqueue 3
-         */
-        // skipped as is not guaranteed in general
-        // take start/end parts for each parallel step
-        // for (var i = 0; i < result.Length; i += 2 * parallelism)
-        // {
-        //     // ensure each start item is followed by end item in next chunk
-        //     var nextChunk = result.Skip(i + parallelism).Take(parallelism).ToList();
-        //     for (var j = 0; j < parallelism; j++)
-        //         nextChunk.Contains(result[i + j] + size).IsTrue();
-        // }
+        foreach (var num in sequence)
+            result.Contains(num).IsTrue();
 
         Console.WriteLine("done");
     }
@@ -90,11 +66,11 @@ public class ConcurrentTest
     public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 
     [Fact]
-    public async Task ConcurrentExecutor_CompletesOnFailure()
+    public async Task CompletesOnFailure()
     {
         Log.SetTestMode();
         // arrange
-        var executor = Executor.Background.Concurrent<ConcurrentTest>(10);
+        var executor = Executor.Background.Parallel<ParallelBackgroundExecutorTests>();
         var successes = 0;
         var failures = 0;
 
