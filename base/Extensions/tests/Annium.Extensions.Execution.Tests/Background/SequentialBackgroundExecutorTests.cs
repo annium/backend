@@ -67,7 +67,7 @@ public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 
     [Fact]
     // ReSharper disable once xUnit1026
-    public async Task CancellationWorks()
+    public async Task HandlesFailure()
     {
         Log.SetTestMode();
 

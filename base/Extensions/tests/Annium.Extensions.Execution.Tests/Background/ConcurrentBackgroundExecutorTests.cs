@@ -90,7 +90,7 @@ public class ConcurrentBackgroundExecutorTests : BackgroundExecutorTestBase
     public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 
     [Fact]
-    public async Task ConcurrentExecutor_CompletesOnFailure()
+    public async Task HandlesFailure()
     {
         Log.SetTestMode();
         // arrange
