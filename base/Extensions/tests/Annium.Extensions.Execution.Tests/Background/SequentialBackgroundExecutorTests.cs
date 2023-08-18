@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
-public class SequentialBackgroundExecutorTests
+public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 {
     [Theory]
     [MemberData(nameof(GetRange))]
@@ -81,5 +81,29 @@ public class SequentialBackgroundExecutorTests
         var disposalTask = executor.DisposeAsync();
         executor.IsAvailable.IsFalse();
         await disposalTask;
+    }
+
+    [Fact]
+    public async Task Schedule_SyncAction()
+    {
+        await Schedule_SyncAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+    }
+
+    [Fact]
+    public async Task Schedule_SyncCancellableAction()
+    {
+        await Schedule_SyncCancellableAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+    }
+
+    [Fact]
+    public async Task Schedule_AsyncAction()
+    {
+        await Schedule_AsyncAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
+    }
+
+    [Fact]
+    public async Task Schedule_AsyncCancellableAction()
+    {
+        await Schedule_AsyncCancellableAction_Base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>());
     }
 }
