@@ -5,15 +5,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Execution;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.Servers;
 
-public class WebSocketServer
+public class WebServer
 {
     private readonly Func<WebSocket, CancellationToken, Task> _handleClient;
     private readonly HttpListener _listener;
-    private readonly IBackgroundExecutor _executor = Executor.Background.Parallel<WebSocketServer>();
+    private readonly IBackgroundExecutor _executor = Executor.Background.Parallel<WebServer>();
 
-    public WebSocketServer(IPEndPoint endpoint, string path, Func<WebSocket, CancellationToken, Task> handleClient)
+    public WebServer(IPEndPoint endpoint, string path, Func<WebSocket, CancellationToken, Task> handleClient)
     {
         _handleClient = handleClient;
         _listener = new HttpListener();

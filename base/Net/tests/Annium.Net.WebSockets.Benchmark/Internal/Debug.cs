@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Extensions.Execution;
+using Annium.Net.Servers;
 using Annium.Threading.Tasks;
 
 namespace Annium.Net.WebSockets.Benchmark.Internal;
@@ -15,14 +16,14 @@ internal static class Debug
     {
         Trace("start");
 
-        await using var executor = Executor.Background.Parallel<WebSocketServer>();
+        await using var executor = Executor.Background.Parallel<WebServer>();
         executor.Start();
 
         var cts = new CancellationTokenSource();
 
         // server
-        var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, 9898), "/", HandleClient);
-        var serverRunTask = Task.Run(() => server.RunAsync(cts.Token));
+        var server = new WebServer(new IPEndPoint(IPAddress.Loopback, 9898), "/", HandleClient);
+        var serverRunTask = Task.Run(() => server.RunAsync(cts.Token), CancellationToken.None);
 
         // client
         var socket = new System.Net.WebSockets.ClientWebSocket();

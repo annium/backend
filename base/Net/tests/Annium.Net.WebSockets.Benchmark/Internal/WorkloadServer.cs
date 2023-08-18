@@ -4,6 +4,7 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Net.Servers;
 
 namespace Annium.Net.WebSockets.Benchmark.Internal;
 
@@ -13,7 +14,7 @@ internal static class WorkloadServer
 
     public static async Task RunAsync(CancellationToken ct)
     {
-        var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, Constants.Port), "/", HandleClient);
+        var server = new WebServer(new IPEndPoint(IPAddress.Loopback, Constants.Port), "/", HandleClient);
         await server.RunAsync(ct);
 
         static async Task HandleClient(WebSocket rawSocket, CancellationToken ct)

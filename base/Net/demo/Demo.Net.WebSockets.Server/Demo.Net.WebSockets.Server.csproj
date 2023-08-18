@@ -16,6 +16,7 @@
         <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
         <ProjectReference Include="../../../Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
         <ProjectReference Include="../../../Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
+        <ProjectReference Include="../../src/Annium.Net.Servers/Annium.Net.Servers.csproj" />
         <ProjectReference Include="../../src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
     </ItemGroup>
 </Project>

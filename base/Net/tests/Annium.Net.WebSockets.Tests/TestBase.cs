@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Net.Servers;
 
 namespace Annium.Net.WebSockets.Tests;
 
@@ -12,7 +13,7 @@ public abstract class TestBase
 
     protected IAsyncDisposable RunServer(Func<WebSocket, CancellationToken, Task> handleClient)
     {
-        var server = new WebSocketServer(new IPEndPoint(IPAddress.Loopback, ServerUri.Port), "/", handleClient);
+        var server = new WebServer(new IPEndPoint(IPAddress.Loopback, ServerUri.Port), "/", handleClient);
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 
