@@ -65,7 +65,7 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
             try
             {
                 var task = await _taskReader.ReadAsync(_cts.Token);
-                await Helper.RunTaskInForeground(task);
+                await Helper.RunTaskInForeground(task, Cts.Token);
             }
             catch (ChannelClosedException)
             {
@@ -84,7 +84,7 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
         while (true)
         {
             if (_taskReader.TryRead(out var task))
-                await Helper.RunTaskInForeground(task);
+                await Helper.RunTaskInForeground(task, Cts.Token);
             else
                 break;
         }

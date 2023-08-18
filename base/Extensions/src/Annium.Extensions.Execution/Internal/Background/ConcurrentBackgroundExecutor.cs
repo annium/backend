@@ -54,7 +54,7 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
         {
             Interlocked.Increment(ref _taskCounter);
             await _gate.WaitAsync();
-            await Helper.RunTaskInBackground(task);
+            await Helper.RunTaskInBackground(task, Cts.Token);
         }
         finally
         {

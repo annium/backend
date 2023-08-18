@@ -26,7 +26,7 @@ internal class ParallelBackgroundExecutor<TSource> : BackgroundExecutorBase
         if (IsStarted)
         {
             Interlocked.Increment(ref _taskCounter);
-            Helper.RunTaskInBackground(task).ContinueWith(CompleteTask);
+            Helper.RunTaskInBackground(task, Cts.Token).ContinueWith(CompleteTask);
         }
         else
         {

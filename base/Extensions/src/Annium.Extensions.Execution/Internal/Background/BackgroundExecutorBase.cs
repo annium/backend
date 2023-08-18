@@ -10,7 +10,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
 {
     public bool IsAvailable => _state is State.Created or State.Started;
     protected bool IsStarted => _state is State.Started;
-    protected CancellationToken Ct = CancellationToken.None;
+    protected readonly CancellationTokenSource Cts = new();
     private State _state = State.Created;
 
     public void Schedule(Action task)
@@ -73,7 +73,6 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         }
 
         // change to state to unavailable
-        Ct = ct;
         ct.Register(Stop);
 
         this.Trace("run");
@@ -113,7 +112,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
     protected abstract ValueTask HandleDisposeAsync();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    protected void ScheduleTask(Delegate task)
+    private void ScheduleTask(Delegate task)
     {
         EnsureAvailable();
         ScheduleTaskCore(task);
@@ -160,6 +159,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         }
 
         this.Trace("start");
+        Cts.Cancel();
         HandleStop();
         this.Trace("done");
     }
