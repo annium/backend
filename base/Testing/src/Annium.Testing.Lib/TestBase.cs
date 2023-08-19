@@ -40,6 +40,9 @@ public abstract class TestBase
         _builder.UseServicePack(new DynamicServicePack().Setup(setup));
     }
 
+    protected IAsyncServiceScope CreateAsyncScope()
+        => _sp.Value.CreateAsyncScope();
+
     protected T Get<T>()
         where T : notnull
         => _sp.Value.Resolve<T>();
