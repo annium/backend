@@ -83,7 +83,7 @@ public class IntegrationTestsBase : TestBase
         }
 
         // assert
-        await Task.WhenAll(Enumerable.Range(0, 100).Select(async _ =>
+        await Task.WhenAll(Enumerable.Range(0, 1000).Select(async _ =>
         {
             await using var scope = CreateAsyncScope();
             await using var conn = scope.ServiceProvider.Resolve<Connection>();

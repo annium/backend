@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.PostgreSql;
@@ -81,6 +82,20 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnection, ILogSubject<TConnection>
     {
+        // mapping schema
+        container.Add(sp =>
+        {
+            var mappingSchema = new MappingSchema();
+            mappingSchema
+                .ApplyConfigurations(sp)
+                .UseSnakeCaseColumns()
+                .UseJsonSupport(sp);
+            configure(sp, mappingSchema);
+
+            return new MappingSchemaContainer<TConnection>(mappingSchema);
+        }).AsSelf().Singleton();
+
+        // data source
         container.Add(sp =>
         {
             var cfg = getCfg(sp);
@@ -91,26 +106,39 @@ public static class ServiceContainerExtensions
             dataSourceBuilder.UseNodaTime();
             var dataSource = dataSourceBuilder.Build();
 
-            // configure mapping
-            var mappingSchema = new MappingSchema();
-            mappingSchema
-                .ApplyConfigurations(sp)
-                .UseSnakeCaseColumns()
-                .UseJsonSupport(sp);
-            configure(sp, mappingSchema);
+            return new DataSourceContainer<TConnection>(dataSource);
+        }).AsSelf().In(lifetime);
+
+        container.Add(sp =>
+        {
+            var mappingSchema = sp.Resolve<MappingSchemaContainer<TConnection>>().Schema;
+            var dataSource = sp.Resolve<DataSourceContainer<TConnection>>().DataSource;
+            var connection = dataSource.CreateConnection();
 
             var options = new DataOptions()
-                .UseConnectionFactory(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), _ => dataSource.CreateConnection())
+                .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection)
                 .UseMappingSchema(mappingSchema)
                 .UseLogging<TConnection>(sp);
 
             return new DataOptions<TConnection>(options);
-        }).AsSelf().Singleton();
+        }).AsSelf().In(lifetime);
 
         container.Add<TConnection>().AsSelf().In(lifetime);
 
         container.AddEntityConfigurations();
 
         return container;
+    }
+}
+
+// ReSharper disable once UnusedTypeParameter
+file sealed record MappingSchemaContainer<TConnection>(MappingSchema Schema);
+
+// ReSharper disable once UnusedTypeParameter
+file sealed record DataSourceContainer<TConnection>(NpgsqlDataSource DataSource) : IAsyncDisposable
+{
+    public ValueTask DisposeAsync()
+    {
+        return DataSource.DisposeAsync();
     }
 }
