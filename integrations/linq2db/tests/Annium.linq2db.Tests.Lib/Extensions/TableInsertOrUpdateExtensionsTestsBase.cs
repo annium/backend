@@ -6,6 +6,7 @@ using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
+using NodaTime;
 
 namespace Annium.linq2db.Tests.Lib.Extensions;
 
@@ -20,8 +21,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     {
         // arrange
         await using var conn = Get<Connection>();
+        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), metadata);
+        var company = new Company(Name(), createdAt, metadata);
         var chief = new Employee(Name(), null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
         var worker = new Employee(Name(), chief);
@@ -36,6 +38,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
+        company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
     }
 
@@ -43,8 +46,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     {
         // arrange
         await using var conn = Get<Connection>();
+        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), metadata);
+        var company = new Company(Name(), createdAt, metadata);
         await conn.Companies.InsertAsync(company);
         var chief = new Employee(Name(), null);
         await conn.Employees.InsertAsync(chief);
@@ -56,6 +60,8 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         await conn.CompanyEmployees.InsertAsync(companyWorker);
 
         // act
+        createdAt += Duration.FromMinutes(1);
+        company.SetCreatedAt(createdAt);
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
         await conn.Companies.UpdateAsync(company);
@@ -65,6 +71,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
+        company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         worker = await conn.Employees.LoadWith(x => x.Chief).SingleAsync(x => x.Name == worker.Name);
         worker.ChiefId.IsDefault();
@@ -75,8 +82,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     {
         // arrange
         await using var conn = Get<Connection>();
+        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), metadata);
+        var company = new Company(Name(), createdAt, metadata);
         var chief = new Employee(Name(), null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
 
@@ -87,11 +95,14 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.LoadWith(x => x.Employees).SingleAsync(x => x.Name == company.Name);
+        company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(1);
         company.Employees.At(0).Role.Is("chief");
 
         // act
+        createdAt += Duration.FromMinutes(1);
+        company.SetCreatedAt(createdAt);
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
         await conn.Companies.InsertOrUpdateAsync(company);
@@ -100,6 +111,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.LoadWith(x => x.Employees).SingleAsync(x => x.Name == company.Name);
+        company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(1);
         company.Employees.At(0).Role.Is("main chief");

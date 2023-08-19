@@ -13,6 +13,7 @@ internal class CompanyConfiguration : IEntityConfiguration<Company>
         builder.HasPrimaryKey(x => x.Id);
         builder.Property(x => x.Id).IsColumn();
         builder.Property(x => x.Name).IsColumn();
+        builder.Property(x => x.CreatedAt).IsColumn();
         builder.Property(x => x.Metadata).IsColumn().HasDbType("text").HasDataType(DataType.Json);
         builder.Association(x => x.Employees, x => x.Id, x => x.CompanyId, false);
     }

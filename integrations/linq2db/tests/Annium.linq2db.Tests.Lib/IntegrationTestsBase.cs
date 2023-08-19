@@ -7,6 +7,7 @@ using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
+using NodaTime;
 
 namespace Annium.linq2db.Tests.Lib;
 
@@ -22,8 +23,9 @@ public class IntegrationTestsBase : TestBase
         // arrange
         await using var conn = Get<Connection>();
         var companyName = $"demo:{Guid.NewGuid()}";
+        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(companyName, metadata);
+        var company = new Company(companyName, createdAt, metadata);
         var chief = new Employee("A", null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
         var worker = new Employee("B", chief);
@@ -42,6 +44,8 @@ public class IntegrationTestsBase : TestBase
             .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Chief)
             .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Subordinates)
             .SingleAsync(x => x.Name == companyName);
+        company.Name.Is(companyName);
+        company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(2);
         // chief
@@ -69,8 +73,9 @@ public class IntegrationTestsBase : TestBase
     {
         // arrange
         var companyName = $"demo:{Guid.NewGuid()}";
+        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(companyName, metadata);
+        var company = new Company(companyName, createdAt, metadata);
         await using (var conn = Get<Connection>())
         {
             await conn.Companies.InsertAsync(company);
