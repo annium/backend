@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Annium.Data.Models;
 
-public abstract class Comparable<T> : Equatable<T>, IComparable<T>, IComparable where T : Comparable<T>
+public abstract class Comparable<T> : IEquatable<T>, IComparable<T>, IComparable where T : Comparable<T>
 {
     public int CompareTo(T? other)
     {
@@ -44,4 +44,6 @@ public abstract class Comparable<T> : Equatable<T>, IComparable<T>, IComparable 
 
         return a.CompareTo(b);
     }
+
+    public bool Equals(T? other) => GetHashCode() == other?.GetHashCode();
 }
