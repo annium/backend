@@ -18,8 +18,8 @@ public record PostgreSqlConfiguration
         "SSL Mode=Prefer",
         "Trust Server Certificate=true",
         "Keepalive=30",
-        "Tcp Keepalive=true",
-        "ConnectionLifetime=180",
+        "Connection Lifetime=180",
+        "Pooling=true",
         "Minimum Pool Size=100",
         "Maximum Pool Size=1000"
     );
