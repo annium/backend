@@ -19,10 +19,10 @@
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="dbup-postgresql" Version="5.0.8" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.1" />
-        <PackageReference Include="Testcontainers.PostgreSql" Version="3.2.0" />
-        <PackageReference Include="xunit" Version="2.4.2" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.1" />
+        <PackageReference Include="Testcontainers.PostgreSql" Version="3.4.0" />
+        <PackageReference Include="xunit" Version="2.5.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Db/Migrations/*.sql" />
