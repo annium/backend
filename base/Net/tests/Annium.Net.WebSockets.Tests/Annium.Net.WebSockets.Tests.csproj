@@ -14,8 +14,8 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Net.Servers/Annium.Net.Servers.csproj" />
         <ProjectReference Include="../../src/Annium.Net.WebSockets/Annium.Net.WebSockets.csproj" />
-        <ProjectReference Include="..\..\src\Annium.Net.Servers\Annium.Net.Servers.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
