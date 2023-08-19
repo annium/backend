@@ -16,4 +16,10 @@ public class IntegrationTests : IntegrationTestsBase
     {
         await EndToEnd_Base();
     }
+
+    [Fact]
+    public async Task HighLoad()
+    {
+        await HighLoad_Base();
+    }
 }

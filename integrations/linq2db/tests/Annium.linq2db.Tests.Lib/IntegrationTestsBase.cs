@@ -12,12 +12,12 @@ namespace Annium.linq2db.Tests.Lib;
 
 public class IntegrationTestsBase : TestBase
 {
-    public IntegrationTestsBase()
+    protected IntegrationTestsBase()
     {
         AddServicePack<LibServicePack>();
     }
 
-    public async Task EndToEnd_Base()
+    protected async Task EndToEnd_Base()
     {
         // arrange
         await using var conn = Get<Connection>();
@@ -63,5 +63,32 @@ public class IntegrationTestsBase : TestBase
         workerEmployee.Employee.ChiefId.Is(chief.Id);
         workerEmployee.Employee.Chief.IsNotDefault();
         workerEmployee.Employee.Subordinates.IsEmpty();
+    }
+
+    protected async Task HighLoad_Base()
+    {
+        // arrange
+        var companyName = $"demo:{Guid.NewGuid()}";
+        var metadata = new CompanyMetadata("somewhere");
+        var company = new Company(companyName, metadata);
+        await using (var conn = Get<Connection>())
+        {
+            await conn.Companies.InsertAsync(company);
+        }
+
+        // assert
+        await Task.WhenAll(Enumerable.Range(0, 5000).Select(async _ =>
+        {
+            await using var conn = Get<Connection>();
+            var loadedCompany = await conn.Companies
+                .LoadWith(x => x.Employees).ThenLoad(x => x.Company)
+                .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Chief)
+                .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Subordinates)
+                .SingleAsync(x => x.Name == companyName);
+
+            loadedCompany.Id.Is(company.Id);
+            loadedCompany.Name.Is(company.Name);
+            loadedCompany.Metadata.Is(metadata);
+        }));
     }
 }
