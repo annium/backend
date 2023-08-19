@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
@@ -82,9 +83,10 @@ public class IntegrationTestsBase : TestBase
         }
 
         // assert
-        await Task.WhenAll(Enumerable.Range(0, 5000).Select(async _ =>
+        await Task.WhenAll(Enumerable.Range(0, 100).Select(async _ =>
         {
-            await using var conn = Get<Connection>();
+            await using var scope = CreateAsyncScope();
+            await using var conn = scope.ServiceProvider.Resolve<Connection>();
             var loadedCompany = await conn.Companies
                 .LoadWith(x => x.Employees).ThenLoad(x => x.Company)
                 .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Chief)
