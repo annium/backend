@@ -30,10 +30,10 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        return SendAsync(data, WebSocketMessageType.Text, ct);
+        return SendAsync(data, WebSocketMessageType.Binary, ct);
     }
 
-    public async Task<WebSocketCloseStatus> ListenAsync(CancellationToken ct)
+    public async Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
         using var buffer = new DynamicBuffer<byte>(_bufferSize);
 
@@ -77,7 +77,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    private async ValueTask<(bool IsClosed, WebSocketCloseStatus CloseStatus)> ReceiveAsync(DynamicBuffer<byte> buffer, CancellationToken ct)
+    private async ValueTask<(bool IsClosed, WebSocketReceiveStatus CloseStatus)> ReceiveAsync(DynamicBuffer<byte> buffer, CancellationToken ct)
     {
         // reset buffer to start writing from start
         buffer.Reset();
@@ -90,7 +90,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             // if close received - return false, indicating socket is closed
             if (receiveResult.MessageType is WebSocketMessageType.Close)
             {
-                return (true, receiveResult.CloseStatus);
+                return (true, receiveResult.Status);
             }
 
             // track receiveResult count
@@ -108,7 +108,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             else
                 BinaryReceived(buffer.AsDataReadOnlyMemory());
 
-            return (false, WebSocketCloseStatus.Empty);
+            return (false, WebSocketReceiveStatus.Normal);
         }
     }
 
@@ -117,21 +117,28 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
     {
         try
         {
+            if (ct.IsCancellationRequested)
+                return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.Canceled);
+
+            if (_socket.State is not WebSocketState.Open)
+                return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedLocal);
+
             var result = await _socket.ReceiveAsync(buffer.AsFreeSpaceMemory(), ct).ConfigureAwait(false);
 
-            return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketCloseStatus.Empty);
+            return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketReceiveStatus.Normal);
         }
         catch (OperationCanceledException)
         {
-            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketCloseStatus.NormalClosure);
+            var status = ct.IsCancellationRequested ? WebSocketReceiveStatus.Canceled : WebSocketReceiveStatus.ClosedLocal;
+            return new ReceiveResult(WebSocketMessageType.Close, 0, true, status);
         }
         catch (WebSocketException)
         {
-            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketCloseStatus.NormalClosure);
+            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedRemote);
         }
         catch (Exception)
         {
-            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketCloseStatus.InternalServerError);
+            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.Error);
         }
     }
 }

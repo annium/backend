@@ -14,7 +14,7 @@ public partial class Benchmarks
     private ManualResetEventSlim _plainGate = default!;
     private long _plainEventCount;
     private System.Net.WebSockets.ClientWebSocket _plainSocket = default!;
-    private Task<WebSocketCloseStatus> _plainListenTask = default!;
+    private Task<WebSocketReceiveStatus> _plainListenTask = default!;
 
     [IterationSetup(Target = nameof(Plain))]
     public void IterationSetup_Plain()

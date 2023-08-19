@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -13,7 +14,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 {
     private System.Net.WebSockets.ClientWebSocket _clientSocket = default!;
     private ManagedWebSocket _managedSocket = default!;
-    private readonly ConcurrentQueue<string> _messages = new();
+    private readonly ConcurrentQueue<string> _texts = new();
+    private readonly ConcurrentQueue<byte[]> _binaries = new();
 
     [Fact]
     public async Task Send_NotConnected()
@@ -131,7 +133,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task Send_Normal()
     {
         // arrange
-        const string message = "demo";
+        const string text = "demo";
+        var binary = Encoding.UTF8.GetBytes(text);
         await using var _ = RunServer(async (rawSocket, ct) =>
         {
             var serverSocket = new ManagedWebSocket(rawSocket);
@@ -141,95 +144,221 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
                 .GetAwaiter()
                 .GetResult();
 
+            serverSocket.BinaryReceived += x => serverSocket
+                .SendBinaryAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+
             await serverSocket.ListenAsync(ct);
         });
         await ConnectAndStartListenAsync();
 
         // act
-        await SendTextAsync(message);
+        var textResult = await SendTextAsync(text);
+        var binaryResult = await SendBinaryAsync(binary);
 
         // assert
-        await Expect.To(() => _messages.Has(1));
-        _messages.At(0).Is(message);
-    }
-
-    [Fact]
-    public async Task Listen_NotConnected()
-    {
-        await Task.CompletedTask;
+        textResult.Is(WebSocketSendStatus.Ok);
+        binaryResult.Is(WebSocketSendStatus.Ok);
+        var expectedTexts = new[] { text };
+        var expectedBinaries = new[] { binary };
+        await Expect.To(() => _texts.IsEqual(expectedTexts));
+        await Expect.To(() => _binaries.IsEqual(expectedBinaries));
     }
 
     [Fact]
     public async Task Listen_Canceled()
-    {
-        await Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task Listen_ClientClosed()
-    {
-        await Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task Listen_ServerClosed()
-    {
-        await Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task Listen_ClientAborted()
-    {
-        await Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task Listen_ServerAborted()
-    {
-        await Task.CompletedTask;
-    }
-
-    [Fact]
-    public async Task Listen_Normal()
     {
         // arrange
         await using var _ = RunServer(async (rawSocket, ct) =>
         {
             var serverSocket = new ManagedWebSocket(rawSocket);
 
-            for (var i = 0; i < 3; i++)
+            await serverSocket.ListenAsync(ct);
+        });
+        await ConnectAsync();
+
+        // act
+        var result = await ListenAsync(new CancellationToken(true));
+
+        // assert
+        result.Is(WebSocketReceiveStatus.Canceled);
+    }
+
+    [Fact]
+    public async Task Listen_ClientClosed()
+    {
+        // arrange
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            await serverSocket.ListenAsync(ct);
+        });
+        await ConnectAsync();
+        await _clientSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
+
+        // act
+        var result = await ListenAsync();
+
+        // assert
+        result.Is(WebSocketReceiveStatus.ClosedLocal);
+    }
+
+    [Fact]
+    public async Task Listen_ServerClosed()
+    {
+        // arrange
+        await using var _ = RunServer(async (rawSocket, _) => await rawSocket.CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, default));
+        await ConnectAsync();
+
+        // act
+        var result = await ListenAsync();
+
+        // assert
+        result.Is(WebSocketReceiveStatus.ClosedRemote);
+    }
+
+    [Fact]
+    public async Task Listen_ClientAborted()
+    {
+        // arrange
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            await serverSocket.ListenAsync(ct);
+        });
+        await ConnectAsync();
+        var listenTask = ListenAsync();
+
+        // act
+        _clientSocket.Abort();
+        var result = await listenTask;
+
+        // assert
+        result.Is(WebSocketReceiveStatus.ClosedLocal);
+    }
+
+    [Fact]
+    public async Task Listen_ServerAborted()
+    {
+        // arrange
+        await using var _ = RunServer((rawSocket, _) =>
+        {
+            rawSocket.Abort();
+
+            return Task.CompletedTask;
+        });
+        await ConnectAsync();
+        var listenTask = ListenAsync();
+
+        // act
+        await Task.Delay(1);
+        var result = await listenTask;
+
+        // assert
+        result.Is(WebSocketReceiveStatus.ClosedRemote);
+    }
+
+    [Fact]
+    public async Task Listen_Normal()
+    {
+        // arrange
+        var messages = Enumerable.Range(0, 3)
+            .Select(x => new string((char)x, 10))
+            .ToArray();
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            foreach (var message in messages)
             {
-                await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes($"x{i}"), ct);
+                await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
                 await Task.Delay(1, CancellationToken.None);
             }
         });
 
         // act
         await ConnectAsync();
-        await Task.Delay(100);
         ListenAsync().GetAwaiter();
 
         // assert
-        await Expect.To(() => _messages.Has(3), 1000);
+        await Expect.To(() => _texts.IsEqual(messages), 1000);
     }
 
     [Fact]
     public async Task Listen_SmallBuffer()
     {
-        await Task.CompletedTask;
+        // arrange
+        var messages = Enumerable.Range(0, 3)
+            .Select(x => new string((char)x, 1_000_000))
+            .ToArray();
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            foreach (var message in messages)
+            {
+                await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
+                await Task.Delay(1, CancellationToken.None);
+            }
+        });
+
+        // act
+        await ConnectAsync();
+        var listenTask = ListenAsync();
+
+        // assert
+        await Expect.To(() => _texts.IsEqual(messages), 1000);
+        var result = await listenTask;
+        result.Is(WebSocketReceiveStatus.ClosedRemote);
     }
 
     [Fact]
     public async Task Listen_BothTypes()
     {
-        await Task.CompletedTask;
+        // arrange
+        var texts = Enumerable.Range(0, 3)
+            .Select(x => new string((char)x, 10))
+            .ToArray();
+        var binaries = texts
+            .Select(Encoding.UTF8.GetBytes)
+            .ToArray();
+        await using var _ = RunServer(async (rawSocket, ct) =>
+        {
+            var serverSocket = new ManagedWebSocket(rawSocket);
+
+            foreach (var message in texts)
+            {
+                await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
+                await Task.Delay(1, CancellationToken.None);
+            }
+
+            foreach (var message in binaries)
+            {
+                await serverSocket.SendBinaryAsync(message, ct);
+                await Task.Delay(1, CancellationToken.None);
+            }
+        });
+
+        // act
+        await ConnectAsync();
+        var listenTask = ListenAsync();
+
+        // assert
+        await Expect.To(() => _texts.IsEqual(texts), 1000);
+        await Expect.To(() => _binaries.IsEqual(binaries), 1000);
+        var result = await listenTask;
+        result.Is(WebSocketReceiveStatus.ClosedRemote);
     }
 
     public async Task InitializeAsync()
     {
         _clientSocket = new System.Net.WebSockets.ClientWebSocket();
         _managedSocket = new ManagedWebSocket(_clientSocket);
-        _managedSocket.TextReceived += x => _messages.Enqueue(Encoding.UTF8.GetString(x.Span));
+        _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
+        _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
         await Task.CompletedTask;
     }
@@ -250,7 +379,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         return _clientSocket.ConnectAsync(ServerUri, ct);
     }
 
-    private Task ListenAsync(CancellationToken ct = default)
+    private Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
     {
         return _managedSocket.ListenAsync(ct);
     }
@@ -258,5 +387,10 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
         return await _managedSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+    }
+
+    private async Task<WebSocketSendStatus> SendBinaryAsync(byte[] data, CancellationToken ct = default)
+    {
+        return await _managedSocket.SendBinaryAsync(data, ct);
     }
 }
