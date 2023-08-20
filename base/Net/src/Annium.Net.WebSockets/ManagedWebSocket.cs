@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Debug;
 using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Net.WebSockets;
@@ -38,6 +39,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             var result = await ReceiveAsync(buffer, ct);
             if (result.IsClosed)
             {
+                this.Trace($"stop with {result.CloseStatus}");
                 return result.CloseStatus;
             }
         }
@@ -49,25 +51,35 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         try
         {
             if (ct.IsCancellationRequested)
+            {
+                this.Trace($"{messageType} ({data.Length}) - canceled with cancellation token");
                 return WebSocketSendStatus.Canceled;
+            }
 
             if (_socket.State is not WebSocketState.Open)
+            {
+                this.Trace($"{messageType} ({data.Length}) - closed because socket is not open");
                 return WebSocketSendStatus.Closed;
+            }
 
             await _socket.SendAsync(data, messageType, true, ct).ConfigureAwait(false);
+            this.Trace($"{messageType} ({data.Length}) - send succeed");
 
             return WebSocketSendStatus.Ok;
         }
         catch (OperationCanceledException)
         {
+            this.Trace($"{messageType} ({data.Length}) - canceled with OperationCanceledException");
             return WebSocketSendStatus.Canceled;
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException e)
         {
+            this.Trace($"{messageType} ({data.Length}) - closed with InvalidOperationException: {e}");
             return WebSocketSendStatus.Closed;
         }
-        catch (WebSocketException)
+        catch (WebSocketException e)
         {
+            this.Trace($"{messageType} ({data.Length}) - closed with WebSocketException: {e}");
             return WebSocketSendStatus.Closed;
         }
     }
@@ -95,10 +107,12 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             // buffer was not big enough - grow and receive next chunk
             if (!receiveResult.EndOfMessage)
             {
+                this.Trace("grow buffer");
                 buffer.Grow();
                 continue;
             }
 
+            this.Trace($"fire {receiveResult.MessageType} received");
             if (receiveResult.MessageType is WebSocketMessageType.Text)
                 TextReceived(buffer.AsDataReadOnlyMemory());
             else
@@ -114,12 +128,19 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         try
         {
             if (ct.IsCancellationRequested)
-                return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.Canceled);
+            {
+                this.Trace("canceled with cancellation token");
+                return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedLocal);
+            }
 
             if (_socket.State is not WebSocketState.Open)
+            {
+                this.Trace("closed because socket is not open");
                 return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedLocal);
+            }
 
             var result = await _socket.ReceiveAsync(buffer.AsFreeSpaceMemory(), ct).ConfigureAwait(false);
+            this.Trace($"received {result.MessageType} ({result.Count} - {result.EndOfMessage})");
 
             return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketReceiveStatus.ClosedRemote);
         }
@@ -128,12 +149,14 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             this.Trace($"closed locally with cancellation: {ct.IsCancellationRequested}");
             return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedLocal);
         }
-        catch (WebSocketException)
+        catch (WebSocketException e)
         {
+            this.Trace($"closed remotely with WebSocketException: {e}");
             return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedRemote);
         }
-        catch (Exception)
+        catch (Exception e)
         {
+            this.Trace($"Error!!: {e}");
             return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.Error);
         }
     }
