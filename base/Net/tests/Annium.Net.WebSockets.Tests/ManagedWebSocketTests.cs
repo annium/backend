@@ -347,7 +347,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         return _clientSocket.ConnectAsync(ServerUri, ct);
     }
 
-    private ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
+    private Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
     {
         return _managedSocket.ListenAsync(ct);
     }

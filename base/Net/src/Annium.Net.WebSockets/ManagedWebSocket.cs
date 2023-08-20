@@ -29,7 +29,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         return SendAsync(data, WebSocketMessageType.Binary, ct);
     }
 
-    public async ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
+    public async Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
         using var buffer = new DynamicBuffer<byte>(BufferSize);
 

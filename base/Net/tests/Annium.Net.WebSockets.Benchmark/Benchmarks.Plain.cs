@@ -14,7 +14,7 @@ public partial class Benchmarks
     private ManualResetEventSlim _plainGate = default!;
     private long _plainEventCount;
     private System.Net.WebSockets.ClientWebSocket _plainSocket = default!;
-    private ValueTask<WebSocketReceiveStatus> _plainListenTask;
+    private Task<WebSocketReceiveStatus> _plainListenTask = default!;
 
     [IterationSetup(Target = nameof(Plain))]
     public void IterationSetup_Plain()
@@ -35,7 +35,7 @@ public partial class Benchmarks
     {
         _plainSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         _plainCts.Cancel();
-        _plainListenTask.AsTask().Wait();
+        _plainListenTask.Wait();
     }
 
     [Benchmark(Baseline = true)]

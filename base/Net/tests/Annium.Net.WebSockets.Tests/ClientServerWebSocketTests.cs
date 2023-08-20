@@ -12,7 +12,7 @@ namespace Annium.Net.WebSockets.Tests;
 
 public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 {
-    private ClientWebSocket _clientSocket = default!;
+    private IClientWebSocket _clientSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
 
@@ -265,12 +265,12 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         ListenAsync(ct).GetAwaiter();
     }
 
-    private ValueTask ConnectAsync(CancellationToken ct = default)
+    private Task ConnectAsync(CancellationToken ct = default)
     {
         return _clientSocket.ConnectAsync(ServerUri, ct);
     }
 
-    private ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
+    private Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
     {
         return _clientSocket.ListenAsync(ct);
     }

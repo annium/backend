@@ -22,7 +22,7 @@ public class ServerWebSocket : IServerWebSocket
         _managedSocket.BinaryReceived += OnBinaryReceived;
     }
 
-    public async ValueTask DisconnectAsync()
+    public Task DisconnectAsync()
     {
         EnsureConnected();
         _isConnected = false;
@@ -30,7 +30,7 @@ public class ServerWebSocket : IServerWebSocket
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
-        await _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
+        return _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
@@ -47,7 +47,7 @@ public class ServerWebSocket : IServerWebSocket
         return _managedSocket.SendBinaryAsync(data, ct);
     }
 
-    public ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
+    public Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
         EnsureConnected();
 

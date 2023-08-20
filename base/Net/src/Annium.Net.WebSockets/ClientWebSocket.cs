@@ -14,7 +14,7 @@ public class ClientWebSocket : IClientWebSocket
     private NativeWebSocket? _nativeSocket;
     private ManagedWebSocket? _managedSocket;
 
-    public async ValueTask ConnectAsync(Uri uri, CancellationToken ct)
+    public Task ConnectAsync(Uri uri, CancellationToken ct)
     {
         EnsureNotConnected();
 
@@ -24,17 +24,17 @@ public class ClientWebSocket : IClientWebSocket
         _managedSocket.TextReceived += OnTextReceived;
         _managedSocket.BinaryReceived += OnBinaryReceived;
 
-        await nativeSocket.ConnectAsync(uri, ct).ConfigureAwait(false);
+        return nativeSocket.ConnectAsync(uri, ct);
     }
 
-    public async ValueTask DisconnectAsync()
+    public Task DisconnectAsync()
     {
         EnsureConnected();
 
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
-        await _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None).ConfigureAwait(false);
+        return _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
@@ -47,9 +47,9 @@ public class ClientWebSocket : IClientWebSocket
         return IsConnected() ? _managedSocket.SendBinaryAsync(data, ct) : ValueTask.FromResult(WebSocketSendStatus.Closed);
     }
 
-    public ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
+    public Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
-        return IsConnected() ? _managedSocket.ListenAsync(ct) : ValueTask.FromResult(WebSocketReceiveStatus.ClosedLocal);
+        return IsConnected() ? _managedSocket.ListenAsync(ct) : Task.FromResult(WebSocketReceiveStatus.ClosedLocal);
     }
 
     private void OnTextReceived(ReadOnlyMemory<byte> data) => TextReceived(data);

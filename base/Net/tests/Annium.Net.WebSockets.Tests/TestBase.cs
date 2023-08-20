@@ -8,12 +8,13 @@ namespace Annium.Net.WebSockets.Tests;
 
 public abstract class TestBase
 {
+    private static int _basePort = 15000;
     private readonly int _port;
     protected readonly Uri ServerUri;
 
     protected TestBase()
     {
-        _port = new Random().Next(32768, 65536);
+        _port = Interlocked.Increment(ref _basePort);
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
 
