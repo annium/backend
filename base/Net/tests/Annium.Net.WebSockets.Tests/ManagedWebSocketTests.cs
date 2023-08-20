@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Net.WebSockets;
@@ -35,12 +36,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         const string message = "demo";
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
 
         // act
@@ -55,12 +51,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         const string message = "demo";
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
 
         // act
@@ -92,12 +83,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         const string message = "demo";
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
 
         // act
@@ -135,10 +121,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
-        await using var _ = RunServer(async (ctx, ct) =>
+        await using var _ = RunServer(async (serverSocket, ct) =>
         {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
             serverSocket.TextReceived += x => serverSocket
                 .SendTextAsync(x.ToArray(), CancellationToken.None)
                 .GetAwaiter()
@@ -170,12 +154,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task Listen_Canceled()
     {
         // arrange
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
 
         // act
@@ -189,12 +168,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task Listen_ClientClosed()
     {
         // arrange
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
         await _clientSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
 
@@ -223,12 +197,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task Listen_ClientAborted()
     {
         // arrange
-        await using var _ = RunServer(async (ctx, ct) =>
-        {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
-            await serverSocket.ListenAsync(ct);
-        });
+        await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
         var listenTask = ListenAsync();
 
@@ -268,10 +237,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
-        await using var _ = RunServer(async (ctx, ct) =>
+        await using var _ = RunServer(async (serverSocket, ct) =>
         {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
             foreach (var message in messages)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
@@ -294,10 +261,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 1_000_000))
             .ToArray();
-        await using var _ = RunServer(async (ctx, ct) =>
+        await using var _ = RunServer(async (serverSocket, ct) =>
         {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
             foreach (var message in messages)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
@@ -325,10 +290,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var binaries = texts
             .Select(Encoding.UTF8.GetBytes)
             .ToArray();
-        await using var _ = RunServer(async (ctx, ct) =>
+        await using var _ = RunServer(async (serverSocket, ct) =>
         {
-            var serverSocket = new ManagedWebSocket(ctx.WebSocket);
-
             foreach (var message in texts)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message), ct);
@@ -366,6 +329,11 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task DisposeAsync()
     {
         await Task.CompletedTask;
+    }
+
+    private IAsyncDisposable RunServer(Func<ManagedWebSocket, CancellationToken, Task> handleWebSocket)
+    {
+        return RunServer((ctx, ct) => handleWebSocket(new ManagedWebSocket(ctx.WebSocket), ct));
     }
 
     private async Task ConnectAndStartListenAsync(CancellationToken ct = default)

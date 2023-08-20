@@ -9,18 +9,14 @@ namespace Annium.Net.WebSockets;
 
 public class ManagedWebSocket : ISendingReceivingWebSocket
 {
+    private const int BufferSize = 65_536;
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     private readonly WebSocket _socket;
-    private readonly int _bufferSize;
 
-    public ManagedWebSocket(
-        WebSocket socket,
-        int bufferSize = 65_536
-    )
+    public ManagedWebSocket(WebSocket socket)
     {
         _socket = socket;
-        _bufferSize = bufferSize;
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
@@ -35,7 +31,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
 
     public async Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
-        using var buffer = new DynamicBuffer<byte>(_bufferSize);
+        using var buffer = new DynamicBuffer<byte>(BufferSize);
 
         while (true)
         {
