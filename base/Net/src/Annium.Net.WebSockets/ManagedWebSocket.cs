@@ -125,8 +125,8 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         }
         catch (OperationCanceledException)
         {
-            var status = ct.IsCancellationRequested ? WebSocketReceiveStatus.Canceled : WebSocketReceiveStatus.ClosedLocal;
-            return new ReceiveResult(WebSocketMessageType.Close, 0, true, status);
+            this.Trace($"closed locally with cancellation: {ct.IsCancellationRequested}");
+            return new ReceiveResult(WebSocketMessageType.Close, 0, true, WebSocketReceiveStatus.ClosedLocal);
         }
         catch (WebSocketException)
         {

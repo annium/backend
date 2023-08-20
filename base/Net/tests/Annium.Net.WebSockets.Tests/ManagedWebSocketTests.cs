@@ -70,6 +70,9 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAndStartListenAsync();
 
+        // delay to let server close connection
+        await Task.Delay(10);
+
         // act
         await Task.Delay(1);
         var result = await SendTextAsync(message);
@@ -137,6 +140,9 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         });
         await ConnectAndStartListenAsync();
 
+        // delay to let server setup subscriptions
+        await Task.Delay(10);
+
         // act
         var textResult = await SendTextAsync(text);
         var binaryResult = await SendBinaryAsync(binary);
@@ -161,7 +167,8 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await ListenAsync(new CancellationToken(true));
 
         // assert
-        result.Is(WebSocketReceiveStatus.Canceled);
+        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        this.Trace("done");
     }
 
     [Fact]
