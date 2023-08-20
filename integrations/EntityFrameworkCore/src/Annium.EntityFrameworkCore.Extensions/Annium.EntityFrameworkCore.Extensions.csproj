@@ -13,9 +13,8 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../../base/Data/src/Annium.Data.Models/Annium.Data.Models.csproj" />
-        <ProjectReference Include="../../../Sqlite/src/Annium.Sqlite.Extensions/Annium.Sqlite.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
     </ItemGroup>
 </Project>
