@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Channels;
@@ -10,19 +9,19 @@ using Annium.Threading.Tasks;
 
 namespace Annium.Net.WebSockets.Benchmark.Internal;
 
-internal static class Debug
+internal class Debug
 {
     public static async Task RunAsync()
     {
         Trace("start");
 
-        await using var executor = Executor.Background.Parallel<WebServer>();
+        await using var executor = Executor.Background.Parallel<Debug>();
         executor.Start();
 
         var cts = new CancellationTokenSource();
 
         // server
-        var server = new WebServer(new IPEndPoint(IPAddress.Loopback, 9898), "/", HandleClient);
+        var server = WebServerBuilder.New(new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build();
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token), CancellationToken.None);
 
         // client
@@ -52,9 +51,9 @@ internal static class Debug
         Trace("done");
     }
 
-    private static async Task HandleClient(WebSocket rawSocket, CancellationToken ct)
+    private static async Task HandleWebSocket(HttpListenerWebSocketContext ctx, CancellationToken ct)
     {
-        var clientSocket = new ManagedWebSocket(rawSocket);
+        var clientSocket = new ManagedWebSocket(ctx.WebSocket);
 
         // create channel to decouple read/write flow
         var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();

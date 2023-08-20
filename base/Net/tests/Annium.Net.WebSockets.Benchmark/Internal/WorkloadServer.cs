@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -14,18 +13,18 @@ internal static class WorkloadServer
 
     public static async Task RunAsync(CancellationToken ct)
     {
-        var server = new WebServer(new IPEndPoint(IPAddress.Loopback, Constants.Port), "/", HandleClient);
+        var server = WebServerBuilder.New(new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build();
         await server.RunAsync(ct);
+    }
 
-        static async Task HandleClient(WebSocket rawSocket, CancellationToken ct)
-        {
-            var clientSocket = new ManagedWebSocket(rawSocket);
+    private static async Task HandleWebSocket(HttpListenerWebSocketContext ctx, CancellationToken ct)
+    {
+        var clientSocket = new ManagedWebSocket(ctx.WebSocket);
 
-            ReadOnlyMemory<byte> workloadMessageBytes = Encoding.UTF8.GetBytes(WorkloadMessage).AsMemory();
-            for (var i = 0; i < Constants.TotalMessages; i++)
-                await clientSocket.SendTextAsync(workloadMessageBytes, CancellationToken.None).ConfigureAwait(false);
+        ReadOnlyMemory<byte> workloadMessageBytes = Encoding.UTF8.GetBytes(WorkloadMessage).AsMemory();
+        for (var i = 0; i < Constants.TotalMessages; i++)
+            await clientSocket.SendTextAsync(workloadMessageBytes, CancellationToken.None).ConfigureAwait(false);
 
-            await rawSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
-        }
+        await ctx.WebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
     }
 }
