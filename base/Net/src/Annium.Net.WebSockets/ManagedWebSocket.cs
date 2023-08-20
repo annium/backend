@@ -29,7 +29,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
         return SendAsync(data, WebSocketMessageType.Binary, ct);
     }
 
-    public async Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
+    public async ValueTask<WebSocketReceiveStatus> ListenAsync(CancellationToken ct)
     {
         using var buffer = new DynamicBuffer<byte>(BufferSize);
 
@@ -104,7 +104,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
             else
                 BinaryReceived(buffer.AsDataReadOnlyMemory());
 
-            return (false, WebSocketReceiveStatus.Normal);
+            return (false, WebSocketReceiveStatus.ClosedRemote);
         }
     }
 
@@ -121,7 +121,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
 
             var result = await _socket.ReceiveAsync(buffer.AsFreeSpaceMemory(), ct).ConfigureAwait(false);
 
-            return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketReceiveStatus.Normal);
+            return new ReceiveResult(result.MessageType, result.Count, result.EndOfMessage, WebSocketReceiveStatus.ClosedRemote);
         }
         catch (OperationCanceledException)
         {

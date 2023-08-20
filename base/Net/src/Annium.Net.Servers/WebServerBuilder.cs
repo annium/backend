@@ -11,8 +11,8 @@ public static class WebServerBuilder
 {
     public static IWebServerBuilder New(Uri uri)
     {
-        if (uri.IsFile)
-            throw new InvalidOperationException("Invalid uri for web server");
+        if (uri.Scheme != "http")
+            throw new InvalidOperationException("Only http uri is supported by web server");
 
         return new WebServerBuilderInstance(uri);
     }

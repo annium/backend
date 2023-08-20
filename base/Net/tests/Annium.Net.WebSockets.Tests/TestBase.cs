@@ -17,7 +17,7 @@ public abstract class TestBase
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
 
-    protected IAsyncDisposable RunServer(Func<HttpListenerWebSocketContext, CancellationToken, Task> handleWebSocket)
+    protected IAsyncDisposable RunServerBase(Func<HttpListenerWebSocketContext, CancellationToken, Task> handleWebSocket)
     {
         var uri = new Uri($"http://127.0.0.1:{_port}");
         var server = WebServerBuilder.New(uri).WithWebSockets(handleWebSocket).Build();
