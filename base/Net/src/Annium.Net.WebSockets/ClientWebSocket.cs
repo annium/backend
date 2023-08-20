@@ -61,6 +61,7 @@ public class ClientWebSocket : IClientWebSocket
 
         this.Trace("cancel listen cts");
         _listenCts.Cancel();
+        await _listenTask;
 
         this.Trace("reset socket references to null");
         _nativeSocket = null;
