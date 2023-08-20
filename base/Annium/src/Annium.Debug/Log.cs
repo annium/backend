@@ -32,7 +32,7 @@ public static class Log
 
     [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Trace(
+    public static void Trace(
         string subject,
         string message,
         [CallerFilePath] string callerFilePath = "",
@@ -52,7 +52,7 @@ public static class Log
 
     [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void Trace(
+    public static void Trace(
         string message,
         [CallerFilePath] string callerFilePath = "",
         [CallerMemberName] string member = "",
