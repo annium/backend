@@ -77,10 +77,12 @@ internal class WebServer : IWebServer
     private async Task HandleWebSocketRequest(HttpListenerContext listenerContext, CancellationToken ct)
     {
         var statusCode = 200;
+        var isAborted = false;
         try
         {
             var webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
             await _handleWebSocket(webSocketContext, ct).ConfigureAwait(false);
+            isAborted = webSocketContext.WebSocket.State is WebSocketState.Aborted;
         }
         catch (OperationCanceledException)
         {
@@ -91,8 +93,13 @@ internal class WebServer : IWebServer
         }
         finally
         {
-            listenerContext.Response.StatusCode = statusCode;
-            listenerContext.Response.Close();
+            if (isAborted)
+                listenerContext.Response.Abort();
+            else
+            {
+                listenerContext.Response.StatusCode = statusCode;
+                listenerContext.Response.Close();
+            }
         }
     }
 

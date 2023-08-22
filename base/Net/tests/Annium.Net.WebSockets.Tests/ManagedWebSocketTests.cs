@@ -113,11 +113,11 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServerBase((ctx, _) =>
+        await using var _ = RunServerBase(async (ctx, _) =>
         {
             ctx.WebSocket.Abort();
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         });
         await ConnectAndStartListenAsync();
 
@@ -242,11 +242,11 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServerBase((ctx, _) =>
+        await using var _ = RunServerBase(async (ctx, _) =>
         {
             ctx.WebSocket.Abort();
 
-            return Task.CompletedTask;
+            await Task.CompletedTask;
         });
         await ConnectAsync();
         var listenTask = ListenAsync();
