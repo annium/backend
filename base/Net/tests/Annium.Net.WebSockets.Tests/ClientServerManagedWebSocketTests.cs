@@ -11,9 +11,9 @@ using Xunit;
 
 namespace Annium.Net.WebSockets.Tests;
 
-public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
+public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 {
-    private IClientWebSocket _clientSocket = default!;
+    private IClientManagedWebSocket _clientSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
 
@@ -323,7 +323,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     public async Task InitializeAsync()
     {
         this.Trace("start");
-        _clientSocket = new ClientWebSocket();
+        _clientSocket = new ClientManagedWebSocket();
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
@@ -336,9 +336,9 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         await Task.CompletedTask;
     }
 
-    private IAsyncDisposable RunServer(Func<IServerWebSocket, Task> handleWebSocket)
+    private IAsyncDisposable RunServer(Func<IServerManagedWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase((ctx, ct) => handleWebSocket(new ServerWebSocket(ctx.WebSocket, ct)));
+        return RunServerBase((ctx, ct) => handleWebSocket(new ServerManagedWebSocket(ctx.WebSocket, ct)));
     }
 
     private Task ConnectAsync(CancellationToken ct = default)

@@ -7,7 +7,7 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class ServerWebSocket : IServerWebSocket
+public class ServerManagedWebSocket : IServerManagedWebSocket
 {
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
@@ -16,7 +16,7 @@ public class ServerWebSocket : IServerWebSocket
     private readonly ManagedWebSocket _managedSocket;
     private bool _isConnected = true;
 
-    public ServerWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
+    public ServerManagedWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
     {
         _nativeSocket = nativeSocket;
         _managedSocket = new ManagedWebSocket(nativeSocket);

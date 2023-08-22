@@ -8,7 +8,7 @@ using NativeWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class ClientWebSocket : IClientWebSocket
+public class ClientManagedWebSocket : IClientManagedWebSocket
 {
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
