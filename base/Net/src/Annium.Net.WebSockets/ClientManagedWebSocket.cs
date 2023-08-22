@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
@@ -13,7 +12,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
 
-    public Task<WebSocketCloseStatus> IsClosed
+    public Task<WebSocketCloseResult> IsClosed
     {
         get
         {
@@ -27,7 +26,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
     private NativeWebSocket? _nativeSocket;
     private ManagedWebSocket? _managedSocket;
     private CancellationTokenSource? _listenCts;
-    private Task<WebSocketCloseStatus>? _listenTask;
+    private Task<WebSocketCloseResult>? _listenTask;
 
     public async Task ConnectAsync(Uri uri, CancellationToken ct = default)
     {

@@ -4,6 +4,6 @@ namespace Annium.Net.WebSockets;
 
 public interface IServerManagedWebSocket : ISendingReceivingWebSocket
 {
-    Task<WebSocketCloseStatus> IsClosed { get; }
+    Task<WebSocketCloseResult> IsClosed { get; }
     Task DisconnectAsync();
 }

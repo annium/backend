@@ -1,5 +1,4 @@
 using System;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
@@ -11,7 +10,7 @@ public class ServerManagedWebSocket : IServerManagedWebSocket
 {
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
-    public Task<WebSocketCloseStatus> IsClosed { get; }
+    public Task<WebSocketCloseResult> IsClosed { get; }
     private readonly NativeWebSocket _nativeSocket;
     private readonly ManagedWebSocket _managedSocket;
     private bool _isConnected = true;

@@ -25,7 +25,7 @@ internal class Debug
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token), CancellationToken.None);
 
         // client
-        var socket = new System.Net.WebSockets.ClientWebSocket();
+        var socket = new ClientWebSocket();
         var client = new ManagedWebSocket(socket);
         var messageCount = 1_000_000L;
         var counter = messageCount;

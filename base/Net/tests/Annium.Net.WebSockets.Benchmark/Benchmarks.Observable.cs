@@ -12,8 +12,8 @@ public partial class Benchmarks
     private CancellationTokenSource _observableCts = default!;
     private ManualResetEventSlim _observableGate = default!;
     private long _observableEventCount;
-    private System.Net.WebSockets.ClientWebSocket _observableSocket = default!;
-    private Task<WebSocketCloseStatus> _observableListenTask = default!;
+    private ClientWebSocket _observableSocket = default!;
+    private Task<WebSocketCloseResult> _observableListenTask = default!;
 
     [IterationSetup(Target = nameof(Observable))]
     public void IterationSetup_Observable()
@@ -22,7 +22,7 @@ public partial class Benchmarks
         _observableGate = new ManualResetEventSlim();
         _observableEventCount = Constants.TotalMessages;
 
-        _observableSocket = new System.Net.WebSockets.ClientWebSocket();
+        _observableSocket = new ClientWebSocket();
         var client = new ManagedWebSocket(_observableSocket);
         client.ObserveText().Subscribe(HandleMessage_Observable);
         _observableSocket.ConnectAsync(new Uri($"ws://127.0.0.1:{Constants.Port}/"), CancellationToken.None).GetAwaiter().GetResult();
