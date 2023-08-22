@@ -56,7 +56,7 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
             )
             {
                 this.Trace("Disconnect");
-                await Socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
+                await Socket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
             }
             else
                 this.Trace("Already disconnected");

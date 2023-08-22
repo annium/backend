@@ -194,7 +194,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await _clientSocket.IsClosed;
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        result.Is(WebSocketCloseStatus.ClosedLocal);
         this.Trace("done");
     }
 
@@ -211,7 +211,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await _clientSocket.IsClosed;
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        result.Is(WebSocketCloseStatus.ClosedLocal);
         this.Trace("done");
     }
 
@@ -227,7 +227,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await _clientSocket.IsClosed;
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -279,7 +279,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         await Expect.To(() => _texts.IsEqual(messages), 1000);
         var result = await _clientSocket.IsClosed;
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -316,7 +316,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         await Expect.To(() => _texts.IsEqual(texts), 1000);
         await Expect.To(() => _binaries.IsEqual(binaries), 1000);
         var result = await _clientSocket.IsClosed;
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 

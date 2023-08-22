@@ -13,7 +13,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
 
-    public Task<WebSocketReceiveStatus> IsClosed
+    public Task<WebSocketCloseStatus> IsClosed
     {
         get
         {
@@ -27,7 +27,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
     private NativeWebSocket? _nativeSocket;
     private ManagedWebSocket? _managedSocket;
     private CancellationTokenSource? _listenCts;
-    private Task<WebSocketReceiveStatus>? _listenTask;
+    private Task<WebSocketCloseStatus>? _listenTask;
 
     public async Task ConnectAsync(Uri uri, CancellationToken ct = default)
     {
@@ -57,7 +57,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
         this.Trace("close output");
-        await _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        await _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
 
         this.Trace("cancel listen cts");
         _listenCts.Cancel();

@@ -13,7 +13,7 @@ public partial class Benchmarks
     private ManualResetEventSlim _observableGate = default!;
     private long _observableEventCount;
     private System.Net.WebSockets.ClientWebSocket _observableSocket = default!;
-    private Task<WebSocketReceiveStatus> _observableListenTask = default!;
+    private Task<WebSocketCloseStatus> _observableListenTask = default!;
 
     [IterationSetup(Target = nameof(Observable))]
     public void IterationSetup_Observable()
@@ -32,7 +32,7 @@ public partial class Benchmarks
     [IterationCleanup(Target = nameof(Observable))]
     public void IterationCleanup_Observable()
     {
-        _observableSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        _observableSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         _observableCts.Cancel();
         _observableListenTask.Wait();
     }

@@ -61,7 +61,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         await ConnectAndStartListenAsync();
 
         // act
-        _clientSocket.CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None).GetAwaiter();
+        _clientSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, CancellationToken.None).GetAwaiter();
         var result = await SendTextAsync(message);
 
         // assert
@@ -75,7 +75,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, default));
+        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAndStartListenAsync();
 
         // delay to let server close connection
@@ -182,7 +182,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await ListenAsync(new CancellationToken(true));
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        result.Is(WebSocketCloseStatus.ClosedLocal);
         this.Trace("done");
     }
 
@@ -193,13 +193,13 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
-        await _clientSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, default);
+        await _clientSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, default);
 
         // act
         var result = await ListenAsync();
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        result.Is(WebSocketCloseStatus.ClosedLocal);
         this.Trace("done");
     }
 
@@ -208,14 +208,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(WebSocketCloseStatus.Empty, string.Empty, default));
+        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAsync();
 
         // act
         var result = await ListenAsync();
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -233,7 +233,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await listenTask;
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedLocal);
+        result.Is(WebSocketCloseStatus.ClosedLocal);
         this.Trace("done");
     }
 
@@ -256,7 +256,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await listenTask;
 
         // assert
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -310,7 +310,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         await Expect.To(() => _texts.IsEqual(messages), 1000);
         var result = await listenTask;
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -348,7 +348,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         await Expect.To(() => _texts.IsEqual(texts), 1000);
         await Expect.To(() => _binaries.IsEqual(binaries), 1000);
         var result = await listenTask;
-        result.Is(WebSocketReceiveStatus.ClosedRemote);
+        result.Is(WebSocketCloseStatus.ClosedRemote);
         this.Trace("done");
     }
 
@@ -385,7 +385,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         return _clientSocket.ConnectAsync(ServerUri, ct);
     }
 
-    private Task<WebSocketReceiveStatus> ListenAsync(CancellationToken ct = default)
+    private Task<WebSocketCloseStatus> ListenAsync(CancellationToken ct = default)
     {
         return _managedSocket.ListenAsync(ct);
     }

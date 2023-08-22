@@ -43,7 +43,7 @@ internal class Debug
         await Wait.UntilAsync(() => counter == 0);
 
         Trace("client: disconnect");
-        await socket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        await socket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
 
         cts.Cancel();
         await Task.WhenAll(clientListenTask, serverRunTask);

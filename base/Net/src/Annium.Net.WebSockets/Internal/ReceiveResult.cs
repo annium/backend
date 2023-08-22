@@ -7,13 +7,13 @@ internal readonly struct ReceiveResult
     public readonly WebSocketMessageType MessageType;
     public readonly int Count;
     public readonly bool EndOfMessage;
-    public readonly WebSocketReceiveStatus Status;
+    public readonly WebSocketCloseStatus Status;
 
     public ReceiveResult(
         WebSocketMessageType messageType,
         int count,
         bool endOfMessage,
-        WebSocketReceiveStatus status
+        WebSocketCloseStatus status
     )
     {
         MessageType = messageType;

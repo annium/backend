@@ -25,6 +25,6 @@ internal static class WorkloadServer
         for (var i = 0; i < Constants.TotalMessages; i++)
             await clientSocket.SendTextAsync(workloadMessageBytes, CancellationToken.None).ConfigureAwait(false);
 
-        await ctx.WebSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
+        await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, null, CancellationToken.None);
     }
 }

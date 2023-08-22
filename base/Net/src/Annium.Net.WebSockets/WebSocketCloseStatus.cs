@@ -1,6 +1,6 @@
 namespace Annium.Net.WebSockets;
 
-public enum WebSocketReceiveStatus
+public enum WebSocketCloseStatus
 {
     ClosedLocal,
     ClosedRemote,

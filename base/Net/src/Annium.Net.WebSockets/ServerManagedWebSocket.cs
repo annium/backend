@@ -11,7 +11,7 @@ public class ServerManagedWebSocket : IServerManagedWebSocket
 {
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
-    public Task<WebSocketReceiveStatus> IsClosed { get; }
+    public Task<WebSocketCloseStatus> IsClosed { get; }
     private readonly NativeWebSocket _nativeSocket;
     private readonly ManagedWebSocket _managedSocket;
     private bool _isConnected = true;
@@ -39,7 +39,7 @@ public class ServerManagedWebSocket : IServerManagedWebSocket
 
         this.Trace("close output");
 
-        return _nativeSocket.CloseOutputAsync(WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        return _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
