@@ -1,9 +1,9 @@
 using System;
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets.Benchmark.Internal;
 using BenchmarkDotNet.Attributes;
+using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets.Benchmark;
 
@@ -13,7 +13,7 @@ public partial class Benchmarks
     private CancellationTokenSource _plainCts = default!;
     private ManualResetEventSlim _plainGate = default!;
     private long _plainEventCount;
-    private ClientWebSocket _plainSocket = default!;
+    private NativeClientWebSocket _plainSocket = default!;
     private Task<WebSocketCloseResult> _plainListenTask = default!;
 
     [IterationSetup(Target = nameof(Plain))]
@@ -23,7 +23,7 @@ public partial class Benchmarks
         _plainGate = new ManualResetEventSlim();
         _plainEventCount = Constants.TotalMessages;
 
-        _plainSocket = new ClientWebSocket();
+        _plainSocket = new NativeClientWebSocket();
         var client = new ManagedWebSocket(_plainSocket);
         client.TextReceived += HandleMessage_Plain;
         _plainSocket.ConnectAsync(new Uri($"ws://127.0.0.1:{Constants.Port}/"), CancellationToken.None).GetAwaiter().GetResult();

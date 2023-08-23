@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,12 +8,13 @@ using Annium.Debug;
 using Annium.Testing;
 using Annium.Testing.Assertions;
 using Xunit;
+using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets.Tests;
 
 public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 {
-    private ClientWebSocket _clientSocket = default!;
+    private NativeClientWebSocket _clientSocket = default!;
     private ManagedWebSocket _managedSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
@@ -362,7 +362,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task InitializeAsync()
     {
         this.Trace("start");
-        _clientSocket = new ClientWebSocket();
+        _clientSocket = new NativeClientWebSocket();
         _managedSocket = new ManagedWebSocket(_clientSocket);
         _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());

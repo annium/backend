@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Annium.Extensions.Execution;
 using Annium.Net.Servers;
 using Annium.Threading.Tasks;
+using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets.Benchmark.Internal;
 
@@ -25,7 +26,7 @@ internal class Debug
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token), CancellationToken.None);
 
         // client
-        var socket = new ClientWebSocket();
+        var socket = new NativeClientWebSocket();
         var client = new ManagedWebSocket(socket);
         var messageCount = 1_000_000L;
         var counter = messageCount;
