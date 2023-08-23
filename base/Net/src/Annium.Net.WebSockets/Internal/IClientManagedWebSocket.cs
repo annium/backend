@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Internal;
 
 public interface IClientManagedWebSocket : ISendingReceivingWebSocket
 {

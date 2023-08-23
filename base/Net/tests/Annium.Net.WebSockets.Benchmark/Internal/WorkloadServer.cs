@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.Servers;
+using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Net.WebSockets.Benchmark.Internal;
 

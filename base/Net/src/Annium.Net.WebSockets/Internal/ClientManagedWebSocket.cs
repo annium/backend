@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Annium.Debug;
 using NativeWebSocket = System.Net.WebSockets.ClientWebSocket;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Internal;
 
 public class ClientManagedWebSocket : IClientManagedWebSocket
 {

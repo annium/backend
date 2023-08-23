@@ -5,6 +5,7 @@ using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Extensions.Execution;
 using Annium.Net.Servers;
+using Annium.Net.WebSockets.Internal;
 using Annium.Threading.Tasks;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 

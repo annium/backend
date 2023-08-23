@@ -4,9 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Net.WebSockets.Internal;
 
-namespace Annium.Net.WebSockets;
+namespace Annium.Net.WebSockets.Internal;
 
 public class ManagedWebSocket : ISendingReceivingWebSocket
 {

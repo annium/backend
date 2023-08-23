@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets.Benchmark.Internal;
+using Annium.Net.WebSockets.Internal;
 using BenchmarkDotNet.Attributes;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
