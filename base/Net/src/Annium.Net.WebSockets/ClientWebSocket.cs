@@ -18,8 +18,9 @@ public class ClientWebSocket : IClientWebSocket
     private readonly IConnectionMonitor _connectionMonitor;
     private Uri? _uri;
     private Status _status = Status.Disconnected;
+    private readonly int _reconnectDelay;
 
-    public ClientWebSocket(IConnectionMonitor monitor)
+    public ClientWebSocket(ClientWebSocketOptions options)
     {
         this.Trace("start monitor");
         _socket = new ClientManagedWebSocket();
@@ -27,15 +28,16 @@ public class ClientWebSocket : IClientWebSocket
         _socket.BinaryReceived += BinaryReceived;
 
         this.Trace("init monitor");
-        _connectionMonitor = monitor;
+        _connectionMonitor = options.ConnectionMonitor;
         _connectionMonitor.Init(this);
+        _reconnectDelay = options.ReconnectDelay;
 
         this.Trace("subscribe to OnConnectionLost");
         _connectionMonitor.OnConnectionLost += HandleConnectionLost;
     }
 
     public ClientWebSocket()
-        : this(ConnectionMonitor.None)
+        : this(ClientWebSocketOptions.Default)
     {
     }
 
@@ -100,10 +102,13 @@ public class ClientWebSocket : IClientWebSocket
         this.Trace("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace("trigger connect");
-        ConnectPrivate(uri);
+        Task.Delay(_reconnectDelay).ContinueWith(_ =>
+        {
+            this.Trace("trigger connect");
+            ConnectPrivate(uri);
 
-        this.Trace("done");
+            this.Trace("done");
+        });
     }
 
     private void ConnectPrivate(Uri uri)

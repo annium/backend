@@ -340,7 +340,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     {
         this.Trace("start");
 
-        _clientSocket = new ClientWebSocket();
+        _clientSocket = new ClientWebSocket(ClientWebSocketOptions.Default with { ReconnectDelay = 10 });
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 

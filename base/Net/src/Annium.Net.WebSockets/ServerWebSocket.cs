@@ -18,7 +18,7 @@ public class ServerWebSocket : IServerWebSocket
     private readonly IConnectionMonitor _connectionMonitor;
     private Status _status = Status.Connected;
 
-    public ServerWebSocket(NativeWebSocket nativeSocket, IConnectionMonitor monitor, CancellationToken ct = default)
+    public ServerWebSocket(NativeWebSocket nativeSocket, ServerWebSocketOptions options, CancellationToken ct = default)
     {
         this.Trace("start");
         _socket = new ServerManagedWebSocket(nativeSocket, ct);
@@ -29,7 +29,7 @@ public class ServerWebSocket : IServerWebSocket
         _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
 
         this.Trace("init monitor");
-        _connectionMonitor = monitor;
+        _connectionMonitor = options.ConnectionMonitor;
         _connectionMonitor.Init(this);
 
         this.Trace("start monitor");
@@ -40,7 +40,7 @@ public class ServerWebSocket : IServerWebSocket
     }
 
     public ServerWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
-        : this(nativeSocket, ConnectionMonitor.None, ct)
+        : this(nativeSocket, ServerWebSocketOptions.Default, ct)
     {
     }
 
