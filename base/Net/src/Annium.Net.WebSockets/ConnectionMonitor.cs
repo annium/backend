@@ -1,4 +1,5 @@
 using System;
+using Annium.Debug;
 
 namespace Annium.Net.WebSockets;
 
@@ -14,13 +15,16 @@ public class ConnectionMonitor : IConnectionMonitor
 
     public void Init(ISendingReceivingWebSocket socket)
     {
+        this.Trace($"Init with {socket.GetFullId()}");
     }
 
     public void Start()
     {
+        this.Trace("start");
     }
 
     public void Stop()
     {
+        this.Trace("stop");
     }
 }
