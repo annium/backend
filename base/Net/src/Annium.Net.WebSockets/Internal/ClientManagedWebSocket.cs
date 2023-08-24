@@ -17,7 +17,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
         get
         {
             if (_listenCts is null || _listenTask is null)
-                throw new InvalidOperationException("Socket was not connected");
+                throw new InvalidOperationException("Socket is not connected");
 
             return _listenTask;
         }

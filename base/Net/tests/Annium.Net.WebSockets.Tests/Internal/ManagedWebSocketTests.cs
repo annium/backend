@@ -11,7 +11,7 @@ using Annium.Testing.Assertions;
 using Xunit;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
-namespace Annium.Net.WebSockets.Tests;
+namespace Annium.Net.WebSockets.Tests.Internal;
 
 public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 {

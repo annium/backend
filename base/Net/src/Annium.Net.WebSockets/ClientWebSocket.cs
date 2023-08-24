@@ -23,9 +23,8 @@ public class ClientWebSocket : IClientWebSocket
     {
         this.Trace("start monitor");
         _socket = new ClientManagedWebSocket();
-
-        this.Trace("subscribe to IsClosed");
-        _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
+        _socket.TextReceived += TextReceived;
+        _socket.BinaryReceived += BinaryReceived;
 
         this.Trace("init monitor");
         _connectionMonitor = monitor;
@@ -89,6 +88,34 @@ public class ClientWebSocket : IClientWebSocket
         return _socket.SendBinaryAsync(data, ct);
     }
 
+    private void ReconnectPrivate(Uri uri, WebSocketCloseStatus closeStatus)
+    {
+        this.Trace("start");
+
+        SetStatus(Status.Connecting);
+
+        this.Trace("fire disconnected");
+        OnDisconnected(closeStatus);
+
+        this.Trace("stop monitor");
+        _connectionMonitor.Stop();
+
+        this.Trace("trigger connect");
+        ConnectPrivate(uri);
+
+        this.Trace("done");
+    }
+
+    private void ConnectPrivate(Uri uri)
+    {
+        this.Trace("start");
+
+        _uri = uri;
+        _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleOpened);
+
+        this.Trace("done");
+    }
+
     private void HandleOpened(Task task)
     {
         this.Trace("start");
@@ -101,7 +128,13 @@ public class ClientWebSocket : IClientWebSocket
 
         SetStatus(Status.Connected);
 
-        this.Trace("fire disconnected");
+        this.Trace("subscribe to IsClosed");
+        _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
+
+        this.Trace("start monitor");
+        _connectionMonitor.Start();
+
+        this.Trace("fire connected");
         OnConnected();
     }
 
@@ -115,13 +148,7 @@ public class ClientWebSocket : IClientWebSocket
             return;
         }
 
-        SetStatus(Status.Connecting);
-
-        this.Trace("fire disconnected");
-        OnDisconnected(WebSocketCloseStatus.ClosedRemote);
-
-        this.Trace("trigger connect");
-        ConnectPrivate(_uri!);
+        ReconnectPrivate(_uri!, WebSocketCloseStatus.ClosedRemote);
     }
 
     private void HandleClosed(Task<WebSocketCloseResult> task)
@@ -134,27 +161,7 @@ public class ClientWebSocket : IClientWebSocket
             return;
         }
 
-        SetStatus(Status.Connecting);
-
-        this.Trace("fire disconnected");
-        var result = task.Result;
-        OnDisconnected(result.Status);
-
-        this.Trace("trigger connect");
-        ConnectPrivate(_uri!);
-    }
-
-    private void ConnectPrivate(Uri uri)
-    {
-        this.Trace("start");
-
-        _uri = uri;
-        _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleOpened);
-
-        this.Trace("start monitor");
-        _connectionMonitor.Start();
-
-        this.Trace("done");
+        ReconnectPrivate(_uri!, task.Result.Status);
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

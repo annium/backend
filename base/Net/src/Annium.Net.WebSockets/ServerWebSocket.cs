@@ -22,6 +22,8 @@ public class ServerWebSocket : IServerWebSocket
     {
         this.Trace("start");
         _socket = new ServerManagedWebSocket(nativeSocket, ct);
+        _socket.TextReceived += TextReceived;
+        _socket.BinaryReceived += BinaryReceived;
 
         this.Trace("subscribe to IsClosed");
         _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);

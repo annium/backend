@@ -10,7 +10,7 @@ using Annium.Testing;
 using Annium.Testing.Assertions;
 using Xunit;
 
-namespace Annium.Net.WebSockets.Tests;
+namespace Annium.Net.WebSockets.Tests.Internal;
 
 public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 {
