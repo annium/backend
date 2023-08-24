@@ -13,12 +13,22 @@ public class ServerWebSocket : IServerWebSocket
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     private readonly IServerManagedWebSocket _managedSocket;
+    private readonly IConnectionMonitor _connectionMonitor;
     private bool _isConnected = true;
 
-    public ServerWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
+    public ServerWebSocket(NativeWebSocket nativeSocket, IConnectionMonitor monitor, CancellationToken ct = default)
     {
         _managedSocket = new ServerManagedWebSocket(nativeSocket, ct);
-        _managedSocket.IsClosed.ContinueWith(HandleClose);
+        _managedSocket.IsClosed.ContinueWith(HandleClose, CancellationToken.None);
+        _connectionMonitor = monitor;
+        _connectionMonitor.Init(this);
+        _connectionMonitor.Start();
+        _connectionMonitor.OnConnectionLost += Disconnect;
+    }
+
+    public ServerWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
+        : this(nativeSocket, ConnectionMonitor.None, ct)
+    {
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
@@ -37,6 +47,7 @@ public class ServerWebSocket : IServerWebSocket
             return;
 
         _isConnected = false;
+        _connectionMonitor.Stop();
         _managedSocket.DisconnectAsync();
     }
 
