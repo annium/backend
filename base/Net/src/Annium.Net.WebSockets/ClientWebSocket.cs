@@ -118,6 +118,12 @@ public class ClientWebSocket : IClientWebSocket
 
     private void HandleOpened(Task task)
     {
+        if (!task.IsCompletedSuccessfully)
+        {
+            this.Trace($"failure: {task.Exception}");
+            return;
+        }
+
         this.Trace("start");
 
         if (_status is Status.Connected or Status.Disconnected)
@@ -153,6 +159,12 @@ public class ClientWebSocket : IClientWebSocket
 
     private void HandleClosed(Task<WebSocketCloseResult> task)
     {
+        if (!task.IsCompletedSuccessfully)
+        {
+            this.Trace($"failure: {task.Exception}");
+            return;
+        }
+
         this.Trace("start");
 
         if (_status is Status.Disconnected)

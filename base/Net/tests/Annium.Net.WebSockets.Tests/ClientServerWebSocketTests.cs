@@ -375,7 +375,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var tcs = new TaskCompletionSource();
         _clientSocket.OnConnected += tcs.SetResult;
 
-        return tcs.Task;
+        return tcs.Task.WaitAsync(TimeSpan.FromSeconds(1));
     }
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
