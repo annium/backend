@@ -94,7 +94,7 @@ public class ClientWebSocket : IClientWebSocket
 
         SetStatus(Status.Connecting);
 
-        this.Trace("fire disconnected");
+        this.Trace($"fire disconnected with {closeStatus}");
         OnDisconnected(closeStatus);
 
         this.Trace("stop monitor");
@@ -111,6 +111,7 @@ public class ClientWebSocket : IClientWebSocket
         this.Trace("start");
 
         _uri = uri;
+        this.Trace($"connect to {uri}");
         _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleOpened);
 
         this.Trace("done");
