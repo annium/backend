@@ -12,14 +12,14 @@ public class ServerWebSocket : IServerWebSocket
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
-    private readonly IServerManagedWebSocket _managedSocket;
+    private readonly IServerManagedWebSocket _socket;
     private readonly IConnectionMonitor _connectionMonitor;
     private bool _isConnected = true;
 
     public ServerWebSocket(NativeWebSocket nativeSocket, IConnectionMonitor monitor, CancellationToken ct = default)
     {
-        _managedSocket = new ServerManagedWebSocket(nativeSocket, ct);
-        _managedSocket.IsClosed.ContinueWith(HandleClose, CancellationToken.None);
+        _socket = new ServerManagedWebSocket(nativeSocket, ct);
+        _socket.IsClosed.ContinueWith(HandleClose, CancellationToken.None);
         _connectionMonitor = monitor;
         _connectionMonitor.Init(this);
         _connectionMonitor.Start();
@@ -33,12 +33,12 @@ public class ServerWebSocket : IServerWebSocket
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
-        return _managedSocket.SendTextAsync(text, ct);
+        return _socket.SendTextAsync(text, ct);
     }
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        return _managedSocket.SendBinaryAsync(data, ct);
+        return _socket.SendBinaryAsync(data, ct);
     }
 
     public void Disconnect()
@@ -48,7 +48,7 @@ public class ServerWebSocket : IServerWebSocket
 
         _isConnected = false;
         _connectionMonitor.Stop();
-        _managedSocket.DisconnectAsync();
+        _socket.DisconnectAsync();
     }
 
     private void HandleClose(Task<WebSocketCloseResult> task)
