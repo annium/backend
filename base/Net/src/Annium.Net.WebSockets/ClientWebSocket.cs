@@ -117,24 +117,26 @@ public class ClientWebSocket : IClientWebSocket
 
         _uri = uri;
         this.Trace($"connect to {uri}");
-        _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleOpened);
+        _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleOpened, uri);
 
         this.Trace("done");
     }
 
-    private void HandleOpened(Task task)
+    private void HandleOpened(Task task, object? state)
     {
-        if (!task.IsCompletedSuccessfully)
-        {
-            this.Trace($"failure: {task.Exception}");
-            return;
-        }
-
         this.Trace("start");
 
         if (_status is Status.Connected or Status.Disconnected)
         {
             this.Trace($"skip - already {_status}");
+            return;
+        }
+
+        if (!task.IsCompletedSuccessfully)
+        {
+            var uri = (Uri)state!;
+            this.Trace($"failure: {task.Exception}");
+            ReconnectPrivate(uri, WebSocketCloseStatus.Error);
             return;
         }
 
