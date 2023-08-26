@@ -49,6 +49,8 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
     {
         try
         {
+            this.Trace($"{messageType} ({data.Length}) - start");
+
             if (ct.IsCancellationRequested)
             {
                 this.Trace($"{messageType} ({data.Length}) - canceled with cancellation token");
