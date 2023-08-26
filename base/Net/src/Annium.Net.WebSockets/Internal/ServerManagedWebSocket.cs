@@ -1,4 +1,5 @@
 using System;
+using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
@@ -6,104 +7,59 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets.Internal;
 
-public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
+public class ServerManagedWebSocket : IServerManagedWebSocket
 {
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public Task<WebSocketCloseResult> IsClosed { get; }
-    private readonly ReaderWriterLockSlim _locker = new();
     private readonly NativeWebSocket _nativeSocket;
     private readonly ManagedWebSocket _managedSocket;
-    private bool _isDisposed;
-    private bool _isConnected = true;
 
     public ServerManagedWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
     {
         _nativeSocket = nativeSocket;
         _managedSocket = new ManagedWebSocket(nativeSocket);
-        this.Trace($"paired with {_managedSocket.GetFullId()}");
+        this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
 
         _managedSocket.TextReceived += OnTextReceived;
         _managedSocket.BinaryReceived += OnBinaryReceived;
 
         this.Trace("start listen");
-        IsClosed = _managedSocket.ListenAsync(ct);
+        IsClosed = _managedSocket.ListenAsync(ct).ContinueWith(HandleClosed);
     }
 
     public async Task DisconnectAsync()
     {
+        this.Trace("start");
+        _managedSocket.TextReceived -= OnTextReceived;
+        _managedSocket.BinaryReceived -= OnBinaryReceived;
+
         try
         {
-            _locker.EnterWriteLock();
-
-            EnsureConnectedAndNotDisposed();
-
-            await DisconnectPrivateAsync();
+            this.Trace("close output");
+            if (_nativeSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
+                await _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         }
-        finally
+        catch (Exception e)
         {
-            _locker.ExitWriteLock();
+            this.Trace($"failed: {e}");
         }
+
+        this.Trace("done");
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
-        try
-        {
-            _locker.EnterReadLock();
+        this.Trace("send text");
 
-            EnsureConnectedAndNotDisposed();
-
-            this.Trace("send text");
-
-            return _managedSocket.SendTextAsync(text, ct);
-        }
-        finally
-        {
-            _locker.ExitReadLock();
-        }
+        return _managedSocket.SendTextAsync(text, ct);
     }
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        try
-        {
-            _locker.EnterReadLock();
+        this.Trace("send binary");
 
-            EnsureConnectedAndNotDisposed();
-
-            this.Trace("send binary");
-
-            return _managedSocket.SendBinaryAsync(data, ct);
-        }
-        finally
-        {
-            _locker.ExitReadLock();
-        }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        try
-        {
-            _locker.EnterWriteLock();
-
-            if (_isDisposed)
-            {
-                this.Trace("already disposed");
-
-                return;
-            }
-
-            _isDisposed = true;
-
-            if (_isConnected)
-                await DisconnectPrivateAsync();
-        }
-        finally
-        {
-            _locker.ExitWriteLock();
-        }
+        return _managedSocket.SendBinaryAsync(data, ct);
     }
 
     private void OnTextReceived(ReadOnlyMemory<byte> data)
@@ -118,25 +74,15 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
         BinaryReceived(data);
     }
 
-    private Task DisconnectPrivateAsync()
+    private WebSocketCloseResult HandleClosed(Task<WebSocketCloseResult> task)
     {
-        this.Trace("start");
-        _isConnected = false;
+        this.Trace("start, unsubscribe from managed socket");
 
-        _managedSocket.TextReceived -= TextReceived;
-        _managedSocket.BinaryReceived -= BinaryReceived;
+        _managedSocket.TextReceived -= OnTextReceived;
+        _managedSocket.BinaryReceived -= OnBinaryReceived;
 
-        this.Trace("close output");
+        this.Trace("done");
 
-        return _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
-    }
-
-    private void EnsureConnectedAndNotDisposed()
-    {
-        if (!_isConnected)
-            throw new InvalidOperationException("Socket is not connected");
-
-        if (_isDisposed)
-            throw new ObjectDisposedException("Socket is already disposed");
+        return task.Result;
     }
 }

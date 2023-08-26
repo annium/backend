@@ -329,40 +329,67 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task InitializeAsync()
     {
         this.Trace("start");
+
         _clientSocket = new ClientManagedWebSocket();
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
         await Task.CompletedTask;
+
         this.Trace("done");
     }
 
     public async Task DisposeAsync()
     {
-        await Task.CompletedTask;
+        this.Trace("start");
+
+        await _clientSocket.DisconnectAsync();
+
+        this.Trace("done");
     }
 
     private IAsyncDisposable RunServer(Func<IServerManagedWebSocket, Task> handleWebSocket)
     {
         return RunServerBase(async (ctx, ct) =>
         {
-            await using var socket = new ServerManagedWebSocket(ctx.WebSocket, ct);
+            this.Trace("start");
+
+            var socket = new ServerManagedWebSocket(ctx.WebSocket, ct);
             await handleWebSocket(socket);
+            await socket.DisconnectAsync();
+
+            this.Trace("done");
         });
     }
 
-    private Task ConnectAsync(CancellationToken ct = default)
+    private async Task ConnectAsync(CancellationToken ct = default)
     {
-        return _clientSocket.ConnectAsync(ServerUri, ct);
+        this.Trace("start");
+
+        await _clientSocket.ConnectAsync(ServerUri, ct);
+
+        this.Trace("done");
     }
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
-        return await _clientSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+        this.Trace("start");
+
+        var result = await _clientSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+
+        this.Trace("done");
+
+        return result;
     }
 
     private async Task<WebSocketSendStatus> SendBinaryAsync(byte[] data, CancellationToken ct = default)
     {
-        return await _clientSocket.SendBinaryAsync(data, ct);
+        this.Trace("start");
+
+        var result = await _clientSocket.SendBinaryAsync(data, ct);
+
+        this.Trace("done");
+
+        return result;
     }
 }
