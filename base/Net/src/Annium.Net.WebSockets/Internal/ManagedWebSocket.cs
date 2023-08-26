@@ -33,6 +33,8 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
     {
         using var buffer = new DynamicBuffer<byte>(BufferSize);
 
+        this.Trace("start");
+
         while (true)
         {
             var (isClosed,result) = await ReceiveAsync(buffer, ct);

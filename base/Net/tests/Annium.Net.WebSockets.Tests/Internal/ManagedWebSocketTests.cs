@@ -363,12 +363,16 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task InitializeAsync()
     {
         this.Trace("start");
+
         _clientSocket = new NativeClientWebSocket();
         _managedSocket = new ManagedWebSocket(_clientSocket);
+        this.Trace($"created pair of {_clientSocket.GetFullId()} and {_managedSocket.GetFullId()}");
+
         _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
         await Task.CompletedTask;
+
         this.Trace("done");
     }
 
@@ -379,32 +383,63 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<ManagedWebSocket, CancellationToken, Task> handleWebSocket)
     {
-        return RunServerBase((ctx, ct) => handleWebSocket(new ManagedWebSocket(ctx.WebSocket), ct));
+        return RunServerBase(async (ctx, ct) =>
+        {
+            var socket = new ManagedWebSocket(ctx.WebSocket);
+            this.Trace($"handle {socket.GetFullId()}");
+            await handleWebSocket(socket, ct);
+        });
     }
 
     private async Task ConnectAndStartListenAsync(CancellationToken ct = default)
     {
+        this.Trace("start");
+
         await ConnectAsync(ct);
         ListenAsync(ct).GetAwaiter();
+
+        this.Trace("done");
     }
 
-    private Task ConnectAsync(CancellationToken ct = default)
+    private async Task ConnectAsync(CancellationToken ct = default)
     {
-        return _clientSocket.ConnectAsync(ServerUri, ct);
+        this.Trace("start");
+
+        await _clientSocket.ConnectAsync(ServerUri, ct);
+
+        this.Trace("done");
     }
 
-    private Task<WebSocketCloseResult> ListenAsync(CancellationToken ct = default)
+    private async Task<WebSocketCloseResult> ListenAsync(CancellationToken ct = default)
     {
-        return _managedSocket.ListenAsync(ct);
+        this.Trace("start");
+
+        var result = await _managedSocket.ListenAsync(ct);
+
+        this.Trace("done");
+
+        return result;
     }
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
-        return await _managedSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+        this.Trace("start");
+
+        var result = await _managedSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+
+        this.Trace("done");
+
+        return result;
     }
 
     private async Task<WebSocketSendStatus> SendBinaryAsync(byte[] data, CancellationToken ct = default)
     {
-        return await _managedSocket.SendBinaryAsync(data, ct);
+        this.Trace("start");
+
+        var result = await _managedSocket.SendBinaryAsync(data, ct);
+
+        this.Trace("done");
+
+        return result;
     }
 }
