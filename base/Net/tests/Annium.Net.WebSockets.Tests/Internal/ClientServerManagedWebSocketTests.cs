@@ -344,7 +344,11 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<IServerManagedWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase((ctx, ct) => handleWebSocket(new ServerManagedWebSocket(ctx.WebSocket, ct)));
+        return RunServerBase(async (ctx, ct) =>
+        {
+            await using var socket = new ServerManagedWebSocket(ctx.WebSocket, ct);
+            await handleWebSocket(socket);
+        });
     }
 
     private Task ConnectAsync(CancellationToken ct = default)
