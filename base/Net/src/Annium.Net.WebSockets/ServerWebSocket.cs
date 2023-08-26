@@ -14,6 +14,7 @@ public class ServerWebSocket : IServerWebSocket
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
+    private readonly object _locker = new();
     private readonly IServerManagedWebSocket _socket;
     private readonly IConnectionMonitor _connectionMonitor;
     private Status _status = Status.Connected;
@@ -60,13 +61,16 @@ public class ServerWebSocket : IServerWebSocket
     {
         this.Trace("start");
 
-        if (_status is Status.Disconnected)
+        lock (_locker)
         {
-            this.Trace($"skip - already {_status}");
-            return;
-        }
+            if (_status is Status.Disconnected)
+            {
+                this.Trace($"skip - already {_status}");
+                return;
+            }
 
-        SetStatus(Status.Disconnected);
+            SetStatus(Status.Disconnected);
+        }
 
         this.Trace("stop monitor");
         _connectionMonitor.Stop();
@@ -81,13 +85,16 @@ public class ServerWebSocket : IServerWebSocket
     {
         this.Trace("start");
 
-        if (_status is Status.Disconnected)
+        lock (_locker)
         {
-            this.Trace($"skip - already {_status}");
-            return;
-        }
+            if (_status is Status.Disconnected)
+            {
+                this.Trace($"skip - already {_status}");
+                return;
+            }
 
-        SetStatus(Status.Disconnected);
+            SetStatus(Status.Disconnected);
+        }
 
         var result = task.Result;
         if (result.Exception is not null)

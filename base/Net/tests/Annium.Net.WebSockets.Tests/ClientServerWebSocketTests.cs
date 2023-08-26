@@ -344,6 +344,10 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
+        _clientSocket.OnConnected += () => Console.WriteLine("STATE: Connected");
+        _clientSocket.OnDisconnected += x => Console.WriteLine($"STATE: Disconnected: {x}");
+        _clientSocket.OnError += x => Console.WriteLine($"STATE: Error: {x}");
+
         this.Trace("done");
 
         return Task.CompletedTask;

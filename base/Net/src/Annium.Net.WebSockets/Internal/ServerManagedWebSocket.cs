@@ -11,7 +11,8 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public Task<WebSocketCloseResult> IsClosed { get; }
-    private readonly ReaderWriterLockSlim _locker = new();
+    private readonly object _locker = new();
+    private readonly SemaphoreSlim _semaphore = new(1, 1);
     private readonly NativeWebSocket _nativeSocket;
     private readonly ManagedWebSocket _managedSocket;
     private bool _isDisposed;
@@ -32,62 +33,78 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
 
     public async Task DisconnectAsync()
     {
+        EnsureNotDisposed();
+
         try
         {
-            _locker.EnterWriteLock();
+            await _semaphore.WaitAsync();
 
-            EnsureConnectedAndNotDisposed();
+            this.Trace("start");
+
+            EnsureConnected();
 
             await DisconnectPrivateAsync();
         }
         finally
         {
-            _locker.ExitWriteLock();
+            this.Trace("done");
+
+            _semaphore.Release();
         }
     }
 
-    public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
+    public async ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
+        EnsureNotDisposed();
+
         try
         {
-            _locker.EnterReadLock();
+            await _semaphore.WaitAsync(CancellationToken.None);
 
-            EnsureConnectedAndNotDisposed();
+            this.Trace("start");
+
+            EnsureConnected();
 
             this.Trace("send text");
 
-            return _managedSocket.SendTextAsync(text, ct);
+            return await _managedSocket.SendTextAsync(text, ct);
         }
         finally
         {
-            _locker.ExitReadLock();
+            this.Trace("done");
+
+            _semaphore.Release();
         }
     }
 
-    public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
+    public async ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
+        EnsureNotDisposed();
+
         try
         {
-            _locker.EnterReadLock();
+            await _semaphore.WaitAsync(CancellationToken.None);
 
-            EnsureConnectedAndNotDisposed();
+            this.Trace("start");
+
+            EnsureConnected();
 
             this.Trace("send binary");
 
-            return _managedSocket.SendBinaryAsync(data, ct);
+            return await _managedSocket.SendBinaryAsync(data, ct);
         }
         finally
         {
-            _locker.ExitReadLock();
+            this.Trace("done");
+
+            _semaphore.Release();
         }
     }
 
     public async ValueTask DisposeAsync()
     {
-        try
+        lock (_locker)
         {
-            _locker.EnterWriteLock();
-
             if (_isDisposed)
             {
                 this.Trace("already disposed");
@@ -96,13 +113,23 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
             }
 
             _isDisposed = true;
+        }
+
+        try
+        {
+            await _semaphore.WaitAsync();
+
+            this.Trace("start");
 
             if (_isConnected)
                 await DisconnectPrivateAsync();
         }
         finally
         {
-            _locker.ExitWriteLock();
+            this.Trace("done");
+
+            _semaphore.Release();
+            _semaphore.Dispose();
         }
     }
 
@@ -118,9 +145,10 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
         BinaryReceived(data);
     }
 
-    private Task DisconnectPrivateAsync()
+    private async Task DisconnectPrivateAsync()
     {
         this.Trace("start");
+
         _isConnected = false;
 
         _managedSocket.TextReceived -= TextReceived;
@@ -128,15 +156,23 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, IAsyncDisposable
 
         this.Trace("close output");
 
-        return _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+        await _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
+
+        this.Trace("done");
     }
 
-    private void EnsureConnectedAndNotDisposed()
+    private void EnsureConnected()
     {
         if (!_isConnected)
             throw new InvalidOperationException("Socket is not connected");
+    }
 
-        if (_isDisposed)
-            throw new ObjectDisposedException("Socket is already disposed");
+    private void EnsureNotDisposed()
+    {
+        lock (_locker)
+        {
+            if (_isDisposed)
+                throw new ObjectDisposedException("Socket is already disposed");
+        }
     }
 }
