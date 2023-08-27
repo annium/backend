@@ -6,11 +6,11 @@ using Annium.Debug;
 
 namespace Annium.Core.Entrypoint;
 
-public record struct Entry(
+public readonly record struct Entry(
     IServiceProvider Provider,
     CancellationToken Ct,
     ManualResetEventSlim _gate
-) : ITraceSubject<Entry>, IAsyncDisposable
+) : ITraceSubject, IAsyncDisposable
 {
     public ITracer Tracer { get; } = Provider.Resolve<ITracer>();
     public readonly IServiceProvider Provider = Provider;
