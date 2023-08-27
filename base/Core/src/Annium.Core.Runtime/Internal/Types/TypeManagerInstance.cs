@@ -32,7 +32,7 @@ internal class TypeManagerInstance : ITypeManager
         this.Trace($"register {types.Count} ids");
         var ids = new Dictionary<TypeId, Type>();
         foreach (var type in types)
-            ids[type.GetId()] = type;
+            ids[type.GetTypeId()] = type;
 
         _ids = ids;
         Types = types;

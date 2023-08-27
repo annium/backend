@@ -10,7 +10,7 @@ namespace Annium.Core.Runtime.Internal.Types;
 
 internal static class AssembliesCollector
 {
-    private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetId();
+    private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetTypeId();
 
     public static IReadOnlyCollection<Assembly> Collect(
         Assembly assembly
@@ -65,7 +65,7 @@ internal static class AssembliesCollector
             return;
 
         var autoScanned = assembly.GetCustomAttributes()
-            .SingleOrDefault(x => x.GetType().GetId() == AutoScannedTypeId);
+            .SingleOrDefault(x => x.GetType().GetTypeId() == AutoScannedTypeId);
         if (autoScanned is null)
             Log.Trace($"{name.Name} - not marked as auto-scanned");
         else

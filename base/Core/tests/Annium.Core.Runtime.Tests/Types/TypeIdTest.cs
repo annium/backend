@@ -29,12 +29,12 @@ public class TypeIdTest
     private void Assert(Type type)
     {
         // act
-        var id = type.GetId();
+        var id = type.GetTypeId();
 
         // assert
         id.Id.Contains(type.Namespace!).IsTrue();
         id.Id.Contains(type.Name).IsTrue();
-        (id == type.GetId()).IsTrue();
+        (id == type.GetTypeId()).IsTrue();
         var tm = GetTypeManager();
         var parsed = TypeId.TryParse(id.Id, tm);
         (parsed == id).IsTrue();

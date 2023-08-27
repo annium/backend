@@ -18,7 +18,7 @@ internal sealed class Descendant
     {
         Type = type;
         Signature = TypeSignature.Create(type);
-        Id = type.GetId();
+        Id = type.GetTypeId();
         var keyAttribute = type.GetTypeInfo().GetCustomAttribute<ResolutionKeyValueAttribute>();
         Key = keyAttribute?.Key;
         HasKey = keyAttribute != null;
