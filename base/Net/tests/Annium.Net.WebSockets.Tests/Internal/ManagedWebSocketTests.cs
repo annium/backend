@@ -385,9 +385,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         return RunServerBase(async (ctx, ct) =>
         {
+            this.Trace("start");
+
             var socket = new ManagedWebSocket(ctx.WebSocket);
+
             this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket, ct);
+
+            this.Trace("done");
         });
     }
 

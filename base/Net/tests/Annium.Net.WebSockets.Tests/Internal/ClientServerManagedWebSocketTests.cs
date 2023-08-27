@@ -355,7 +355,11 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
             this.Trace("start");
 
             var socket = new ServerManagedWebSocket(ctx.WebSocket, ct);
+
+            this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket);
+
+            this.Trace($"disconnect {socket.GetFullId()}");
             await socket.DisconnectAsync();
 
             this.Trace("done");

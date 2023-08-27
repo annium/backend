@@ -27,6 +27,8 @@ public abstract class TestBase
 
         return Disposable.Create(async () =>
         {
+            // await before cancellation for a while
+            await Task.Delay(5, CancellationToken.None);
             cts.Cancel();
             await serverTask;
         });

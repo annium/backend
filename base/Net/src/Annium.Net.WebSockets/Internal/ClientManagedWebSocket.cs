@@ -49,9 +49,11 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
             this.Trace($"connect native socket to {uri}");
             await _nativeSocket.ConnectAsync(uri, ct);
         }
-        catch
+        catch (Exception e)
         {
-            this.Trace("connection failed - cleanup");
+            this.Trace($"failed: {e}");
+
+            this.Trace("dispose native socket");
             _nativeSocket.Dispose();
             _nativeSocket = null;
 
