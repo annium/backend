@@ -1,6 +1,6 @@
 namespace Annium.Debug;
 
-public interface ITraceSubject<out T>
+public interface ITraceSubject
 {
     ITracer Tracer { get; }
 }

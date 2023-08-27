@@ -13,6 +13,6 @@ public static class TraceSubjectExtensions
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
-    ) where T : ITraceSubject<T> =>
+    ) where T : ITraceSubject =>
         subject.Tracer.Trace(subject, message, withTrace, file, member, line);
 }
