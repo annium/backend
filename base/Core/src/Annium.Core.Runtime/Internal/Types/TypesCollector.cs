@@ -6,7 +6,7 @@ using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class TypesCollector : ITraceSubject<TypesCollector>
+internal class TypesCollector : ITraceSubject
 {
     public ITracer Tracer { get; }
 

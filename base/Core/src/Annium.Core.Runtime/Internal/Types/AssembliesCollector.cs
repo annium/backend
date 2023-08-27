@@ -8,7 +8,7 @@ using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class AssembliesCollector : ITraceSubject<AssembliesCollector>
+internal class AssembliesCollector : ITraceSubject
 {
     private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetTypeId();
 
