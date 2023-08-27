@@ -1,7 +1,7 @@
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.Debug.Tests;
+namespace Annium.Tests;
 
 public class IdExtensionsTest
 {
@@ -9,15 +9,17 @@ public class IdExtensionsTest
     public void GetId_IsStablyUniquePerObject_NotSharedAmongTypes()
     {
         // arrange
-        var a = new object();
-        var b = new object();
+        var a = new Sample();
+        var b = new Sample();
         var c = new { };
 
         // assert
         string.IsNullOrWhiteSpace(a.GetId()).IsFalse();
         a.GetId().Is(a.GetId());
-        a.GetId().Is("001");
-        b.GetId().Is("002");
-        c.GetId().Is("001");
+        a.GetId().Is("1");
+        b.GetId().Is("2");
+        c.GetId().Is("1");
     }
 }
+
+file record Sample;
