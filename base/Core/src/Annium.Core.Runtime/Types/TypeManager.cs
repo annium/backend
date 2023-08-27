@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Internal.Types;
+using Annium.Debug;
 
 namespace Annium.Core.Runtime.Types;
 
@@ -12,11 +13,12 @@ public static class TypeManager
         new();
 
     public static ITypeManager GetInstance(
-        Assembly assembly
+        Assembly assembly,
+        ITracer tracer
     )
     {
         var key = new CacheKey(assembly);
-        return Instances.GetOrAdd(key, k => new TypeManagerInstance(k.Assembly));
+        return Instances.GetOrAdd(key, k => new TypeManagerInstance(k.Assembly, tracer));
     }
 
     public static void Release(Assembly assembly)

@@ -1,10 +1,16 @@
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Tests;
 
-public class ArrayExtensionsTest
+public class ArrayExtensionsTest : TestBase
 {
+    public ArrayExtensionsTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public void Deconstruct_1_Works()
     {

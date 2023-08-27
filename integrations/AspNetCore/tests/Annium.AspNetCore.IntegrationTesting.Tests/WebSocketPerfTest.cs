@@ -9,7 +9,6 @@ using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
-using Annium.Debug;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
@@ -27,7 +26,6 @@ public class WebSocketPerfTest : IntegrationTestBase
     [MemberData(nameof(GetRange))]
     public async Task PerfRequestResponse_Works(int index)
     {
-        Log.SetTestMode();
         Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - start");
 
         // arrange
@@ -47,7 +45,6 @@ public class WebSocketPerfTest : IntegrationTestBase
     [MemberData(nameof(GetRange))]
     public async Task PerfRequestResponseBundle_Works(int index)
     {
-        Log.SetTestMode();
         Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
 
         // arrange
@@ -78,7 +75,6 @@ public class WebSocketPerfTest : IntegrationTestBase
     [MemberData(nameof(GetRange))]
     public async Task PerfSubscription_Works(int index)
     {
-        Log.SetTestMode();
         Trace("start");
 
         // arrange
@@ -166,7 +162,6 @@ public class WebSocketPerfTest : IntegrationTestBase
     // ReSharper disable once xUnit1026
     public async Task PerfConnection_Works(int index)
     {
-        Log.SetTestMode();
         Console.WriteLine($"{nameof(PerfConnection_Works)}#{index} - start");
 
         Console.WriteLine("get client");

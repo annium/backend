@@ -8,15 +8,22 @@ using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal static class AssembliesCollector
+internal class AssembliesCollector : ITraceSubject<AssembliesCollector>
 {
     private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetTypeId();
 
-    public static IReadOnlyCollection<Assembly> Collect(
+    public ITracer Tracer { get; }
+
+    public AssembliesCollector(ITracer tracer)
+    {
+        Tracer = tracer;
+    }
+
+    public IReadOnlyCollection<Assembly> Collect(
         Assembly assembly
     )
     {
-        Log.Trace("start");
+        this.Trace("start");
 
         // result parts
         var allAssemblies = new Dictionary<string, Assembly>();
@@ -24,17 +31,17 @@ internal static class AssembliesCollector
         var matchedAssemblies = new HashSet<Assembly>();
 
         // collect assemblies, already residing in AppDomain
-        Log.Trace("register AppDomain assemblies");
+        this.Trace("register AppDomain assemblies");
         foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             if (domainAssembly.FullName != null! && !allAssemblies.ContainsKey(domainAssembly.FullName))
             {
-                Log.Trace($"{domainAssembly.FriendlyName()} - register with {domainAssembly.FullName}");
+                this.Trace($"{domainAssembly.FriendlyName()} - register with {domainAssembly.FullName}");
                 allAssemblies[domainAssembly.FullName] = domainAssembly;
             }
 
         var resolveAssembly = LoadAssembly(allAssemblies);
 
-        Log.Trace($"collect {assembly} dependencies");
+        this.Trace($"collect {assembly} dependencies");
         Collect(
             assembly.GetName(),
             resolveAssembly,
@@ -42,12 +49,12 @@ internal static class AssembliesCollector
             asm => matchedAssemblies.Add(asm)
         );
 
-        Log.Trace("done");
+        this.Trace("done");
 
         return matchedAssemblies;
     }
 
-    private static void Collect(
+    private void Collect(
         AssemblyName name,
         Func<AssemblyName, Assembly?> resolveAssembly,
         Func<Assembly, bool> registerAssembly,
@@ -57,7 +64,7 @@ internal static class AssembliesCollector
         var assembly = resolveAssembly(name);
         if (assembly is null)
         {
-            Log.Trace($"{name.Name} - not resolved");
+            this.Trace($"{name.Name} - not resolved");
             return;
         }
 
@@ -67,17 +74,17 @@ internal static class AssembliesCollector
         var autoScanned = assembly.GetCustomAttributes()
             .SingleOrDefault(x => x.GetType().GetTypeId() == AutoScannedTypeId);
         if (autoScanned is null)
-            Log.Trace($"{name.Name} - not marked as auto-scanned");
+            this.Trace($"{name.Name} - not marked as auto-scanned");
         else
         {
-            Log.Trace($"{name.Name} - matched");
+            this.Trace($"{name.Name} - matched");
             addMatchedAssembly(assembly);
             var dependencies = (Assembly[])autoScanned.GetType()
                 .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
                 .GetValue(autoScanned)!;
             foreach (var dependency in dependencies)
             {
-                Log.Trace($"{name.Name} - add dependency {dependency.ShortName()}");
+                this.Trace($"{name.Name} - add dependency {dependency.ShortName()}");
                 addMatchedAssembly(dependency);
                 Collect(dependency.GetName(), resolveAssembly, registerAssembly, addMatchedAssembly);
             }
@@ -87,12 +94,12 @@ internal static class AssembliesCollector
             Collect(assemblyName, resolveAssembly, registerAssembly, addMatchedAssembly);
     }
 
-    private static Func<AssemblyName, Assembly?> LoadAssembly(IDictionary<string, Assembly> assemblies) => name =>
+    private Func<AssemblyName, Assembly?> LoadAssembly(IDictionary<string, Assembly> assemblies) => name =>
     {
         if (assemblies.TryGetValue(name.FullName, out var asm))
             return asm;
 
-        Log.Trace($"load {name}");
+        this.Trace($"load {name}");
         return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
     };
 }

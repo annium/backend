@@ -6,12 +6,13 @@ using Annium.Testing;
 using Annium.Testing.Lib;
 using Annium.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Data.Tables.Tests;
 
 public class TableOfTTests : TestBase
 {
-    public TableOfTTests()
+    public TableOfTTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         Register(x => x.AddTables());
     }

@@ -2,12 +2,13 @@ using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.Testing;
 using Annium.Testing.Lib;
+using Xunit.Abstractions;
 
 namespace Annium.linq2db.Tests.Lib.Configuration;
 
 public class ConfigurationTestsBase : TestBase
 {
-    protected ConfigurationTestsBase()
+    protected ConfigurationTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }

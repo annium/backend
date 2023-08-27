@@ -5,12 +5,13 @@ using Annium.Testing;
 using Annium.Testing.Lib;
 using NodaTime;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Redis.Tests;
 
 public class RedisStorageTests : TestBase
 {
-    public RedisStorageTests()
+    public RedisStorageTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

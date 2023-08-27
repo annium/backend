@@ -5,6 +5,7 @@ using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Logging.Shared.Tests;
 
@@ -13,7 +14,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     public ILogger<BaseLoggerTest> Logger { get; }
     private readonly IList<LogMessage<Context>> _messages = new List<LogMessage<Context>>();
 
-    public BaseLoggerTest()
+    public BaseLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         Logger = Get<ILogger<BaseLoggerTest>>();
     }

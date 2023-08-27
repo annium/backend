@@ -2,12 +2,18 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Runtime.Tests.Types;
 
-public class TypeIdTest
+public class TypeIdTests : TestBase
 {
+    public TypeIdTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public void PlainId_Works()
     {
@@ -35,11 +41,9 @@ public class TypeIdTest
         id.Id.Contains(type.Namespace!).IsTrue();
         id.Id.Contains(type.Name).IsTrue();
         (id == type.GetTypeId()).IsTrue();
-        var tm = GetTypeManager();
+        var tm = Get<ITypeManager>();
         var parsed = TypeId.TryParse(id.Id, tm);
         (parsed == id).IsTrue();
         parsed!.Type.Is(type);
     }
-
-    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
 }

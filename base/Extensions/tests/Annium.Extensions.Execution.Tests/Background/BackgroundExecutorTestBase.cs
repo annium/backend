@@ -4,24 +4,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Testing;
+using Annium.Testing.Lib;
+using Xunit.Abstractions;
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
-public abstract class BackgroundExecutorTestBase
+public abstract class BackgroundExecutorTestBase : TestBase
 {
     private readonly IBackgroundExecutor _executor;
 
-    protected BackgroundExecutorTestBase(IBackgroundExecutor executor)
+    protected BackgroundExecutorTestBase(IBackgroundExecutor executor, ITestOutputHelper outputHelper) : base(outputHelper)
     {
         _executor = executor;
     }
 
     protected async Task<IReadOnlyList<int>> Works_Base(int size)
     {
-        Log.SetTestMode();
-
         // run executor
         _executor.Start();
 
@@ -44,8 +43,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task Availability_Base()
     {
-        Log.SetTestMode();
-
         // act
         // schedule batch of work
         Parallel.For(0, 4, _ => _executor.Schedule(Helper.SyncLongWork));
@@ -70,8 +67,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task HandlesFailure_Base()
     {
-        Log.SetTestMode();
-
         // arrange
         var successes = 0;
         var failures = 0;
@@ -120,7 +115,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task Schedule_SyncAction_Base()
     {
-        Log.SetTestMode();
         // arrange
         var cts = new CancellationTokenSource();
         var success = false;
@@ -138,7 +132,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task Schedule_SyncCancellableAction_Base()
     {
-        Log.SetTestMode();
         // arrange
         var cts = new CancellationTokenSource();
         var isCancelled = false;
@@ -156,7 +149,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task Schedule_AsyncAction_Base()
     {
-        Log.SetTestMode();
         // arrange
         var cts = new CancellationTokenSource();
         var success = false;
@@ -178,7 +170,6 @@ public abstract class BackgroundExecutorTestBase
 
     protected async Task Schedule_AsyncCancellableAction_Base()
     {
-        Log.SetTestMode();
         // arrange
         var cts = new CancellationTokenSource();
         var isCancelled = false;

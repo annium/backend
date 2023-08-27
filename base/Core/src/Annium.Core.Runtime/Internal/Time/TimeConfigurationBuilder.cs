@@ -28,6 +28,15 @@ internal class TimeConfigurationBuilder : ITimeConfigurationBuilder
         return this;
     }
 
+    public ITimeConfigurationBuilder WithRelativeTime()
+    {
+        _container.Add<RelativeTimeProvider>().AsKeyed(typeof(IInternalTimeProvider), TimeType.Relative).In(_lifetime);
+        _container.Add<IActionScheduler, ActionScheduler>().In(_lifetime);
+        _type = TimeType.Relative;
+
+        return this;
+    }
+
     public ITimeConfigurationBuilder WithManagedTime()
     {
         _container.Add<ITimeManager, ManagedTimeProvider>().AsKeyed(typeof(IInternalTimeProvider), TimeType.Managed).In(_lifetime);

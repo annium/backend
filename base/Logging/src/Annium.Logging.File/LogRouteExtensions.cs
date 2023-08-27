@@ -15,13 +15,6 @@ public static class LogRouteExtensions
         where TContext : class, ILogContext
         => route.UseFile(LogMessageExtensions.DefaultFormat, cfg);
 
-    public static LogRoute<TContext> UseTestFile<TContext>(
-        this LogRoute<TContext> route,
-        FileLoggingConfiguration<TContext> cfg
-    )
-        where TContext : class, ILogContext
-        => route.UseFile(LogMessageExtensions.DefaultTestFormat, cfg);
-
     public static LogRoute<TContext> UseFile<TContext>(
         this LogRoute<TContext> route,
         Func<LogMessage<TContext>, string> format,

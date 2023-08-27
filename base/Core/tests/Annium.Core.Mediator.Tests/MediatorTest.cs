@@ -6,17 +6,25 @@ using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Logging.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mediator.Tests;
 
-public class MediatorTest
+public class MediatorTest : TestBase
 {
+    public MediatorTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task SingleClosedHandler_Works()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
+        RegisterMediator(cfg => cfg.AddHandler(typeof(ClosedFinalHandler)));
+        SetupLogging();
+        var mediator = Get<IMediator>();
         var request = new Base { Value = "base" };
 
         // act
@@ -30,7 +38,9 @@ public class MediatorTest
     public async Task SingleOpenHandler_WithExpectedParameters_Works()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
+        RegisterMediator(cfg => cfg.AddHandler(typeof(OpenFinalHandler<,>)));
+        SetupLogging();
+        var mediator = Get<IMediator>();
         var request = new Two { Second = 2, Value = "one two three" };
 
         // act
@@ -44,11 +54,13 @@ public class MediatorTest
     public async Task ChainOfHandlers_WithExpectedParameters_Works()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg
+        RegisterMediator(cfg => cfg
             .AddHandler(typeof(ConversionHandler<,>))
             .AddHandler(typeof(ValidationHandler<,>))
             .AddHandler(typeof(OpenFinalHandler<,>))
         );
+        SetupLogging();
+        var mediator = Get<IMediator>();
         var request = new Two { Second = 2, Value = "one two three" };
         var payload = new Request<Two>(request);
 
@@ -64,12 +76,14 @@ public class MediatorTest
     public async Task ChainOfHandlers_WithRegisteredResponse_Works()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg
+        RegisterMediator(cfg => cfg
             .AddHandler(typeof(ConversionHandler<,>))
             .AddHandler(typeof(ValidationHandler<,>))
             .AddHandler(typeof(OpenFinalHandler<,>))
             .AddMatch(typeof(Request<Two>), typeof(IResponse), typeof(Response<IBooleanResult<Base>>))
         );
+        SetupLogging();
+        var mediator = Get<IMediator>();
         var request = new Two { Second = 2, Value = "one two three" };
         var payload = new Request<Two>(request);
 
@@ -81,19 +95,18 @@ public class MediatorTest
         response.Data.GetHashCode().Is(new Base { Value = "one_two_three" }.GetHashCode());
     }
 
-    private IMediator GetMediator(Action<MediatorConfiguration> configure)
+    private void RegisterMediator(Action<MediatorConfiguration> configure) => Register(container =>
     {
-        var container = new ServiceContainer();
-        container.AddTime().WithRealTime().SetDefault();
         container.Add<Func<One, bool>>(value => value.First % 2 == 1).AsSelf().Singleton();
         container.Add<Func<Two, bool>>(value => value.Second % 2 == 0).AsSelf().Singleton();
-        container.AddLogging();
+
         container.AddMediatorConfiguration(configure);
         container.AddMediator();
+    });
 
-        var provider = container.BuildServiceProvider();
-
-        provider.UseLogging(route => route
+    private void SetupLogging() => Setup(sp =>
+    {
+        sp.UseLogging(route => route
             .For(m =>
                 m.Source.StartsWith("ConversionHandler") ||
                 m.Source.StartsWith("ValidationHandler") ||
@@ -102,9 +115,7 @@ public class MediatorTest
             )
             .UseInMemory()
         );
-
-        return provider.Resolve<IMediator>();
-    }
+    });
 
     private class ConversionHandler<TRequest, TResponse> :
         IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,

@@ -4,16 +4,22 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Architecture.Mediator.Tests;
 
 public class LoggingPipeHandlerTest : TestBase
 {
+    public LoggingPipeHandlerTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task ReturnsOriginalResult()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg.AddLoggingHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        RegisterMediator(cfg => cfg.AddLoggingHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var mediator = Get<IMediator>();
         var request = new LoginRequest();
 
         // act

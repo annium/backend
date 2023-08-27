@@ -1,12 +1,14 @@
 using System.Threading.Tasks;
 using Annium.Cache.Tests.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Cache.InMemory.Tests;
 
 public class CacheTests : CacheTestsBase
 {
-    public CacheTests()
+    public CacheTests(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

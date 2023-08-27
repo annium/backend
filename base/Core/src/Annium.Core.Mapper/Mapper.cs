@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Reflection;
 using Annium.Core.DependencyInjection;
+using Annium.Debug;
 
 namespace Annium.Core.Mapper;
 
@@ -14,6 +15,7 @@ public static class Mapper
             var container = new ServiceContainer();
             container.AddRuntime(x);
             container.AddMapper(false);
+            container.Add(NoopTracer.Instance).AsSelf().Singleton();
 
             var provider = container.BuildServiceProvider();
 

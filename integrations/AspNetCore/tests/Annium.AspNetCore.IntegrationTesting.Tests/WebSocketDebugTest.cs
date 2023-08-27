@@ -8,7 +8,6 @@ using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
-using Annium.Debug;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
@@ -24,7 +23,6 @@ public class WebSocketDebugTest : IntegrationTestBase
     [Fact]
     public async Task DebugRequestResponse_Works()
     {
-        Log.SetTestMode();
         Console.WriteLine($"{nameof(DebugRequestResponse_Works)} - start");
 
         // arrange
@@ -42,7 +40,6 @@ public class WebSocketDebugTest : IntegrationTestBase
     [Fact]
     public async Task DebugSubscription_Works()
     {
-        Log.SetTestMode();
         Trace("start");
 
         // arrange

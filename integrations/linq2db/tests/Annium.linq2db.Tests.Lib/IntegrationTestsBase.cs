@@ -9,12 +9,13 @@ using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
 using NodaTime;
+using Xunit.Abstractions;
 
 namespace Annium.linq2db.Tests.Lib;
 
 public class IntegrationTestsBase : TestBase
 {
-    protected IntegrationTestsBase()
+    protected IntegrationTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }

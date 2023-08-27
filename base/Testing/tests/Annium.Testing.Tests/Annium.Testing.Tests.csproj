@@ -14,6 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
         <ProjectReference Include="../../src/Annium.Testing.TestAdapter/Annium.Testing.TestAdapter.csproj" />
     </ItemGroup>
     <ItemGroup>

@@ -14,7 +14,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
-        <ProjectReference Include="../../src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
+        <ProjectReference Include="../../../Testing/src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

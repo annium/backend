@@ -7,6 +7,7 @@ using Annium.Core.Runtime.Internal.Types;
 using Annium.Core.Runtime.Resources;
 using Annium.Core.Runtime.Time;
 using Annium.Core.Runtime.Types;
+using Annium.Debug;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
@@ -18,7 +19,7 @@ public static class ServiceContainerExtensions
         Assembly assembly
     )
     {
-        container.Add(TypeManager.GetInstance(assembly)).As<ITypeManager>().Singleton();
+        container.Add(TypeManager.GetInstance(assembly, NoopTracer.Instance)).As<ITypeManager>().Singleton();
         container.Add<ITypeResolver, TypeResolver>().Singleton();
 
         return container;

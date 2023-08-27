@@ -1,11 +1,12 @@
 using Annium.linq2db.Tests.Lib.Configuration;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.linq2db.PostgreSql.Tests.Configuration;
 
 public class ConfigurationTests : ConfigurationTestsBase
 {
-    public ConfigurationTests()
+    public ConfigurationTests(ITestOutputHelper outputHelper)  : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

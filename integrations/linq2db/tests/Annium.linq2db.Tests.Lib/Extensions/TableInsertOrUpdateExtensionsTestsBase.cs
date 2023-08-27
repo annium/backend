@@ -7,12 +7,13 @@ using Annium.Testing;
 using Annium.Testing.Lib;
 using LinqToDB;
 using NodaTime;
+using Xunit.Abstractions;
 
 namespace Annium.linq2db.Tests.Lib.Extensions;
 
 public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 {
-    protected TableInsertOrUpdateExtensionsTestsBase()
+    protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }

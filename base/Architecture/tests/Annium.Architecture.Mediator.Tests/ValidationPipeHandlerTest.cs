@@ -5,16 +5,22 @@ using Annium.Data.Operations;
 using Annium.Extensions.Validation;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Architecture.Mediator.Tests;
 
 public class ValidationPipeHandlerTest : TestBase
 {
+    public ValidationPipeHandlerTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task ValidationFailure_ReturnsBadRequest()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        RegisterMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var mediator = Get<IMediator>();
         var request = new LoginRequest();
 
         // act
@@ -31,7 +37,8 @@ public class ValidationPipeHandlerTest : TestBase
     public async Task ValidationSuccess_ReturnsOriginalResult()
     {
         // arrange
-        var mediator = GetMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        RegisterMediator(cfg => cfg.AddValidationHandler().AddHandler(typeof(EchoRequestHandler<>)));
+        var mediator = Get<IMediator>();
         var request = new LoginRequest { UserName = "user", Password = "pass" };
 
         // act

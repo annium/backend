@@ -1,21 +1,18 @@
 using System;
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
+using Xunit.Abstractions;
 
 namespace Annium.Architecture.Mediator.Tests;
 
-public class TestBase
+public class TestBase : Testing.Lib.TestBase
 {
-    protected IMediator GetMediator(Action<MediatorConfiguration> configure)
+    public TestBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        var container = new ServiceContainer();
+    }
 
-        container.AddRuntime(Assembly.GetCallingAssembly());
-        container.AddTime().WithRealTime().SetDefault();
-
-        container.AddLogging();
-
+    protected void RegisterMediator(Action<MediatorConfiguration> configure) => Register(container =>
+    {
         container.AddLocalization(opts => opts.UseInMemoryStorage());
 
         container.AddComposition();
@@ -23,11 +20,5 @@ public class TestBase
 
         container.AddMediatorConfiguration(configure);
         container.AddMediator();
-
-        var sp = container.BuildServiceProvider();
-
-        sp.UseLogging(route => route.UseInMemory());
-
-        return sp.Resolve<IMediator>();
-    }
+    });
 }

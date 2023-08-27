@@ -1,8 +1,9 @@
-namespace Annium.Core.Runtime.Time;
+namespace Annium.Core.Runtime.Internal.Time;
 
 internal sealed class TimeType
 {
     public static readonly TimeType Real = new(nameof(Real));
+    public static readonly TimeType Relative = new(nameof(Relative));
     public static readonly TimeType Managed = new(nameof(Managed));
 
     private readonly string _name;

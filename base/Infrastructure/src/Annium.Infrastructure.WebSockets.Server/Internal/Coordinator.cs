@@ -2,7 +2,6 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Obsolete;
@@ -40,14 +39,14 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject<Coor
     public async Task HandleAsync(WebSocket socket)
     {
         await using var cn = _connectionTracker.Track(socket);
-        this.Log().Trace($"Start for connection {cn.GetId()}");
+        this.Log().Trace($"Start for {cn.GetFullId()}");
         await using var scope = _sp.CreateAsyncScope();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
         try
         {
             socket.ConnectionLost += () =>
             {
-                this.Log().Trace($"Notify lost connection {cn.GetId()}");
+                this.Log().Trace($"Notify lost {cn.GetFullId()}");
                 // for case, when server stops, thus cancellation occurs before connection is lost
                 if (!cts.IsCancellationRequested)
                     cts.Cancel();
@@ -59,11 +58,11 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject<Coor
         }
         finally
         {
-            this.Log().Trace($"Release complete connection {cn.GetId()}");
+            this.Log().Trace($"Release complete {cn.GetFullId()}");
             await _connectionTracker.Release(cn.Id);
         }
 
-        this.Log().Trace($"End for connection {cn.GetId()}");
+        this.Log().Trace($"End for {cn.GetFullId()}");
     }
 
     public void Shutdown()

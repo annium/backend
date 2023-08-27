@@ -19,24 +19,25 @@ internal class TypeManagerInstance : ITypeManager
     private readonly IReadOnlyDictionary<TypeId, Type> _ids;
 
     public TypeManagerInstance(
-        Assembly assembly
+        Assembly assembly,
+        ITracer tracer
     )
     {
-        this.Trace($"start for {assembly}");
-        this.Trace("collect assemblies");
-        var assemblies = AssembliesCollector.Collect(assembly);
-        this.Trace("collect types");
-        var types = TypesCollector.Collect(assemblies);
-        this.Trace("build hierarchy");
+        this.TraceOld($"start for {assembly}");
+        this.TraceOld("collect assemblies");
+        var assemblies = new AssembliesCollector(tracer).Collect(assembly);
+        this.TraceOld("collect types");
+        var types = new TypesCollector(tracer).Collect(assemblies);
+        this.TraceOld("build hierarchy");
         _hierarchy = HierarchyBuilder.BuildHierarchy(types);
-        this.Trace($"register {types.Count} ids");
+        this.TraceOld($"register {types.Count} ids");
         var ids = new Dictionary<TypeId, Type>();
         foreach (var type in types)
             ids[type.GetTypeId()] = type;
 
         _ids = ids;
         Types = types;
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     /// <summary>

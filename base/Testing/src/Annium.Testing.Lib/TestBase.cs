@@ -1,6 +1,8 @@
 using System;
 using Annium.Core.DependencyInjection;
 using Annium.Debug;
+using Annium.Testing.Lib.Internal;
+using Xunit.Abstractions;
 
 namespace Annium.Testing.Lib;
 
@@ -10,13 +12,11 @@ public abstract class TestBase
     private readonly IServiceProviderBuilder _builder;
     private readonly Lazy<IServiceProvider> _sp;
 
-    protected TestBase()
+    protected TestBase(ITestOutputHelper outputHelper)
     {
-        Log.SetTestMode();
-
         _builder = new ServiceProviderFactory().CreateBuilder(new ServiceContainer().Collection);
 
-        Register(SharedRegister);
+        Register(SharedRegister(outputHelper));
         Setup(SharedSetup);
 
         _sp = new Lazy<IServiceProvider>(BuildServiceProvider, true);
@@ -52,17 +52,18 @@ public abstract class TestBase
         where T : notnull
         => _sp.Value.ResolveKeyed<TKey, T>(key);
 
-    private void SharedRegister(IServiceContainer container)
+    private Action<IServiceContainer> SharedRegister(ITestOutputHelper outputHelper) => container =>
     {
         container.AddRuntime(GetType().Assembly);
-        container.AddTime().WithManagedTime().SetDefault();
+        container.AddTime().WithManagedTime().WithRelativeTime().SetDefault();
         container.AddLogging();
         container.AddMapper();
-    }
+        container.Add<ITracer>(new TestTracer(outputHelper)).AsSelf().Singleton();
+    };
 
     private void SharedSetup(IServiceProvider sp)
     {
-        sp.UseLogging(x => x.UseTestConsole());
+        sp.UseLogging(x => x.UseConsole());
     }
 
     private IServiceProvider BuildServiceProvider()

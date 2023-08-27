@@ -4,6 +4,7 @@ using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Logging.Console.Tests;
 
@@ -11,7 +12,7 @@ public class ConsoleLoggerTest : TestBase, ILogSubject<ConsoleLoggerTest>
 {
     public ILogger<ConsoleLoggerTest> Logger { get; }
 
-    public ConsoleLoggerTest()
+    public ConsoleLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         Logger = Get<ILogger<ConsoleLoggerTest>>();
     }

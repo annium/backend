@@ -6,11 +6,18 @@ using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal static class TypesCollector
+internal class TypesCollector : ITraceSubject<TypesCollector>
 {
-    public static IReadOnlyCollection<Type> Collect(IReadOnlyCollection<Assembly> assemblies)
+    public ITracer Tracer { get; }
+
+    public TypesCollector(ITracer tracer)
     {
-        Log.Trace("start");
+        Tracer = tracer;
+    }
+
+    public IReadOnlyCollection<Type> Collect(IReadOnlyCollection<Assembly> assemblies)
+    {
+        this.Trace("start");
 
         // list of collected types
         var types = new HashSet<Type>();
@@ -18,12 +25,12 @@ internal static class TypesCollector
         foreach (var assembly in assemblies)
         {
             var assemblyTypes = assembly.GetTypes();
-            Log.Trace($"register {assemblyTypes.Length} type(s) from assembly {assembly.ShortName()}");
+            this.Trace($"register {assemblyTypes.Length} type(s) from assembly {assembly.ShortName()}");
             foreach (var type in assemblyTypes)
                 types.Add(type);
         }
 
-        Log.Trace("done");
+        this.Trace("done");
 
         return types;
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Debug;
 
 namespace Annium.Core.Entrypoint;
@@ -9,8 +10,9 @@ public record struct Entry(
     IServiceProvider Provider,
     CancellationToken Ct,
     ManualResetEventSlim _gate
-) : IAsyncDisposable
+) : ITraceSubject<Entry>, IAsyncDisposable
 {
+    public ITracer Tracer { get; } = Provider.Resolve<ITracer>();
     public readonly IServiceProvider Provider = Provider;
     public readonly CancellationToken Ct = Ct;
     private readonly ManualResetEventSlim _gate = _gate;
@@ -26,17 +28,17 @@ public record struct Entry(
 
     public async ValueTask DisposeAsync()
     {
-        Log.Trace("start");
+        this.Trace("start");
 
         if (Provider is IAsyncDisposable asyncDisposable)
             await asyncDisposable.DisposeAsync();
         else if (Provider is IDisposable disposable)
             disposable.Dispose();
 
-        Log.Trace("set gate");
+        this.Trace("set gate");
 
         _gate.Set();
 
-        Log.Trace("done");
+        this.Trace("done");
     }
 }

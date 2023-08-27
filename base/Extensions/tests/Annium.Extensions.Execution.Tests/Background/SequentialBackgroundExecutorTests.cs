@@ -3,13 +3,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Extensions.Execution.Tests.Background;
 
 public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 {
-    public SequentialBackgroundExecutorTests()
-        : base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>())
+    public SequentialBackgroundExecutorTests(ITestOutputHelper outputHelper)
+        : base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>(), outputHelper)
     {
     }
 

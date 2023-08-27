@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
-using Annium.Debug;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal;

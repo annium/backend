@@ -1,12 +1,13 @@
 using System.Threading.Tasks;
 using Annium.linq2db.Tests.Lib.Extensions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.linq2db.PostgreSql.Tests.Extensions;
 
 public class TableInsertOrUpdateExtensionsTests : TableInsertOrUpdateExtensionsTestsBase
 {
-    public TableInsertOrUpdateExtensionsTests()
+    public TableInsertOrUpdateExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

@@ -27,6 +27,9 @@ internal class TimeProvider : ITimeProviderSwitcher, ITimeProvider
     public void UseRealTime()
         => _provider = _timeProviders[TimeType.Real];
 
+    public void UseRelativeTime()
+        => _provider = _timeProviders[TimeType.Relative];
+
     public void UseManagedTime()
         => _provider = _timeProviders[TimeType.Managed];
 }

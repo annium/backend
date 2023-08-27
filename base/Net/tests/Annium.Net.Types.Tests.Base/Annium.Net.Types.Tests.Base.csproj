@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
+        <ProjectReference Include="../../../Testing/src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
         <ProjectReference Include="../../src/Annium.Net.Types/Annium.Net.Types.csproj" />
     </ItemGroup>
 </Project>

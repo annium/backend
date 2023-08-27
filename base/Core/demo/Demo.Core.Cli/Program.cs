@@ -11,6 +11,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Core.Runtime.Loader;
 using Annium.Core.Runtime.Types;
+using Annium.Debug;
 using Demo.Core.Cli;
 using Demo.Core.Cli.Lib;
 
@@ -72,7 +73,7 @@ Wrap(() =>
     Console.WriteLine("---TYPES---");
     foreach (var (name, plugin) in plugins)
     {
-        Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin).Types.Count}");
+        Console.WriteLine($"{name} - {TypeManager.GetInstance(plugin, provider.Resolve<ITracer>()).Types.Count}");
         TypeManager.Release(plugin);
     }
 

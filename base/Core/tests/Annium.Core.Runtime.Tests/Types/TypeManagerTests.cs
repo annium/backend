@@ -1,17 +1,23 @@
 using System.Collections.Generic;
 using Annium.Core.Runtime.Types;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Runtime.Tests.Types;
 
-public class TypeManagerTest
+public class TypeManagerTests : TestBase
 {
+    public TypeManagerTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public void CanResolve_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
 
         // assert
         manager.HasImplementations(typeof(A)).IsTrue();
@@ -24,7 +30,7 @@ public class TypeManagerTest
     public void GetImplementations_ForAncestors_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
 
         var implementations = manager.GetImplementations(typeof(A));
 
@@ -38,7 +44,7 @@ public class TypeManagerTest
     public void GetImplementations_ForGenericInterfaceDefinitions_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
 
         var implementations = manager.GetImplementations(typeof(IGenericInterface<,>));
 
@@ -54,7 +60,7 @@ public class TypeManagerTest
     public void GetImplementations_ForGenericClassDefinitions_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
 
         var implementations = manager.GetImplementations(typeof(GenericClass<,>));
 
@@ -69,7 +75,7 @@ public class TypeManagerTest
     public void ResolveBySignature_FromInstance_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         var value = new { ForB = 5 };
 
         // act
@@ -83,7 +89,7 @@ public class TypeManagerTest
     public void ResolveBySignature_FromSignature_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
 
         // act
         var result = manager.ResolveBySignature(new[] { nameof(B.ForB) }, typeof(A), true);
@@ -96,7 +102,7 @@ public class TypeManagerTest
     public void ResolveByKey_NoDescendants_Throws()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         var key = "key";
 
         // assert
@@ -107,7 +113,7 @@ public class TypeManagerTest
     public void ResolveByKey_Ambiguity_Throws()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         var key = "F";
 
         // assert
@@ -118,7 +124,7 @@ public class TypeManagerTest
     public void ResolveByKey_Normally_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         var key = "E";
 
         // act
@@ -132,7 +138,7 @@ public class TypeManagerTest
     public void Resolve_ById_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         var source = new K();
 
         // act
@@ -146,7 +152,7 @@ public class TypeManagerTest
     public void Resolve_ByKey_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         object source = new E();
 
         // act
@@ -160,7 +166,7 @@ public class TypeManagerTest
     public void Resolve_BySignature_Works()
     {
         // arrange
-        var manager = GetTypeManager();
+        var manager = Get<ITypeManager>();
         object source = new B();
 
         // act
@@ -169,8 +175,6 @@ public class TypeManagerTest
         // assert
         result.Is(typeof(B));
     }
-
-    private ITypeManager GetTypeManager() => TypeManager.GetInstance(GetType().Assembly);
 }
 
 file class A

@@ -5,12 +5,13 @@ using Annium.Core.DependencyInjection;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Data.Tables.Tests;
 
 public class TableSourceExtensionsTests : TestBase
 {
-    public TableSourceExtensionsTests()
+    public TableSourceExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         Register(x => x.AddTables());
     }

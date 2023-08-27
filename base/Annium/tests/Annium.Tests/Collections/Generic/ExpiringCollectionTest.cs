@@ -2,17 +2,21 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Collections.Generic;
-using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime.Time;
 using Annium.Testing;
-using Microsoft.Extensions.DependencyInjection;
+using Annium.Testing.Lib;
 using NodaTime;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Tests.Collections.Generic;
 
-public class ExpiringCollectionTest
+public class ExpiringCollectionTest : TestBase
 {
+    public ExpiringCollectionTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public void Add_Works()
     {
@@ -71,14 +75,11 @@ public class ExpiringCollectionTest
 
     private (ITimeManager, ITimeProvider) GetTimeTools()
     {
-        var container = new ServiceContainer();
-        container.AddTime().WithManagedTime().SetDefault();
-        var provider = container.BuildServiceProvider();
-
-        var timeManager = provider.GetRequiredService<ITimeManager>();
+        Get<ITimeProviderSwitcher>().UseManagedTime();
+        var timeManager = Get<ITimeManager>();
         timeManager.SetNow(Instant.FromDateTimeUtc(DateTime.SpecifyKind(DateTime.MinValue, DateTimeKind.Utc)));
 
-        var timeProvider = provider.GetRequiredService<ITimeProvider>();
+        var timeProvider = Get<ITimeProvider>();
 
         return (timeManager, timeProvider);
     }
