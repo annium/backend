@@ -75,7 +75,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
         // change to state to unavailable
         ct.Register(Stop);
 
-        this.Trace("run");
+        this.TraceOld("run");
         HandleStart();
     }
 
@@ -88,7 +88,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             sl.Enter(ref lockTaken);
             if (_state is State.Disposed)
             {
-                this.Trace("already disposed");
+                this.TraceOld("already disposed");
                 return;
             }
 
@@ -100,10 +100,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
                 sl.Exit();
         }
 
-        this.Trace("start");
+        this.TraceOld("start");
         Stop();
         await HandleDisposeAsync();
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     protected abstract void HandleStart();
@@ -146,7 +146,7 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
             sl.Enter(ref lockTaken);
             if (_state is State.Stopped)
             {
-                this.Trace("already stopped");
+                this.TraceOld("already stopped");
                 return;
             }
 
@@ -158,10 +158,10 @@ internal abstract class BackgroundExecutorBase : IBackgroundExecutor
                 sl.Exit();
         }
 
-        this.Trace("start");
+        this.TraceOld("start");
         Cts.Cancel();
         HandleStop();
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     private enum State : byte

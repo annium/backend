@@ -23,20 +23,20 @@ public class ClientWebSocket : IClientWebSocket
 
     public ClientWebSocket(ClientWebSocketOptions options)
     {
-        this.Trace("start monitor");
+        this.TraceOld("start monitor");
         _socket = new ClientManagedWebSocket();
-        this.Trace($"paired with {_socket.GetFullId()}");
+        this.TraceOld($"paired with {_socket.GetFullId()}");
 
-        this.Trace("bind events");
+        this.TraceOld("bind events");
         _socket.TextReceived += TextReceived;
         _socket.BinaryReceived += BinaryReceived;
 
-        this.Trace("init monitor");
+        this.TraceOld("init monitor");
         _connectionMonitor = options.ConnectionMonitor;
         _connectionMonitor.Init(this);
         _reconnectDelay = options.ReconnectDelay;
 
-        this.Trace("subscribe to OnConnectionLost");
+        this.TraceOld("subscribe to OnConnectionLost");
         _connectionMonitor.OnConnectionLost += HandleConnectionLost;
     }
 
@@ -47,13 +47,13 @@ public class ClientWebSocket : IClientWebSocket
 
     public void Connect(Uri uri)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Connecting or Status.Connected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
@@ -62,125 +62,125 @@ public class ClientWebSocket : IClientWebSocket
 
         ConnectPrivate(uri);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public void Disconnect()
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
             SetStatus(Status.Disconnected);
         }
 
-        this.Trace("stop monitor");
+        this.TraceOld("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace("disconnect managed socket");
+        this.TraceOld("disconnect managed socket");
         _socket.DisconnectAsync();
 
-        this.Trace("fire disconnected");
+        this.TraceOld("fire disconnected");
         OnDisconnected(WebSocketCloseStatus.ClosedLocal);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
-        this.Trace("send text");
+        this.TraceOld("send text");
         return _socket.SendTextAsync(text, ct);
     }
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        this.Trace("send binary");
+        this.TraceOld("send binary");
         return _socket.SendBinaryAsync(data, ct);
     }
 
     private void ReconnectPrivate(Uri uri, WebSocketCloseStatus closeStatus)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
-        this.Trace("stop monitor");
+        this.TraceOld("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace($"fire disconnected with {closeStatus}");
+        this.TraceOld($"fire disconnected with {closeStatus}");
         OnDisconnected(closeStatus);
 
-        this.Trace($"schedule connection in {_reconnectDelay}ms");
+        this.TraceOld($"schedule connection in {_reconnectDelay}ms");
         Task.Delay(_reconnectDelay).ContinueWith(_ =>
         {
-            this.Trace("trigger connect");
+            this.TraceOld("trigger connect");
             ConnectPrivate(uri);
 
-            this.Trace("done");
+            this.TraceOld("done");
         });
     }
 
     private void ConnectPrivate(Uri uri)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         _uri = uri;
-        this.Trace($"connect to {uri}");
+        this.TraceOld($"connect to {uri}");
         _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleConnected, uri);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     private void HandleConnected(Task<bool> task, object? state)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Connected or Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
             // set status in lock
-            this.Trace($"set status by connection result: {task.Result}");
+            this.TraceOld($"set status by connection result: {task.Result}");
             SetStatus(task.Result ? Status.Connected : Status.Connecting);
         }
 
         if (!task.Result)
         {
             var uri = (Uri)state!;
-            this.Trace($"failure: {task.Exception}, init reconnect");
+            this.TraceOld($"failure: {task.Exception}, init reconnect");
             ReconnectPrivate(uri, WebSocketCloseStatus.Error);
             return;
         }
 
-        this.Trace("subscribe to IsClosed");
+        this.TraceOld("subscribe to IsClosed");
         _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
 
-        this.Trace("start monitor");
+        this.TraceOld("start monitor");
         _connectionMonitor.Start();
 
-        this.Trace("fire connected");
+        this.TraceOld("fire connected");
         OnConnected();
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     private void HandleConnectionLost()
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
@@ -189,18 +189,18 @@ public class ClientWebSocket : IClientWebSocket
 
         ReconnectPrivate(_uri!, WebSocketCloseStatus.ClosedRemote);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     private void HandleClosed(Task<WebSocketCloseResult> task)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
@@ -209,13 +209,13 @@ public class ClientWebSocket : IClientWebSocket
 
         ReconnectPrivate(_uri!, task.Result.Status);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetStatus(Status status)
     {
-        this.Trace($"update status from {_status} to {status}");
+        this.TraceOld($"update status from {_status} to {status}");
         _status = status;
     }
 

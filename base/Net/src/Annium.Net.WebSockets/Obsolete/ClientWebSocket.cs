@@ -42,10 +42,10 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public async Task DisconnectAsync()
     {
-        this.Trace($"cancel receive, if pending, in {Socket.State}");
+        this.TraceOld($"cancel receive, if pending, in {Socket.State}");
         PauseObservable();
 
-        this.Trace($"invoke ConnectionLost in {Socket.State}");
+        this.TraceOld($"invoke ConnectionLost in {Socket.State}");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -55,36 +55,36 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
                 Socket.State == WebSocketState.Open
             )
             {
-                this.Trace("disconnect");
+                this.TraceOld("disconnect");
                 await Socket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
             }
             else
-                this.Trace("already disconnected");
+                this.TraceOld("already disconnected");
         }
         catch (WebSocketException)
         {
-            this.Trace(nameof(WebSocketException));
+            this.TraceOld(nameof(WebSocketException));
         }
     }
 
     protected override async Task OnConnectionLostAsync()
     {
-        this.Trace("invoke ConnectionLost");
+        this.TraceOld("invoke ConnectionLost");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         if (_options.ReconnectTimeout != Duration.MaxValue)
         {
-            this.Trace("try reconnect");
+            this.TraceOld("try reconnect");
             await Task.Delay(_options.ReconnectTimeout.ToTimeSpan());
             await ConnectAsync(_uri!, _options.ReconnectTimeout, CancellationToken.None);
         }
         else
-            this.Trace("no reconnect");
+            this.TraceOld("no reconnect");
     }
 
     private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
     {
-        this.Trace($"connect to {uri}");
+        this.TraceOld($"connect to {uri}");
 
         _uri = uri;
         do
@@ -92,12 +92,12 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
             try
             {
                 Socket = new NativeClientWebSocket();
-                this.Trace("try connect");
+                this.TraceOld("try connect");
                 await Socket.ConnectAsync(uri, ct);
             }
             catch (WebSocketException)
             {
-                this.Trace("connection failed");
+                this.TraceOld("connection failed");
                 Socket.Dispose();
                 await Task.Delay(timeout.ToTimeSpan(), ct);
             }
@@ -109,27 +109,27 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
         if (Socket.State is WebSocketState.Open or WebSocketState.CloseSent)
         {
-            this.Trace("connected");
+            this.TraceOld("connected");
             ResumeObservable();
 
-            this.Trace("invoke ConnectionRestored");
+            this.TraceOld("invoke ConnectionRestored");
             Executor.Schedule(() => ConnectionRestored.Invoke());
         }
         else
-            this.Trace("connected");
+            this.TraceOld("connected");
     }
 
     public override async ValueTask DisposeAsync()
     {
-        this.Trace($"start in {Socket.State}");
+        this.TraceOld($"start in {Socket.State}");
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
-            this.Trace("invoke ConnectionLost");
+            this.TraceOld("invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
         }
 
         await DisposeBaseAsync();
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 }

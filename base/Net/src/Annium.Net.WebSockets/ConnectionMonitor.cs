@@ -15,16 +15,16 @@ public class ConnectionMonitor : IConnectionMonitor
 
     public void Init(ISendingReceivingWebSocket socket)
     {
-        this.Trace($"Init with {socket.GetFullId()}");
+        this.TraceOld($"Init with {socket.GetFullId()}");
     }
 
     public void Start()
     {
-        this.Trace("start");
+        this.TraceOld("start");
     }
 
     public void Stop()
     {
-        this.Trace("stop");
+        this.TraceOld("stop");
     }
 }

@@ -11,15 +11,15 @@ public static class WhenCompletedExtensions
     )
     {
         var tcs = new TaskCompletionSource<object?>();
-        source.Trace("subscribe");
+        source.TraceOld("subscribe");
         using var _ = source.Subscribe(delegate { }, () =>
         {
-            source.Trace("set - start");
+            source.TraceOld("set - start");
             tcs.SetResult(null);
-            source.Trace("set - done");
+            source.TraceOld("set - done");
         });
-        source.Trace("wait");
+        source.TraceOld("wait");
         await tcs.Task;
-        source.Trace("done");
+        source.TraceOld("done");
     }
 }

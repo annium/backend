@@ -23,26 +23,26 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
 
     public async ValueTask DisposeAsync()
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         DisposeBase();
 
         if (_asyncDisposables.Count > 0)
             await Task.WhenAll(Pull(_asyncDisposables).Select(async entry =>
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.TraceOld($"dispose {entry.GetFullId()} - start");
                 await entry.DisposeAsync();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.TraceOld($"dispose {entry.GetFullId()} - done");
             }));
         if (_asyncDisposes.Count > 0)
             await Task.WhenAll(Pull(_asyncDisposes).Select(async entry =>
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.TraceOld($"dispose {entry.GetFullId()} - start");
                 await entry();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.TraceOld($"dispose {entry.GetFullId()} - done");
             }));
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public static AsyncDisposableBox operator +(AsyncDisposableBox box, IDisposable disposable) => box.Add(box.SyncDisposables, disposable);
@@ -77,9 +77,9 @@ public sealed class DisposableBox : DisposableBoxBase<DisposableBox>, IDisposabl
 
     public void Dispose()
     {
-        this.Trace("start");
+        this.TraceOld("start");
         DisposeBase();
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public static DisposableBox operator +(DisposableBox box, IDisposable disposable) => box.Add(box.SyncDisposables, disposable);
@@ -105,7 +105,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
 
         lock (_locker)
         {
-            this.Trace($"add {item.GetFullId()}");
+            this.TraceOld($"add {item.GetFullId()}");
             entries.Add(item);
         }
 
@@ -119,7 +119,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         lock (_locker)
             foreach (var item in items)
             {
-                this.Trace($"add {item.GetFullId()}");
+                this.TraceOld($"add {item.GetFullId()}");
                 entries.Add(item);
             }
 
@@ -132,7 +132,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
 
         lock (_locker)
         {
-            this.Trace($"remove {item.GetFullId()}");
+            this.TraceOld($"remove {item.GetFullId()}");
             entries.Remove(item);
         }
 
@@ -146,7 +146,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         lock (_locker)
             foreach (var item in items)
             {
-                this.Trace($"remove {item.GetFullId()}");
+                this.TraceOld($"remove {item.GetFullId()}");
                 entries.Remove(item);
             }
 
@@ -167,7 +167,7 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         {
             if (IsDisposed)
             {
-                this.Trace("already disposed");
+                this.TraceOld("already disposed");
                 return;
             }
 
@@ -177,17 +177,17 @@ public abstract class DisposableBoxBase<TBox> where TBox : DisposableBoxBase<TBo
         if (SyncDisposables.Count > 0)
             foreach (var entry in Pull(SyncDisposables))
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.TraceOld($"dispose {entry.GetFullId()} - start");
                 entry.Dispose();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.TraceOld($"dispose {entry.GetFullId()} - done");
             }
 
         if (SyncDisposes.Count > 0)
             foreach (var entry in Pull(SyncDisposes))
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.TraceOld($"dispose {entry.GetFullId()} - start");
                 entry();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.TraceOld($"dispose {entry.GetFullId()} - done");
             }
     }
 

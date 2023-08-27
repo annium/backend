@@ -19,69 +19,69 @@ public class ServerManagedWebSocket : IServerManagedWebSocket
     {
         _nativeSocket = nativeSocket;
         _managedSocket = new ManagedWebSocket(nativeSocket);
-        this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
+        this.TraceOld($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
 
         _managedSocket.TextReceived += OnTextReceived;
         _managedSocket.BinaryReceived += OnBinaryReceived;
 
-        this.Trace("start listen");
+        this.TraceOld("start listen");
         IsClosed = _managedSocket.ListenAsync(ct).ContinueWith(HandleClosed);
     }
 
     public async Task DisconnectAsync()
     {
-        this.Trace("start");
+        this.TraceOld("start");
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
         try
         {
-            this.Trace("close output");
+            this.TraceOld("close output");
             if (_nativeSocket.State is WebSocketState.Open or WebSocketState.CloseReceived)
                 await _nativeSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, CancellationToken.None);
         }
         catch (Exception e)
         {
-            this.Trace($"failed: {e}");
+            this.TraceOld($"failed: {e}");
         }
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
-        this.Trace("send text");
+        this.TraceOld("send text");
 
         return _managedSocket.SendTextAsync(text, ct);
     }
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        this.Trace("send binary");
+        this.TraceOld("send binary");
 
         return _managedSocket.SendBinaryAsync(data, ct);
     }
 
     private void OnTextReceived(ReadOnlyMemory<byte> data)
     {
-        this.Trace("trigger text received");
+        this.TraceOld("trigger text received");
         TextReceived(data);
     }
 
     private void OnBinaryReceived(ReadOnlyMemory<byte> data)
     {
-        this.Trace("trigger binary received");
+        this.TraceOld("trigger binary received");
         BinaryReceived(data);
     }
 
     private WebSocketCloseResult HandleClosed(Task<WebSocketCloseResult> task)
     {
-        this.Trace("start, unsubscribe from managed socket");
+        this.TraceOld("start, unsubscribe from managed socket");
 
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
-        this.Trace("done");
+        this.TraceOld("done");
 
         return task.Result;
     }

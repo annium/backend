@@ -18,7 +18,7 @@ internal class Processor
 
     public void Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        this.Trace($"Process {type.FriendlyName()}");
+        this.TraceOld($"Process {type.FriendlyName()}");
 
         foreach (var processor in _processors)
         {
@@ -26,7 +26,7 @@ internal class Processor
             if (!result)
                 continue;
 
-            this.Trace($"Processed {type.FriendlyName()} via {processor.GetType().FriendlyName()}");
+            this.TraceOld($"Processed {type.FriendlyName()} via {processor.GetType().FriendlyName()}");
             return;
         }
     }

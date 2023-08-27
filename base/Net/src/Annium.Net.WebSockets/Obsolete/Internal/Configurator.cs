@@ -45,7 +45,7 @@ internal static class Configurator
                 )
                 .DoParallelAsync(async _ =>
                 {
-                    pingPong.Trace("KeepAlive: ping -> pong");
+                    pingPong.TraceOld("KeepAlive: ping -> pong");
                     await send(opts.PongFrame);
                 })
                 .Subscribe();

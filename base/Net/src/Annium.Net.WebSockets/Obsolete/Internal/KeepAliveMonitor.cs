@@ -33,7 +33,7 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
 
     public void Resume()
     {
-        this.Trace("start");
+        this.TraceOld("start");
         _disposable = Disposable.Box();
 
         _disposable += _cts = new();
@@ -48,15 +48,15 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
         _disposable += _observable
             .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
             .Subscribe(TrackPong);
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public void Pause()
     {
-        this.Trace("start");
+        this.TraceOld("start");
         _cts.Cancel();
         _disposable.Dispose();
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     private void SendPingCheckPong(object? _)
@@ -77,7 +77,7 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
     private void SendPing()
     {
         // send ping every time
-        this.Trace("Send ping");
+        this.TraceOld("Send ping");
         _send(_options.PingFrame).Subscribe();
     }
 
@@ -91,17 +91,17 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
         if (silenceDuration <= _options.PingInterval)
             return;
 
-        this.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+        this.TraceOld($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
         if (silenceDuration > _options.PingInterval * _options.Retries)
         {
-            this.Trace("Missed all pings - signal connection lost");
+            this.TraceOld("Missed all pings - signal connection lost");
             _cts.Cancel();
         }
     }
 
     private void TrackPong(SocketMessage _)
     {
-        this.Trace("Received pong");
+        this.TraceOld("Received pong");
         _lastPongTime = GetNow();
     }
 

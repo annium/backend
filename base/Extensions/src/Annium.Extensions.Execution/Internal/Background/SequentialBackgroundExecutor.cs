@@ -49,16 +49,16 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
 
     protected override async ValueTask HandleDisposeAsync()
     {
-        this.Trace($"wait for {Count} task(s) to finish");
+        this.TraceOld($"wait for {Count} task(s) to finish");
         await _runTask;
-        this.Trace("wait for reader completion");
+        this.TraceOld("wait for reader completion");
         await _taskReader.Completion.ConfigureAwait(false);
         _cts.Dispose();
     }
 
     private async Task Run()
     {
-        this.Trace("start");
+        this.TraceOld("start");
         // normal mode - runs task immediately or waits for one
         while (IsAvailable)
         {
@@ -69,18 +69,18 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
             }
             catch (ChannelClosedException)
             {
-                this.Trace("channel closed");
+                this.TraceOld("channel closed");
                 break;
             }
             catch (OperationCanceledException)
             {
-                this.Trace("operation canceled");
+                this.TraceOld("operation canceled");
                 break;
             }
         }
 
         // shutdown mode - runs only left tasks
-        this.Trace($"run {Count} tasks left");
+        this.TraceOld($"run {Count} tasks left");
         while (true)
         {
             if (_taskReader.TryRead(out var task))
@@ -89,6 +89,6 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
                 break;
         }
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 }

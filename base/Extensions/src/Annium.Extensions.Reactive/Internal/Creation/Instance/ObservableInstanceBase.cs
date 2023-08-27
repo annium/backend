@@ -44,7 +44,7 @@ internal abstract class ObservableInstanceBase<T>
     {
         if (_isCompleted)
         {
-            this.Trace("Observable already completed");
+            this.TraceOld("Observable already completed");
             throw new InvalidOperationException("Observable already completed");
         }
 
@@ -59,7 +59,7 @@ internal abstract class ObservableInstanceBase<T>
     {
         if (_isDisposing)
         {
-            this.Trace("Observable is already disposing");
+            this.TraceOld("Observable is already disposing");
             throw new ObjectDisposedException(GetType().FriendlyName());
         }
     }

@@ -21,22 +21,22 @@ public class ServerWebSocket : IServerWebSocket
 
     public ServerWebSocket(NativeWebSocket nativeSocket, ServerWebSocketOptions options, CancellationToken ct = default)
     {
-        this.Trace("start");
+        this.TraceOld("start");
         _socket = new ServerManagedWebSocket(nativeSocket, ct);
         _socket.TextReceived += TextReceived;
         _socket.BinaryReceived += BinaryReceived;
 
-        this.Trace("subscribe to IsClosed");
+        this.TraceOld("subscribe to IsClosed");
         _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
 
-        this.Trace("init monitor");
+        this.TraceOld("init monitor");
         _connectionMonitor = options.ConnectionMonitor;
         _connectionMonitor.Init(this);
 
-        this.Trace("start monitor");
+        this.TraceOld("start monitor");
         _connectionMonitor.Start();
 
-        this.Trace("subscribe to OnConnectionLost");
+        this.TraceOld("subscribe to OnConnectionLost");
         _connectionMonitor.OnConnectionLost += Disconnect;
     }
 
@@ -47,78 +47,78 @@ public class ServerWebSocket : IServerWebSocket
 
     public void Disconnect()
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
             SetStatus(Status.Disconnected);
         }
 
-        this.Trace("stop monitor");
+        this.TraceOld("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace("disconnect managed socket");
+        this.TraceOld("disconnect managed socket");
         _socket.DisconnectAsync();
 
-        this.Trace("fire disconnected");
+        this.TraceOld("fire disconnected");
         OnDisconnected(WebSocketCloseStatus.ClosedLocal);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
-        this.Trace("send text");
+        this.TraceOld("send text");
         return _socket.SendTextAsync(text, ct);
     }
 
     public ValueTask<WebSocketSendStatus> SendBinaryAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
-        this.Trace("send binary");
+        this.TraceOld("send binary");
         return _socket.SendBinaryAsync(data, ct);
     }
 
     private void HandleClosed(Task<WebSocketCloseResult> task)
     {
-        this.Trace("start");
+        this.TraceOld("start");
 
         lock (_locker)
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.TraceOld($"skip - already {_status}");
                 return;
             }
 
             SetStatus(Status.Disconnected);
         }
 
-        this.Trace("stop monitor");
+        this.TraceOld("stop monitor");
         _connectionMonitor.Stop();
 
         var result = task.Result;
         if (result.Exception is not null)
         {
-            this.Trace($"fire error: {result.Exception}");
+            this.TraceOld($"fire error: {result.Exception}");
             OnError(result.Exception);
         }
 
-        this.Trace("fire disconnected");
+        this.TraceOld("fire disconnected");
         OnDisconnected(result.Status);
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetStatus(Status status)
     {
-        this.Trace($"update status from {_status} to {status}");
+        this.TraceOld($"update status from {_status} to {status}");
         _status = status;
     }
 

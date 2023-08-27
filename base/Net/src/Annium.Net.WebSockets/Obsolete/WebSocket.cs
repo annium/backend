@@ -42,10 +42,10 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public async Task DisconnectAsync()
     {
-        this.Trace($"cancel receive, if pending, in {Socket.State}");
+        this.TraceOld($"cancel receive, if pending, in {Socket.State}");
         PauseObservable();
 
-        this.Trace($"invoke ConnectionLost in {Socket.State}");
+        this.TraceOld($"invoke ConnectionLost in {Socket.State}");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -55,21 +55,21 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
                 Socket.State == WebSocketState.Open
             )
             {
-                this.Trace("Disconnect");
+                this.TraceOld("Disconnect");
                 await Socket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
             }
             else
-                this.Trace("Already disconnected");
+                this.TraceOld("Already disconnected");
         }
         catch (WebSocketException)
         {
-            this.Trace(nameof(WebSocketException));
+            this.TraceOld(nameof(WebSocketException));
         }
     }
 
     protected override Task OnConnectionLostAsync()
     {
-        this.Trace("Invoke ConnectionLost");
+        this.TraceOld("Invoke ConnectionLost");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         return Task.CompletedTask;
@@ -77,15 +77,15 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public override async ValueTask DisposeAsync()
     {
-        this.Trace($"start in {Socket.State}");
+        this.TraceOld($"start in {Socket.State}");
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
-            this.Trace("Invoke ConnectionLost");
+            this.TraceOld("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
         }
 
         await DisposeBaseAsync();
 
-        this.Trace("done");
+        this.TraceOld("done");
     }
 }

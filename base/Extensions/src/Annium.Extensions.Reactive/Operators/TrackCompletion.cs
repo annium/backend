@@ -103,6 +103,6 @@ file record CompletionContext<T>
         [CallerLineNumber] int line = 0
     )
     {
-        this.Trace(msg, false, callerFilePath, member, line);
+        this.TraceOld(msg, false, callerFilePath, member, line);
     }
 }

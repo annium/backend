@@ -9,19 +9,19 @@ internal static class ObserverObservableEventExtensions
     {
         if (e.Error is not null)
         {
-            observer.Trace($"error: {e.Error}");
+            observer.TraceOld($"error: {e.Error}");
             observer.OnError(e.Error);
             return;
         }
 
         if (e.IsCompleted)
         {
-            observer.Trace("completed");
+            observer.TraceOld("completed");
             observer.OnCompleted();
             return;
         }
 
-        observer.Trace($"next: {e.Data}");
+        observer.TraceOld($"next: {e.Data}");
         observer.OnNext(e.Data);
     }
 }

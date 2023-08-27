@@ -20,7 +20,7 @@ internal class Referrer
 
     public IRef GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        this.Trace($"Resolve {type.FriendlyName()} ref");
+        this.TraceOld($"Resolve {type.FriendlyName()} ref");
 
         foreach (var referrer in _referrers)
         {
@@ -28,7 +28,7 @@ internal class Referrer
             if (result is null)
                 continue;
 
-            this.Trace($"Resolved {type.FriendlyName()} ref as {result} via {referrer.GetType().FriendlyName()}");
+            this.TraceOld($"Resolved {type.FriendlyName()} ref as {result} via {referrer.GetType().FriendlyName()}");
             return result;
         }
 
