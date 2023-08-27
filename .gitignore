@@ -2,6 +2,9 @@
 .idea/
 *.DotSettings.user
 
+# artifacts
+*.log
+
 # xs ignore patterns
 .xs.ignore
 .xs.credentials
