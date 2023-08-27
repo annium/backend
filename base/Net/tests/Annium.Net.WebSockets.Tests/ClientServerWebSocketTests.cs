@@ -23,6 +23,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         const string message = "demo";
 
         // act
+        this.Trace("send text");
         var result = await SendTextAsync(message);
 
         // assert
@@ -37,10 +38,12 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string message = "demo";
         await using var _ = RunServer(async serverSocket => await serverSocket.WhenDisconnected());
-        Connect();
-        await WhenConnected();
+
+        this.Trace("connect");
+        await ConnectAsync();
 
         // act
+        this.Trace("send text");
         var result = await SendTextAsync(message, new CancellationToken(true));
 
         // assert
@@ -55,11 +58,15 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string message = "demo";
         await using var _ = RunServer(async serverSocket => await serverSocket.WhenDisconnected());
-        Connect();
-        await WhenConnected();
+
+        this.Trace("connect");
+        await ConnectAsync();
 
         // act
+        this.Trace("disconnect");
         _clientSocket.Disconnect();
+
+        this.Trace("send text");
         var result = await SendTextAsync(message);
 
         // assert
@@ -79,13 +86,15 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
             return Task.CompletedTask;
         });
-        Connect();
-        await WhenConnected();
+
+        this.Trace("connect");
+        await ConnectAsync();
 
         // delay to let server close connection
         await Task.Delay(20);
 
         // act
+        this.Trace("send text");
         var result = await SendTextAsync(message);
 
         // assert
@@ -344,6 +353,10 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
+        _clientSocket.OnConnected += () => Console.WriteLine("STATE: Connected");
+        _clientSocket.OnDisconnected += x => Console.WriteLine($"STATE: Disconnected: {x}");
+        _clientSocket.OnError += x => Console.WriteLine($"STATE: Error: {x}");
+
         this.Trace("done");
 
         return Task.CompletedTask;
@@ -362,39 +375,78 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<IServerWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase((ctx, ct) => handleWebSocket(new ServerWebSocket(ctx.WebSocket, ct)));
+        return RunServerBase(async (ctx, ct) =>
+        {
+            this.Trace("start");
+
+            var socket = new ServerWebSocket(ctx.WebSocket, ct);
+
+            this.Trace($"handle {socket.GetFullId()}");
+            await handleWebSocket(socket);
+
+            this.Trace($"disconnect {socket.GetFullId()}");
+            socket.Disconnect();
+
+            this.Trace("done");
+        });
     }
 
-    private void Connect()
+    private async Task ConnectAsync()
     {
-        _clientSocket.Connect(ServerUri);
-    }
+        this.Trace("start");
 
-    private Task WhenConnected()
-    {
         var tcs = new TaskCompletionSource();
-        _clientSocket.OnConnected += tcs.SetResult;
 
-        return tcs.Task.WaitAsync(TimeSpan.FromSeconds(1));
+        _clientSocket.Trace($"subscribe {tcs.GetFullId()} to OnConnected");
+        _clientSocket.OnConnected += () =>
+        {
+            _clientSocket.Trace($"set {tcs.GetFullId()} to signaled state");
+            tcs.SetResult();
+        };
+
+        _clientSocket.Connect(ServerUri);
+
+        await tcs.Task.WaitAsync(TimeSpan.FromSeconds(1));
+
+        this.Trace("done");
     }
+
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
-        return await _clientSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+        this.Trace("start");
+
+        var result = await _clientSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
+
+        this.Trace("done");
+
+        return result;
     }
 
     private async Task<WebSocketSendStatus> SendBinaryAsync(byte[] data, CancellationToken ct = default)
     {
-        return await _clientSocket.SendBinaryAsync(data, ct);
+        this.Trace("start");
+
+        var result = await _clientSocket.SendBinaryAsync(data, ct);
+
+        this.Trace("done");
+
+        return result;
     }
 }
 
-internal static class ServerWebSocketExtensions
+internal static class WebSocketExtensions
 {
     public static Task WhenDisconnected(this IServerWebSocket socket)
     {
         var tcs = new TaskCompletionSource();
-        socket.OnDisconnected += _ => tcs.SetResult();
+
+        socket.Trace($"subscribe {tcs.GetFullId()} to OnDisconnected");
+        socket.OnDisconnected += status =>
+        {
+            socket.Trace($"set {tcs.GetFullId()} to signaled state for status {status}");
+            tcs.SetResult();
+        };
 
         return tcs.Task;
     }

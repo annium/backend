@@ -14,6 +14,7 @@ public class ServerWebSocket : IServerWebSocket
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
+    private readonly object _locker = new();
     private readonly IServerManagedWebSocket _socket;
     private readonly IConnectionMonitor _connectionMonitor;
     private Status _status = Status.Connected;
@@ -44,6 +45,33 @@ public class ServerWebSocket : IServerWebSocket
     {
     }
 
+    public void Disconnect()
+    {
+        this.Trace("start");
+
+        lock (_locker)
+        {
+            if (_status is Status.Disconnected)
+            {
+                this.Trace($"skip - already {_status}");
+                return;
+            }
+
+            SetStatus(Status.Disconnected);
+        }
+
+        this.Trace("stop monitor");
+        _connectionMonitor.Stop();
+
+        this.Trace("disconnect managed socket");
+        _socket.DisconnectAsync();
+
+        this.Trace("fire disconnected");
+        OnDisconnected(WebSocketCloseStatus.ClosedLocal);
+
+        this.Trace("done");
+    }
+
     public ValueTask<WebSocketSendStatus> SendTextAsync(ReadOnlyMemory<byte> text, CancellationToken ct = default)
     {
         this.Trace("send text");
@@ -56,38 +84,23 @@ public class ServerWebSocket : IServerWebSocket
         return _socket.SendBinaryAsync(data, ct);
     }
 
-    public void Disconnect()
-    {
-        this.Trace("start");
-
-        if (_status is Status.Disconnected)
-        {
-            this.Trace($"skip - already {_status}");
-            return;
-        }
-
-        SetStatus(Status.Disconnected);
-
-        this.Trace("stop monitor");
-        _connectionMonitor.Stop();
-
-        this.Trace("disconnect managed socket");
-        _socket.DisconnectAsync();
-
-        this.Trace("done");
-    }
-
     private void HandleClosed(Task<WebSocketCloseResult> task)
     {
         this.Trace("start");
 
-        if (_status is Status.Disconnected)
+        lock (_locker)
         {
-            this.Trace($"skip - already {_status}");
-            return;
+            if (_status is Status.Disconnected)
+            {
+                this.Trace($"skip - already {_status}");
+                return;
+            }
+
+            SetStatus(Status.Disconnected);
         }
 
-        SetStatus(Status.Disconnected);
+        this.Trace("stop monitor");
+        _connectionMonitor.Stop();
 
         var result = task.Result;
         if (result.Exception is not null)
