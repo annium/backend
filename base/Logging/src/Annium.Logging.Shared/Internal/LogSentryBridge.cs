@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -32,7 +33,7 @@ internal class LogSentryBridge<TContext> : ILogSentryBridge
         LogLevel level,
         string messageTemplate,
         Exception? exception,
-        object[] dataItems
+        IReadOnlyList<object> dataItems
     )
     {
         var instant = _timeProvider.Now;

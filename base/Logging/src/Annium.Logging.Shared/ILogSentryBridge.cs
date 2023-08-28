@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Annium.Logging.Shared;
 
@@ -13,6 +14,6 @@ public interface ILogSentryBridge
         LogLevel level,
         string messageTemplate,
         Exception? exception,
-        object[] dataItems
+        IReadOnlyList<object> dataItems
     );
 }

@@ -6,7 +6,7 @@ namespace Annium.Logging.Shared.Internal;
 
 internal static class Helper
 {
-    public static (string, IReadOnlyDictionary<string, object>) Process(string messageTemplate, object[] dataItems)
+    public static (string, IReadOnlyDictionary<string, object>) Process(string messageTemplate, IReadOnlyList<object> dataItems)
     {
         var depth = 0;
         var keyIndex = -1;
@@ -34,7 +34,7 @@ internal static class Helper
                     keyIndex = -1;
 
                     ++itemIndex;
-                    if (dataItems.Length > itemIndex)
+                    if (dataItems.Count > itemIndex)
                         sb.Append(data[key] = dataItems[itemIndex]);
                     else
                     {
@@ -52,7 +52,7 @@ internal static class Helper
             }
         }
 
-        var extra = dataItems.Length - itemIndex - 1;
+        var extra = dataItems.Count - itemIndex - 1;
         if (extra > 0)
             throw new InvalidOperationException($"Unexpected {extra} data item(s). Template: {messageTemplate}.");
 
