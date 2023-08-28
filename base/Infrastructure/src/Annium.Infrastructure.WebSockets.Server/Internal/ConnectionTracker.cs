@@ -15,21 +15,16 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     private readonly IServerLifetime _lifetime;
     private readonly Dictionary<Guid, ConnectionRef> _connections = new();
     private readonly TaskCompletionSource<object> _disposeTcs = new();
-    private readonly ILogger _connectionLogger;
     private bool _isDisposing;
     private bool _isDisposed;
-    private readonly ILogger _connectionRefLogger;
 
     public ConnectionTracker(
         IServerLifetime lifetime,
-        ILoggerFactory loggerFactory,
         ILogger logger
     )
     {
         _lifetime = lifetime;
         Logger = logger;
-        _connectionLogger = loggerFactory.Get<Connection>();
-        _connectionRefLogger = loggerFactory.Get<ConnectionRef>();
         _lifetime.Stopping.Register(TryStop);
     }
 
@@ -40,10 +35,10 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         if (_lifetime.Stopping.IsCancellationRequested)
             throw new InvalidOperationException("Server is already stopping");
 
-        var cn = new Connection(Guid.NewGuid(), socket, _connectionLogger);
+        var cn = new Connection(Guid.NewGuid(), socket, Logger);
         this.Trace($"connection {cn.Id} - start");
         lock (_connections)
-            _connections[cn.Id] = new ConnectionRef(cn, _connectionRefLogger);
+            _connections[cn.Id] = new ConnectionRef(cn, Logger);
 
         this.Trace($"connection {cn.Id} - done");
         return cn;

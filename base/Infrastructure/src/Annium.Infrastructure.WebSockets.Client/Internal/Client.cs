@@ -8,9 +8,8 @@ using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
-internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
+internal class Client : ClientBase<ClientWebSocket>, IClient
 {
-    public new ILogger Logger { get; }
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
     public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
     private readonly IClientConfiguration _configuration;
@@ -22,18 +21,17 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfiguration configuration,
-        ILoggerFactory loggerFactory,
+        ILogger logger,
         ITracer tracer
     ) : base(
         new ClientWebSocket(configuration.WebSocketOptions, tracer),
         timeProvider,
         serializer,
         configuration,
-        loggerFactory.Get<Client>(),
+        logger,
         tracer
     )
     {
-        Logger = loggerFactory.Get<Client>();
         _configuration = configuration;
         _disposable = Disposable.Box(tracer);
         Socket.ConnectionLost += () => ConnectionLost.Invoke();

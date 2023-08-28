@@ -24,21 +24,18 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     public ILogger Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;
     private readonly IMediator _mediator;
-    private readonly ILoggerFactory _loggerFactory;
     private readonly IServiceProvider _sp;
 
     public SubscriptionInitHandler(
         SubscriptionContextStore subscriptionContextStore,
         IMediator mediator,
         ILogger logger,
-        ILoggerFactory loggerFactory,
         IServiceProvider sp
     )
     {
         _subscriptionContextStore = subscriptionContextStore;
         _mediator = mediator;
         Logger = logger;
-        _loggerFactory = loggerFactory;
         _sp = sp;
     }
 
@@ -57,7 +54,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
             subscriptionId,
             cts,
             _mediator,
-            _loggerFactory.Get<SubscriptionContext<TInit, TMessage, TState>>(),
+            Logger,
             _sp
         );
 

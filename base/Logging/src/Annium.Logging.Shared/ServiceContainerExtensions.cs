@@ -33,7 +33,6 @@ public static class ServiceContainerExtensions
         container.Add<TContext>().AsSelf().In(ServiceLifetime.Scoped);
         container.Add<ILogger, Logger>().In(ServiceLifetime.Scoped);
         container.Add<ILogSubject, LogSubject>().In(ServiceLifetime.Scoped);
-        container.Add<ILoggerFactory, LoggerFactory>().In(ServiceLifetime.Scoped);
         container.Add<LogRouter<TContext>>().AsSelf().Singleton();
         container.Add<ILogSentry<TContext>, LogSentry<TContext>>().Singleton();
         container.Add<ILogSentryBridge, LogSentryBridge<TContext>>().In(ServiceLifetime.Scoped);

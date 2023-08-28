@@ -8,19 +8,19 @@ internal class TestClientFactory : ITestClientFactory
 {
     private readonly ITimeProvider _timeProvider;
     private readonly SerializerFactory _serializerFactory;
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger _logger;
     private readonly ITracer _tracer;
 
     public TestClientFactory(
         ITimeProvider timeProvider,
         SerializerFactory serializerFactory,
-        ILoggerFactory loggerFactory,
+        ILogger logger,
         ITracer tracer
     )
     {
         _timeProvider = timeProvider;
         _serializerFactory = serializerFactory;
-        _loggerFactory = loggerFactory;
+        _logger = logger;
         _tracer = tracer;
     }
 
@@ -28,6 +28,6 @@ internal class TestClientFactory : ITestClientFactory
     {
         var serializer = _serializerFactory.Create(configuration);
 
-        return new TestClient(socket, _timeProvider, serializer, configuration, _loggerFactory, _tracer);
+        return new TestClient(socket, _timeProvider, serializer, configuration, _logger, _tracer);
     }
 }

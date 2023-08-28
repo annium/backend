@@ -4,18 +4,18 @@ namespace Annium.Data.Tables.Internal;
 
 internal class TableFactory : ITableFactory
 {
-    private readonly ILoggerFactory _loggerFactory;
+    private readonly ILogger _logger;
 
     public TableFactory(
-        ILoggerFactory loggerFactory
+        ILogger logger
     )
     {
-        _loggerFactory = loggerFactory;
+        _logger = logger;
     }
 
     public ITableBuilder<T> New<T>()
         where T : notnull
     {
-        return new TableBuilder<T>(_loggerFactory.Get<Table<T>>());
+        return new TableBuilder<T>(_logger);
     }
 }
