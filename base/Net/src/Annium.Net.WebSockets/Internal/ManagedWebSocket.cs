@@ -3,18 +3,21 @@ using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Net.WebSockets.Internal;
 
-public class ManagedWebSocket : ISendingReceivingWebSocket
+public class ManagedWebSocket : ISendingReceivingWebSocket, ILogSubject
 {
+    public ILogger Logger { get; }
     private const int BufferSize = 65_536;
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     private readonly WebSocket _socket;
 
-    public ManagedWebSocket(WebSocket socket)
+    public ManagedWebSocket(WebSocket socket, ILogger logger)
     {
+        Logger = logger;
         _socket = socket;
     }
 
@@ -36,7 +39,7 @@ public class ManagedWebSocket : ISendingReceivingWebSocket
 
         while (true)
         {
-            var (isClosed,result) = await ReceiveAsync(buffer, ct);
+            var (isClosed, result) = await ReceiveAsync(buffer, ct);
             if (isClosed)
             {
                 this.Trace(result.Exception is not null ? $"stop with {result.Status}: {result.Exception}" : $"stop with {result.Status}");

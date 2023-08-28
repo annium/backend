@@ -1,4 +1,5 @@
 using System;
+using Annium.Logging;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
@@ -6,6 +7,13 @@ namespace Annium.Net.Types.Internal.Referrers;
 
 internal class NullableReferrer : IReferrer
 {
+    public ILogger Logger { get; }
+
+    public NullableReferrer(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.IsValueType)

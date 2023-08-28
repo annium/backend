@@ -45,7 +45,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         var cnId = _cn.Id;
         this.Trace($"cn {cnId} - start");
         await using var scope = _sp.CreateAsyncScope();
-        var executor = Executor.Background.Parallel<ConnectionHandler<TState>>();
+        var executor = Executor.Background.Parallel<ConnectionHandler<TState>>(Logger);
         var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
         var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator<TState>>();
         try

@@ -27,7 +27,7 @@ internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject
         _timeProvider = timeProvider;
         _intervalParser = intervalParser;
 
-        _executor = Executor.Background.Parallel<Scheduler>();
+        _executor = Executor.Background.Parallel<Scheduler>(logger);
         _executor.Start();
     }
 

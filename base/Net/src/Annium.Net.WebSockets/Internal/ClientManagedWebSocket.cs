@@ -2,12 +2,14 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using NativeWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets.Internal;
 
-public class ClientManagedWebSocket : IClientManagedWebSocket
+public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
 {
+    public ILogger Logger { get; }
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
 
@@ -27,6 +29,11 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
     private CancellationTokenSource? _listenCts;
     private Task<WebSocketCloseResult>? _listenTask;
 
+    public ClientManagedWebSocket(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     public async Task<bool> ConnectAsync(Uri uri, CancellationToken ct = default)
     {
         this.Trace("start");
@@ -36,7 +43,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket
             throw new InvalidOperationException("Socket is already connected");
 
         _nativeSocket = new NativeWebSocket();
-        _managedSocket = new ManagedWebSocket(_nativeSocket);
+        _managedSocket = new ManagedWebSocket(_nativeSocket, Logger);
         this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
 
         this.Trace("bind events");

@@ -2,15 +2,22 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 
-internal abstract class BackgroundExecutorBase : IBackgroundExecutor
+internal abstract class BackgroundExecutorBase : IBackgroundExecutor, ILogSubject
 {
+    public ILogger Logger { get; }
     public bool IsAvailable => _state is State.Created or State.Started;
     protected bool IsStarted => _state is State.Started;
     protected readonly CancellationTokenSource Cts = new();
     private State _state = State.Created;
+
+    protected BackgroundExecutorBase(ILogger logger)
+    {
+        Logger = logger;
+    }
 
     public void Schedule(Action task)
     {

@@ -3,16 +3,22 @@ using System.Collections.Concurrent;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Net.WebSockets.Tests;
 
 public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 {
-    private IClientWebSocket _clientSocket = default!;
+    private ClientWebSocket _clientSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
+
+    public ClientServerWebSocketTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
 
     [Fact]
     public async Task Send_NotConnected()
@@ -348,7 +354,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     {
         this.Trace("start");
 
-        _clientSocket = new ClientWebSocket(ClientWebSocketOptions.Default with { ReconnectDelay = 1 });
+        _clientSocket = new ClientWebSocket(ClientWebSocketOptions.Default with { ReconnectDelay = 1 }, Logger);
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
@@ -372,13 +378,13 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         return Task.CompletedTask;
     }
 
-    private IAsyncDisposable RunServer(Func<IServerWebSocket, Task> handleWebSocket)
+    private IAsyncDisposable RunServer(Func<ServerWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, ct) =>
+        return RunServerBase(async (ctx, logger, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ServerWebSocket(ctx.WebSocket, ct);
+            var socket = new ServerWebSocket(ctx.WebSocket, logger, ct);
 
             this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket);
@@ -436,7 +442,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
 internal static class WebSocketExtensions
 {
-    public static Task WhenDisconnected(this IServerWebSocket socket)
+    public static Task WhenDisconnected(this ServerWebSocket socket)
     {
         var tcs = new TaskCompletionSource();
 

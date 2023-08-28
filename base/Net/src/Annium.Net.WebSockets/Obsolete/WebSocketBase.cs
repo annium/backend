@@ -53,7 +53,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
 
         // start socket observable
         _observable = CreateSocketObservable(_observableCts.Token)
-            .TrackCompletion();
+            .TrackCompletion(logger);
 
         // resolve components from configuration
         var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, logger);
@@ -193,7 +193,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         this.Trace("done");
 
         return () => Task.CompletedTask;
-    }, ct);
+    }, ct, Logger);
 
     private async ValueTask<Status> ReceiveAsync(
         ObserverContext<SocketMessage> ctx,
@@ -324,7 +324,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         this.Trace("cancel observable cts");
         _observableCts.Cancel();
         this.Trace("await observable");
-        await _observable.WhenCompleted();
+        await _observable.WhenCompleted(Logger);
         this.Trace("dispose executor");
         await Executor.DisposeAsync();
         this.Trace("dispose socket");

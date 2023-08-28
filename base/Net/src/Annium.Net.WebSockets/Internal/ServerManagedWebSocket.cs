@@ -2,22 +2,29 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets.Internal;
 
-public class ServerManagedWebSocket : IServerManagedWebSocket
+public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
 {
+    public ILogger Logger { get; }
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public Task<WebSocketCloseResult> IsClosed { get; }
     private readonly NativeWebSocket _nativeSocket;
     private readonly ManagedWebSocket _managedSocket;
 
-    public ServerManagedWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
+    public ServerManagedWebSocket(
+        NativeWebSocket nativeSocket,
+        ILogger logger,
+        CancellationToken ct = default
+    )
     {
+        Logger = logger;
         _nativeSocket = nativeSocket;
-        _managedSocket = new ManagedWebSocket(nativeSocket);
+        _managedSocket = new ManagedWebSocket(nativeSocket, logger);
         this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
 
         _managedSocket.TextReceived += OnTextReceived;

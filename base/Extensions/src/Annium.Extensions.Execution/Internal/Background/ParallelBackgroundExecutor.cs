@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 
@@ -12,6 +13,12 @@ internal class ParallelBackgroundExecutor<TSource> : BackgroundExecutorBase
     private int _taskCounter;
     private readonly ConcurrentBag<Delegate> _backlog = new();
     private readonly TaskCompletionSource<object> _tcs = new();
+
+    public ParallelBackgroundExecutor(
+        ILogger logger
+    ) : base(logger)
+    {
+    }
 
     protected override void HandleStart()
     {

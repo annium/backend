@@ -1,18 +1,24 @@
 using System;
 using System.Collections.Generic;
+using Annium.Logging;
 using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Referrers;
 
-internal class Referrer
+internal class Referrer : ILogSubject
 {
+    public ILogger Logger { get; }
     private readonly IEnumerable<IReferrer> _referrers;
 
-    public Referrer(IEnumerable<IReferrer> referrers)
+    public Referrer(
+        IEnumerable<IReferrer> referrers,
+        ILogger logger
+    )
     {
         _referrers = referrers;
+        Logger = logger;
     }
 
     public IRef GetRef(ContextualType type, IProcessingContext ctx) => GetRef(type, type.Nullability, ctx);

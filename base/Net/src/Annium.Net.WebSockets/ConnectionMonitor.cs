@@ -1,11 +1,12 @@
 using System;
+using Annium.Logging;
 
 namespace Annium.Net.WebSockets;
 
-public class ConnectionMonitor : IConnectionMonitor
+public class ConnectionMonitor : IConnectionMonitor, ILogSubject
 {
     public static IConnectionMonitor None { get; } = new ConnectionMonitor();
-
+    public ILogger Logger { get; } = VoidLogger.Instance;
     public event Action OnConnectionLost = delegate { };
 
     private ConnectionMonitor()

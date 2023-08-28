@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Cache.Abstractions;
 using Annium.Extensions.Execution;
+using Annium.Logging;
 using NodaTime;
 
 namespace Annium.Cache.InMemory.Internal;
@@ -13,13 +14,15 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, IAsyncDisposable
 {
     private readonly ITimeProvider _timeProvider;
     private readonly Dictionary<TKey, Entry> _data = new();
-    private readonly IBackgroundExecutor _executor = Executor.Background.Concurrent<Cache<TKey, TValue>>();
+    private readonly IBackgroundExecutor _executor;
 
     public Cache(
-        ITimeProvider timeProvider
+        ITimeProvider timeProvider,
+        ILogger logger
     )
     {
         _timeProvider = timeProvider;
+        _executor = Executor.Background.Concurrent<Cache<TKey, TValue>>(logger);
         _executor.Start();
     }
 

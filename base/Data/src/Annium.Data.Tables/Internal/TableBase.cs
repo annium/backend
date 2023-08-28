@@ -35,7 +35,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         _eventWriter = taskChannel.Writer;
         _eventReader = taskChannel.Reader;
 
-        _observable = CreateObservable(_observableCts.Token).TrackCompletion();
+        _observable = CreateObservable(_observableCts.Token).TrackCompletion(logger);
 
         Logger = logger;
     }
@@ -93,7 +93,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         }
 
         return () => Task.CompletedTask;
-    }, ct);
+    }, ct, Logger);
 
     public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
 
@@ -106,7 +106,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         this.Trace("cancel observable");
         _observableCts.Cancel();
         this.Trace("await observable completion");
-        await _observable.WhenCompleted();
+        await _observable.WhenCompleted(Logger);
         this.Trace("done");
     }
 }

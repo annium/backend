@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.WebSockets.Benchmark.Internal;
 using Annium.Net.WebSockets.Internal;
 using BenchmarkDotNet.Attributes;
@@ -25,7 +26,7 @@ public partial class Benchmarks
         _plainEventCount = Constants.TotalMessages;
 
         _plainSocket = new NativeClientWebSocket();
-        var client = new ManagedWebSocket(_plainSocket);
+        var client = new ManagedWebSocket(_plainSocket, VoidLogger.Instance);
         client.TextReceived += HandleMessage_Plain;
         _plainSocket.ConnectAsync(new Uri($"ws://127.0.0.1:{Constants.Port}/"), CancellationToken.None).GetAwaiter().GetResult();
         _plainListenTask = client.ListenAsync(_plainCts.Token);

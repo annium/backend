@@ -18,6 +18,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     private readonly CancellationTokenSource _observableCts = new();
     private readonly IObservable<string> _observable;
     private readonly AsyncDisposableBox _disposable;
+    private readonly ILogger _logger;
 
     public NetMQMessageBusSocket(
         NetworkConfiguration cfg,
@@ -32,7 +33,8 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
         _subscriber.Connect(cfg.Endpoints.SubEndpoint);
         _subscriber.SubscribeToAnyTopic();
 
-        _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token).TrackCompletion();
+        _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token, logger).TrackCompletion(logger);
+        _logger = logger;
     }
 
     public IObservable<Unit> Send(string message)
@@ -78,7 +80,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     public async ValueTask DisposeAsync()
     {
         _observableCts.Cancel();
-        await _observable.WhenCompleted();
+        await _observable.WhenCompleted(_logger);
 
         await _disposable.DisposeAsync();
     }

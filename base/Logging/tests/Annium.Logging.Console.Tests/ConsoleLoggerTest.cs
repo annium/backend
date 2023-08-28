@@ -7,13 +7,10 @@ using Xunit.Abstractions;
 
 namespace Annium.Logging.Console.Tests;
 
-public class ConsoleLoggerTest : TestBase, ILogSubject
+public class ConsoleLoggerTest : TestBase
 {
-    public ILogger Logger { get; }
-
     public ConsoleLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Logger = Get<ILogger>();
     }
 
     [Fact]

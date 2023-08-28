@@ -37,7 +37,6 @@ internal static class Configurator
         {
             var opts = options.PassiveKeepAlive;
             keepAliveFrames.Add(opts.PingFrame);
-            var pingPong = new PingPong();
             disposable += observable
                 .Where(x =>
                     x.Type == WebSocketMessageType.Binary &&
@@ -46,7 +45,6 @@ internal static class Configurator
                 )
                 .DoParallelAsync(async _ =>
                 {
-                    pingPong.Trace("KeepAlive: ping -> pong");
                     await send(opts.PongFrame);
                 })
                 .Subscribe();

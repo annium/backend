@@ -1,6 +1,7 @@
 using System;
 using Annium.Extensions.Execution.Internal;
 using Annium.Extensions.Execution.Internal.Background;
+using Annium.Logging;
 
 namespace Annium.Extensions.Execution;
 
@@ -11,13 +12,13 @@ public static class Executor
 
     public static class Background
     {
-        public static IBackgroundExecutor Parallel<T>() =>
-            new ParallelBackgroundExecutor<T>();
+        public static IBackgroundExecutor Parallel<T>(ILogger logger) =>
+            new ParallelBackgroundExecutor<T>(logger);
 
-        public static IBackgroundExecutor Concurrent<T>(uint parallelism = 0) =>
-            new ConcurrentBackgroundExecutor<T>(parallelism == 0u ? Environment.ProcessorCount : (int)parallelism);
+        public static IBackgroundExecutor Concurrent<T>(ILogger logger, uint parallelism = 0) =>
+            new ConcurrentBackgroundExecutor<T>(parallelism == 0u ? Environment.ProcessorCount : (int)parallelism, logger);
 
-        public static IBackgroundExecutor Sequential<T>() =>
-            new SequentialBackgroundExecutor<T>();
+        public static IBackgroundExecutor Sequential<T>(ILogger logger) =>
+            new SequentialBackgroundExecutor<T>(logger);
     }
 }

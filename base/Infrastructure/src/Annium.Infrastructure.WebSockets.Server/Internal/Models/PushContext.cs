@@ -18,7 +18,7 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
     private readonly IServiceProvider _sp;
     public TState State { get; }
     public ILogger Logger { get; }
-    private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<PushContext<TMessage, TState>>();
+    private readonly IBackgroundExecutor _executor;
 
     public PushContext(
         TState state,
@@ -33,6 +33,7 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
         _sp = sp;
         State = state;
         Logger = logger;
+        _executor = Executor.Background.Sequential<PushContext<TMessage, TState>>(logger);
         _executor.Start();
     }
 

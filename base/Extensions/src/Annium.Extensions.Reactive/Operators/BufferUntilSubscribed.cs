@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium;
 using Annium.Extensions.Reactive.Internal;
+using Annium.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace System;
@@ -12,10 +12,11 @@ namespace System;
 public static class BufferUntilSubscribedOperatorExtensions
 {
     public static IObservable<T> BufferUntilSubscribed<T>(
-        this IObservable<T> source
+        this IObservable<T> source,
+        ILogger logger
     )
     {
-        var ctx = new BufferContext<T>(source);
+        var ctx = new BufferContext<T>(source, logger);
 
         source.SubscribeOn(TaskPoolScheduler.Default).Subscribe(x => ctx.Process(x, null), e => ctx.Process(default!, e), ctx.DataCt);
         source.SubscribeOn(TaskPoolScheduler.Default).Subscribe(delegate { }, ctx.Complete, ctx.CompletionCt);
@@ -26,8 +27,9 @@ public static class BufferUntilSubscribedOperatorExtensions
     }
 }
 
-file record BufferContext<T>
+file record BufferContext<T> : ILogSubject
 {
+    public ILogger Logger { get; }
     public bool IsFlushed { get; private set; }
     public CancellationToken DataCt => _dataCts.Token;
     public CancellationToken CompletionCt => _completionCts.Token;
@@ -40,9 +42,11 @@ file record BufferContext<T>
     private IDisposable _firstSubscription = Disposable.Empty;
 
     public BufferContext(
-        IObservable<T> source
+        IObservable<T> source,
+        ILogger logger
     )
     {
+        Logger = logger;
         _source = source;
         _dataCts = CancellationTokenSource.CreateLinkedTokenSource(_completionCts.Token);
     }
@@ -52,13 +56,13 @@ file record BufferContext<T>
         lock (this)
         {
             var target = observer.GetFullId();
-            Trace($"{target} - start");
+            this.Trace($"{target} - start");
 
             Flush(observer);
             SetFirstObserver(observer);
             var subscription = Disposable.Create(DisposeFirstSubscription);
 
-            Trace($"{target} - done");
+            this.Trace($"{target} - done");
 
             return subscription;
         }
@@ -68,9 +72,9 @@ file record BufferContext<T>
     {
         lock (this)
         {
-            Trace("start");
+            this.Trace("start");
             var subscription = _source.Subscribe(observer);
-            Trace("done");
+            this.Trace("done");
 
             return subscription;
         }
@@ -80,7 +84,7 @@ file record BufferContext<T>
     {
         lock (this)
         {
-            Trace("start");
+            this.Trace("start");
 
             if (_isCompleted)
                 throw new InvalidOperationException($"Can't add: {data} - {error}, ctx already completed");
@@ -88,17 +92,17 @@ file record BufferContext<T>
             var e = new ObservableEvent<T>(data, error, false);
             if (_firstObserver is null)
             {
-                Trace($"enqueue: {data} - {error}");
+                this.Trace($"enqueue: {data} - {error}");
                 _events.Enqueue(e);
             }
             else
             {
-                Trace($"first - handle: {data} - {error}");
+                this.Trace($"first - handle: {data} - {error}");
                 _firstObserver.Handle(e);
                 SetFirstSubscription(Subscribe(_firstObserver));
             }
 
-            Trace("done");
+            this.Trace("done");
         }
     }
 
@@ -106,14 +110,14 @@ file record BufferContext<T>
     {
         lock (this)
         {
-            Trace("start");
+            this.Trace("start");
 
             if (_isCompleted)
                 throw new InvalidOperationException("source already completed");
 
             if (!IsFlushed)
             {
-                Trace("enqueue: completed");
+                this.Trace("enqueue: completed");
                 _events.Enqueue(new ObservableEvent<T>(default!, null, true));
             }
 
@@ -122,35 +126,35 @@ file record BufferContext<T>
             _firstObserver = null;
             _completionCts.Cancel();
 
-            Trace("done");
+            this.Trace("done");
         }
     }
 
     private void Flush(IObserver<T> observer)
     {
-        Trace("start");
+        this.Trace("start");
 
         IsFlushed = true;
         while (_events.TryDequeue(out var e))
             observer.Handle(e);
 
-        Trace("done");
+        this.Trace("done");
     }
 
     private void SetFirstObserver(IObserver<T> observer)
     {
-        Trace("start");
+        this.Trace("start");
 
         if (_firstObserver is not null)
             throw new InvalidOperationException("first observer already subscribed");
         _firstObserver = observer;
 
-        Trace("done");
+        this.Trace("done");
     }
 
     private void SetFirstSubscription(IDisposable subscription)
     {
-        Trace("start");
+        this.Trace("start");
 
         if (!ReferenceEquals(_firstSubscription, Disposable.Empty))
             throw new InvalidOperationException("first subscription already set");
@@ -159,26 +163,16 @@ file record BufferContext<T>
         _firstObserver = null;
         _dataCts.Cancel();
 
-        Trace("done");
+        this.Trace("done");
     }
 
     private void DisposeFirstSubscription()
     {
-        Trace("start");
+        this.Trace("start");
 
         _firstSubscription.Dispose();
         _firstSubscription = Disposable.Empty;
 
-        Trace("done");
-    }
-
-    public void Trace(
-        string msg,
-        [CallerFilePath] string callerFilePath = "",
-        [CallerMemberName] string member = "",
-        [CallerLineNumber] int line = 0
-    )
-    {
-        this.Trace(msg, false, callerFilePath, member, line);
+        this.Trace("done");
     }
 }

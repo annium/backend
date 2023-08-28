@@ -1,14 +1,17 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Logging;
 using Xunit.Abstractions;
 
 namespace Annium.Testing.Lib;
 
-public abstract class TestBase
+public abstract class TestBase : ILogSubject
 {
+    public ILogger Logger => _logger.Value;
     private bool _isBuilt;
     private readonly IServiceProviderBuilder _builder;
     private readonly Lazy<IServiceProvider> _sp;
+    private readonly Lazy<ILogger> _logger;
 
     protected TestBase(ITestOutputHelper outputHelper)
     {
@@ -19,6 +22,7 @@ public abstract class TestBase
         Setup(SharedSetup);
 
         _sp = new Lazy<IServiceProvider>(BuildServiceProvider, true);
+        _logger = new Lazy<ILogger>(Get<ILogger>, true);
     }
 
     protected void AddServicePack<T>()

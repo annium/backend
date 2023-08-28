@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 
@@ -14,7 +15,10 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
     private readonly SemaphoreSlim _gate;
     private readonly TaskCompletionSource<object> _tcs = new();
 
-    public ConcurrentBackgroundExecutor(int parallelism)
+    public ConcurrentBackgroundExecutor(
+        int parallelism,
+        ILogger logger
+    ) : base(logger)
     {
         _gate = new SemaphoreSlim(parallelism, parallelism);
     }

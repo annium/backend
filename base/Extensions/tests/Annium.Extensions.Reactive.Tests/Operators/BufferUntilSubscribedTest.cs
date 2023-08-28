@@ -3,17 +3,25 @@ using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Extensions.Reactive.Tests.Operators;
 
-public class BufferUntilSubscribedTest
+public class BufferUntilSubscribedTest : TestBase
 {
+    public BufferUntilSubscribedTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task BufferUntilSubscribed_LightImmediateWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -38,7 +46,7 @@ public class BufferUntilSubscribedTest
             }
 
             return () => Task.CompletedTask;
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Capture(observable, writeLog);
@@ -50,6 +58,7 @@ public class BufferUntilSubscribedTest
     public async Task BufferUntilSubscribed_LightDelayedWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -74,7 +83,7 @@ public class BufferUntilSubscribedTest
             }
 
             return () => Task.CompletedTask;
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Task.Delay(100, CancellationToken.None);
@@ -87,6 +96,7 @@ public class BufferUntilSubscribedTest
     public async Task BufferUntilSubscribed_HeavyImmediateWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -111,7 +121,7 @@ public class BufferUntilSubscribedTest
             }
 
             return () => Task.CompletedTask;
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Capture(observable, writeLog);
@@ -123,6 +133,7 @@ public class BufferUntilSubscribedTest
     public async Task BufferUntilSubscribed_HeavyDelayedWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -147,7 +158,7 @@ public class BufferUntilSubscribedTest
             }
 
             return () => Task.CompletedTask;
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Task.Delay(20, CancellationToken.None);
@@ -160,6 +171,7 @@ public class BufferUntilSubscribedTest
     public async Task BufferUntilSubscribed_SyncImmediateWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -182,7 +194,7 @@ public class BufferUntilSubscribedTest
             }
 
             return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Capture(observable, writeLog);
@@ -194,6 +206,7 @@ public class BufferUntilSubscribedTest
     public async Task BufferUntilSubscribed_SyncDelayedWorks()
     {
         // arrange
+        var logger = Get<ILogger>();
         var (log, writeLog) = GetLog();
 
         var cts = new CancellationTokenSource();
@@ -216,7 +229,7 @@ public class BufferUntilSubscribedTest
             }
 
             return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
-        }, cts.Token).BufferUntilSubscribed();
+        }, cts.Token, logger).BufferUntilSubscribed(logger);
 
         // act
         await Task.Delay(10, CancellationToken.None);
@@ -236,7 +249,7 @@ public class BufferUntilSubscribedTest
             x => log($"d: {x}"),
             () => log("c")
         )
-        .WhenCompleted();
+        .WhenCompleted(Get<ILogger>());
 
     private (List<string>, Action<string>) GetLog()
     {

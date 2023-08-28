@@ -1,3 +1,4 @@
+using Annium.Logging;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
@@ -5,6 +6,13 @@ namespace Annium.Net.Types.Internal.Processors;
 
 internal class GenericTypeProcessor : IProcessor
 {
+    public ILogger Logger { get; }
+
+    public GenericTypeProcessor(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         // handles only bound generic types

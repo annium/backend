@@ -22,7 +22,7 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
         ILogger logger
     ) : base(
         new NativeClientWebSocket(),
-        Extensions.Execution.Executor.Background.Parallel<ClientWebSocket>(),
+        Extensions.Execution.Executor.Background.Parallel<ClientWebSocket>(logger),
         options,
         new WebSocketConfig
         {

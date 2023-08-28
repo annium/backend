@@ -1,3 +1,4 @@
+using Annium.Logging;
 using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Internal.Helpers;
 using Annium.Net.Types.Models;
@@ -7,6 +8,13 @@ namespace Annium.Net.Types.Internal.Processors;
 
 internal class InterfaceProcessor : IProcessor
 {
+    public ILogger Logger { get; }
+
+    public InterfaceProcessor(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     public bool Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         if (!type.Type.IsInterface)

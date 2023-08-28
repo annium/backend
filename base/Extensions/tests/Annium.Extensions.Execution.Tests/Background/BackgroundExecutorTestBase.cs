@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit.Abstractions;
@@ -14,9 +15,9 @@ public abstract class BackgroundExecutorTestBase : TestBase
 {
     private readonly IBackgroundExecutor _executor;
 
-    protected BackgroundExecutorTestBase(IBackgroundExecutor executor, ITestOutputHelper outputHelper) : base(outputHelper)
+    protected BackgroundExecutorTestBase(Func<ILogger, IBackgroundExecutor> getExecutor, ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        _executor = executor;
+        _executor = getExecutor(Get<ILogger>());
     }
 
     protected async Task<IReadOnlyList<int>> Works_Base(int size)

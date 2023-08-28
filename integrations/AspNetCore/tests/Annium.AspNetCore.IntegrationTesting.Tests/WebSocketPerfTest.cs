@@ -9,6 +9,7 @@ using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
+using Annium.Logging;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
@@ -19,7 +20,7 @@ using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
-public class WebSocketPerfTest : IntegrationTestBase
+public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
 {
     public WebSocketPerfTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
@@ -34,6 +35,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - start");
 
         // arrange
+        var logger = Get<ILogger>();
         await using var client = await GetClient();
         Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - client arranged");
 
@@ -53,6 +55,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
 
         // arrange
+        var logger = Get<ILogger>();
         await using var client = await GetClient();
         var responses = new ConcurrentBag<string>();
         var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
@@ -83,6 +86,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         Trace("start");
 
         // arrange
+        var logger = Get<ILogger>();
         await using var client = await GetClient();
         var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
         var clientLog = new ConcurrentQueue<string>();
@@ -111,9 +115,9 @@ public class WebSocketPerfTest : IntegrationTestBase
         os1.Dispose();
         os2.Dispose();
         Trace("await subscription 1");
-        await o1.WhenCompleted();
+        await o1.WhenCompleted(logger);
         Trace("await subscription 2");
-        await o2.WhenCompleted();
+        await o2.WhenCompleted(logger);
 
         // wait for cancellation entries
         Trace("wait for cancellation log entries");

@@ -2,13 +2,15 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Net.WebSockets;
 
-public class ServerWebSocket : IServerWebSocket
+public class ServerWebSocket : IServerWebSocket, ILogSubject
 {
+    public ILogger Logger { get; }
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
@@ -18,10 +20,16 @@ public class ServerWebSocket : IServerWebSocket
     private readonly IConnectionMonitor _connectionMonitor;
     private Status _status = Status.Connected;
 
-    public ServerWebSocket(NativeWebSocket nativeSocket, ServerWebSocketOptions options, CancellationToken ct = default)
+    public ServerWebSocket(
+        NativeWebSocket nativeSocket,
+        ServerWebSocketOptions options,
+        ILogger logger,
+        CancellationToken ct = default
+    )
     {
+        Logger = logger;
         this.Trace("start");
-        _socket = new ServerManagedWebSocket(nativeSocket, ct);
+        _socket = new ServerManagedWebSocket(nativeSocket, logger, ct);
         _socket.TextReceived += TextReceived;
         _socket.BinaryReceived += BinaryReceived;
 
@@ -39,8 +47,16 @@ public class ServerWebSocket : IServerWebSocket
         _connectionMonitor.OnConnectionLost += Disconnect;
     }
 
-    public ServerWebSocket(NativeWebSocket nativeSocket, CancellationToken ct = default)
-        : this(nativeSocket, ServerWebSocketOptions.Default, ct)
+    public ServerWebSocket(
+        NativeWebSocket nativeSocket,
+        ILogger logger,
+        CancellationToken ct = default
+    ) : this(
+        nativeSocket,
+        ServerWebSocketOptions.Default,
+        logger,
+        ct
+    )
     {
     }
 

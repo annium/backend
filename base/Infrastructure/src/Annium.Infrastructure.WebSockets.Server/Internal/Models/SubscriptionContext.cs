@@ -30,7 +30,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
     private readonly IServiceProvider _sp;
     private bool _isInitiated;
     private Action _handleInit = () => { };
-    private readonly IBackgroundExecutor _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>();
+    private readonly IBackgroundExecutor _executor;
 
     public SubscriptionContext(
         TInit request,
@@ -50,6 +50,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         _mediator = mediator;
         Logger = logger;
         _sp = sp;
+        _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>(logger);
         _executor.Start();
     }
 

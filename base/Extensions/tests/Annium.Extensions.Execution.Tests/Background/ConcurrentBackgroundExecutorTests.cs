@@ -10,7 +10,7 @@ namespace Annium.Extensions.Execution.Tests.Background;
 public class ConcurrentBackgroundExecutorTests : BackgroundExecutorTestBase
 {
     public ConcurrentBackgroundExecutorTests(ITestOutputHelper outputHelper)
-        : base(Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>(), outputHelper)
+        : base(x => Executor.Background.Concurrent<ConcurrentBackgroundExecutorTests>(x), outputHelper)
     {
     }
 

@@ -15,12 +15,12 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     private readonly ChannelWriter<string> _messageWriter;
     private readonly ChannelReader<string> _messageReader;
     private readonly AsyncDisposableBox _disposable;
+    private readonly ILogger _logger;
 
     public InMemoryMessageBusSocket(
         ILogger logger
     )
     {
-        _disposable = Disposable.AsyncBox(logger);
         var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
         {
             AllowSynchronousContinuations = true,
@@ -30,7 +30,9 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
         _messageWriter = taskChannel.Writer;
         _messageReader = taskChannel.Reader;
 
-        _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token).TrackCompletion();
+        _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token, logger).TrackCompletion(logger);
+        _disposable = Disposable.AsyncBox(logger);
+        _logger = logger;
     }
 
     public IObservable<Unit> Send(string message)
@@ -73,7 +75,7 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     public async ValueTask DisposeAsync()
     {
         _observableCts.Cancel();
-        await _observable.WhenCompleted();
+        await _observable.WhenCompleted(_logger);
 
         await _disposable.DisposeAsync();
     }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.Types.Internal.Extensions;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
@@ -8,6 +9,13 @@ namespace Annium.Net.Types.Internal.Referrers;
 
 internal class SpecialReferrer : IReferrer
 {
+    public ILogger Logger { get; }
+
+    public SpecialReferrer(ILogger logger)
+    {
+        Logger = logger;
+    }
+
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
         return type.Type.IsGenericType

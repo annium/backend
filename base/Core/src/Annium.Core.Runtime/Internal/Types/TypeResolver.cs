@@ -2,16 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Annium.Core.Runtime.Types;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class TypeResolver : ITypeResolver
+internal class TypeResolver : ITypeResolver, ILogSubject
 {
+    public ILogger Logger { get; }
     private readonly ITypeManager _typeManager;
 
-    public TypeResolver(ITypeManager typeManager)
+    public TypeResolver(
+        ITypeManager typeManager,
+        ILogger logger
+    )
     {
+        Logger = logger;
         _typeManager = typeManager;
     }
 

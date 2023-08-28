@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 using Annium.Testing;
 using Annium.Testing.Assertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Net.WebSockets.Tests.Internal;
 
@@ -16,6 +18,10 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
     private IClientManagedWebSocket _clientSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
+
+    public ClientServerManagedWebSocketTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
 
     [Fact]
     public async Task Send_NotConnected()
@@ -329,7 +335,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         this.Trace("start");
 
-        _clientSocket = new ClientManagedWebSocket();
+        _clientSocket = new ClientManagedWebSocket(Logger);
         _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
@@ -349,11 +355,11 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<IServerManagedWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, ct) =>
+        return RunServerBase(async (ctx, logger, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ServerManagedWebSocket(ctx.WebSocket, ct);
+            var socket = new ServerManagedWebSocket(ctx.WebSocket, logger, ct);
 
             this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket);

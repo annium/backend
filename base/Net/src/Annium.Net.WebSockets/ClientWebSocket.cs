@@ -2,12 +2,14 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Net.WebSockets;
 
-public class ClientWebSocket : IClientWebSocket
+public class ClientWebSocket : IClientWebSocket, ILogSubject
 {
+    public ILogger Logger { get; }
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> BinaryReceived = delegate { };
     public event Action OnConnected = delegate { };
@@ -20,10 +22,11 @@ public class ClientWebSocket : IClientWebSocket
     private Status _status = Status.Disconnected;
     private readonly int _reconnectDelay;
 
-    public ClientWebSocket(ClientWebSocketOptions options)
+    public ClientWebSocket(ClientWebSocketOptions options, ILogger logger)
     {
+        Logger = logger;
         this.Trace("start monitor");
-        _socket = new ClientManagedWebSocket();
+        _socket = new ClientManagedWebSocket(logger);
         this.Trace($"paired with {_socket.GetFullId()}");
 
         this.Trace("bind events");
@@ -39,8 +42,12 @@ public class ClientWebSocket : IClientWebSocket
         _connectionMonitor.OnConnectionLost += HandleConnectionLost;
     }
 
-    public ClientWebSocket()
-        : this(ClientWebSocketOptions.Default)
+    public ClientWebSocket(
+        ILogger logger
+    ) : this(
+        ClientWebSocketOptions.Default,
+        logger
+    )
     {
     }
 

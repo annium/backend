@@ -1,15 +1,21 @@
 using System.Collections.Generic;
+using Annium.Logging;
 using Annium.Net.Types.Internal.Extensions;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Internal.Processors;
 
-internal class Processor
+internal class Processor : ILogSubject
 {
+    public ILogger Logger { get; }
     private readonly IEnumerable<IProcessor> _processors;
 
-    public Processor(IEnumerable<IProcessor> processors)
+    public Processor(
+        IEnumerable<IProcessor> processors,
+        ILogger logger
+    )
     {
+        Logger = logger;
         _processors = processors;
     }
 

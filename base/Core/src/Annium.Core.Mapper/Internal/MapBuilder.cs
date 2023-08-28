@@ -4,12 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using AgileObjects.ReadableExpressions;
 using Annium.Core.Runtime.Types;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Core.Mapper.Internal;
 
-internal class MapBuilder : IMapBuilder
+internal class MapBuilder : IMapBuilder, ILogSubject
 {
+    public ILogger Logger { get; }
     private readonly IReadOnlyCollection<Profile> _knownProfiles;
     private readonly ITypeResolver _typeResolver;
     private readonly IEnumerable<IMapResolver> _mapResolvers;
@@ -23,9 +25,11 @@ internal class MapBuilder : IMapBuilder
         ITypeResolver typeResolver,
         IEnumerable<IMapResolver> mapResolvers,
         IRepacker repacker,
-        Lazy<IMapContext> mapContext
+        Lazy<IMapContext> mapContext,
+        ILogger logger
     )
     {
+        Logger = logger;
         _knownProfiles = profiles.ToArray();
         _typeResolver = typeResolver;
         _mapResolvers = mapResolvers;

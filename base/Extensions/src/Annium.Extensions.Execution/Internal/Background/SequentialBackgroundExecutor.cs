@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Extensions.Execution.Internal.Background;
 
@@ -15,7 +16,9 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
     private ConfiguredTaskAwaitable _runTask = Task.CompletedTask.ConfigureAwait(false);
     private readonly CancellationTokenSource _cts = new();
 
-    public SequentialBackgroundExecutor()
+    public SequentialBackgroundExecutor(
+        ILogger logger
+    ) : base(logger)
     {
         var taskChannel = Channel.CreateUnbounded<Delegate>(new UnboundedChannelOptions
         {

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 
 namespace Annium.Extensions.Reactive.Internal.Creation.Instance;
 
@@ -13,8 +14,9 @@ internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObserva
     internal StaticObservableInstance(
         Func<ObserverContext<T>, Task<Func<Task>>> factory,
         bool isAsync,
-        CancellationToken ct
-    )
+        CancellationToken ct,
+        ILogger logger
+    ) : base(logger)
     {
         _factory = factory;
         _isAsync = isAsync;

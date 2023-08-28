@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 using Annium.Testing;
 using Annium.Testing.Assertions;
 using Xunit;
+using Xunit.Abstractions;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
 
 namespace Annium.Net.WebSockets.Tests.Internal;
@@ -18,6 +20,10 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     private ManagedWebSocket _managedSocket = default!;
     private readonly ConcurrentQueue<string> _texts = new();
     private readonly ConcurrentQueue<byte[]> _binaries = new();
+
+    public ManagedWebSocketTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
 
     [Fact]
     public async Task Send_NotConnected()
@@ -75,7 +81,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
+        await using var _ = RunServerBase(async (ctx, _, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAndStartListenAsync();
 
         // delay to let server close connection
@@ -113,7 +119,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServerBase(async (ctx, _) =>
+        await using var _ = RunServerBase(async (ctx, _, _) =>
         {
             ctx.WebSocket.Abort();
 
@@ -210,7 +216,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
+        await using var _ = RunServerBase(async (ctx, _, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAsync();
 
         // act
@@ -246,7 +252,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServerBase(async (ctx, _) =>
+        await using var _ = RunServerBase(async (ctx, _, _) =>
         {
             ctx.WebSocket.Abort();
 
@@ -364,7 +370,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
 
         _clientSocket = new NativeClientWebSocket();
-        _managedSocket = new ManagedWebSocket(_clientSocket);
+        _managedSocket = new ManagedWebSocket(_clientSocket, Logger);
         this.Trace($"created pair of {_clientSocket.GetFullId()} and {_managedSocket.GetFullId()}");
 
         _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
@@ -382,11 +388,11 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<ManagedWebSocket, CancellationToken, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, ct) =>
+        return RunServerBase(async (ctx, logger, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ManagedWebSocket(ctx.WebSocket);
+            var socket = new ManagedWebSocket(ctx.WebSocket, logger);
 
             this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket, ct);

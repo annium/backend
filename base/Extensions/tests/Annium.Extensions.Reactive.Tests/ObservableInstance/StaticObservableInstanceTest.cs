@@ -4,13 +4,20 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Extensions.Reactive.Tests.ObservableInstance;
 
-public class StaticObservableInstanceTest
+public class StaticObservableInstanceTest : TestBase
 {
+    public StaticObservableInstanceTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task Events_AreEmittedCorrectly()
     {
@@ -35,7 +42,7 @@ public class StaticObservableInstanceTest
                     await Task.Delay(5);
                     Interlocked.Increment(ref disposeCounter);
                 };
-            }, CancellationToken.None)
+            }, CancellationToken.None, Get<ILogger>())
             .Do(_ => { }, errors.Add)
             .Retry()
             .Catch(Observable.Empty<Sample>());

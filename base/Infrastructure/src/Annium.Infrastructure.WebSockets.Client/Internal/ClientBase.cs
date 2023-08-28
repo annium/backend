@@ -238,9 +238,9 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
                     await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
                     this.Trace($"{type}#{subscriptionId} - unsubscribed on server");
                 };
-            }, cts.Token)
-            .TrackCompletion()
-            .BufferUntilSubscribed();
+            }, cts.Token, Logger)
+            .TrackCompletion(Logger)
+            .BufferUntilSubscribed(Logger);
 
         this.Trace($"{type}#{subscriptionId} - init");
         var response = await FetchInternal(request, Guid.Empty, ct);
@@ -248,7 +248,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         {
             this.Trace($"{type}#{subscriptionId} - failed: {response}");
             cts.Cancel();
-            await observable.WhenCompleted();
+            await observable.WhenCompleted(Logger);
             return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
         }
 
@@ -265,7 +265,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         await Task.WhenAll(_subscriptions.Values.Select(async x =>
         {
             x.Item1.Cancel();
-            await x.Item2.WhenCompleted();
+            await x.Item2.WhenCompleted(Logger);
         }));
         this.Trace("dispose disposable box");
         await _disposable.DisposeAsync();

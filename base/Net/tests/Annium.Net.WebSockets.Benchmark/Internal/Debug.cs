@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Extensions.Execution;
+using Annium.Logging;
 using Annium.Net.Servers;
 using Annium.Net.WebSockets.Internal;
 using Annium.Threading.Tasks;
@@ -16,19 +17,20 @@ internal class Debug
     public static async Task RunAsync()
     {
         Trace("start");
+        var logger = VoidLogger.Instance;
 
-        await using var executor = Executor.Background.Parallel<Debug>();
+        await using var executor = Executor.Background.Parallel<Debug>(logger);
         executor.Start();
 
         var cts = new CancellationTokenSource();
 
         // server
-        var server = WebServerBuilder.New(new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build();
+        var server = WebServerBuilder.New(new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build(logger);
         var serverRunTask = Task.Run(() => server.RunAsync(cts.Token), CancellationToken.None);
 
         // client
         var socket = new NativeClientWebSocket();
-        var client = new ManagedWebSocket(socket);
+        var client = new ManagedWebSocket(socket, logger);
         var messageCount = 1_000_000L;
         var counter = messageCount;
         client.TextReceived += _ => Interlocked.Decrement(ref counter);
@@ -53,9 +55,9 @@ internal class Debug
         Trace("done");
     }
 
-    private static async Task HandleWebSocket(HttpListenerWebSocketContext ctx, CancellationToken ct)
+    private static async Task HandleWebSocket(HttpListenerWebSocketContext ctx, ILogger logger, CancellationToken ct)
     {
-        var clientSocket = new ManagedWebSocket(ctx.WebSocket);
+        var clientSocket = new ManagedWebSocket(ctx.WebSocket, logger);
 
         // create channel to decouple read/write flow
         var channel = Channel.CreateUnbounded<ReadOnlyMemory<byte>>();

@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium;
+using Annium.Logging;
 
 // ReSharper disable once CheckNamespace
 namespace System;
@@ -10,10 +11,11 @@ namespace System;
 public static class TrackCompletionOperatorExtensions
 {
     public static IObservable<T> TrackCompletion<T>(
-        this IObservable<T> source
+        this IObservable<T> source,
+        ILogger logger
     )
     {
-        var ctx = new CompletionContext<T>(source);
+        var ctx = new CompletionContext<T>(source, logger);
 
         source.Subscribe(delegate { }, ctx.Complete, ctx.CompletionCt);
 
@@ -36,18 +38,21 @@ public static class TrackCompletionOperatorExtensions
     }
 }
 
-file record CompletionContext<T>
+file record CompletionContext<T> : ILogSubject
 {
     public bool IsCompleted { get; private set; }
+    public ILogger Logger { get; }
     public CancellationToken CompletionCt => _completionCts.Token;
     private readonly IObservable<T> _source;
     private readonly List<IObserver<T>> _incompleteObservers = new();
     private readonly CancellationTokenSource _completionCts = new();
 
     public CompletionContext(
-        IObservable<T> source
+        IObservable<T> source,
+        ILogger logger
     )
     {
+        Logger = logger;
         _source = source;
     }
 

@@ -2,26 +2,28 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Logging;
 using Annium.Net.Servers;
+using Xunit.Abstractions;
 
 namespace Annium.Net.WebSockets.Tests;
 
-public abstract class TestBase
+public abstract class TestBase : Testing.Lib.TestBase
 {
     private static int _basePort = 15000;
-    private readonly int _port;
     protected readonly Uri ServerUri;
+    private readonly int _port;
 
-    protected TestBase()
+    protected TestBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         _port = Interlocked.Increment(ref _basePort);
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
 
-    protected IAsyncDisposable RunServerBase(Func<HttpListenerWebSocketContext, CancellationToken, Task> handleWebSocket)
+    protected IAsyncDisposable RunServerBase(Func<HttpListenerWebSocketContext, ILogger, CancellationToken, Task> handleWebSocket)
     {
         var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(uri).WithWebSockets(handleWebSocket).Build();
+        var server = WebServerBuilder.New(uri).WithWebSockets(handleWebSocket).Build(Get<ILogger>());
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 

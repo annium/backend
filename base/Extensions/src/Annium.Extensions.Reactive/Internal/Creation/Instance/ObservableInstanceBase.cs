@@ -2,15 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using Annium.Logging;
 
 namespace Annium.Extensions.Reactive.Internal.Creation.Instance;
 
-internal abstract class ObservableInstanceBase<T>
+internal abstract class ObservableInstanceBase<T> : ILogSubject
 {
+    public ILogger Logger { get; }
     protected readonly HashSet<IObserver<T>> Subscribers = new();
     protected readonly object Lock = new();
     private bool _isCompleted;
     private bool _isDisposing;
+
+    protected ObservableInstanceBase(ILogger logger)
+    {
+        Logger = logger;
+    }
 
     protected ObserverContext<T> GetObserverContext(CancellationToken ct) => new(OnNext, OnError, OnCompleted, ct);
 

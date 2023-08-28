@@ -9,14 +9,12 @@ using Xunit.Abstractions;
 
 namespace Annium.Logging.Shared.Tests;
 
-public class BaseLoggerTest : TestBase, ILogSubject
+public class BaseLoggerTest : TestBase
 {
-    public ILogger Logger { get; }
     private readonly IList<LogMessage<Context>> _messages = new List<LogMessage<Context>>();
 
     public BaseLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Logger = Get<ILogger>();
     }
 
 

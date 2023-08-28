@@ -1,3 +1,4 @@
+using Annium.Logging;
 using Annium.Net.Types.Internal.Helpers;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
@@ -9,6 +10,13 @@ internal class ExcludedReferrer : IReferrer
     private static StructRef BuildStructRef(string ns, string name, IRef[] args) => new(ns, name, args);
     private static InterfaceRef BuildInterfaceRef(string ns, string name, IRef[] args) => new(ns, name, args);
     private static EnumRef BuildEnumRef(string ns, string name, IRef[] args) => new(ns, name);
+
+    public ILogger Logger { get; }
+
+    public ExcludedReferrer(ILogger logger)
+    {
+        Logger = logger;
+    }
 
     public IRef? GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {

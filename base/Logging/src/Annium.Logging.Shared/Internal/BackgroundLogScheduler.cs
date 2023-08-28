@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace Annium.Logging.Shared.Internal;
 
-internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyncDisposable
-    where TContext : class, ILogContext
+internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, ILogSubject, IAsyncDisposable
+    where TContext :
+    class, ILogContext
 {
+    public ILogger Logger { get; }
     public Func<LogMessage<TContext>, bool> Filter { get; }
     private int Count => _messageReader.CanCount ? _messageReader.Count : -1;
     private bool _isDisposed;
@@ -31,6 +33,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
         if (configuration.BufferCount <= 0)
             throw new ArgumentOutOfRangeException(nameof(configuration.BufferCount), "Buffer count is expected to be positive");
 
+        Logger = VoidLogger.Instance;
         Filter = filter;
 
         var channel = Channel.CreateUnbounded<LogMessage<TContext>>(new UnboundedChannelOptions
@@ -41,7 +44,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
         });
         _messageWriter = channel.Writer;
         _messageReader = channel.Reader;
-        _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token).TrackCompletion();
+        _observable = ObservableExt.StaticSyncInstance<LogMessage<TContext>>(Run, _observableCts.Token, VoidLogger.Instance).TrackCompletion(VoidLogger.Instance);
         _subscription = _observable
             .Buffer(configuration.BufferTime, configuration.BufferCount)
             .Where(x => x.Count > 0)
@@ -107,7 +110,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
         this.Trace("cancel observable cts");
         _observableCts.Cancel();
         this.Trace("await observable");
-        await _observable.WhenCompleted();
+        await _observable.WhenCompleted(Logger);
         this.Trace("dispose subscription");
         _subscription.Dispose();
         this.Trace("done");

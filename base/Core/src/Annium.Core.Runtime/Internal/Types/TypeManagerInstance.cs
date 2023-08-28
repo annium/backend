@@ -8,8 +8,10 @@ using Annium.Logging;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class TypeManagerInstance : ITypeManager
+internal class TypeManagerInstance : ITypeManager, ILogSubject
 {
+    public ILogger Logger { get; }
+
     /// <summary>
     /// Contains collection of all types, collected for given Assembly
     /// </summary>
@@ -23,6 +25,7 @@ internal class TypeManagerInstance : ITypeManager
         ILogger logger
     )
     {
+        Logger = logger;
         this.Trace($"start for {assembly}");
         this.Trace("collect assemblies");
         var assemblies = new AssembliesCollector(logger).Collect(assembly);

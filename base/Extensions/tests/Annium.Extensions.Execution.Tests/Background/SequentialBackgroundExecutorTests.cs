@@ -9,7 +9,7 @@ namespace Annium.Extensions.Execution.Tests.Background;
 public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
 {
     public SequentialBackgroundExecutorTests(ITestOutputHelper outputHelper)
-        : base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>(), outputHelper)
+        : base(Executor.Background.Sequential<SequentialBackgroundExecutorTests>, outputHelper)
     {
     }
 

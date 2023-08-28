@@ -30,7 +30,7 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
         ILogger logger
     ) : base(
         socket,
-        Extensions.Execution.Executor.Background.Parallel<WebSocket>(),
+        Extensions.Execution.Executor.Background.Parallel<WebSocket>(logger),
         options,
         new WebSocketConfig
         {
