@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Debug;
+using Annium.Logging;
 
 namespace Annium;
 
@@ -11,8 +11,8 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
     private readonly List<IAsyncDisposable> _asyncDisposables = new();
     private readonly List<Func<Task>> _asyncDisposes = new();
 
-    internal AsyncDisposableBox(ITracer tracer)
-        : base(tracer)
+    internal AsyncDisposableBox(ILogger logger)
+        : base(logger)
     {
     }
 
@@ -66,8 +66,8 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
 
 public sealed class DisposableBox : DisposableBoxBase<DisposableBox>, IDisposable
 {
-    internal DisposableBox(ITracer tracer)
-        : base(tracer)
+    internal DisposableBox(ILogger logger)
+        : base(logger)
     {
     }
 
@@ -94,18 +94,18 @@ public sealed class DisposableBox : DisposableBoxBase<DisposableBox>, IDisposabl
     public static DisposableBox operator -(DisposableBox box, IEnumerable<Action> disposes) => box.Remove(box.SyncDisposes, disposes);
 }
 
-public abstract class DisposableBoxBase<TBox> : ITraceSubject
+public abstract class DisposableBoxBase<TBox> : ILogSubject
     where TBox : DisposableBoxBase<TBox>
 {
-    public ITracer Tracer { get; }
+    public ILogger Logger { get; }
     public bool IsDisposed { get; private set; }
     protected readonly List<IDisposable> SyncDisposables = new();
     protected readonly List<Action> SyncDisposes = new();
     private readonly object _locker = new();
 
-    protected DisposableBoxBase(ITracer tracer)
+    protected DisposableBoxBase(ILogger logger)
     {
-        Tracer = tracer;
+        Logger = logger;
     }
 
     protected TBox Add<T>(List<T> entries, T item)

@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
 using Annium.Data.Operations;
-using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
@@ -36,15 +35,14 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfigurationBase configuration,
-        ILogger logger,
-        ITracer tracer
+        ILogger logger
     )
     {
         Socket = socket;
         _serializer = serializer;
         _configuration = configuration;
         Logger = logger;
-        _disposable = Disposable.AsyncBox(tracer);
+        _disposable = Disposable.AsyncBox(logger);
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
         _responseObservable = Socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);

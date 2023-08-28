@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
 using Annium.Debug;
+using Annium.Logging;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
@@ -20,14 +21,14 @@ internal class TypeManagerInstance : ITypeManager
 
     public TypeManagerInstance(
         Assembly assembly,
-        ITracer tracer
+        ILogger logger
     )
     {
         this.TraceOld($"start for {assembly}");
         this.TraceOld("collect assemblies");
-        var assemblies = new AssembliesCollector(tracer).Collect(assembly);
+        var assemblies = new AssembliesCollector(logger).Collect(assembly);
         this.TraceOld("collect types");
-        var types = new TypesCollector(tracer).Collect(assemblies);
+        var types = new TypesCollector(logger).Collect(assemblies);
         this.TraceOld("build hierarchy");
         _hierarchy = HierarchyBuilder.BuildHierarchy(types);
         this.TraceOld($"register {types.Count} ids");

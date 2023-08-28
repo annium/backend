@@ -3,15 +3,15 @@ using System.Net.WebSockets;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
-using Annium.Debug;
+using Annium.Logging;
 using NodaTime;
 
 namespace Annium.Net.WebSockets.Obsolete.Internal;
 
 [Obsolete]
-internal class KeepAliveMonitor : IKeepAliveMonitor, ITraceSubject
+internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject
 {
-    public ITracer Tracer { get; }
+    public ILogger Logger { get; }
     public CancellationToken Token => _cts.Token;
     private readonly IObservable<SocketMessage> _observable;
     private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
@@ -25,20 +25,20 @@ internal class KeepAliveMonitor : IKeepAliveMonitor, ITraceSubject
         IObservable<SocketMessage> observable,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
         ActiveKeepAlive options,
-        ITracer tracer
+        ILogger logger
     )
     {
         _observable = observable;
         _send = send;
         _options = options;
-        Tracer = tracer;
-        _disposable = Disposable.Box(tracer);
+        Logger = logger;
+        _disposable = Disposable.Box(logger);
     }
 
     public void Resume()
     {
         this.Trace("start");
-        _disposable = Disposable.Box(Tracer);
+        _disposable = Disposable.Box(Logger);
 
         _disposable += _cts = new();
 

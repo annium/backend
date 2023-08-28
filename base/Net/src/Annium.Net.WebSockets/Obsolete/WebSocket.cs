@@ -2,7 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
@@ -15,11 +15,11 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public WebSocket(
         NativeWebSocket socket,
-        ITracer tracer
+        ILogger logger
     ) : this(
         socket,
         new WebSocketOptions(),
-        tracer
+        logger
     )
     {
     }
@@ -27,7 +27,7 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     public WebSocket(
         NativeWebSocket socket,
         WebSocketOptions options,
-        ITracer tracer
+        ILogger logger
     ) : base(
         socket,
         Extensions.Execution.Executor.Background.Parallel<WebSocket>(),
@@ -36,7 +36,7 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
         {
             ResumeImmediately = true
         },
-        tracer
+        logger
     )
     {
         // resume observable unconditionally, because this kind of socket is expected to be connected

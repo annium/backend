@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
@@ -16,15 +15,13 @@ internal class TestClient : ClientBase<WebSocket>, ITestClient
         ITimeProvider timeProvider,
         Serializer serializer,
         ITestClientConfiguration configuration,
-        ILogger logger,
-        ITracer tracer
+        ILogger logger
     ) : base(
-        new WebSocket(socket, configuration.WebSocketOptions, tracer),
+        new WebSocket(socket, configuration.WebSocketOptions, logger),
         timeProvider,
         serializer,
         configuration,
-        logger,
-        tracer
+        logger
     )
     {
         Socket.ConnectionLost += () => ConnectionLost.Invoke();

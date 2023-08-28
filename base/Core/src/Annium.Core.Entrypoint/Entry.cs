@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Debug;
+using Annium.Logging;
 
 namespace Annium.Core.Entrypoint;
 
@@ -10,9 +10,9 @@ public readonly record struct Entry(
     IServiceProvider Provider,
     CancellationToken Ct,
     ManualResetEventSlim _gate
-) : ITraceSubject, IAsyncDisposable
+) : ILogSubject, IAsyncDisposable
 {
-    public ITracer Tracer { get; } = Provider.Resolve<ITracer>();
+    public ILogger Logger { get; } = Provider.Resolve<ILogger>();
     public readonly IServiceProvider Provider = Provider;
     public readonly CancellationToken Ct = Ct;
     private readonly ManualResetEventSlim _gate = _gate;

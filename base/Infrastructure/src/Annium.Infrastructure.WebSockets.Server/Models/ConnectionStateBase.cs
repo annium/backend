@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Infrastructure.WebSockets.Server.Models;
@@ -19,9 +19,9 @@ public abstract class ConnectionStateBase : IAsyncDisposable
 
     private readonly ManualResetEventSlim _gate = new(true);
 
-    protected ConnectionStateBase(ITracer tracer)
+    protected ConnectionStateBase(ILogger logger)
     {
-        Disposable = Annium.Disposable.AsyncBox(tracer);
+        Disposable = Annium.Disposable.AsyncBox(logger);
         Disposable += _gate;
     }
 

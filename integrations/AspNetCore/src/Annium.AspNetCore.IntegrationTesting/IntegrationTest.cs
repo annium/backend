@@ -2,9 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting.Internal;
 using Annium.Core.DependencyInjection;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Testing.Lib;
-using Annium.Testing.Lib.Internal;
 using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 
@@ -12,7 +11,7 @@ namespace Annium.AspNetCore.IntegrationTesting;
 
 public abstract class IntegrationTest : TestBase, IAsyncDisposable
 {
-    private AsyncDisposableBox _disposable = Disposable.AsyncBox(NoopTracer.Instance);
+    private AsyncDisposableBox _disposable = Disposable.AsyncBox(VoidLogger.Instance);
     private readonly ITestOutputHelper _outputHelper;
 
     protected IntegrationTest(ITestOutputHelper outputHelper) : base(outputHelper)
@@ -37,9 +36,23 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
             var container = new ServiceContainer(services);
             configureServices(container);
             container.Add(_outputHelper).AsSelf().Singleton();
-            container.Add<ITracer>(new TestTracer(_outputHelper)).AsSelf().Singleton();
         });
         hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
+    };
+
+    private void SetupHost(
+        IServiceProvider sp
+    )
+    {
+        SetupHost(_ => { })(sp);
+    }
+
+    private Action<IServiceProvider> SetupHost(
+        Action<IServiceProvider> configureServices
+    ) => sp =>
+    {
+        configureServices(sp);
+        sp.UseLogging(route => route.UseTestOutput());
     };
 
     #endregion
@@ -50,21 +63,21 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
         Action<IServiceProviderBuilder> configureBuilder
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), _ => { });
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost);
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceContainer> configureServices
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), _ => { });
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), SetupHost);
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceProvider> setupServices
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), setupServices);
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost(setupServices));
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
@@ -72,7 +85,7 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
         Action<IServiceProvider> setupServices
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), setupServices);
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), SetupHost(setupServices));
 
     private IWebApplicationFactory GetAppFactory<TEntryPoint>(
         Action<IHostBuilder> configureHost,

@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
@@ -19,16 +18,13 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDes
     public static string Description => "socket sink (to listen broadcasts)";
     public ILogger Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
-    private readonly ITracer _tracer;
 
     public SinkCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILogger logger,
-        ITracer tracer
+        ILogger logger
     )
     {
         _serializer = serializer;
-        _tracer = tracer;
         Logger = logger;
     }
 
@@ -36,7 +32,7 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDes
     {
         var ws = new ClientWebSocket(
             new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _tracer
+            Logger
         );
         ws.ConnectionLost += () =>
         {

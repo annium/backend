@@ -1,7 +1,5 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Debug;
-using Annium.Testing.Lib.Internal;
 using Xunit.Abstractions;
 
 namespace Annium.Testing.Lib;
@@ -59,7 +57,6 @@ public abstract class TestBase
         container.AddTime().WithManagedTime().WithRelativeTime().SetDefault();
         container.AddLogging();
         container.AddMapper();
-        container.Add<ITracer>(sp => new TestTracer(sp.Resolve<ITestOutputHelper>())).AsSelf().Singleton();
     }
 
     private void SharedSetup(IServiceProvider sp)

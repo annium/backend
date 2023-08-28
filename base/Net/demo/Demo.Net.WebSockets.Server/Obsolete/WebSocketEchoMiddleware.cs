@@ -3,7 +3,7 @@ using System.Net;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 using Microsoft.AspNetCore.Http;
 
@@ -13,15 +13,15 @@ namespace Demo.Net.WebSockets.Server.Obsolete;
 public class WebSocketEchoMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ITracer _tracer;
+    private readonly ILogger _logger;
 
     public WebSocketEchoMiddleware(
         RequestDelegate next,
-        ITracer tracer
+        ILogger logger
     )
     {
         _next = next;
-        _tracer = tracer;
+        _logger = logger;
     }
 
     public async Task Invoke(HttpContext context)
@@ -39,7 +39,7 @@ public class WebSocketEchoMiddleware
             return;
         }
 
-        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _tracer);
+        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
 
         if (path == "/ws/echo")
             await Echo(ws);

@@ -8,8 +8,8 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Extensions.Execution;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete.Internal;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
@@ -17,13 +17,13 @@ namespace Annium.Net.WebSockets.Obsolete;
 
 // TODO: rewrite as generic socket wrapper
 [Obsolete]
-public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket, ITraceSubject
+public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket, ILogSubject
     where TNativeSocket : NativeWebSocket
 {
     private const int BufferSize = 65536;
 
     public WebSocketState State => Socket.State;
-    public ITracer Tracer { get; }
+    public ILogger Logger { get; }
     protected TNativeSocket Socket { get; set; }
     protected IBackgroundExecutor Executor { get; }
     private TaskCompletionSource<object> _socketTcs = new();
@@ -43,20 +43,20 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         IBackgroundExecutor executor,
         WebSocketBaseOptions options,
         WebSocketConfig config,
-        ITracer tracer
+        ILogger logger
     )
     {
         Socket = socket;
         Executor = executor;
-        Tracer = tracer;
-        _disposable = Disposable.AsyncBox(tracer);
+        Logger = logger;
+        _disposable = Disposable.AsyncBox(logger);
 
         // start socket observable
         _observable = CreateSocketObservable(_observableCts.Token)
             .TrackCompletion();
 
         // resolve components from configuration
-        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, tracer);
+        var cfg = Configurator.GetConfiguration(_observable.ObserveOn(TaskPoolScheduler.Default), _encoding, TrySend, options, logger);
         _keepAliveMonitor = cfg.KeepAliveMonitor;
         _messageObservable = cfg.MessageObservable;
         _binaryObservable = cfg.BinaryObservable;

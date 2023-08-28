@@ -1,18 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class TypesCollector : ITraceSubject
+internal class TypesCollector : ILogSubject
 {
-    public ITracer Tracer { get; }
+    public ILogger Logger { get; }
 
-    public TypesCollector(ITracer tracer)
+    public TypesCollector(ILogger logger)
     {
-        Tracer = tracer;
+        Logger = logger;
     }
 
     public IReadOnlyCollection<Type> Collect(IReadOnlyCollection<Assembly> assemblies)

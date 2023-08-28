@@ -4,7 +4,6 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Extensions.Arguments;
 using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
@@ -14,25 +13,22 @@ namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
 internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
-    private readonly ITracer _tracer;
     public static string Id => "echo";
     public static string Description => "test echo flow";
     public ILogger Logger { get; }
 
     public EchoCommand(
-        ILogger logger,
-        ITracer tracer
+        ILogger logger
     )
     {
         Logger = logger;
-        _tracer = tracer;
     }
 
     public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
             new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            _tracer
+            Logger
         );
         ws.ConnectionLost += () =>
         {

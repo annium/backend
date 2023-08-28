@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Annium.Core.Runtime.Types;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Core.Runtime.Internal.Types;
 
-internal class AssembliesCollector : ITraceSubject
+internal class AssembliesCollector : ILogSubject
 {
     private static readonly TypeId AutoScannedTypeId = typeof(AutoScannedAttribute).GetTypeId();
 
-    public ITracer Tracer { get; }
+    public ILogger Logger { get; }
 
-    public AssembliesCollector(ITracer tracer)
+    public AssembliesCollector(ILogger logger)
     {
-        Tracer = tracer;
+        Logger = logger;
     }
 
     public IReadOnlyCollection<Assembly> Collect(

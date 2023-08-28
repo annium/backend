@@ -2,7 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete.Internal;
 using NodaTime;
 using NativeClientWebSocket = System.Net.WebSockets.ClientWebSocket;
@@ -19,7 +19,7 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public ClientWebSocket(
         ClientWebSocketOptions options,
-        ITracer tracer
+        ILogger logger
     ) : base(
         new NativeClientWebSocket(),
         Extensions.Execution.Executor.Background.Parallel<ClientWebSocket>(),
@@ -28,15 +28,15 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
         {
             ResumeImmediately = false
         },
-        tracer
+        logger
     )
     {
         _options = options;
     }
 
     public ClientWebSocket(
-        ITracer tracer
-    ) : this(new ClientWebSocketOptions(), tracer)
+        ILogger logger
+    ) : this(new ClientWebSocketOptions(), logger)
     {
     }
 

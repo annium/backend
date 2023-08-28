@@ -1,7 +1,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
@@ -21,19 +20,17 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfiguration configuration,
-        ILogger logger,
-        ITracer tracer
+        ILogger logger
     ) : base(
-        new ClientWebSocket(configuration.WebSocketOptions, tracer),
+        new ClientWebSocket(configuration.WebSocketOptions, logger),
         timeProvider,
         serializer,
         configuration,
-        logger,
-        tracer
+        logger
     )
     {
         _configuration = configuration;
-        _disposable = Disposable.Box(tracer);
+        _disposable = Disposable.Box(logger);
         Socket.ConnectionLost += () => ConnectionLost.Invoke();
         Socket.ConnectionRestored += async () =>
         {

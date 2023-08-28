@@ -6,6 +6,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Text;
 using Annium.Debug;
+using Annium.Logging;
 
 namespace Annium.Net.WebSockets.Obsolete.Internal;
 
@@ -17,19 +18,19 @@ internal static class Configurator
         Encoding encoding,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
         WebSocketBaseOptions options,
-        ITracer tracer
+        ILogger logger
     )
     {
         IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
         var keepAliveFrames = new List<ReadOnlyMemory<byte>>();
-        var disposable = Disposable.Box(tracer);
+        var disposable = Disposable.Box(logger);
 
         // if active - send pings/count pongs via monitor
         if (options.ActiveKeepAlive is not null)
         {
             var opts = options.ActiveKeepAlive;
             keepAliveFrames.Add(opts.PongFrame);
-            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, tracer);
+            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, logger);
         }
 
         // if passive - listen pings, respond with pongs

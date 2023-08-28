@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Logging;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
@@ -168,8 +168,8 @@ public class ValueContainerTest : TestBase
             IValueContainer<ConnectionState, int> a,
             IValueContainer<ConnectionState, decimal> b,
             IValueContainer<ConnectionState, DisposableValue> c,
-            ITracer tracer
-        ) : base(tracer)
+            ILogger logger
+        ) : base(logger)
         {
             A = a;
             B = b;
