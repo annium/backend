@@ -16,19 +16,20 @@ internal static class Configurator
         IObservable<SocketMessage> observable,
         Encoding encoding,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-        WebSocketBaseOptions options
+        WebSocketBaseOptions options,
+        ITracer tracer
     )
     {
         IKeepAliveMonitor keepAliveMonitor = new KeepAliveMonitorStub();
         var keepAliveFrames = new List<ReadOnlyMemory<byte>>();
-        var disposable = Disposable.Box();
+        var disposable = Disposable.Box(tracer);
 
         // if active - send pings/count pongs via monitor
         if (options.ActiveKeepAlive is not null)
         {
             var opts = options.ActiveKeepAlive;
             keepAliveFrames.Add(opts.PongFrame);
-            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts);
+            keepAliveMonitor = new KeepAliveMonitor(observable, send, opts, tracer);
         }
 
         // if passive - listen pings, respond with pongs

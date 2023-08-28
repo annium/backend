@@ -14,17 +14,20 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
 
     public WebSocket(
-        NativeWebSocket socket
+        NativeWebSocket socket,
+        ITracer tracer
     ) : this(
         socket,
-        new WebSocketOptions()
+        new WebSocketOptions(),
+        tracer
     )
     {
     }
 
     public WebSocket(
         NativeWebSocket socket,
-        WebSocketOptions options
+        WebSocketOptions options,
+        ITracer tracer
     ) : base(
         socket,
         Extensions.Execution.Executor.Background.Parallel<WebSocket>(),
@@ -32,7 +35,8 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
         new WebSocketConfig
         {
             ResumeImmediately = true
-        }
+        },
+        tracer
     )
     {
         // resume observable unconditionally, because this kind of socket is expected to be connected
@@ -42,10 +46,10 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public async Task DisconnectAsync()
     {
-        this.TraceOld($"cancel receive, if pending, in {Socket.State}");
+        this.Trace($"cancel receive, if pending, in {Socket.State}");
         PauseObservable();
 
-        this.TraceOld($"invoke ConnectionLost in {Socket.State}");
+        this.Trace($"invoke ConnectionLost in {Socket.State}");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -55,21 +59,21 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
                 Socket.State == WebSocketState.Open
             )
             {
-                this.TraceOld("Disconnect");
+                this.Trace("Disconnect");
                 await Socket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, "Normal close", CancellationToken.None);
             }
             else
-                this.TraceOld("Already disconnected");
+                this.Trace("Already disconnected");
         }
         catch (WebSocketException)
         {
-            this.TraceOld(nameof(WebSocketException));
+            this.Trace(nameof(WebSocketException));
         }
     }
 
     protected override Task OnConnectionLostAsync()
     {
-        this.TraceOld("Invoke ConnectionLost");
+        this.Trace("Invoke ConnectionLost");
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         return Task.CompletedTask;
@@ -77,15 +81,15 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public override async ValueTask DisposeAsync()
     {
-        this.TraceOld($"start in {Socket.State}");
+        this.Trace($"start in {Socket.State}");
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
-            this.TraceOld("Invoke ConnectionLost");
+            this.Trace("Invoke ConnectionLost");
             Executor.Schedule(() => ConnectionLost.Invoke());
         }
 
         await DisposeBaseAsync();
 
-        this.TraceOld("done");
+        this.Trace("done");
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Debug;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Obsolete;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
@@ -16,13 +17,15 @@ internal class TestClient : ClientBase<WebSocket>, ITestClient, ILogSubject<Test
         ITimeProvider timeProvider,
         Serializer serializer,
         ITestClientConfiguration configuration,
-        ILoggerFactory loggerFactory
+        ILoggerFactory loggerFactory,
+        ITracer tracer
     ) : base(
-        new WebSocket(socket, configuration.WebSocketOptions),
+        new WebSocket(socket, configuration.WebSocketOptions, tracer),
         timeProvider,
         serializer,
         configuration,
-        loggerFactory.Get<TestClient>()
+        loggerFactory.Get<TestClient>(),
+        tracer
     )
     {
         Logger = loggerFactory.Get<TestClient>();

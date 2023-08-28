@@ -4,6 +4,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
+using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Obsolete;
@@ -19,6 +20,7 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
     private readonly RequestDelegate _next;
     private readonly ICoordinator _coordinator;
     private readonly ServerConfiguration _cfg;
+    private readonly ITracer _tracer;
     private readonly Helper _helper;
 
     public WebSocketsMiddleware(
@@ -27,7 +29,8 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
         ServerConfiguration cfg,
         IHostApplicationLifetime applicationLifetime,
         IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILogger<WebSocketsMiddleware> logger
+        ILogger<WebSocketsMiddleware> logger,
+        ITracer tracer
     )
     {
         _next = next;
@@ -35,6 +38,7 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
         _cfg = cfg;
         applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
         Logger = logger;
+        _tracer = tracer;
         _helper = new Helper(
             serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
             MediaTypeNames.Application.Json
@@ -64,7 +68,7 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
             this.Log().Trace("accept");
             var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
             this.Log().Trace("create socket");
-            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions);
+            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _tracer);
             this.Log().Trace("handle");
             await _coordinator.HandleAsync(socket);
         }

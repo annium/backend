@@ -1,16 +1,22 @@
 using Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient;
 using Annium.AspNetCore.TestServer;
+using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
 public abstract class IntegrationTestBase : IntegrationTest
 {
-    protected IWebApplicationFactory AppFactory => GetAppFactory<Program>(
-        builder => builder.UseServicePack<TestServicePack>(),
-        container => container
-            .AddTestServerTestClient(x => x
-                .WithActiveKeepAlive(600)
-                .WithResponseTimeout(6000)
-            )
-    );
+    protected IWebApplicationFactory AppFactory { get; }
+
+    protected IntegrationTestBase(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        AppFactory = GetAppFactory<Program>(
+            builder => builder.UseServicePack<TestServicePack>(),
+            container => container
+                .AddTestServerTestClient(x => x
+                    .WithActiveKeepAlive(600)
+                    .WithResponseTimeout(6000)
+                )
+        );
+    }
 }

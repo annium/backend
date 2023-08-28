@@ -7,11 +7,16 @@ using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.Extensions.Tests;
 
 public class ServerControllerTest : IntegrationTest
 {
+    public ServerControllerTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     private IHttpRequest Http => GetAppFactory<Program>(
         builder => builder.UseServicePack<TestServicePack>()
     ).GetHttpRequest();

@@ -1,13 +1,15 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
+using Annium.Debug;
 using Annium.Net.WebSockets.Obsolete;
 
 await using var entry = Entrypoint.Default.Setup();
 
-var (_, ct) = entry;
+var (sp, ct) = entry;
 
-var socket = new ClientWebSocket();
+var socket = new ClientWebSocket(sp.Resolve<ITracer>());
 
 await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
 

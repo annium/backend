@@ -1,72 +1,92 @@
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting.Internal;
 using Annium.Core.DependencyInjection;
+using Annium.Debug;
+using Annium.Testing.Lib;
+using Annium.Testing.Lib.Internal;
 using Microsoft.Extensions.Hosting;
+using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting;
 
-public abstract class IntegrationTest : IAsyncDisposable
+public abstract class IntegrationTest : TestBase, IAsyncDisposable
 {
-    #region host configuration
+    private AsyncDisposableBox _disposable = Disposable.AsyncBox(NoopTracer.Instance);
+    private readonly ITestOutputHelper _outputHelper;
 
-    private static Action<IHostBuilder> ConfigureHost(
-        Action<IServiceProviderBuilder> configureBuilder
-    ) => hostBuilder =>
+    protected IntegrationTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        var serviceProviderFactory = new ServiceProviderFactory(configureBuilder);
-        hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
-    };
+        _outputHelper = outputHelper;
+    }
 
-    private static Action<IHostBuilder> ConfigureHost(
+    #region host configuration & setup
+
+    private Action<IHostBuilder> ConfigureHost(
+        Action<IServiceProviderBuilder> configureBuilder
+    ) => ConfigureHost(configureBuilder, _ => { });
+
+    private Action<IHostBuilder> ConfigureHost(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceContainer> configureServices
     ) => hostBuilder =>
     {
         var serviceProviderFactory = new ServiceProviderFactory(configureBuilder);
-        hostBuilder.ConfigureServices((_, services) => configureServices(new ServiceContainer(services)));
+        hostBuilder.ConfigureServices((_, services) =>
+        {
+            var container = new ServiceContainer(services);
+            configureServices(container);
+            container.Add<ITracer>(new TestTracer(_outputHelper)).AsSelf().Singleton();
+        });
         hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
     };
 
     #endregion
 
-    #region state
-
-    private AsyncDisposableBox _disposable = Disposable.AsyncBox();
-    private readonly ConcurrentDictionary<Type, IWebApplicationFactory> _appFactoryCache = new();
-
-    #endregion
-
-    #region WebAppFactory cache access
+    #region WebAppFactory instantiation
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder));
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), _ => { });
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceContainer> configureServices
     )
         where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices));
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), _ => { });
+
+    protected IWebApplicationFactory GetAppFactory<TStartup>(
+        Action<IServiceProviderBuilder> configureBuilder,
+        Action<IServiceProvider> setupServices
+    )
+        where TStartup : class =>
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), setupServices);
+
+    protected IWebApplicationFactory GetAppFactory<TStartup>(
+        Action<IServiceProviderBuilder> configureBuilder,
+        Action<IServiceContainer> configureServices,
+        Action<IServiceProvider> setupServices
+    )
+        where TStartup : class =>
+        GetAppFactory<TStartup>(ConfigureHost(configureBuilder, configureServices), setupServices);
 
     private IWebApplicationFactory GetAppFactory<TEntryPoint>(
-        Action<IHostBuilder> configureHost
+        Action<IHostBuilder> configureHost,
+        Action<IServiceProvider> setupServices
     )
-        where TEntryPoint : class =>
-        _appFactoryCache.GetOrAdd(typeof(TEntryPoint), static (_, ctx) =>
-        {
-            var (test, configure) = ctx;
-            var appFactory = new TestWebApplicationFactory<TEntryPoint>(configure);
-            // _disposable += () => appFactory.Server.Host.StopAsync();
-            var wrappedAppFactory = new WrappedWebApplicationFactory<TEntryPoint>(appFactory);
-            test._disposable += wrappedAppFactory;
+        where TEntryPoint : class
+    {
+        var appFactory = new TestWebApplicationFactory<TEntryPoint>(configureHost);
+        setupServices(appFactory.Services);
+        // _disposable += () => appFactory.Server.Host.StopAsync();
+        var wrappedAppFactory = new WrappedWebApplicationFactory<TEntryPoint>(appFactory);
+        _disposable += wrappedAppFactory;
 
-            return wrappedAppFactory;
-        }, (this, configureHost));
+        return wrappedAppFactory;
+    }
 
     #endregion
 

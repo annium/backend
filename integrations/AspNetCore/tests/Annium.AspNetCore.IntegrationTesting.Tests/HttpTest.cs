@@ -3,6 +3,7 @@ using Annium.AspNetCore.TestServer.Components;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
@@ -24,5 +25,9 @@ public class HttpTest : IntegrationTestBase
         // assert
         result.IsOk.IsTrue();
         result.Data.Is(value);
+    }
+
+    public HttpTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
     }
 }

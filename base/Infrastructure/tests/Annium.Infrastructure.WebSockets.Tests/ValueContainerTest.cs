@@ -1,16 +1,24 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 // ReSharper disable UnusedType.Local
 
 namespace Annium.Infrastructure.WebSockets.Tests;
 
-public class ValueContainerTest
+public class ValueContainerTest : TestBase
 {
+    public ValueContainerTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(container => { container.AddWebSocketServer<ConnectionState>((_, _) => { }); });
+    }
+
     [Fact]
     public void NotInitiated_Get_Throws()
     {
@@ -108,12 +116,7 @@ public class ValueContainerTest
 
     private ConnectionState GetState()
     {
-        var container = new ServiceContainer();
-        container.AddRuntime(GetType().Assembly);
-        container.AddWebSocketServer<ConnectionState>((_, _) => { });
-
-        var sp = container.BuildServiceProvider();
-        var factory = sp.Resolve<Func<Guid, ConnectionState>>();
+        var factory = Get<Func<Guid, ConnectionState>>();
 
         return factory(Guid.NewGuid());
     }
@@ -164,8 +167,9 @@ public class ValueContainerTest
         public ConnectionState(
             IValueContainer<ConnectionState, int> a,
             IValueContainer<ConnectionState, decimal> b,
-            IValueContainer<ConnectionState, DisposableValue> c
-        )
+            IValueContainer<ConnectionState, DisposableValue> c,
+            ITracer tracer
+        ) : base(tracer)
         {
             A = a;
             B = b;

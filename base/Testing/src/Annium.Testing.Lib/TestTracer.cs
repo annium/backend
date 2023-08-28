@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 namespace Annium.Testing.Lib.Internal;
 
-internal class TestTracer : ITracer
+public class TestTracer : ITracer
 {
     private readonly ITestOutputHelper _outputHelper;
 

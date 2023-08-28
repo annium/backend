@@ -3,6 +3,7 @@ using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Debug;
 using Annium.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -13,7 +14,7 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
 {
     private readonly WebApplicationFactory<TEntryPoint> _appFactory;
     private readonly Lazy<IHttpRequest> _httpRequest;
-    private AsyncDisposableBox _disposable = Disposable.AsyncBox();
+    private AsyncDisposableBox _disposable = Disposable.AsyncBox(NoopTracer.Instance);
 
     public WrappedWebApplicationFactory(
         WebApplicationFactory<TEntryPoint> appFactory

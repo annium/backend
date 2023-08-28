@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Annium.Debug;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 
@@ -13,10 +14,13 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     private readonly IObservable<string> _observable;
     private readonly ChannelWriter<string> _messageWriter;
     private readonly ChannelReader<string> _messageReader;
-    private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
+    private readonly AsyncDisposableBox _disposable;
 
-    public InMemoryMessageBusSocket()
+    public InMemoryMessageBusSocket(
+        ITracer tracer
+    )
     {
+        _disposable = Disposable.AsyncBox(tracer);
         var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
         {
             AllowSynchronousContinuations = true,

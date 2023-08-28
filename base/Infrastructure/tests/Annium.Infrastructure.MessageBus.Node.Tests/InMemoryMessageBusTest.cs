@@ -6,18 +6,30 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Annium.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Infrastructure.MessageBus.Node.Tests;
 
-public class InMemoryMessageBusTest
+public class InMemoryMessageBusTest : TestBase
 {
+    public InMemoryMessageBusTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(container =>
+        {
+            container.AddSerializers().WithJson(isDefault: true);
+            container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
+        });
+        Setup(sp => { sp.UseLogging(route => route.UseInMemory()); });
+    }
+
     [Fact]
     public async Task Works()
     {
         // arrange
-        var node = GetProvider().Resolve<IMessageBusNode>();
+        var node = Get<IMessageBusNode>();
         var sink1 = new List<IX>();
         var sink2 = new List<IX>();
         var sink3 = new List<object>();
@@ -49,23 +61,6 @@ public class InMemoryMessageBusTest
         sink3.At(0).Is(values[0]);
         sink3.At(1).Is(values[1]);
     }
-
-    private IServiceProvider GetProvider()
-    {
-        var container = new ServiceContainer();
-        container.AddRuntime(GetType().Assembly);
-        container.AddTime().WithRealTime().SetDefault();
-        container.AddSerializers().WithJson(isDefault: true);
-        container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
-        container.AddLogging();
-
-        var provider = container.BuildServiceProvider();
-
-        provider.UseLogging(route => route.UseInMemory());
-
-        return provider;
-    }
-
 
     private record A : IX
     {

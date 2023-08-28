@@ -16,7 +16,8 @@ public abstract class TestBase
     {
         _builder = new ServiceProviderFactory().CreateBuilder(new ServiceContainer().Collection);
 
-        Register(SharedRegister(outputHelper));
+        Register(container => container.Add(outputHelper).AsSelf().Singleton());
+        Register(SharedRegister);
         Setup(SharedSetup);
 
         _sp = new Lazy<IServiceProvider>(BuildServiceProvider, true);
@@ -52,14 +53,14 @@ public abstract class TestBase
         where T : notnull
         => _sp.Value.ResolveKeyed<TKey, T>(key);
 
-    private Action<IServiceContainer> SharedRegister(ITestOutputHelper outputHelper) => container =>
+    private void SharedRegister(IServiceContainer container)
     {
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithManagedTime().WithRelativeTime().SetDefault();
         container.AddLogging();
         container.AddMapper();
-        container.Add<ITracer>(new TestTracer(outputHelper)).AsSelf().Singleton();
-    };
+        container.Add<ITracer>(sp => new TestTracer(sp.Resolve<ITestOutputHelper>())).AsSelf().Singleton();
+    }
 
     private void SharedSetup(IServiceProvider sp)
     {

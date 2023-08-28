@@ -9,13 +9,14 @@ using NodaTime;
 namespace Annium.Net.WebSockets.Obsolete.Internal;
 
 [Obsolete]
-internal class KeepAliveMonitor : IKeepAliveMonitor
+internal class KeepAliveMonitor : IKeepAliveMonitor, ITraceSubject
 {
+    public ITracer Tracer { get; }
     public CancellationToken Token => _cts.Token;
     private readonly IObservable<SocketMessage> _observable;
     private readonly Func<ReadOnlyMemory<byte>, IObservable<Unit>> _send;
     private readonly ActiveKeepAlive _options;
-    private DisposableBox _disposable = Disposable.Box();
+    private DisposableBox _disposable;
     private CancellationTokenSource _cts = new();
     private Instant _lastPongTime;
     private bool _pingStep = true;
@@ -23,18 +24,21 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
     public KeepAliveMonitor(
         IObservable<SocketMessage> observable,
         Func<ReadOnlyMemory<byte>, IObservable<Unit>> send,
-        ActiveKeepAlive options
+        ActiveKeepAlive options,
+        ITracer tracer
     )
     {
         _observable = observable;
         _send = send;
         _options = options;
+        Tracer = tracer;
+        _disposable = Disposable.Box(tracer);
     }
 
     public void Resume()
     {
-        this.TraceOld("start");
-        _disposable = Disposable.Box();
+        this.Trace("start");
+        _disposable = Disposable.Box(Tracer);
 
         _disposable += _cts = new();
 
@@ -48,15 +52,15 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
         _disposable += _observable
             .Where(x => x.Type == WebSocketMessageType.Binary && x.Data.Span.SequenceEqual(_options.PongFrame.Span))
             .Subscribe(TrackPong);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     public void Pause()
     {
-        this.TraceOld("start");
+        this.Trace("start");
         _cts.Cancel();
         _disposable.Dispose();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     private void SendPingCheckPong(object? _)
@@ -77,7 +81,7 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
     private void SendPing()
     {
         // send ping every time
-        this.TraceOld("Send ping");
+        this.Trace("Send ping");
         _send(_options.PingFrame).Subscribe();
     }
 
@@ -91,17 +95,17 @@ internal class KeepAliveMonitor : IKeepAliveMonitor
         if (silenceDuration <= _options.PingInterval)
             return;
 
-        this.TraceOld($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+        this.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
         if (silenceDuration > _options.PingInterval * _options.Retries)
         {
-            this.TraceOld("Missed all pings - signal connection lost");
+            this.Trace("Missed all pings - signal connection lost");
             _cts.Cancel();
         }
     }
 
     private void TrackPong(SocketMessage _)
     {
-        this.TraceOld("Received pong");
+        this.Trace("Received pong");
         _lastPongTime = GetNow();
     }
 

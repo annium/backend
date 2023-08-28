@@ -5,6 +5,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium;
+using Annium.Debug;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
@@ -24,20 +25,24 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
     public static string Description => "test demo flow";
     public ILogger<RequestCommand> Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+    private readonly ITracer _tracer;
 
     public RequestCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILogger<RequestCommand> logger
+        ILogger<RequestCommand> logger,
+        ITracer tracer
     )
     {
         _serializer = serializer;
+        _tracer = tracer;
         Logger = logger;
     }
 
     public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
     {
         var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) }
+            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
+            _tracer
         );
         ws.ConnectionLost += () =>
         {

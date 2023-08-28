@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
 using Annium.Data.Operations;
+using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
@@ -28,20 +29,22 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBas
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
     private readonly ConcurrentDictionary<Guid, ValueTuple<CancellationTokenSource, IObservable<object>>> _subscriptions = new();
     private readonly IObservable<AbstractResponseBase> _responseObservable;
-    private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
+    private readonly AsyncDisposableBox _disposable;
 
     protected ClientBase(
         TSocket socket,
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfigurationBase configuration,
-        ILogger<ClientBase<TSocket>> logger
+        ILogger<ClientBase<TSocket>> logger,
+        ITracer tracer
     )
     {
         Socket = socket;
         _serializer = serializer;
         _configuration = configuration;
         Logger = logger;
+        _disposable = Disposable.AsyncBox(tracer);
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
         _responseObservable = Socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);

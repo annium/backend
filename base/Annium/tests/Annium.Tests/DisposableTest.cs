@@ -1,16 +1,23 @@
 using System.Threading.Tasks;
+using Annium.Debug;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Tests;
 
-public class DisposableTest
+public class DisposableTest : TestBase
 {
+    public DisposableTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public async Task AsyncDisposable_Add_Works()
     {
         // arrange
-        var box = Disposable.AsyncBox();
+        var box = Disposable.AsyncBox(Get<ITracer>());
         var calls = 0;
 
         // act
@@ -28,7 +35,7 @@ public class DisposableTest
     public async Task AsyncDisposable_Remove_Works()
     {
         // arrange
-        var box = Disposable.AsyncBox();
+        var box = Disposable.AsyncBox(Get<ITracer>());
         var calls = 0;
 
         // act
@@ -54,7 +61,7 @@ public class DisposableTest
     public async Task AsyncDisposable_Reset_Works()
     {
         // arrange
-        var box = Disposable.AsyncBox();
+        var box = Disposable.AsyncBox(Get<ITracer>());
 
         // act
         await box.DisposeAndResetAsync();
@@ -67,7 +74,7 @@ public class DisposableTest
     public void Disposable_Add_Works()
     {
         // arrange
-        var box = Disposable.Box();
+        var box = Disposable.Box(Get<ITracer>());
         var calls = 0;
 
         // act
@@ -83,7 +90,7 @@ public class DisposableTest
     public void Disposable_Remove_Works()
     {
         // arrange
-        var box = Disposable.Box();
+        var box = Disposable.Box(Get<ITracer>());
         var calls = 0;
 
         // act
@@ -103,7 +110,7 @@ public class DisposableTest
     public void Disposable_Reset_Works()
     {
         // arrange
-        var box = Disposable.Box();
+        var box = Disposable.Box(Get<ITracer>());
 
         // act
         box.DisposeAndReset();

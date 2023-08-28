@@ -4,6 +4,7 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Debug;
 using NetMQ;
 using NetMQ.Sockets;
 
@@ -16,12 +17,14 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     private readonly SubscriberSocket _subscriber;
     private readonly CancellationTokenSource _observableCts = new();
     private readonly IObservable<string> _observable;
-    private readonly AsyncDisposableBox _disposable = Disposable.AsyncBox();
+    private readonly AsyncDisposableBox _disposable;
 
     public NetMQMessageBusSocket(
-        NetworkConfiguration cfg
+        NetworkConfiguration cfg,
+        ITracer tracer
     )
     {
+        _disposable = Disposable.AsyncBox(tracer);
         _disposable += _publisher = new PublisherSocket();
         _publisher.Connect(cfg.Endpoints.PubEndpoint);
 

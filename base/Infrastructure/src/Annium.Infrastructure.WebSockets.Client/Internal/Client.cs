@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging.Abstractions;
 using Annium.Net.WebSockets.Obsolete;
@@ -13,7 +14,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject<Client
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
     public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
     private readonly IClientConfiguration _configuration;
-    private readonly DisposableBox _disposable = Disposable.Box();
+    private readonly DisposableBox _disposable;
     private bool _isDisposed;
     private TaskCompletionSource<object?> _connectionTcs = new();
 
@@ -21,17 +22,20 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject<Client
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfiguration configuration,
-        ILoggerFactory loggerFactory
+        ILoggerFactory loggerFactory,
+        ITracer tracer
     ) : base(
-        new ClientWebSocket(configuration.WebSocketOptions),
+        new ClientWebSocket(configuration.WebSocketOptions, tracer),
         timeProvider,
         serializer,
         configuration,
-        loggerFactory.Get<Client>()
+        loggerFactory.Get<Client>(),
+        tracer
     )
     {
         Logger = loggerFactory.Get<Client>();
         _configuration = configuration;
+        _disposable = Disposable.Box(tracer);
         Socket.ConnectionLost += () => ConnectionLost.Invoke();
         Socket.ConnectionRestored += async () =>
         {

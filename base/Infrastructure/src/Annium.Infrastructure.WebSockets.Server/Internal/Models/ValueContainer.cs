@@ -2,6 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Server.Models;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
@@ -78,7 +79,7 @@ internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
     private readonly AsyncLazy<TValue> _initiator;
     protected TState? State;
     private TValue _value;
-    private AsyncDisposableBox _disposable = Disposable.AsyncBox();
+    private AsyncDisposableBox _disposable;
 
     protected ValueContainerBase(
         IServiceProvider sp
@@ -87,6 +88,7 @@ internal abstract class ValueContainerBase<TState, TValue> : IAsyncDisposable
         _sp = sp;
         _initiator = new AsyncLazy<TValue>((Func<Task<TValue>>)LoadValueAsync);
         _value = default!;
+        _disposable = Disposable.AsyncBox(sp.Resolve<ITracer>());
     }
 
     public void Bind(TState state)

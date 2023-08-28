@@ -14,6 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
         <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
+        <ProjectReference Include="..\..\..\..\base\Testing\src\Annium.Testing.Lib\Annium.Testing.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.10" />

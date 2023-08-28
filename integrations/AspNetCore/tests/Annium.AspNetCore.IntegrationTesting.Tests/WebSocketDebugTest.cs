@@ -11,6 +11,7 @@ using Annium.Data.Operations;
 using Annium.Testing;
 using Annium.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 
 // ReSharper disable Xunit.XunitTestWithConsoleOutput
 
@@ -18,6 +19,10 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
 public class WebSocketDebugTest : IntegrationTestBase
 {
+    public WebSocketDebugTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
 
     [Fact]
