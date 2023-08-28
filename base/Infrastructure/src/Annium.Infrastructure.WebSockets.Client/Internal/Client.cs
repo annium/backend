@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Debug;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;

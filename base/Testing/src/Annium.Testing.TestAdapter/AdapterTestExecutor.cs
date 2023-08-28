@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Testing.Elements;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;

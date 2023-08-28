@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Execution;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.NodaTime.Extensions;
 using NodaTime;
 

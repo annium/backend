@@ -1,5 +1,5 @@
 using System;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Storage.Abstractions;
 using Annium.Storage.FileSystem;
 using FsStorage = Annium.Storage.FileSystem.Storage;

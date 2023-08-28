@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Logging.Abstractions;
+namespace Annium.Logging;
 
 public interface ILogger
 {

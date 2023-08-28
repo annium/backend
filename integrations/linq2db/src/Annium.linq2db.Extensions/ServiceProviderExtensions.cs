@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using LinqToDB.Data;
 
 // ReSharper disable once CheckNamespace

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
 using Annium.Logging.Shared.Internal;
 using Annium.Testing;
 using Annium.Testing.Lib;

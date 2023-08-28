@@ -1,7 +1,7 @@
 using System.Diagnostics.Contracts;
 using System.Runtime.CompilerServices;
 
-namespace Annium.Logging.Abstractions;
+namespace Annium.Logging;
 
 public static class LogSubjectExtensions
 {

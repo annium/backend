@@ -9,7 +9,7 @@ using Annium.Core.Mapper.Internal.DependencyInjection;
 using Annium.Core.Mapper.Internal.Profiles;
 using Annium.Core.Mapper.Internal.Resolvers;
 using Annium.Core.Runtime.Types;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace

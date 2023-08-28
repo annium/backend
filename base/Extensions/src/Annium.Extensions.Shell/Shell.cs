@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Extensions.Shell;
 

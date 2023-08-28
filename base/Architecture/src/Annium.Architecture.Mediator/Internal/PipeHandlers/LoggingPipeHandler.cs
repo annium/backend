@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
 

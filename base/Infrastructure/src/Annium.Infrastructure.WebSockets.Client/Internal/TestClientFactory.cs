@@ -1,5 +1,5 @@
 using Annium.Debug;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;

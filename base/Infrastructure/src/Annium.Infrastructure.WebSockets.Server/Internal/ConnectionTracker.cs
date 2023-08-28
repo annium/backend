@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Pooling;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;

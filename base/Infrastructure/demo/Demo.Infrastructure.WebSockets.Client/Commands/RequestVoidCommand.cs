@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Client;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;

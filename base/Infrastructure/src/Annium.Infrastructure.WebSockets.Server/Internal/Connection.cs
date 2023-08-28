@@ -1,7 +1,7 @@
 using System;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 using WebSocket = Annium.Net.WebSockets.Obsolete.WebSocket;
 

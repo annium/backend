@@ -1,5 +1,6 @@
 using Annium.Logging.Shared;
 using Microsoft.Extensions.Logging;
+using IMicrosoftLogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace Annium.Logging.Microsoft;
 
@@ -14,7 +15,7 @@ internal class LoggingBridgeProvider : ILoggerProvider
         _sentryBridge = sentryBridge;
     }
 
-    public ILogger CreateLogger(string categoryName)
+    public IMicrosoftLogger CreateLogger(string categoryName)
     {
         return new LoggingBridge(_sentryBridge, categoryName);
     }

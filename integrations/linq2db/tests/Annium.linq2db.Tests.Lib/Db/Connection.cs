@@ -1,5 +1,5 @@
 using Annium.linq2db.Tests.Lib.Db.Models;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using LinqToDB;
 using LinqToDB.Data;
 

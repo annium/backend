@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
 

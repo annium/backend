@@ -1,5 +1,3 @@
-using Annium.Logging.Abstractions;
-
 namespace Annium.Logging.Shared.Internal;
 
 internal class LogSubject : ILogSubject

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Linq;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Data.Tables.Internal;
 

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mapper;
 using Annium.Core.Mediator;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Architecture.ViewModel.Internal.PipeHandlers.Request;
 

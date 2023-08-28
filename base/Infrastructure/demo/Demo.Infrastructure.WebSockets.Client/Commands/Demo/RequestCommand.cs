@@ -8,7 +8,7 @@ using Annium;
 using Annium.Debug;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 using Annium.Serialization.Abstractions;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;

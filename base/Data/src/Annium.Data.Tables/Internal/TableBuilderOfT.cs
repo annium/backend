@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Data.Tables.Internal;
 

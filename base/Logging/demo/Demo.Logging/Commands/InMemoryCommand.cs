@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Demo.Logging.Commands;
 

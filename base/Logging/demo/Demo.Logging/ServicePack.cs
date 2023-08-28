@@ -1,6 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Logging.Seq;
 
 namespace Demo.Logging;

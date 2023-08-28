@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Reflection;
 
 namespace Annium.Core.Mediator.Internal;

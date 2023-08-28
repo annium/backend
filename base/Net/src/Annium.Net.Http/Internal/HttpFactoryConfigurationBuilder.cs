@@ -1,6 +1,6 @@
 using System.Linq;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Net.Http.Internal;

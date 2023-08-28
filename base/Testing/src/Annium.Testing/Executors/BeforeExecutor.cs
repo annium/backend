@@ -1,5 +1,5 @@
 using System.Threading.Tasks;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Testing.Executors;
 

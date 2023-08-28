@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Annium.Logging.Abstractions;
 using NodaTime;
 
 namespace Annium.Logging.Shared;

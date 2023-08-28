@@ -5,7 +5,7 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Data.Tables.Internal;
 

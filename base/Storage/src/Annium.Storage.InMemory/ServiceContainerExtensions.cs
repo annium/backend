@@ -1,5 +1,5 @@
 using System;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Storage.Abstractions;
 using Annium.Storage.InMemory;
 using MemoryStorage = Annium.Storage.InMemory.Storage;

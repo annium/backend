@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.PostgreSql;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using LinqToDB;
 using LinqToDB.Data;
 using LinqToDB.DataProvider.PostgreSQL;

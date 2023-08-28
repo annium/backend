@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Annium.Logging.Abstractions;
+namespace Annium.Logging;
 
 public readonly ref struct LogEntryContext<T>
     where T : notnull

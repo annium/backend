@@ -1,5 +1,5 @@
 using Annium.Debug;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 

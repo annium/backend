@@ -1,7 +1,7 @@
 using System;
 using System.Diagnostics;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using LinqToDB;
 using LinqToDB.Data;
 

@@ -1,13 +1,12 @@
 using System;
 using Annium.Logging.Shared;
-using Microsoft.Extensions.Logging;
-using LogLevel = Annium.Logging.Abstractions.LogLevel;
+using IMicrosoftLogger = Microsoft.Extensions.Logging.ILogger;
 using MicrosoftEventId = Microsoft.Extensions.Logging.EventId;
 using MicrosoftLogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Annium.Logging.Microsoft;
 
-internal class LoggingBridge : ILogger
+internal class LoggingBridge : IMicrosoftLogger
 {
     private readonly ILogSentryBridge _sentryBridge;
     private readonly string _source;

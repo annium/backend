@@ -1,5 +1,5 @@
 using System.Xml.Linq;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 
 namespace Annium.Testing.TestAdapter;

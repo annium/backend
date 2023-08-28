@@ -1,5 +1,4 @@
 using System;
-using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal;
 

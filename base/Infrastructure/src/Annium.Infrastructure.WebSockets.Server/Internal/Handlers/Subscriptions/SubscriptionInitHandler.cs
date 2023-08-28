@@ -6,7 +6,7 @@ using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 using Annium.Infrastructure.WebSockets.Server.Models;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
 

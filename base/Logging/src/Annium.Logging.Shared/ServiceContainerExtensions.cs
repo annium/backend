@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Logging.Shared;
 using Annium.Logging.Shared.Internal;
 

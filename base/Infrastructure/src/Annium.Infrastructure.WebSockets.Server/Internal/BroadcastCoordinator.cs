@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 

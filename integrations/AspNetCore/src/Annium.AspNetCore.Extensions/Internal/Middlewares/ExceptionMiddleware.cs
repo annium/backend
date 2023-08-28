@@ -6,7 +6,7 @@ using Annium.Architecture.Base;
 using Annium.Architecture.Http.Exceptions;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Serialization.Abstractions;
 using Microsoft.AspNetCore.Http;
 

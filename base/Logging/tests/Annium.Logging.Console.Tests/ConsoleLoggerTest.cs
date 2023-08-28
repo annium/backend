@@ -1,6 +1,5 @@
 using System;
 using Annium.Core.DependencyInjection;
-using Annium.Logging.Abstractions;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;

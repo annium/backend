@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Debug;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 using Annium.Net.WebSockets.Obsolete;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 

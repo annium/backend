@@ -2,7 +2,7 @@ using System;
 using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
-using Annium.Logging.Abstractions;
+using Annium.Logging;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers.Request;
 
