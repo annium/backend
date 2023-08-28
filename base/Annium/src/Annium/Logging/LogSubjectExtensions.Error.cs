@@ -30,134 +30,134 @@ public static class LogSubjectErrorExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1>(
         this ILogSubject subject,
         string message,
-        object x1,
+        T1 x1,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
+        T1 x1,
+        T2 x2,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
+        T1 x1,
+        T2 x2,
+        T3 x3,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3, T4>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
-        object x4,
+        T1 x1,
+        T2 x2,
+        T3 x3,
+        T4 x4,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3, x4 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3, x4 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3, T4, T5>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
-        object x4,
-        object x5,
+        T1 x1,
+        T2 x2,
+        T3 x3,
+        T4 x4,
+        T5 x5,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3, x4, x5 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3, x4, x5 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3, T4, T5, T6>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
-        object x4,
-        object x5,
-        object x6,
+        T1 x1,
+        T2 x2,
+        T3 x3,
+        T4 x4,
+        T5 x5,
+        T6 x6,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3, x4, x5, x6 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3, x4, x5, x6 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3, T4, T5, T6, T7>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
-        object x4,
-        object x5,
-        object x6,
-        object x7,
+        T1 x1,
+        T2 x2,
+        T3 x3,
+        T4 x4,
+        T5 x5,
+        T6 x6,
+        T7 x7,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3, x4, x5, x6, x7 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3, x4, x5, x6, x7 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void Error(
+    public static void Error<T1, T2, T3, T4, T5, T6, T7, T8>(
         this ILogSubject subject,
         string message,
-        object x1,
-        object x2,
-        object x3,
-        object x4,
-        object x5,
-        object x6,
-        object x7,
-        object x8,
+        T1 x1,
+        T2 x2,
+        T3 x3,
+        T4 x4,
+        T5 x5,
+        T6 x6,
+        T7 x7,
+        T8 x8,
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new[] { x1, x2, x3, x4, x5, x6, x7, x8 });
+        subject.Logger.Log(subject, file, member, line, LogLevel.Error, message, new object?[] { x1, x2, x3, x4, x5, x6, x7, x8 });
     }
 }

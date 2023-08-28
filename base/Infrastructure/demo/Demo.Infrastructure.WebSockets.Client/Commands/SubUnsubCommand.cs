@@ -61,7 +61,7 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
             await Task.Delay(100);
         }
         else
-            this.Error("Subscription failed: {error}", result.PlainError);
+            this.Error<string>("Subscription failed: {error}", result.PlainError);
 
         await client.DisconnectAsync();
 

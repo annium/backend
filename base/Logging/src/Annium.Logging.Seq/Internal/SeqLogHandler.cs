@@ -13,7 +13,7 @@ internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
     where TContext : class, ILogContext
 {
     private readonly IHttpRequest _request;
-    private readonly Func<LogMessage<TContext>, IReadOnlyDictionary<string, string>> _format;
+    private readonly Func<LogMessage<TContext>, IReadOnlyDictionary<string, string?>> _format;
     private readonly ISerializer<string> _serializer;
     private readonly SeqConfiguration _cfg;
 

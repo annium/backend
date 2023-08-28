@@ -118,7 +118,7 @@ public static class ServiceContainerExtensions
             var options = new DataOptions()
                 .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection)
                 .UseMappingSchema(mappingSchema)
-                .UseLogging<TConnection>(sp);
+                .UseLogging(sp);
 
             return new DataOptions<TConnection>(options);
         }).AsSelf().In(lifetime);

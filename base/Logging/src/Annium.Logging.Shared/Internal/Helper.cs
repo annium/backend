@@ -6,13 +6,13 @@ namespace Annium.Logging.Shared.Internal;
 
 internal static class Helper
 {
-    public static (string, IReadOnlyDictionary<string, object>) Process(string messageTemplate, IReadOnlyList<object> dataItems)
+    public static (string, IReadOnlyDictionary<string, object?>) Process(string messageTemplate, IReadOnlyList<object?> dataItems)
     {
         var depth = 0;
         var keyIndex = -1;
         var itemIndex = -1;
         var sb = new StringBuilder();
-        var data = new Dictionary<string, object>();
+        var data = new Dictionary<string, object?>();
 
         for (var i = 0; i < messageTemplate.Length; i++)
         {

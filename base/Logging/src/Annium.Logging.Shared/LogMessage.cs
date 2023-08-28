@@ -16,7 +16,7 @@ public record LogMessage<TContext>
     public string Message { get; }
     public Exception? Exception { get; }
     public string MessageTemplate { get; }
-    public IReadOnlyDictionary<string, object> Data { get; }
+    public IReadOnlyDictionary<string, object?> Data { get; }
     public string Type { get; }
     public string Member { get; }
     public int Line { get; }
@@ -24,14 +24,14 @@ public record LogMessage<TContext>
     internal LogMessage(
         TContext context,
         Instant instant,
-        string? subjectType,
-        string? subjectId,
+        string subjectType,
+        string subjectId,
         LogLevel level,
         int threadId,
         string message,
         Exception? exception,
         string messageTemplate,
-        IReadOnlyDictionary<string, object> data,
+        IReadOnlyDictionary<string, object?> data,
         string type,
         string member,
         int line

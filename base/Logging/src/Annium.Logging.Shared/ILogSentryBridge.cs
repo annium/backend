@@ -14,6 +14,6 @@ public interface ILogSentryBridge
         LogLevel level,
         string messageTemplate,
         Exception? exception,
-        IReadOnlyList<object> dataItems
+        IReadOnlyList<object?> dataItems
     );
 }

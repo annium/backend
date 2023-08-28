@@ -3,21 +3,19 @@ using System.Diagnostics;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using LinqToDB;
-using LinqToDB.Data;
 
 namespace Annium.linq2db.Extensions.Configuration;
 
 // ReSharper disable once InconsistentNaming
 public static class DataOptionsExtensions
 {
-    public static DataOptions UseLogging<TConnection>(this DataOptions options, IServiceProvider sp)
-        where TConnection : DataConnection, ILogSubject
+    public static DataOptions UseLogging(this DataOptions options, IServiceProvider sp)
     {
         var logSubject = sp.Resolve<ILogSubject>();
 
         return options
             .UseTraceLevel(TraceLevel.Verbose)
-            .UseTraceWith((msg, category, lvl) => logSubject.Log(MapTraceLevel(lvl), "{category}: {msg}", category, msg));
+            .UseTraceWith((msg, category, lvl) => logSubject.Log<string?, string?>(MapTraceLevel(lvl), "{category}: {msg}", category, msg));
 
         static LogLevel MapTraceLevel(TraceLevel level) => level switch
         {
