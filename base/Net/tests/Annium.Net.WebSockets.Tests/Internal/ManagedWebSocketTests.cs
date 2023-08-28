@@ -24,7 +24,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     public async Task Send_NotConnected()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
 
         // act
@@ -32,14 +32,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Closed);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_Canceled()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
@@ -49,14 +49,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Canceled);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ClientClosed()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
@@ -67,14 +67,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Closed);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ServerClosed()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
         await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAndStartListenAsync();
@@ -87,14 +87,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Closed);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ClientAborted()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAndStartListenAsync();
@@ -105,14 +105,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Closed);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ServerAborted()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string message = "demo";
         await using var _ = RunServerBase(async (ctx, _) =>
         {
@@ -128,14 +128,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         result.Is(WebSocketSendStatus.Closed);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Send_Normal()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
         await using var _ = RunServer(async (serverSocket, ct) =>
@@ -168,14 +168,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var expectedBinaries = new[] { binary };
         await Expect.To(() => _texts.IsEqual(expectedTexts));
         await Expect.To(() => _binaries.IsEqual(expectedBinaries));
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_Canceled()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
 
@@ -185,14 +185,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         result.Status.Is(WebSocketCloseStatus.ClosedLocal);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_ClientClosed()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
         await _clientSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.NormalClosure, string.Empty, default);
@@ -203,14 +203,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         result.Status.Is(WebSocketCloseStatus.ClosedLocal);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_ServerClosed()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         await using var _ = RunServerBase(async (ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAsync();
 
@@ -220,14 +220,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         result.Status.Is(WebSocketCloseStatus.ClosedRemote);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_ClientAborted()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         await using var _ = RunServer(async (serverSocket, ct) => await serverSocket.ListenAsync(ct));
         await ConnectAsync();
         var listenTask = ListenAsync();
@@ -239,14 +239,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         result.Status.Is(WebSocketCloseStatus.ClosedLocal);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_ServerAborted()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         await using var _ = RunServerBase(async (ctx, _) =>
         {
             ctx.WebSocket.Abort();
@@ -263,14 +263,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // assert
         result.Status.Is(WebSocketCloseStatus.ClosedRemote);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_Normal()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
@@ -289,14 +289,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         await Expect.To(() => _texts.IsEqual(messages), 1000);
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_SmallBuffer()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 1_000_000))
             .ToArray();
@@ -318,14 +318,14 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await listenTask;
         result.Status.Is(WebSocketCloseStatus.ClosedRemote);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_BothTypes()
     {
         // arrange
-        this.TraceOld("start");
+        this.Trace("start");
         var texts = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
@@ -357,23 +357,23 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         var result = await listenTask;
         result.Status.Is(WebSocketCloseStatus.ClosedRemote);
         result.Exception.IsDefault();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     public async Task InitializeAsync()
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         _clientSocket = new NativeClientWebSocket();
         _managedSocket = new ManagedWebSocket(_clientSocket);
-        this.TraceOld($"created pair of {_clientSocket.GetFullId()} and {_managedSocket.GetFullId()}");
+        this.Trace($"created pair of {_clientSocket.GetFullId()} and {_managedSocket.GetFullId()}");
 
         _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
 
         await Task.CompletedTask;
 
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     public async Task DisposeAsync()
@@ -385,65 +385,65 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         return RunServerBase(async (ctx, ct) =>
         {
-            this.TraceOld("start");
+            this.Trace("start");
 
             var socket = new ManagedWebSocket(ctx.WebSocket);
 
-            this.TraceOld($"handle {socket.GetFullId()}");
+            this.Trace($"handle {socket.GetFullId()}");
             await handleWebSocket(socket, ct);
 
-            this.TraceOld("done");
+            this.Trace("done");
         });
     }
 
     private async Task ConnectAndStartListenAsync(CancellationToken ct = default)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         await ConnectAsync(ct);
         ListenAsync(ct).GetAwaiter();
 
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     private async Task ConnectAsync(CancellationToken ct = default)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         await _clientSocket.ConnectAsync(ServerUri, ct);
 
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     private async Task<WebSocketCloseResult> ListenAsync(CancellationToken ct = default)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         var result = await _managedSocket.ListenAsync(ct);
 
-        this.TraceOld("done");
+        this.Trace("done");
 
         return result;
     }
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         var result = await _managedSocket.SendTextAsync(Encoding.UTF8.GetBytes(text), ct);
 
-        this.TraceOld("done");
+        this.Trace("done");
 
         return result;
     }
 
     private async Task<WebSocketSendStatus> SendBinaryAsync(byte[] data, CancellationToken ct = default)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         var result = await _managedSocket.SendBinaryAsync(data, ct);
 
-        this.TraceOld("done");
+        this.Trace("done");
 
         return result;
     }

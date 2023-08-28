@@ -61,7 +61,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
 
     private async Task<Func<Task>> Run(ObserverContext<LogMessage<TContext>> ctx)
     {
-        this.TraceOld("start");
+        this.Trace("start");
 
         // normal mode - runs task immediately or waits for one
         while (!Volatile.Read(ref _isDisposed))
@@ -82,7 +82,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
         }
 
         // shutdown mode - handle only left tasks
-        this.TraceOld($"handle {Count} messages left");
+        this.Trace($"handle {Count} messages left");
         while (true)
         {
             if (_messageReader.TryRead(out var message))
@@ -91,27 +91,27 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, IAsyn
                 break;
         }
 
-        this.TraceOld("done");
+        this.Trace("done");
 
         return () => Task.CompletedTask;
     }
 
     public async ValueTask DisposeAsync()
     {
-        this.TraceOld("start");
+        this.Trace("start");
         EnsureNotDisposed();
         Volatile.Write(ref _isDisposed, true);
         lock (_messageWriter)
             _messageWriter.Complete();
-        this.TraceOld("wait for reader completion");
+        this.Trace("wait for reader completion");
         await _messageReader.Completion;
-        this.TraceOld("cancel observable cts");
+        this.Trace("cancel observable cts");
         _observableCts.Cancel();
-        this.TraceOld("await observable");
+        this.Trace("await observable");
         await _observable.WhenCompleted();
-        this.TraceOld("dispose subscription");
+        this.Trace("dispose subscription");
         _subscription.Dispose();
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     private void EnsureNotDisposed()

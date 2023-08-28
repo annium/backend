@@ -52,19 +52,19 @@ internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObserva
         var ctx = GetObserverContext(_ct);
         try
         {
-            this.TraceOld("start, run factory");
+            this.Trace("start, run factory");
             var disposeAsync = await _factory(ctx);
-            this.TraceOld("init disposal");
+            this.Trace("init disposal");
             InitDisposal();
-            this.TraceOld("dispose");
+            this.Trace("dispose");
             await disposeAsync();
-            this.TraceOld("invoke onCompleted");
+            this.Trace("invoke onCompleted");
             ctx.OnCompleted();
-            this.TraceOld("done");
+            this.Trace("done");
         }
         catch (Exception e)
         {
-            this.TraceOld($"Error: {e}");
+            this.Trace($"Error: {e}");
             ctx.OnError(e);
         }
     }

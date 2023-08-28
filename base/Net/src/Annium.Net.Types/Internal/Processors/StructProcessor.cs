@@ -12,7 +12,7 @@ internal class StructProcessor : IProcessor
     {
         if (ctx.IsRegistered(type.Type))
         {
-            this.TraceOld($"Process {type.FriendlyName()} - skip, already registered");
+            this.Trace($"Process {type.FriendlyName()} - skip, already registered");
             return true;
         }
 

@@ -17,7 +17,7 @@ internal static class ReferrerExtensions
         var typeGenericArguments = type.GetGenericArguments();
         var genericArguments = typeGenericArguments.Select(ctx.GetRef).ToArray();
         var modelRef = factory(type.Type.Namespace ?? string.Empty, name, genericArguments);
-        referrer.TraceOld($"Created {type.FriendlyName()} ref as {modelRef}");
+        referrer.Trace($"Created {type.FriendlyName()} ref as {modelRef}");
 
         return modelRef;
     }

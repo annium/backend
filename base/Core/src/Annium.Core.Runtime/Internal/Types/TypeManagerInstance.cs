@@ -24,21 +24,21 @@ internal class TypeManagerInstance : ITypeManager
         ILogger logger
     )
     {
-        this.TraceOld($"start for {assembly}");
-        this.TraceOld("collect assemblies");
+        this.Trace($"start for {assembly}");
+        this.Trace("collect assemblies");
         var assemblies = new AssembliesCollector(logger).Collect(assembly);
-        this.TraceOld("collect types");
+        this.Trace("collect types");
         var types = new TypesCollector(logger).Collect(assemblies);
-        this.TraceOld("build hierarchy");
+        this.Trace("build hierarchy");
         _hierarchy = HierarchyBuilder.BuildHierarchy(types);
-        this.TraceOld($"register {types.Count} ids");
+        this.Trace($"register {types.Count} ids");
         var ids = new Dictionary<TypeId, Type>();
         foreach (var type in types)
             ids[type.GetTypeId()] = type;
 
         _ids = ids;
         Types = types;
-        this.TraceOld("done");
+        this.Trace("done");
     }
 
     /// <summary>

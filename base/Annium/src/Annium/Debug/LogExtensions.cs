@@ -8,7 +8,7 @@ public static class LogExtensions
 {
     // [Conditional("LOG_CORE")]
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static void TraceOld<T>(
+    public static void Trace<T>(
         this T obj,
         string message = "",
         bool withTrace = false,

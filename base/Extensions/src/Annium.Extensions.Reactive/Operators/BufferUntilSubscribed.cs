@@ -180,6 +180,6 @@ file record BufferContext<T>
         [CallerLineNumber] int line = 0
     )
     {
-        this.TraceOld(msg, false, callerFilePath, member, line);
+        this.Trace(msg, false, callerFilePath, member, line);
     }
 }

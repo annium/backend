@@ -21,7 +21,7 @@ internal class TypeResolver : ITypeResolver
         if (!type.IsGenericType)
             return new[] { type };
 
-        this.TraceOld($"{type.FriendlyName()} - start");
+        this.Trace($"{type.FriendlyName()} - start");
         var sets = new List<Type[]>();
         foreach (var argument in type.GetGenericArguments())
         {
@@ -41,7 +41,7 @@ internal class TypeResolver : ITypeResolver
             .Select(type.MakeGenericType)
             .ToArray();
 
-        this.TraceOld($"{type.FriendlyName()} - end");
+        this.Trace($"{type.FriendlyName()} - end");
 
         return types;
     }
