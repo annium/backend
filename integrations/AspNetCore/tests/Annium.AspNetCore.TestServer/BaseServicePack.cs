@@ -43,7 +43,7 @@ internal class BaseServicePack : ServicePackBase
 
     public override void Setup(IServiceProvider provider)
     {
-        provider.UseLogging(route => route.UseConsole());
+        provider.UseLogging(route => route.UseTestOutput());
     }
 
     private void ConfigureMediator(MediatorConfiguration cfg, ITypeManager tm)

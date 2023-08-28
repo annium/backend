@@ -18,7 +18,7 @@ public class SequentialBackgroundExecutorTests : BackgroundExecutorTestBase
     public async Task Works()
     {
         // arrange
-        var size = Environment.ProcessorCount * 2;
+        var size = 4;
 
         // act
         var result = await Works_Base(size);

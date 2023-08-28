@@ -64,7 +64,7 @@ public abstract class TestBase
 
     private void SharedSetup(IServiceProvider sp)
     {
-        sp.UseLogging(x => x.UseConsole());
+        sp.UseLogging(x => x.UseTestOutput());
     }
 
     private IServiceProvider BuildServiceProvider()

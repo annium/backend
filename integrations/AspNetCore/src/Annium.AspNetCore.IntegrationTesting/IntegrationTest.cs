@@ -36,6 +36,7 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
         {
             var container = new ServiceContainer(services);
             configureServices(container);
+            container.Add(_outputHelper).AsSelf().Singleton();
             container.Add<ITracer>(new TestTracer(_outputHelper)).AsSelf().Singleton();
         });
         hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
