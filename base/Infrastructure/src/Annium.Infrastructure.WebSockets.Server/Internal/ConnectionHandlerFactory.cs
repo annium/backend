@@ -13,13 +13,13 @@ internal class ConnectionHandlerFactory<TState>
     private readonly Func<Guid, TState> _stateFactory;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly Serializer _serializer;
-    private readonly ILogger<ConnectionHandler<TState>> _logger;
+    private readonly ILogger _logger;
 
     public ConnectionHandlerFactory(
         Func<Guid, TState> stateFactory,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
         Serializer serializer,
-        ILogger<ConnectionHandler<TState>> logger
+        ILogger logger
     )
     {
         _stateFactory = stateFactory;

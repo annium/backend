@@ -1,16 +1,16 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors;
 
-public class SetupExecutor : ITestExecutor, ILogSubject<SetupExecutor>
+public class SetupExecutor : ITestExecutor, ILogSubject
 {
-    public ILogger<SetupExecutor> Logger { get; }
+    public ILogger Logger { get; }
 
     public uint Order => 2;
 
     public SetupExecutor(
-        ILogger<SetupExecutor> logger
+        ILogger logger
     )
     {
         Logger = logger;

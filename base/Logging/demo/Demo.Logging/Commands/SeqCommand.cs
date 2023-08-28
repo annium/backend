@@ -5,14 +5,14 @@ using Annium.Logging.Abstractions;
 
 namespace Demo.Logging.Commands;
 
-internal class SeqCommand : AsyncCommand, ICommandDescriptor, ILogSubject<SeqCommand>
+internal class SeqCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "seq";
     public static string Description => $"test {Id} log handler";
-    public ILogger<SeqCommand> Logger { get; }
+    public ILogger Logger { get; }
 
     public SeqCommand(
-        ILogger<SeqCommand> logger
+        ILogger logger
     )
     {
         Logger = logger;

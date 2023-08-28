@@ -10,7 +10,7 @@ internal class ExceptionPipeHandler<TRequest> : ExceptionPipeHandlerBase<TReques
     IPipeRequestHandler<TRequest, TRequest, IStatusResult<OperationStatus>, IStatusResult<OperationStatus>>
 {
     public ExceptionPipeHandler(
-        ILogger<ExceptionPipeHandler<TRequest>> logger
+        ILogger logger
     ) : base(logger)
     {
     }

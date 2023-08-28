@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Logging.Abstractions;
+using Annium.Logging.Shared.Internal;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
@@ -9,14 +10,14 @@ using Xunit.Abstractions;
 
 namespace Annium.Logging.Shared.Tests;
 
-public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
+public class BaseLoggerTest : TestBase, ILogSubject
 {
-    public ILogger<BaseLoggerTest> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IList<LogMessage<Context>> _messages = new List<LogMessage<Context>>();
 
     public BaseLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Logger = Get<ILogger<BaseLoggerTest>>();
+        Logger = Get<ILogger>();
     }
 
 
@@ -25,7 +26,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
         var timeProvider = provider.Resolve<ITimeProvider>();
 
         // act
@@ -35,7 +36,8 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
         _messages.Has(1);
         _messages.At(0).Instant.Is(timeProvider.Now);
         _messages.At(0).Level.Is(LogLevel.Info);
-        _messages.At(0).Source.Is(typeof(BaseLoggerTest).FriendlyName());
+        _messages.At(0).SubjectType.Is(typeof(LogSubject).FriendlyName());
+        _messages.At(0).SubjectId.IsNullOrWhiteSpace().IsFalse();
         _messages.At(0).Message.Is("sample");
     }
 
@@ -44,7 +46,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider(LogLevel.Warn);
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Info("sample");
@@ -58,7 +60,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Info("sample");
@@ -72,7 +74,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Warn("sample");
@@ -86,7 +88,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Info("sample");
@@ -100,7 +102,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Warn("sample");
@@ -114,7 +116,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
         var exception = new Exception("sample");
 
         // act
@@ -131,7 +133,7 @@ public class BaseLoggerTest : TestBase, ILogSubject<BaseLoggerTest>
     {
         // arrange
         var provider = GetProvider();
-        var subject = provider.Resolve<ILogSubject<BaseLoggerTest>>();
+        var subject = provider.Resolve<ILogSubject>();
 
         // act
         subject.Log().Error("sample");

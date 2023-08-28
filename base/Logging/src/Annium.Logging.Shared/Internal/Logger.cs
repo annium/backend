@@ -3,7 +3,7 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Logging.Shared.Internal;
 
-internal class Logger<T> : ILogger<T>
+internal class Logger : ILogger
 {
     private readonly ILogSentryBridge _sentryBridge;
 
@@ -14,9 +14,15 @@ internal class Logger<T> : ILogger<T>
         _sentryBridge = sentryBridge;
     }
 
-    public void Log<TS>(TS? subject, string file, string member, int line, LogLevel level, string message, object[] data) =>
-        _sentryBridge.Register(subject, file, member, line, level, typeof(T).FriendlyName(), message, null, data);
+    public void Log<T>(T subject, string file, string member, int line, LogLevel level, string message, object[] data)
+        where T : notnull
+    {
+        _sentryBridge.Register(subject.GetType().FriendlyName(), subject.GetFullId(), file, member, line, level, message, null, data);
+    }
 
-    public void Error<TS>(TS? subject, string file, string member, int line, Exception exception, object[] data) =>
-        _sentryBridge.Register(subject, file, member, line, LogLevel.Error, typeof(T).FriendlyName(), exception.Message, exception, data);
+    public void Error<T>(T subject, string file, string member, int line, Exception exception, object[] data)
+        where T : notnull
+    {
+        _sentryBridge.Register(subject.GetType().FriendlyName(), subject.GetFullId(), file, member, line, LogLevel.Error, exception.Message, exception, data);
+    }
 }

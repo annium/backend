@@ -7,9 +7,9 @@ using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
-internal class TestClient : ClientBase<WebSocket>, ITestClient, ILogSubject<TestClient>
+internal class TestClient : ClientBase<WebSocket>, ITestClient, ILogSubject
 {
-    public new ILogger<TestClient> Logger { get; }
+    public new ILogger Logger { get; }
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
 
     public TestClient(

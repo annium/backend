@@ -6,10 +6,10 @@ namespace Annium.Extensions.Shell;
 
 internal class Shell : IShell
 {
-    private readonly ILogger<ShellInstance> _logger;
+    private readonly ILogger _logger;
 
     public Shell(
-        ILogger<ShellInstance> logger
+        ILogger logger
     )
     {
         _logger = logger;

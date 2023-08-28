@@ -7,17 +7,17 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Extensions.Pooling.Internal;
 
-internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject<ObjectCache<TKey, TValue>>
+internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, ILogSubject
     where TKey : notnull
     where TValue : class
 {
     private readonly ObjectCacheProvider<TKey, TValue> _provider;
-    public ILogger<ObjectCache<TKey, TValue>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IDictionary<TKey, CacheEntry> _entries = new Dictionary<TKey, CacheEntry>();
 
     public ObjectCache(
         ObjectCacheProvider<TKey, TValue> provider,
-        ILogger<ObjectCache<TKey, TValue>> logger
+        ILogger logger
     )
     {
         _provider = provider;

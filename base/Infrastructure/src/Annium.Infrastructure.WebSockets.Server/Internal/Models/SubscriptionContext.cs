@@ -16,7 +16,7 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
 internal sealed record SubscriptionContext<TInit, TMessage, TState> :
     ISubscriptionContext<TInit, TMessage, TState>,
     ISubscriptionContext,
-    ILogSubject<SubscriptionContext<TInit, TMessage, TState>>
+    ILogSubject
     where TInit : SubscriptionInitRequestBase
     where TState : ConnectionStateBase
 {
@@ -24,7 +24,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
     public TState State { get; }
     public Guid ConnectionId { get; }
     public Guid SubscriptionId { get; }
-    public ILogger<SubscriptionContext<TInit, TMessage, TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly CancellationTokenSource _cts;
     private readonly IMediator _mediator;
     private readonly IServiceProvider _sp;
@@ -38,7 +38,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         Guid subscriptionId,
         CancellationTokenSource cts,
         IMediator mediator,
-        ILogger<SubscriptionContext<TInit, TMessage, TState>> logger,
+        ILogger logger,
         IServiceProvider sp
     )
     {

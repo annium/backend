@@ -108,10 +108,10 @@ public class MediatorTest : TestBase
     {
         sp.UseLogging(route => route
             .For(m =>
-                m.Source.StartsWith("ConversionHandler") ||
-                m.Source.StartsWith("ValidationHandler") ||
-                m.Source.StartsWith("OpenFinalHandler") ||
-                m.Source.StartsWith("ClosedFinalHandler")
+                m.SubjectType.StartsWith("ConversionHandler") ||
+                m.SubjectType.StartsWith("ValidationHandler") ||
+                m.SubjectType.StartsWith("OpenFinalHandler") ||
+                m.SubjectType.StartsWith("ClosedFinalHandler")
             )
             .UseInMemory()
         );
@@ -119,15 +119,15 @@ public class MediatorTest : TestBase
 
     private class ConversionHandler<TRequest, TResponse> :
         IPipeRequestHandler<Request<TRequest>, TRequest, TResponse, Response<TResponse>>,
-        ILogSubject<ConversionHandler<TRequest, TResponse>>
+        ILogSubject
     {
         private readonly JsonSerializerOptions
             _options = new JsonSerializerOptions().ConfigureForOperations();
 
-        public ILogger<ConversionHandler<TRequest, TResponse>> Logger { get; }
+        public ILogger Logger { get; }
 
         public ConversionHandler(
-            ILogger<ConversionHandler<TRequest, TResponse>> logger
+            ILogger logger
         )
         {
             Logger = logger;
@@ -179,14 +179,14 @@ public class MediatorTest : TestBase
 
     private class ValidationHandler<TRequest, TResponse> :
         IPipeRequestHandler<TRequest, TRequest, TResponse, IBooleanResult<TResponse>>,
-        ILogSubject<ValidationHandler<TRequest, TResponse>>
+        ILogSubject
     {
-        public ILogger<ValidationHandler<TRequest, TResponse>> Logger { get; }
+        public ILogger Logger { get; }
         private readonly Func<TRequest, bool> _validate;
 
         public ValidationHandler(
             Func<TRequest, bool> validate,
-            ILogger<ValidationHandler<TRequest, TResponse>> logger
+            ILogger logger
         )
         {
             _validate = validate;
@@ -213,14 +213,14 @@ public class MediatorTest : TestBase
         }
     }
 
-    private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>, ILogSubject<OpenFinalHandler<TRequest, TResponse>>
+    private class OpenFinalHandler<TRequest, TResponse> : IFinalRequestHandler<TRequest, TResponse>, ILogSubject
         where TRequest : TResponse
         where TResponse : Base, new()
     {
-        public ILogger<OpenFinalHandler<TRequest, TResponse>> Logger { get; }
+        public ILogger Logger { get; }
 
         public OpenFinalHandler(
-            ILogger<OpenFinalHandler<TRequest, TResponse>> logger
+            ILogger logger
         )
         {
             Logger = logger;
@@ -240,12 +240,12 @@ public class MediatorTest : TestBase
         }
     }
 
-    private class ClosedFinalHandler : IFinalRequestHandler<Base, One>, ILogSubject<ClosedFinalHandler>
+    private class ClosedFinalHandler : IFinalRequestHandler<Base, One>, ILogSubject
     {
-        public ILogger<ClosedFinalHandler> Logger { get; }
+        public ILogger Logger { get; }
 
         public ClosedFinalHandler(
-            ILogger<ClosedFinalHandler> logger
+            ILogger logger
         )
         {
             Logger = logger;

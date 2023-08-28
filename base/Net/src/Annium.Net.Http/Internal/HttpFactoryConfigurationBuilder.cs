@@ -27,7 +27,7 @@ internal class HttpFactoryConfigurationBuilder : IHttpFactoryConfigurationBuilde
         _container.Add<IHttpRequestFactory>(sp =>
         {
             var serializer = sp.Resolve<IIndex<string, IHttpContentSerializer>>()[_key];
-            var logger = sp.Resolve<ILogger<IHttpRequest>>();
+            var logger = sp.Resolve<ILogger>();
 
             return new HttpRequestFactory(serializer, logger);
         }).AsKeyed<IHttpRequestFactory, string>(_key).Singleton();

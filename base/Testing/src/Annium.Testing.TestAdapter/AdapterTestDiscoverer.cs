@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
@@ -13,9 +13,9 @@ namespace Annium.Testing.TestAdapter;
 [FileExtension(Constants.FileExtensionDll)]
 [FileExtension(Constants.FileExtensionExe)]
 [DefaultExecutorUri(Constants.ExecutorUri)]
-public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject<AdapterTestDiscoverer>
+public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
 {
-    public ILogger<AdapterTestDiscoverer> Logger { get; private set; } = default!;
+    public ILogger Logger { get; private set; } = default!;
     private readonly TestConverter _testConverter;
     private TestDiscoverer? _testDiscoverer;
 
@@ -36,7 +36,7 @@ public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject<AdapterTestDis
     {
         var provider = AdapterServiceProviderBuilder.Build(discoveryContext);
         _testDiscoverer = provider.Resolve<TestDiscoverer>();
-        Logger = provider.Resolve<ILogger<AdapterTestDiscoverer>>();
+        Logger = provider.Resolve<ILogger>();
 
         this.Log().Debug("Start discovery.");
 

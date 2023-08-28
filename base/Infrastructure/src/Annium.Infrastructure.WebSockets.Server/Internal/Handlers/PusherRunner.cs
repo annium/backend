@@ -16,13 +16,13 @@ internal class PusherRunner<TMessage, TState> : IPusherRunner<TState>
 {
     private readonly IPusher<TMessage, TState> _pusher;
     private readonly IMediator _mediator;
-    private readonly ILogger<PushContext<TMessage, TState>> _logger;
+    private readonly ILogger _logger;
     private readonly IServiceProvider _sp;
 
     public PusherRunner(
         IPusher<TMessage, TState> pusher,
         IMediator mediator,
-        ILogger<PushContext<TMessage, TState>> logger,
+        ILogger logger,
         IServiceProvider sp
     )
     {

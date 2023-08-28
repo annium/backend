@@ -9,16 +9,16 @@ using Demo.Infrastructure.WebSockets.Domain.Responses.User;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<SubUnsubCommand>
+internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "sub-unsub";
     public static string Description => $"test {Id} flow";
-    public ILogger<SubUnsubCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public SubUnsubCommand(
         IClientFactory clientFactory,
-        ILogger<SubUnsubCommand> logger
+        ILogger logger
     )
     {
         _clientFactory = clientFactory;

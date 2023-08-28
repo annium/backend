@@ -6,15 +6,15 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class LifeCycleCoordinator<TState> : ILogSubject<LifeCycleCoordinator<TState>>
+internal class LifeCycleCoordinator<TState> : ILogSubject
     where TState : ConnectionStateBase
 {
-    public ILogger<LifeCycleCoordinator<TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IEnumerable<LifeCycleHandlerBase<TState>> _handlers;
 
     public LifeCycleCoordinator(
         IEnumerable<LifeCycleHandlerBase<TState>> handlers,
-        ILogger<LifeCycleCoordinator<TState>> logger
+        ILogger logger
     )
     {
         _handlers = handlers;

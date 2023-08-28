@@ -12,15 +12,15 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDescriptor, ILogSubject<EchoCommand>
+internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     private readonly ITracer _tracer;
     public static string Id => "echo";
     public static string Description => "test echo flow";
-    public ILogger<EchoCommand> Logger { get; }
+    public ILogger Logger { get; }
 
     public EchoCommand(
-        ILogger<EchoCommand> logger,
+        ILogger logger,
         ITracer tracer
     )
     {

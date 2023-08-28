@@ -22,7 +22,7 @@ public static class LogMessageExtensions
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Subject<TContext>(this LogMessage<TContext> m)
         where TContext : class, ILogContext
-        => string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}";
+        => string.IsNullOrWhiteSpace(m.SubjectId) ? m.SubjectType : $"{m.SubjectType}#{m.SubjectId}";
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static string Location<TContext>(this LogMessage<TContext> m)

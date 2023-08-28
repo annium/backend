@@ -9,21 +9,21 @@ using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class ConnectionTracker : IAsyncDisposable, ILogSubject<ConnectionTracker>
+internal class ConnectionTracker : IAsyncDisposable, ILogSubject
 {
-    public ILogger<ConnectionTracker> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IServerLifetime _lifetime;
     private readonly Dictionary<Guid, ConnectionRef> _connections = new();
     private readonly TaskCompletionSource<object> _disposeTcs = new();
-    private readonly ILogger<Connection> _connectionLogger;
+    private readonly ILogger _connectionLogger;
     private bool _isDisposing;
     private bool _isDisposed;
-    private readonly ILogger<ConnectionRef> _connectionRefLogger;
+    private readonly ILogger _connectionRefLogger;
 
     public ConnectionTracker(
         IServerLifetime lifetime,
         ILoggerFactory loggerFactory,
-        ILogger<ConnectionTracker> logger
+        ILogger logger
     )
     {
         _lifetime = lifetime;
@@ -150,8 +150,8 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject<ConnectionTrack
 
     private sealed record ConnectionRef(
         Connection Connection,
-        ILogger<ConnectionRef> Logger
-    ) : ILogSubject<ConnectionRef>
+        ILogger Logger
+    ) : ILogSubject
     {
         public Task CanBeReleased => _disposeTcs.Task;
         private readonly TaskCompletionSource<object?> _disposeTcs = new();

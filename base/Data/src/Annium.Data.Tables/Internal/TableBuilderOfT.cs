@@ -12,10 +12,10 @@ internal class TableBuilder<T> : ITableBuilder<T>
     private Func<T, T, bool>? _hasChanged;
     private Action<T, T>? _update;
     private Func<T, bool>? _isActive;
-    private readonly ILogger<Table<T>> _logger;
+    private readonly ILogger _logger;
 
     public TableBuilder(
-        ILogger<Table<T>> logger
+        ILogger logger
     )
     {
         _logger = logger;

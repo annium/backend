@@ -11,6 +11,6 @@ public static class LogSubjectExtensions
         [CallerFilePath] string file = "",
         [CallerMemberName] string member = "",
         [CallerLineNumber] int line = 0
-    ) where T : ILogSubject<T> =>
+    ) where T : ILogSubject =>
         new(subject, subject.Logger, file, member, line);
 }

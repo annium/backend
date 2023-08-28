@@ -4,16 +4,17 @@ using System.Diagnostics;
 namespace Annium.Logging.Abstractions;
 
 public readonly ref struct LogEntryContext<T>
+    where T : notnull
 {
     private readonly T _subject;
     private readonly string _file;
     private readonly string _member;
     private readonly int _line;
-    private readonly ILogger<T> _logger;
+    private readonly ILogger _logger;
 
     public LogEntryContext(
         T subject,
-        ILogger<T> logger,
+        ILogger logger,
         string file,
         string member,
         int line

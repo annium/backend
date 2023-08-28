@@ -13,17 +13,17 @@ using NodaTime;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDescriptor, ILogSubject<SinkCommand>
+internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "sink";
     public static string Description => "socket sink (to listen broadcasts)";
-    public ILogger<SinkCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
     private readonly ITracer _tracer;
 
     public SinkCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILogger<SinkCommand> logger,
+        ILogger logger,
         ITracer tracer
     )
     {

@@ -8,15 +8,15 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
 
-internal abstract class CompositionPipeHandlerBase<TRequest, TResponse> : ILogSubject<CompositionPipeHandlerBase<TRequest, TResponse>>
+internal abstract class CompositionPipeHandlerBase<TRequest, TResponse> : ILogSubject
     where TRequest : class
 {
-    public ILogger<CompositionPipeHandlerBase<TRequest, TResponse>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IComposer<TRequest> _composer;
 
     public CompositionPipeHandlerBase(
         IComposer<TRequest> composer,
-        ILogger<CompositionPipeHandlerBase<TRequest, TResponse>> logger
+        ILogger logger
     )
     {
         _composer = composer;

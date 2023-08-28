@@ -8,13 +8,13 @@ using Xunit.Abstractions;
 
 namespace Annium.Logging.Console.Tests;
 
-public class ConsoleLoggerTest : TestBase, ILogSubject<ConsoleLoggerTest>
+public class ConsoleLoggerTest : TestBase, ILogSubject
 {
-    public ILogger<ConsoleLoggerTest> Logger { get; }
+    public ILogger Logger { get; }
 
     public ConsoleLoggerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Logger = Get<ILogger<ConsoleLoggerTest>>();
+        Logger = Get<ILogger>();
     }
 
     [Fact]
@@ -67,7 +67,7 @@ public class ConsoleLoggerTest : TestBase, ILogSubject<ConsoleLoggerTest>
         capture.Output.Contains("xxx").IsTrue();
     }
 
-    private ILogSubject<ConsoleLoggerTest> GetSubject(LogLevel minLogLevel = LogLevel.Trace)
+    private ILogSubject GetSubject(LogLevel minLogLevel = LogLevel.Trace)
     {
         var container = new ServiceContainer();
 
@@ -82,6 +82,6 @@ public class ConsoleLoggerTest : TestBase, ILogSubject<ConsoleLoggerTest>
                 .UseConsole()
         );
 
-        return provider.Resolve<ILogSubject<ConsoleLoggerTest>>();
+        return provider.Resolve<ILogSubject>();
     }
 }

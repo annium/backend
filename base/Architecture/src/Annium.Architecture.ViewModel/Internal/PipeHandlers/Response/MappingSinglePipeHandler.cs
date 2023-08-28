@@ -16,15 +16,15 @@ internal class MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut> :
         IStatusResult<OperationStatus, TResponseIn>,
         IStatusResult<OperationStatus, TResponseOut>
     >,
-    ILogSubject<MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut>>
+    ILogSubject
     where TResponseOut : IResponse<TResponseIn>
 {
-    public ILogger<MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IMapper _mapper;
 
     public MappingSinglePipeHandler(
         IMapper mapper,
-        ILogger<MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut>> logger
+        ILogger logger
     )
     {
         _mapper = mapper;

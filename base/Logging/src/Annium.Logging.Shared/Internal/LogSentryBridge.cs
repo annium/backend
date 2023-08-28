@@ -24,13 +24,13 @@ internal class LogSentryBridge<TContext> : ILogSentryBridge
         _logSentry = logSentry;
     }
 
-    public void Register<T>(
-        T? subject,
+    public void Register(
+        string subjectType,
+        string subjectId,
         string file,
         string member,
         int line,
         LogLevel level,
-        string source,
         string messageTemplate,
         Exception? exception,
         object[] dataItems
@@ -42,10 +42,9 @@ internal class LogSentryBridge<TContext> : ILogSentryBridge
         var msg = new LogMessage<TContext>(
             _context,
             instant,
-            subject?.GetType().FriendlyName() ?? null,
-            subject?.GetId() ?? null,
+            subjectType,
+            subjectId,
             level,
-            source,
             Thread.CurrentThread.ManagedThreadId,
             exception is null ? message : LogMessageEnricher.GetExceptionMessage(exception),
             exception?.Demystify(),

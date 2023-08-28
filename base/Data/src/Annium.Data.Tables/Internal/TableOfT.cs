@@ -40,7 +40,7 @@ internal sealed class Table<T> : TableBase<T>, ITable<T>
         Func<T, T, bool> hasChanged,
         Action<T, T> update,
         Func<T, bool> isActive,
-        ILogger<Table<T>> logger
+        ILogger logger
     ) : base(permissions, logger)
     {
         _getKey = getKey;

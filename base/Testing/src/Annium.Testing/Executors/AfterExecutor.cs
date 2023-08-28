@@ -1,17 +1,17 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 
 namespace Annium.Testing.Executors;
 
-public class AfterExecutor : ITestExecutor, ILogSubject<AfterExecutor>
+public class AfterExecutor : ITestExecutor, ILogSubject
 {
     public uint Order => 5;
-    public ILogger<AfterExecutor> Logger { get; }
+    public ILogger Logger { get; }
     private readonly MethodExecutor _executor;
 
     public AfterExecutor(
         MethodExecutor executor,
-        ILogger<AfterExecutor> logger
+        ILogger logger
     )
     {
         _executor = executor;

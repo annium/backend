@@ -7,16 +7,16 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestVoidCommand>
+internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "request-void";
     public static string Description => $"test {Id} flow";
-    public ILogger<RequestVoidCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public RequestVoidCommand(
         IClientFactory clientFactory,
-        ILogger<RequestVoidCommand> logger
+        ILogger logger
     )
     {
         _clientFactory = clientFactory;

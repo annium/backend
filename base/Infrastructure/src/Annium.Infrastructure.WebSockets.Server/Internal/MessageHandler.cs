@@ -14,10 +14,10 @@ using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class MessageHandler<TState> : ILogSubject<MessageHandler<TState>>
+internal class MessageHandler<TState> : ILogSubject
     where TState : ConnectionStateBase
 {
-    public ILogger<MessageHandler<TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly Serializer _serializer;
     private readonly IMediator _mediator;
@@ -26,7 +26,7 @@ internal class MessageHandler<TState> : ILogSubject<MessageHandler<TState>>
         IServiceProvider sp,
         Serializer serializer,
         IMediator mediator,
-        ILogger<MessageHandler<TState>> logger
+        ILogger logger
     )
     {
         _sp = sp;

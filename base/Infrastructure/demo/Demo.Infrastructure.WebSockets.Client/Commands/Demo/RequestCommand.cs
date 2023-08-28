@@ -19,17 +19,17 @@ using ClientWebSocketOptions = Annium.Net.WebSockets.Obsolete.ClientWebSocketOpt
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
-internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestCommand>
+internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "request";
     public static string Description => "test demo flow";
-    public ILogger<RequestCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
     private readonly ITracer _tracer;
 
     public RequestCommand(
         ISerializer<ReadOnlyMemory<byte>> serializer,
-        ILogger<RequestCommand> logger,
+        ILogger logger,
         ITracer tracer
     )
     {

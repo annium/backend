@@ -1,6 +1,6 @@
 namespace Annium.Logging.Abstractions;
 
-public interface ILogSubject<out T>
+public interface ILogSubject
 {
-    ILogger<T> Logger { get; }
+    ILogger Logger { get; }
 }

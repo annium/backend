@@ -1,17 +1,17 @@
-﻿using System.Threading.Tasks;
+using System.Threading.Tasks;
 using Annium.Logging.Abstractions;
 using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class SkippedExecutor : ITestExecutor, ILogSubject<SkippedExecutor>
+public class SkippedExecutor : ITestExecutor, ILogSubject
 {
-    public ILogger<SkippedExecutor> Logger { get; }
+    public ILogger Logger { get; }
 
     public uint Order => 1;
 
     public SkippedExecutor(
-        ILogger<SkippedExecutor> logger
+        ILogger logger
     )
     {
         Logger = logger;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,12 +7,12 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class MethodExecutor : ILogSubject<MethodExecutor>
+public class MethodExecutor : ILogSubject
 {
-    public ILogger<MethodExecutor> Logger { get; }
+    public ILogger Logger { get; }
 
     public MethodExecutor(
-        ILogger<MethodExecutor> logger
+        ILogger logger
     )
     {
         Logger = logger;

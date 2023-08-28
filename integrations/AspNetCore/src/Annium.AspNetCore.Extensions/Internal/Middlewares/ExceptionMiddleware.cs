@@ -12,16 +12,16 @@ using Microsoft.AspNetCore.Http;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares;
 
-internal class ExceptionMiddleware : ILogSubject<ExceptionMiddleware>
+internal class ExceptionMiddleware : ILogSubject
 {
-    public ILogger<ExceptionMiddleware> Logger { get; }
+    public ILogger Logger { get; }
     private readonly RequestDelegate _next;
     private readonly Helper _helper;
 
     public ExceptionMiddleware(
         RequestDelegate next,
         IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILogger<ExceptionMiddleware> logger
+        ILogger logger
     )
     {
         _next = next;

@@ -11,18 +11,16 @@ using Annium.Storage.Abstractions;
 
 namespace Annium.Storage.S3;
 
-internal class Storage : StorageBase, ILogSubject<Storage>
+internal class Storage : StorageBase
 {
-    public new ILogger<Storage> Logger { get; }
     private readonly Configuration _configuration;
     private readonly string _directory;
 
     public Storage(
         Configuration configuration,
-        ILogger<Storage> logger
+        ILogger logger
     ) : base(logger)
     {
-        Logger = logger;
         _configuration = configuration;
 
         VerifyPath(configuration.Directory);

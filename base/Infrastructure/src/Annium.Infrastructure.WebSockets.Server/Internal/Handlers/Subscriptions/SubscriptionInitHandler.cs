@@ -17,11 +17,11 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         None,
         VoidResponse<TMessage>
     >,
-    ILogSubject<SubscriptionInitHandler<TInit, TMessage, TState>>
+    ILogSubject
     where TInit : SubscriptionInitRequestBase
     where TState : ConnectionStateBase
 {
-    public ILogger<SubscriptionInitHandler<TInit, TMessage, TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;
     private readonly IMediator _mediator;
     private readonly ILoggerFactory _loggerFactory;
@@ -30,7 +30,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     public SubscriptionInitHandler(
         SubscriptionContextStore subscriptionContextStore,
         IMediator mediator,
-        ILogger<SubscriptionInitHandler<TInit, TMessage, TState>> logger,
+        ILogger logger,
         ILoggerFactory loggerFactory,
         IServiceProvider sp
     )

@@ -6,16 +6,16 @@ using Annium.Reflection;
 
 namespace Annium.Core.Mediator.Internal;
 
-internal class ChainBuilder : ILogSubject<ChainBuilder>
+internal class ChainBuilder : ILogSubject
 {
-    public ILogger<ChainBuilder> Logger { get; }
+    public ILogger Logger { get; }
     private readonly MediatorConfiguration _configuration;
     private readonly NextBuilder _nextBuilder;
 
     public ChainBuilder(
         IEnumerable<MediatorConfiguration> configurations,
         NextBuilder nextBuilder,
-        ILogger<ChainBuilder> logger
+        ILogger logger
     )
     {
         _configuration = MediatorConfiguration.Merge(configurations.ToArray());

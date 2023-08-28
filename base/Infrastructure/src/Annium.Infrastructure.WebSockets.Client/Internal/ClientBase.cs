@@ -18,11 +18,11 @@ using Annium.Threading;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
-internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBase<TSocket>>
+internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     where TSocket : class, ISendingReceivingWebSocket
 {
     public bool IsConnected => Socket.State == WebSocketState.Open;
-    public ILogger<ClientBase<TSocket>> Logger { get; }
+    public ILogger Logger { get; }
     protected TSocket Socket { get; }
     private readonly Serializer _serializer;
     private readonly IClientConfigurationBase _configuration;
@@ -36,7 +36,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject<ClientBas
         ITimeProvider timeProvider,
         Serializer serializer,
         IClientConfigurationBase configuration,
-        ILogger<ClientBase<TSocket>> logger,
+        ILogger logger,
         ITracer tracer
     )
     {

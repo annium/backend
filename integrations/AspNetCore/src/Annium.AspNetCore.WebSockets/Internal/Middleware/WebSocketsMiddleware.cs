@@ -14,9 +14,9 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.WebSockets.Internal.Middleware;
 
-internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
+internal class WebSocketsMiddleware : ILogSubject
 {
-    public ILogger<WebSocketsMiddleware> Logger { get; }
+    public ILogger Logger { get; }
     private readonly RequestDelegate _next;
     private readonly ICoordinator _coordinator;
     private readonly ServerConfiguration _cfg;
@@ -29,7 +29,7 @@ internal class WebSocketsMiddleware : ILogSubject<WebSocketsMiddleware>
         ServerConfiguration cfg,
         IHostApplicationLifetime applicationLifetime,
         IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILogger<WebSocketsMiddleware> logger,
+        ILogger logger,
         ITracer tracer
     )
     {

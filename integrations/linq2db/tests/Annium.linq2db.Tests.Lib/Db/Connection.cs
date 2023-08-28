@@ -5,16 +5,16 @@ using LinqToDB.Data;
 
 namespace Annium.linq2db.Tests.Lib.Db;
 
-public sealed class Connection : DataConnection, ILogSubject<Connection>
+public sealed class Connection : DataConnection, ILogSubject
 {
-    public ILogger<Connection> Logger { get; }
+    public ILogger Logger { get; }
     public ITable<Company> Companies { get; }
     public ITable<Employee> Employees { get; }
     public ITable<CompanyEmployee> CompanyEmployees { get; }
 
     public Connection(
         DataOptions<Connection> config,
-        ILogger<Connection> logger
+        ILogger logger
     ) : base(config.Options)
     {
         Logger = logger;

@@ -15,15 +15,15 @@ internal class MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse> 
         TResponse,
         TResponse
     >,
-    ILogSubject<MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse>>
+    ILogSubject
     where TRequestIn : IRequest<TRequestOut>
 {
-    public ILogger<MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IMapper _mapper;
 
     public MappingEnumerablePipeHandler(
         IMapper mapper,
-        ILogger<MappingEnumerablePipeHandler<TRequestIn, TRequestOut, TResponse>> logger
+        ILogger logger
     )
     {
         _mapper = mapper;

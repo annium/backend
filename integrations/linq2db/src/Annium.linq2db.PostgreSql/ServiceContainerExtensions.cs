@@ -19,7 +19,7 @@ public static class ServiceContainerExtensions
         this IServiceContainer container,
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
         return container.AddPostgreSql<TConnection>(
             sp => sp.Resolve<PostgreSqlConfiguration>(),
@@ -33,7 +33,7 @@ public static class ServiceContainerExtensions
         Action<IServiceProvider, MappingSchema> configure,
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -48,7 +48,7 @@ public static class ServiceContainerExtensions
         PostgreSqlConfiguration cfg,
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -64,7 +64,7 @@ public static class ServiceContainerExtensions
         Action<IServiceProvider, MappingSchema> configure,
         ServiceLifetime lifetime = ServiceLifetime.Scoped
     )
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
         return container
             .AddPostgreSql<TConnection>(
@@ -80,7 +80,7 @@ public static class ServiceContainerExtensions
         Action<IServiceProvider, MappingSchema> configure,
         ServiceLifetime lifetime
     )
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
         // mapping schema
         container.Add(sp =>

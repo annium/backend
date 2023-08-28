@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,14 +7,14 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing.Executors;
 
-public class PipelineExecutor : ILogSubject<PipelineExecutor>
+public class PipelineExecutor : ILogSubject
 {
-    public ILogger<PipelineExecutor> Logger { get; }
+    public ILogger Logger { get; }
     private readonly ITestExecutor[] _executors;
 
     public PipelineExecutor(
         IEnumerable<ITestExecutor> executors,
-        ILogger<PipelineExecutor> logger
+        ILogger logger
     )
     {
         _executors = executors.OrderBy(e => e.Order).ToArray();

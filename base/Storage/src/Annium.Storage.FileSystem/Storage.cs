@@ -13,7 +13,7 @@ internal class Storage : StorageBase
 
     public Storage(
         Configuration configuration,
-        ILogger<Storage> logger
+        ILogger logger
     ) : base(logger)
     {
         VerifyPath(configuration.Directory);

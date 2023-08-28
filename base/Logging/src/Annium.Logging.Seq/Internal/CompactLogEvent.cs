@@ -31,7 +31,7 @@ internal static class CompactLogEvent<TContext>
     private static string BuildMessagePrefix(LogMessage<TContext> m)
     {
         var sb = new StringBuilder();
-        sb.Append(string.IsNullOrWhiteSpace(m.SubjectType) ? m.Source : $"{m.SubjectType}#{m.SubjectId}");
+        sb.Append($"{m.SubjectType}#{m.SubjectId}");
         if (m.Line != 0)
             sb.Append($" at {m.Type}.{m.Member}:{m.Line}");
 

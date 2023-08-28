@@ -6,13 +6,13 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Storage.Abstractions;
 
-public abstract class StorageBase : IStorage, ILogSubject<StorageBase>
+public abstract class StorageBase : IStorage, ILogSubject
 {
-    public ILogger<StorageBase> Logger { get; }
+    public ILogger Logger { get; }
     private static readonly Regex NameRe = new(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
     public StorageBase(
-        ILogger<StorageBase> logger
+        ILogger logger
     )
     {
         Logger = logger;

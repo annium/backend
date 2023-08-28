@@ -12,7 +12,7 @@ internal class Storage : StorageBase
     private readonly IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
 
     public Storage(
-        ILogger<Storage> logger
+        ILogger logger
     ) : base(logger)
     {
     }

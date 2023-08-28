@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -12,9 +12,9 @@ using Annium.Testing.Executors;
 
 namespace Annium.Testing;
 
-public class TestExecutor : ILogSubject<TestExecutor>
+public class TestExecutor : ILogSubject
 {
-    public ILogger<TestExecutor> Logger { get; }
+    public ILogger Logger { get; }
     private readonly TestingConfiguration _cfg;
     private readonly IServiceProvider _provider;
     private readonly PipelineExecutor _executor;
@@ -23,7 +23,7 @@ public class TestExecutor : ILogSubject<TestExecutor>
         TestingConfiguration cfg,
         IServiceProvider provider,
         PipelineExecutor executor,
-        ILogger<TestExecutor> logger
+        ILogger logger
     )
     {
         _cfg = cfg;

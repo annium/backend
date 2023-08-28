@@ -12,7 +12,7 @@ internal class CompositionPipeHandler<TRequest> :
 {
     public CompositionPipeHandler(
         IComposer<TRequest> composer,
-        ILogger<CompositionPipeHandlerBase<TRequest, IStatusResult<OperationStatus>>> logger
+        ILogger logger
     ) : base(composer, logger)
     {
     }

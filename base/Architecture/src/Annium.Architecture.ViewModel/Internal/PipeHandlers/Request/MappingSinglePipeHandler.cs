@@ -14,15 +14,15 @@ internal class MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse> :
         TResponse,
         TResponse
     >,
-    ILogSubject<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>>
+    ILogSubject
     where TRequestIn : IRequest<TRequestOut>
 {
-    public ILogger<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IMapper _mapper;
 
     public MappingSinglePipeHandler(
         IMapper mapper,
-        ILogger<MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse>> logger
+        ILogger logger
     )
     {
         _mapper = mapper;

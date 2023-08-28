@@ -13,16 +13,16 @@ using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<RequestResponseCommand>
+internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "request-response";
     public static string Description => $"test {Id} flow";
-    public ILogger<RequestResponseCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public RequestResponseCommand(
         IClientFactory clientFactory,
-        ILogger<RequestResponseCommand> logger
+        ILogger logger
     )
     {
         _clientFactory = clientFactory;

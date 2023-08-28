@@ -8,9 +8,9 @@ using NodaTime;
 
 namespace Annium.Extensions.Jobs.Internal;
 
-internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject<Scheduler>
+internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject
 {
-    public ILogger<Scheduler> Logger { get; }
+    public ILogger Logger { get; }
     private readonly ITimeProvider _timeProvider;
     private readonly IIntervalParser _intervalParser;
     private readonly CancellationTokenSource _cts = new();
@@ -20,7 +20,7 @@ internal class Scheduler : IScheduler, IAsyncDisposable, ILogSubject<Scheduler>
     public Scheduler(
         ITimeProvider timeProvider,
         IIntervalParser intervalParser,
-        ILogger<Scheduler> logger
+        ILogger logger
     )
     {
         Logger = logger;

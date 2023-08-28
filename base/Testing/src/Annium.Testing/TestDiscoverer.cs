@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -7,11 +7,11 @@ using Annium.Testing.Elements;
 
 namespace Annium.Testing;
 
-public class TestDiscoverer : ILogSubject<TestDiscoverer>
+public class TestDiscoverer : ILogSubject
 {
-    public ILogger<TestDiscoverer> Logger { get; }
+    public ILogger Logger { get; }
 
-    public TestDiscoverer(ILogger<TestDiscoverer> logger)
+    public TestDiscoverer(ILogger logger)
     {
         Logger = logger;
     }

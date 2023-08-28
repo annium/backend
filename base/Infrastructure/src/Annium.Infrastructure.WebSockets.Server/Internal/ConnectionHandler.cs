@@ -13,10 +13,10 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject<ConnectionHandler<TState>>
+internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
     where TState : ConnectionStateBase
 {
-    public ILogger<ConnectionHandler<TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly Connection _cn;
@@ -29,7 +29,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject<Connect
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
         Connection cn,
         Serializer serializer,
-        ILogger<ConnectionHandler<TState>> logger
+        ILogger logger
     )
     {
         _sp = sp;

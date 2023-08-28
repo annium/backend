@@ -30,7 +30,7 @@ internal partial class HttpRequest : IHttpRequest
     public HttpContent? Content { get; private set; }
     public bool IsEnsuringSuccess => _getFailureMessage != null;
     public IHttpContentSerializer ContentSerializer { get; }
-    public ILogger<IHttpRequest> Logger { get; }
+    public ILogger Logger { get; }
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
     private string? _uri;
@@ -41,7 +41,7 @@ internal partial class HttpRequest : IHttpRequest
 
     internal HttpRequest(
         IHttpContentSerializer httpContentSerializer,
-        ILogger<IHttpRequest> logger,
+        ILogger logger,
         Uri baseUri
     ) : this(
         httpContentSerializer,
@@ -54,7 +54,7 @@ internal partial class HttpRequest : IHttpRequest
 
     internal HttpRequest(
         IHttpContentSerializer httpContentSerializer,
-        ILogger<IHttpRequest> logger
+        ILogger logger
     )
     {
         ContentSerializer = httpContentSerializer;
@@ -65,7 +65,7 @@ internal partial class HttpRequest : IHttpRequest
 
     private HttpRequest(
         IHttpContentSerializer httpContentSerializer,
-        ILogger<IHttpRequest> logger,
+        ILogger logger,
         HttpClient client,
         HttpMethod method,
         Uri? baseUri,

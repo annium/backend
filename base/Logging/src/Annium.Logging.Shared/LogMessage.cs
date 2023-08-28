@@ -10,10 +10,9 @@ public record LogMessage<TContext>
 {
     public TContext Context { get; }
     public Instant Instant { get; }
-    public string? SubjectType { get; }
-    public string? SubjectId { get; }
+    public string SubjectType { get; }
+    public string SubjectId { get; }
     public LogLevel Level { get; }
-    public string Source { get; }
     public int ThreadId { get; }
     public string Message { get; }
     public Exception? Exception { get; }
@@ -29,7 +28,6 @@ public record LogMessage<TContext>
         string? subjectType,
         string? subjectId,
         LogLevel level,
-        string source,
         int threadId,
         string message,
         Exception? exception,
@@ -45,7 +43,6 @@ public record LogMessage<TContext>
         SubjectType = subjectType;
         SubjectId = subjectId;
         Level = level;
-        Source = source;
         ThreadId = threadId;
         Message = message;
         Exception = exception;

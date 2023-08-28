@@ -7,14 +7,14 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Architecture.Mediator.Internal.PipeHandlers;
 
-internal abstract class ValidationPipeHandlerBase<TRequest, TResponse> : ILogSubject<ValidationPipeHandlerBase<TRequest, TResponse>>
+internal abstract class ValidationPipeHandlerBase<TRequest, TResponse> : ILogSubject
 {
-    public ILogger<ValidationPipeHandlerBase<TRequest, TResponse>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IValidator<TRequest> _validator;
 
     protected ValidationPipeHandlerBase(
         IValidator<TRequest> validator,
-        ILogger<ValidationPipeHandlerBase<TRequest, TResponse>> logger
+        ILogger logger
     )
     {
         _validator = validator;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -14,9 +14,9 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 namespace Annium.Testing.TestAdapter;
 
 [ExtensionUri(Constants.ExecutorUri)]
-public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecutor>
+public class AdapterTestExecutor : ITestExecutor, ILogSubject
 {
-    public ILogger<AdapterTestExecutor> Logger { get; private set; } = default!;
+    public ILogger Logger { get; private set; } = default!;
     private readonly TestConverter _testConverter;
     private readonly TestResultConverter _testResultConverter;
     private IServiceProvider? _provider;
@@ -43,7 +43,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
             Debugger.Launch();
 
         _provider = AdapterServiceProviderBuilder.Build(runContext);
-        Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
+        Logger = _provider.Resolve<ILogger>();
 
         this.Log().Debug("Start execution.");
 
@@ -65,7 +65,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject<AdapterTestExecuto
             Debugger.Launch();
 
         _provider = AdapterServiceProviderBuilder.Build(runContext);
-        Logger = _provider.Resolve<ILogger<AdapterTestExecutor>>();
+        Logger = _provider.Resolve<ILogger>();
 
         this.Log().Debug("Start execution.");
 

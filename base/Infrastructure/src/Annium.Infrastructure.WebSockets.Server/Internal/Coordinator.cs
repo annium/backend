@@ -10,10 +10,10 @@ using Annium.Net.WebSockets.Obsolete;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
-internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject<Coordinator<TState>>
+internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
     where TState : ConnectionStateBase
 {
-    public ILogger<Coordinator<TState>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IServerLifetimeManager _lifetimeManager;
     private readonly ConnectionTracker _connectionTracker;
@@ -25,7 +25,7 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject<Coor
         ConnectionTracker connectionTracker,
         ConnectionHandlerFactory<TState> handlerFactory,
         BroadcastCoordinator broadcastCoordinator,
-        ILogger<Coordinator<TState>> logger
+        ILogger logger
     )
     {
         _sp = sp;

@@ -9,9 +9,9 @@ using Annium.Logging.Abstractions;
 
 namespace Annium.Data.Tables.Internal;
 
-internal abstract class TableBase<T> : ITableView<T>, ILogSubject<TableBase<T>>
+internal abstract class TableBase<T> : ITableView<T>, ILogSubject
 {
-    public ILogger<TableBase<T>> Logger { get; }
+    public ILogger Logger { get; }
     public abstract int Count { get; }
     protected readonly object DataLocker = new();
     private readonly CancellationTokenSource _observableCts = new();
@@ -22,7 +22,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject<TableBase<T>>
 
     protected TableBase(
         TablePermission permissions,
-        ILogger<TableBase<T>> logger
+        ILogger logger
     )
     {
         _permissions = permissions;

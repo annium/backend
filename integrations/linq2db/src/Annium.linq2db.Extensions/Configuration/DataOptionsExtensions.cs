@@ -11,9 +11,9 @@ namespace Annium.linq2db.Extensions.Configuration;
 public static class DataOptionsExtensions
 {
     public static DataOptions UseLogging<TConnection>(this DataOptions options, IServiceProvider sp)
-        where TConnection : DataConnection, ILogSubject<TConnection>
+        where TConnection : DataConnection, ILogSubject
     {
-        var logSubject = sp.Resolve<ILogSubject<TConnection>>();
+        var logSubject = sp.Resolve<ILogSubject>();
 
         return options
             .UseTraceLevel(TraceLevel.Verbose)

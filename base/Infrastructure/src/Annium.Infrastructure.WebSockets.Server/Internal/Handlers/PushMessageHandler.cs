@@ -11,16 +11,16 @@ namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
 
 internal class PushMessageHandler<T> :
     IFinalRequestHandler<PushMessage<T>, None>,
-    ILogSubject<PushMessageHandler<T>>
+    ILogSubject
 {
-    public ILogger<PushMessageHandler<T>> Logger { get; }
+    public ILogger Logger { get; }
     private readonly ConnectionTracker _connectionTracker;
     private readonly Serializer _serializer;
 
     public PushMessageHandler(
         ConnectionTracker connectionTracker,
         Serializer serializer,
-        ILogger<PushMessageHandler<T>> logger
+        ILogger logger
     )
     {
         _connectionTracker = connectionTracker;

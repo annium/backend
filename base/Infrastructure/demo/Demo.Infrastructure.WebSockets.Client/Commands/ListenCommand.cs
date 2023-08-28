@@ -9,16 +9,16 @@ using Demo.Infrastructure.WebSockets.Domain.Responses.System;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands;
 
-internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject<ListenCommand>
+internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {
     public static string Id => "listen";
     public static string Description => $"test {Id} flow";
-    public ILogger<ListenCommand> Logger { get; }
+    public ILogger Logger { get; }
     private readonly IClientFactory _clientFactory;
 
     public ListenCommand(
         IClientFactory clientFactory,
-        ILogger<ListenCommand> logger
+        ILogger logger
     )
     {
         _clientFactory = clientFactory;

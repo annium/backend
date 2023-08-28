@@ -13,5 +13,5 @@ internal class LoggerFactory : ILoggerFactory
         _serviceProvider = serviceProvider;
     }
 
-    public ILogger<T> Get<T>() => _serviceProvider.Resolve<ILogger<T>>();
+    public ILogger Get<T>() => _serviceProvider.Resolve<ILogger>();
 }

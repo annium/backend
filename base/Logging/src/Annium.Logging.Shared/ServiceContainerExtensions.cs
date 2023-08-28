@@ -31,8 +31,8 @@ public static class ServiceContainerExtensions
         container.Add(new List<ILogScheduler<TContext>>()).AsSelf().As<IReadOnlyCollection<ILogScheduler<TContext>>>().Singleton();
 
         container.Add<TContext>().AsSelf().In(ServiceLifetime.Scoped);
-        container.Add(typeof(Logger<>)).As(typeof(ILogger<>)).In(ServiceLifetime.Scoped);
-        container.Add(typeof(LogSubject<>)).As(typeof(ILogSubject<>)).In(ServiceLifetime.Scoped);
+        container.Add<ILogger, Logger>().In(ServiceLifetime.Scoped);
+        container.Add<ILogSubject, LogSubject>().In(ServiceLifetime.Scoped);
         container.Add<ILoggerFactory, LoggerFactory>().In(ServiceLifetime.Scoped);
         container.Add<LogRouter<TContext>>().AsSelf().Singleton();
         container.Add<ILogSentry<TContext>, LogSentry<TContext>>().Singleton();
