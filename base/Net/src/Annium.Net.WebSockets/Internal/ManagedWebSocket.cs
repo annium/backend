@@ -3,7 +3,6 @@ using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 
 namespace Annium.Net.WebSockets.Internal;
 

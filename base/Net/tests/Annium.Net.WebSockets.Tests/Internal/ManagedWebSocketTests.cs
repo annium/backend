@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Debug;
 using Annium.Net.WebSockets.Internal;
 using Annium.Testing;
 using Annium.Testing.Assertions;

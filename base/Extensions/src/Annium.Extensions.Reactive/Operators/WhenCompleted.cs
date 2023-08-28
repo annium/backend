@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Annium.Debug;
 
 // ReSharper disable once CheckNamespace
 namespace System;
