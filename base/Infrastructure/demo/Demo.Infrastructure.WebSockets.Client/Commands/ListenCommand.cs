@@ -34,26 +34,26 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         client.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
-        this.Log().Debug($"Connecting to {cfg.Server}");
+        this.Debug($"Connecting to {cfg.Server}");
         await client.ConnectAsync(ct);
-        this.Log().Debug($"Connected to {cfg.Server}");
+        this.Debug($"Connected to {cfg.Server}");
 
-        using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Log().Debug($"<<< diagnostics: {x}"));
-        using var __ = client.Listen<SessionTimeNotification>().Subscribe(x => this.Log().Debug($"<<< session: {x}"));
+        using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Debug($"<<< diagnostics: {x}"));
+        using var __ = client.Listen<SessionTimeNotification>().Subscribe(x => this.Debug($"<<< session: {x}"));
 
         await ct;
-        this.Log().Debug("Disconnecting");
+        this.Debug("Disconnecting");
         if (client.IsConnected)
             await client.DisconnectAsync();
-        this.Log().Debug("Disconnected");
+        this.Debug("Disconnected");
     }
 }

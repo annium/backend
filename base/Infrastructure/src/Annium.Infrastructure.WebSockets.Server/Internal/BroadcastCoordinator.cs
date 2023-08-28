@@ -46,7 +46,7 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
             catch (Exception e)
             {
                 if (e is not TaskCanceledException)
-                    this.Log().Error(e);
+                    this.Error(e);
             }
         });
     }
@@ -61,7 +61,7 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
         catch (Exception e)
         {
             if (e is not TaskCanceledException)
-                this.Log().Error(e);
+                this.Error(e);
         }
     }
 

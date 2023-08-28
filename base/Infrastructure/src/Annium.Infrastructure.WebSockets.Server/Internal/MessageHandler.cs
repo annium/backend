@@ -72,7 +72,7 @@ internal class MessageHandler<TState> : ILogSubject
         }
         catch (Exception e)
         {
-            this.Log().Warn(e.ToString());
+            this.Warn(e.ToString());
             return default;
         }
     }
@@ -81,13 +81,13 @@ internal class MessageHandler<TState> : ILogSubject
     {
         try
         {
-            this.Log().Trace($"Process request {request.Tid}#{request.Rid}");
+            this.Trace($"Process request {request.Tid}#{request.Rid}");
             var context = RequestContext.CreateDynamic(request, state);
             return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
         }
         catch (Exception e)
         {
-            this.Log().Error(e);
+            this.Error(e);
             throw;
         }
     }
@@ -111,12 +111,12 @@ internal class MessageHandler<TState> : ILogSubject
     {
         try
         {
-            this.Log().Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
+            this.Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
             await socket.SendWith(response, _serializer, CancellationToken.None);
         }
         catch (Exception e)
         {
-            this.Log().Error(e);
+            this.Error(e);
             throw;
         }
     }

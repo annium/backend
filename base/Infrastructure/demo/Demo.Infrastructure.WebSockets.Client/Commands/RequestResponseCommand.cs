@@ -38,12 +38,12 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         client.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
@@ -52,7 +52,7 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
         var counter = 0;
         var sw = new Stopwatch();
 
-        this.Log().Debug("Parallel");
+        this.Debug("Parallel");
         sw.Start();
         await Task.WhenAll(
             Enumerable.Range(0, 20000)
@@ -66,7 +66,7 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
         );
         sw.Stop();
 
-        this.Log().Debug("Sequential");
+        this.Debug("Sequential");
         sw.Start();
         foreach (var _ in Enumerable.Range(0, 5000))
         {
@@ -77,16 +77,16 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
 
         sw.Stop();
 
-        this.Log().Debug($"End: {sw.Elapsed}. Counter: {counter}");
+        this.Debug($"End: {sw.Elapsed}. Counter: {counter}");
 
         if (client.IsConnected)
             await client.DisconnectAsync();
 
         async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken token)
         {
-            // this.Log().Debug($">>> {request}");
+            // this.Debug($">>> {request}");
             var result = await client.FetchAsync<T>(request, token);
-            // this.Log().Debug($"<<< {result}");
+            // this.Debug($"<<< {result}");
             return result;
         }
     }

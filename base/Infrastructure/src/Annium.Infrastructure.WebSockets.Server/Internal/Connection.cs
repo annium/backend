@@ -27,19 +27,19 @@ internal class Connection : IAsyncDisposable, ILogSubject
 
     public async ValueTask DisposeAsync()
     {
-        this.Log().Trace("start");
+        this.Trace("start");
         if (
             _socket.State == WebSocketState.Connecting ||
             _socket.State == WebSocketState.Open ||
             _socket.State == WebSocketState.CloseReceived
         )
         {
-            this.Log().Trace("disconnect socket");
+            this.Trace("disconnect socket");
             await _socket.DisconnectAsync();
         }
 
-        this.Log().Trace("dispose socket");
+        this.Trace("dispose socket");
         await _socket.DisposeAsync();
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 }

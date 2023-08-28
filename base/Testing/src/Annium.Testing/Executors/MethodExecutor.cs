@@ -20,7 +20,7 @@ public class MethodExecutor : ILogSubject
 
     public async Task ExecuteAsync(object instance, MethodInfo method, TestResult result)
     {
-        this.Log().Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
+        this.Trace($"Start execution of {method.DeclaringType!.Name}.{method.Name}");
 
         var watch = new Stopwatch();
         watch.Start();
@@ -43,7 +43,7 @@ public class MethodExecutor : ILogSubject
             watch.Stop();
             result.ExecutionDuration += TimeSpan.FromTicks(watch.ElapsedTicks);
 
-            this.Log().Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
+            this.Trace($"Finished execution of {method.DeclaringType!.Name}.{method.Name}");
         }
     }
 
@@ -52,6 +52,6 @@ public class MethodExecutor : ILogSubject
         result.Outcome = TestOutcome.Failed;
         result.Failure = exception;
 
-        this.Log().Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
+        this.Trace($"Failed execution of {method.DeclaringType!.Name}.{method.Name}: {exception}");
     }
 }

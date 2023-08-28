@@ -17,7 +17,7 @@ public static class DataOptionsExtensions
 
         return options
             .UseTraceLevel(TraceLevel.Verbose)
-            .UseTraceWith((msg, category, lvl) => logSubject.Log().Log(MapTraceLevel(lvl), $"{category}: {msg}"));
+            .UseTraceWith((msg, category, lvl) => logSubject.Log(MapTraceLevel(lvl), "{category}: {msg}", category, msg));
 
         static LogLevel MapTraceLevel(TraceLevel level) => level switch
         {

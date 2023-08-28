@@ -49,7 +49,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     )
     {
         var subscriptionId = ctx.Request.Rid;
-        this.Log().Trace($"subscription {subscriptionId} - init");
+        this.Trace($"subscription {subscriptionId} - init");
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         await using var context = new SubscriptionContext<TInit, TMessage, TState>(
             ctx.Request,
@@ -64,7 +64,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         // when reporting successful init - save to subscription store
         context.OnInit(() =>
         {
-            this.Log().Trace($"subscription {subscriptionId} - save to store");
+            this.Trace($"subscription {subscriptionId} - save to store");
             // ReSharper disable once AccessToDisposedClosure
             _subscriptionContextStore.Save(context);
         });
@@ -76,7 +76,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         }
         catch (Exception e)
         {
-            this.Log().Error(e);
+            this.Error(e);
         }
 
         return Response.Void<TMessage>();

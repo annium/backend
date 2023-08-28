@@ -110,12 +110,12 @@ public class ServiceContainer : IServiceContainer
     {
         if (Contains(item))
         {
-            // this.Log().Trace($"skip {item.ToReadableString()}, is already registered");
+            // this.Trace($"skip {item.ToReadableString()}, is already registered");
 
             return;
         }
 
-        // this.Log().Trace($"add  {item.ToReadableString()}");
+        // this.Trace($"add  {item.ToReadableString()}");
         Collection.Add(item.ToMicrosoft());
     }
 

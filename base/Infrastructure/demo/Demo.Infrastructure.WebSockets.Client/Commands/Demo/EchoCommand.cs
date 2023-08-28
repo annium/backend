@@ -36,20 +36,20 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
         );
         ws.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         ws.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
-        this.Log().Debug($"Connecting to {cfg.Server}");
+        this.Debug($"Connecting to {cfg.Server}");
         await ws.ConnectAsync(cfg.Server, ct);
-        this.Log().Debug($"Connected to {cfg.Server}");
+        this.Debug($"Connected to {cfg.Server}");
 
-        this.Log().Debug("Start echo loop");
+        this.Debug("Start echo loop");
 
         var sw = new Stopwatch();
         sw.Start();
@@ -68,19 +68,19 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
             }
 
         sw.Stop();
-        this.Log().Debug($"Messages sent: {value}. Rate: {Math.Floor((double)value / sw.ElapsedMilliseconds * 1000)}rps");
+        this.Debug($"Messages sent: {value}. Rate: {Math.Floor((double)value / sw.ElapsedMilliseconds * 1000)}rps");
 
         if (!cfg.Kill)
         {
-            this.Log().Debug("Disconnecting");
+            this.Debug("Disconnecting");
             await ws.DisconnectAsync();
-            this.Log().Debug("Disconnected");
+            this.Debug("Disconnected");
         }
 
         IObservable<Unit> Send(int val)
         {
             if (val % 10000 == 0)
-                this.Log().Debug($">>> {val}");
+                this.Debug($">>> {val}");
             return ws.Send(val.ToString(), CancellationToken.None);
         }
     }

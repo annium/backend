@@ -23,7 +23,7 @@ public class SkippedExecutor : ITestExecutor, ILogSubject
         {
             target.Result.Outcome = TestOutcome.Skipped;
 
-            this.Log().Trace($"Skip {target.Test.DisplayName}.");
+            this.Trace($"Skip {target.Test.DisplayName}.");
         }
 
         return Task.CompletedTask;

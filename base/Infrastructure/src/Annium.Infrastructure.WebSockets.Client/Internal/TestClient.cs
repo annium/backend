@@ -34,12 +34,12 @@ internal class TestClient : ClientBase<WebSocket>, ITestClient, ILogSubject
 
     public override async ValueTask DisposeAsync()
     {
-        this.Log().Trace("start");
+        this.Trace("start");
         await base.DisposeAsync();
-        this.Log().Trace("disconnect socket");
+        this.Trace("disconnect socket");
         await Socket.DisconnectAsync();
-        this.Log().Trace("dispose socket");
+        this.Trace("dispose socket");
         await Socket.DisposeAsync();
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 }

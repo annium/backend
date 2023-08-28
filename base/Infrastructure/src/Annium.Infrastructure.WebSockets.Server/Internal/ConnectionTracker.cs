@@ -41,11 +41,11 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             throw new InvalidOperationException("Server is already stopping");
 
         var cn = new Connection(Guid.NewGuid(), socket, _connectionLogger);
-        this.Log().Trace($"connection {cn.Id} - start");
+        this.Trace($"connection {cn.Id} - start");
         lock (_connections)
             _connections[cn.Id] = new ConnectionRef(cn, _connectionRefLogger);
 
-        this.Log().Trace($"connection {cn.Id} - done");
+        this.Trace($"connection {cn.Id} - done");
         return cn;
     }
 
@@ -54,7 +54,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         // not available, if already disposing
         if (_isDisposing)
         {
-            this.Log().Trace($"connection {id} - unavailable, is disposing");
+            this.Trace($"connection {id} - unavailable, is disposing");
             cn = null!;
             return false;
         }
@@ -63,7 +63,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         {
             if (!_connections.TryGetValue(id, out var cnRef))
             {
-                this.Log().Trace($"connection {id} - missing");
+                this.Trace($"connection {id} - missing");
                 cn = null!;
                 return false;
             }
@@ -84,13 +84,13 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         // can be called after disposing starts, but invalid, if already disposed
         EnsureNotDisposed();
 
-        this.Log().Trace($"connection {id} - start");
+        this.Trace($"connection {id} - start");
         ConnectionRef? cnRef;
         lock (_connections)
         {
             if (!_connections.Remove(id, out cnRef))
             {
-                this.Log().Trace($"connection {id} - not found");
+                this.Trace($"connection {id} - not found");
                 return;
             }
         }
@@ -98,14 +98,14 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         var cn = cnRef.Connection;
         cnRef.TryDispose();
 
-        this.Log().Trace($"connection {cn.Id} - wait until can be released");
+        this.Trace($"connection {cn.Id} - wait until can be released");
         await cnRef.CanBeReleased;
 
-        this.Log().Trace($"connection {cn.Id} - dispose");
+        this.Trace($"connection {cn.Id} - dispose");
 
         if (_lifetime.Stopping.IsCancellationRequested)
             TryStop();
-        this.Log().Trace($"connection {cn.Id} - done");
+        this.Trace($"connection {cn.Id} - done");
     }
 
     public IReadOnlyCollection<Connection> Slice()
@@ -119,9 +119,9 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         // not ensuring single call, because for some reason is invoked twice from integration tests
         _isDisposing = true;
 
-        this.Log().Trace("start");
+        this.Trace("start");
         await _disposeTcs.Task;
-        this.Log().Trace("done");
+        this.Trace("done");
 
         _isDisposed = true;
     }
@@ -130,7 +130,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     {
         lock (_connections)
         {
-            this.Log().Trace($"Unreleased connections: {_connections.Count}");
+            this.Trace($"Unreleased connections: {_connections.Count}");
             if (_connections.Count == 0)
                 _disposeTcs.TrySetResult(new object());
         }
@@ -160,13 +160,13 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         public void Acquire()
         {
             var count = Interlocked.Increment(ref _refCount);
-            this.Log().Trace($"cn {Connection.Id}: {count}");
+            this.Trace($"cn {Connection.Id}: {count}");
         }
 
         public void Release(bool tryDispose)
         {
             var count = Interlocked.Decrement(ref _refCount);
-            this.Log().Trace($"cn {Connection.Id}: {count} ({tryDispose})");
+            this.Trace($"cn {Connection.Id}: {count} ({tryDispose})");
             if (count == 0 && tryDispose)
                 _disposeTcs.TrySetResult(null);
         }
@@ -174,7 +174,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         public void TryDispose()
         {
             var count = Volatile.Read(ref _refCount);
-            this.Log().Trace($"cn {Connection.Id}: {count}");
+            this.Trace($"cn {Connection.Id}: {count}");
             if (count == 0)
                 _disposeTcs.TrySetResult(null);
         }

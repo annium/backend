@@ -20,7 +20,7 @@ internal class SeqCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        this.Log().Info("demo");
+        this.Info("demo");
         await Task.Delay(100, ct);
     }
 }

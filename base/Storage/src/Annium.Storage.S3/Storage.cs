@@ -30,25 +30,25 @@ internal class Storage : StorageBase
 
     protected override async Task DoSetupAsync()
     {
-        this.Log().Trace("start, list buckets");
+        this.Trace("start, list buckets");
 
         using var s3 = GetClient();
 
         var buckets = (await s3.ListBucketsAsync()).Buckets.Select(b => b.BucketName).ToArray();
         if (buckets.Contains(_configuration.Bucket))
         {
-            this.Log().Trace("bucket already exists, noop, done");
+            this.Trace("bucket already exists, noop, done");
 
             return;
         }
 
         await s3.PutBucketAsync(new PutBucketRequest { BucketName = _configuration.Bucket });
-        this.Log().Trace("bucket created, done");
+        this.Trace("bucket created, done");
     }
 
     protected override async Task<string[]> DoListAsync()
     {
-        this.Log().Trace("start");
+        this.Trace("start");
         var listRequest = new ListObjectsRequest { BucketName = _configuration.Bucket, MaxKeys = 100, Prefix = _directory };
 
         using var s3 = GetClient();
@@ -59,14 +59,14 @@ internal class Storage : StorageBase
             .Select(o => ReadKey(o.Key))
             .ToArray();
 
-        this.Log().Trace("done");
+        this.Trace("done");
 
         return result;
     }
 
     protected override async Task DoUploadAsync(Stream source, string name)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         VerifyName(name);
 
@@ -77,12 +77,12 @@ internal class Storage : StorageBase
 
         await s3.PutObjectAsync(putRequest);
 
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 
     protected override async Task<Stream> DoDownloadAsync(string name)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         VerifyName(name);
 
@@ -97,7 +97,7 @@ internal class Storage : StorageBase
             await getResponse.ResponseStream.CopyToAsync(ms);
             ms.Position = 0;
 
-            this.Log().Trace("done");
+            this.Trace("done");
 
             return ms;
         }
@@ -110,7 +110,7 @@ internal class Storage : StorageBase
 
     protected override async Task<bool> DoDeleteAsync(string name)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         VerifyName(name);
 
@@ -130,7 +130,7 @@ internal class Storage : StorageBase
         var deleteRequest = new DeleteObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name) };
         await s3.DeleteObjectAsync(deleteRequest);
 
-        this.Log().Trace("done");
+        this.Trace("done");
 
         return true;
     }

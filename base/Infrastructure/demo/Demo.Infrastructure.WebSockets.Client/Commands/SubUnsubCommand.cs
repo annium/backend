@@ -34,37 +34,37 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
         await using var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         client.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
         await client.ConnectAsync(ct);
 
-        this.Log().Debug("Init subscription");
+        this.Debug("Init subscription");
         var result = await client.SubscribeAsync<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct);
         if (result.IsOk)
         {
             var subscription = result.Data.Subscribe(Log);
-            this.Log().Debug("Subscription initiated");
+            this.Debug("Subscription initiated");
 
             await Task.Delay(3000);
 
-            this.Log().Debug("Cancel subscription");
+            this.Debug("Cancel subscription");
             subscription.Dispose();
-            this.Log().Debug("Subscription canceled");
+            this.Debug("Subscription canceled");
 
             await Task.Delay(100);
         }
         else
-            this.Log().Error("Subscription failed: {error}", result.PlainError);
+            this.Error("Subscription failed: {error}", result.PlainError);
 
         await client.DisconnectAsync();
 
-        void Log(UserBalanceMessage msg) => this.Log().Debug($"<<< {msg}");
+        void Log(UserBalanceMessage msg) => this.Debug($"<<< {msg}");
     }
 }

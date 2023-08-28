@@ -29,14 +29,14 @@ internal class ChainBuilder : ILogSubject
 
         output = ResolveOutput(input, output);
 
-        this.Log().Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
+        this.Trace($"Build execution chain for {input.FriendlyName()} -> {output.FriendlyName()} from {handlers.Count} handler(s) available");
 
         var chain = new List<ChainElement>();
         var isFinalized = false;
 
         while (true)
         {
-            this.Log().Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
+            this.Trace($"Find chain element for {input.FriendlyName()} -> {output.FriendlyName()}");
 
             Type? service = null;
 
@@ -44,7 +44,7 @@ internal class ChainBuilder : ILogSubject
             {
                 service = ResolveHandler(input, output, handler);
 
-                this.Log().Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
+                this.Trace($"Resolved {handler.RequestIn.FriendlyName()} -> {handler.ResponseOut.FriendlyName()} handler into {service?.FriendlyName() ?? null}");
 
                 if (service is null)
                     continue;
@@ -55,11 +55,11 @@ internal class ChainBuilder : ILogSubject
 
             if (service is null)
             {
-                this.Log().Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
+                this.Trace($"No handler resolved for {input.FriendlyName()} -> {output.FriendlyName()}");
                 break;
             }
 
-            this.Log().Trace($"Add {service.FriendlyName()} to chain");
+            this.Trace($"Add {service.FriendlyName()} to chain");
 
             var serviceOutput = service.GetTargetImplementation(Constants.HandlerOutputType);
             // if final handler - break
@@ -67,7 +67,7 @@ internal class ChainBuilder : ILogSubject
             {
                 chain.Add(new ChainElement(service));
                 isFinalized = true;
-                this.Log().Trace("Resolved handler is final");
+                this.Trace("Resolved handler is final");
                 break;
             }
 
@@ -105,7 +105,7 @@ internal class ChainBuilder : ILogSubject
         var service = handler.Implementation.ResolveByImplementation(handlerInput);
         if (service is null)
         {
-            this.Log().Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
+            this.Trace($"Can't resolve {handler.Implementation.FriendlyName()} by input {requestIn.FriendlyName()} and output {responseOut.FriendlyName()}");
             return null;
         }
 
@@ -114,8 +114,8 @@ internal class ChainBuilder : ILogSubject
 
     private void TraceChain(IReadOnlyCollection<ChainElement> chain)
     {
-        this.Log().Trace($"Composed chain with {chain.Count} handler(s):");
+        this.Trace($"Composed chain with {chain.Count} handler(s):");
         foreach (var element in chain)
-            this.Log().Trace($"- {element.Handler}");
+            this.Trace($"- {element.Handler}");
     }
 }

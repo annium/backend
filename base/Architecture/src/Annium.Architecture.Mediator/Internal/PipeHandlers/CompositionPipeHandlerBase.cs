@@ -29,11 +29,11 @@ internal abstract class CompositionPipeHandlerBase<TRequest, TResponse> : ILogSu
         Func<TRequest, CancellationToken, Task<TResponse>> next
     )
     {
-        this.Log().Trace($"Compose {typeof(TRequest)}");
+        this.Trace($"Compose {typeof(TRequest)}");
         var result = await _composer.ComposeAsync(request);
         if (result.HasErrors)
         {
-            this.Log().Trace($"Composition of {typeof(TRequest)} failed");
+            this.Trace($"Composition of {typeof(TRequest)} failed");
 
             return GetResponse(result);
         }

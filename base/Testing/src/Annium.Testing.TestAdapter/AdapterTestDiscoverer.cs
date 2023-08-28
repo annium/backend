@@ -38,7 +38,7 @@ public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
         _testDiscoverer = provider.Resolve<TestDiscoverer>();
         Logger = provider.Resolve<ILogger>();
 
-        this.Log().Debug("Start discovery.");
+        this.Debug("Start discovery.");
 
         DiscoverSourcesAsync(sources, discoverySink).Wait();
     }
@@ -50,7 +50,7 @@ public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
     {
         var assembly = Source.Resolve(source);
 
-        this.Log().Debug($"Start discovery of {assembly.FullName}.");
+        this.Debug($"Start discovery of {assembly.FullName}.");
 
         return _testDiscoverer!.FindTestsAsync(
             assembly,

@@ -205,14 +205,14 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     {
         var type = typeof(TInit).FriendlyName();
         var subscriptionId = request.Rid;
-        this.Log().Trace($"{type}#{subscriptionId} - start");
+        this.Trace($"{type}#{subscriptionId} - start");
 
-        this.Log().Trace($"{type}#{subscriptionId} - create observable");
+        this.Trace($"{type}#{subscriptionId} - create observable");
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         var observable = ObservableExt
             .StaticAsyncInstance<TMessage>(async ctx =>
             {
-                this.Log().Trace($"{type}#{subscriptionId} - subscribe");
+                this.Trace($"{type}#{subscriptionId} - subscribe");
                 var subscription = _responseObservable
                     .OfType<SubscriptionMessage<TMessage>>()
                     .Where(x => x.SubscriptionId == subscriptionId)
@@ -223,38 +223,38 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
 
                 await ctx.Ct;
 
-                this.Log().Trace($"{type}#{subscriptionId} - unsubscribing");
+                this.Trace($"{type}#{subscriptionId} - unsubscribing");
                 return async () =>
                 {
                     if (!_subscriptions.TryRemove(subscriptionId, out _))
                     {
-                        this.Log().Trace($"{type}#{subscriptionId} - skipped disposal of untracked subscription");
+                        this.Trace($"{type}#{subscriptionId} - skipped disposal of untracked subscription");
                         return;
                     }
 
-                    this.Log().Trace($"{type}#{subscriptionId} - dispose subscription");
+                    this.Trace($"{type}#{subscriptionId} - dispose subscription");
                     subscription.Dispose();
 
-                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribe on server");
+                    this.Trace($"{type}#{subscriptionId} - unsubscribe on server");
 
                     await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
-                    this.Log().Trace($"{type}#{subscriptionId} - unsubscribed on server");
+                    this.Trace($"{type}#{subscriptionId} - unsubscribed on server");
                 };
             }, cts.Token)
             .TrackCompletion()
             .BufferUntilSubscribed();
 
-        this.Log().Trace($"{type}#{subscriptionId} - init");
+        this.Trace($"{type}#{subscriptionId} - init");
         var response = await FetchInternal(request, Guid.Empty, ct);
         if (response.HasErrors)
         {
-            this.Log().Trace($"{type}#{subscriptionId} - failed: {response}");
+            this.Trace($"{type}#{subscriptionId} - failed: {response}");
             cts.Cancel();
             await observable.WhenCompleted();
             return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
         }
 
-        this.Log().Trace($"{type}#{subscriptionId} - track observable");
+        this.Trace($"{type}#{subscriptionId} - track observable");
         if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>)observable)))
             throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
@@ -263,15 +263,15 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
 
     public virtual async ValueTask DisposeAsync()
     {
-        this.Log().Trace("start, dispose subscriptions");
+        this.Trace("start, dispose subscriptions");
         await Task.WhenAll(_subscriptions.Values.Select(async x =>
         {
             x.Item1.Cancel();
             await x.Item2.WhenCompleted();
         }));
-        this.Log().Trace("dispose disposable box");
+        this.Trace("dispose disposable box");
         await _disposable.DisposeAsync();
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 
     private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
@@ -312,7 +312,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
             // if not arrived and not expired - cancel
             if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
             {
-                this.Log().Trace($"request {request.Rid} - cancel operation");
+                this.Trace($"request {request.Rid} - cancel operation");
                 cts.Cancel();
                 tcs.TrySetException(new OperationCanceledException(ct));
             }
@@ -322,7 +322,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
             // if not arrived and not canceled - expire
             if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
             {
-                this.Log().Trace($"request {request.Rid} - cancel by timeout");
+                this.Trace($"request {request.Rid} - cancel by timeout");
                 tcs.TrySetException(new TimeoutException());
             }
         });
@@ -356,13 +356,13 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     {
         if (IsConnected)
         {
-            this.Log().Trace($"send request {request.Tid}#{request.Rid}");
+            this.Trace($"send request {request.Tid}#{request.Rid}");
             await Socket.SendWith(request, _serializer, CancellationToken.None);
 
             return true;
         }
 
-        this.Log().Trace($"send request {request.Tid}#{request.Rid} - skip, socket is disconnected");
+        this.Trace($"send request {request.Tid}#{request.Rid} - skip, socket is disconnected");
 
         return false;
     }
@@ -373,14 +373,14 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         {
             if (!future.CancellationSource.IsCancellationRequested)
             {
-                this.Log().Trace($"complete response {response.Tid}#{response.Rid}");
+                this.Trace($"complete response {response.Tid}#{response.Rid}");
                 future.TaskSource.TrySetResult(response);
             }
             else
-                this.Log().Trace($"dismiss cancelled response {response.Tid}#{response.Rid}");
+                this.Trace($"dismiss cancelled response {response.Tid}#{response.Rid}");
         }
         else
-            this.Log().Trace($"dismiss unknown response {response.Tid}#{response.Rid}");
+            this.Trace($"dismiss unknown response {response.Tid}#{response.Rid}");
     }
 
     private record struct RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);

@@ -101,12 +101,12 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
 
     public virtual async ValueTask DisposeAsync()
     {
-        this.Log().Trace("start, complete writer");
+        this.Trace("start, complete writer");
         _eventWriter.Complete();
-        this.Log().Trace("cancel observable");
+        this.Trace("cancel observable");
         _observableCts.Cancel();
-        this.Log().Trace("await observable completion");
+        this.Trace("await observable completion");
         await _observable.WhenCompleted();
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 }

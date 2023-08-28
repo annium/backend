@@ -46,16 +46,16 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
         );
         ws.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         ws.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
-        this.Log().Debug($"Connecting to {cfg.Server}");
+        this.Debug($"Connecting to {cfg.Server}");
         await ws.ConnectAsync(cfg.Server, ct);
         var counter = 0;
         ws.ListenBinary()
@@ -67,38 +67,38 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
                 }
                 catch (Exception e)
                 {
-                    this.Log().Error($"Deserialize failed with: {e}");
+                    this.Error($"Deserialize failed with: {e}");
                     throw;
                 }
             })
             .Subscribe(x =>
             {
                 Interlocked.Increment(ref counter);
-                this.Log().Debug($"<<< {x}");
+                this.Debug($"<<< {x}");
             });
-        this.Log().Debug($"Connected to {cfg.Server}");
+        this.Debug($"Connected to {cfg.Server}");
 
-        this.Log().Debug("Demo start");
+        this.Debug("Demo start");
         await Task.WhenAll(
             SendRequests(ws)
             // SendNotifications(ws),
         );
-        this.Log().Debug("Demo end");
+        this.Debug("Demo end");
 
         await Task.Delay(50);
-        this.Log().Debug($"Responses: {counter}");
+        this.Debug($"Responses: {counter}");
 
-        this.Log().Debug("Disconnecting");
+        this.Debug("Disconnecting");
         if (ws.State == WebSocketState.Open)
             await ws.DisconnectAsync();
-        this.Log().Debug("Disconnected");
+        this.Debug("Disconnected");
     }
 
     private async Task Send<T>(ISendingWebSocket ws, T data)
         where T : notnull
     {
         var raw = _serializer.Serialize(data);
-        this.Log().Debug($">>> {data.GetType().FriendlyName()}::{data}");
+        this.Debug($">>> {data.GetType().FriendlyName()}::{data}");
 
         await ws.Send(raw, CancellationToken.None);
     }

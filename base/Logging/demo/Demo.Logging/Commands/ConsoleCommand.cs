@@ -20,8 +20,8 @@ internal class ConsoleCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        this.Log().Debug("debug demo");
+        this.Debug("debug demo");
         await Task.Delay(100, ct);
-        this.Log().Trace("trace demo");
+        this.Trace("trace demo");
     }
 }

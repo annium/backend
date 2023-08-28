@@ -39,23 +39,23 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
         Socket.ConnectionLost += () => ConnectionLost.Invoke();
         Socket.ConnectionRestored += async () =>
         {
-            this.Log().Trace("wait for ConnectionReadyNotification");
+            this.Trace("wait for ConnectionReadyNotification");
             await WaitConnectionReadyAsync(CancellationToken.None);
-            this.Log().Trace("invoke ConnectionRestored");
+            this.Trace("invoke ConnectionRestored");
             await ConnectionRestored.Invoke();
-            this.Log().Trace("done ConnectionRestored");
+            this.Trace("done ConnectionRestored");
         };
         _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
     }
 
     public async Task ConnectAsync(CancellationToken ct = default)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
         await Task.WhenAll(
             WaitConnectionReadyAsync(ct),
             Socket.ConnectAsync(_configuration.Uri, ct)
         );
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 
     public Task DisconnectAsync() =>
@@ -66,19 +66,19 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
     {
         if (_isDisposed)
         {
-            this.Log().Trace("already disposed");
+            this.Trace("already disposed");
             return;
         }
 
-        this.Log().Trace("start");
+        this.Trace("start");
         _disposable.Dispose();
-        this.Log().Trace("dispose base");
+        this.Trace("dispose base");
         await base.DisposeAsync();
-        this.Log().Trace("disconnect socket");
+        this.Trace("disconnect socket");
         await Socket.DisconnectAsync();
-        this.Log().Trace("dispose socket");
+        this.Trace("dispose socket");
         await Socket.DisposeAsync();
-        this.Log().Trace("done");
+        this.Trace("done");
 
         _isDisposed = true;
     }
@@ -91,7 +91,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
 
     private async Task WaitConnectionReadyAsync(CancellationToken ct)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         try
         {
@@ -101,6 +101,6 @@ internal class Client : ClientBase<ClientWebSocket>, IClient, ILogSubject
         {
         }
 
-        this.Log().Trace("done");
+        this.Trace("done");
     }
 }

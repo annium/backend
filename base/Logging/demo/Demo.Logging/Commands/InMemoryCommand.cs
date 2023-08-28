@@ -20,7 +20,7 @@ internal class InMemoryCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        this.Log().Trace("demo");
+        this.Trace("demo");
         await Task.Delay(100, ct);
     }
 }

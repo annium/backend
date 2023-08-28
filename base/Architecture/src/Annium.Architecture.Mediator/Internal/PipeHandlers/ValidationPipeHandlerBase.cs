@@ -27,10 +27,10 @@ internal abstract class ValidationPipeHandlerBase<TRequest, TResponse> : ILogSub
         Func<TRequest, CancellationToken, Task<TResponse>> next
     )
     {
-        this.Log().Trace($"Validate {typeof(TRequest)}");
+        this.Trace($"Validate {typeof(TRequest)}");
         if (request is null)
         {
-            this.Log().Trace($"Validation of {typeof(TRequest)} failed - request is null");
+            this.Trace($"Validation of {typeof(TRequest)} failed - request is null");
 
             return GetResponse(Result.New().Error("Request is empty"));
         }
@@ -38,7 +38,7 @@ internal abstract class ValidationPipeHandlerBase<TRequest, TResponse> : ILogSub
         var result = await _validator.ValidateAsync(request);
         if (result.HasErrors)
         {
-            this.Log().Trace($"Validation of {typeof(TRequest)} failed");
+            this.Trace($"Validation of {typeof(TRequest)} failed");
 
             return GetResponse(result);
         }

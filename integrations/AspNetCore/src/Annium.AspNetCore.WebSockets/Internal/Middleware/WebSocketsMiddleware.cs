@@ -65,16 +65,16 @@ internal class WebSocketsMiddleware : ILogSubject
 
         try
         {
-            this.Log().Trace("accept");
+            this.Trace("accept");
             var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
-            this.Log().Trace("create socket");
+            this.Trace("create socket");
             var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, _tracer);
-            this.Log().Trace("handle");
+            this.Trace("handle");
             await _coordinator.HandleAsync(socket);
         }
         catch (Exception ex)
         {
-            this.Log().Error(ex);
+            this.Error(ex);
             await _helper.WriteResponse(
                 context,
                 HttpStatusCode.InternalServerError,

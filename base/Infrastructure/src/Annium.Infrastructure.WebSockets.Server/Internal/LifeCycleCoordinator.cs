@@ -23,7 +23,7 @@ internal class LifeCycleCoordinator<TState> : ILogSubject
 
     public async Task StartAsync(TState state)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         foreach (var handler in _handlers)
             await handler.StartAsync(state);
@@ -31,7 +31,7 @@ internal class LifeCycleCoordinator<TState> : ILogSubject
 
     public async Task EndAsync(TState state)
     {
-        this.Log().Trace("start");
+        this.Trace("start");
 
         foreach (var handler in _handlers)
             await handler.EndAsync(state);

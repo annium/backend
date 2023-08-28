@@ -40,7 +40,7 @@ internal class MappingEnumerablePipeHandler<TRequest, TResponseIn, TResponseOut>
     {
         var response = await next(request, ct);
 
-        this.Log().Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
+        this.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
         var mappedResponse = _mapper.Map<IEnumerable<TResponseOut>>(response.Data);
 
         return Result.Status(response.Status, mappedResponse).Join(response);

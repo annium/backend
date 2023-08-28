@@ -29,7 +29,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var timeProvider = provider.Resolve<ITimeProvider>();
 
         // act
-        subject.Log().Info("sample");
+        subject.Info("sample");
 
         // assert
         _messages.Has(1);
@@ -48,7 +48,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Info("sample");
+        subject.Info("sample");
 
         // assert
         _messages.IsEmpty();
@@ -62,7 +62,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Info("sample");
+        subject.Info("sample");
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Info);
@@ -76,7 +76,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Warn("sample");
+        subject.Warn("sample");
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Warn);
@@ -90,7 +90,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Info("sample");
+        subject.Info("sample");
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Info);
@@ -104,7 +104,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Warn("sample");
+        subject.Warn("sample");
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Warn);
@@ -119,7 +119,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var exception = new Exception("sample");
 
         // act
-        subject.Log().Error(exception);
+        subject.Error(exception);
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Error);
@@ -135,7 +135,7 @@ public class BaseLoggerTest : TestBase, ILogSubject
         var subject = provider.Resolve<ILogSubject>();
 
         // act
-        subject.Log().Error("sample");
+        subject.Error("sample");
 
         // assert
         _messages.At(0).Level.Is(LogLevel.Error);

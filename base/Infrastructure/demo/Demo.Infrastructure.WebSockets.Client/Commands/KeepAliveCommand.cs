@@ -25,44 +25,44 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
 
     public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
     {
-        this.Log().Debug($"Interacting to {cfg.Server}");
+        this.Debug($"Interacting to {cfg.Server}");
 
-        this.Log().Debug("create client");
+        this.Debug("create client");
         var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
         {
-            this.Log().Debug("connection lost");
+            this.Debug("connection lost");
             return Task.CompletedTask;
         };
         client.ConnectionRestored += () =>
         {
-            this.Log().Debug("connection restored");
+            this.Debug("connection restored");
             return Task.CompletedTask;
         };
 
         while (true)
         {
-            this.Log().Debug("press key");
+            this.Debug("press key");
             var key = Console.ReadKey(true).Key;
 
             if (key == ConsoleKey.C)
             {
-                this.Log().Debug("connecting");
+                this.Debug("connecting");
                 await client.ConnectAsync(ct);
-                this.Log().Debug("connected");
+                this.Debug("connected");
             }
 
             if (key == ConsoleKey.D)
             {
-                this.Log().Debug("disconnecting");
+                this.Debug("disconnecting");
                 await client.DisconnectAsync();
-                this.Log().Debug("disconnected");
+                this.Debug("disconnected");
             }
 
             if (key == ConsoleKey.Escape)
             {
-                this.Log().Debug("break");
+                this.Debug("break");
                 break;
             }
 
@@ -72,10 +72,10 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
 
         if (client.IsConnected)
         {
-            this.Log().Debug("Disconnecting");
+            this.Debug("Disconnecting");
             await client.DisconnectAsync();
         }
 
-        this.Log().Debug("Disconnected");
+        this.Debug("Disconnected");
     }
 }

@@ -24,7 +24,7 @@ public class ConsoleLoggerTest : TestBase, ILogSubject
         using var capture = ConsoleCapture.Start();
 
         // act
-        subject.Log().Info("sample");
+        subject.Info("sample");
 
         // assert
         capture.Output.Contains("sample").IsTrue();
@@ -41,7 +41,7 @@ public class ConsoleLoggerTest : TestBase, ILogSubject
         var ex = new AggregateException(new Exception("xxx"), new Exception("yyy"));
 
         // act
-        subject.Log().Error(ex);
+        subject.Error(ex);
 
         // assert
         capture.Output.Contains("2 error(s) in").IsTrue();
@@ -60,7 +60,7 @@ public class ConsoleLoggerTest : TestBase, ILogSubject
         var ex = new Exception("xxx");
 
         // act
-        subject.Log().Error(ex);
+        subject.Error(ex);
 
         // assert
         capture.Output.Contains("xxx").IsTrue();

@@ -139,12 +139,12 @@ public class MediatorTest : TestBase
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Log().Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
+            this.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
             var payload = JsonSerializer.Deserialize<TRequest>(request.Value, _options)!;
 
             var result = await next(payload, ct);
 
-            this.Log().Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
+            this.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
             return new Response<TResponse>(JsonSerializer.Serialize(result, _options));
         }
     }
@@ -199,11 +199,11 @@ public class MediatorTest : TestBase
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Log().Trace($"Start {typeof(TRequest).FriendlyName()} validation");
+            this.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
             var result = _validate(request)
                 ? Result.Success(default(TResponse)!)
                 : Result.Failure(default(TResponse)!).Error("Validation failed");
-            this.Log().Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
+            this.Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
             if (result.HasErrors)
                 return result;
 
@@ -231,8 +231,8 @@ public class MediatorTest : TestBase
             CancellationToken ct
         )
         {
-            this.Log().Info(GetType().FriendlyName());
-            this.Log().Trace(request.GetHashCode().ToString());
+            this.Info(GetType().FriendlyName());
+            this.Trace(request.GetHashCode().ToString());
 
             var response = new TResponse { Value = request.Value!.Replace(' ', '_') };
 
@@ -256,8 +256,8 @@ public class MediatorTest : TestBase
             CancellationToken ct
         )
         {
-            this.Log().Trace(GetType().FullName!);
-            this.Log().Trace(request.GetHashCode().ToString());
+            this.Trace(GetType().FullName!);
+            this.Trace(request.GetHashCode().ToString());
 
             return Task.FromResult(new One { First = request.Value!.Length, Value = request.Value });
         }

@@ -39,7 +39,7 @@ internal class MappingSinglePipeHandler<TRequest, TResponseIn, TResponseOut> :
     {
         var response = await next(request, ct);
 
-        this.Log().Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
+        this.Trace($"Map response: {typeof(TResponseIn)} -> {typeof(TResponseOut)}");
         var mappedResponse = _mapper.Map<TResponseOut>(response.Data!);
 
         return Result.Status(response.Status, mappedResponse).Join(response);

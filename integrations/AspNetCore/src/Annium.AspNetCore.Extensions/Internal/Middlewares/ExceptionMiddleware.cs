@@ -53,13 +53,13 @@ internal class ExceptionMiddleware : ILogSubject
         }
         catch (ServerException e)
         {
-            this.Log().Error(e);
+            this.Error(e);
 
             await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
         }
         catch (Exception e)
         {
-            this.Log().Error(e);
+            this.Error(e);
             var result = Result.Status(OperationStatus.UncaughtError).Error(e.ToString());
             await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
         }
