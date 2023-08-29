@@ -103,7 +103,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             // execute run hook
             var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
             pusherTask.ContinueWith(_ => this.Trace("cn {connectionId} - push ended"), CancellationToken.None).GetAwaiter();
-            this.Trace("cn {connectionId} - push handlers start - start", cnId, cnId);
+            this.Trace("cn {connectionId} - push handlers start - start", cnId);
             this.Trace("cn {connectionId} - push handlers start - done", cnId);
 
             // start scheduler to process backlog and run upcoming work immediately

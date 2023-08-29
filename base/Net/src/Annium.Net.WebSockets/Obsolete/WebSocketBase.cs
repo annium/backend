@@ -286,7 +286,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         this.Trace("refresh socket tcs");
         _socketTcs = new TaskCompletionSource<object>();
 
-        this.Trace("start in {state} state", nameof(OnConnectionLostAsync), State);
+        this.Trace("start in {state} state", State);
         await OnConnectionLostAsync().ConfigureAwait(false);
         this.Trace("complete");
 
