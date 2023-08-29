@@ -1,6 +1,7 @@
 using System;
 using Annium.Logging.Console.Internal;
 using Annium.Logging.Shared;
+using static Annium.Logging.Shared.LogMessageExtensions;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
@@ -12,7 +13,7 @@ public static class LogRouteExtensions
         bool color = false
     )
         where TContext : class, ILogContext
-        => route.UseConsole(LogMessageExtensions.DefaultFormat, color);
+        => route.UseConsole(DefaultFormat<TContext>(LocalTime), color);
 
     public static LogRoute<TContext> UseConsole<TContext>(
         this LogRoute<TContext> route,

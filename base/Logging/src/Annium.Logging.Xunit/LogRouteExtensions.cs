@@ -2,6 +2,7 @@ using System;
 using Annium.Logging.Shared;
 using Annium.Logging.XUnit.Internal;
 using Xunit.Abstractions;
+using static Annium.Logging.Shared.LogMessageExtensions;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
@@ -12,7 +13,7 @@ public static class LogRouteExtensions
         this LogRoute<TContext> route
     )
         where TContext : class, ILogContext
-        => route.UseTestOutput(LogMessageExtensions.DefaultFormat);
+        => route.UseTestOutput(DefaultFormat<TContext>(UtcTime));
 
     public static LogRoute<TContext> UseTestOutput<TContext>(
         this LogRoute<TContext> route,
