@@ -405,7 +405,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         _clientSocket.Trace<string>("subscribe {tcs} to OnConnected", tcs.GetFullId());
         _clientSocket.OnConnected += () =>
         {
-            _clientSocket.Trace<string>($"set {tcs} to signaled state", tcs.GetFullId());
+            _clientSocket.Trace<string>("set {tcs} to signaled state", tcs.GetFullId());
             tcs.SetResult();
         };
 
