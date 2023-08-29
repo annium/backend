@@ -69,7 +69,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         // act
         this.Trace("disconnect");
-        _clientSocket.Disconnect();
+        await DisconnectAsync();
 
         this.Trace("send text");
         var result = await SendTextAsync(message);
@@ -95,8 +95,8 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("connect");
         await ConnectAsync();
 
-        // delay to let server close connection
-        await Task.Delay(20);
+        this.Trace("await until disconnected");
+        await _clientSocket.WhenDisconnected();
 
         // act
         this.Trace("send text");
@@ -416,6 +416,25 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("done");
     }
 
+    private async Task DisconnectAsync()
+    {
+        this.Trace("start");
+
+        var tcs = new TaskCompletionSource();
+
+        _clientSocket.Trace<string>("subscribe {tcs} to OnConnected", tcs.GetFullId());
+        _clientSocket.OnDisconnected += status =>
+        {
+            _clientSocket.Trace("set {tcs} to signaled state with status {status}", tcs.GetFullId(), status);
+            tcs.SetResult();
+        };
+
+        _clientSocket.Disconnect();
+
+        await tcs.Task;
+
+        this.Trace("done");
+    }
 
     private async Task<WebSocketSendStatus> SendTextAsync(string text, CancellationToken ct = default)
     {
@@ -442,6 +461,20 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
 internal static class WebSocketExtensions
 {
+    public static Task WhenDisconnected(this ClientWebSocket socket)
+    {
+        var tcs = new TaskCompletionSource();
+
+        socket.Trace<string>("subscribe {tcs} to OnDisconnected", tcs.GetFullId());
+        socket.OnDisconnected += status =>
+        {
+            socket.Trace("set {tcs} to signaled state for status {status}", tcs.GetFullId(), status);
+            tcs.TrySetResult();
+        };
+
+        return tcs.Task;
+    }
+
     public static Task WhenDisconnected(this ServerWebSocket socket)
     {
         var tcs = new TaskCompletionSource();
