@@ -42,15 +42,15 @@ public abstract class StorageBase : IStorage, ILogSubject
     {
         try
         {
-            this.Debug($"{operation} start");
+            this.Debug<string>("{operation} start", operation);
             var result = await handleAsync();
-            this.Debug($"{operation} succeed");
+            this.Debug<string>("{operation} succeed", operation);
 
             return result;
         }
         catch
         {
-            this.Debug($"{operation} failed");
+            this.Debug<string>("{operation} failed", operation);
             throw;
         }
     }
@@ -59,13 +59,13 @@ public abstract class StorageBase : IStorage, ILogSubject
     {
         try
         {
-            this.Debug($"{operation} start");
+            this.Debug<string>("{operation} start", operation);
             await handleAsync();
-            this.Debug($"{operation} succeed");
+            this.Debug<string>("{operation} succeed", operation);
         }
         catch
         {
-            this.Debug($"{operation} failed");
+            this.Debug<string>("{operation} failed", operation);
             throw;
         }
     }

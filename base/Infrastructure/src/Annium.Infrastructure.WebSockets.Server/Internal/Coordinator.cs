@@ -39,14 +39,14 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
     public async Task HandleAsync(WebSocket socket)
     {
         await using var cn = _connectionTracker.Track(socket);
-        this.Trace($"Start for {cn.GetFullId()}");
+        this.Trace<string>("Start for {connectionId}", cn.GetFullId());
         await using var scope = _sp.CreateAsyncScope();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
         try
         {
             socket.ConnectionLost += () =>
             {
-                this.Trace($"Notify lost {cn.GetFullId()}");
+                this.Trace<string>("Notify lost {connectionId}", cn.GetFullId());
                 // for case, when server stops, thus cancellation occurs before connection is lost
                 if (!cts.IsCancellationRequested)
                     cts.Cancel();
@@ -58,11 +58,11 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
         }
         finally
         {
-            this.Trace($"Release complete {cn.GetFullId()}");
+            this.Trace<string>("Release complete {connectionId}", cn.GetFullId());
             await _connectionTracker.Release(cn.Id);
         }
 
-        this.Trace($"End for {cn.GetFullId()}");
+        this.Trace<string>("End for {connectionId}", cn.GetFullId());
     }
 
     public void Shutdown()

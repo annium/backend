@@ -45,10 +45,10 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public async Task DisconnectAsync()
     {
-        this.Trace($"cancel receive, if pending, in {Socket.State}");
+        this.Trace("cancel receive, if pending, in {state}", Socket.State);
         PauseObservable();
 
-        this.Trace($"invoke ConnectionLost in {Socket.State}");
+        this.Trace("invoke ConnectionLost in {state}", Socket.State);
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -87,7 +87,7 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     private async Task ConnectAsync(Uri uri, Duration timeout, CancellationToken ct)
     {
-        this.Trace($"connect to {uri}");
+        this.Trace("connect to {uri}", uri);
 
         _uri = uri;
         do
@@ -124,7 +124,7 @@ public class ClientWebSocket : WebSocketBase<NativeClientWebSocket>, IClientWebS
 
     public override async ValueTask DisposeAsync()
     {
-        this.Trace($"start in {Socket.State}");
+        this.Trace("start in {state}", Socket.State);
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
             this.Trace("invoke ConnectionLost");

@@ -139,6 +139,9 @@ public class BufferUntilSubscribedTest : TestBase
         var cts = new CancellationTokenSource();
         var observable = ObservableExt.StaticSyncInstance<string>(async ctx =>
         {
+            // delay before emits to operators setup
+            await Task.Delay(10, CancellationToken.None);
+
             var i = 0;
             while (i < 10)
             {

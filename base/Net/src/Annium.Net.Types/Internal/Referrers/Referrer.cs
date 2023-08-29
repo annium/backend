@@ -25,7 +25,7 @@ internal class Referrer : ILogSubject
 
     public IRef GetRef(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        this.Trace($"Resolve {type.FriendlyName()} ref");
+        this.Trace<string>("Resolve {type} ref", type.FriendlyName());
 
         foreach (var referrer in _referrers)
         {
@@ -33,7 +33,7 @@ internal class Referrer : ILogSubject
             if (result is null)
                 continue;
 
-            this.Trace($"Resolved {type.FriendlyName()} ref as {result} via {referrer.GetType().FriendlyName()}");
+            this.Trace<string, IRef?, string>("Resolved {type} ref as {result} via {referrerType}", type.FriendlyName(), result, referrer.GetType().FriendlyName());
             return result;
         }
 

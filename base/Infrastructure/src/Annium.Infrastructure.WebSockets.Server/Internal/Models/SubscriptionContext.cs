@@ -107,11 +107,11 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         if (!_isInitiated)
             throw new InvalidOperationException("Can't cancel not initiated subscription");
 
-        this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - start");
+        this.Trace("connection {connectionId}, subscription {subscriptionId} - start", ConnectionId, SubscriptionId);
         _cts.Dispose();
-        this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - dispose executor");
+        this.Trace("connection {connectionId}, subscription {subscriptionId} - dispose executor", ConnectionId, SubscriptionId);
         await _executor.DisposeAsync();
-        this.Trace($"connection {ConnectionId}, subscription {SubscriptionId} - done");
+        this.Trace("connection {connectionId}, subscription {subscriptionId} - done", ConnectionId, SubscriptionId);
     }
 
     private void SendInternal<T>(T msg) =>

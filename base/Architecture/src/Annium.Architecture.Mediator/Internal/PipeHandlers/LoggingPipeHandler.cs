@@ -23,11 +23,11 @@ internal class LoggingPipeHandler<TRequest, TResponse> : IPipeRequestHandler<TRe
         Func<TRequest, CancellationToken, Task<TResponse>> next
     )
     {
-        this.Trace($"Start {typeof(TRequest)} -> {typeof(TResponse)}");
+        this.Trace("Start {request} -> {response}", typeof(TRequest), typeof(TResponse));
 
         var result = await next(request, ct);
 
-        this.Trace($"Complete {typeof(TRequest)} -> {typeof(TResponse)}");
+        this.Trace("Complete {request} -> {response}", typeof(TRequest), typeof(TResponse));
 
         return result;
     }

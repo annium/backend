@@ -32,10 +32,10 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
         lock (_entries)
         {
             if (_entries.TryGetValue(key, out entry!))
-                this.Trace($"Get by {key}: entry already exists");
+                this.Trace("Get by {key}: entry already exists", key);
             else
             {
-                this.Trace($"Get by {key}: entry missed, creating");
+                this.Trace("Get by {key}: entry missed, creating", key);
                 entry = _entries[key] = new CacheEntry();
                 isInitializing = true;
             }
@@ -45,7 +45,7 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
         ICacheReference<TValue>? reference = null;
         if (isInitializing)
         {
-            this.Trace($"Get by {key}: initialize entry");
+            this.Trace("Get by {key}: initialize entry", key);
             if (_provider.HasCreate)
                 entry.SetValue(await _provider.CreateAsync(key, ct));
             else if (_provider.HasExternalCreate)
@@ -56,23 +56,23 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
             else
                 throw new NotImplementedException("Neither base not external factory is implemented");
 
-            this.Trace($"Get by {key}: entry ready");
+            this.Trace("Get by {key}: entry ready", key);
         }
         else
         {
-            this.Trace($"Get by {key}: wait entry");
+            this.Trace("Get by {key}: wait entry", key);
             await entry.WaitAsync();
         }
 
         // if not initializing and entry has no references - it is suspended, need to resume
         if (!isInitializing && !entry.HasReferences)
         {
-            this.Trace($"Get by {key}: resume entry");
+            this.Trace("Get by {key}: resume entry", key);
             await _provider.ResumeAsync(entry.Value);
         }
 
         // create reference, incrementing reference counter
-        this.Trace($"Get by {key}: add entry reference");
+        this.Trace("Get by {key}: add entry reference", key);
         entry.AddReference();
         reference ??= new CacheReference<TValue>(entry.Value, () => Release(key, entry));
 
@@ -83,14 +83,14 @@ internal sealed class ObjectCache<TKey, TValue> : IObjectCache<TKey, TValue>, IL
 
     private async Task Release(TKey key, CacheEntry entry)
     {
-        this.Trace($"Release by {key}: wait entry");
+        this.Trace("Release by {key}: wait entry", key);
         await entry.WaitAsync();
 
-        this.Trace($"Release by {key}: remove reference");
+        this.Trace("Release by {key}: remove reference", key);
         entry.RemoveReference();
         if (!entry.HasReferences)
         {
-            this.Trace($"Release by {key}: suspend entry");
+            this.Trace("Release by {key}: suspend entry", key);
             await _provider.SuspendAsync(entry.Value);
         }
 

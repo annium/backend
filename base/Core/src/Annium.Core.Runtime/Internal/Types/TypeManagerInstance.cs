@@ -26,14 +26,14 @@ internal class TypeManagerInstance : ITypeManager, ILogSubject
     )
     {
         Logger = logger;
-        this.Trace($"start for {assembly}");
+        this.Trace("start for {assembly}", assembly);
         this.Trace("collect assemblies");
         var assemblies = new AssembliesCollector(logger).Collect(assembly);
         this.Trace("collect types");
         var types = new TypesCollector(logger).Collect(assemblies);
         this.Trace("build hierarchy");
         _hierarchy = HierarchyBuilder.BuildHierarchy(types);
-        this.Trace($"register {types.Count} ids");
+        this.Trace("register {typesCount} ids", types.Count);
         var ids = new Dictionary<TypeId, Type>();
         foreach (var type in types)
             ids[type.GetTypeId()] = type;

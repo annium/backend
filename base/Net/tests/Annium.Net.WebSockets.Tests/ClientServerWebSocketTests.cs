@@ -129,7 +129,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //         this.Trace("server subscribed to binary");
     //
     //         await serverSocket.WhenDisconnected();
-    //         this.Trace($"server socket closed");
+    //         this.Trace("server socket closed");
     //     });
     //     await Connect();
     //
@@ -172,7 +172,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //         this.Trace("server subscribed to binary");
     //
     //         await serverSocket.WhenDisconnected();
-    //         this.Trace($"server socket closed");
+    //         this.Trace("server socket closed");
     //     });
     //
     //     // act - send text
@@ -386,10 +386,10 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
             var socket = new ServerWebSocket(ctx.WebSocket, logger, ct);
 
-            this.Trace($"handle {socket.GetFullId()}");
+            this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket);
 
-            this.Trace($"disconnect {socket.GetFullId()}");
+            this.Trace<string>("disconnect {socket}", socket.GetFullId());
             socket.Disconnect();
 
             this.Trace("done");
@@ -402,10 +402,10 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         var tcs = new TaskCompletionSource();
 
-        _clientSocket.Trace($"subscribe {tcs.GetFullId()} to OnConnected");
+        _clientSocket.Trace<string>("subscribe {tcs} to OnConnected", tcs.GetFullId());
         _clientSocket.OnConnected += () =>
         {
-            _clientSocket.Trace($"set {tcs.GetFullId()} to signaled state");
+            _clientSocket.Trace<string>($"set {tcs} to signaled state", tcs.GetFullId());
             tcs.SetResult();
         };
 
@@ -446,10 +446,10 @@ internal static class WebSocketExtensions
     {
         var tcs = new TaskCompletionSource();
 
-        socket.Trace($"subscribe {tcs.GetFullId()} to OnDisconnected");
+        socket.Trace<string>("subscribe {tcs} to OnDisconnected", tcs.GetFullId());
         socket.OnDisconnected += status =>
         {
-            socket.Trace($"set {tcs.GetFullId()} to signaled state for status {status}");
+            socket.Trace("set {tcs} to signaled state for status {status}", tcs.GetFullId(), status);
             tcs.SetResult();
         };
 

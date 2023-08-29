@@ -46,7 +46,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     )
     {
         var subscriptionId = ctx.Request.Rid;
-        this.Trace($"subscription {subscriptionId} - init");
+        this.Trace("subscription {subscriptionId} - init", subscriptionId);
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         await using var context = new SubscriptionContext<TInit, TMessage, TState>(
             ctx.Request,
@@ -61,7 +61,7 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         // when reporting successful init - save to subscription store
         context.OnInit(() =>
         {
-            this.Trace($"subscription {subscriptionId} - save to store");
+            this.Trace("subscription {subscriptionId} - save to store", subscriptionId);
             // ReSharper disable once AccessToDisposedClosure
             _subscriptionContextStore.Save(context);
         });

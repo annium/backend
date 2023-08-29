@@ -86,7 +86,7 @@ internal class ShellInstance : IShellInstance, ILogSubject
         process.StartInfo.FileName = args[0];
         process.StartInfo.Arguments = string.Join(" ", args.Skip(1));
 
-        this.Trace($"shell: {process.StartInfo.FileName} {process.StartInfo.Arguments}");
+        this.Trace<string, string>("shell: {fileName} {arguments}", process.StartInfo.FileName, process.StartInfo.Arguments);
 
         return process;
     }
@@ -105,14 +105,14 @@ internal class ShellInstance : IShellInstance, ILogSubject
         var registration = ct.Register(() =>
         {
             killed = true;
-            this.Trace($"Kill process {GetCommand(process)} due token cancellation");
+            this.Trace<string>("Kill process {command} due token cancellation", GetCommand(process));
             try
             {
                 process.Kill();
             }
             catch (Exception e)
             {
-                this.Warn($"Kill process {GetCommand(process)} failed: {e}");
+                this.Warn("Kill process {command} failed: {e}", GetCommand(process), e);
             }
 
             HandleExit();
@@ -156,7 +156,7 @@ internal class ShellInstance : IShellInstance, ILogSubject
             }
             catch (Exception e)
             {
-                this.Warn($"Process.Dispose() failed: {e}");
+                this.Warn("Process.Dispose() failed: {e}", e);
             }
         }
 

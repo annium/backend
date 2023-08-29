@@ -68,7 +68,7 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -107,7 +107,7 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -120,7 +120,7 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
         var result = task.Result;
         if (result.Exception is not null)
         {
-            this.Trace($"fire error: {result.Exception}");
+            this.Trace("fire error: {exception}", result.Exception);
             OnError(result.Exception);
         }
 
@@ -133,7 +133,7 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetStatus(Status status)
     {
-        this.Trace($"update status from {_status} to {status}");
+        this.Trace("update status from {oldStatus} to {newStatus}", _status, status);
         _status = status;
     }
 

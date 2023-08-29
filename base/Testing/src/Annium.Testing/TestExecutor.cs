@@ -44,14 +44,14 @@ public class TestExecutor : ILogSubject
             try
             {
                 semaphore.WaitOne();
-                this.Debug($"Run test {test.DisplayName}");
+                this.Debug<string>("Run test {test}", test.DisplayName);
 
                 await using var scope = _provider.CreateAsyncScope();
                 var target = new Target(scope.ServiceProvider, test, new TestResult());
 
                 await _executor.ExecuteAsync(target);
 
-                this.Debug($"Complete test {test.DisplayName}");
+                this.Debug<string>("Complete test {test}", test.DisplayName);
                 handleResult(target.Test, target.Result);
             }
             finally

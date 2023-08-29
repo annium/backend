@@ -371,7 +371,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
         _clientSocket = new NativeClientWebSocket();
         _managedSocket = new ManagedWebSocket(_clientSocket, Logger);
-        this.Trace($"created pair of {_clientSocket.GetFullId()} and {_managedSocket.GetFullId()}");
+        this.Trace<string, string>("created pair of {clientSocket} and {managedSocket}", _clientSocket.GetFullId(), _managedSocket.GetFullId());
 
         _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
         _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
@@ -394,7 +394,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
             var socket = new ManagedWebSocket(ctx.WebSocket, logger);
 
-            this.Trace($"handle {socket.GetFullId()}");
+            this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket, ct);
 
             this.Trace("done");

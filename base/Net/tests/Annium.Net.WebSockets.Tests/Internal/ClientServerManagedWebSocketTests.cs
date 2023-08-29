@@ -115,7 +115,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
             this.Trace("server subscribed to binary");
 
             await serverSocket.IsClosed;
-            this.Trace($"server socket closed");
+            this.Trace("server socket closed");
         });
         await ConnectAsync();
 
@@ -158,7 +158,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
             this.Trace("server subscribed to binary");
 
             await serverSocket.IsClosed;
-            this.Trace($"server socket closed");
+            this.Trace("server socket closed");
         });
 
         // act - send text
@@ -361,10 +361,10 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 
             var socket = new ServerManagedWebSocket(ctx.WebSocket, logger, ct);
 
-            this.Trace($"handle {socket.GetFullId()}");
+            this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket);
 
-            this.Trace($"disconnect {socket.GetFullId()}");
+            this.Trace<string>("disconnect {socket}", socket.GetFullId());
             await socket.DisconnectAsync();
 
             this.Trace("done");

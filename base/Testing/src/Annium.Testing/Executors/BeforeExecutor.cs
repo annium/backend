@@ -24,7 +24,7 @@ public class BeforeExecutor : ITestExecutor, ILogSubject
         if (test.Before == null)
             return Task.CompletedTask;
 
-        this.Trace($"Execute Before of {target.Test.DisplayName}.");
+        this.Trace<string>("Execute Before of {test}.", target.Test.DisplayName);
 
         return _executor.ExecuteAsync(instance, test.Before, result);
     }

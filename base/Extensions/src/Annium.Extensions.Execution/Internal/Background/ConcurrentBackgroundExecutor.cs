@@ -41,13 +41,13 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     protected override void HandleStop()
     {
-        this.Trace($"isAvailable: {IsAvailable}, tasks: {_taskCounter}");
+        this.Trace("isAvailable: {isAvailable}, tasks: {taskCounter}", IsAvailable, _taskCounter);
         TryFinish();
     }
 
     protected override async ValueTask HandleDisposeAsync()
     {
-        this.Trace($"wait for {_taskCounter} task(s) to finish");
+        this.Trace("wait for {taskCounter} task(s) to finish", _taskCounter);
         await _tcs.Task;
     }
 

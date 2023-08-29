@@ -46,10 +46,10 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public async Task DisconnectAsync()
     {
-        this.Trace($"cancel receive, if pending, in {Socket.State}");
+        this.Trace("cancel receive, if pending, in {state}", Socket.State);
         PauseObservable();
 
-        this.Trace($"invoke ConnectionLost in {Socket.State}");
+        this.Trace("invoke ConnectionLost in {state}", Socket.State);
         Executor.Schedule(() => ConnectionLost.Invoke());
 
         try
@@ -81,7 +81,7 @@ public class WebSocket : WebSocketBase<NativeWebSocket>, IWebSocket
 
     public override async ValueTask DisposeAsync()
     {
-        this.Trace($"start in {Socket.State}");
+        this.Trace("start in {state}", Socket.State);
         if (Socket.State is WebSocketState.Connecting or WebSocketState.Open)
         {
             this.Trace("Invoke ConnectionLost");

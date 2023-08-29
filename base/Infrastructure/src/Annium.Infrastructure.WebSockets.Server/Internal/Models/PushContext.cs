@@ -48,9 +48,9 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
 
     public async ValueTask DisposeAsync()
     {
-        this.Trace($"connection {State.ConnectionId} - start");
+        this.Trace("connection {connectionId} - start", State.ConnectionId);
         await _executor.DisposeAsync();
-        this.Trace($"connection {State.ConnectionId} - done");
+        this.Trace("connection {connectionId} - done", State.ConnectionId);
     }
 
     private void SendInternal<T>(T msg) =>

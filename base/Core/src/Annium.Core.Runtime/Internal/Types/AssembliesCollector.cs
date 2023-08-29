@@ -35,13 +35,13 @@ internal class AssembliesCollector : ILogSubject
         foreach (var domainAssembly in AppDomain.CurrentDomain.GetAssemblies())
             if (domainAssembly.FullName != null! && !allAssemblies.ContainsKey(domainAssembly.FullName))
             {
-                this.Trace($"{domainAssembly.FriendlyName()} - register with {domainAssembly.FullName}");
+                this.Trace<string, string>("{domainAssemblyName} - register with {domainAssemblyFullName}", domainAssembly.FriendlyName(), domainAssembly.FullName);
                 allAssemblies[domainAssembly.FullName] = domainAssembly;
             }
 
         var resolveAssembly = LoadAssembly(allAssemblies);
 
-        this.Trace($"collect {assembly} dependencies");
+        this.Trace("collect {assembly} dependencies", assembly);
         Collect(
             assembly.GetName(),
             resolveAssembly,
@@ -64,7 +64,7 @@ internal class AssembliesCollector : ILogSubject
         var assembly = resolveAssembly(name);
         if (assembly is null)
         {
-            this.Trace($"{name.Name} - not resolved");
+            this.Trace<string?>("{name} - not resolved", name.Name);
             return;
         }
 
@@ -74,17 +74,17 @@ internal class AssembliesCollector : ILogSubject
         var autoScanned = assembly.GetCustomAttributes()
             .SingleOrDefault(x => x.GetType().GetTypeId() == AutoScannedTypeId);
         if (autoScanned is null)
-            this.Trace($"{name.Name} - not marked as auto-scanned");
+            this.Trace<string?>("{name} - not marked as auto-scanned", name.Name);
         else
         {
-            this.Trace($"{name.Name} - matched");
+            this.Trace<string?>("{name} - matched", name.Name);
             addMatchedAssembly(assembly);
             var dependencies = (Assembly[])autoScanned.GetType()
                 .GetProperty(nameof(AutoScannedAttribute.Dependencies))!
                 .GetValue(autoScanned)!;
             foreach (var dependency in dependencies)
             {
-                this.Trace($"{name.Name} - add dependency {dependency.ShortName()}");
+                this.Trace<string?, string>("{name} - add dependency {dependency}", name.Name, dependency.ShortName());
                 addMatchedAssembly(dependency);
                 Collect(dependency.GetName(), resolveAssembly, registerAssembly, addMatchedAssembly);
             }
@@ -99,7 +99,7 @@ internal class AssembliesCollector : ILogSubject
         if (assemblies.TryGetValue(name.FullName, out var asm))
             return asm;
 
-        this.Trace($"load {name}");
+        this.Trace("load {name}", name);
         return assemblies[name.FullName] = AppDomain.CurrentDomain.Load(name);
     };
 }

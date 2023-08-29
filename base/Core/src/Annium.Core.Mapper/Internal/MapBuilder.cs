@@ -72,7 +72,7 @@ internal class MapBuilder : IMapBuilder, ILogSubject
         {
             if (entry.HasMap)
             {
-                this.Trace($"Use existing map for {src.FriendlyName()} -> {tgt.FriendlyName()}");
+                this.Trace<string, string>("Use existing map for {src} -> {tgt}", src.FriendlyName(), tgt.FriendlyName());
                 return entry.Map;
             }
 
@@ -81,7 +81,7 @@ internal class MapBuilder : IMapBuilder, ILogSubject
 
             var result = Expression.Lambda(mapping(param), param);
             var resultView = result.ToReadableString();
-            this.Trace($"Resolved map for {src.FriendlyName()} -> {tgt.FriendlyName()} to: {Environment.NewLine}{resultView}");
+            this.Trace<string, string, string>("Resolved map for {src} -> {tgt} to:\n{resultView}", src.FriendlyName(), tgt.FriendlyName(), resultView);
 
             entry.SetMap(result.Compile());
         }
@@ -96,7 +96,7 @@ internal class MapBuilder : IMapBuilder, ILogSubject
         {
             if (entry.HasMapping)
             {
-                this.Trace($"Use existing mapping for {src.FriendlyName()} -> {tgt.FriendlyName()}");
+                this.Trace<string, string>("Use existing mapping for {src} -> {tgt}", src.FriendlyName(), tgt.FriendlyName());
                 return entry.Mapping;
             }
 
@@ -111,7 +111,7 @@ internal class MapBuilder : IMapBuilder, ILogSubject
         var mapResolver = _mapResolvers.FirstOrDefault(x => x.CanResolveMap(src, tgt));
         if (mapResolver is not null)
         {
-            this.Trace($"Build mapping for {src.FriendlyName()} -> {tgt.FriendlyName()} with {mapResolver.GetType().FriendlyName()}");
+            this.Trace<string, string, string>("Build mapping for {src} -> {tgt} with {resolver}", src.FriendlyName(), tgt.FriendlyName(), mapResolver.GetType().FriendlyName());
             return mapResolver.ResolveMap(src, tgt, cfg, _context);
         }
 
@@ -154,7 +154,7 @@ internal class MapBuilder : IMapBuilder, ILogSubject
             if (_entries.TryGetValue(key, out var entry))
                 return entry;
 
-            this.Trace($"Create entry for {key.Item1.FriendlyName()} -> {key.Item2.FriendlyName()}");
+            this.Trace<string, string>("Create entry for {src} -> {tgt}", key.Item1.FriendlyName(), key.Item2.FriendlyName());
             return _entries[key] = Entry.Create();
         }
     }

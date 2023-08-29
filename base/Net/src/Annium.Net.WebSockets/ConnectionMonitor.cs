@@ -15,7 +15,7 @@ public class ConnectionMonitor : IConnectionMonitor, ILogSubject
 
     public void Init(ISendingReceivingWebSocket socket)
     {
-        this.Trace($"Init with {socket.GetFullId()}");
+        this.Trace<string>("Init with {socket}", socket.GetFullId());
     }
 
     public void Start()

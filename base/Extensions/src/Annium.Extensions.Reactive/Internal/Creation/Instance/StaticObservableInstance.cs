@@ -65,7 +65,7 @@ internal class StaticObservableInstance<T> : ObservableInstanceBase<T>, IObserva
         }
         catch (Exception e)
         {
-            this.Trace($"Error: {e}");
+            this.Trace("Error: {e}", e);
             ctx.OnError(e);
         }
     }

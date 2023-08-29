@@ -23,7 +23,7 @@ public class PipelineExecutor : ILogSubject
 
     public async Task ExecuteAsync(Target target)
     {
-        this.Trace($"Start pipeline of {target.Test.DisplayName}.");
+        this.Trace<string>("Start pipeline of {test}.", target.Test.DisplayName);
 
         var result = target.Result;
         result.ExecutionStart = DateTime.Now;
@@ -40,6 +40,6 @@ public class PipelineExecutor : ILogSubject
 
         result.ExecutionEnd = DateTime.Now;
 
-        this.Trace($"Finished pipeline of {target.Test.DisplayName} with {result.Outcome}.");
+        this.Trace("Finished pipeline of {test} with {outcome}.", target.Test.DisplayName, result.Outcome);
     }
 }

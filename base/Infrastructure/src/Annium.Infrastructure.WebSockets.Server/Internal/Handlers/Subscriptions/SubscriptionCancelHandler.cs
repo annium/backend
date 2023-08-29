@@ -37,11 +37,11 @@ internal class SubscriptionCancelHandler<TState> :
     )
     {
         var subscriptionId = ctx.Request.SubscriptionId;
-        this.Trace($"subscription {subscriptionId} - init");
+        this.Trace("subscription {subscriptionId} - init", subscriptionId);
         var status = _subscriptionContextStore.TryCancel(subscriptionId)
             ? OperationStatus.Ok
             : OperationStatus.NotFound;
-        this.Trace($"subscription {subscriptionId} - result: {status}");
+        this.Trace("subscription {subscriptionId} - result: {status}", subscriptionId, status);
         var response = Response.Result(ctx.Request.Rid, Result.Status(status));
 
         return Task.FromResult(response);

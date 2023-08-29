@@ -34,9 +34,9 @@ internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, IC
         await client.ConnectAsync(ct);
 
         var request = new DeleteOrderRequest();
-        this.Debug($">>> {request}");
+        this.Debug(">>> {request}", request);
         var result = await client.SendAsync(request, ct);
-        this.Debug($"<<< {result}");
+        this.Debug("<<< {result}", result);
 
         if (client.IsConnected)
             await client.DisconnectAsync();

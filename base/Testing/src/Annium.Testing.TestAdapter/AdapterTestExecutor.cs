@@ -81,7 +81,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject
 
     private async Task RunAssemblyTestsAsync(Assembly assembly, IFrameworkHandle frameworkHandle)
     {
-        this.Debug($"Start execution of all tests in {assembly.FullName}.");
+        this.Debug<string?>("Start execution of all tests in {assembly}.", assembly.FullName);
 
         var tests = new List<Test>();
         await _provider!.Resolve<TestDiscoverer>().FindTestsAsync(assembly, tests.Add);
@@ -97,7 +97,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject
     {
         var testCasesSet = testCases.ToArray();
 
-        this.Debug($"Start execution of specific {testCasesSet.Length} tests in {assembly.FullName}.");
+        this.Debug<int, string?>("Start execution of specific {testCasesCount} tests in {assembly}.", testCasesSet.Length, assembly.FullName);
 
         var tests = testCasesSet.Select(testCase => _testConverter.Convert(assembly, testCase)).ToArray();
 
@@ -124,7 +124,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject
     {
         var testSet = tests.ToArray();
 
-        this.Trace($"Build test executor for assembly {assembly.FullName} and given {testSet.Length} tests.");
+        this.Trace("Build test executor for assembly {assembly} and given {testsCount} tests.", assembly.FullName, testSet.Length);
 
         var container = AssemblyServicesCollector.Collect(assembly, testSet);
         container.Add(_provider!.Resolve<TestingConfiguration>()).Singleton();

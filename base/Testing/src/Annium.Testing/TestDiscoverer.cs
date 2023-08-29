@@ -33,11 +33,11 @@ public class TestDiscoverer : ILogSubject
     {
         if (testClass.GetCustomAttribute<SkipAttribute>() != null)
         {
-            this.Debug($"{nameof(FindTestClassTests)}: {testClass.FullName} is skipped");
+            this.Debug<string?>("{testClass} is skipped", testClass.FullName);
             return;
         }
 
-        this.Trace($"{nameof(FindTestClassTests)} in {testClass.FullName}");
+        this.Trace<string?>("search in {testClass}", testClass.FullName);
         foreach (var test in testClass.GetMethods().Where(IsTest).Select(method => new Test(method)))
             handleTestFound(test);
     }

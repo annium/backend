@@ -81,7 +81,7 @@ internal class MessageHandler<TState> : ILogSubject
     {
         try
         {
-            this.Trace($"Process request {request.Tid}#{request.Rid}");
+            this.Trace("Process request {requestType}#{requestId}", request.Tid, request.Rid);
             var context = RequestContext.CreateDynamic(request, state);
             return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
         }
@@ -111,7 +111,7 @@ internal class MessageHandler<TState> : ILogSubject
     {
         try
         {
-            this.Trace($"Send response {response.Tid}#{(response is ResponseBase res ? res.Rid : "")}");
+            this.Trace("Send response {responseType}#{responseId}", response.Tid, (response is ResponseBase res ? res.Rid : Guid.Empty));
             await socket.SendWith(response, _serializer, CancellationToken.None);
         }
         catch (Exception e)

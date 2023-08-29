@@ -56,13 +56,13 @@ file record BufferContext<T> : ILogSubject
         lock (this)
         {
             var target = observer.GetFullId();
-            this.Trace($"{target} - start");
+            this.Trace<string>("{target} - start", target);
 
             Flush(observer);
             SetFirstObserver(observer);
             var subscription = Disposable.Create(DisposeFirstSubscription);
 
-            this.Trace($"{target} - done");
+            this.Trace<string>("{target} - done", target);
 
             return subscription;
         }
@@ -92,12 +92,12 @@ file record BufferContext<T> : ILogSubject
             var e = new ObservableEvent<T>(data, error, false);
             if (_firstObserver is null)
             {
-                this.Trace($"enqueue: {data} - {error}");
+                this.Trace("enqueue: {data} - {error}", data, error);
                 _events.Enqueue(e);
             }
             else
             {
-                this.Trace($"first - handle: {data} - {error}");
+                this.Trace("first - handle: {data} - {error}", data, error);
                 _firstObserver.Handle(e);
                 SetFirstSubscription(Subscribe(_firstObserver));
             }

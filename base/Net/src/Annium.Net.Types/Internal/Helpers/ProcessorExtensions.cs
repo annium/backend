@@ -17,67 +17,67 @@ internal static class ProcessorExtensions
     {
         var name = type.PureName();
         var model = factory(type.GetNamespace(), type.Type.IsAbstract, name);
-        processor.Trace($"Initialized {type.FriendlyName()} model as {model}");
+        processor.Trace("Initialized {type} model as {model}", type.FriendlyName(), model);
 
         return model;
     }
 
     public static void ProcessImplementations(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Process {type.FriendlyName()} implementations");
+        processor.Trace<string>("Process {type} implementations", type.FriendlyName());
         var implementations = ctx.GetImplementations(type);
         if (implementations.Count == 0)
         {
-            processor.Trace($"Process {type.FriendlyName()} implementations - no implementations");
+            processor.Trace<string>("Process {type} implementations - no implementations", type.FriendlyName());
             return;
         }
 
-        processor.Trace($"Process {type.FriendlyName()} {implementations.Count} implementation(s)");
+        processor.Trace("Process {type} {implementations.Count} implementation(s)", type.FriendlyName(), implementations.Count);
         foreach (var implementation in implementations)
             ctx.Process(implementation);
     }
 
     public static void ProcessBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Process {type.FriendlyName()} base type");
+        processor.Trace<string>("Process {type} base type", type.FriendlyName());
         if (type.BaseType is null)
         {
-            processor.Trace($"Process {type.FriendlyName()} base type - no base type");
+            processor.Trace<string>("Process {type} base type - no base type", type.FriendlyName());
             return;
         }
 
-        processor.Trace($"Process {type.FriendlyName()} base type {type.BaseType.FriendlyName()}");
+        processor.Trace<string, string>("Process {type} base type {baseType}", type.FriendlyName(), type.BaseType.FriendlyName());
         ctx.Process(type.BaseType);
     }
 
     public static void ProcessInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Process {type.FriendlyName()} interfaces");
+        processor.Trace<string>("Process {type} interfaces", type.FriendlyName());
         foreach (var @interface in type.GetOwnInterfaces())
         {
-            processor.Trace($"Process {type.FriendlyName()} interface {@interface.FriendlyName()}");
+            processor.Trace<string, string>("Process {type} interface {interface}", type.FriendlyName(), @interface.FriendlyName());
             ctx.Process(@interface);
         }
     }
 
     public static void ProcessMembers(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Process {type.FriendlyName()} members");
+        processor.Trace<string>("Process {type} members", type.FriendlyName());
         foreach (var member in type.GetOwnMembers())
         {
-            processor.Trace($"Process {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name}");
+            processor.Trace<string, string, string>("Process {type} member {accessorType} {member}", type.FriendlyName(), member.AccessorType.FriendlyName(), member.Name);
             ctx.Process(member.AccessorType);
         }
     }
 
     public static IReadOnlyList<IRef> ResolveGenericArguments(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Resolve {type.FriendlyName()} generic argument refs");
+        processor.Trace<string>("Resolve {type} generic argument refs", type.FriendlyName());
         var typeGenericArguments = type.GetGenericArguments();
         var genericArguments = new List<IRef>(typeGenericArguments.Length);
         foreach (var genericArgument in typeGenericArguments)
         {
-            processor.Trace($"Resolve {type.FriendlyName()} generic argument {genericArgument.FriendlyName()} ref");
+            processor.Trace<string, string>("Resolve {type} generic argument {genericArgument} ref", type.FriendlyName(), genericArgument.FriendlyName());
             genericArguments.Add(ctx.GetRef(genericArgument));
         }
 
@@ -86,38 +86,38 @@ internal static class ProcessorExtensions
 
     public static IRef? ResolveBaseType(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Resolve {type.FriendlyName()} base type ref");
+        processor.Trace<string>("Resolve {type} base type ref", type.FriendlyName());
         if (type.BaseType is null)
         {
-            processor.Trace($"Resolve {type.FriendlyName()} base type ref - no base type");
+            processor.Trace<string>("Resolve {type} base type ref - no base type", type.FriendlyName());
             return null;
         }
 
         if (ctx.Config.IsIgnored(type.BaseType))
         {
-            processor.Trace($"Resolve ignore {type.FriendlyName()} base type {type.BaseType.FriendlyName()} ref");
+            processor.Trace<string, string>("Resolve ignore {type} base type {baseType} ref", type.FriendlyName(), type.BaseType.FriendlyName());
             return null;
         }
 
-        processor.Trace($"Resolve {type.FriendlyName()} base type {type.BaseType.FriendlyName()} ref");
+        processor.Trace<string, string>("Resolve {type} base type {baseType} ref", type.FriendlyName(), type.BaseType.FriendlyName());
 
         return ctx.GetRef(type.BaseType);
     }
 
     public static IReadOnlyList<IRef> ResolveInterfaces(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Resolve {type.FriendlyName()} interface refs");
+        processor.Trace<string>("Resolve {type} interface refs", type.FriendlyName());
         var interfaces = type.GetOwnInterfaces();
         var interfaceRefs = new List<IRef>(interfaces.Count);
         foreach (var @interface in interfaces)
         {
             if (ctx.Config.IsIgnored(@interface))
             {
-                processor.Trace($"Resolve ignore {type.FriendlyName()} interface {@interface.FriendlyName()} ref");
+                processor.Trace<string, string>("Resolve ignore {type} interface {interface} ref", type.FriendlyName(), @interface.FriendlyName());
                 continue;
             }
 
-            processor.Trace($"Resolve {type.FriendlyName()} interface {@interface.FriendlyName()} ref");
+            processor.Trace<string, string>("Resolve {type} interface {interface} ref", type.FriendlyName(), @interface.FriendlyName());
             interfaceRefs.Add(ctx.GetRef(@interface));
         }
 
@@ -126,11 +126,11 @@ internal static class ProcessorExtensions
 
     public static IReadOnlyList<FieldModel> ResolveFields(this IProcessor processor, ContextualType type, IProcessingContext ctx)
     {
-        processor.Trace($"Resolve {type.FriendlyName()} field models");
+        processor.Trace<string>("Resolve {type} field models", type.FriendlyName());
         var fields = type.GetOwnMembers()
             .Select(member =>
             {
-                processor.Trace($"Resolve {type.FriendlyName()} member {member.AccessorType.FriendlyName()} {member.Name} ref");
+                processor.Trace<string, string, string>("Resolve {type} member {accessorType} {member} ref", type.FriendlyName(), member.AccessorType.FriendlyName(), member.Name);
                 return new FieldModel(ctx.GetRef(member.AccessorType), member.Name);
             })
             .ToArray();

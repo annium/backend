@@ -23,14 +23,14 @@ public static class TrackCompletionOperatorExtensions
         return Observable.Create<T>(observer =>
         {
             var target = observer.GetFullId();
-            ctx.Trace($"{target} - handle");
+            ctx.Trace<string>("{target} - handle", target);
 
             if (!ctx.IsCompleted)
                 return ctx.Subscribe(observer);
 
-            ctx.Trace($"{target} - complete");
+            ctx.Trace<string>("{target} - complete", target);
             observer.OnCompleted();
-            ctx.Trace($"{target} - completed");
+            ctx.Trace<string>("{target} - completed", target);
 
             return Disposable.Empty;
         });
@@ -81,14 +81,14 @@ file record CompletionContext<T> : ILogSubject
                 throw new InvalidOperationException("source already completed");
             IsCompleted = true;
 
-            this.Trace($"complete {_incompleteObservers.Count} observers");
+            this.Trace("complete {incompleteObserversCount} observers", _incompleteObservers.Count);
             observers = _incompleteObservers.ToArray();
             _incompleteObservers.Clear();
         }
 
         foreach (var observer in observers)
         {
-            this.Trace($"complete {observer.GetFullId()}");
+            this.Trace<string>("complete {observer}", observer.GetFullId());
             observer.OnCompleted();
         }
 

@@ -95,7 +95,7 @@ internal class KeepAliveMonitor : IKeepAliveMonitor, ILogSubject
         if (silenceDuration <= _options.PingInterval)
             return;
 
-        this.Trace($"Missed ping {Math.Floor(silenceDuration / _options.PingInterval):F0}/{_options.Retries}");
+        this.Trace("Missed ping {retryIndex}/{retriesCount}", Math.Floor(silenceDuration / _options.PingInterval).FloorInt32(), _options.Retries);
         if (silenceDuration > _options.PingInterval * _options.Retries)
         {
             this.Trace("Missed all pings - signal connection lost");

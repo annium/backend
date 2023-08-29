@@ -26,17 +26,17 @@ internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
 
     public bool TryCancel(Guid subscriptionId)
     {
-        this.Trace($"subscription {subscriptionId} - init");
+        this.Trace("subscription {subscriptionId} - init", subscriptionId);
         lock (_contexts)
         {
             var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId);
             if (context is null)
             {
-                this.Trace($"subscription {subscriptionId} - context missing");
+                this.Trace("subscription {subscriptionId} - context missing", subscriptionId);
                 return false;
             }
 
-            this.Trace($"subscription {subscriptionId} - cancel context");
+            this.Trace("subscription {subscriptionId} - cancel context", subscriptionId);
             _contexts.Remove(context);
             context.Cancel();
 

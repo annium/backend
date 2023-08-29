@@ -25,7 +25,7 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
 
     public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
     {
-        this.Debug($"Interacting to {cfg.Server}");
+        this.Debug("Interacting to {server}", cfg.Server);
 
         this.Debug("create client");
         var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);

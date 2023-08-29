@@ -18,7 +18,7 @@ public class SetupExecutor : ITestExecutor, ILogSubject
 
     public Task ExecuteAsync(Target target)
     {
-        this.Trace($"Setup {target.Test.DisplayName}.");
+        this.Trace<string>("Setup {test}.", target.Test.DisplayName);
 
         target.Init();
 

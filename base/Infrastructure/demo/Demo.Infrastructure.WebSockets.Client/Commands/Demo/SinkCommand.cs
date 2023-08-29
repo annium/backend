@@ -45,15 +45,15 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDes
             return Task.CompletedTask;
         };
 
-        this.Debug($"Connecting to {cfg.Server}");
+        this.Debug("Connecting to {server}", cfg.Server);
         await ws.ConnectAsync(cfg.Server, ct);
         var count = 0;
         ws.ListenBinary().Select(_serializer.Deserialize<NotificationBase>).Subscribe(x =>
         {
-            this.Debug($"<<< {x}");
+            this.Debug("<<< {x}", x);
             count++;
         });
-        this.Debug($"Connected to {cfg.Server}");
+        this.Debug("Connected to {server}", cfg.Server);
 
         var sw = new Stopwatch();
         sw.Start();
@@ -71,7 +71,7 @@ internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDes
         this.Debug("Demo end");
 
         sw.Stop();
-        this.Debug($"Messages received: {count}. Rate: {Math.Floor((double)count / sw.ElapsedMilliseconds * 1000)}rps");
+        this.Debug("Messages received: {count}. Rate: {rate}rps", count, Math.Floor((double)count / sw.ElapsedMilliseconds * 1000));
 
         this.Debug("Disconnecting");
         await ws.DisconnectAsync();

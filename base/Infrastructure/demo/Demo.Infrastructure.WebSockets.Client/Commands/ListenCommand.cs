@@ -43,12 +43,16 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
             return Task.CompletedTask;
         };
 
-        this.Debug($"Connecting to {cfg.Server}");
+        this.Debug("Connecting to {server}", cfg.Server);
         await client.ConnectAsync(ct);
-        this.Debug($"Connected to {cfg.Server}");
+        this.Debug("Connected to {server}", cfg.Server);
 
-        using var _ = client.Listen<DiagnosticsNotification>().Subscribe(x => this.Debug($"<<< diagnostics: {x}"));
-        using var __ = client.Listen<SessionTimeNotification>().Subscribe(x => this.Debug($"<<< session: {x}"));
+        using var _ = client
+            .Listen<DiagnosticsNotification>()
+            .Subscribe(x => this.Debug("<<< diagnostics: {x}", x));
+        using var __ = client
+            .Listen<SessionTimeNotification>()
+            .Subscribe(x => this.Debug("<<< session: {x}", x));
 
         await ct;
         this.Debug("Disconnecting");

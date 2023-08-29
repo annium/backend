@@ -174,7 +174,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             }
             catch (Exception e)
             {
-                this.Trace($"exception {e}");
+                this.Trace("exception {e}", e);
             }
 
             this.Trace("return buffer");
@@ -242,7 +242,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         //  remote party closed connection w/o handshake
         catch (WebSocketException e)
         {
-            this.Trace($"{nameof(WebSocketException)} {e}");
+            this.Trace("Exception: {e}", e);
             if (await HandleConnectionLost() == Status.Closed)
             {
                 this.Trace("connection closed after connection lost by WebSocket exception");
@@ -255,13 +255,13 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
             // Operation canceled either by disconnect, or by disposal
             if (!_keepAliveMonitor.Token.IsCancellationRequested)
             {
-                this.Trace($"{nameof(OperationCanceledException)} by disconnect or disposal");
+                this.Trace("Canceled by disconnect or disposal");
                 HandleDisconnected();
 
                 return null;
             }
 
-            this.Trace($"{nameof(OperationCanceledException)} by keepAlive");
+            this.Trace("Canceled by keepAlive");
             if (await HandleConnectionLost() == Status.Closed)
             {
                 this.Trace("connection closed after connection lost by keepAlive");
@@ -270,7 +270,7 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         }
         catch (Exception e)
         {
-            this.Trace($"exception {e}");
+            this.Trace("exception: {e}", e);
             // unexpected case
             throw;
         }
@@ -286,9 +286,9 @@ public abstract class WebSocketBase<TNativeSocket> : ISendingReceivingWebSocket,
         this.Trace("refresh socket tcs");
         _socketTcs = new TaskCompletionSource<object>();
 
-        this.Trace($"{nameof(OnConnectionLostAsync)} - start in {State} state");
+        this.Trace("start in {state} state", nameof(OnConnectionLostAsync), State);
         await OnConnectionLostAsync().ConfigureAwait(false);
-        this.Trace($"{nameof(OnConnectionLostAsync)} - complete");
+        this.Trace("complete");
 
         // if after disconnect handling not connected - set completed and break
         if (State is WebSocketState.CloseReceived or WebSocketState.Closed or WebSocketState.Aborted)

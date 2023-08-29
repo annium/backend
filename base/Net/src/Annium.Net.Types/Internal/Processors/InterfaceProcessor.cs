@@ -22,7 +22,7 @@ internal class InterfaceProcessor : IProcessor
 
         if (ctx.IsRegistered(type.Type))
         {
-            this.Trace($"Process {type.FriendlyName()} - skip, already registered");
+            this.Trace<string>("Process {type} - skip, already registered", type.FriendlyName());
             return true;
         }
 

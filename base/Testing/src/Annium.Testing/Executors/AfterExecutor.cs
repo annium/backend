@@ -24,7 +24,7 @@ public class AfterExecutor : ITestExecutor, ILogSubject
         if (test.After == null)
             return Task.CompletedTask;
 
-        this.Trace($"Execute After of {target.Test.DisplayName}.");
+        this.Trace<string>("Execute After of {test}.", target.Test.DisplayName);
 
         return _executor.ExecuteAsync(instance, test.After, result);
     }

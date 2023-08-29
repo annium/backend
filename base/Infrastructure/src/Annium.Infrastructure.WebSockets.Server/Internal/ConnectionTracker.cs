@@ -36,11 +36,11 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             throw new InvalidOperationException("Server is already stopping");
 
         var cn = new Connection(Guid.NewGuid(), socket, Logger);
-        this.Trace($"connection {cn.Id} - start");
+        this.Trace("cn {connectionId} - start", cn.Id);
         lock (_connections)
             _connections[cn.Id] = new ConnectionRef(cn, Logger);
 
-        this.Trace($"connection {cn.Id} - done");
+        this.Trace("cn {connectionId} - done", cn.Id);
         return cn;
     }
 
@@ -49,7 +49,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         // not available, if already disposing
         if (_isDisposing)
         {
-            this.Trace($"connection {id} - unavailable, is disposing");
+            this.Trace("cn {connectionId} - unavailable, is disposing", id);
             cn = null!;
             return false;
         }
@@ -58,7 +58,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         {
             if (!_connections.TryGetValue(id, out var cnRef))
             {
-                this.Trace($"connection {id} - missing");
+                this.Trace("cn {connectionId} - missing", id);
                 cn = null!;
                 return false;
             }
@@ -79,13 +79,13 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         // can be called after disposing starts, but invalid, if already disposed
         EnsureNotDisposed();
 
-        this.Trace($"connection {id} - start");
+        this.Trace("cn {connectionId} - start", id);
         ConnectionRef? cnRef;
         lock (_connections)
         {
             if (!_connections.Remove(id, out cnRef))
             {
-                this.Trace($"connection {id} - not found");
+                this.Trace("cn {connectionId} - not found", id);
                 return;
             }
         }
@@ -93,14 +93,14 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         var cn = cnRef.Connection;
         cnRef.TryDispose();
 
-        this.Trace($"connection {cn.Id} - wait until can be released");
+        this.Trace("cn {connectionId} - wait until can be released", cn.Id);
         await cnRef.CanBeReleased;
 
-        this.Trace($"connection {cn.Id} - dispose");
+        this.Trace("cn {connectionId} - dispose", cn.Id);
 
         if (_lifetime.Stopping.IsCancellationRequested)
             TryStop();
-        this.Trace($"connection {cn.Id} - done");
+        this.Trace("cn {connectionId} - done", cn.Id);
     }
 
     public IReadOnlyCollection<Connection> Slice()
@@ -125,7 +125,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     {
         lock (_connections)
         {
-            this.Trace($"Unreleased connections: {_connections.Count}");
+            this.Trace("Unreleased connections: {connectionsCount}", _connections.Count);
             if (_connections.Count == 0)
                 _disposeTcs.TrySetResult(new object());
         }
@@ -155,13 +155,13 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         public void Acquire()
         {
             var count = Interlocked.Increment(ref _refCount);
-            this.Trace($"cn {Connection.Id}: {count}");
+            this.Trace("cn {connectionId}: {count}", Connection.Id, count);
         }
 
         public void Release(bool tryDispose)
         {
             var count = Interlocked.Decrement(ref _refCount);
-            this.Trace($"cn {Connection.Id}: {count} ({tryDispose})");
+            this.Trace("cn {connectionId}: {count} ({tryDispose})", Connection.Id, count, tryDispose);
             if (count == 0 && tryDispose)
                 _disposeTcs.TrySetResult(null);
         }
@@ -169,7 +169,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         public void TryDispose()
         {
             var count = Volatile.Read(ref _refCount);
-            this.Trace($"cn {Connection.Id}: {count}");
+            this.Trace("cn {connectionId}: {count}", Connection.Id, count);
             if (count == 0)
                 _disposeTcs.TrySetResult(null);
         }

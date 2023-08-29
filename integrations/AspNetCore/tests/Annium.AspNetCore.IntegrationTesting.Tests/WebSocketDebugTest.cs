@@ -56,7 +56,7 @@ public class WebSocketDebugTest : IntegrationTestBase
 
         void ClientLog(string value)
         {
-            this.Trace($"client log: {value}");
+            this.Trace<string>("client log: {value}", value);
             clientLog.Enqueue(value);
         }
 

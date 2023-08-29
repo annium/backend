@@ -25,7 +25,7 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
         Logger = logger;
         _nativeSocket = nativeSocket;
         _managedSocket = new ManagedWebSocket(nativeSocket, logger);
-        this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
+        this.Trace<string, string>("paired with {nativeSocket} / {managedSocket}", _nativeSocket.GetFullId(), _managedSocket.GetFullId());
 
         _managedSocket.TextReceived += OnTextReceived;
         _managedSocket.BinaryReceived += OnBinaryReceived;
@@ -48,7 +48,7 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
         }
         catch (Exception e)
         {
-            this.Trace($"failed: {e}");
+            this.Trace("failed: {e}", e);
         }
 
         this.Trace("done");

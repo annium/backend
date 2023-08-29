@@ -35,7 +35,7 @@ internal class MappingSinglePipeHandler<TRequestIn, TRequestOut, TResponse> :
         Func<TRequestOut, CancellationToken, Task<TResponse>> next
     )
     {
-        this.Trace($"Map request: {typeof(TRequestIn)} -> {typeof(TRequestOut)}");
+        this.Trace("Map request: {requestIn} -> {requestOut}", typeof(TRequestIn), typeof(TRequestOut));
         var mappedRequest = _mapper.Map<TRequestOut>(request);
 
         return next(mappedRequest, ct);

@@ -41,7 +41,7 @@ internal abstract class ExceptionPipeHandlerBase<TRequest, TResponse> : ILogSubj
 
     private TResponse Failure(Exception exception)
     {
-        this.Trace($"Failure of {typeof(TRequest)}: {exception}");
+        this.Trace("Failure of {request}: {exception}", typeof(TRequest), exception);
 
         return GetFailure(exception);
     }

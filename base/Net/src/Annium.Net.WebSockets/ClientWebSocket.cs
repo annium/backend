@@ -27,7 +27,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         Logger = logger;
         this.Trace("start monitor");
         _socket = new ClientManagedWebSocket(logger);
-        this.Trace($"paired with {_socket.GetFullId()}");
+        this.Trace<string>("paired with {socket}", _socket.GetFullId());
 
         this.Trace("bind events");
         _socket.TextReceived += TextReceived;
@@ -59,7 +59,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         {
             if (_status is Status.Connecting or Status.Connected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -79,7 +79,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -117,10 +117,10 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         this.Trace("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace($"fire disconnected with {closeStatus}");
+        this.Trace("fire disconnected with {closeStatus}", closeStatus);
         OnDisconnected(closeStatus);
 
-        this.Trace($"schedule connection in {_reconnectDelay}ms");
+        this.Trace("schedule connection in {reconnectDelay}ms", _reconnectDelay);
         Task.Delay(_reconnectDelay).ContinueWith(_ =>
         {
             this.Trace("trigger connect");
@@ -135,7 +135,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         this.Trace("start");
 
         _uri = uri;
-        this.Trace($"connect to {uri}");
+        this.Trace("connect to {uri}", uri);
         _socket.ConnectAsync(uri, CancellationToken.None).ContinueWith(HandleConnected, uri);
 
         this.Trace("done");
@@ -149,19 +149,19 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         {
             if (_status is Status.Connected or Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
             // set status in lock
-            this.Trace($"set status by connection result: {task.Result}");
+            this.Trace("set status by connection result: {result}", task.Result);
             SetStatus(task.Result ? Status.Connected : Status.Connecting);
         }
 
         if (!task.Result)
         {
             var uri = (Uri)state!;
-            this.Trace($"failure: {task.Exception}, init reconnect");
+            this.Trace("failure: {exception}, init reconnect", task.Exception);
             ReconnectPrivate(uri, WebSocketCloseStatus.Error);
             return;
         }
@@ -186,7 +186,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -206,7 +206,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         {
             if (_status is Status.Disconnected)
             {
-                this.Trace($"skip - already {_status}");
+                this.Trace("skip - already {status}", _status);
                 return;
             }
 
@@ -221,7 +221,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void SetStatus(Status status)
     {
-        this.Trace($"update status from {_status} to {status}");
+        this.Trace("update status from {currentStatus} to {newStatus}", _status, status);
         _status = status;
     }
 

@@ -84,7 +84,7 @@ internal class BackgroundLogScheduler<TContext> : ILogScheduler<TContext>, ILogS
         }
 
         // shutdown mode - handle only left tasks
-        this.Trace($"handle {Count} messages left");
+        this.Trace("handle {count} messages left", Count);
         while (true)
         {
             if (_messageReader.TryRead(out var message))

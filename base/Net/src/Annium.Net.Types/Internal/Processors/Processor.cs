@@ -23,7 +23,7 @@ internal class Processor : ILogSubject
 
     public void Process(ContextualType type, Nullability nullability, IProcessingContext ctx)
     {
-        this.Trace($"Process {type.FriendlyName()}");
+        this.Trace<string>("Process {type}", type.FriendlyName());
 
         foreach (var processor in _processors)
         {
@@ -31,7 +31,7 @@ internal class Processor : ILogSubject
             if (!result)
                 continue;
 
-            this.Trace($"Processed {type.FriendlyName()} via {processor.GetType().FriendlyName()}");
+            this.Trace<string, string>("Processed {type} via {processorType}", type.FriendlyName(), processor.GetType().FriendlyName());
             return;
         }
     }

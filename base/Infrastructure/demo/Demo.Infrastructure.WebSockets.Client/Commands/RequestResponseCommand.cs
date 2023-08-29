@@ -77,16 +77,16 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
 
         sw.Stop();
 
-        this.Debug($"End: {sw.Elapsed}. Counter: {counter}");
+        this.Debug("End: {elapsed}. Counter: {counter}", sw.Elapsed, counter);
 
         if (client.IsConnected)
             await client.DisconnectAsync();
 
         async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken token)
         {
-            // this.Debug($">>> {request}");
+            // this.Debug(">>> {request}", request);
             var result = await client.FetchAsync<T>(request, token);
-            // this.Debug($"<<< {result}");
+            // this.Debug("<<< {result}", result);
             return result;
         }
     }

@@ -33,10 +33,10 @@ internal class PushMessageHandler<T> :
         CancellationToken ct
     )
     {
-        this.Trace($"cn {request.ConnectionId} - start");
+        this.Trace("cn {connectionId} - start", request.ConnectionId);
         if (!_connectionTracker.TryGet(request.ConnectionId, out var cnRef))
         {
-            this.Trace($"cn {request.ConnectionId} - not found");
+            this.Trace("cn {connectionId} - not found", request.ConnectionId);
             return None.Default;
         }
 
@@ -44,22 +44,22 @@ internal class PushMessageHandler<T> :
         {
             if (cnRef.Value.Socket.State != WebSocketState.Open)
             {
-                this.Trace($"cn {request.ConnectionId} - socket not opened");
+                this.Trace("cn {connectionId} - socket not opened", request.ConnectionId);
                 return None.Default;
             }
 
-            this.Trace($"cn {request.ConnectionId} - start send");
+            this.Trace("cn {connectionId} - start send", request.ConnectionId);
             await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
-            this.Trace($"cn {request.ConnectionId} - send complete");
+            this.Trace("cn {connectionId} - send complete", request.ConnectionId);
         }
         // socket can get closed/aborted in a moment
         catch (WebSocketException e)
         {
-            this.Trace($"cn {request.ConnectionId} - send failed due to socket exception: {e}");
+            this.Trace("cn {connectionId} - send failed due to socket exception: {e}", request.ConnectionId, e);
         }
         finally
         {
-            this.Trace($"cn {request.ConnectionId} - dispose ref");
+            this.Trace("cn {connectionId} - dispose ref", request.ConnectionId);
             await cnRef.DisposeAsync();
         }
 

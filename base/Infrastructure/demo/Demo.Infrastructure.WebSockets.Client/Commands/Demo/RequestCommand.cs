@@ -51,7 +51,7 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
             return Task.CompletedTask;
         };
 
-        this.Debug($"Connecting to {cfg.Server}");
+        this.Debug("Connecting to {server}", cfg.Server);
         await ws.ConnectAsync(cfg.Server, ct);
         var counter = 0;
         ws.ListenBinary()
@@ -63,16 +63,16 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
                 }
                 catch (Exception e)
                 {
-                    this.Error($"Deserialize failed with: {e}");
+                    this.Error("Deserialize failed with: {e}", e);
                     throw;
                 }
             })
             .Subscribe(x =>
             {
                 Interlocked.Increment(ref counter);
-                this.Debug($"<<< {x}");
+                this.Debug("<<< {x}", x);
             });
-        this.Debug($"Connected to {cfg.Server}");
+        this.Debug("Connected to {server}", cfg.Server);
 
         this.Debug("Demo start");
         await Task.WhenAll(
@@ -82,7 +82,7 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
         this.Debug("Demo end");
 
         await Task.Delay(50);
-        this.Debug($"Responses: {counter}");
+        this.Debug("Responses: {counter}", counter);
 
         this.Debug("Disconnecting");
         if (ws.State == WebSocketState.Open)
@@ -94,7 +94,7 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
         where T : notnull
     {
         var raw = _serializer.Serialize(data);
-        this.Debug($">>> {data.GetType().FriendlyName()}::{data}");
+        this.Debug(">>> {data.GetType().FriendlyName()}::{data}", data.GetType().FriendlyName(), data);
 
         await ws.Send(raw, CancellationToken.None);
     }

@@ -139,12 +139,12 @@ public class MediatorTest : TestBase
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Deserialize Request to {typeof(TRequest).FriendlyName()}");
+            this.Trace<string>("Deserialize Request to {request}", typeof(TRequest).FriendlyName());
             var payload = JsonSerializer.Deserialize<TRequest>(request.Value, _options)!;
 
             var result = await next(payload, ct);
 
-            this.Trace($"Serialize {typeof(TResponse).FriendlyName()} to Response");
+            this.Trace<string>("Serialize {response} to Response", typeof(TResponse).FriendlyName());
             return new Response<TResponse>(JsonSerializer.Serialize(result, _options));
         }
     }
@@ -199,11 +199,11 @@ public class MediatorTest : TestBase
             Func<TRequest, CancellationToken, Task<TResponse>> next
         )
         {
-            this.Trace($"Start {typeof(TRequest).FriendlyName()} validation");
+            this.Trace<string>("Start {request} validation", typeof(TRequest).FriendlyName());
             var result = _validate(request)
                 ? Result.Success(default(TResponse)!)
                 : Result.Failure(default(TResponse)!).Error("Validation failed");
-            this.Trace($"Status of {typeof(TRequest).FriendlyName()} validation: {result.IsSuccess}");
+            this.Trace("Status of {request} validation: {isSuccess}", typeof(TRequest).FriendlyName(), result.IsSuccess);
             if (result.HasErrors)
                 return result;
 

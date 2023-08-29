@@ -22,7 +22,7 @@ public class BodyExecutor : ITestExecutor, ILogSubject
     {
         var (instance, test, result) = target;
 
-        this.Trace($"Execute Body of {target.Test.DisplayName}.");
+        this.Trace<string>("Execute Body of {test}.", target.Test.DisplayName);
 
         return _executor.ExecuteAsync(instance, test.Method, result);
     }

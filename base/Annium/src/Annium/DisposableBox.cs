@@ -31,16 +31,16 @@ public sealed class AsyncDisposableBox : DisposableBoxBase<AsyncDisposableBox>, 
         if (_asyncDisposables.Count > 0)
             await Task.WhenAll(Pull(_asyncDisposables).Select(async entry =>
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.Trace<string>("dispose {entry} - start", entry.GetFullId());
                 await entry.DisposeAsync();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.Trace<string>("dispose {entry} - done", entry.GetFullId());
             }));
         if (_asyncDisposes.Count > 0)
             await Task.WhenAll(Pull(_asyncDisposes).Select(async entry =>
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.Trace<string>("dispose {entry} - start", entry.GetFullId());
                 await entry();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.Trace<string>("dispose {entry} - done", entry.GetFullId());
             }));
 
         this.Trace("done");
@@ -108,14 +108,14 @@ public abstract class DisposableBoxBase<TBox> : ILogSubject
         Logger = logger;
     }
 
-    protected TBox Add<T>(List<T> entries, T item)
+    protected TBox Add<T>(List<T> entries, T entry)
     {
         EnsureNotDisposed();
 
         lock (_locker)
         {
-            this.Trace($"add {item.GetFullId()}");
-            entries.Add(item);
+            this.Trace<string>("add {entry}", entry.GetFullId());
+            entries.Add(entry);
         }
 
         return (TBox)this;
@@ -126,10 +126,10 @@ public abstract class DisposableBoxBase<TBox> : ILogSubject
         EnsureNotDisposed();
 
         lock (_locker)
-            foreach (var item in items)
+            foreach (var entry in items)
             {
-                this.Trace($"add {item.GetFullId()}");
-                entries.Add(item);
+                this.Trace<string>("add {entry}", entry.GetFullId());
+                entries.Add(entry);
             }
 
         return (TBox)this;
@@ -141,7 +141,7 @@ public abstract class DisposableBoxBase<TBox> : ILogSubject
 
         lock (_locker)
         {
-            this.Trace($"remove {item.GetFullId()}");
+            this.Trace<string>("remove {entry}", item.GetFullId());
             entries.Remove(item);
         }
 
@@ -155,7 +155,7 @@ public abstract class DisposableBoxBase<TBox> : ILogSubject
         lock (_locker)
             foreach (var item in items)
             {
-                this.Trace($"remove {item.GetFullId()}");
+                this.Trace<string>("remove {entry}", item.GetFullId());
                 entries.Remove(item);
             }
 
@@ -186,17 +186,17 @@ public abstract class DisposableBoxBase<TBox> : ILogSubject
         if (SyncDisposables.Count > 0)
             foreach (var entry in Pull(SyncDisposables))
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.Trace<string>("dispose {entry} - start", entry.GetFullId());
                 entry.Dispose();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.Trace<string>("dispose {entry} - done", entry.GetFullId());
             }
 
         if (SyncDisposes.Count > 0)
             foreach (var entry in Pull(SyncDisposes))
             {
-                this.Trace($"dispose {entry.GetFullId()} - start");
+                this.Trace<string>("dispose {entry} - start", entry.GetFullId());
                 entry();
-                this.Trace($"dispose {entry.GetFullId()} - done");
+                this.Trace<string>("dispose {entry} - done", entry.GetFullId());
             }
     }
 

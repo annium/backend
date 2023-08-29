@@ -65,6 +65,6 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
 
         await client.DisconnectAsync();
 
-        void Log(UserBalanceMessage msg) => this.Debug($"<<< {msg}");
+        void Log(UserBalanceMessage msg) => this.Debug("<<< {msg}", msg);
     }
 }

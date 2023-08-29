@@ -41,9 +41,9 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
             return Task.CompletedTask;
         };
 
-        this.Debug($"Connecting to {cfg.Server}");
+        this.Debug("Connecting to {server}", cfg.Server);
         await ws.ConnectAsync(cfg.Server, ct);
-        this.Debug($"Connected to {cfg.Server}");
+        this.Debug("Connected to {server}", cfg.Server);
 
         this.Debug("Start echo loop");
 
@@ -64,7 +64,7 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
             }
 
         sw.Stop();
-        this.Debug($"Messages sent: {value}. Rate: {Math.Floor((double)value / sw.ElapsedMilliseconds * 1000)}rps");
+        this.Debug("Messages sent: {value}. Rate: {rate}rps", value, Math.Floor((double)value / sw.ElapsedMilliseconds * 1000));
 
         if (!cfg.Kill)
         {
@@ -76,7 +76,7 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
         IObservable<Unit> Send(int val)
         {
             if (val % 10000 == 0)
-                this.Debug($">>> {val}");
+                this.Debug(">>> {val}", val);
             return ws.Send(val.ToString(), CancellationToken.None);
         }
     }

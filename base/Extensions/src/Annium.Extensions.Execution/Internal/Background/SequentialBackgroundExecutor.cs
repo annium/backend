@@ -51,7 +51,7 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
 
     protected override async ValueTask HandleDisposeAsync()
     {
-        this.Trace($"wait for {Count} task(s) to finish");
+        this.Trace("wait for {count} task(s) to finish", Count);
         await _runTask;
         this.Trace("wait for reader completion");
         await _taskReader.Completion.ConfigureAwait(false);
@@ -82,7 +82,7 @@ internal class SequentialBackgroundExecutor<TSource> : BackgroundExecutorBase
         }
 
         // shutdown mode - runs only left tasks
-        this.Trace($"run {Count} tasks left");
+        this.Trace("run {count} tasks left", Count);
         while (true)
         {
             if (_taskReader.TryRead(out var task))

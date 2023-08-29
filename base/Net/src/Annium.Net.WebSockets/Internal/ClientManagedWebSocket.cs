@@ -44,7 +44,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
 
         _nativeSocket = new NativeWebSocket();
         _managedSocket = new ManagedWebSocket(_nativeSocket, Logger);
-        this.Trace($"paired with {_nativeSocket.GetFullId()} / {_managedSocket.GetFullId()}");
+        this.Trace<string, string>("paired with {nativeSocket} / {managedSocket}", _nativeSocket.GetFullId(), _managedSocket.GetFullId());
 
         this.Trace("bind events");
         _managedSocket.TextReceived += OnTextReceived;
@@ -52,12 +52,12 @@ public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
 
         try
         {
-            this.Trace($"connect native socket to {uri}");
+            this.Trace("connect native socket to {uri}", uri);
             await _nativeSocket.ConnectAsync(uri, ct);
         }
         catch (Exception e)
         {
-            this.Trace($"failed: {e}");
+            this.Trace("failed: {e}", e);
 
             this.Trace("dispose native socket");
             _nativeSocket.Dispose();
@@ -106,7 +106,7 @@ public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
         }
         catch (Exception e)
         {
-            this.Trace($"failed: {e}");
+            this.Trace("failed: {e}", e);
         }
 
         this.Trace("cancel listen cts");
