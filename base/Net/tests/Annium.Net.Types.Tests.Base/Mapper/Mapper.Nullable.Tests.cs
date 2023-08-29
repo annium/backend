@@ -1,16 +1,20 @@
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperNullableTestsBase : TestBase
 {
-    protected MapperNullableTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperNullableTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Nullable_BaseType_Struct_Base()
+    protected void Nullable_BaseType_Struct_Base()
     {
         // arrange
         var target = typeof(int?).ToContextualType();
@@ -25,7 +29,7 @@ public abstract class MapperNullableTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void Nullable_BaseType_Class_Base()
+    protected void Nullable_BaseType_Class_Base()
     {
         // arrange
         var target = typeof(Sample).ToContextualType().GetProperty(nameof(Sample.Value))!.AccessorType;

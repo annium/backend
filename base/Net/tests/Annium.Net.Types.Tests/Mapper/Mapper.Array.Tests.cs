@@ -1,11 +1,17 @@
 using Annium.Net.Types.Tests.Base.Mapper;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Mapper;
 
 public class MapperArrayTests : MapperArrayTestsBase
 {
-    public MapperArrayTests() : base(new TestProvider())
+    public MapperArrayTests(
+        ITestOutputHelper outputHelper
+    ) : base(
+        new TestProvider(),
+        outputHelper
+    )
     {
     }
 

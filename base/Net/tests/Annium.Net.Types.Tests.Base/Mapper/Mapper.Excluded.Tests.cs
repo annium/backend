@@ -1,16 +1,20 @@
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperExcludedTestsBase : TestBase
 {
-    protected MapperExcludedTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperExcludedTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Excluded_Base()
+    protected void Excluded_Base()
     {
         // arrange
         Config.Exclude(Match.Is(typeof(Sample)));

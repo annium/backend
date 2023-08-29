@@ -2,16 +2,20 @@ using System.Collections.Generic;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperArrayTestsBase : TestBase
 {
-    protected MapperArrayTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperArrayTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Array_Base()
+    protected void Array_Base()
     {
         // arrange
         var target = typeof(int[]).ToContextualType();
@@ -26,7 +30,7 @@ public abstract class MapperArrayTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void ArrayLike_Base()
+    protected void ArrayLike_Base()
     {
         // arrange
         var target = typeof(HashSet<>).ToContextualType();

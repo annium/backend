@@ -3,16 +3,20 @@ using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperIncludedTestsBase : TestBase
 {
-    protected MapperIncludedTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperIncludedTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Included_Base()
+    protected void Included_Base()
     {
         // arrange
         Config.Include(typeof(Sample));

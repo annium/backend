@@ -2,16 +2,20 @@ using System.Collections.Generic;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperGenericParameterTestsBase : TestBase
 {
-    protected MapperGenericParameterTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperGenericParameterTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void GenericParameter_NotNullable_Base()
+    protected void GenericParameter_NotNullable_Base()
     {
         // arrange
         var target = typeof(List<>).GetGenericArguments()[0].ToContextualType();
@@ -25,7 +29,7 @@ public abstract class MapperGenericParameterTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void GenericParameter_Nullable_Base()
+    protected void GenericParameter_Nullable_Base()
     {
         // arrange
         var target = typeof(Sample<>).ToContextualType().GetProperty(nameof(Sample<string>.Value))!.AccessorType;

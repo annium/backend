@@ -1,10 +1,10 @@
+using System;
 using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Annium.Net.Types.Tests.Base.Mapper;
 using Annium.Serialization.Abstractions;
-using Microsoft.Extensions.DependencyInjection;
 using Namotion.Reflection;
 
 namespace Annium.Net.Types.Serialization.Json.Tests.Mapper;
@@ -24,14 +24,14 @@ internal class TestProvider : ITestProvider
     private IModelMapper _mapper = default!;
     private ISerializer<string> _serializer = default!;
 
-    public void ConfigureContainer(ServiceContainer container)
+    public void ConfigureContainer(IServiceContainer container)
     {
         container.AddRuntime(GetType().Assembly);
         container.AddSerializers()
             .WithJson(opts => { opts.ConfigureForNetTypes(); }, isDefault: true);
     }
 
-    public void Setup(ServiceProvider sp)
+    public void Setup(IServiceProvider sp)
     {
         _mapper = sp.Resolve<IModelMapper>();
         _serializer = sp.Resolve<ISerializer<string>>();

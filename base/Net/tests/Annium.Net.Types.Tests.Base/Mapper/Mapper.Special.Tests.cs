@@ -2,16 +2,20 @@ using System.Threading.Tasks;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperSpecialTestsBase : TestBase
 {
-    protected MapperSpecialTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperSpecialTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Task_Generic_Nullable_Base()
+    protected void Task_Generic_Nullable_Base()
     {
         // arrange
         var target = typeof(Sample).ToContextualType().GetProperty(nameof(Sample.NullableTask))!.AccessorType;
@@ -27,7 +31,7 @@ public abstract class MapperSpecialTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void Task_Generic_NotNullable_Base()
+    protected void Task_Generic_NotNullable_Base()
     {
         // arrange
         var target = typeof(Sample).ToContextualType().GetProperty(nameof(Sample.NotNullableTask))!.AccessorType;
@@ -42,7 +46,7 @@ public abstract class MapperSpecialTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void Task_NonGeneric_Base()
+    protected void Task_NonGeneric_Base()
     {
         // arrange
         var target = typeof(Task).ToContextualType();

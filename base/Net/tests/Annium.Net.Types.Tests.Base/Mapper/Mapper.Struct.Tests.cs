@@ -5,16 +5,20 @@ using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperStructTestsBase : TestBase
 {
-    protected MapperStructTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperStructTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Empty_Base(Type type)
+    protected void Empty_Base(Type type)
     {
         // arrange
         var target = type.ToContextualType();
@@ -36,7 +40,7 @@ public abstract class MapperStructTestsBase : TestBase
         model.Fields.IsEmpty();
     }
 
-    public void Struct_Base()
+    protected void Struct_Base()
     {
         // arrange
         var type = typeof(Struct<string, HashSet<string>>);

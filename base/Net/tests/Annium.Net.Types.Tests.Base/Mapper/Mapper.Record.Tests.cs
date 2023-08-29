@@ -3,16 +3,20 @@ using System.Collections.Immutable;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperRecordTestsBase : TestBase
 {
-    protected MapperRecordTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperRecordTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Interface_Base()
+    protected void Interface_Base()
     {
         // arrange
         var target = typeof(IDictionary<,>).ToContextualType();
@@ -30,7 +34,7 @@ public abstract class MapperRecordTestsBase : TestBase
         Models.IsEmpty();
     }
 
-    public void Implementation_Base()
+    protected void Implementation_Base()
     {
         // arrange
         var target = typeof(ImmutableDictionary<string, int>).ToContextualType();

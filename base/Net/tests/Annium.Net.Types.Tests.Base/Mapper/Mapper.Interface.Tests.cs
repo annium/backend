@@ -4,16 +4,20 @@ using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Annium.Testing;
 using Namotion.Reflection;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Tests.Base.Mapper;
 
 public abstract class MapperInterfaceTestsBase : TestBase
 {
-    protected MapperInterfaceTestsBase(ITestProvider testProvider) : base(testProvider)
+    protected MapperInterfaceTestsBase(
+        ITestProvider testProvider,
+        ITestOutputHelper outputHelper
+    ) : base(testProvider, outputHelper)
     {
     }
 
-    public void Empty_Base(Type type)
+    protected void Empty_Base(Type type)
     {
         // arrange
         var target = type.ToContextualType();

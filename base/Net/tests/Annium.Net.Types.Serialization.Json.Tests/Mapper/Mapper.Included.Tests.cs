@@ -1,11 +1,17 @@
 using Annium.Net.Types.Tests.Base.Mapper;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Net.Types.Serialization.Json.Tests.Mapper;
 
 public class MapperIncludedTests : MapperIncludedTestsBase
 {
-    public MapperIncludedTests() : base(new TestProvider())
+    public MapperIncludedTests(
+        ITestOutputHelper outputHelper
+    ) : base(
+        new TestProvider(),
+        outputHelper
+    )
     {
     }
 
