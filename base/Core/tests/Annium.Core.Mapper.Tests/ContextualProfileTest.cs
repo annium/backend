@@ -1,17 +1,23 @@
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests;
 
-public class ContextualProfileTest
+public class ContextualProfileTest : TestBase
 {
+    public ContextualProfileTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false).AddProfile<ContextualProfile>());
+    }
+
     [Fact]
     public void ContextualMapping_With_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var payload = new OuterPayload(InnerPayload.B);
 
         // act
@@ -25,7 +31,7 @@ public class ContextualProfileTest
     public void ContextualMapping_Field_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var payload = new OuterPayload(InnerPayload.B);
 
         // act
@@ -34,13 +40,6 @@ public class ContextualProfileTest
         // assert
         result.As<OuterModel>().X.Is(InnerModel.D);
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .AddProfile<ContextualProfile>()
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private class ContextualProfile : Profile
     {

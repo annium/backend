@@ -1,20 +1,26 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using NodaTime;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests;
 
-public class ProfilesTest
+public class ProfilesTest : TestBase
 {
+    public ProfilesTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false).AddProfile(ConfigureProfile));
+    }
+
     [Fact]
     public void ConfigurationMapping_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var date = new DateTime(2000, 10, 7).ToUniversalTime();
         var instant = Instant.FromDateTimeUtc(new DateTime(2002, 6, 17).ToUniversalTime());
         var value = new Payload[] { new ImagePayload("img", date), new LinkPayload { Link = "lnk", Created = instant } };
@@ -29,13 +35,6 @@ public class ProfilesTest
         result.At(1).As<LinkModel>().Link.Is("lnk");
         result.At(1).As<LinkModel>().Created.Is(instant.ToDateTimeUtc());
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .AddProfile(ConfigureProfile)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private void ConfigureProfile(Profile p)
     {

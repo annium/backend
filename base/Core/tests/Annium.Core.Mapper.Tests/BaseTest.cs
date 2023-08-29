@@ -1,17 +1,23 @@
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests;
 
-public class BaseTest
+public class BaseTest : TestBase
 {
+    public BaseTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false));
+    }
+
     [Fact]
     public void SameType_ReturnsSource()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new A { Name = "name" };
 
         // act
@@ -25,7 +31,7 @@ public class BaseTest
     public void Nesting_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new D(new A { Name = "name" }, "nice");
 
         // act
@@ -40,7 +46,7 @@ public class BaseTest
     public void NullableNesting_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new D(null, "nice");
 
         // act
@@ -50,12 +56,6 @@ public class BaseTest
         result.Inner.IsDefault();
         result.Value.Is(value.Value);
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private class A
     {

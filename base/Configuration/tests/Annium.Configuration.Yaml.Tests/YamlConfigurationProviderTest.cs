@@ -5,13 +5,20 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 using YamlDotNet.Serialization;
 
 namespace Annium.Configuration.Yaml.Tests;
 
-public class YamlConfigurationProviderTest
+public class YamlConfigurationProviderTest : TestBase
 {
+    public YamlConfigurationProviderTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        RegisterMapper();
+    }
+
     [Fact]
     public void YamlConfiguration_Works()
     {
@@ -35,11 +42,11 @@ public class YamlConfigurationProviderTest
             yamlFile = Path.GetTempFileName();
             var serializer = new SerializerBuilder().Build();
             File.WriteAllText(yamlFile, serializer.Serialize(cfg));
+            Register(c => c.AddConfiguration<Config>(x => x.AddYamlFile(yamlFile)));
 
             // act
-            var provider = Helper.GetProvider<Config>(builder => builder.AddYamlFile(yamlFile));
-            var result = provider.Resolve<Config>();
-            var nested = provider.Resolve<SomeConfig>();
+            var result = Get<Config>();
+            var nested = Get<SomeConfig>();
 
             // assert
             result.IsNotDefault();

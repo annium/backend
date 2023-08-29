@@ -31,6 +31,11 @@ public abstract class TestBase : ILogSubject
         _builder.UseServicePack<T>();
     }
 
+    protected void RegisterMapper()
+    {
+        Register(container => container.AddMapper(autoload: false));
+    }
+
     protected void Register(Action<IServiceContainer> register)
     {
         EnsureNotBuilt();
@@ -60,7 +65,6 @@ public abstract class TestBase : ILogSubject
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithManagedTime().WithRelativeTime().SetDefault();
         container.AddLogging();
-        container.AddMapper();
     }
 
     private void SharedSetup(IServiceProvider sp)

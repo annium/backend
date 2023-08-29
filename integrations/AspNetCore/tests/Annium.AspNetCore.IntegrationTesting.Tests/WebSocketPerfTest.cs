@@ -20,7 +20,7 @@ using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
-public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
+public class WebSocketPerfTest : IntegrationTestBase
 {
     public WebSocketPerfTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
@@ -35,7 +35,6 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
         Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - start");
 
         // arrange
-        var logger = Get<ILogger>();
         await using var client = await GetClient();
         Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - client arranged");
 
@@ -55,7 +54,6 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
         Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
 
         // arrange
-        var logger = Get<ILogger>();
         await using var client = await GetClient();
         var responses = new ConcurrentBag<string>();
         var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
@@ -83,7 +81,7 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
     [MemberData(nameof(GetRange))]
     public async Task PerfSubscription_Works(int index)
     {
-        Trace("start");
+        this.Trace("start {num}", index);
 
         // arrange
         var logger = Get<ILogger>();
@@ -93,7 +91,7 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
 
         void ClientLog(string value)
         {
-            Trace($"client log: {value}");
+            this.Trace($"client log: {value}");
             clientLog.Enqueue(value);
         }
 
@@ -102,25 +100,25 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
         // act
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
         var os1 = o1.Subscribe(ClientLog);
-        Trace("first subscribed");
+        this.Trace("first subscribed");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
         var os2 = o2.Subscribe(ClientLog);
-        Trace("second subscribed");
+        this.Trace("second subscribed");
         // wait for init and msg entries
-        Trace("wait for init and msg log entries");
+        this.Trace("wait for init and msg log entries");
         await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
-        Trace("dispose subscriptions");
+        this.Trace("dispose subscriptions");
         cts.Cancel();
         os1.Dispose();
         os2.Dispose();
-        Trace("await subscription 1");
+        this.Trace("await subscription 1");
         await o1.WhenCompleted(logger);
-        Trace("await subscription 2");
+        this.Trace("await subscription 2");
         await o2.WhenCompleted(logger);
 
         // wait for cancellation entries
-        Trace("wait for cancellation log entries");
+        this.Trace("wait for cancellation log entries");
         await Wait.UntilAsync(() => serverLog.Count == 8);
 
         // assert
@@ -158,12 +156,7 @@ public class WebSocketPerfTest : IntegrationTestBase, ILogSubject
         };
         clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
-        Trace("done");
-
-        void Trace(string value)
-        {
-            Console.WriteLine($"{nameof(PerfSubscription_Works)}#{index} - {value}");
-        }
+        this.Trace("done");
     }
 
     [Theory]

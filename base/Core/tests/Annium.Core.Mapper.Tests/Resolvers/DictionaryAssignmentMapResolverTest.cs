@@ -1,19 +1,25 @@
 using System.Collections.Generic;
-using System.Reflection;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests.Resolvers;
 
-public class DictionaryAssignmentMapResolverTest
+public class DictionaryAssignmentMapResolverTest : TestBase
 {
+    public DictionaryAssignmentMapResolverTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false).AddProfile(ConfigureProfile));
+    }
+
     [Fact]
     public void ConstructorMapping_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var serialized = JsonSerializer.Serialize(new { Name = "Alex", Age = 20 });
         var value = new Dictionary<string, object> { { "Serialized", serialized } };
 
@@ -23,13 +29,6 @@ public class DictionaryAssignmentMapResolverTest
         // assert
         result.IsShallowEqual(new C { Name = "Alex", Age = 20 });
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .AddProfile(ConfigureProfile)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private void ConfigureProfile(Profile p)
     {

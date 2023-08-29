@@ -1,19 +1,25 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests.Resolvers;
 
-public class EnumerableMapResolverTest
+public class EnumerableMapResolverTest : TestBase
 {
+    public EnumerableMapResolverTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false));
+    }
+
     [Fact]
     public void ToArray_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new[] { new A { Name = "name" } };
 
         // act
@@ -31,7 +37,7 @@ public class EnumerableMapResolverTest
     public void ToCollection_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new[] { new A { Name = "name" } };
 
         // act
@@ -46,7 +52,7 @@ public class EnumerableMapResolverTest
     public void ToDictionary_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new Dictionary<string, A> { { "one", new A { Name = "name" } } };
 
         // act
@@ -61,7 +67,7 @@ public class EnumerableMapResolverTest
     public void ToIEnumerable_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new[] { new A { Name = "name" } };
 
         // act
@@ -76,7 +82,7 @@ public class EnumerableMapResolverTest
     public void ToIDictionary_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new Dictionary<string, A> { { "one", new A { Name = "name" } } };
 
         // act
@@ -91,7 +97,7 @@ public class EnumerableMapResolverTest
     public void ToIDictionary_Same_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new Dictionary<string, A> { { "one", new A { Name = "name" } } };
 
         // act
@@ -101,12 +107,6 @@ public class EnumerableMapResolverTest
         result.Has(1);
         result.At("one").Name.Is(value["one"].Name);
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private class A
     {

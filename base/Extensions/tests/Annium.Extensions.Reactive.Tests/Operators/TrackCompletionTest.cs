@@ -38,10 +38,10 @@ public class TrackCompletionTest : TestBase
         // arrange
         var logger = Get<ILogger>();
         var cts = new CancellationTokenSource();
-        var observable = ObservableExt.StaticAsyncInstance<string>(_ =>
+        var observable = ObservableExt.StaticAsyncInstance<string>(async _ =>
         {
-            //
-            return Task.FromResult<Func<Task>>(() => Task.CompletedTask);
+            await Task.Delay(1, CancellationToken.None);
+            return () => Task.CompletedTask;
         }, cts.Token, logger).TrackCompletion(logger);
 
         // act

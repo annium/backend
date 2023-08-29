@@ -1,17 +1,23 @@
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests.Resolvers;
 
-public class InstanceOfMapResolverTest
+public class InstanceOfMapResolverTest : TestBase
 {
+    public InstanceOfMapResolverTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false));
+    }
+
     [Fact]
     public void InstanceOf_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new Payload();
 
         // act
@@ -20,12 +26,6 @@ public class InstanceOfMapResolverTest
         // assert
         result.Is(value);
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private class Payload
     {

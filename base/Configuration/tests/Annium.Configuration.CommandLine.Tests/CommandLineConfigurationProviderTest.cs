@@ -4,12 +4,19 @@ using Annium.Configuration.Abstractions;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Configuration.CommandLine.Tests;
 
-public class CommandLineConfigurationProviderTest
+public class CommandLineConfigurationProviderTest : TestBase
 {
+    public CommandLineConfigurationProviderTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        RegisterMapper();
+    }
+
     [Fact]
     public void CommandLineConfiguration_Works()
     {
@@ -21,11 +28,11 @@ public class CommandLineConfigurationProviderTest
         args.AddRange("-array", "4", "-array", "7");
         args.AddRange("-nested.plain", "4");
         args.AddRange("-nested.array", "4", "-nested.array", "13");
+        Register(c => c.AddConfiguration<Config>(x => x.AddCommandLineArgs(args.ToArray())));
 
         // act
-        var provider = Helper.GetProvider<Config>(builder => builder.AddCommandLineArgs(args.ToArray()));
-        var result = provider.Resolve<Config>();
-        var nested = provider.Resolve<Val>();
+        var result = Get<Config>();
+        var nested = Get<Val>();
 
         // assert
         result.IsNotDefault();

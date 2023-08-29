@@ -35,8 +35,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         _eventWriter = taskChannel.Writer;
         _eventReader = taskChannel.Reader;
 
-        _observable = CreateObservable(_observableCts.Token).TrackCompletion(logger);
-
+        _observable = CreateObservable(_observableCts.Token, logger).TrackCompletion(logger);
         Logger = logger;
     }
 
@@ -69,7 +68,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
 
     protected abstract IReadOnlyCollection<T> Get();
 
-    private IObservable<IChangeEvent<T>> CreateObservable(CancellationToken ct) => ObservableExt.StaticSyncInstance<IChangeEvent<T>>(async ctx =>
+    private IObservable<IChangeEvent<T>> CreateObservable(CancellationToken ct, ILogger logger) => ObservableExt.StaticSyncInstance<IChangeEvent<T>>(async ctx =>
     {
         try
         {
@@ -93,7 +92,7 @@ internal abstract class TableBase<T> : ITableView<T>, ILogSubject
         }
 
         return () => Task.CompletedTask;
-    }, ct, Logger);
+    }, ct, logger);
 
     public IEnumerator<T> GetEnumerator() => Get().GetEnumerator();
 

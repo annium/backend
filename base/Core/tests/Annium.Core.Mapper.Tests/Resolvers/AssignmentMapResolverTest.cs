@@ -1,17 +1,23 @@
-using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests.Resolvers;
 
-public class AssignmentMapResolverTest
+public class AssignmentMapResolverTest : TestBase
 {
+    public AssignmentMapResolverTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false));
+    }
+
     [Fact]
     public void AssignmentMapping_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new A { Name = "name" };
 
         // act
@@ -25,7 +31,7 @@ public class AssignmentMapResolverTest
     public void AssignmentMapping_WithExcessProperties_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var value = new A { Name = "name" };
 
         // act
@@ -34,12 +40,6 @@ public class AssignmentMapResolverTest
         // assert
         result.IsNotDefault();
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private class A
     {

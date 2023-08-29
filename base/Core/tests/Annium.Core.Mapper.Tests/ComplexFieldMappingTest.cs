@@ -1,18 +1,24 @@
-using System.Reflection;
 using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Models.Extensions;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests;
 
-public class ComplexFieldMappingTest
+public class ComplexFieldMappingTest : TestBase
 {
+    public ComplexFieldMappingTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        Register(c => c.AddMapper(autoload: false).AddProfile(ConfigureProfile));
+    }
+
     [Fact]
     public void AssignmentMapping_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var serialized = JsonSerializer.Serialize(new { Name = "Alex", Age = 20 });
         var value = new A { SerializedValue = serialized };
 
@@ -38,7 +44,7 @@ public class ComplexFieldMappingTest
     public void ConstructorMapping_Works()
     {
         // arrange
-        var mapper = GetMapper();
+        var mapper = Get<IMapper>();
         var serialized = JsonSerializer.Serialize(new { Name = "Alex", Age = 20 });
         var value = new A { SerializedValue = serialized };
 
@@ -53,13 +59,6 @@ public class ComplexFieldMappingTest
             SerializedValue = serialized,
         });
     }
-
-    private IMapper GetMapper() => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .AddProfile(ConfigureProfile)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
 
     private void ConfigureProfile(Profile p)
     {

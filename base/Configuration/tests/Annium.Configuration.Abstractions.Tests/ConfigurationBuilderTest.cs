@@ -2,12 +2,19 @@ using System.Collections.Generic;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Configuration.Abstractions.Tests;
 
-public class ConfigurationBuilderTest
+public class ConfigurationBuilderTest : TestBase
 {
+    public ConfigurationBuilderTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        RegisterMapper();
+    }
+
     [Fact]
     public void BaseBuilding_Works()
     {
@@ -17,11 +24,11 @@ public class ConfigurationBuilderTest
         cfg[new[] { "abstract", "type" }] = "ConfigOne";
         cfg[new[] { "abstract", "value" }] = "14";
         cfg[new[] { "enum" }] = "two";
+        Register(container => container.AddConfiguration<Config>(x => x.Add(cfg)));
 
         // act
-        var provider = Helper.GetProvider<Config>(x => x.Add(cfg));
-        var result = provider.Resolve<Config>();
-        var nested = provider.Resolve<SomeConfig>();
+        var result = Get<Config>();
+        var nested = Get<SomeConfig>();
 
         // assert
         result.IsNotDefault();

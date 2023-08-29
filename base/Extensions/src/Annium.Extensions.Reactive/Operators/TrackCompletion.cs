@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using Annium;
 using Annium.Logging;
@@ -60,12 +59,12 @@ file record CompletionContext<T> : ILogSubject
     {
         lock (this)
         {
-            Trace("start");
+            this.Trace("start");
 
             _incompleteObservers.Add(observer);
             var subscription = _source.Subscribe(observer.OnNext, observer.OnError);
 
-            Trace("done");
+            this.Trace("done");
 
             return subscription;
         }
@@ -73,7 +72,7 @@ file record CompletionContext<T> : ILogSubject
 
     public void Complete()
     {
-        Trace("start");
+        this.Trace("start");
 
         IReadOnlyCollection<IObserver<T>> observers;
         lock (this)
@@ -82,31 +81,20 @@ file record CompletionContext<T> : ILogSubject
                 throw new InvalidOperationException("source already completed");
             IsCompleted = true;
 
-            Trace($"complete {_incompleteObservers.Count} observers");
+            this.Trace($"complete {_incompleteObservers.Count} observers");
             observers = _incompleteObservers.ToArray();
             _incompleteObservers.Clear();
         }
 
         foreach (var observer in observers)
         {
-            Trace($"complete {observer.GetFullId()}");
+            this.Trace($"complete {observer.GetFullId()}");
             observer.OnCompleted();
         }
 
-        Trace("cancel cts");
+        this.Trace("cancel cts");
         _completionCts.Cancel();
 
-        Trace("done");
-    }
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public void Trace(
-        string msg,
-        [CallerFilePath] string callerFilePath = "",
-        [CallerMemberName] string member = "",
-        [CallerLineNumber] int line = 0
-    )
-    {
-        this.Trace(msg, false, callerFilePath, member, line);
+        this.Trace("done");
     }
 }

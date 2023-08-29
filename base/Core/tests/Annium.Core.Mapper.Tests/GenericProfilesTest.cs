@@ -3,17 +3,24 @@ using System.Reflection;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper.Attributes;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Core.Mapper.Tests;
 
-public class GenericProfilesTest
+public class GenericProfilesTest : TestBase
 {
+    public GenericProfilesTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+    }
+
     [Fact]
     public void GenericProfiles_Work()
     {
         // arrange
-        var mapper = GetMapper(typeof(ValidProfile<>));
+        Register(c => c.AddMapper(autoload: false).AddProfile(typeof(ValidProfile<>)));
+        var mapper = Get<IMapper>();
         var b = new B { Name = "Mike", Age = 5 };
         var c = new C { Name = "Donny", IsAlive = true };
 
@@ -30,15 +37,11 @@ public class GenericProfilesTest
     public void GenericProfiles_Unconstrained_Fails()
     {
         // arrange
-        Wrap.It(() => GetMapper(typeof(InvalidProfile<>))).Throws<ArgumentException>();
-    }
+        Register(c => c.AddMapper(autoload: false).AddProfile(typeof(InvalidProfile<>)));
 
-    private IMapper GetMapper(Type profileType) => new ServiceContainer()
-        .AddRuntime(Assembly.GetCallingAssembly())
-        .AddMapper(autoload: false)
-        .AddProfile(profileType)
-        .BuildServiceProvider()
-        .Resolve<IMapper>();
+        // assert
+        Wrap.It(Get<IMapper>).Throws<ArgumentException>();
+    }
 
     private class ValidProfile<T> : Profile
         where T : A

@@ -29,7 +29,7 @@ public class WebSocketDebugTest : IntegrationTestBase
     [Fact]
     public async Task DebugRequestResponse_Works()
     {
-        Console.WriteLine($"{nameof(DebugRequestResponse_Works)} - start");
+        this.Trace("start");
 
         // arrange
         await using var client = await GetClient();
@@ -40,13 +40,13 @@ public class WebSocketDebugTest : IntegrationTestBase
         // assert
         response.Status.Is(OperationStatus.Ok);
         response.Data.Is("Hi");
-        Console.WriteLine($"{nameof(DebugRequestResponse_Works)} - done");
+        this.Trace("done");
     }
 
     [Fact]
     public async Task DebugSubscription_Works()
     {
-        Trace("start");
+        this.Trace("start");
 
         // arrange
         var logger = Get<ILogger>();
@@ -56,7 +56,7 @@ public class WebSocketDebugTest : IntegrationTestBase
 
         void ClientLog(string value)
         {
-            Trace($"client log: {value}");
+            this.Trace($"client log: {value}");
             clientLog.Enqueue(value);
         }
 
@@ -65,25 +65,25 @@ public class WebSocketDebugTest : IntegrationTestBase
         // act
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
         var os1 = o1.Subscribe(ClientLog);
-        Trace("first subscribed");
+        this.Trace("first subscribed");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
         var os2 = o2.Subscribe(ClientLog);
-        Trace("second subscribed");
+        this.Trace("second subscribed");
         // wait for init and msg entries
-        Trace("wait for init and msg log entries");
+        this.Trace("wait for init and msg log entries");
         await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
 
-        Trace("dispose subscriptions");
+        this.Trace("dispose subscriptions");
         cts.Cancel();
         os1.Dispose();
         os2.Dispose();
-        Trace("await subscription 1");
+        this.Trace("await subscription 1");
         await o1.WhenCompleted(logger);
-        Trace("await subscription 2");
+        this.Trace("await subscription 2");
         await o2.WhenCompleted(logger);
 
         // wait for cancellation entries
-        Trace("wait for cancellation log entries");
+        this.Trace("wait for cancellation log entries");
         await Wait.UntilAsync(() => serverLog.Count == 8);
 
         // assert
@@ -121,11 +121,6 @@ public class WebSocketDebugTest : IntegrationTestBase
         };
         clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
-        Trace("done");
-
-        void Trace(string value)
-        {
-            Console.WriteLine($"{nameof(DebugSubscription_Works)} - {value}");
-        }
+        this.Trace("done");
     }
 }

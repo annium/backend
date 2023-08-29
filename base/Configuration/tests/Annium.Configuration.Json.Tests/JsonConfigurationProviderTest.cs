@@ -6,12 +6,19 @@ using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Configuration.Json.Tests;
 
-public class JsonConfigurationProviderTest
+public class JsonConfigurationProviderTest : TestBase
 {
+    public JsonConfigurationProviderTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        RegisterMapper();
+    }
+
     [Fact]
     public void JsonConfiguration_Works()
     {
@@ -42,11 +49,11 @@ public class JsonConfigurationProviderTest
             var serializer = container.BuildServiceProvider()
                 .Resolve<ISerializer<string>>();
             File.WriteAllText(jsonFile, serializer.Serialize(cfg));
+            Register(c => c.AddConfiguration<Config>(x => x.AddJsonFile(jsonFile)));
 
             // act
-            var provider = Helper.GetProvider<Config>(builder => builder.AddJsonFile(jsonFile));
-            var result = provider.Resolve<Config>();
-            var nested = provider.Resolve<SomeConfig>();
+            var result = Get<Config>();
+            var nested = Get<SomeConfig>();
 
             // assert
             result.IsNotDefault();

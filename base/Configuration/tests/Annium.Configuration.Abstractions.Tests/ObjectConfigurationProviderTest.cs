@@ -3,12 +3,19 @@ using System.Linq;
 using Annium.Configuration.Tests;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Lib;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Annium.Configuration.Abstractions.Tests;
 
-public class ObjectConfigurationProviderTest
+public class ObjectConfigurationProviderTest : TestBase
 {
+    public ObjectConfigurationProviderTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    {
+        RegisterMapper();
+    }
+
     [Fact]
     public void Works()
     {
@@ -25,11 +32,11 @@ public class ObjectConfigurationProviderTest
             Abstract = new ConfigTwo { Value = 10 },
             Tuple = ("demo|", 11),
         };
+        Register(container => container.AddConfiguration<Config>(x => x.Add(cfg)));
 
         // act
-        var provider = Helper.GetProvider<Config>(builder => builder.Add(cfg));
-        var result = provider.Resolve<Config>();
-        var nested = provider.Resolve<SomeConfig>();
+        var result = Get<Config>();
+        var nested = Get<SomeConfig>();
 
         // assert
         result.IsNotDefault();
