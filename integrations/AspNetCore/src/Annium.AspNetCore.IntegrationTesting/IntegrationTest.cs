@@ -48,12 +48,8 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
     }
 
     private Action<IServiceProvider> SetupHost(
-        Action<IServiceProvider> configureServices
-    ) => sp =>
-    {
-        configureServices(sp);
-        sp.UseLogging(route => route.UseTestOutput());
-    };
+        Action<IServiceProvider> setupServices
+    ) => setupServices;
 
     #endregion
 
