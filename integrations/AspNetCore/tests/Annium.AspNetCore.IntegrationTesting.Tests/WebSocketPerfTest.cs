@@ -16,7 +16,6 @@ using Xunit;
 using Xunit.Abstractions;
 
 // ReSharper disable AccessToDisposedClosure
-// ReSharper disable Xunit.XunitTestWithConsoleOutput
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
@@ -32,28 +31,32 @@ public class WebSocketPerfTest : IntegrationTestBase
     [MemberData(nameof(GetRange))]
     public async Task PerfRequestResponse_Works(int index)
     {
-        Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - start");
+        this.Trace("start {index}", index);
 
         // arrange
+        this.Trace("get client");
         await using var client = await GetClient();
-        Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - client arranged");
 
         // act
+        this.Trace("send request");
         var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));
 
         // assert
+        this.Trace("validate response");
         response.Status.Is(OperationStatus.Ok);
         response.Data.Is("Hi");
-        Console.WriteLine($"{nameof(PerfRequestResponse_Works)}#{index} - done");
+
+        this.Trace("done {index}", index);
     }
 
     [Theory]
     [MemberData(nameof(GetRange))]
     public async Task PerfRequestResponseBundle_Works(int index)
     {
-        Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
+        this.Trace("start {index}", index);
 
         // arrange
+        this.Trace("get client");
         await using var client = await GetClient();
         var responses = new ConcurrentBag<string>();
         var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
@@ -63,7 +66,9 @@ public class WebSocketPerfTest : IntegrationTestBase
             range
                 .Select(async x =>
                 {
+                    this.Trace("send request");
                     var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetData();
+                    this.Trace("add response");
                     responses.Add(response);
                 })
         );
@@ -74,17 +79,18 @@ public class WebSocketPerfTest : IntegrationTestBase
         foreach (var x in range)
             set.Contains(x).IsTrue();
 
-        Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - start");
+        this.Trace("done {index}", index);
     }
 
     [Theory]
     [MemberData(nameof(GetRange))]
     public async Task PerfSubscription_Works(int index)
     {
-        this.Trace("start {num}", index);
+        this.Trace("start {index}", index);
 
         // arrange
         var logger = Get<ILogger>();
+        this.Trace("get client");
         await using var client = await GetClient();
         var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
         var clientLog = new ConcurrentQueue<string>();
@@ -98,12 +104,16 @@ public class WebSocketPerfTest : IntegrationTestBase
         var cts = new CancellationTokenSource();
 
         // act
+        this.Trace("subscribe first");
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
         var os1 = o1.Subscribe(ClientLog);
         this.Trace("first subscribed");
+
+        this.Trace("subscribe second");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
         var os2 = o2.Subscribe(ClientLog);
         this.Trace("second subscribed");
+
         // wait for init and msg entries
         this.Trace("wait for init and msg log entries");
         await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
@@ -112,8 +122,10 @@ public class WebSocketPerfTest : IntegrationTestBase
         cts.Cancel();
         os1.Dispose();
         os2.Dispose();
+
         this.Trace("await subscription 1");
         await o1.WhenCompleted(logger);
+
         this.Trace("await subscription 2");
         await o2.WhenCompleted(logger);
 
@@ -156,7 +168,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         };
         clientLog.Where(x => x.StartsWith("second")).ToArray().IsEqual(expectedClientSecondLog);
 
-        this.Trace("done");
+        this.Trace("done {index}", index);
     }
 
     [Theory]
@@ -164,14 +176,15 @@ public class WebSocketPerfTest : IntegrationTestBase
     // ReSharper disable once xUnit1026
     public async Task PerfConnection_Works(int index)
     {
-        Console.WriteLine($"{nameof(PerfConnection_Works)}#{index} - start");
+        this.Trace("start {index}", index);
 
-        Console.WriteLine("get client");
+        this.Trace("get client");
         var client = await AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
-        Console.WriteLine("dispose client");
+
+        this.Trace("dispose client");
         await client.DisposeAsync();
 
-        Console.WriteLine($"{nameof(PerfRequestResponseBundle_Works)}#{index} - done");
+        this.Trace("done {index}", index);
     }
 
     public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 100).Select(x => new object[] { x });

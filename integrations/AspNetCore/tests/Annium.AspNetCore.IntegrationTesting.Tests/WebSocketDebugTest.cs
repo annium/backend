@@ -14,8 +14,6 @@ using Annium.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-// ReSharper disable Xunit.XunitTestWithConsoleOutput
-
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
 public class WebSocketDebugTest : IntegrationTestBase
@@ -32,12 +30,15 @@ public class WebSocketDebugTest : IntegrationTestBase
         this.Trace("start");
 
         // arrange
+        this.Trace("get client");
         await using var client = await GetClient();
 
         // act
+        this.Trace("send request");
         var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));
 
         // assert
+        this.Trace("validate response");
         response.Status.Is(OperationStatus.Ok);
         response.Data.Is("Hi");
         this.Trace("done");
@@ -50,7 +51,10 @@ public class WebSocketDebugTest : IntegrationTestBase
 
         // arrange
         var logger = Get<ILogger>();
+
+        this.Trace("get client");
         await using var client = await GetClient();
+
         var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
         var clientLog = new ConcurrentQueue<string>();
 
@@ -63,12 +67,16 @@ public class WebSocketDebugTest : IntegrationTestBase
         var cts = new CancellationTokenSource();
 
         // act
+        this.Trace("subscribe first");
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
         var os1 = o1.Subscribe(ClientLog);
         this.Trace("first subscribed");
+
+        this.Trace("subscribe second");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
         var os2 = o2.Subscribe(ClientLog);
         this.Trace("second subscribed");
+
         // wait for init and msg entries
         this.Trace("wait for init and msg log entries");
         await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
@@ -77,8 +85,10 @@ public class WebSocketDebugTest : IntegrationTestBase
         cts.Cancel();
         os1.Dispose();
         os2.Dispose();
+
         this.Trace("await subscription 1");
         await o1.WhenCompleted(logger);
+
         this.Trace("await subscription 2");
         await o2.WhenCompleted(logger);
 
