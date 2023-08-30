@@ -43,7 +43,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         _disposable = Disposable.AsyncBox(logger);
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-        _responseObservable = Socket.ObserveText().Select(_serializer.Deserialize<AbstractResponseBase>);
+        _responseObservable = Socket.ObserveBinary().Select(_serializer.Deserialize<AbstractResponseBase>);
         _disposable += _responseObservable.OfType<ResponseBase>()
             .ObserveOn(TaskPoolScheduler.Default)
             .Subscribe(CompleteResponse);

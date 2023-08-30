@@ -30,17 +30,19 @@ public class WebSocketDebugTest : IntegrationTestBase
         this.Trace("start");
 
         // arrange
+        var message = "test message";
         this.Trace("get client");
         await using var client = await GetClient();
 
         // act
         this.Trace("send request");
-        var response = await client.Demo.EchoAsync(new EchoRequest("Hi"));
+        var response = await client.Demo.EchoAsync(new EchoRequest(message));
 
         // assert
         this.Trace("validate response");
         response.Status.Is(OperationStatus.Ok);
-        response.Data.Is("Hi");
+        response.Data.Is(message);
+
         this.Trace("done");
     }
 

@@ -110,7 +110,7 @@ internal class MessageHandler<TState> : ILogSubject
         try
         {
             this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBase res ? res.Rid : Guid.Empty);
-            await socket.SendBinaryAsync(_serializer.Serialize(new ConnectionReadyNotification()));
+            await socket.SendBinaryAsync(_serializer.Serialize(response));
         }
         catch (Exception e)
         {
