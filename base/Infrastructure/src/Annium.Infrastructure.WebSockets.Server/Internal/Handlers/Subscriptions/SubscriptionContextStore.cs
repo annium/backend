@@ -46,12 +46,15 @@ internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
 
     public Task Cleanup(Guid connectionId)
     {
+        this.Trace("cleanup {connectionId} subscriptions - start", connectionId);
         lock (_contexts)
             foreach (var context in _contexts.Where(x => x.ConnectionId == connectionId).ToArray())
             {
+                this.Trace("cancel {subscriptionId} subscription", context.SubscriptionId);
                 _contexts.Remove(context);
                 context.Cancel();
             }
+        this.Trace("cleanup {connectionId} subscriptions - done", connectionId);
 
         return Task.CompletedTask;
     }

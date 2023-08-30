@@ -71,11 +71,13 @@ public class WebSocketDebugTest : IntegrationTestBase
         // act
         this.Trace("subscribe first");
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
+        var o1Completed = o1.WhenCompleted(logger);
         var os1 = o1.Subscribe(ClientLog);
         this.Trace("first subscribed");
 
         this.Trace("subscribe second");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
+        var o2Completed = o2.WhenCompleted(logger);
         var os2 = o2.Subscribe(ClientLog);
         this.Trace("second subscribed");
 
@@ -93,10 +95,10 @@ public class WebSocketDebugTest : IntegrationTestBase
         os2.Dispose();
 
         this.Trace("await subscription 1");
-        await o1.WhenCompleted(logger);
+        await o1Completed;
 
         this.Trace("await subscription 2");
-        await o2.WhenCompleted(logger);
+        await o2Completed;
 
         // wait for cancellation entries
         this.Trace("wait for cancellation log entries");

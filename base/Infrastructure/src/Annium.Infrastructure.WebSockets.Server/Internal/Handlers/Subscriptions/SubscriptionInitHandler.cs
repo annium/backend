@@ -69,7 +69,9 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
         // run subscription
         try
         {
+            this.Trace("subscription {subscriptionId} - start next", subscriptionId);
             await next(context, cts.Token);
+            this.Trace("subscription {subscriptionId} - done next", subscriptionId);
         }
         catch (Exception e)
         {
