@@ -37,6 +37,8 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
     public async Task DisconnectAsync()
     {
         this.Trace("start");
+
+        this.Trace("unbind events");
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 
@@ -68,18 +70,6 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
         return _managedSocket.SendBinaryAsync(data, ct);
     }
 
-    private void OnTextReceived(ReadOnlyMemory<byte> data)
-    {
-        this.Trace("trigger text received");
-        TextReceived(data);
-    }
-
-    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
-    {
-        this.Trace("trigger binary received");
-        BinaryReceived(data);
-    }
-
     private WebSocketCloseResult HandleClosed(Task<WebSocketCloseResult> task)
     {
         this.Trace("start, unsubscribe from managed socket");
@@ -90,5 +80,17 @@ public class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
         this.Trace("done");
 
         return task.Result;
+    }
+
+    private void OnTextReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger text received");
+        TextReceived(data);
+    }
+
+    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger binary received");
+        BinaryReceived(data);
     }
 }

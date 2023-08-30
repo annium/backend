@@ -136,18 +136,6 @@ public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
         return _managedSocket?.SendBinaryAsync(data, ct) ?? ValueTask.FromResult(WebSocketSendStatus.Closed);
     }
 
-    private void OnTextReceived(ReadOnlyMemory<byte> data)
-    {
-        this.Trace("trigger text received");
-        TextReceived(data);
-    }
-
-    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
-    {
-        this.Trace("trigger binary received");
-        BinaryReceived(data);
-    }
-
     private WebSocketCloseResult HandleClosed(Task<WebSocketCloseResult> task)
     {
         this.Trace("start");
@@ -166,5 +154,17 @@ public class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
         this.Trace("done");
 
         return task.Result;
+    }
+
+    private void OnTextReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger text received");
+        TextReceived(data);
+    }
+
+    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger binary received");
+        BinaryReceived(data);
     }
 }

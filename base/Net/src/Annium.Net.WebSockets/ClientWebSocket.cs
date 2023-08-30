@@ -27,11 +27,9 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         Logger = logger;
         this.Trace("start monitor");
         _socket = new ClientManagedWebSocket(logger);
+        _socket.TextReceived += OnTextReceived;
+        _socket.BinaryReceived += OnBinaryReceived;
         this.Trace<string>("paired with {socket}", _socket.GetFullId());
-
-        this.Trace("bind events");
-        _socket.TextReceived += TextReceived;
-        _socket.BinaryReceived += BinaryReceived;
 
         this.Trace("init monitor");
         _connectionMonitor = options.ConnectionMonitor;
@@ -223,6 +221,18 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
     {
         this.Trace("update status from {currentStatus} to {newStatus}", _status, status);
         _status = status;
+    }
+
+    private void OnTextReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger text received");
+        TextReceived(data);
+    }
+
+    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger binary received");
+        BinaryReceived(data);
     }
 
     private enum Status

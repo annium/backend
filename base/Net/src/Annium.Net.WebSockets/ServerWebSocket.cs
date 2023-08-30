@@ -30,8 +30,9 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
         Logger = logger;
         this.Trace("start");
         _socket = new ServerManagedWebSocket(nativeSocket, logger, ct);
-        _socket.TextReceived += TextReceived;
-        _socket.BinaryReceived += BinaryReceived;
+        _socket.TextReceived += OnTextReceived;
+        _socket.BinaryReceived += OnBinaryReceived;
+        this.Trace<string>("paired with {socket}", _socket.GetFullId());
 
         this.Trace("subscribe to IsClosed");
         _socket.IsClosed.ContinueWith(HandleClosed, CancellationToken.None);
@@ -135,6 +136,18 @@ public class ServerWebSocket : IServerWebSocket, ILogSubject
     {
         this.Trace("update status from {oldStatus} to {newStatus}", _status, status);
         _status = status;
+    }
+
+    private void OnTextReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger text received");
+        TextReceived(data);
+    }
+
+    private void OnBinaryReceived(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("trigger binary received");
+        BinaryReceived(data);
     }
 
     private enum Status
