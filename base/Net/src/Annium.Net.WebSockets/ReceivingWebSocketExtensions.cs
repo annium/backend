@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 
 namespace Annium.Net.WebSockets;
 
-public static class ObservableReceivingWebSocketExtensions
+public static class ReceivingWebSocketExtensions
 {
     public static IObservable<ReadOnlyMemory<byte>> ObserveText(this IReceivingWebSocket socket) =>
         Observable.FromEvent<ReadOnlyMemory<byte>>(
