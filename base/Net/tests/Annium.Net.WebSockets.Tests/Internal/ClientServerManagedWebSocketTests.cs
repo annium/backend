@@ -79,11 +79,16 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServer(async serverSocket => await serverSocket.DisconnectAsync());
+        var serverTcs = new TaskCompletionSource();
+        await using var _ = RunServer(async serverSocket =>
+        {
+            await serverSocket.DisconnectAsync();
+            Task.Delay(10, CancellationToken.None).ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None).GetAwaiter();
+        });
         await ConnectAsync();
 
         // delay to let server close connection
-        await Task.Delay(10);
+        await serverTcs.Task;
 
         // act
         var result = await SendTextAsync(message);
@@ -100,6 +105,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
+        var serverTcs = new TaskCompletionSource();
         await using var _ = RunServer(async serverSocket =>
         {
             serverSocket.TextReceived += x => serverSocket
@@ -114,13 +120,15 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
                 .GetResult();
             this.Trace("server subscribed to binary");
 
+            Task.Delay(10, CancellationToken.None).ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None).GetAwaiter();
+
             await serverSocket.IsClosed;
             this.Trace("server socket closed");
         });
         await ConnectAsync();
 
-        // delay to let server setup subscriptions
-        await Task.Delay(10);
+        // delay to let server close connection
+        await serverTcs.Task;
 
         // act
         var textResult = await SendTextAsync(text);
@@ -143,6 +151,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
+        var serverConnectionTcs = new TaskCompletionSource();
         await using var _ = RunServer(async serverSocket =>
         {
             serverSocket.TextReceived += x => serverSocket
@@ -157,26 +166,43 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
                 .GetResult();
             this.Trace("server subscribed to binary");
 
+            serverConnectionTcs.TrySetResult();
+
             await serverSocket.IsClosed;
             this.Trace("server socket closed");
         });
 
         // act - send text
+        this.Trace("connect");
         await ConnectAsync();
-        await Task.Delay(10);
+
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
+
+        this.Trace("send text");
         var textResult = await SendTextAsync(text);
         textResult.Is(WebSocketSendStatus.Ok);
         var expectedTexts = new[] { text };
         await Expect.To(() => _texts.IsEqual(expectedTexts));
+
+        this.Trace("disconnect");
         await _clientSocket.DisconnectAsync();
 
         // act - send binary
+        this.Trace("connect");
+        serverConnectionTcs = new TaskCompletionSource();
         await ConnectAsync();
-        await Task.Delay(10);
+
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
+
+        this.Trace("send binary");
         var binaryResult = await SendBinaryAsync(binary);
         binaryResult.Is(WebSocketSendStatus.Ok);
         var expectedBinaries = new[] { binary };
         await Expect.To(() => _binaries.IsEqual(expectedBinaries));
+
+        this.Trace("disconnect");
         await _clientSocket.DisconnectAsync();
 
         this.Trace("done");
@@ -187,11 +213,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServer(async serverSocket =>
-        {
-            await serverSocket.IsClosed;
-            await Task.Delay(100);
-        });
+        await using var _ = RunServer(async serverSocket => await serverSocket.IsClosed);
         var cts = new CancellationTokenSource();
         await ConnectAsync(cts.Token);
         cts.Cancel();

@@ -81,11 +81,18 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServerBase(async (ctx, _, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
+        var serverTcs = new TaskCompletionSource();
+        await using var _ = RunServerBase(async (ctx, _, _) =>
+        {
+            await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default);
+            Task.Delay(10, CancellationToken.None)
+                .ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None)
+                .GetAwaiter();
+        });
         await ConnectAndStartListenAsync();
 
         // delay to let server close connection
-        await Task.Delay(10);
+        await serverTcs.Task;
 
         // act
         var result = await SendTextAsync(message);
@@ -119,16 +126,23 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
+        var serverTcs = new TaskCompletionSource();
         await using var _ = RunServerBase(async (ctx, _, _) =>
         {
             ctx.WebSocket.Abort();
 
             await Task.CompletedTask;
+
+            Task.Delay(10, CancellationToken.None)
+                .ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None)
+                .GetAwaiter();
         });
         await ConnectAndStartListenAsync();
 
         // act
-        await Task.Delay(1);
+        // delay to let server close connection
+        await serverTcs.Task;
+
         var result = await SendTextAsync(message);
 
         // assert
@@ -143,6 +157,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
+        var serverTcs = new TaskCompletionSource();
         await using var _ = RunServer(async (serverSocket, ct) =>
         {
             serverSocket.TextReceived += x => serverSocket
@@ -155,12 +170,16 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
                 .GetAwaiter()
                 .GetResult();
 
+            Task.Delay(10, CancellationToken.None)
+                .ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None)
+                .GetAwaiter();
+
             await serverSocket.ListenAsync(ct);
         });
         await ConnectAndStartListenAsync();
 
-        // delay to let server setup subscriptions
-        await Task.Delay(10);
+        // delay to let server close connection
+        await serverTcs.Task;
 
         // act
         var textResult = await SendTextAsync(text);
@@ -252,17 +271,25 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
+        var serverTcs = new TaskCompletionSource();
         await using var _ = RunServerBase(async (ctx, _, _) =>
         {
             ctx.WebSocket.Abort();
 
             await Task.CompletedTask;
+
+            Task.Delay(10, CancellationToken.None)
+                .ContinueWith(_ => serverTcs.SetResult(), CancellationToken.None)
+                .GetAwaiter();
         });
         await ConnectAsync();
         var listenTask = ListenAsync();
 
         // act
-        await Task.Delay(1);
+
+        // delay to let server close connection
+        await serverTcs.Task;
+
         var result = await listenTask;
 
         // assert

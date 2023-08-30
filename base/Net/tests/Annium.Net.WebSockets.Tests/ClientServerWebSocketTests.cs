@@ -63,10 +63,19 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         const string message = "demo";
-        await using var _ = RunServer(async serverSocket => await serverSocket.WhenDisconnected());
+        var serverConnectionTcs = new TaskCompletionSource();
+        await using var _ = RunServer(async serverSocket =>
+        {
+            var disconnectionTask= serverSocket.WhenDisconnected();
+            serverConnectionTcs.SetResult();
+            await disconnectionTask;
+        });
 
         this.Trace("connect");
         await ConnectAsync();
+
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
 
         // act
         this.Trace("disconnect");
@@ -139,7 +148,6 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("connect");
         await ConnectAsync();
 
-        // await for server to setup subscriptions
         this.Trace("server connected");
         await serverConnectionTcs.Task;
 
@@ -191,7 +199,6 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("connect");
         await ConnectAsync();
 
-        // await for server to setup subscriptions
         this.Trace("server connected");
         await serverConnectionTcs.Task;
 
