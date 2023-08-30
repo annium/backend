@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Extensions.Execution;
+using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
@@ -68,14 +69,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             this.Trace("cn {connectionId} - init subscription", cnId);
             _cn.Socket
                 .ObserveBinary()
-                .Subscribe(
-                    x => executor.TrySchedule(async () =>
-                    {
-                        this.Trace("cn {connectionId} - handle message", cnId);
-                        await using var messageScope = _sp.CreateAsyncScope();
-                        var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
-                        await handler.HandleMessage(_cn.Socket, _state, x);
-                    }),
+                .Subscribe(HandleMessage,
                     e =>
                     {
                         this.Trace("cn {connectionId} - handle error", cnId);
@@ -133,6 +127,39 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             this.Trace("cn {connectionId} - handle lifecycle end - start", cnId);
             await lifeCycleCoordinator.EndAsync(_state);
             this.Trace("cn {connectionId} - handle lifecycle end - done", cnId);
+        }
+
+        void HandleMessage(ReadOnlyMemory<byte> raw)
+        {
+            var request = ParseRequest(raw);
+            if (request is null)
+            {
+                this.Warn("Failed to parse msg of size {size} bytes", raw.Length);
+
+                return;
+            }
+
+            this.Trace("cn {connectionId} - schedule {requestType}#{requestId}", cnId, request.Tid, request.Rid);
+            executor.TrySchedule(async () =>
+            {
+                this.Trace("cn {connectionId} - handle {requestType}#{requestId}", cnId, request.Tid, request.Rid);
+                await using var messageScope = _sp.CreateAsyncScope();
+                var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
+                await handler.HandleMessage(_cn.Socket, _state, request);
+            });
+        }
+    }
+
+    private AbstractRequestBase? ParseRequest(ReadOnlyMemory<byte> msg)
+    {
+        try
+        {
+            return _serializer.Deserialize<AbstractRequestBase>(msg);
+        }
+        catch (Exception e)
+        {
+            this.Warn(e.ToString());
+            return default;
         }
     }
 

@@ -33,12 +33,8 @@ internal class MessageHandler<TState> : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingWebSocket socket, TState state, ReadOnlyMemory<byte> msg)
+    public async Task HandleMessage(ISendingWebSocket socket, TState state, AbstractRequestBase request)
     {
-        var request = ParseRequest(msg);
-        if (request is null)
-            return;
-
         var response = await ProcessRequest(state, request);
         await SendResponse(socket, response);
 
@@ -60,19 +56,6 @@ internal class MessageHandler<TState> : ILogSubject
         //  - when request is terminated, error is propagated to handler, so it can handle this (remove allocated resources, log exception, etc)
         //  - Coordinator for now will have configurable default policy to terminate responses, not closed in 1 minute since last chunk
         //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
-    }
-
-    private AbstractRequestBase? ParseRequest(ReadOnlyMemory<byte> msg)
-    {
-        try
-        {
-            return _serializer.Deserialize<AbstractRequestBase>(msg);
-        }
-        catch (Exception e)
-        {
-            this.Warn(e.ToString());
-            return default;
-        }
     }
 
     private async Task<AbstractResponseBase> ProcessRequest(TState state, AbstractRequestBase request)
