@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Testing;
+using Annium.Testing.Assertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -107,94 +108,121 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("done");
     }
 
-    // [Fact]
-    // public async Task Send_Normal()
-    // {
-    //     // arrange
-    //     this.Trace("start");
-    //     const string text = "demo";
-    //     var binary = Encoding.UTF8.GetBytes(text);
-    //     await using var _ = RunServer(async serverSocket =>
-    //     {
-    //         serverSocket.TextReceived += x => serverSocket
-    //             .SendTextAsync(x.ToArray(), CancellationToken.None)
-    //             .GetAwaiter()
-    //             .GetResult();
-    //         this.Trace("server subscribed to text");
-    //
-    //         serverSocket.BinaryReceived += x => serverSocket
-    //             .SendBinaryAsync(x.ToArray(), CancellationToken.None)
-    //             .GetAwaiter()
-    //             .GetResult();
-    //         this.Trace("server subscribed to binary");
-    //
-    //         await serverSocket.WhenDisconnected();
-    //         this.Trace("server socket closed");
-    //     });
-    //     await Connect();
-    //
-    //     // delay to let server setup subscriptions
-    //     await Task.Delay(10);
-    //
-    //     // act
-    //     var textResult = await SendTextAsync(text);
-    //     var binaryResult = await SendBinaryAsync(binary);
-    //
-    //     // assert
-    //     textResult.Is(WebSocketSendStatus.Ok);
-    //     binaryResult.Is(WebSocketSendStatus.Ok);
-    //     var expectedTexts = new[] { text };
-    //     var expectedBinaries = new[] { binary };
-    //     await Expect.To(() => _texts.IsEqual(expectedTexts));
-    //     await Expect.To(() => _binaries.IsEqual(expectedBinaries));
-    //     this.Trace("done");
-    // }
-    //
-    // [Fact]
-    // public async Task Send_Reconnect()
-    // {
-    //     // arrange
-    //     this.Trace("start");
-    //     const string text = "demo";
-    //     var binary = Encoding.UTF8.GetBytes(text);
-    //     await using var _ = RunServer(async serverSocket =>
-    //     {
-    //         serverSocket.TextReceived += x => serverSocket
-    //             .SendTextAsync(x.ToArray(), CancellationToken.None)
-    //             .GetAwaiter()
-    //             .GetResult();
-    //         this.Trace("server subscribed to text");
-    //
-    //         serverSocket.BinaryReceived += x => serverSocket
-    //             .SendBinaryAsync(x.ToArray(), CancellationToken.None)
-    //             .GetAwaiter()
-    //             .GetResult();
-    //         this.Trace("server subscribed to binary");
-    //
-    //         await serverSocket.WhenDisconnected();
-    //         this.Trace("server socket closed");
-    //     });
-    //
-    //     // act - send text
-    //     await Connect();
-    //     await Task.Delay(10);
-    //     var textResult = await SendTextAsync(text);
-    //     textResult.Is(WebSocketSendStatus.Ok);
-    //     var expectedTexts = new[] { text };
-    //     await Expect.To(() => _texts.IsEqual(expectedTexts));
-    //     await _clientSocket.DisconnectAsync();
-    //
-    //     // act - send binary
-    //     await Connect();
-    //     await Task.Delay(10);
-    //     var binaryResult = await SendBinaryAsync(binary);
-    //     binaryResult.Is(WebSocketSendStatus.Ok);
-    //     var expectedBinaries = new[] { binary };
-    //     await Expect.To(() => _binaries.IsEqual(expectedBinaries));
-    //     await _clientSocket.DisconnectAsync();
-    //
-    //     this.Trace("done");
-    // }
+    [Fact]
+    public async Task Send_Normal()
+    {
+        // arrange
+        this.Trace("start");
+        const string text = "demo";
+        var binary = Encoding.UTF8.GetBytes(text);
+        var serverConnectionTcs = new TaskCompletionSource();
+        await using var _ = RunServer(async serverSocket =>
+        {
+            serverSocket.TextReceived += x => serverSocket
+                .SendTextAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            this.Trace("server subscribed to text");
+
+            serverSocket.BinaryReceived += x => serverSocket
+                .SendBinaryAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            this.Trace("server subscribed to binary");
+
+            serverConnectionTcs.TrySetResult();
+
+            await serverSocket.WhenDisconnected();
+            this.Trace("server socket closed");
+        });
+
+        this.Trace("connect");
+        await ConnectAsync();
+
+        // await for server to setup subscriptions
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
+
+        // act
+        this.Trace("send text");
+        var textResult = await SendTextAsync(text);
+
+        this.Trace("send binary");
+        var binaryResult = await SendBinaryAsync(binary);
+
+        // assert
+        textResult.Is(WebSocketSendStatus.Ok);
+        binaryResult.Is(WebSocketSendStatus.Ok);
+        var expectedTexts = new[] { text };
+        var expectedBinaries = new[] { binary };
+        await Expect.To(() => _texts.IsEqual(expectedTexts));
+        await Expect.To(() => _binaries.IsEqual(expectedBinaries));
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Reconnect()
+    {
+        // arrange
+        this.Trace("start");
+        const string text = "demo";
+        var binary = Encoding.UTF8.GetBytes(text);
+        var serverConnectionTcs = new TaskCompletionSource();
+        await using var _ = RunServer(async serverSocket =>
+        {
+            serverSocket.TextReceived += x => serverSocket
+                .SendTextAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            this.Trace("server subscribed to text");
+
+            serverSocket.BinaryReceived += x => serverSocket
+                .SendBinaryAsync(x.ToArray(), CancellationToken.None)
+                .GetAwaiter()
+                .GetResult();
+            this.Trace("server subscribed to binary");
+
+            serverConnectionTcs.TrySetResult();
+
+            await serverSocket.WhenDisconnected();
+            this.Trace("server socket closed");
+        });
+
+        this.Trace("connect");
+        await ConnectAsync();
+
+        // await for server to setup subscriptions
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
+
+        this.Trace("send text");
+        var textResult = await SendTextAsync(text);
+        textResult.Is(WebSocketSendStatus.Ok);
+        var expectedTexts = new[] { text };
+        await Expect.To(() => _texts.IsEqual(expectedTexts));
+
+        this.Trace("disconnect");
+        await DisconnectAsync();
+
+        // act - send binary
+        this.Trace("connect");
+        serverConnectionTcs = new TaskCompletionSource();
+        await ConnectAsync();
+
+        this.Trace("server connected");
+        await serverConnectionTcs.Task;
+
+        this.Trace("send binary");
+        var binaryResult = await SendBinaryAsync(binary);
+        binaryResult.Is(WebSocketSendStatus.Ok);
+        var expectedBinaries = new[] { binary };
+        await Expect.To(() => _binaries.IsEqual(expectedBinaries));
+
+        this.Trace("disconnect");
+        await DisconnectAsync();
+
+        this.Trace("done");
+    }
     //
     // [Fact]
     // public async Task Listen_Canceled()
@@ -207,7 +235,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //         await Task.Delay(100);
     //     });
     //     var cts = new CancellationTokenSource();
-    //     await Connect(cts.Token);
+    //     await ConnectAsync(cts.Token);
     //     cts.Cancel();
     //
     //     // act
@@ -225,7 +253,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //     // arrange
     //     this.Trace("start");
     //     await using var _ = RunServer(async serverSocket => await serverSocket.WhenDisconnected());
-    //     await Connect();
+    //     await ConnectAsync();
     //     await _clientSocket.DisconnectAsync();
     //
     //     // act
@@ -248,7 +276,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //
     //         return Task.CompletedTask;
     //     });
-    //     await Connect();
+    //     await ConnectAsync();
     //
     //     // act
     //     var result = await _clientSocket.IsClosed;
@@ -277,7 +305,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //     });
     //
     //     // act
-    //     await Connect();
+    //     await ConnectAsync();
     //
     //     // assert
     //     await Expect.To(() => _texts.IsEqual(messages), 1000);
@@ -302,7 +330,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //     });
     //
     //     // act
-    //     await Connect();
+    //     await ConnectAsync();
     //
     //     // assert
     //     await Expect.To(() => _texts.IsEqual(messages), 1000);
@@ -339,7 +367,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     //     });
     //
     //     // act
-    //     await Connect();
+    //     await ConnectAsync();
     //
     //     // assert
     //     await Expect.To(() => _texts.IsEqual(texts), 1000);
@@ -403,11 +431,15 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var tcs = new TaskCompletionSource();
 
         _clientSocket.Trace<string>("subscribe {tcs} to OnConnected", tcs.GetFullId());
-        _clientSocket.OnConnected += () =>
+
+        void HandleConnected()
         {
             _clientSocket.Trace<string>("set {tcs} to signaled state", tcs.GetFullId());
             tcs.SetResult();
-        };
+            _clientSocket.OnConnected -= HandleConnected;
+        }
+
+        _clientSocket.OnConnected += HandleConnected;
 
         _clientSocket.Connect(ServerUri);
 
@@ -423,11 +455,15 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var tcs = new TaskCompletionSource();
 
         _clientSocket.Trace<string>("subscribe {tcs} to OnConnected", tcs.GetFullId());
-        _clientSocket.OnDisconnected += status =>
+
+        void HandleDisconnected(WebSocketCloseStatus status)
         {
             _clientSocket.Trace("set {tcs} to signaled state with status {status}", tcs.GetFullId(), status);
             tcs.SetResult();
-        };
+            _clientSocket.OnDisconnected -= HandleDisconnected;
+        }
+
+        _clientSocket.OnDisconnected += HandleDisconnected;
 
         _clientSocket.Disconnect();
 
@@ -459,7 +495,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     }
 }
 
-internal static class WebSocketExtensions
+file static class WebSocketExtensions
 {
     public static Task WhenDisconnected(this ClientWebSocket socket)
     {
