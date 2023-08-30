@@ -4,7 +4,6 @@ using Annium.AspNetCore.TestServer.Handlers;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
-using Annium.Infrastructure.WebSockets.Domain;
 using Annium.Infrastructure.WebSockets.Server;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,7 +15,6 @@ internal class BaseServicePack : ServicePackBase
     {
         // register and setup services
         container.AddRuntime(GetType().Assembly);
-        container.AddTime().WithRealTime().SetDefault();
         container.AddSerializers()
             .WithJson(opts => opts
                 .ConfigureForOperations()

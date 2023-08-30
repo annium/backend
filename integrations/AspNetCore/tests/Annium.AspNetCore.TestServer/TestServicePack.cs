@@ -7,7 +7,11 @@ public class TestServicePack : ServicePackBase
 {
     public TestServicePack()
     {
-        Console.WriteLine(nameof(TestServicePack));
         Add<BaseServicePack>();
+    }
+
+    public override void Register(IServiceContainer container, IServiceProvider provider)
+    {
+        container.AddTime().WithRelativeTime().SetDefault();
     }
 }
