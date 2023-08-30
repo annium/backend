@@ -44,10 +44,13 @@ internal class ChainBuilder : ILogSubject
             {
                 service = ResolveHandler(input, output, handler);
 
-                this.Trace<string, string, string?>("Resolved {requestIn} -> {responseOut} handler into {service}", handler.RequestIn.FriendlyName(), handler.ResponseOut.FriendlyName(), service?.FriendlyName() ?? null);
-
                 if (service is null)
+                {
+                    this.Trace<string, string>("Handler {requestIn} -> {responseOut} didn't match", handler.RequestIn.FriendlyName(), handler.ResponseOut.FriendlyName());
                     continue;
+                }
+
+                this.Trace<string, string, string>("Handler {requestIn} -> {responseOut} resolved into {service}", handler.RequestIn.FriendlyName(), handler.ResponseOut.FriendlyName(), service.FriendlyName());
 
                 handlers.Remove(handler);
                 break;
