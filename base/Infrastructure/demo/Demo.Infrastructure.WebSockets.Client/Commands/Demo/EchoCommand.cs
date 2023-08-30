@@ -1,13 +1,10 @@
 using System;
 using System.Diagnostics;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
-using NodaTime;
+using Annium.Net.WebSockets;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
@@ -26,23 +23,12 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
 
     public override async Task HandleAsync(EchoCommandConfiguration cfg, CancellationToken ct)
     {
-        var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            Logger
-        );
-        ws.ConnectionLost += () =>
-        {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
-        };
-        ws.ConnectionRestored += () =>
-        {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
-        };
+        var ws = new ClientWebSocket(ClientWebSocketOptions.Default, Logger);
+        ws.OnDisconnected += status => this.Debug("connection lost: {status}", status);
+        ws.OnConnected += () => this.Debug("connection restored");
 
         this.Debug("Connecting to {server}", cfg.Server);
-        await ws.ConnectAsync(cfg.Server, ct);
+        ws.Connect(cfg.Server);
         this.Debug("Connected to {server}", cfg.Server);
 
         this.Debug("Start echo loop");
@@ -69,15 +55,17 @@ internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDes
         if (!cfg.Kill)
         {
             this.Debug("Disconnecting");
-            await ws.DisconnectAsync();
+            ws.Disconnect();
             this.Debug("Disconnected");
         }
 
-        IObservable<Unit> Send(int val)
+        return;
+
+        ValueTask<WebSocketSendStatus> Send(int val)
         {
             if (val % 10000 == 0)
                 this.Debug(">>> {val}", val);
-            return ws.Send(val.ToString(), CancellationToken.None);
+            return ws.SendBinaryAsync(val.ToString(), CancellationToken.None);
         }
     }
 }

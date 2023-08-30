@@ -6,7 +6,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Server;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
@@ -64,7 +64,7 @@ internal class WebSocketsMiddleware : ILogSubject
             this.Trace("accept");
             var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
             this.Trace("create socket");
-            var socket = new WebSocket(rawSocket, _cfg.WebSocketOptions, Logger);
+            var socket = new ServerWebSocket(rawSocket, _cfg.WebSocketOptions, Logger);
             this.Trace("handle");
             await _coordinator.HandleAsync(socket);
         }

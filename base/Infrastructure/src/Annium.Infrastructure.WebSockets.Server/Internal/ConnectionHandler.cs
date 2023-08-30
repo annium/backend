@@ -10,6 +10,7 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
@@ -66,7 +67,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             // start listening to messages and adding them to scheduler
             this.Trace("cn {connectionId} - init subscription", cnId);
             _cn.Socket
-                .Listen()
+                .ObserveBinary()
                 .Subscribe(
                     x => executor.TrySchedule(async () =>
                     {
@@ -98,7 +99,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
 
             // notify client, that connection is ready
             this.Trace("cn {connectionId} - notify connection ready", cnId);
-            _cn.Socket.SendWith(new ConnectionReadyNotification(), _serializer, cts.Token).Subscribe();
+            await _cn.Socket.SendBinaryAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
 
             // execute run hook
             var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);

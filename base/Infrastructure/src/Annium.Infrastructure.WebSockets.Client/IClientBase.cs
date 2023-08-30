@@ -10,9 +10,6 @@ namespace Annium.Infrastructure.WebSockets.Client;
 
 public interface IClientBase : IAsyncDisposable
 {
-    // management
-    bool IsConnected { get; }
-
     // broadcast
     IObservable<TNotification> Listen<TNotification>()
         where TNotification : NotificationBase;

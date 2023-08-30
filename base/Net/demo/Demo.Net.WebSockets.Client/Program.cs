@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Entrypoint;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 await using var entry = Entrypoint.Default.Setup();
 
@@ -11,7 +11,7 @@ var (sp, ct) = entry;
 
 var socket = new ClientWebSocket(sp.Resolve<ILogger>());
 
-await socket.ConnectAsync(new Uri("ws://localhost:5000/ws/data"), ct);
+socket.Connect(new Uri("ws://localhost:5000/ws/data"));
 
 if (ct.IsCancellationRequested)
 {
@@ -29,7 +29,7 @@ ct.Register(() =>
     tcs.TrySetResult(new object());
 });
 
-var s1 = socket.ListenText().Subscribe(x => Console.WriteLine($"In: '{x}'"));
+var s1 = socket.ObserveText().Subscribe(x => Console.WriteLine($"In: '{x}'"));
 
 await tcs.Task;
 s1.Dispose();

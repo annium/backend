@@ -1,10 +1,9 @@
 using System;
 using System.Net;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 using Microsoft.AspNetCore.Http;
 
 namespace Demo.Net.WebSockets.Server.Obsolete;
@@ -39,7 +38,7 @@ public class WebSocketEchoMiddleware
             return;
         }
 
-        var ws = new WebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
+        var ws = new ServerWebSocket(await context.WebSockets.AcceptWebSocketAsync(), _logger);
 
         if (path == "/ws/echo")
             await Echo(ws);
@@ -48,21 +47,21 @@ public class WebSocketEchoMiddleware
             await Data(ws);
     }
 
-    private Task Echo(IWebSocket ws)
+    private Task Echo(IServerWebSocket ws)
     {
         var tcs = new TaskCompletionSource<object>();
 
-        ws.ListenText()
+        ws.ObserveText()
             .DoSequentialAsync(async x =>
             {
                 Console.WriteLine($"In:  '{x}'");
-                await ws.Send(x, CancellationToken.None);
+                await ws.SendTextAsync(x, CancellationToken.None);
                 Console.WriteLine($"Out: '{x}'");
             })
-            .SubscribeAsync(async () =>
+            .Subscribe(_ =>
             {
                 Console.WriteLine("Close");
-                await ws.DisconnectAsync();
+                ws.Disconnect();
                 Console.WriteLine("Closed");
                 tcs.TrySetResult(new object());
             });
@@ -70,10 +69,10 @@ public class WebSocketEchoMiddleware
         return tcs.Task;
     }
 
-    private async Task Data(IWebSocket ws)
+    private async Task Data(IServerWebSocket ws)
     {
         var isClosed = false;
-        ws.ListenText().Subscribe(_ => { }, () => isClosed = true);
+        ws.ObserveText().Subscribe(_ => { }, () => isClosed = true);
 
         for (var i = 0; i < 1000; i++)
         {
@@ -86,7 +85,7 @@ public class WebSocketEchoMiddleware
             }
 
             Console.WriteLine($"Out: '{i}'");
-            await ws.Send(i.ToString(), CancellationToken.None);
+            await ws.SendTextAsync(i.ToString(), CancellationToken.None);
         }
     }
 }

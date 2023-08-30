@@ -14,7 +14,6 @@ public abstract class IntegrationTestBase : IntegrationTest
             builder => builder.UseServicePack<TestServicePack>(),
             container => container
                 .AddTestServerTestClient(x => x
-                    .WithActiveKeepAlive(600)
                     .WithResponseTimeout(6000)
                 )
         );

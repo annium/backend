@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
@@ -71,6 +70,6 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
         if (connections.Count == 0)
             return;
         var data = _serializer.Serialize(message);
-        Task.WhenAll(connections.Select(async x => await x.Socket.SendSerialized(data, CancellationToken.None)));
+        Task.WhenAll(connections.Select(async x => await x.Socket.SendBinaryAsync(data)));
     }
 }

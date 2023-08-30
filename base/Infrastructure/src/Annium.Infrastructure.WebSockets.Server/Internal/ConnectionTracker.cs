@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Pooling;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
@@ -28,7 +28,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         _lifetime.Stopping.Register(TryStop);
     }
 
-    public Connection Track(WebSocket socket)
+    public Connection Track(IServerWebSocket socket)
     {
         EnsureNotDisposing();
 

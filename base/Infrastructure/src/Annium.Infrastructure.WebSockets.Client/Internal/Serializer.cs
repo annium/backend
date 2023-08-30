@@ -1,35 +1,23 @@
 using System;
-using System.Text;
-using Annium.Infrastructure.WebSockets.Domain;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
+using Constants = Annium.Serialization.Json.Constants;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
 internal class Serializer
 {
-    public object Instance { get; }
+    private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 
     public Serializer(
-        ISerializer<ReadOnlyMemory<byte>> binarySerializer,
-        ISerializer<string> textSerializer,
-        IClientConfigurationBase configuration
+        IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> binarySerializers
     )
     {
-        Instance = configuration.Format switch
-        {
-            SerializationFormat.Binary => binarySerializer,
-            SerializationFormat.Text   => textSerializer,
-            _ => throw new NotImplementedException(
-                $"Serialization format {configuration.Format} is not implemented"
-            )
-        };
+        var key = SerializerKey.CreateDefault(Constants.MediaType);
+        _serializer = binarySerializers[key];
     }
 
-    public T Deserialize<T>(SocketMessage message) => Instance switch
-    {
-        ISerializer<ReadOnlyMemory<byte>> x => x.Deserialize<T>(message.Data),
-        ISerializer<string> x               => x.Deserialize<T>(Encoding.UTF8.GetString(message.Data.Span)),
-        _                                   => throw new NotImplementedException()
-    };
+    public ReadOnlyMemory<byte> Serialize<T>(T value) => _serializer.Serialize(value);
+
+    public T Deserialize<T>(ReadOnlyMemory<byte> data) => _serializer.Deserialize<T>(data);
 }

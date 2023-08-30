@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -36,23 +36,24 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
         broadcastCoordinator.Start();
     }
 
-    public async Task HandleAsync(WebSocket socket)
+    public async Task HandleAsync(IServerWebSocket socket)
     {
-        await using var cn = _connectionTracker.Track(socket);
+        using var cn = _connectionTracker.Track(socket);
         this.Trace<string>("Start for {connectionId}", cn.GetFullId());
+
         await using var scope = _sp.CreateAsyncScope();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
+
+        socket.OnDisconnected += status =>
+        {
+            this.Trace("Notify lost {connectionId} - {status}", cn.GetFullId(), status);
+            // for case, when server stops, thus cancellation occurs before connection is lost
+            if (!cts.IsCancellationRequested)
+                cts.Cancel();
+        };
+
         try
         {
-            socket.ConnectionLost += () =>
-            {
-                this.Trace<string>("Notify lost {connectionId}", cn.GetFullId());
-                // for case, when server stops, thus cancellation occurs before connection is lost
-                if (!cts.IsCancellationRequested)
-                    cts.Cancel();
-
-                return Task.CompletedTask;
-            };
             await using var handler = _handlerFactory.Create(scope.ServiceProvider, cn);
             await handler.HandleAsync(cts.Token);
         }

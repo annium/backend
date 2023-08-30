@@ -27,7 +27,6 @@ internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, IC
     {
         var configuration = new ClientConfiguration()
             .ConnectTo(cfg.Server)
-            .WithActiveKeepAlive(600)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
 
@@ -38,7 +37,6 @@ internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, IC
         var result = await client.SendAsync(request, ct);
         this.Debug("<<< {result}", result);
 
-        if (client.IsConnected)
-            await client.DisconnectAsync();
+        await client.DisconnectAsync();
     }
 }

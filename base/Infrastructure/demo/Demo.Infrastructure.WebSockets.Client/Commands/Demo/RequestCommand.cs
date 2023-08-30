@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,13 +7,10 @@ using Annium;
 using Annium.Extensions.Arguments;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
 using Demo.Infrastructure.WebSockets.Domain.Requests.User;
-using NodaTime;
-using ClientWebSocket = Annium.Net.WebSockets.Obsolete.ClientWebSocket;
-using ClientWebSocketOptions = Annium.Net.WebSockets.Obsolete.ClientWebSocketOptions;
 
 namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
 
@@ -36,25 +32,14 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
 
     public override async Task HandleAsync(RequestCommandConfiguration cfg, CancellationToken ct)
     {
-        var ws = new ClientWebSocket(
-            new ClientWebSocketOptions { ReconnectTimeout = Duration.FromSeconds(1) },
-            Logger
-        );
-        ws.ConnectionLost += () =>
-        {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
-        };
-        ws.ConnectionRestored += () =>
-        {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
-        };
+        var ws = new ClientWebSocket(ClientWebSocketOptions.Default, Logger);
+        ws.OnDisconnected += status => this.Debug("connection lost: {status}", status);
+        ws.OnConnected += () => this.Debug("connection restored");
 
         this.Debug("Connecting to {server}", cfg.Server);
-        await ws.ConnectAsync(cfg.Server, ct);
+        ws.Connect(cfg.Server);
         var counter = 0;
-        ws.ListenBinary()
+        ws.ObserveBinary()
             .Select(x =>
             {
                 try
@@ -85,8 +70,7 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
         this.Debug("Responses: {counter}", counter);
 
         this.Debug("Disconnecting");
-        if (ws.State == WebSocketState.Open)
-            await ws.DisconnectAsync();
+        ws.Disconnect();
         this.Debug("Disconnected");
     }
 
@@ -96,7 +80,7 @@ internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, IComm
         var raw = _serializer.Serialize(data);
         this.Debug(">>> {data.GetType().FriendlyName()}::{data}", data.GetType().FriendlyName(), data);
 
-        await ws.Send(raw, CancellationToken.None);
+        await ws.SendBinaryAsync(raw, CancellationToken.None);
     }
 
     private async Task SendRequests(ISendingWebSocket ws)

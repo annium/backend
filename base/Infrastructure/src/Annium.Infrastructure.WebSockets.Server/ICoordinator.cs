@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server;
 
 public interface ICoordinator
 {
-    Task HandleAsync(WebSocket socket);
+    Task HandleAsync(IServerWebSocket socket);
 
     void Shutdown();
 }

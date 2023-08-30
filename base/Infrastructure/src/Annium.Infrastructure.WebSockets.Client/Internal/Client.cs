@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
@@ -14,7 +14,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
     private readonly IClientConfiguration _configuration;
     private readonly DisposableBox _disposable;
     private bool _isDisposed;
-    private TaskCompletionSource<object?> _connectionTcs = new();
+    private TaskCompletionSource _connectionTcs = new();
 
     public Client(
         ITimeProvider timeProvider,
@@ -31,8 +31,8 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
     {
         _configuration = configuration;
         _disposable = Disposable.Box(logger);
-        Socket.ConnectionLost += () => ConnectionLost.Invoke();
-        Socket.ConnectionRestored += async () =>
+        Socket.OnDisconnected += _ => ConnectionLost.Invoke();
+        Socket.OnConnected += async () =>
         {
             this.Trace("wait for ConnectionReadyNotification");
             await WaitConnectionReadyAsync(CancellationToken.None);
@@ -46,15 +46,17 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
     public async Task ConnectAsync(CancellationToken ct = default)
     {
         this.Trace("start");
-        await Task.WhenAll(
-            WaitConnectionReadyAsync(ct),
-            Socket.ConnectAsync(_configuration.Uri, ct)
-        );
+        Socket.Connect(_configuration.Uri);
+        await WaitConnectionReadyAsync(ct);
         this.Trace("done");
     }
 
-    public Task DisconnectAsync() =>
-        Socket.DisconnectAsync();
+    public Task DisconnectAsync()
+    {
+        Socket.Disconnect();
+
+        return Task.CompletedTask;
+    }
 
 
     public override async ValueTask DisposeAsync()
@@ -70,9 +72,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
         this.Trace("dispose base");
         await base.DisposeAsync();
         this.Trace("disconnect socket");
-        await Socket.DisconnectAsync();
-        this.Trace("dispose socket");
-        await Socket.DisposeAsync();
+        Socket.Disconnect();
         this.Trace("done");
 
         _isDisposed = true;
@@ -80,7 +80,7 @@ internal class Client : ClientBase<ClientWebSocket>, IClient
 
     private void HandleConnectionReady()
     {
-        _connectionTcs.SetResult(null);
+        _connectionTcs.SetResult();
         _connectionTcs = new();
     }
 

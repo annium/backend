@@ -33,7 +33,6 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
     {
         var configuration = new ClientConfiguration()
             .ConnectTo(cfg.Server)
-            .WithActiveKeepAlive(600)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
@@ -79,8 +78,7 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
 
         this.Debug("End: {elapsed}. Counter: {counter}", sw.Elapsed, counter);
 
-        if (client.IsConnected)
-            await client.DisconnectAsync();
+        await client.DisconnectAsync();
 
         async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken token)
         {

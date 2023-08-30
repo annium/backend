@@ -29,7 +29,6 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
     {
         var configuration = new ClientConfiguration()
             .ConnectTo(cfg.Server)
-            .WithActiveKeepAlive(600)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
@@ -56,8 +55,7 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
 
         await ct;
         this.Debug("Disconnecting");
-        if (client.IsConnected)
-            await client.DisconnectAsync();
+        await client.DisconnectAsync();
         this.Debug("Disconnected");
     }
 }

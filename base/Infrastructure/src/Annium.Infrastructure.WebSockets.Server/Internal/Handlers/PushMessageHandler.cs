@@ -1,5 +1,4 @@
 using System.Net.WebSockets;
-using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
@@ -42,14 +41,8 @@ internal class PushMessageHandler<T> :
 
         try
         {
-            if (cnRef.Value.Socket.State != WebSocketState.Open)
-            {
-                this.Trace("cn {connectionId} - socket not opened", request.ConnectionId);
-                return None.Default;
-            }
-
             this.Trace("cn {connectionId} - start send", request.ConnectionId);
-            await cnRef.Value.Socket.SendWith(request.Message, _serializer, CancellationToken.None);
+            await cnRef.Value.Socket.SendBinaryAsync(_serializer.Serialize(request.Message));
             this.Trace("cn {connectionId} - send complete", request.ConnectionId);
         }
         // socket can get closed/aborted in a moment

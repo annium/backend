@@ -29,7 +29,6 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
     {
         var configuration = new ClientConfiguration()
             .ConnectTo(cfg.Server)
-            .WithActiveKeepAlive(600, 600)
             .WithResponseTimeout(600);
         await using var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>

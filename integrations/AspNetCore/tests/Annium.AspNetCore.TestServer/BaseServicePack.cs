@@ -29,8 +29,6 @@ internal class BaseServicePack : ServicePackBase
         container.AddWebSocketServer<ConnectionState>(
             (_, cfg) => cfg
                 .ListenOn("/ws")
-                .UseFormat(SerializationFormat.Text)
-                .WithActiveKeepAlive(600)
         );
         container.Add<SharedDataContainer>().AsSelf().Singleton();
 

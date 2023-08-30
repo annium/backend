@@ -1,6 +1,4 @@
 using System;
-using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
@@ -10,7 +8,7 @@ using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
 using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 
 namespace Annium.Infrastructure.WebSockets.Server.Internal;
 
@@ -35,7 +33,7 @@ internal class MessageHandler<TState> : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingWebSocket socket, TState state, SocketMessage msg)
+    public async Task HandleMessage(ISendingWebSocket socket, TState state, ReadOnlyMemory<byte> msg)
     {
         var request = ParseRequest(msg);
         if (request is null)
@@ -64,11 +62,11 @@ internal class MessageHandler<TState> : ILogSubject
         //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
     }
 
-    private AbstractRequestBase? ParseRequest(SocketMessage msg)
+    private AbstractRequestBase? ParseRequest(ReadOnlyMemory<byte> msg)
     {
         try
         {
-            return _serializer.Deserialize<AbstractRequestBase>(msg.Data);
+            return _serializer.Deserialize<AbstractRequestBase>(msg);
         }
         catch (Exception e)
         {
@@ -111,8 +109,8 @@ internal class MessageHandler<TState> : ILogSubject
     {
         try
         {
-            this.Trace("Send response {responseType}#{responseId}", response.Tid, (response is ResponseBase res ? res.Rid : Guid.Empty));
-            await socket.SendWith(response, _serializer, CancellationToken.None);
+            this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBase res ? res.Rid : Guid.Empty);
+            await socket.SendBinaryAsync(_serializer.Serialize(new ConnectionReadyNotification()));
         }
         catch (Exception e)
         {

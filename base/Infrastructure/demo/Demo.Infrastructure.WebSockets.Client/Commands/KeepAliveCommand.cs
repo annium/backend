@@ -28,7 +28,7 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
         this.Debug("Interacting to {server}", cfg.Server);
 
         this.Debug("create client");
-        var configuration = new ClientConfiguration().ConnectTo(cfg.Server).WithActiveKeepAlive(1);
+        var configuration = new ClientConfiguration().ConnectTo(cfg.Server);
         var client = _clientFactory.Create(configuration);
         client.ConnectionLost += () =>
         {
@@ -70,11 +70,8 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
             await Task.Delay(100, CancellationToken.None);
         }
 
-        if (client.IsConnected)
-        {
-            this.Debug("Disconnecting");
-            await client.DisconnectAsync();
-        }
+        this.Debug("Disconnecting");
+        await client.DisconnectAsync();
 
         this.Debug("Disconnected");
     }

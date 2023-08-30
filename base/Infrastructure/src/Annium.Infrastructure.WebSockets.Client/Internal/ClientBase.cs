@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net.WebSockets;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
@@ -12,7 +11,7 @@ using Annium.Data.Operations;
 using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
-using Annium.Net.WebSockets.Obsolete;
+using Annium.Net.WebSockets;
 using Annium.Threading;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
@@ -20,7 +19,6 @@ namespace Annium.Infrastructure.WebSockets.Client.Internal;
 internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     where TSocket : class, ISendingReceivingWebSocket
 {
-    public bool IsConnected => Socket.State == WebSocketState.Open;
     public ILogger Logger { get; }
     protected TSocket Socket { get; }
     private readonly Serializer _serializer;
@@ -45,7 +43,7 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         _disposable = Disposable.AsyncBox(logger);
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-        _responseObservable = Socket.Listen().Select(_serializer.Deserialize<AbstractResponseBase>);
+        _responseObservable = Socket.ObserveText().Select(_serializer.Deserialize<AbstractResponseBase>);
         _disposable += _responseObservable.OfType<ResponseBase>()
             .ObserveOn(TaskPoolScheduler.Default)
             .Subscribe(CompleteResponse);
@@ -352,17 +350,10 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     private async Task<bool> SendInternal<T>(T request)
         where T : AbstractRequestBase
     {
-        if (IsConnected)
-        {
-            this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
-            await Socket.SendWith(request, _serializer, CancellationToken.None);
+        this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
+        var result = await Socket.SendBinaryAsync(_serializer.Serialize(request), CancellationToken.None);
 
-            return true;
-        }
-
-        this.Trace("send request {requestType}#{requestId} - skip, socket is disconnected", request.Tid, request.Rid);
-
-        return false;
+        return result is WebSocketSendStatus.Ok;
     }
 
     private void CompleteResponse(ResponseBase response)

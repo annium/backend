@@ -8,7 +8,6 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 public class TestServerClient : IAsyncDisposable
 {
     public DemoClient Demo { get; }
-    public bool IsConnected => _client.IsConnected;
     public event Func<Task> ConnectionLost = () => Task.CompletedTask;
     public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
     private readonly IClient _client;

@@ -13,7 +13,7 @@ public static class ServiceContainerExtensions
         container.Add<ITestClientFactory, TestClientFactory>().Singleton();
 
         // internal
-        container.Add<SerializerFactory>().AsSelf().Transient();
+        container.Add<Serializer>().AsSelf().Transient();
 
         return container;
     }
