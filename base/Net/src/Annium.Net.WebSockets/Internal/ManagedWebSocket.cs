@@ -7,7 +7,7 @@ using Annium.Logging;
 
 namespace Annium.Net.WebSockets.Internal;
 
-public class ManagedWebSocket : ISendingReceivingWebSocket, ILogSubject
+internal class ManagedWebSocket : ISendingReceivingWebSocket, ILogSubject
 {
     public ILogger Logger { get; }
     private const int BufferSize = 65_536;
