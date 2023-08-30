@@ -102,9 +102,9 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             await _cn.Socket.SendBinaryAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
 
             // execute run hook
+            this.Trace("cn {connectionId} - push handlers start - start", cnId);
             var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
             pusherTask.ContinueWith(_ => this.Trace("cn {connectionId} - push ended"), CancellationToken.None).GetAwaiter();
-            this.Trace("cn {connectionId} - push handlers start - start", cnId);
             this.Trace("cn {connectionId} - push handlers start - done", cnId);
 
             // start scheduler to process backlog and run upcoming work immediately
