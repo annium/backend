@@ -11,7 +11,7 @@ using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Testing;
-using Annium.Threading.Tasks;
+using Annium.Testing.Assertions;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -116,7 +116,11 @@ public class WebSocketPerfTest : IntegrationTestBase
 
         // wait for init and msg entries
         this.Trace("wait for init and msg log entries");
-        await Wait.UntilAsync(() => serverLog.Count == 6 && clientLog.Count == 4);
+        await Expect.To(()=>
+        {
+            serverLog.Has(6);
+            clientLog.Has(4);
+        });
 
         this.Trace("dispose subscriptions");
         cts.Cancel();
@@ -131,7 +135,7 @@ public class WebSocketPerfTest : IntegrationTestBase
 
         // wait for cancellation entries
         this.Trace("wait for cancellation log entries");
-        await Wait.UntilAsync(() => serverLog.Count == 8);
+        await Expect.To(() => serverLog.Has(8));
 
         // assert
         serverLog.Has(8);

@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Assertions;
 using Annium.Testing.Lib;
-using Annium.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -42,12 +41,14 @@ public class InMemoryMessageBusTest : TestBase
         foreach (var x in values)
             await node.Send(x);
 
-        await Wait.UntilAsync(
+        await Expect.To(
             () =>
-                sink1.Count == 2 &&
-                sink2.Count == 2 &&
-                sink3.Count == 2,
-            new CancellationTokenSource(3000).Token
+            {
+                sink1.Has(2);
+                sink2.Has(2);
+                sink3.Has(2);
+            },
+            3000
         );
 
         // assert

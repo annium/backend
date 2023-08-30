@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Testing;
+using Annium.Testing.Assertions;
 using Annium.Testing.Lib;
-using Annium.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,7 +40,7 @@ public class TableOfTTests : TestBase
         // init with some data
         var initValues = new[] { new Sample(1, true) };
         table.Init(initValues);
-        await Wait.UntilAsync(() => log1.Count > 1);
+        await Expect.To(() => log1.Count.IsGreater(1));
         log1.Has(2);
         log1.At(1).IsEqual(ChangeEvent.Init(initValues));
         log2.At(1).Is(log1.At(1));
