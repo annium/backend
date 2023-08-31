@@ -90,8 +90,10 @@ public class WebSocketPerfTest : IntegrationTestBase
 
         // arrange
         var logger = Get<ILogger>();
+
         this.Trace("get client");
         await using var client = await GetClient();
+
         var serverLog = AppFactory.Resolve<SharedDataContainer>().Log;
         var clientLog = new ConcurrentQueue<string>();
 
@@ -106,18 +108,25 @@ public class WebSocketPerfTest : IntegrationTestBase
         // act
         this.Trace("subscribe first");
         var o1 = await client.Demo.SubscribeFirstAsync(new FirstSubscriptionInit { Param = "abc" }, cts.Token).GetData();
+
+        this.Trace("schedule first completion tracking");
+        var o1Completed = o1.WhenCompleted(logger);
         var os1 = o1.Subscribe(ClientLog);
         this.Trace("first subscribed");
 
         this.Trace("subscribe second");
         var o2 = await client.Demo.SubscribeSecondAsync(new SecondSubscriptionInit { Param = "def" }, cts.Token).GetData();
+
+        this.Trace("schedule second completion tracking");
+        var o2Completed = o2.WhenCompleted(logger);
         var os2 = o2.Subscribe(ClientLog);
         this.Trace("second subscribed");
 
         // wait for init and msg entries
         this.Trace("wait for init and msg log entries");
-        await Expect.To(()=>
+        await Expect.To(() =>
         {
+            this.Trace("assert client/server log");
             serverLog.Has(6);
             clientLog.Has(4);
         });
@@ -128,16 +137,17 @@ public class WebSocketPerfTest : IntegrationTestBase
         os2.Dispose();
 
         this.Trace("await subscription 1");
-        await o1.WhenCompleted(logger);
+        await o1Completed;
 
         this.Trace("await subscription 2");
-        await o2.WhenCompleted(logger);
+        await o2Completed;
 
         // wait for cancellation entries
         this.Trace("wait for cancellation log entries");
         await Expect.To(() => serverLog.Has(8));
 
         // assert
+        this.Trace("verify log");
         serverLog.Has(8);
         // filter server log and ensure messages order
         var expectedServerFirstLog = new[]
