@@ -10,7 +10,7 @@ using Annium.Testing.Lib;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Annium.Extensions.Reactive.Tests.ObservableInstance;
+namespace Annium.Extensions.Reactive.Tests.Creation.ObservableInstance;
 
 public class StaticObservableInstanceTest : TestBase
 {
