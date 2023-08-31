@@ -1,4 +1,5 @@
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Extensions.Reactive.Internal.Creation.Instance;
 using Annium.Logging;
@@ -31,6 +32,41 @@ public static class ObservableExt
     )
     {
         return new StaticObservableInstance<T>(factory, false, ct, logger);
+    }
+
+    #endregion
+
+    #region From
+
+    public static IObservable<T> FromChannel<T>(
+        ChannelReader<T> reader,
+        Action? onDisposed = null
+    )
+    {
+        return Observable.Create<T>(async (observer, ct) =>
+        {
+            try
+            {
+                while (!ct.IsCancellationRequested)
+                {
+                    var data = await reader.ReadAsync(ct);
+                    observer.OnNext(data);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+            }
+            catch (Exception)
+            {
+                //
+            }
+
+            return onDisposed ?? OnDisposed;
+        });
+
+        static void OnDisposed()
+        {
+        }
     }
 
     #endregion
