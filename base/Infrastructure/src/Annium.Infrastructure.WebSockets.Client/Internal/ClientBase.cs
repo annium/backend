@@ -3,7 +3,10 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Text;
+using System.Text.Json;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
@@ -12,7 +15,6 @@ using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
 using Annium.Net.WebSockets;
-using Annium.Threading;
 
 namespace Annium.Infrastructure.WebSockets.Client.Internal;
 
@@ -36,6 +38,11 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         ILogger logger
     )
     {
+        socket.ObserveBinary()
+            .Subscribe(x => this.Trace<string>("RAW!: {x}", Encoding.UTF8.GetString(x.ToArray())));
+        socket.ObserveBinary()
+            .Select(serializer.Deserialize<AbstractResponseBase>)
+            .Subscribe(x => this.Trace<string>("MSG!: {x}", JsonSerializer.Serialize(x)));
         _responseObservable = socket.ObserveBinary().Select(serializer.Deserialize<AbstractResponseBase>);
 
         _disposable = Disposable.AsyncBox(logger);
@@ -202,44 +209,34 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     {
         var type = typeof(TInit).FriendlyName();
         var subscriptionId = request.Rid;
-        this.Trace("{type}#{subscriptionId} - start", type, subscriptionId);
+
+        this.Trace("{type}#{subscriptionId} - start, create observable", type, subscriptionId);
+        var channel = Channel.CreateUnbounded<TMessage>();
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+
+        async void OnDisposed()
+        {
+            if (!_subscriptions.TryRemove(subscriptionId, out _))
+            {
+                this.Trace("{type}#{subscriptionId} - skipped disposal of untracked subscription", type, subscriptionId);
+                return;
+            }
+
+            this.Trace("{type}#{subscriptionId} - unsubscribe on server", type, subscriptionId);
+            await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
+            this.Trace("{type}#{subscriptionId} - unsubscribed on server", type, subscriptionId);
+        }
 
         this.Trace("{type}#{subscriptionId} - create observable", type, subscriptionId);
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        var observable = ObservableExt
-            .StaticAsyncInstance<TMessage>(async ctx =>
+        _responseObservable
+            .OfType<SubscriptionMessage<TMessage>>()
+            .Where(x => x.SubscriptionId == subscriptionId)
+            .Select(x =>
             {
-                this.Trace("{type}#{subscriptionId} - subscribe", type, subscriptionId);
-                var subscription = _responseObservable
-                    .OfType<SubscriptionMessage<TMessage>>()
-                    .Where(x => x.SubscriptionId == subscriptionId)
-                    .SubscribeOn(TaskPoolScheduler.Default)
-                    .ObserveOn(TaskPoolScheduler.Default)
-                    .Select(x => x.Message)
-                    .Subscribe(ctx);
-
-                await ctx.Ct;
-
-                this.Trace("{type}#{subscriptionId} - unsubscribing", type, subscriptionId);
-                return async () =>
-                {
-                    if (!_subscriptions.TryRemove(subscriptionId, out _))
-                    {
-                        this.Trace("{type}#{subscriptionId} - skipped disposal of untracked subscription", type, subscriptionId);
-                        return;
-                    }
-
-                    this.Trace("{type}#{subscriptionId} - dispose subscription", type, subscriptionId);
-                    subscription.Dispose();
-
-                    this.Trace("{type}#{subscriptionId} - unsubscribe on server", type, subscriptionId);
-
-                    await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
-                    this.Trace("{type}#{subscriptionId} - unsubscribed on server", type, subscriptionId);
-                };
-            }, cts.Token, Logger)
-            .TrackCompletion(Logger)
-            .BufferUntilSubscribed(Logger);
+                this.Trace("GOT!: {x}", x.Message);
+                return x.Message;
+            })
+            .WriteToChannel(channel.Writer, cts.Token);
 
         this.Trace("{type}#{subscriptionId} - init", type, subscriptionId);
         var response = await FetchInternal(request, Guid.Empty, ct);
@@ -247,9 +244,12 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         {
             this.Trace("{type}#{subscriptionId} - failed: {response}", type, subscriptionId, response);
             cts.Cancel();
-            await observable.WhenCompleted(Logger);
             return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
         }
+
+        this.Trace("{type}#{subscriptionId} - subscribe", type, subscriptionId);
+        var observable = ObservableExt.FromChannel(channel.Reader, OnDisposed)
+            .ObserveOn(TaskPoolScheduler.Default);
 
         this.Trace("{type}#{subscriptionId} - track observable", type, subscriptionId);
         if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>)observable)))
