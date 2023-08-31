@@ -59,6 +59,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         if (_isInitiated)
             throw new InvalidOperationException("Can't init subscription more than once");
         _isInitiated = true;
+
         if (_cts.IsCancellationRequested)
             throw new InvalidOperationException("Can't init canceled subscription");
 
@@ -75,8 +76,12 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
     {
         if (!_isInitiated)
             throw new InvalidOperationException("Can't send message from not initiated subscription");
+
         if (_cts.IsCancellationRequested)
+        {
+            this.Trace("connection {connectionId}, subscription {subscriptionId} - skip sending, cancellation requested");
             return;
+        }
 
         SendInternal(new SubscriptionMessage<TMessage>(SubscriptionId, message));
     }
@@ -114,8 +119,15 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         this.Trace("connection {connectionId}, subscription {subscriptionId} - done", ConnectionId, SubscriptionId);
     }
 
-    private void SendInternal<T>(T msg) =>
-        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None));
+    private void SendInternal<T>(T msg)
+    {
+        this.Trace("connection {connectionId}, subscription {subscriptionId} - schedule message {message}", ConnectionId, SubscriptionId, msg);
+        _executor.Schedule(() =>
+        {
+            this.Trace("connection {connectionId}, subscription {subscriptionId} - send message {message}", ConnectionId, SubscriptionId, msg);
+            _mediator.SendAsync<None>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None);
+        });
+    }
 }
 
 internal interface ISubscriptionContext : IAsyncDisposable

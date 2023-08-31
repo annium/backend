@@ -1,4 +1,3 @@
-using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
@@ -42,13 +41,8 @@ internal class PushMessageHandler<T> :
         try
         {
             this.Trace("cn {connectionId} - start send", request.ConnectionId);
-            await cnRef.Value.Socket.SendBinaryAsync(_serializer.Serialize(request.Message));
-            this.Trace("cn {connectionId} - send complete", request.ConnectionId);
-        }
-        // socket can get closed/aborted in a moment
-        catch (WebSocketException e)
-        {
-            this.Trace("cn {connectionId} - send failed due to socket exception: {e}", request.ConnectionId, e);
+            var status = await cnRef.Value.Socket.SendBinaryAsync(_serializer.Serialize(request.Message), ct);
+            this.Trace("cn {connectionId} - send status - {status}", request.ConnectionId, status);
         }
         finally
         {

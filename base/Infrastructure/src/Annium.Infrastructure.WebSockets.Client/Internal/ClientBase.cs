@@ -36,17 +36,18 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         ILogger logger
     )
     {
+        _responseObservable = socket.ObserveBinary().Select(serializer.Deserialize<AbstractResponseBase>);
+
+        _disposable = Disposable.AsyncBox(logger);
+        _disposable += _responseObservable.OfType<ResponseBase>()
+            .SubscribeOn(TaskPoolScheduler.Default)
+            .Subscribe(CompleteResponse);
+
         Socket = socket;
+        Logger = logger;
         _serializer = serializer;
         _configuration = configuration;
-        Logger = logger;
-        _disposable = Disposable.AsyncBox(logger);
-
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-        _responseObservable = Socket.ObserveBinary().Select(_serializer.Deserialize<AbstractResponseBase>);
-        _disposable += _responseObservable.OfType<ResponseBase>()
-            .ObserveOn(TaskPoolScheduler.Default)
-            .Subscribe(CompleteResponse);
     }
 
     // broadcast
