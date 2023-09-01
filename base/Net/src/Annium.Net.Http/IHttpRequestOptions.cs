@@ -13,6 +13,5 @@ public interface IHttpRequestOptions
     public IReadOnlyDictionary<string, StringValues> Parameters { get; }
     public string QueryString { get; }
     public HttpRequestHeaders Headers { get; }
-
     public HttpContent? Content { get; }
 }
