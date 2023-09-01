@@ -1,4 +1,4 @@
-namespace Annium.Net.Http;
+namespace Annium.Net.Http.Internal;
 
 internal class Constants
 {

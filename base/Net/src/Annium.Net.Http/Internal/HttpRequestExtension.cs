@@ -13,7 +13,7 @@ internal partial class HttpRequest
         return this;
     }
 
-    public IHttpRequest Configure(Action<IHttpRequest, HttpRequestOptions> configure)
+    public IHttpRequest Configure(Action<IHttpRequest, IHttpRequestOptions> configure)
     {
         var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
         configure(this, options);
@@ -36,7 +36,7 @@ internal partial class HttpRequest
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, HttpRequestOptions, Task<IHttpResponse>> middleware)
+    public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, IHttpRequestOptions, Task<IHttpResponse>> middleware)
     {
         _middlewares.Add(new Middleware(middleware));
 

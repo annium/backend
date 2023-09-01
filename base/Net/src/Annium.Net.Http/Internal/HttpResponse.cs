@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http;
+namespace Annium.Net.Http.Internal;
 
-public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
+internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
 {
     public T Data { get; }
 
@@ -18,7 +18,7 @@ public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
     }
 }
 
-public class HttpResponse : IHttpResponse
+internal class HttpResponse : IHttpResponse
 {
     public bool IsSuccess { get; }
     public bool IsFailure { get; }

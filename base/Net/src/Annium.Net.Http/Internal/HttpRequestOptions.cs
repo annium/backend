@@ -5,9 +5,9 @@ using System.Net.Http.Headers;
 using Annium.Net.Base;
 using Microsoft.Extensions.Primitives;
 
-namespace Annium.Net.Http;
+namespace Annium.Net.Http.Internal;
 
-public class HttpRequestOptions
+internal class HttpRequestOptions : IHttpRequestOptions
 {
     public HttpMethod Method { get; }
     public Uri Uri { get; }
