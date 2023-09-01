@@ -16,7 +16,6 @@ public partial interface IHttpRequest : ILogSubject
     HttpRequestHeaders Headers { get; }
     IReadOnlyDictionary<string, StringValues> Params { get; }
     HttpContent? Content { get; }
-    bool IsEnsuringSuccess { get; }
     IHttpContentSerializer ContentSerializer { get; }
     IHttpRequest Base(Uri baseUri);
     IHttpRequest Base(string baseUri);
@@ -31,11 +30,6 @@ public partial interface IHttpRequest : ILogSubject
     IHttpRequest Param<T>(string key, IEnumerable<T> values);
     IHttpRequest Param<T>(string key, T value);
     IHttpRequest Attach(HttpContent content);
-    IHttpRequest DontEnsureSuccessStatusCode();
-    IHttpRequest EnsureSuccessStatusCode();
-    IHttpRequest EnsureSuccessStatusCode(string message);
-    IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, string> getFailureMessage);
-    IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, Task<string>> getFailureMessage);
     IHttpRequest Clone();
     Task<IHttpResponse> RunAsync();
     Task<IHttpResponse> RunAsync(CancellationToken ct);

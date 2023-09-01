@@ -28,7 +28,6 @@ internal partial class HttpRequest : IHttpRequest
     public HttpRequestHeaders Headers => _headers;
     public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
-    public bool IsEnsuringSuccess => _getFailureMessage != null;
     public IHttpContentSerializer ContentSerializer { get; }
     public ILogger Logger { get; }
     private HttpClient _client = DefaultClient;
@@ -36,7 +35,6 @@ internal partial class HttpRequest : IHttpRequest
     private string? _uri;
     private readonly HttpRequestHeaders _headers;
     private readonly Dictionary<string, StringValues> _parameters = new();
-    private Func<IHttpResponse, Task<string>>? _getFailureMessage;
     private readonly List<Middleware> _middlewares = new();
 
     internal HttpRequest(
@@ -73,7 +71,6 @@ internal partial class HttpRequest : IHttpRequest
         HttpRequestHeaders headers,
         IReadOnlyDictionary<string, StringValues> parameters,
         HttpContent? content,
-        Func<IHttpResponse, Task<string>>? getFailureMessage,
         List<Middleware> middlewares
     )
     {
@@ -88,7 +85,6 @@ internal partial class HttpRequest : IHttpRequest
             _headers.Add(name, values);
         _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
         Content = content;
-        _getFailureMessage = getFailureMessage;
         _middlewares = middlewares;
     }
 
@@ -145,29 +141,6 @@ internal partial class HttpRequest : IHttpRequest
         return this;
     }
 
-    public IHttpRequest DontEnsureSuccessStatusCode()
-    {
-        _getFailureMessage = null;
-
-        return this;
-    }
-
-    public IHttpRequest EnsureSuccessStatusCode() =>
-        EnsureSuccessStatusCode(response => response.Content.ReadAsStringAsync());
-
-    public IHttpRequest EnsureSuccessStatusCode(string message) =>
-        EnsureSuccessStatusCode(_ => Task.FromResult(message));
-
-    public IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, string> getFailureMessage) =>
-        EnsureSuccessStatusCode(response => Task.FromResult(getFailureMessage(response)));
-
-    public IHttpRequest EnsureSuccessStatusCode(Func<IHttpResponse, Task<string>> getFailureMessage)
-    {
-        _getFailureMessage = getFailureMessage;
-
-        return this;
-    }
-
     public IHttpRequest Clone() =>
         new HttpRequest(
             ContentSerializer,
@@ -179,7 +152,6 @@ internal partial class HttpRequest : IHttpRequest
             _headers,
             _parameters,
             Content,
-            _getFailureMessage,
             _middlewares
         );
 
@@ -215,12 +187,6 @@ internal partial class HttpRequest : IHttpRequest
 
         var responseMessage = await _client.SendAsync(requestMessage).ConfigureAwait(false);
         var response = new HttpResponse(responseMessage);
-
-        if (response.IsFailure && _getFailureMessage != null)
-        {
-            var failure = await _getFailureMessage(response).ConfigureAwait(false);
-            throw new HttpRequestException(failure, null, response.StatusCode);
-        }
 
         return response;
     }

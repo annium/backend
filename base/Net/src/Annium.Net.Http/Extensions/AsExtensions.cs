@@ -38,9 +38,6 @@ public static class AsExtensions
         Func<IHttpRequest, HttpContent, Task<T>> parseAsync
     )
     {
-        if (!request.IsEnsuringSuccess)
-            request.EnsureSuccessStatusCode();
-
         var response = await request.RunAsync();
 
         return await parseAsync(request, response.Content);
@@ -54,9 +51,6 @@ public static class AsExtensions
     {
         try
         {
-            if (!request.IsEnsuringSuccess)
-                request.EnsureSuccessStatusCode();
-
             var response = await request.RunAsync();
 
             return await parseAsync(request, response.Content, defaultValue);
