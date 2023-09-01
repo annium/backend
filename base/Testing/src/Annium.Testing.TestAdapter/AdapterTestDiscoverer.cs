@@ -50,7 +50,7 @@ public class AdapterTestDiscoverer : ITestDiscoverer, ILogSubject
     {
         var assembly = Source.Resolve(source);
 
-        this.Debug<string>("Start discovery of {assembly}.", assembly.FullName);
+        this.Debug<string?>("Start discovery of {assembly}.", assembly.FullName);
 
         return _testDiscoverer!.FindTestsAsync(
             assembly,
