@@ -1,6 +1,6 @@
-namespace Annium.Net.Http;
+namespace Annium.Net.Http.Internal;
 
-public interface IHttpContentSerializer
+internal interface IHttpContentSerializer
 {
     bool CanSerialize(string mediaType);
     string Serialize<T>(string mediaType, T value);

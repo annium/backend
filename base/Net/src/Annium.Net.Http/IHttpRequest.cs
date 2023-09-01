@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
+using Annium.Net.Http.Internal;
 using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Http;
@@ -16,7 +17,6 @@ public partial interface IHttpRequest : ILogSubject
     HttpRequestHeaders Headers { get; }
     IReadOnlyDictionary<string, StringValues> Params { get; }
     HttpContent? Content { get; }
-    IHttpContentSerializer ContentSerializer { get; }
     IHttpRequest Base(Uri baseUri);
     IHttpRequest Base(string baseUri);
     IHttpRequest UseClient(HttpClient client);
@@ -33,4 +33,5 @@ public partial interface IHttpRequest : ILogSubject
     IHttpRequest Clone();
     Task<IHttpResponse> RunAsync();
     Task<IHttpResponse> RunAsync(CancellationToken ct);
+    internal IHttpContentSerializer ContentSerializer { get; }
 }
