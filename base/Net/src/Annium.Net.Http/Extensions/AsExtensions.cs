@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Annium.Data.Operations;
@@ -10,39 +9,27 @@ namespace Annium.Net.Http;
 
 public static class AsExtensions
 {
-    public static Task<string> AsStringAsync(this IHttpRequest request) =>
-        request.ToAsync(Parse.String);
-
-    public static Task<string> AsStringAsync(this IHttpRequest request, string defaultValue) =>
-        request.ToAsync(Parse.String, defaultValue);
-
-    public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IHttpRequest request) =>
-        request.ToAsync(Parse.Memory);
-
-    public static Task<ReadOnlyMemory<byte>> AsMemoryAsync(this IHttpRequest request, ReadOnlyMemory<byte> defaultValue) =>
-        request.ToAsync(Parse.Memory, defaultValue);
-
-    public static Task<Stream> AsStreamAsync(this IHttpRequest request) =>
-        request.ToAsync(Parse.Stream);
-
-    public static Task<Stream> AsStreamAsync(this IHttpRequest request, Stream defaultValue) =>
-        request.ToAsync(Parse.Stream, defaultValue);
-
+    // not used
     public static Task<IResult> AsResultAsync(this IHttpRequest request) =>
         request.ToAsync(Parse.Result);
 
+    // not used
     public static Task<IResult> AsResultAsync(this IHttpRequest request, IResult defaultValue) =>
         request.ToAsync(Parse.Result, defaultValue);
 
+    // used in AspNetCore tests
     public static Task<IResult<T>> AsResultAsync<T>(this IHttpRequest request) =>
         request.ToAsync(Parse.ResultT<T>);
 
+    // not used
     public static Task<IResult<T>> AsResultAsync<T>(this IHttpRequest request, IResult<T> defaultValue) =>
         request.ToAsync(Parse.ResultT, defaultValue);
 
+    // used in lots of places
     public static Task<T> AsAsync<T>(this IHttpRequest request) =>
         request.ToAsync(Parse.T<T>);
 
+    // used in lots of places
     public static Task<T> AsAsync<T>(this IHttpRequest request, T defaultValue) =>
         request.ToAsync(Parse.T, defaultValue);
 

@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -11,39 +10,27 @@ namespace Annium.Net.Http;
 
 public static class AsResponseExtensions
 {
-    public static Task<IHttpResponse<string>> AsResponseStringAsync(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.String);
-
-    public static Task<IHttpResponse<string>> AsResponseStringAsync(this IHttpRequest request, string defaultValue) =>
-        request.ToResponseAsync(Parse.String, defaultValue);
-
-    public static Task<IHttpResponse<ReadOnlyMemory<byte>>> AsResponseMemoryAsync(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.Memory);
-
-    public static Task<IHttpResponse<ReadOnlyMemory<byte>>> AsResponseMemoryAsync(this IHttpRequest request, ReadOnlyMemory<byte> defaultValue) =>
-        request.ToResponseAsync(Parse.Memory, defaultValue);
-
-    public static Task<IHttpResponse<Stream>> AsResponseStreamAsync(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.Stream);
-
-    public static Task<IHttpResponse<Stream>> AsResponseStreamAsync(this IHttpRequest request, Stream defaultValue) =>
-        request.ToResponseAsync(Parse.Stream, defaultValue);
-
+    // used in AspNetCore tests
     public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request) =>
         request.ToResponseAsync(Parse.Result);
 
+    // not used
     public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request, IResult defaultValue) =>
         request.ToResponseAsync(Parse.Result, defaultValue);
 
+    // not used
     public static Task<IHttpResponse<IResult<T>>> AsResponseResultAsync<T>(this IHttpRequest request) =>
         request.ToResponseAsync(Parse.ResultT<T>);
 
+    // not used
     public static Task<IHttpResponse<IResult<T>>> AsResponseResultAsync<T>(this IHttpRequest request, IResult<T> defaultValue) =>
         request.ToResponseAsync(Parse.ResultT, defaultValue);
 
+    // used in lots of places
     public static Task<IHttpResponse<T>> AsResponseAsync<T>(this IHttpRequest request) =>
         request.ToResponseAsync(Parse.T<T>);
 
+    // used in lots of places
     public static Task<IHttpResponse<T>> AsResponseAsync<T>(this IHttpRequest request, T defaultValue) =>
         request.ToResponseAsync(Parse.T, defaultValue);
 
