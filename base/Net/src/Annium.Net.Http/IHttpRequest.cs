@@ -31,7 +31,6 @@ public partial interface IHttpRequest : ILogSubject
     IHttpRequest Param<T>(string key, T value);
     IHttpRequest Attach(HttpContent content);
     IHttpRequest Clone();
-    Task<IHttpResponse> RunAsync();
-    Task<IHttpResponse> RunAsync(CancellationToken ct);
+    Task<IHttpResponse> RunAsync(CancellationToken ct = default);
     internal IHttpContentSerializer ContentSerializer { get; }
 }

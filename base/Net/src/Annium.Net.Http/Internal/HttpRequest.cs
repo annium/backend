@@ -24,23 +24,23 @@ internal partial class HttpRequest : IHttpRequest
     private static readonly HttpClient DefaultClient = new();
 
     public HttpMethod Method { get; private set; } = HttpMethod.Get;
-    public Uri Uri => BuildUri();
-    public HttpRequestHeaders Headers => _headers;
+    public Uri Uri => Helper.BuildUri(_client, _baseUri, _uri, _parameters);
+    public HttpRequestHeaders Headers { get; }
     public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
     public IHttpContentSerializer ContentSerializer { get; }
     public ILogger Logger { get; }
+    private Uri Path => Helper.GetUriFactory(_client, _baseUri, _uri).Build();
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
     private string? _uri;
-    private readonly HttpRequestHeaders _headers;
     private readonly Dictionary<string, StringValues> _parameters = new();
     private readonly List<Middleware> _middlewares = new();
 
     internal HttpRequest(
+        Uri baseUri,
         IHttpContentSerializer httpContentSerializer,
-        ILogger logger,
-        Uri baseUri
+        ILogger logger
     ) : this(
         httpContentSerializer,
         logger
@@ -58,7 +58,7 @@ internal partial class HttpRequest : IHttpRequest
         ContentSerializer = httpContentSerializer;
         Logger = logger;
         using var message = new HttpRequestMessage();
-        _headers = message.Headers;
+        Headers = message.Headers;
     }
 
     private HttpRequest(
@@ -80,9 +80,9 @@ internal partial class HttpRequest : IHttpRequest
         Method = method;
         _baseUri = baseUri;
         _uri = uri;
-        using (var message = new HttpRequestMessage()) _headers = message.Headers;
+        using (var message = new HttpRequestMessage()) Headers = message.Headers;
         foreach (var (name, values) in headers)
-            _headers.Add(name, values);
+            Headers.Add(name, values);
         _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
         Content = content;
         _middlewares = middlewares;
@@ -149,38 +149,41 @@ internal partial class HttpRequest : IHttpRequest
             Method,
             _baseUri,
             _uri,
-            _headers,
+            Headers,
             _parameters,
             Content,
             _middlewares
         );
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync() => InternalRunAsync(0, CancellationToken.None);
-
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync(CancellationToken ct) => InternalRunAsync(0, ct);
+    public Task<IHttpResponse> RunAsync(CancellationToken ct = default) => InternalRunAsync(0, ct);
 
     private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
     {
         if (ct.IsCancellationRequested)
-            return GetRequestCanceledResponse();
+            return new HttpResponse(new HttpResponseMessage(HttpStatusCode.RequestTimeout)
+            {
+                ReasonPhrase = "Request canceled"
+            });
 
         if (middlewareIndex >= _middlewares.Count)
             return await InternalRunAsync().ConfigureAwait(false);
 
-        Func<Task<IHttpResponse>> next = () => InternalRunAsync(middlewareIndex + 1, ct);
-        var options = new HttpRequestOptions(Method, GetUriFactory().Build(), _parameters, _headers, Content);
+        var options = new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
         var middleware = _middlewares[middlewareIndex];
 
-        return await middleware(next, this, options).ConfigureAwait(false);
+        return await middleware(
+            () => InternalRunAsync(middlewareIndex + 1, ct),
+            this,
+            options
+        ).ConfigureAwait(false);
     }
 
     private async Task<IHttpResponse> InternalRunAsync()
     {
-        var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = BuildUri() };
+        var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = Uri };
 
-        foreach (var (name, values) in _headers)
+        foreach (var (name, values) in Headers)
             requestMessage.Headers.Add(name, values);
 
         requestMessage.Content = Content;
@@ -190,39 +193,44 @@ internal partial class HttpRequest : IHttpRequest
 
         return response;
     }
+}
 
-    private IHttpResponse GetRequestCanceledResponse()
+file static class Helper
+{
+    public static Uri BuildUri(
+        HttpClient client,
+        Uri? baseUri,
+        string? uri,
+        IReadOnlyDictionary<string, StringValues> parameters
+    )
     {
-        var message = new HttpResponseMessage(HttpStatusCode.RequestTimeout) { ReasonPhrase = "Request canceled" };
-
-        return new HttpResponse(message);
-    }
-
-    private Uri BuildUri()
-    {
-        var factory = GetUriFactory();
+        var factory = GetUriFactory(client, baseUri, uri);
 
         // add manually defined params to queryBuilder
-        foreach (var (name, value) in _parameters)
+        foreach (var (name, value) in parameters)
             factory.Param(name, value);
 
         return factory.Build();
     }
 
-    private UriFactory GetUriFactory()
+    public static UriFactory GetUriFactory(
+        HttpClient client,
+        Uri? baseUri,
+        string? uri
+    )
     {
-        var baseUri = _baseUri ?? _client.BaseAddress;
-        if (baseUri is null)
+        var baseAddress = baseUri ?? client.BaseAddress;
+        if (baseAddress is null)
         {
-            if (string.IsNullOrWhiteSpace(_uri))
+            if (string.IsNullOrWhiteSpace(uri))
                 throw new ArgumentException("Request URI is empty");
 
-            return UriFactory.Base(_uri);
+            return UriFactory.Base(uri);
         }
 
-        if (string.IsNullOrWhiteSpace(_uri))
-            return UriFactory.Base(baseUri);
+        if (string.IsNullOrWhiteSpace(uri))
+            return UriFactory.Base(baseAddress);
 
-        return UriFactory.Base(baseUri).Path(_uri);
+        return UriFactory.Base(baseAddress).Path(uri);
     }
 }

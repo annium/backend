@@ -19,7 +19,7 @@ internal class HttpRequestFactory : IHttpRequestFactory
 
     public IHttpRequest New() => new HttpRequest(_httpContentSerializer, _logger);
 
-    public IHttpRequest New(string baseUri) => new HttpRequest(_httpContentSerializer, _logger, new Uri(baseUri.Trim()));
+    public IHttpRequest New(string baseUri) => new HttpRequest(new Uri(baseUri.Trim()), _httpContentSerializer, _logger);
 
-    public IHttpRequest New(Uri baseUri) => new HttpRequest(_httpContentSerializer, _logger, baseUri);
+    public IHttpRequest New(Uri baseUri) => new HttpRequest(baseUri, _httpContentSerializer, _logger);
 }
