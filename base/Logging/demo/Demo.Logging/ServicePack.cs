@@ -16,7 +16,7 @@ internal class ServicePack : ServicePackBase
         container.AddMapper();
         container.AddArguments();
         container.AddSerializers().WithJson(isDefault: true);
-        container.AddHttpRequestFactory().SetDefault();
+        container.AddHttpRequestFactory(true);
 
         // commands
         container.AddAll(GetType().Assembly)

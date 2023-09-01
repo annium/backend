@@ -21,7 +21,7 @@ internal class BaseServicePack : ServicePackBase
                 .ConfigureForNodaTime()
             );
         container.AddLogging();
-        container.AddHttpRequestFactory().SetDefault();
+        container.AddHttpRequestFactory(true);
         container.AddMediatorConfiguration(ConfigureMediator);
         container.AddMediator();
         container.AddWebSocketServer<ConnectionState>(

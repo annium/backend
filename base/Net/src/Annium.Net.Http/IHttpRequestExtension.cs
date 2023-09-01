@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Net.Http.Internal;
 
 namespace Annium.Net.Http;
 
