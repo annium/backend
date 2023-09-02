@@ -114,15 +114,16 @@ internal partial class HttpRequest : IHttpRequest
         return this;
     }
 
-    public IHttpRequest Param<T>(string key, List<T> values) => Param(key, values.AsEnumerable());
-    public IHttpRequest Param<T>(string key, IList<T> values) => Param(key, values.AsEnumerable());
-    public IHttpRequest Param<T>(string key, IReadOnlyList<T> values) => Param(key, values.AsEnumerable());
-    public IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values) => Param(key, values.AsEnumerable());
-    public IHttpRequest Param<T>(string key, T[] values) => Param(key, values.AsEnumerable());
-
-    public IHttpRequest Param<T>(string key, IEnumerable<T> values)
+    public IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values)
     {
-        _parameters[key] = new StringValues(values.Where(x => x is not null).Select(x => x!.ToString()).ToArray());
+        var parameters =
+        (
+            from value in values
+            where value is not null
+            select value.ToString()
+        ).ToArray();
+
+        _parameters[key] = new StringValues(parameters);
 
         return this;
     }
