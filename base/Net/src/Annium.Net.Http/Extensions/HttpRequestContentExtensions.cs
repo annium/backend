@@ -1,3 +1,4 @@
+using System.IO;
 using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
@@ -9,7 +10,9 @@ public static class HttpRequestContentExtensions
 {
     public static IHttpRequest JsonContent<T>(this IHttpRequest request, T data)
     {
-        var content = request.Serializer.Serialize(MediaTypeNames.Application.Json, data);
+        using var stream = request.Serializer.Serialize(MediaTypeNames.Application.Json, data);
+        using var reader = new StreamReader(stream);
+        var content = reader.ReadToEnd();
 
         return request.Attach(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
     }

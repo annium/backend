@@ -1,3 +1,4 @@
+using System.IO;
 using System.Linq;
 using Annium.Logging;
 using Annium.Net.Http;
@@ -20,7 +21,7 @@ public static class ServiceContainerExtensions
     {
         container.Add<Serializer>(sp =>
         {
-            var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>()
+            var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<Stream>>>()
                 .Where(x => x.Key.Key == key)
                 .ToIndex(x => x.Key.MediaType, x => x.Value);
 

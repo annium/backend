@@ -13,7 +13,7 @@ internal static class ContentParser
         var mediaType = content.Headers.ContentType?.MediaType
             ?? throw new HttpRequestException("Media-type missing in response");
 
-        var raw = await content.ReadAsStringAsync();
+        var raw = await content.ReadAsStreamAsync();
 
         return serializer.Deserialize<T>(mediaType, raw);
     }

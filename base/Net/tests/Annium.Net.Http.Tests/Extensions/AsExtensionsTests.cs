@@ -1,7 +1,6 @@
-using System;
+using System.IO;
 using System.Net;
 using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
@@ -259,7 +258,9 @@ public class AsExtensionsTests : TestBase
     {
         var contentType = MediaTypeNames.Application.Json;
         response.ContentType = contentType;
-        var data = Encoding.UTF8.GetBytes(_serializer.Serialize(contentType, value));
+        using var ms = new MemoryStream();
+        await _serializer.Serialize(contentType, value).CopyToAsync(ms);
+        var data = ms.ToArray();
         await response.OutputStream.WriteAsync(data);
     }
 
