@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.IO;
 using System.Text.Json;
 using Annium.Core.Runtime.Types;
 using Annium.Serialization.Abstractions;
@@ -25,7 +26,8 @@ public static class SerializationConfigurationBuilderExtensions
         return builder
             .Register<byte[], ByteArraySerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateByteArray))
             .Register<ReadOnlyMemory<byte>, ReadOnlyMemoryByteSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateReadOnlyMemoryByte))
-            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateString));
+            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateString))
+            .Register<Stream, StreamSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateStream));
     }
 
     public static ISerializationConfigurationBuilder WithJson(
@@ -39,7 +41,8 @@ public static class SerializationConfigurationBuilderExtensions
         return builder
             .Register<byte[], ByteArraySerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateByteArray))
             .Register<ReadOnlyMemory<byte>, ReadOnlyMemoryByteSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateReadOnlyMemoryByte))
-            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateString));
+            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateString))
+            .Register<Stream, StreamSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, Configure, CreateStream));
     }
 
     public static ISerializationConfigurationBuilder WithJson(
@@ -51,7 +54,8 @@ public static class SerializationConfigurationBuilderExtensions
         return builder
             .Register<byte[], ByteArraySerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, configure, CreateByteArray))
             .Register<ReadOnlyMemory<byte>, ReadOnlyMemoryByteSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, configure, CreateReadOnlyMemoryByte))
-            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, configure, CreateString));
+            .Register<string, StringSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, configure, CreateString))
+            .Register<Stream, StreamSerializer>(Constants.MediaType, isDefault, ResolveSerializer(builder.Key, configure, CreateStream));
     }
 
     private static Func<IServiceProvider, TSerializer> ResolveSerializer<TSerializer>(
@@ -76,4 +80,5 @@ public static class SerializationConfigurationBuilderExtensions
     private static ByteArraySerializer CreateByteArray(JsonSerializerOptions opts) => new(opts);
     private static ReadOnlyMemoryByteSerializer CreateReadOnlyMemoryByte(JsonSerializerOptions opts) => new(opts);
     private static StringSerializer CreateString(JsonSerializerOptions opts) => new(opts);
+    private static StreamSerializer CreateStream(JsonSerializerOptions opts) => new(opts);
 }
