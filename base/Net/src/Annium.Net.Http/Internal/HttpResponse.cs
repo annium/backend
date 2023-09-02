@@ -20,6 +20,14 @@ internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
 
 internal class HttpResponse : IHttpResponse
 {
+    private static readonly HttpResponseHeaders DefaultHeaders;
+
+    static HttpResponse()
+    {
+        using var message = new HttpResponseMessage();
+        DefaultHeaders = message.Headers;
+    }
+
     public bool IsSuccess { get; }
     public bool IsFailure { get; }
     public HttpStatusCode StatusCode { get; }
@@ -39,15 +47,21 @@ internal class HttpResponse : IHttpResponse
         Content = message.Content;
     }
 
-    public HttpResponse(Uri uri, HttpRequestException exception)
+    public HttpResponse(
+        bool isSuccess,
+        Uri uri,
+        HttpStatusCode statusCode,
+        string statusText,
+        string message
+    )
     {
-        IsSuccess = false;
-        IsFailure = true;
-        StatusCode = HttpStatusCode.ServiceUnavailable;
-        StatusText = "Connection refused";
+        IsSuccess = isSuccess;
+        IsFailure = !isSuccess;
+        StatusCode = statusCode;
+        StatusText = statusText;
         Uri = uri;
-        using (var message = new HttpResponseMessage()) Headers = message.Headers;
-        Content = new StringContent(exception.Message);
+        Headers = DefaultHeaders;
+        Content = new StringContent(message);
     }
 
     protected HttpResponse(IHttpResponse response)

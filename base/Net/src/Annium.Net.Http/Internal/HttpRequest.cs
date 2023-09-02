@@ -157,10 +157,16 @@ internal partial class HttpRequest : IHttpRequest
         );
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync(CancellationToken ct = default) => InternalRunAsync(0, ct);
+    public Task<IHttpResponse> RunAsync(CancellationToken ct = default) =>
+        _middlewares.Count == 0
+            ? InternalRunAsync(ct)
+            : InternalRunAsync(0, ct);
 
     private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
     {
+        if (middlewareIndex >= _middlewares.Count)
+            return await InternalRunAsync(ct).ConfigureAwait(false);
+
         if (ct.IsCancellationRequested)
             return new HttpResponse(
                 Uri,
@@ -169,9 +175,6 @@ internal partial class HttpRequest : IHttpRequest
                     ReasonPhrase = "Request canceled"
                 }
             );
-
-        if (middlewareIndex >= _middlewares.Count)
-            return await InternalRunAsync().ConfigureAwait(false);
 
         var options = new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
         var middleware = _middlewares[middlewareIndex];
@@ -183,7 +186,7 @@ internal partial class HttpRequest : IHttpRequest
         ).ConfigureAwait(false);
     }
 
-    private async Task<IHttpResponse> InternalRunAsync()
+    private async Task<IHttpResponse> InternalRunAsync(CancellationToken ct)
     {
         var uri = Uri;
         var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = uri };
@@ -195,16 +198,30 @@ internal partial class HttpRequest : IHttpRequest
 
         try
         {
-            var responseMessage = await _client.SendAsync(requestMessage).ConfigureAwait(false);
+            var responseMessage = await _client.SendAsync(requestMessage, ct).ConfigureAwait(false);
             var response = new HttpResponse(uri, responseMessage);
 
             return response;
         }
         catch (HttpRequestException e)
         {
-            var response = new HttpResponse(uri, e);
-
-            return response;
+            return new HttpResponse(
+                false,
+                uri,
+                HttpStatusCode.ServiceUnavailable,
+                "Connection refused",
+                e.Message
+            );
+        }
+        catch (TaskCanceledException e)
+        {
+            return new HttpResponse(
+                false,
+                uri,
+                HttpStatusCode.GatewayTimeout,
+                "Request canceled",
+                e.Message
+            );
         }
     }
 }

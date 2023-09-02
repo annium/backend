@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Testing;
@@ -35,6 +36,33 @@ public class HttpRequestTests : TestBase
     }
 
     [Fact]
+    public async Task Send_Canceled()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var _ = RunServer(async (_, response) =>
+        {
+            await Task.Delay(100);
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.Close();
+        });
+
+        // act
+        this.Trace("send");
+        var response = await _httpRequestFactory.New(ServerUri)
+            .Get("/")
+            .RunAsync(new CancellationToken(true));
+
+        // assert
+        response.IsSuccess.IsFalse();
+        response.IsFailure.IsTrue();
+        response.StatusCode.Is(HttpStatusCode.GatewayTimeout);
+
+        this.Trace("done");
+    }
+
+    [Fact]
     public async Task Send_Echo()
     {
         this.Trace("start");
@@ -61,6 +89,30 @@ public class HttpRequestTests : TestBase
         response.StatusCode.Is(HttpStatusCode.OK);
         var responseContent = await response.Content.ReadAsStringAsync();
         responseContent.Is(message);
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_CustomMethod()
+    {
+        this.Trace("start");
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Headers()
+    {
+        this.Trace("start");
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Params()
+    {
+        this.Trace("start");
 
         this.Trace("done");
     }
