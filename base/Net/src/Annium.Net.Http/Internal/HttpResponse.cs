@@ -33,13 +33,13 @@ internal class HttpResponse : IHttpResponse
         IsSuccess = message.IsSuccessStatusCode;
         IsFailure = !message.IsSuccessStatusCode;
         StatusCode = message.StatusCode;
-        StatusText = message.ReasonPhrase!;
-        Uri = message.RequestMessage!.RequestUri!;
+        StatusText = message.ReasonPhrase ?? string.Empty;
+        Uri = message.RequestMessage?.RequestUri ?? throw new InvalidOperationException("Request uri is missing");
         Headers = message.Headers;
         Content = message.Content;
     }
 
-    internal HttpResponse(IHttpResponse response)
+    protected HttpResponse(IHttpResponse response)
     {
         IsSuccess = response.IsSuccess;
         IsFailure = response.IsFailure;

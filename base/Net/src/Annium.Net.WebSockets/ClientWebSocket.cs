@@ -15,6 +15,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
     public event Action OnConnected = delegate { };
     public event Action<WebSocketCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
+    private Uri Uri => _uri ?? throw new InvalidOperationException("Uri is not set");
     private readonly object _locker = new();
     private readonly IClientManagedWebSocket _socket;
     private readonly IConnectionMonitor _connectionMonitor;
@@ -191,7 +192,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
             SetStatus(Status.Connecting);
         }
 
-        ReconnectPrivate(_uri!, WebSocketCloseStatus.ClosedRemote);
+        ReconnectPrivate(Uri, WebSocketCloseStatus.ClosedRemote);
 
         this.Trace("done");
     }
@@ -211,7 +212,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
             SetStatus(Status.Connecting);
         }
 
-        ReconnectPrivate(_uri!, task.Result.Status);
+        ReconnectPrivate(Uri, task.Result.Status);
 
         this.Trace("done");
     }
