@@ -162,10 +162,13 @@ internal partial class HttpRequest : IHttpRequest
     private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
     {
         if (ct.IsCancellationRequested)
-            return new HttpResponse(new HttpResponseMessage(HttpStatusCode.RequestTimeout)
-            {
-                ReasonPhrase = "Request canceled"
-            });
+            return new HttpResponse(
+                Uri,
+                new HttpResponseMessage(HttpStatusCode.RequestTimeout)
+                {
+                    ReasonPhrase = "Request canceled"
+                }
+            );
 
         if (middlewareIndex >= _middlewares.Count)
             return await InternalRunAsync().ConfigureAwait(false);
@@ -182,17 +185,27 @@ internal partial class HttpRequest : IHttpRequest
 
     private async Task<IHttpResponse> InternalRunAsync()
     {
-        var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = Uri };
+        var uri = Uri;
+        var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = uri };
 
         foreach (var (name, values) in Headers)
             requestMessage.Headers.Add(name, values);
 
         requestMessage.Content = Content;
 
-        var responseMessage = await _client.SendAsync(requestMessage).ConfigureAwait(false);
-        var response = new HttpResponse(responseMessage);
+        try
+        {
+            var responseMessage = await _client.SendAsync(requestMessage).ConfigureAwait(false);
+            var response = new HttpResponse(uri, responseMessage);
 
-        return response;
+            return response;
+        }
+        catch (HttpRequestException e)
+        {
+            var response = new HttpResponse(uri, e);
+
+            return response;
+        }
     }
 }
 

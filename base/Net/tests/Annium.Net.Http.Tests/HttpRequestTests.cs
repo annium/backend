@@ -27,6 +27,8 @@ public class HttpRequestTests : TestBase
         var response = await _httpRequestFactory.New(ServerUri).Get("/").RunAsync();
 
         // assert
+        response.IsSuccess.IsFalse();
+        response.IsFailure.IsTrue();
         response.StatusCode.Is(HttpStatusCode.ServiceUnavailable);
 
         this.Trace("done");
@@ -54,6 +56,8 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsSuccess.IsTrue();
+        response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.OK);
         var responseContent = await response.Content.ReadAsStringAsync();
         responseContent.Is(message);

@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Annium.Data.Operations;
@@ -52,15 +51,7 @@ public static class AsResponseExtensions
         T defaultValue
     )
     {
-        IHttpResponse response;
-        try
-        {
-            response = await request.RunAsync();
-        }
-        catch (Exception e)
-        {
-            response = new HttpResponse(new HttpResponseMessage(HttpStatusCode.BadGateway) { Content = new StringContent(e.Message) });
-        }
+        var response = await request.RunAsync();
 
         try
         {

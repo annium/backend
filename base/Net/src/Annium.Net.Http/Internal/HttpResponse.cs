@@ -28,15 +28,26 @@ internal class HttpResponse : IHttpResponse
     public HttpResponseHeaders Headers { get; }
     public HttpContent Content { get; }
 
-    public HttpResponse(HttpResponseMessage message)
+    public HttpResponse(Uri uri, HttpResponseMessage message)
     {
         IsSuccess = message.IsSuccessStatusCode;
         IsFailure = !message.IsSuccessStatusCode;
         StatusCode = message.StatusCode;
         StatusText = message.ReasonPhrase ?? string.Empty;
-        Uri = message.RequestMessage?.RequestUri ?? throw new InvalidOperationException("Request uri is missing");
+        Uri = uri;
         Headers = message.Headers;
         Content = message.Content;
+    }
+
+    public HttpResponse(Uri uri, HttpRequestException exception)
+    {
+        IsSuccess = false;
+        IsFailure = true;
+        StatusCode = HttpStatusCode.ServiceUnavailable;
+        StatusText = "Connection refused";
+        Uri = uri;
+        using (var message = new HttpResponseMessage()) Headers = message.Headers;
+        Content = new StringContent(exception.Message);
     }
 
     protected HttpResponse(IHttpResponse response)
