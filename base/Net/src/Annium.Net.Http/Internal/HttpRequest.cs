@@ -34,6 +34,7 @@ internal partial class HttpRequest : IHttpRequest
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
     private string? _uri;
+    private TimeSpan _timeout = TimeSpan.FromSeconds(30);
     private readonly Dictionary<string, StringValues> _parameters = new();
     private readonly List<Middleware> _middlewares = new();
 
@@ -156,11 +157,25 @@ internal partial class HttpRequest : IHttpRequest
             _middlewares
         );
 
+    public IHttpRequest Timeout(TimeSpan timeout)
+    {
+        _timeout = timeout;
+
+        return this;
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync(CancellationToken ct = default) =>
-        _middlewares.Count == 0
-            ? InternalRunAsync(ct)
-            : InternalRunAsync(0, ct);
+    public Task<IHttpResponse> RunAsync(CancellationToken ct = default)
+    {
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(
+            new CancellationTokenSource(_timeout).Token,
+            ct
+        );
+
+        return _middlewares.Count == 0
+            ? InternalRunAsync(cts.Token)
+            : InternalRunAsync(0, cts.Token);
+    }
 
     private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
     {

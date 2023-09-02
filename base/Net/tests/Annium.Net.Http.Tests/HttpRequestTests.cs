@@ -41,6 +41,34 @@ public class HttpRequestTests : TestBase
         this.Trace("start");
 
         // arrange
+        await using var _ = RunServer((_, response) =>
+        {
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.Close();
+
+            return Task.CompletedTask;
+        });
+
+        // act
+        this.Trace("send");
+        var response = await _httpRequestFactory.New(ServerUri)
+            .Get("/")
+            .RunAsync(new CancellationToken(true));
+
+        // assert
+        response.IsSuccess.IsFalse();
+        response.IsFailure.IsTrue();
+        response.StatusCode.Is(HttpStatusCode.GatewayTimeout);
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Timeout()
+    {
+        this.Trace("start");
+
+        // arrange
         await using var _ = RunServer(async (_, response) =>
         {
             await Task.Delay(100);
@@ -52,7 +80,8 @@ public class HttpRequestTests : TestBase
         this.Trace("send");
         var response = await _httpRequestFactory.New(ServerUri)
             .Get("/")
-            .RunAsync(new CancellationToken(true));
+            .Timeout(TimeSpan.FromMilliseconds(50))
+            .RunAsync();
 
         // assert
         response.IsSuccess.IsFalse();

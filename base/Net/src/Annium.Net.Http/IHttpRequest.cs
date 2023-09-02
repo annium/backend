@@ -26,6 +26,7 @@ public partial interface IHttpRequest : ILogSubject
     IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values);
     IHttpRequest Attach(HttpContent content);
     IHttpRequest Clone();
+    IHttpRequest Timeout(TimeSpan timeout);
     Task<IHttpResponse> RunAsync(CancellationToken ct = default);
     internal IHttpContentSerializer ContentSerializer { get; }
 }
