@@ -22,12 +22,21 @@ public abstract class TestBase : Testing.Lib.TestBase
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
 
-    protected IAsyncDisposable RunServerBase(
-        Func<HttpListenerContext, ILogger, CancellationToken, Task> handle
+    protected IAsyncDisposable RunServer(
+        Func<HttpListenerRequest, HttpListenerResponse, Task> handle
     )
     {
         var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(uri).WithHttp(handle).Build(Get<ILogger>());
+        var server = WebServerBuilder.New(uri)
+            .WithHttp(async (ctx, _, _) =>
+            {
+                this.Trace("start");
+
+                await handle(ctx.Request, ctx.Response);
+
+                this.Trace("done");
+            })
+            .Build(Get<ILogger>());
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 

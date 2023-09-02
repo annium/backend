@@ -1,5 +1,8 @@
 using System;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
@@ -92,7 +95,113 @@ public class HttpRequestTests : TestBase
     }
 
     [Fact]
-    public async Task Send_Echo()
+    public async Task Send_CustomMethod()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var _ = RunServer(async (request, response) =>
+        {
+            var data = Encoding.UTF8.GetBytes(request.HttpMethod);
+            await response.OutputStream.WriteAsync(data);
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.Close();
+        });
+
+        // act
+        this.Trace("send");
+        var response = await _httpRequestFactory.New(ServerUri)
+            .With(HttpMethod.Patch, "/")
+            .RunAsync();
+
+        // assert
+        response.IsSuccess.IsTrue();
+        response.IsFailure.IsFalse();
+        response.StatusCode.Is(HttpStatusCode.OK);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        responseContent.Is(HttpMethod.Patch.ToString());
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Headers()
+    {
+        this.Trace("start");
+
+        // arrange
+        const string headerPrefix = "custom";
+        const string headerKey = $"{headerPrefix}-header";
+        const string headerValue = $"{headerPrefix} content";
+        await using var _ = RunServer((request, response) =>
+        {
+            var targetHeaders = request.Headers.AllKeys
+                .OfType<string>()
+                .Where(x => x.StartsWith(headerPrefix))
+                .ToArray();
+
+            foreach (var key in targetHeaders)
+                response.Headers.Add(key, request.Headers.Get(key));
+
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.Close();
+
+            return Task.CompletedTask;
+        });
+
+        // act
+        this.Trace("send");
+        var response = await _httpRequestFactory.New(ServerUri)
+            .Head("/")
+            .Header(headerKey, headerValue)
+            .RunAsync();
+
+        // assert
+        response.IsSuccess.IsTrue();
+        response.IsFailure.IsFalse();
+        response.StatusCode.Is(HttpStatusCode.OK);
+        response.Headers.TryGetValues(headerKey, out var headerValuesRaw).IsTrue();
+        var headerValues = headerValuesRaw.NotNull().ToArray();
+        headerValues.Has(1);
+        headerValues.At(0).Is(headerValue);
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Params()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var _ = RunServer(async (request, response) =>
+        {
+            var data = Encoding.UTF8.GetBytes(request.Url.NotNull().Query);
+            await response.OutputStream.WriteAsync(data);
+            response.StatusCode = (int)HttpStatusCode.OK;
+            response.Close();
+        });
+
+        // act
+        this.Trace("send");
+        var response = await _httpRequestFactory.New(ServerUri)
+            .Get("/")
+            .Param("x", "a")
+            .Param("y", new[] { "b", "c" })
+            .RunAsync();
+
+        // assert
+        response.IsSuccess.IsTrue();
+        response.IsFailure.IsFalse();
+        response.StatusCode.Is(HttpStatusCode.OK);
+        var responseContent = await response.Content.ReadAsStringAsync();
+        responseContent.Is("?x=a&y=b&y=c");
+
+        this.Trace("done");
+    }
+
+    [Fact]
+    public async Task Send_Content()
     {
         this.Trace("start");
 
@@ -120,43 +229,5 @@ public class HttpRequestTests : TestBase
         responseContent.Is(message);
 
         this.Trace("done");
-    }
-
-    [Fact]
-    public async Task Send_CustomMethod()
-    {
-        this.Trace("start");
-
-        this.Trace("done");
-    }
-
-    [Fact]
-    public async Task Send_Headers()
-    {
-        this.Trace("start");
-
-        this.Trace("done");
-    }
-
-    [Fact]
-    public async Task Send_Params()
-    {
-        this.Trace("start");
-
-        this.Trace("done");
-    }
-
-    private IAsyncDisposable RunServer(
-        Func<HttpListenerRequest, HttpListenerResponse, Task> handle
-    )
-    {
-        return RunServerBase(async (ctx, _, _) =>
-        {
-            this.Trace("start");
-
-            await handle(ctx.Request, ctx.Response);
-
-            this.Trace("done");
-        });
     }
 }

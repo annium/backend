@@ -115,7 +115,39 @@ internal partial class HttpRequest : IHttpRequest
         return this;
     }
 
+    public IHttpRequest Param<T>(string key, T value)
+    {
+        _parameters[key] = value?.ToString() ?? string.Empty;
+
+        return this;
+    }
+
+    public IHttpRequest Param<T>(string key, List<T> values)
+    {
+        return Param(key, values.AsEnumerable());
+    }
+
+    public IHttpRequest Param<T>(string key, IList<T> values)
+    {
+        return Param(key, values.AsEnumerable());
+    }
+
+    public IHttpRequest Param<T>(string key, IReadOnlyList<T> values)
+    {
+        return Param(key, values.AsEnumerable());
+    }
+
     public IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values)
+    {
+        return Param(key, values.AsEnumerable());
+    }
+
+    public IHttpRequest Param<T>(string key, T[] values)
+    {
+        return Param(key, values.AsEnumerable());
+    }
+
+    public IHttpRequest Param<T>(string key, IEnumerable<T> values)
     {
         var parameters =
         (
@@ -125,13 +157,6 @@ internal partial class HttpRequest : IHttpRequest
         ).ToArray();
 
         _parameters[key] = new StringValues(parameters);
-
-        return this;
-    }
-
-    public IHttpRequest Param<T>(string key, T value)
-    {
-        _parameters[key] = value?.ToString() ?? string.Empty;
 
         return this;
     }

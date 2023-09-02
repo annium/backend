@@ -23,7 +23,12 @@ public partial interface IHttpRequest : ILogSubject
     IHttpRequest With(HttpMethod method, Uri uri);
     IHttpRequest With(HttpMethod method, string uri);
     IHttpRequest Param<T>(string key, T value);
+    IHttpRequest Param<T>(string key, List<T> values);
+    IHttpRequest Param<T>(string key, IList<T> values);
+    IHttpRequest Param<T>(string key, IReadOnlyList<T> values);
     IHttpRequest Param<T>(string key, IReadOnlyCollection<T> values);
+    IHttpRequest Param<T>(string key, T[] values);
+    IHttpRequest Param<T>(string key, IEnumerable<T> values);
     IHttpRequest Attach(HttpContent content);
     IHttpRequest Clone();
     IHttpRequest Timeout(TimeSpan timeout);
