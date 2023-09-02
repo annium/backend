@@ -14,4 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../Core/src/Annium.Core.Mapper/Annium.Core.Mapper.csproj" />
     </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="OneOf" Version="3.0.255" />
+    </ItemGroup>
 </Project>
