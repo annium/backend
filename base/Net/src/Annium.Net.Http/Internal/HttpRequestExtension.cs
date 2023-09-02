@@ -9,7 +9,7 @@ internal partial class HttpRequest
         Action<IHttpRequest> configure
     )
     {
-        configure(this);
+        _configurations.Add((request, _) => configure(request));
 
         return this;
     }
@@ -18,8 +18,7 @@ internal partial class HttpRequest
         Action<IHttpRequest, IHttpRequestOptions> configure
     )
     {
-        var options = new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
-        configure(this, options);
+        _configurations.Add(new Configuration(configure));
 
         return this;
     }

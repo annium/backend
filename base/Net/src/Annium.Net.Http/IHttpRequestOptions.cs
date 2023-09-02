@@ -10,7 +10,7 @@ public interface IHttpRequestOptions
 {
     public HttpMethod Method { get; }
     public Uri Uri { get; }
-    public IReadOnlyDictionary<string, StringValues> Parameters { get; }
+    public IReadOnlyDictionary<string, StringValues> Params { get; }
     public string QueryString { get; }
     public HttpRequestHeaders Headers { get; }
     public HttpContent? Content { get; }

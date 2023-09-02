@@ -15,10 +15,15 @@ namespace Annium.Net.Http.Internal;
 
 internal partial class HttpRequest : IHttpRequest
 {
+    private delegate void Configuration(
+        IHttpRequest request,
+        IHttpRequestOptions options
+    );
+
     private delegate Task<IHttpResponse> Middleware(
         Func<Task<IHttpResponse>> next,
         IHttpRequest request,
-        HttpRequestOptions options
+        IHttpRequestOptions options
     );
 
     private static readonly HttpClient DefaultClient = new();
@@ -31,11 +36,13 @@ internal partial class HttpRequest : IHttpRequest
     public IHttpContentSerializer ContentSerializer { get; }
     public ILogger Logger { get; }
     private Uri Path => Helper.GetUriFactory(_client, _baseUri, _uri).Build();
+    private IHttpRequestOptions Options => new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
     private string? _uri;
     private TimeSpan _timeout = TimeSpan.FromSeconds(30);
     private readonly Dictionary<string, StringValues> _parameters = new();
+    private readonly List<Configuration> _configurations = new();
     private readonly List<Middleware> _middlewares = new();
 
     internal HttpRequest(
@@ -197,12 +204,19 @@ internal partial class HttpRequest : IHttpRequest
             ct
         );
 
+        foreach (var configure in _configurations)
+            configure(this, Options);
+
         return _middlewares.Count == 0
             ? InternalRunAsync(cts.Token)
-            : InternalRunAsync(0, cts.Token);
+            : InternalRunAsync(0, Options, cts.Token);
     }
 
-    private async Task<IHttpResponse> InternalRunAsync(int middlewareIndex, CancellationToken ct)
+    private async Task<IHttpResponse> InternalRunAsync(
+        int middlewareIndex,
+        IHttpRequestOptions options,
+        CancellationToken ct
+    )
     {
         if (middlewareIndex >= _middlewares.Count)
             return await InternalRunAsync(ct).ConfigureAwait(false);
@@ -216,11 +230,10 @@ internal partial class HttpRequest : IHttpRequest
                 }
             );
 
-        var options = new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
         var middleware = _middlewares[middlewareIndex];
 
         return await middleware(
-            () => InternalRunAsync(middlewareIndex + 1, ct),
+            () => InternalRunAsync(middlewareIndex + 1, options, ct),
             this,
             options
         ).ConfigureAwait(false);

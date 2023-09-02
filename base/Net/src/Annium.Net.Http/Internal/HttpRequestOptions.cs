@@ -11,7 +11,7 @@ internal class HttpRequestOptions : IHttpRequestOptions
 {
     public HttpMethod Method { get; }
     public Uri Uri { get; }
-    public IReadOnlyDictionary<string, StringValues> Parameters { get; }
+    public IReadOnlyDictionary<string, StringValues> Params { get; }
     public string QueryString { get; }
     public HttpRequestHeaders Headers { get; }
     public HttpContent? Content { get; }
@@ -26,7 +26,7 @@ internal class HttpRequestOptions : IHttpRequestOptions
     {
         Method = method;
         Uri = uri;
-        Parameters = parameters;
+        Params = parameters;
 
         var query = UriQuery.New();
         foreach (var (key, values) in parameters)
