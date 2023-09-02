@@ -15,7 +15,7 @@ internal static class WorkloadServer
 
     public static async Task RunAsync(CancellationToken ct, ILogger logger)
     {
-        var server = WebServerBuilder.New(new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build(logger);
+        var server = WebServerBuilder.New(new Uri($"http://127.0.0.1:{Constants.Port}")).WithWebSockets(HandleWebSocket).Build(logger);
         await server.RunAsync(ct);
     }
 
