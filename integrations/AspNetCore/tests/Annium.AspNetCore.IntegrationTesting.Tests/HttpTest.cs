@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Annium.AspNetCore.TestServer.Components;
+using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
@@ -20,10 +21,11 @@ public class HttpTest : IntegrationTestBase
         sharedDataContainer.Value = value;
 
         // act
-        var result = await Http.Get("/").AsResultAsync<string>();
+        var result = await Http.Get("/").AsAsync<IResult<string>>();
 
         // assert
-        result.IsOk.IsTrue();
+        result.IsNotDefault();
+        result!.IsOk.IsTrue();
         result.Data.Is(value);
     }
 

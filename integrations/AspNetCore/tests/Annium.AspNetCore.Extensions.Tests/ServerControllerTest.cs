@@ -25,7 +25,7 @@ public class ServerControllerTest : IntegrationTest
     public async Task Command_BadRequest_Works()
     {
         // act
-        var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseResultAsync();
+        var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseAsync<IResult>();
 
         // assert
         response.StatusCode.Is(HttpStatusCode.BadRequest);
