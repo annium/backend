@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Testing;
 using Xunit;
@@ -15,6 +16,11 @@ public class HttpRequestConfigureInterceptTests : TestBase
 
     public HttpRequestConfigureInterceptTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
+        Register(container =>
+        {
+            container.AddSerializers().WithJson(true);
+            container.AddHttpRequestFactory(true);
+        });
         _httpRequestFactory = Get<IHttpRequestFactory>();
     }
 
@@ -28,8 +34,7 @@ public class HttpRequestConfigureInterceptTests : TestBase
         {
             var data = Encoding.UTF8.GetBytes(request.Url.NotNull().Query);
             await response.OutputStream.WriteAsync(data);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
@@ -60,8 +65,7 @@ public class HttpRequestConfigureInterceptTests : TestBase
         await using var _ = RunServer(async (request, response) =>
         {
             await request.InputStream.CopyToAsync(response.OutputStream);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
@@ -101,8 +105,7 @@ public class HttpRequestConfigureInterceptTests : TestBase
         await using var _ = RunServer(async (request, response) =>
         {
             await request.InputStream.CopyToAsync(response.OutputStream);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act

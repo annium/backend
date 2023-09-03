@@ -1,53 +1,32 @@
-using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Annium.Data.Operations;
 using Annium.Net.Http.Internal;
+using OneOf;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Net.Http;
 
 public static class AsResponseExtensions
 {
-    // used in AspNetCore tests
-    public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.Result);
-
-    // not used
-    public static Task<IHttpResponse<IResult>> AsResponseResultAsync(this IHttpRequest request, IResult defaultValue) =>
-        request.ToResponseAsync(Parse.Result, defaultValue);
-
-    // not used
-    public static Task<IHttpResponse<IResult<T>>> AsResponseResultAsync<T>(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.ResultT<T>);
-
-    // not used
-    public static Task<IHttpResponse<IResult<T>>> AsResponseResultAsync<T>(this IHttpRequest request, IResult<T> defaultValue) =>
-        request.ToResponseAsync(Parse.ResultT, defaultValue);
-
-    // used in lots of places
-    public static Task<IHttpResponse<T>> AsResponseAsync<T>(this IHttpRequest request) =>
-        request.ToResponseAsync(Parse.T<T>);
-
-    // used in lots of places
-    public static Task<IHttpResponse<T>> AsResponseAsync<T>(this IHttpRequest request, T defaultValue) =>
-        request.ToResponseAsync(Parse.T, defaultValue);
-
-    private static async Task<IHttpResponse<T>> ToResponseAsync<T>(
-        this IHttpRequest request,
-        Func<IHttpRequest, HttpContent, Task<T>> parseAsync
+    public static async Task<IHttpResponse<T?>> AsResponseAsync<T>(
+        this IHttpRequest request
     )
     {
         var response = await request.RunAsync();
 
-        var data = await parseAsync(request, response.Content);
+        try
+        {
+            var data = await ContentParser.ParseAsync<T>(request.Serializer, response.Content);
 
-        return new HttpResponse<T>(response, data);
+            return new HttpResponse<T?>(response, data);
+        }
+        catch
+        {
+            return new HttpResponse<T?>(response, default);
+        }
     }
 
-    private static async Task<IHttpResponse<T>> ToResponseAsync<T>(
+    public static async Task<IHttpResponse<T>> AsResponseAsync<T>(
         this IHttpRequest request,
-        Func<IHttpRequest, HttpContent, T, Task<T>> parseAsync,
         T defaultValue
     )
     {
@@ -55,13 +34,62 @@ public static class AsResponseExtensions
 
         try
         {
-            var data = await parseAsync(request, response.Content, defaultValue);
+            var data = await ContentParser.ParseAsync<T>(request.Serializer, response.Content);
 
             return new HttpResponse<T>(response, data);
         }
         catch
         {
             return new HttpResponse<T>(response, defaultValue);
+        }
+    }
+
+    public static async Task<IHttpResponse<OneOf<TSuccess?, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
+        this IHttpRequest request
+    )
+    {
+        var response = await request.RunAsync();
+
+        try
+        {
+            var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
+            if (!Equals(success, default))
+                return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, success);
+
+            var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
+            if (!Equals(failure, default))
+                return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, failure);
+
+            return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, default(TSuccess));
+        }
+        catch
+        {
+            return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, default(TSuccess));
+        }
+    }
+
+    public static async Task<IHttpResponse<OneOf<TSuccess, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
+        this IHttpRequest request,
+        TSuccess defaultValue
+    )
+    {
+        var response = await request.RunAsync();
+
+        try
+        {
+            var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
+            if (!Equals(success, default))
+                return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, success);
+
+            var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
+            if (!Equals(failure, default))
+                return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, failure);
+
+            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultValue);
+        }
+        catch
+        {
+            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultValue);
         }
     }
 }

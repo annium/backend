@@ -27,7 +27,7 @@ internal class HttpRequest : IHttpRequest
     public HttpRequestHeaders Headers { get; }
     public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
-    public IHttpContentSerializer ContentSerializer { get; }
+    public Serializer Serializer { get; }
     public ILogger Logger { get; }
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
@@ -39,7 +39,7 @@ internal class HttpRequest : IHttpRequest
 
     internal HttpRequest(
         Uri baseUri,
-        IHttpContentSerializer httpContentSerializer,
+        Serializer httpContentSerializer,
         ILogger logger
     ) : this(
         httpContentSerializer,
@@ -51,18 +51,18 @@ internal class HttpRequest : IHttpRequest
     }
 
     internal HttpRequest(
-        IHttpContentSerializer httpContentSerializer,
+        Serializer httpContentSerializer,
         ILogger logger
     )
     {
-        ContentSerializer = httpContentSerializer;
+        Serializer = httpContentSerializer;
         Logger = logger;
         using var message = new HttpRequestMessage();
         Headers = message.Headers;
     }
 
     private HttpRequest(
-        IHttpContentSerializer httpContentSerializer,
+        Serializer httpContentSerializer,
         ILogger logger,
         HttpClient client,
         HttpMethod method,
@@ -74,7 +74,7 @@ internal class HttpRequest : IHttpRequest
         List<Middleware> middlewares
     )
     {
-        ContentSerializer = httpContentSerializer;
+        Serializer = httpContentSerializer;
         Logger = logger;
         _client = client;
         Method = method;
@@ -190,7 +190,7 @@ internal class HttpRequest : IHttpRequest
 
     public IHttpRequest Clone() =>
         new HttpRequest(
-            ContentSerializer,
+            Serializer,
             Logger,
             _client,
             Method,

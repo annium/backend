@@ -5,11 +5,11 @@ namespace Annium.Net.Http.Internal;
 
 internal class HttpRequestFactory : IHttpRequestFactory
 {
-    private readonly IHttpContentSerializer _httpContentSerializer;
+    private readonly Serializer _httpContentSerializer;
     private readonly ILogger _logger;
 
     public HttpRequestFactory(
-        IHttpContentSerializer httpContentSerializer,
+        Serializer httpContentSerializer,
         ILogger logger
     )
     {

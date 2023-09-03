@@ -9,7 +9,7 @@ public static class HttpRequestContentExtensions
 {
     public static IHttpRequest JsonContent<T>(this IHttpRequest request, T data)
     {
-        var content = request.ContentSerializer.Serialize(MediaTypeNames.Application.Json, data);
+        var content = request.Serializer.Serialize(MediaTypeNames.Application.Json, data);
 
         return request.Attach(new StringContent(content, Encoding.UTF8, MediaTypeNames.Application.Json));
     }

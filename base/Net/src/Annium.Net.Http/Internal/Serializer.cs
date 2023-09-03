@@ -4,11 +4,11 @@ using Annium.Serialization.Abstractions;
 
 namespace Annium.Net.Http.Internal;
 
-internal class HttpContentSerializer : IHttpContentSerializer
+internal class Serializer
 {
     private readonly IIndex<string, ISerializer<string>> _serializers;
 
-    public HttpContentSerializer(
+    public Serializer(
         IIndex<string, ISerializer<string>> serializers
     )
     {

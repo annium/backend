@@ -17,7 +17,6 @@ public abstract class TestBase : Testing.Lib.TestBase
 
     protected TestBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Register(container => container.AddHttpRequestFactory(true));
         _port = Interlocked.Increment(ref _basePort);
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
@@ -32,7 +31,19 @@ public abstract class TestBase : Testing.Lib.TestBase
             {
                 this.Trace("start");
 
-                await handle(ctx.Request, ctx.Response);
+                ctx.Response.Headers.Clear();
+                try
+                {
+                    await handle(ctx.Request, ctx.Response);
+                }
+                catch
+                {
+                    ctx.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                }
+                finally
+                {
+                    ctx.Response.Close();
+                }
 
                 this.Trace("done");
             })

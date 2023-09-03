@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Testing;
 using Xunit;
@@ -18,6 +19,11 @@ public class HttpRequestTests : TestBase
 
     public HttpRequestTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
+        Register(container =>
+        {
+            container.AddSerializers().WithJson(true);
+            container.AddHttpRequestFactory(true);
+        });
         _httpRequestFactory = Get<IHttpRequestFactory>();
     }
 
@@ -46,8 +52,7 @@ public class HttpRequestTests : TestBase
         // arrange
         await using var _ = RunServer((_, response) =>
         {
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
 
             return Task.CompletedTask;
         });
@@ -75,8 +80,7 @@ public class HttpRequestTests : TestBase
         await using var _ = RunServer(async (_, response) =>
         {
             await Task.Delay(100);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
@@ -104,8 +108,7 @@ public class HttpRequestTests : TestBase
         {
             var data = Encoding.UTF8.GetBytes(request.HttpMethod);
             await response.OutputStream.WriteAsync(data);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
@@ -143,8 +146,7 @@ public class HttpRequestTests : TestBase
             foreach (var key in targetHeaders)
                 response.Headers.Add(key, request.Headers.Get(key));
 
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
 
             return Task.CompletedTask;
         });
@@ -178,8 +180,7 @@ public class HttpRequestTests : TestBase
         {
             var data = Encoding.UTF8.GetBytes(request.Url.NotNull().Query);
             await response.OutputStream.WriteAsync(data);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
@@ -210,8 +211,7 @@ public class HttpRequestTests : TestBase
         await using var _ = RunServer(async (request, response) =>
         {
             await request.InputStream.CopyToAsync(response.OutputStream);
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.Close();
+            response.Ok();
         });
 
         // act
