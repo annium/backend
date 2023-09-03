@@ -15,11 +15,6 @@ internal class HttpContentSerializer : IHttpContentSerializer
         _serializers = serializers;
     }
 
-    public bool CanSerialize(string mediaType)
-    {
-        return _serializers.TryGetValue(mediaType, out _);
-    }
-
     public string Serialize<T>(string mediaType, T value)
     {
         var serializer = ResolveSerializer(mediaType);
