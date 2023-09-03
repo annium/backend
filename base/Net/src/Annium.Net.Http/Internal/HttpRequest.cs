@@ -13,30 +13,22 @@ using Microsoft.Extensions.Primitives;
 
 namespace Annium.Net.Http.Internal;
 
-internal partial class HttpRequest : IHttpRequest
+internal class HttpRequest : IHttpRequest
 {
-    private delegate void Configuration(
-        IHttpRequest request,
-        IHttpRequestOptions options
-    );
+    private delegate void Configuration(IHttpRequest request);
 
-    private delegate Task<IHttpResponse> Middleware(
-        Func<Task<IHttpResponse>> next,
-        IHttpRequest request,
-        IHttpRequestOptions options
-    );
+    private delegate Task<IHttpResponse> Middleware(Func<Task<IHttpResponse>> next, IHttpRequest request);
 
     private static readonly HttpClient DefaultClient = new();
 
     public HttpMethod Method { get; private set; } = HttpMethod.Get;
     public Uri Uri => Helper.BuildUri(_client, _baseUri, _uri, _parameters);
+    public Uri Path => Helper.GetUriFactory(_client, _baseUri, _uri).Build();
     public HttpRequestHeaders Headers { get; }
     public IReadOnlyDictionary<string, StringValues> Params => _parameters;
     public HttpContent? Content { get; private set; }
     public IHttpContentSerializer ContentSerializer { get; }
     public ILogger Logger { get; }
-    private Uri Path => Helper.GetUriFactory(_client, _baseUri, _uri).Build();
-    private IHttpRequestOptions Options => new HttpRequestOptions(Method, Path, _parameters, Headers, Content);
     private HttpClient _client = DefaultClient;
     private Uri? _baseUri;
     private string? _uri;
@@ -122,6 +114,27 @@ internal partial class HttpRequest : IHttpRequest
         return this;
     }
 
+    public IHttpRequest Header(string name, string value)
+    {
+        Headers.Add(name, value);
+
+        return this;
+    }
+
+    public IHttpRequest Header(string name, IEnumerable<string> values)
+    {
+        Headers.Add(name, values);
+
+        return this;
+    }
+
+    public IHttpRequest Authorization(AuthenticationHeaderValue value)
+    {
+        Headers.Authorization = value;
+
+        return this;
+    }
+
     public IHttpRequest Param<T>(string key, T value)
     {
         _parameters[key] = value?.ToString() ?? string.Empty;
@@ -189,6 +202,27 @@ internal partial class HttpRequest : IHttpRequest
             _middlewares
         );
 
+    public IHttpRequest Configure(Action<IHttpRequest> configure)
+    {
+        _configurations.Add(new Configuration(configure));
+
+        return this;
+    }
+
+    public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, Task<IHttpResponse>> middleware)
+    {
+        _middlewares.Add((next, _) => middleware(next));
+
+        return this;
+    }
+
+    public IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, Task<IHttpResponse>> middleware)
+    {
+        _middlewares.Add(new Middleware(middleware));
+
+        return this;
+    }
+
     public IHttpRequest Timeout(TimeSpan timeout)
     {
         _timeout = timeout;
@@ -207,11 +241,11 @@ internal partial class HttpRequest : IHttpRequest
         );
 
         foreach (var configure in _configurations)
-            configure(this, Options);
+            configure(this);
 
         var response = _middlewares.Count == 0
             ? await InternalRunAsync(cts.Token).ConfigureAwait(false)
-            : await InternalRunAsync(0, Options, cts.Token).ConfigureAwait(false);
+            : await InternalRunAsync(0, cts.Token).ConfigureAwait(false);
 
         this.Trace("done");
 
@@ -220,7 +254,6 @@ internal partial class HttpRequest : IHttpRequest
 
     private async Task<IHttpResponse> InternalRunAsync(
         int middlewareIndex,
-        IHttpRequestOptions options,
         CancellationToken ct
     )
     {
@@ -241,9 +274,8 @@ internal partial class HttpRequest : IHttpRequest
         var middleware = _middlewares[middlewareIndex];
 
         var response = await middleware(
-            () => InternalRunAsync(middlewareIndex + 1, options, ct),
-            this,
-            options
+            () => InternalRunAsync(middlewareIndex + 1, ct),
+            this
         ).ConfigureAwait(false);
 
         this.Trace("done {index}/{total}", middlewareIndex, _middlewares.Count);
