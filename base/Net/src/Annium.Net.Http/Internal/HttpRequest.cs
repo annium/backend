@@ -197,8 +197,10 @@ internal partial class HttpRequest : IHttpRequest
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Task<IHttpResponse> RunAsync(CancellationToken ct = default)
+    public async Task<IHttpResponse> RunAsync(CancellationToken ct = default)
     {
+        this.Trace("start");
+
         var cts = CancellationTokenSource.CreateLinkedTokenSource(
             new CancellationTokenSource(_timeout).Token,
             ct
@@ -207,9 +209,13 @@ internal partial class HttpRequest : IHttpRequest
         foreach (var configure in _configurations)
             configure(this, Options);
 
-        return _middlewares.Count == 0
-            ? InternalRunAsync(cts.Token)
-            : InternalRunAsync(0, Options, cts.Token);
+        var response = _middlewares.Count == 0
+            ? await InternalRunAsync(cts.Token).ConfigureAwait(false)
+            : await InternalRunAsync(0, Options, cts.Token).ConfigureAwait(false);
+
+        this.Trace("done");
+
+        return response;
     }
 
     private async Task<IHttpResponse> InternalRunAsync(
@@ -218,6 +224,8 @@ internal partial class HttpRequest : IHttpRequest
         CancellationToken ct
     )
     {
+        this.Trace("start {index}/{total}", middlewareIndex, _middlewares.Count);
+
         if (middlewareIndex >= _middlewares.Count)
             return await InternalRunAsync(ct).ConfigureAwait(false);
 
@@ -232,15 +240,21 @@ internal partial class HttpRequest : IHttpRequest
 
         var middleware = _middlewares[middlewareIndex];
 
-        return await middleware(
+        var response = await middleware(
             () => InternalRunAsync(middlewareIndex + 1, options, ct),
             this,
             options
         ).ConfigureAwait(false);
+
+        this.Trace("done {index}/{total}", middlewareIndex, _middlewares.Count);
+
+        return response;
     }
 
     private async Task<IHttpResponse> InternalRunAsync(CancellationToken ct)
     {
+        this.Trace("start");
+
         var uri = Uri;
         var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = uri };
 
@@ -251,13 +265,19 @@ internal partial class HttpRequest : IHttpRequest
 
         try
         {
+            this.Trace("send request");
             var responseMessage = await _client.SendAsync(requestMessage, ct).ConfigureAwait(false);
+
+            this.Trace("prepare response");
             var response = new HttpResponse(uri, responseMessage);
+
+            this.Trace("done");
 
             return response;
         }
         catch (HttpRequestException e)
         {
+            this.Trace("handle connection refused");
             return new HttpResponse(
                 false,
                 uri,
@@ -268,6 +288,7 @@ internal partial class HttpRequest : IHttpRequest
         }
         catch (TaskCanceledException e)
         {
+            this.Trace("handle task canceled");
             return new HttpResponse(
                 false,
                 uri,
