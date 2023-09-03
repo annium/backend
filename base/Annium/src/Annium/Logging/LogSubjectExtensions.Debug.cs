@@ -1,11 +1,15 @@
 using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace Annium.Logging;
 
 public static class LogSubjectDebugExtensions
 {
+    private const string CompilationFlag = "LOG_DEBUG";
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug(
         this ILogSubject subject,
         string message,
@@ -18,6 +22,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1>(
         this ILogSubject subject,
         string message,
@@ -31,6 +36,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2>(
         this ILogSubject subject,
         string message,
@@ -45,6 +51,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3>(
         this ILogSubject subject,
         string message,
@@ -60,6 +67,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4>(
         this ILogSubject subject,
         string message,
@@ -76,6 +84,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5>(
         this ILogSubject subject,
         string message,
@@ -93,6 +102,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6>(
         this ILogSubject subject,
         string message,
@@ -111,6 +121,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6, T7>(
         this ILogSubject subject,
         string message,
@@ -130,6 +141,7 @@ public static class LogSubjectDebugExtensions
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6, T7, T8>(
         this ILogSubject subject,
         string message,
