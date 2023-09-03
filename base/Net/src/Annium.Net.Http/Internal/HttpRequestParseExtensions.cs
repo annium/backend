@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace Annium.Net.Http.Internal;
 
-internal static class HttpRequestContentExtensions
+internal static class HttpRequestParseExtensions
 {
     public static async Task<T> ParseAsync<T>(
         this IHttpRequest request,
