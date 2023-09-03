@@ -27,7 +27,7 @@ public static class AsResponseExtensions
 
     public static async Task<IHttpResponse<T>> AsResponseAsync<T>(
         this IHttpRequest request,
-        T defaultValue
+        T defaultData
     )
     {
         var response = await request.RunAsync();
@@ -35,12 +35,11 @@ public static class AsResponseExtensions
         try
         {
             var data = await ContentParser.ParseAsync<T>(request.Serializer, response.Content);
-
-            return new HttpResponse<T>(response, data);
+            return new HttpResponse<T>(response, data ?? defaultData);
         }
         catch
         {
-            return new HttpResponse<T>(response, defaultValue);
+            return new HttpResponse<T>(response, defaultData);
         }
     }
 
@@ -70,7 +69,7 @@ public static class AsResponseExtensions
 
     public static async Task<IHttpResponse<OneOf<TSuccess, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
         this IHttpRequest request,
-        TSuccess defaultValue
+        TSuccess defaultData
     )
     {
         var response = await request.RunAsync();
@@ -85,11 +84,11 @@ public static class AsResponseExtensions
             if (!Equals(failure, default))
                 return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, failure);
 
-            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultValue);
+            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultData);
         }
         catch
         {
-            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultValue);
+            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultData);
         }
     }
 }
