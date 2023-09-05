@@ -71,6 +71,7 @@ internal class HttpRequest : IHttpRequest
         HttpRequestHeaders headers,
         IReadOnlyDictionary<string, StringValues> parameters,
         HttpContent? content,
+        List<Configuration> configurations,
         List<Middleware> middlewares
     )
     {
@@ -85,6 +86,7 @@ internal class HttpRequest : IHttpRequest
             Headers.Add(name, values);
         _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
         Content = content;
+        _configurations = configurations;
         _middlewares = middlewares;
     }
 
@@ -199,6 +201,7 @@ internal class HttpRequest : IHttpRequest
             Headers,
             _parameters,
             Content,
+            _configurations,
             _middlewares
         );
 
