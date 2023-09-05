@@ -6,7 +6,7 @@ namespace Annium.linq2db.PostgreSql.Tests.Configuration;
 
 public class ConfigurationTests : ConfigurationTestsBase
 {
-    public ConfigurationTests(ITestOutputHelper outputHelper)  : base(outputHelper)
+    public ConfigurationTests(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

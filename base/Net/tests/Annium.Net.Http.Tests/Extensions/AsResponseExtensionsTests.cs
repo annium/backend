@@ -47,7 +47,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data>();
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data>();
 
         // assert
         response.Data.IsNotDefault();
@@ -70,7 +70,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data>();
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data>();
 
         // assert
         response.Data.IsDefault();
@@ -94,7 +94,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync(defaultData);
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync(defaultData);
 
         // assert
         response.Data.IsNotDefault();
@@ -118,7 +118,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync(defaultData);
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync(defaultData);
 
         // assert
         response.Data.IsNotDefault();
@@ -142,7 +142,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data, Error>();
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data, Error>();
 
         // assert
         response.Data.IsT0.IsTrue();
@@ -167,7 +167,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data, Error>();
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data, Error>();
 
         // assert
         response.Data.IsT1.IsTrue();
@@ -193,7 +193,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data, Error>(defaultData);
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data, Error>(defaultData);
 
         // assert
         response.Data.IsT0.IsTrue();
@@ -219,7 +219,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data, Error>(defaultData);
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data, Error>(defaultData);
 
         // assert
         response.Data.IsT1.IsTrue();
@@ -244,7 +244,7 @@ public class AsResponseExtensionsTests : TestBase
 
         // act
         this.Trace("send");
-        var response = await _httpRequestFactory.New(ServerUri).Get("/"). AsResponseAsync<Data, Error>(defaultData);
+        var response = await _httpRequestFactory.New(ServerUri).Get("/").AsResponseAsync<Data, Error>(defaultData);
 
         // assert
         response.Data.IsT0.IsTrue();

@@ -54,6 +54,7 @@ internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
                 _contexts.Remove(context);
                 context.Cancel();
             }
+
         this.Trace("cleanup {connectionId} subscriptions - done", connectionId);
 
         return Task.CompletedTask;
