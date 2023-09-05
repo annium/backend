@@ -3,9 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 
-namespace Annium.Net.Http.Internal;
+namespace Annium.Net.Http;
 
-internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
+public class HttpResponse<T> : HttpResponse, IHttpResponse<T>
 {
     public T Data { get; }
 
@@ -18,7 +18,7 @@ internal class HttpResponse<T> : HttpResponse, IHttpResponse<T>
     }
 }
 
-internal class HttpResponse : IHttpResponse
+public class HttpResponse : IHttpResponse
 {
     private static readonly HttpResponseHeaders DefaultHeaders;
 
