@@ -321,7 +321,7 @@ internal class HttpRequest : IHttpRequest
                 e.Message
             );
         }
-        catch (TaskCanceledException e)
+        catch (OperationCanceledException e)
         {
             this.Trace("handle task canceled");
             return new HttpResponse(
