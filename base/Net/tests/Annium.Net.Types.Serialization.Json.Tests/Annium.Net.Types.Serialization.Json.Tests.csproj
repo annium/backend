@@ -15,7 +15,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
         <ProjectReference Include="../../src/Annium.Net.Types.Serialization.Json/Annium.Net.Types.Serialization.Json.csproj" />
-        <ProjectReference Include="../Annium.Net.Types.Tests.Base/Annium.Net.Types.Tests.Base.csproj" />
+        <ProjectReference Include="../Annium.Net.Types.Tests.Lib/Annium.Net.Types.Tests.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

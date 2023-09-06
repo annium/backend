@@ -13,7 +13,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../Annium.Net.Types.Tests.Base/Annium.Net.Types.Tests.Base.csproj" />
+        <ProjectReference Include="../Annium.Net.Types.Tests.Lib/Annium.Net.Types.Tests.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
