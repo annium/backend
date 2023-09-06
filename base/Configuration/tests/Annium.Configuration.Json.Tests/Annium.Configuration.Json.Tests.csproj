@@ -17,7 +17,7 @@
         <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
         <ProjectReference Include="../../../Testing/src/Annium.Testing.Assertions/Annium.Testing.Assertions.csproj" />
         <ProjectReference Include="../../src/Annium.Configuration.Json/Annium.Configuration.Json.csproj" />
-        <ProjectReference Include="../Annium.Configuration.Tests/Annium.Configuration.Tests.csproj" />
+        <ProjectReference Include="../Annium.Configuration.Tests.Lib/Annium.Configuration.Tests.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.0" />

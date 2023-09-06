@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Configuration.Tests</PackageId>
+        <PackageId>Annium.Configuration.Tests.Lib</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Configuration.Tests</Description>
         <TargetFramework>net7.0</TargetFramework>
