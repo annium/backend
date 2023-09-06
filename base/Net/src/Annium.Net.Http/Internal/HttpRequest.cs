@@ -233,7 +233,6 @@ internal class HttpRequest : IHttpRequest
         return this;
     }
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public async Task<IHttpResponse> RunAsync(CancellationToken ct = default)
     {
         this.Trace("start");
