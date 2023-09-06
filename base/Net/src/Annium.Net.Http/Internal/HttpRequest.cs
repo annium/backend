@@ -4,7 +4,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
@@ -190,20 +189,12 @@ internal class HttpRequest : IHttpRequest
         return this;
     }
 
-    public IHttpRequest Clone() =>
-        new HttpRequest(
-            Serializer,
-            Logger,
-            _client,
-            Method,
-            _baseUri,
-            _uri,
-            Headers,
-            _parameters,
-            Content,
-            _configurations,
-            _middlewares
-        );
+    public IHttpRequest Timeout(TimeSpan timeout)
+    {
+        _timeout = timeout;
+
+        return this;
+    }
 
     public IHttpRequest Configure(Action<IHttpRequest> configure)
     {
@@ -226,12 +217,20 @@ internal class HttpRequest : IHttpRequest
         return this;
     }
 
-    public IHttpRequest Timeout(TimeSpan timeout)
-    {
-        _timeout = timeout;
-
-        return this;
-    }
+    public IHttpRequest Clone() =>
+        new HttpRequest(
+            Serializer,
+            Logger,
+            _client,
+            Method,
+            _baseUri,
+            _uri,
+            Headers,
+            _parameters,
+            Content,
+            _configurations,
+            _middlewares
+        );
 
     public async Task<IHttpResponse> RunAsync(CancellationToken ct = default)
     {
