@@ -7,7 +7,7 @@ using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Net.WebSockets;
 
-public class ClientWebSocket : IClientWebSocket, ILogSubject
+public class ClientWebSocket : IClientWebSocket
 {
     public ILogger Logger { get; }
     public event Action<ReadOnlyMemory<byte>> TextReceived = delegate { };
@@ -109,15 +109,21 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         return _socket.SendBinaryAsync(data, ct);
     }
 
-    private void ReconnectPrivate(Uri uri, WebSocketCloseStatus closeStatus)
+    private void ReconnectPrivate(Uri uri, WebSocketCloseResult result)
     {
         this.Trace("start");
 
         this.Trace("stop monitor");
         _connectionMonitor.Stop();
 
-        this.Trace("fire disconnected with {closeStatus}", closeStatus);
-        OnDisconnected(closeStatus);
+        if (result.Exception is not null)
+        {
+            this.Trace("fire error: {exception}", result.Exception);
+            OnError(result.Exception);
+        }
+
+        this.Trace("fire disconnected with {closeStatus}", result.Status);
+        OnDisconnected(result.Status);
 
         this.Trace("schedule connection in {reconnectDelay}ms", _reconnectDelay);
         Task.Delay(_reconnectDelay).ContinueWith(_ =>
@@ -140,7 +146,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
         this.Trace("done");
     }
 
-    private void HandleConnected(Task<bool> task, object? state)
+    private void HandleConnected(Task<Exception?> task, object? state)
     {
         this.Trace("start");
 
@@ -153,15 +159,15 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
             }
 
             // set status in lock
-            this.Trace("set status by connection result: {result}", task.Result);
-            SetStatus(task.Result ? Status.Connected : Status.Connecting);
+            this.Trace<string>("set status by connection result: {result}", task.Result is null ? "ok" : task.Result.ToString());
+            SetStatus(task.Result is null ? Status.Connected : Status.Connecting);
         }
 
-        if (!task.Result)
+        if (task.Result is not null)
         {
             var uri = (Uri)state!;
             this.Trace("failure: {exception}, init reconnect", task.Exception);
-            ReconnectPrivate(uri, WebSocketCloseStatus.Error);
+            ReconnectPrivate(uri, new WebSocketCloseResult(WebSocketCloseStatus.Error, task.Result));
             return;
         }
 
@@ -192,7 +198,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
             SetStatus(Status.Connecting);
         }
 
-        ReconnectPrivate(Uri, WebSocketCloseStatus.ClosedRemote);
+        ReconnectPrivate(Uri, new WebSocketCloseResult(WebSocketCloseStatus.ClosedRemote, null));
 
         this.Trace("done");
     }
@@ -212,7 +218,7 @@ public class ClientWebSocket : IClientWebSocket, ILogSubject
             SetStatus(Status.Connecting);
         }
 
-        ReconnectPrivate(Uri, task.Result.Status);
+        ReconnectPrivate(Uri, task.Result);
 
         this.Trace("done");
     }

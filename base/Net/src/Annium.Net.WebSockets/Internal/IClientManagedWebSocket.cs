@@ -7,6 +7,6 @@ namespace Annium.Net.WebSockets.Internal;
 internal interface IClientManagedWebSocket : ISendingReceivingWebSocket
 {
     Task<WebSocketCloseResult> IsClosed { get; }
-    Task<bool> ConnectAsync(Uri uri, CancellationToken ct);
+    Task<Exception?> ConnectAsync(Uri uri, CancellationToken ct);
     Task DisconnectAsync();
 }

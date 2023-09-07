@@ -34,7 +34,7 @@ internal class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
         Logger = logger;
     }
 
-    public async Task<bool> ConnectAsync(Uri uri, CancellationToken ct = default)
+    public async Task<Exception?> ConnectAsync(Uri uri, CancellationToken ct = default)
     {
         this.Trace("start");
 
@@ -70,7 +70,7 @@ internal class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
 
             this.Trace("done (not connected)");
 
-            return false;
+            return e;
         }
 
         this.Trace("create listen cts");
@@ -81,7 +81,7 @@ internal class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
 
         this.Trace("done (connected)");
 
-        return true;
+        return null;
     }
 
     public async Task DisconnectAsync()
