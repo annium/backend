@@ -17,7 +17,7 @@ public abstract class TestBase : Testing.Lib.TestBase
     protected TestBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
         _port = Interlocked.Increment(ref _basePort);
-        ServerUri = new Uri($"ws://127.0.0.1:{_port}");
+        ServerUri = new Uri($"http://127.0.0.1:{_port}");
     }
 
     protected IAsyncDisposable RunServer(
