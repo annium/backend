@@ -8,12 +8,15 @@ namespace Annium.Net.Http;
 
 public static class HttpRequestLogExtensions
 {
-    public static IHttpRequest WithLogFrom<T>(this IHttpRequest request, T subject)
+    public static IHttpRequest WithLogFrom<T>(
+        this IHttpRequest request,
+        T subject,
+        LogData log = default
+    )
         where T : ILogSubject => request.Intercept(async next =>
     {
         var id = Guid.NewGuid();
         var response = default(IHttpResponse);
-        var responseString = string.Empty;
         try
         {
             subject.Trace(
@@ -23,9 +26,13 @@ public static class HttpRequestLogExtensions
                 request.Uri
             );
 
-            response = await next();
-            responseString = await response.Content.ReadAsStringAsync();
-            return response;
+            if (log.HasFlag(LogData.Headers))
+            {
+                foreach (var (name, values) in request.Headers)
+                    subject.Trace<string, string>("- {headerName}: {headerValues}", name, string.Join(", ", values));
+            }
+
+            return await next();
         }
         catch (Exception e)
         {
@@ -42,16 +49,31 @@ public static class HttpRequestLogExtensions
         {
             if (response is not null)
             {
-                subject.Trace<Guid, HttpMethod, Uri, HttpStatusCode, string, string>(
-                    "response {id}: {method} {uri} -> {statusCode} ({statusText})\n{response}",
+                subject.Trace<Guid, HttpMethod, Uri, HttpStatusCode, string>(
+                    "response {id}: {method} {uri} -> {statusCode} ({statusText})",
                     id,
                     request.Method,
                     request.Uri,
                     response.StatusCode,
-                    response.StatusText,
-                    responseString
+                    response.StatusText
                 );
+
+                if (log.HasFlag(LogData.Headers))
+                {
+                    foreach (var (name, values) in response.Headers)
+                        subject.Trace<string, string>("- {headerName}: {headerValues}", name, string.Join(", ", values));
+                }
+
+                if (log.HasFlag(LogData.Response))
+                    subject.Trace(await response.Content.ReadAsStringAsync());
             }
         }
     });
+}
+
+[Flags]
+public enum LogData
+{
+    Headers = 1 << 0,
+    Response = 1 << 1,
 }
