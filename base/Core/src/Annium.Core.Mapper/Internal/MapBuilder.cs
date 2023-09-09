@@ -72,10 +72,10 @@ internal class MapBuilder : IMapBuilder, ILogSubject
         {
             if (entry.HasMap)
             {
-                this.Trace<string, string>("Use existing map for {src} -> {tgt}", src.FriendlyName(), tgt.FriendlyName());
                 return entry.Map;
             }
 
+            this.Trace<string, string>("Resolve map for {src} -> {tgt}", src.FriendlyName(), tgt.FriendlyName());
             var param = Expression.Parameter(src);
             var mapping = ResolveMapping(src, tgt);
 
