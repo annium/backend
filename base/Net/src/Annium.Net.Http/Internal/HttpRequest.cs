@@ -244,9 +244,9 @@ internal class HttpRequest : IHttpRequest
         foreach (var configure in _configurations)
             configure(this);
 
-        var response = _middlewares.Count == 0
-            ? await InternalRunAsync(cts.Token).ConfigureAwait(false)
-            : await InternalRunAsync(0, cts.Token).ConfigureAwait(false);
+        var response = _middlewares.Count > 0
+            ? await InternalRunAsync(0, cts.Token).ConfigureAwait(false)
+            : await InternalRunAsync(cts.Token).ConfigureAwait(false);
 
         this.Trace("done");
 
@@ -258,10 +258,7 @@ internal class HttpRequest : IHttpRequest
         CancellationToken ct
     )
     {
-        this.Trace("start {index}/{total}", middlewareIndex, _middlewares.Count);
-
-        if (middlewareIndex >= _middlewares.Count)
-            return await InternalRunAsync(ct).ConfigureAwait(false);
+        this.Trace("start {index}/{total}", middlewareIndex + 1, _middlewares.Count);
 
         if (ct.IsCancellationRequested)
             return new HttpResponse(
@@ -273,13 +270,13 @@ internal class HttpRequest : IHttpRequest
             );
 
         var middleware = _middlewares[middlewareIndex];
+        Func<Task<IHttpResponse>> next = middlewareIndex + 1 < _middlewares.Count
+            ? () => InternalRunAsync(middlewareIndex + 1, ct)
+            : () => InternalRunAsync(ct);
 
-        var response = await middleware(
-            () => InternalRunAsync(middlewareIndex + 1, ct),
-            this
-        ).ConfigureAwait(false);
+        var response = await middleware(next, this).ConfigureAwait(false);
 
-        this.Trace("done {index}/{total}", middlewareIndex, _middlewares.Count);
+        this.Trace("done {index}/{total}", middlewareIndex + 1, _middlewares.Count);
 
         return response;
     }
