@@ -261,6 +261,9 @@ internal class HttpRequest : IHttpRequest
         this.Trace("start {index}/{total}", middlewareIndex + 1, _middlewares.Count);
 
         if (ct.IsCancellationRequested)
+        {
+            this.Trace("canceled");
+
             return new HttpResponse(
                 Uri,
                 new HttpResponseMessage(HttpStatusCode.RequestTimeout)
@@ -268,6 +271,7 @@ internal class HttpRequest : IHttpRequest
                     ReasonPhrase = "Request canceled"
                 }
             );
+        }
 
         var middleware = _middlewares[middlewareIndex];
         Func<Task<IHttpResponse>> next = middlewareIndex + 1 < _middlewares.Count
@@ -284,6 +288,19 @@ internal class HttpRequest : IHttpRequest
     private async Task<IHttpResponse> InternalRunAsync(CancellationToken ct)
     {
         this.Trace("start");
+
+        if (ct.IsCancellationRequested)
+        {
+            this.Trace("canceled");
+
+            return new HttpResponse(
+                Uri,
+                new HttpResponseMessage(HttpStatusCode.RequestTimeout)
+                {
+                    ReasonPhrase = "Request canceled"
+                }
+            );
+        }
 
         var uri = Uri;
         var requestMessage = new HttpRequestMessage { Method = Method, RequestUri = uri };
