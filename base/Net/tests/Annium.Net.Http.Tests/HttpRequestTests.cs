@@ -66,7 +66,7 @@ public class HttpRequestTests : TestBase
         // assert
         response.IsSuccess.IsFalse();
         response.IsFailure.IsTrue();
-        response.StatusCode.Is(HttpStatusCode.GatewayTimeout);
+        response.StatusCode.Is(HttpStatusCode.RequestTimeout);
 
         this.Trace("done");
     }
@@ -93,7 +93,7 @@ public class HttpRequestTests : TestBase
         // assert
         response.IsSuccess.IsFalse();
         response.IsFailure.IsTrue();
-        response.StatusCode.Is(HttpStatusCode.GatewayTimeout);
+        response.StatusCode.Is(HttpStatusCode.RequestTimeout);
 
         this.Trace("done");
     }

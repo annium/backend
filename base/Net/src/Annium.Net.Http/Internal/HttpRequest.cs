@@ -339,7 +339,7 @@ internal class HttpRequest : IHttpRequest
             return new HttpResponse(
                 false,
                 uri,
-                HttpStatusCode.GatewayTimeout,
+                HttpStatusCode.RequestTimeout,
                 "Request canceled",
                 e.Message
             );
