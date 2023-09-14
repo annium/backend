@@ -10,8 +10,7 @@ public static partial class IsShallowEqualExtensions
 {
     private static MethodInfo? ResolveEqualityOperatorMethod(Type type) => type.GetMethods()
         .SingleOrDefault(x =>
-            x.IsSpecialName &&
-            x.Name == "op_Equality" &&
+            x is { IsSpecialName: true, Name: "op_Equality" } &&
             x.GetParameters().All(y => y.ParameterType == type)
         );
 

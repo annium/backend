@@ -51,7 +51,7 @@ public static class JsonSerializerOptionsExtensions
 
     private static readonly IReadOnlyCollection<PropertyInfo> CloneableProperties = typeof(JsonSerializerOptions)
         .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-        .Where(x => x.PropertyType.GetTargetImplementation(typeof(IEnumerable<>)) is null && x.CanRead && x.CanWrite)
+        .Where(x => x.PropertyType.GetTargetImplementation(typeof(IEnumerable<>)) is null && x is { CanRead: true, CanWrite: true })
         .ToArray();
 
     public static JsonSerializerOptions Clone(this JsonSerializerOptions opts)

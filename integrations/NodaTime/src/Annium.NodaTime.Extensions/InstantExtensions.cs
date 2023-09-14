@@ -14,7 +14,7 @@ public static class InstantExtensions
     {
         var d = m - Instant.MinValue;
 
-        return d.Hours == 0 && d.Minutes == 0 && d.Seconds == 0 && d.SubsecondTicks == 0;
+        return d is { Hours: 0, Minutes: 0 } and { Seconds: 0, SubsecondTicks: 0 };
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -18,7 +18,7 @@ internal class ObjectArrayJsonConverter<T> : JsonConverter<T>
         var raw = typeof(T).GetMembers()
             .Where(x => x switch
             {
-                PropertyInfo p => p.CanRead && p.CanWrite,
+                PropertyInfo p => p is { CanRead: true, CanWrite: true },
                 FieldInfo f    => !f.IsInitOnly,
                 _              => false
             })

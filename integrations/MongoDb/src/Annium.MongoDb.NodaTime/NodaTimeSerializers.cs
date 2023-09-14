@@ -11,7 +11,7 @@ public static class NodaTimeSerializers
     public static void Register()
     {
         var types = typeof(NodaTimeSerializers).GetTypeInfo().Assembly.DefinedTypes
-            .Where(t => t.BaseType != null && !t.ContainsGenericParameters && t.ImplementedInterfaces.Contains(typeof(IBsonSerializer)))
+            .Where(t => t is { BaseType: not null, ContainsGenericParameters: false } && t.ImplementedInterfaces.Contains(typeof(IBsonSerializer)))
             .ToList();
 
         foreach (var type in types)

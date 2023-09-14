@@ -23,7 +23,7 @@ public static class LocalDateTimeExtensions
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static bool IsMidnight(this LocalDateTime dateTime) =>
-        dateTime.Hour == 0 && dateTime.Minute == 0 && dateTime.Second == 0 && dateTime.Millisecond == 0;
+        dateTime is { Hour: 0, Minute: 0 } and { Second: 0, Millisecond: 0 };
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static long ToUnixTimeMinutes(this LocalDateTime m) =>

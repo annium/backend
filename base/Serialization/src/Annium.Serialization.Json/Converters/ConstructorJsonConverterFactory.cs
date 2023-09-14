@@ -85,11 +85,11 @@ public class ConstructorJsonConverterFactory : JsonConverterFactory
     private static bool IsSuitableType(Type type)
     {
         // must be class or struct
-        if (!type.IsClass && !type.IsValueType)
+        if (type is { IsClass: false, IsValueType: false })
             return false;
 
         // must be not abstract and constructable
-        if (type.IsAbstract || type.IsGenericType && !type.IsConstructedGenericType)
+        if (type.IsAbstract || type is { IsGenericType: true, IsConstructedGenericType: false })
             return false;
 
         // must be object-like

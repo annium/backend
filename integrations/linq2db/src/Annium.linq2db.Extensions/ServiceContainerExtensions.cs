@@ -10,7 +10,7 @@ public static class ServiceContainerExtensions
     )
     {
         container.AddAll()
-            .Where(x => x.IsClass && !x.IsAbstract)
+            .Where(x => x is { IsClass: true, IsAbstract: false })
             .AssignableTo(typeof(IEntityConfiguration<>))
             .As<IEntityConfiguration>()
             .Singleton();
