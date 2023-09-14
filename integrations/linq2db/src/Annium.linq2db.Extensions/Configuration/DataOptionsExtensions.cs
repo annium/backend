@@ -15,15 +15,21 @@ public static class DataOptionsExtensions
 
         return options
             .UseTraceLevel(TraceLevel.Verbose)
-            .UseTraceWith((msg, category, lvl) => logSubject.Log<string?, string?>(MapTraceLevel(lvl), "{category}: {msg}", category, msg));
-
-        static LogLevel MapTraceLevel(TraceLevel level) => level switch
-        {
-            TraceLevel.Error   => LogLevel.Error,
-            TraceLevel.Warning => LogLevel.Warn,
-            TraceLevel.Info    => LogLevel.Info,
-            TraceLevel.Verbose => LogLevel.Trace,
-            _                  => LogLevel.None
-        };
+            .UseTraceWith((msg, category, lvl) =>
+            {
+                switch (lvl)
+                {
+                    case TraceLevel.Error:
+                        logSubject.Error<string?, string?>("{category}: {msg}", category, msg);
+                        break;
+                    case TraceLevel.Warning:
+                        logSubject.Warn<string?, string?>("{category}: {msg}", category, msg);
+                        break;
+                    // all other levels are handled as Trace by design (at the moment linq2db traces with Info level)
+                    default:
+                        logSubject.Trace<string?, string?>("{category}: {msg}", category, msg);
+                        break;
+                }
+            });
     }
 }
