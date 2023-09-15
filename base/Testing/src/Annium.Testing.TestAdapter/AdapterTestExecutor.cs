@@ -127,7 +127,7 @@ public class AdapterTestExecutor : ITestExecutor, ILogSubject
         this.Trace("Build test executor for assembly {assembly} and given {testsCount} tests.", assembly.FullName, testSet.Length);
 
         var container = AssemblyServicesCollector.Collect(assembly, testSet);
-        container.Add(_provider!.Resolve<TestingConfiguration>()).Singleton();
+        container.Add(_provider!.Resolve<TestingConfiguration>()).AsSelf().Singleton();
 
         var factory = new ServiceProviderFactory();
         var provider = factory.CreateServiceProvider(factory.CreateBuilder(container.Collection).UseServicePack<Testing.ServicePack>());

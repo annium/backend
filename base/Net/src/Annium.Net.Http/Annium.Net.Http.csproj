@@ -16,6 +16,6 @@
         <ProjectReference Include="../Annium.Net.Base/Annium.Net.Base.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="OneOf" Version="3.0.255" />
+        <PackageReference Include="OneOf" Version="3.0.263" />
     </ItemGroup>
 </Project>

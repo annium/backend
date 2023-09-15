@@ -15,6 +15,6 @@
         <ProjectReference Include="../../../../base/Data/src/Annium.Data.Models/Annium.Data.Models.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.10" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.11" />
     </ItemGroup>
 </Project>

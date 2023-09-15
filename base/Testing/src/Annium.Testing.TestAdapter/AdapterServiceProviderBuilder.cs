@@ -9,7 +9,7 @@ internal static class AdapterServiceProviderBuilder
     public static IServiceProvider Build(IDiscoveryContext discoveryContext)
     {
         var container = new ServiceContainer();
-        container.Add(TestingConfigurationReader.Read(discoveryContext)).Singleton();
+        container.Add(TestingConfigurationReader.Read(discoveryContext)).AsSelf().Singleton();
 
         var factory = new ServiceProviderFactory();
 

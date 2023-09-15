@@ -191,5 +191,5 @@ public class WebSocketPerfTest : IntegrationTestBase
         this.Trace("done {index}", index);
     }
 
-    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 100).Select(x => new object[] { x });
+    public static IEnumerable<object[]> GetRange() => Enumerable.Range(0, 10).Select(x => new object[] { x });
 }

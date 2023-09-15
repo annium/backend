@@ -14,11 +14,11 @@ public static class AssemblyServicesCollector
 
         // fixtures
         foreach (var type in assembly.GetTypes().Where(t => t.GetTypeInfo().GetCustomAttribute<FixtureAttribute>() != null))
-            container.Add(type).Transient();
+            container.Add(type).AsSelf().Transient();
 
         // test classes
         foreach (var type in tests.Select(t => t.Method.DeclaringType!).Distinct())
-            container.Add(type).Transient();
+            container.Add(type).AsSelf().Transient();
 
         return container;
     }

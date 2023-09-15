@@ -11,17 +11,17 @@ public class ServicePack : ServicePackBase
         container.AddTime().WithRealTime().SetDefault();
 
         // components
-        container.Add<TestDiscoverer>().Singleton();
-        container.Add<TestExecutor>().Singleton();
+        container.Add<TestDiscoverer>().AsSelf().Singleton();
+        container.Add<TestExecutor>().AsSelf().Singleton();
 
         // executors
-        container.Add<PipelineExecutor>().Singleton();
+        container.Add<PipelineExecutor>().AsSelf().Singleton();
         container.Add<ITestExecutor, SkippedExecutor>().Singleton();
         container.Add<ITestExecutor, SetupExecutor>().Singleton();
         container.Add<ITestExecutor, BeforeExecutor>().Singleton();
         container.Add<ITestExecutor, BodyExecutor>().Singleton();
         container.Add<ITestExecutor, AfterExecutor>().Singleton();
-        container.Add<MethodExecutor>().Singleton();
+        container.Add<MethodExecutor>().AsSelf().Singleton();
 
         // tools
         container.AddLogging();

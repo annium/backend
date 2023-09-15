@@ -7,7 +7,7 @@ public class ServicePack : ServicePackBase
 {
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
-        container.Add(new TestConverter(Constants.ExecutorUri)).Singleton();
-        container.Add<TestResultConverter>().Singleton();
+        container.Add(new TestConverter(Constants.ExecutorUri)).AsSelf().Singleton();
+        container.Add<TestResultConverter>().AsSelf().Singleton();
     }
 }
