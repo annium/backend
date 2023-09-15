@@ -1,15 +1,19 @@
 using System;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Annium.Internal.Logging;
 
 namespace Annium.Logging;
 
 public static class LogSubjectDebugExtensions
 {
-    private const string CompilationFlag = "LOG_DEBUG";
+    private static readonly bool IsEnabled;
+
+    static LogSubjectDebugExtensions()
+    {
+        IsEnabled = LogConfig.Level == "debug" || LogConfig.Level == "trace";
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug(
         this ILogSubject subject,
         string message,
@@ -18,11 +22,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, Array.Empty<object>());
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, Array.Empty<object>());
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1>(
         this ILogSubject subject,
         string message,
@@ -32,11 +36,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2>(
         this ILogSubject subject,
         string message,
@@ -47,11 +51,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3>(
         this ILogSubject subject,
         string message,
@@ -63,11 +67,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4>(
         this ILogSubject subject,
         string message,
@@ -80,11 +84,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5>(
         this ILogSubject subject,
         string message,
@@ -98,11 +102,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6>(
         this ILogSubject subject,
         string message,
@@ -117,11 +121,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6, T7>(
         this ILogSubject subject,
         string message,
@@ -137,11 +141,11 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6, x7 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6, x7 });
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Conditional(CompilationFlag)]
     public static void Debug<T1, T2, T3, T4, T5, T6, T7, T8>(
         this ILogSubject subject,
         string message,
@@ -158,6 +162,7 @@ public static class LogSubjectDebugExtensions
         [CallerLineNumber] int line = 0
     )
     {
-        subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6, x7, x8 });
+        if (IsEnabled)
+            subject.Logger.Log(subject, file, member, line, LogLevel.Debug, message, new object?[] { x1, x2, x3, x4, x5, x6, x7, x8 });
     }
 }
