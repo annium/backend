@@ -5,7 +5,7 @@ setup:
 	xs remote restore -user $(user) -password $(pass)
 
 update:
-	xs update all -debug -sc -ic
+	xs update all -sc -ic
 
 clean:
 	xs clean -sc -ic
