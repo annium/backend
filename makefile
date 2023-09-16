@@ -1,8 +1,11 @@
+format:
+	xs format -sc -ic
+
 install:
 	xs remote restore -user $(user) -password $(pass)
 
 update:
-	xs update all dotnet -debug -sc -ic
+	xs update all -debug -sc -ic
 
 clean:
 	xs clean -sc -ic
