@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Security.Cryptography</PackageId>
+        <PackageId>Annium.Identity.Tokens</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Security.Cryptography</Description>
         <TargetFramework>net7.0</TargetFramework>
@@ -12,6 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="PemUtils" Version="3.0.0.82" />
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="7.0.0" />
+        <PackageReference Include="SimpleBase" Version="4.0.0" />
     </ItemGroup>
 </Project>

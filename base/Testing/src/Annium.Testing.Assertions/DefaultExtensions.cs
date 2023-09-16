@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Annium.Testing.Assertions.Internal;
 
@@ -17,13 +19,15 @@ public static class ValueExtensions
         return value;
     }
 
+    [return: NotNull]
     public static T IsNotDefault<T>(
-        this T value,
+        [NotNull] this T value,
         string? message = null,
         [CallerArgumentExpression("value")] string valueEx = default!
     )
     {
         value.IsNot(default, $"{value.Wrap(valueEx)} is default");
+        ArgumentNullException.ThrowIfNull(value);
 
         return value;
     }
