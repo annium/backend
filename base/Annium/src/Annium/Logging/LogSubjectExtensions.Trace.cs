@@ -10,7 +10,7 @@ public static class LogSubjectTraceExtensions
 
     static LogSubjectTraceExtensions()
     {
-        IsEnabled = LogConfig.Level == "trace";
+        IsEnabled = LogConfig.Level <= LogLevel.Trace;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

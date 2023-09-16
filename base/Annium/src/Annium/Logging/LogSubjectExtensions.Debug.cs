@@ -10,7 +10,7 @@ public static class LogSubjectDebugExtensions
 
     static LogSubjectDebugExtensions()
     {
-        IsEnabled = LogConfig.Level == "debug" || LogConfig.Level == "trace";
+        IsEnabled = LogConfig.Level <= LogLevel.Debug;
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
