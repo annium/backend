@@ -4,11 +4,14 @@ install:
 update:
 	xs update all dotnet -debug -sc -ic
 
+clean:
+	xs clean -sc -ic
+
 build:
-	dotnet build -v q
+	dotnet build --nologo -v q
 
 test:
-	dotnet test -v q
+	dotnet test --nologo -v q
 
 publish:
 	xs publish all 0.1.0 -p 1
