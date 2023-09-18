@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.Http.Internal;
 using OneOf;
@@ -8,10 +9,11 @@ namespace Annium.Net.Http;
 public static class AsResponseExtensions
 {
     public static async Task<IHttpResponse<T?>> AsResponseAsync<T>(
-        this IHttpRequest request
+        this IHttpRequest request,
+        CancellationToken ct = default
     )
     {
-        var response = await request.RunAsync();
+        var response = await request.RunAsync(ct);
 
         try
         {
@@ -27,10 +29,11 @@ public static class AsResponseExtensions
 
     public static async Task<IHttpResponse<T>> AsResponseAsync<T>(
         this IHttpRequest request,
-        T defaultData
+        T defaultData,
+        CancellationToken ct = default
     )
     {
-        var response = await request.RunAsync();
+        var response = await request.RunAsync(ct);
 
         try
         {
@@ -44,10 +47,11 @@ public static class AsResponseExtensions
     }
 
     public static async Task<IHttpResponse<OneOf<TSuccess?, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
-        this IHttpRequest request
+        this IHttpRequest request,
+        CancellationToken ct = default
     )
     {
-        var response = await request.RunAsync();
+        var response = await request.RunAsync(ct);
 
         try
         {
@@ -69,10 +73,11 @@ public static class AsResponseExtensions
 
     public static async Task<IHttpResponse<OneOf<TSuccess, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
         this IHttpRequest request,
-        TSuccess defaultData
+        TSuccess defaultData,
+        CancellationToken ct = default
     )
     {
-        var response = await request.RunAsync();
+        var response = await request.RunAsync(ct);
 
         try
         {
