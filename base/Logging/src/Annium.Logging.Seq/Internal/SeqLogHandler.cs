@@ -12,8 +12,8 @@ namespace Annium.Logging.Seq.Internal;
 internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
     where TContext : class, ILogContext
 {
-    private readonly IHttpRequest _request;
     private readonly Func<LogMessage<TContext>, IReadOnlyDictionary<string, string?>> _format;
+    private readonly IHttpRequestFactory _httpRequestFactory;
     private readonly ISerializer<string> _serializer;
     private readonly SeqConfiguration _cfg;
 
@@ -25,8 +25,8 @@ internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
         cfg
     )
     {
-        _request = httpRequestFactory.New(cfg.Endpoint);
         _format = CompactLogEvent<TContext>.CreateFormat(cfg.Project);
+        _httpRequestFactory = httpRequestFactory;
         _serializer = serializer;
         _cfg = cfg;
     }
@@ -39,7 +39,7 @@ internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
 
         try
         {
-            var response = await _request.Clone()
+            var response = await _httpRequestFactory.New(_cfg.Endpoint)
                 .Post("api/events/raw")
                 .Param("clef", string.Empty)
                 .Header("X-Seq-ApiKey", _cfg.ApiKey)
@@ -48,12 +48,12 @@ internal class SeqLogHandler<TContext> : BufferingLogHandler<TContext>
             if (response.IsSuccess)
                 return true;
 
-            Console.WriteLine($"Failed to to write events to Seq at {_request.Uri}: {response.StatusCode} - {response.StatusText}");
+            Console.WriteLine($"Failed to to write events to Seq at {_cfg.Endpoint}: {response.StatusCode} - {response.StatusText}");
             return false;
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed to to write events to Seq at {_request.Uri}: {e}");
+            Console.WriteLine($"Failed to to write events to Seq at {_cfg.Endpoint}: {e}");
             return false;
         }
     }

@@ -1,4 +1,5 @@
 using System;
+using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,8 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     where TEntryPoint : class
 {
     private readonly WebApplicationFactory<TEntryPoint> _appFactory;
-    private readonly Lazy<IHttpRequest> _httpRequest;
+    private readonly Lazy<HttpClient> _httpClient;
+    private readonly IHttpRequestFactory _httpRequestFactory;
     private AsyncDisposableBox _disposable = Disposable.AsyncBox(VoidLogger.Instance);
 
     public WrappedWebApplicationFactory(
@@ -21,7 +23,8 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     )
     {
         _appFactory = appFactory;
-        _httpRequest = new Lazy<IHttpRequest>(InitHttpRequest, true);
+        _httpClient = new Lazy<HttpClient>(InitHttpClient, true);
+        _httpRequestFactory = Resolve<IHttpRequestFactory>();
         _disposable += _appFactory as IAsyncDisposable;
     }
 
@@ -32,7 +35,10 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     public object Resolve(Type type)
         => _appFactory.Services.Resolve(type);
 
-    public IHttpRequest GetHttpRequest() => _httpRequest.Value.Clone();
+    public IHttpRequest GetHttpRequest()
+    {
+        return _httpRequestFactory.New().UseClient(_httpClient.Value);
+    }
 
     public async Task<TWebSocketClient> GetWebSocketClientAsync<TWebSocketClient>(string endpoint)
         where TWebSocketClient : class, IAsyncDisposable
@@ -51,15 +57,12 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
         return client;
     }
 
-    private IHttpRequest InitHttpRequest()
+    private HttpClient InitHttpClient()
     {
         var httpClient = _appFactory.CreateClient();
         _disposable += httpClient;
-        var httpRequestFactory = Resolve<IHttpRequestFactory>();
 
-        var request = httpRequestFactory.New().UseClient(httpClient);
-
-        return request;
+        return httpClient;
     }
 
     public ValueTask DisposeAsync()

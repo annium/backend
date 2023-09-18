@@ -60,35 +60,6 @@ internal class HttpRequest : IHttpRequest
         Headers = message.Headers;
     }
 
-    private HttpRequest(
-        Serializer httpContentSerializer,
-        ILogger logger,
-        HttpClient client,
-        HttpMethod method,
-        Uri? baseUri,
-        string? uri,
-        HttpRequestHeaders headers,
-        IReadOnlyDictionary<string, StringValues> parameters,
-        HttpContent? content,
-        List<Configuration> configurations,
-        List<Middleware> middlewares
-    )
-    {
-        Serializer = httpContentSerializer;
-        Logger = logger;
-        _client = client;
-        Method = method;
-        _baseUri = baseUri;
-        _uri = uri;
-        using (var message = new HttpRequestMessage()) Headers = message.Headers;
-        foreach (var (name, values) in headers)
-            Headers.Add(name, values);
-        _parameters = parameters.ToDictionary(p => p.Key, p => p.Value);
-        Content = content;
-        _configurations = configurations;
-        _middlewares = middlewares;
-    }
-
     public IHttpRequest Base(Uri baseUri)
     {
         _baseUri = baseUri;
@@ -216,21 +187,6 @@ internal class HttpRequest : IHttpRequest
 
         return this;
     }
-
-    public IHttpRequest Clone() =>
-        new HttpRequest(
-            Serializer,
-            Logger,
-            _client,
-            Method,
-            _baseUri,
-            _uri,
-            Headers,
-            _parameters,
-            Content,
-            _configurations,
-            _middlewares
-        );
 
     public async Task<IHttpResponse> RunAsync(CancellationToken ct = default)
     {

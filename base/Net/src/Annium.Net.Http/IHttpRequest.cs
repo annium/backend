@@ -38,7 +38,6 @@ public interface IHttpRequest : ILogSubject
     IHttpRequest Configure(Action<IHttpRequest> configure);
     IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, Task<IHttpResponse>> middleware);
     IHttpRequest Intercept(Func<Func<Task<IHttpResponse>>, IHttpRequest, Task<IHttpResponse>> middleware);
-    IHttpRequest Clone();
     Task<IHttpResponse> RunAsync(CancellationToken ct = default);
     internal Serializer Serializer { get; }
 }
