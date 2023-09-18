@@ -32,7 +32,9 @@ public static class HttpRequestLogExtensions
                     subject.Trace<string, string>("- {headerName}: {headerValues}", name, string.Join(", ", values));
             }
 
-            return await next();
+            response = await next();
+
+            return response;
         }
         catch (Exception e)
         {
