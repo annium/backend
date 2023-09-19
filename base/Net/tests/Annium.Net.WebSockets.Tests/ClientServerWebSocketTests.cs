@@ -396,8 +396,16 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
 
         _clientSocket = new ClientWebSocket(ClientWebSocketOptions.Default with { ReconnectDelay = 1 }, Logger);
-        _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
-        _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
+        _clientSocket.TextReceived += x =>
+        {
+            var message = Encoding.UTF8.GetString(x.Span);
+            _texts.Enqueue(message);
+        };
+        _clientSocket.BinaryReceived += x =>
+        {
+            var message = x.ToArray();
+            _binaries.Enqueue(message);
+        };
 
         _clientSocket.OnConnected += () => this.Trace("STATE: Connected");
         _clientSocket.OnDisconnected += status => this.Trace("STATE: Disconnected: {status}", status);

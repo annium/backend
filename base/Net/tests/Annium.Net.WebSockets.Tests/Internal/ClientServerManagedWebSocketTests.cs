@@ -269,7 +269,7 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         var messages = Enumerable.Range(0, 3)
-            .Select(x => new string((char)x, 10))
+            .Select(x => $"msg {x}")
             .ToArray();
         await using var _ = RunServer(async serverSocket =>
         {
@@ -359,8 +359,16 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
 
         _clientSocket = new ClientManagedWebSocket(Logger);
-        _clientSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
-        _clientSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
+        _clientSocket.TextReceived += x =>
+        {
+            var message = Encoding.UTF8.GetString(x.Span);
+            _texts.Enqueue(message);
+        };
+        _clientSocket.BinaryReceived += x =>
+        {
+            var message = x.ToArray();
+            _binaries.Enqueue(message);
+        };
 
         await Task.CompletedTask;
 

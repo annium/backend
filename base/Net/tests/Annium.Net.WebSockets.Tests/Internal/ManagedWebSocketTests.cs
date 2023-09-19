@@ -401,8 +401,16 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         _managedSocket = new ManagedWebSocket(_clientSocket, Logger);
         this.Trace<string, string>("created pair of {clientSocket} and {managedSocket}", _clientSocket.GetFullId(), _managedSocket.GetFullId());
 
-        _managedSocket.TextReceived += x => _texts.Enqueue(Encoding.UTF8.GetString(x.Span));
-        _managedSocket.BinaryReceived += x => _binaries.Enqueue(x.ToArray());
+        _managedSocket.TextReceived += x =>
+        {
+            var message = Encoding.UTF8.GetString(x.Span);
+            _texts.Enqueue(message);
+        };
+        _managedSocket.BinaryReceived += x =>
+        {
+            var message = x.ToArray();
+            _binaries.Enqueue(message);
+        };
 
         await Task.CompletedTask;
 
