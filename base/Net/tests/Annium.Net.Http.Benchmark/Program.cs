@@ -1,5 +1,4 @@
 using System.Threading;
-using Annium.Logging;
 using Annium.Net.Http.Benchmark.Internal;
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
@@ -13,7 +12,7 @@ using BenchmarkDotNet.Running;
 using BenchmarkDotNet.Validators;
 
 var cts = new CancellationTokenSource();
-var serverTask = WorkloadServer.RunAsync(cts.Token, VoidLogger.Instance);
+var serverTask = WorkloadServer.RunAsync(cts.Token);
 
 var config = new ManualConfig()
     .AddExporter(MarkdownExporter.Default)

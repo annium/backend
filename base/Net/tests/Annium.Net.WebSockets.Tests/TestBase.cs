@@ -2,7 +2,6 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Logging;
 using Annium.Net.Servers;
 using Xunit.Abstractions;
 
@@ -20,10 +19,10 @@ public abstract class TestBase : Testing.Lib.TestBase
         ServerUri = new Uri($"ws://127.0.0.1:{_port}");
     }
 
-    protected IAsyncDisposable RunServerBase(Func<HttpListenerWebSocketContext, ILogger, CancellationToken, Task> handleWebSocket)
+    protected IAsyncDisposable RunServerBase(Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task> handleWebSocket)
     {
         var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(uri).WithWebSockets(handleWebSocket).Build(Get<ILogger>());
+        var server = WebServerBuilder.New(Get<IServiceProvider>(), uri).WithWebSockets(handleWebSocket).Build();
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 

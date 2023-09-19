@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 using Annium.Testing;
@@ -82,7 +83,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string message = "demo";
         var serverTcs = new TaskCompletionSource();
-        await using var _ = RunServerBase(async (ctx, _, _) =>
+        await using var _ = RunServerBase(async (_, ctx, _) =>
         {
             await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default);
             Task.Delay(10, CancellationToken.None)
@@ -127,7 +128,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
         const string message = "demo";
         var serverTcs = new TaskCompletionSource();
-        await using var _ = RunServerBase(async (ctx, _, _) =>
+        await using var _ = RunServerBase(async (_, ctx, _) =>
         {
             ctx.WebSocket.Abort();
 
@@ -235,7 +236,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
     {
         // arrange
         this.Trace("start");
-        await using var _ = RunServerBase(async (ctx, _, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
+        await using var _ = RunServerBase(async (_, ctx, _) => await ctx.WebSocket.CloseOutputAsync(System.Net.WebSockets.WebSocketCloseStatus.Empty, string.Empty, default));
         await ConnectAsync();
 
         // act
@@ -272,7 +273,7 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
         // arrange
         this.Trace("start");
         var serverTcs = new TaskCompletionSource();
-        await using var _ = RunServerBase(async (ctx, _, _) =>
+        await using var _ = RunServerBase(async (_, ctx, _) =>
         {
             ctx.WebSocket.Abort();
 
@@ -415,11 +416,11 @@ public class ManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<ManagedWebSocket, CancellationToken, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, logger, ct) =>
+        return RunServerBase(async (sp, ctx, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ManagedWebSocket(ctx.WebSocket, logger);
+            var socket = new ManagedWebSocket(ctx.WebSocket, sp.Resolve<ILogger>());
 
             this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket, ct);

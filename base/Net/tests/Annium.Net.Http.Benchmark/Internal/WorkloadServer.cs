@@ -3,21 +3,22 @@ using System.Globalization;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Logging;
 using Annium.Net.Base;
 using Annium.Net.Servers;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Net.Http.Benchmark.Internal;
 
 internal static class WorkloadServer
 {
-    public static async Task RunAsync(CancellationToken ct, ILogger logger)
+    public static async Task RunAsync(CancellationToken ct)
     {
-        var server = WebServerBuilder.New(new Uri($"http://127.0.0.1:{Constants.Port}")).WithHttp(HandleHttpRequest).Build(logger);
+        var sp = new ServiceCollection().BuildServiceProvider();
+        var server = WebServerBuilder.New(sp, new Uri($"http://127.0.0.1:{Constants.Port}")).WithHttp(HandleHttpRequest).Build();
         await server.RunAsync(ct);
     }
 
-    private static Task HandleHttpRequest(HttpListenerContext ctx, ILogger logger, CancellationToken ct)
+    private static Task HandleHttpRequest(IServiceProvider sp, HttpListenerContext ctx, CancellationToken ct)
     {
         var path = ctx.Request.Url.NotNull().AbsolutePath;
 

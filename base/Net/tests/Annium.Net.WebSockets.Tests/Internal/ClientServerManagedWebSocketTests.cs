@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Net.WebSockets.Internal;
 using Annium.Testing;
@@ -377,11 +378,11 @@ public class ClientServerManagedWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<IServerManagedWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, logger, ct) =>
+        return RunServerBase(async (sp, ctx, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ServerManagedWebSocket(ctx.WebSocket, logger, ct);
+            var socket = new ServerManagedWebSocket(ctx.WebSocket, sp.Resolve<ILogger>(), ct);
 
             this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket);

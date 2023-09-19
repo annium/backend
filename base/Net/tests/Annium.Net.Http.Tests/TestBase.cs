@@ -25,8 +25,8 @@ public abstract class TestBase : Testing.Lib.TestBase
     )
     {
         var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(uri)
-            .WithHttp(async (ctx, _, _) =>
+        var server = WebServerBuilder.New(Get<IServiceProvider>(), uri)
+            .WithHttp(async (_, ctx, _) =>
             {
                 this.Trace("start");
 
@@ -46,7 +46,7 @@ public abstract class TestBase : Testing.Lib.TestBase
 
                 this.Trace("done");
             })
-            .Build(Get<ILogger>());
+            .Build();
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 

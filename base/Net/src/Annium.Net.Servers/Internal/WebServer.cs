@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Extensions.Execution;
 using Annium.Logging;
 
@@ -10,21 +11,21 @@ namespace Annium.Net.Servers.Internal;
 
 internal class WebServer : IWebServer
 {
+    private readonly IServiceProvider _sp;
     private readonly HttpListener _listener;
-    private readonly Func<HttpListenerContext, ILogger, CancellationToken, Task> _handleHttpRequest;
-    private readonly Func<HttpListenerContext, ILogger, CancellationToken, Task> _handleWebSocketRequest;
-    private readonly Func<HttpListenerWebSocketContext, ILogger, CancellationToken, Task> _handleWebSocket;
+    private readonly Func<IServiceProvider, HttpListenerContext, CancellationToken, Task> _handleHttpRequest;
+    private readonly Func<IServiceProvider, HttpListenerContext, CancellationToken, Task> _handleWebSocketRequest;
+    private readonly Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task> _handleWebSocket;
     private readonly IBackgroundExecutor _executor;
-    private readonly ILogger _logger;
 
     public WebServer(
+        IServiceProvider sp,
         Uri uri,
-        Func<HttpListenerContext, ILogger, CancellationToken, Task>? handleHttp,
-        Func<HttpListenerWebSocketContext, ILogger, CancellationToken, Task>? handleWebSocket,
-        ILogger logger
+        Func<IServiceProvider, HttpListenerContext, CancellationToken, Task>? handleHttp,
+        Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task>? handleWebSocket
     )
     {
-        _logger = logger;
+        _sp = sp;
         _listener = new HttpListener();
         _listener.Prefixes.Add(uri.ToString());
         _handleHttpRequest = handleHttp ?? CloseConnection;
@@ -39,7 +40,7 @@ internal class WebServer : IWebServer
             _handleWebSocket = handleWebSocket;
         }
 
-        _executor = Executor.Background.Parallel<WebServer>(logger);
+        _executor = Executor.Background.Parallel<WebServer>(_sp.Resolve<ILogger>());
     }
 
     public async Task RunAsync(CancellationToken ct = default)
@@ -64,7 +65,7 @@ internal class WebServer : IWebServer
             }
 
             // schedule connection handling
-            _executor.Schedule(async () => await HandleRequest(listenerContext, _logger, ct).ConfigureAwait(false));
+            _executor.Schedule(async () => await HandleRequest(_sp, listenerContext, ct).ConfigureAwait(false));
         }
 
         // when cancelled - await connections processing and stop listener
@@ -72,22 +73,22 @@ internal class WebServer : IWebServer
         _listener.Stop();
     }
 
-    private async Task HandleRequest(HttpListenerContext listenerContext, ILogger logger, CancellationToken ct)
+    private async Task HandleRequest(IServiceProvider sp, HttpListenerContext ctx, CancellationToken ct)
     {
-        if (listenerContext.Request.IsWebSocketRequest)
-            await _handleWebSocketRequest(listenerContext, logger, ct);
+        if (ctx.Request.IsWebSocketRequest)
+            await _handleWebSocketRequest(sp, ctx, ct);
         else
-            await _handleHttpRequest(listenerContext, logger, ct);
+            await _handleHttpRequest(sp, ctx, ct);
     }
 
-    private async Task HandleWebSocketRequest(HttpListenerContext listenerContext, ILogger logger, CancellationToken ct)
+    private async Task HandleWebSocketRequest(IServiceProvider sp, HttpListenerContext ctx, CancellationToken ct)
     {
         var statusCode = 200;
         var isAborted = false;
         try
         {
-            var webSocketContext = await listenerContext.AcceptWebSocketAsync(subProtocol: null);
-            await _handleWebSocket(webSocketContext, _logger, ct).ConfigureAwait(false);
+            var webSocketContext = await ctx.AcceptWebSocketAsync(subProtocol: null);
+            await _handleWebSocket(sp, webSocketContext, ct).ConfigureAwait(false);
             isAborted = webSocketContext.WebSocket.State is WebSocketState.Aborted;
         }
         catch (OperationCanceledException)
@@ -100,16 +101,16 @@ internal class WebServer : IWebServer
         finally
         {
             if (isAborted)
-                listenerContext.Response.Abort();
+                ctx.Response.Abort();
             else
             {
-                listenerContext.Response.StatusCode = statusCode;
-                listenerContext.Response.Close();
+                ctx.Response.StatusCode = statusCode;
+                ctx.Response.Close();
             }
         }
     }
 
-    private static Task CloseConnection(HttpListenerContext ctx, ILogger logger, CancellationToken ct)
+    private static Task CloseConnection(IServiceProvider sp, HttpListenerContext ctx, CancellationToken ct)
     {
         ctx.Response.StatusCode = 404;
         ctx.Response.Close();
@@ -117,7 +118,7 @@ internal class WebServer : IWebServer
         return Task.CompletedTask;
     }
 
-    private static Task IgnoreWebSocket(HttpListenerWebSocketContext ctx, ILogger logger, CancellationToken ct)
+    private static Task IgnoreWebSocket(IServiceProvider sp, HttpListenerWebSocketContext ctx, CancellationToken ct)
     {
         return Task.CompletedTask;
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Testing;
 using Annium.Testing.Assertions;
@@ -378,7 +379,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         // assert
         var expectedMessages = Enumerable.Range(0, connectionsCount)
-            .SelectMany(x => messages)
+            .SelectMany(_ => messages)
             .ToArray();
         this.Trace("wait for {messagesCount} messages", expectedMessages.Length);
         await Expect.To(() => _texts.IsEqual(expectedMessages), 1000);
@@ -420,11 +421,11 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
     private IAsyncDisposable RunServer(Func<ServerWebSocket, Task> handleWebSocket)
     {
-        return RunServerBase(async (ctx, logger, ct) =>
+        return RunServerBase(async (sp, ctx, ct) =>
         {
             this.Trace("start");
 
-            var socket = new ServerWebSocket(ctx.WebSocket, logger, ct);
+            var socket = new ServerWebSocket(ctx.WebSocket, sp.Resolve<ILogger>(), ct);
 
             this.Trace<string>("handle {socket}", socket.GetFullId());
             await handleWebSocket(socket);
