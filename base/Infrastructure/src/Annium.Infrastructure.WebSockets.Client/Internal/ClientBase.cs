@@ -38,23 +38,24 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         ILogger logger
     )
     {
-        socket.ObserveBinary()
-            .Subscribe(x => this.Trace<string>("RAW!: {x}", Encoding.UTF8.GetString(x.ToArray())));
-        socket.ObserveBinary()
-            .Select(serializer.Deserialize<AbstractResponseBase>)
-            .Subscribe(x => this.Trace<string>("MSG!: {x}", JsonSerializer.Serialize(x)));
-        _responseObservable = socket.ObserveBinary().Select(serializer.Deserialize<AbstractResponseBase>);
-
         _disposable = Disposable.AsyncBox(logger);
-        _disposable += _responseObservable.OfType<ResponseBase>()
-            .SubscribeOn(TaskPoolScheduler.Default)
-            .Subscribe(CompleteResponse);
 
         Socket = socket;
         Logger = logger;
         _serializer = serializer;
         _configuration = configuration;
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
+
+        socket.ObserveBinary()
+            .Subscribe(x => this.Trace<string>("RAW!: {x}", Encoding.UTF8.GetString(x.ToArray())));
+        socket.ObserveBinary()
+            .Select(serializer.Deserialize<AbstractResponseBase>)
+            .Subscribe(x => this.Trace<string>("MSG!: {x}", JsonSerializer.Serialize(x)));
+
+        _responseObservable = socket.ObserveBinary().Select(serializer.Deserialize<AbstractResponseBase>);
+        _disposable += _responseObservable.OfType<ResponseBase>()
+            .SubscribeOn(TaskPoolScheduler.Default)
+            .Subscribe(CompleteResponse);
     }
 
     // broadcast
