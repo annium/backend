@@ -27,9 +27,10 @@ public class ChannelTests : TestBase
 
         // arrange
         var logger = Get<ILogger>();
-        var data = Enumerable.Range(0, 100_000).ToArray();
+        var dataSize = 100_000;
+        var data = Enumerable.Range(0, dataSize).ToArray();
         var channel = Channel.CreateUnbounded<int>();
-        Observable.Range(0, 100_000).WriteToChannel(channel.Writer, CancellationToken.None);
+        Observable.Range(0, dataSize).WriteToChannel(channel.Writer, CancellationToken.None);
         var log = new List<int>();
         var disposeCounter = 0;
 
@@ -47,7 +48,7 @@ public class ChannelTests : TestBase
 
         // assert
         this.Trace("assert");
-        await Expect.To(() => { log.IsEqual(data); }, 100, 5);
+        await Expect.To(() => { log.IsEqual(data); });
         disposable.Dispose();
         disposeCounter.Is(0);
 
