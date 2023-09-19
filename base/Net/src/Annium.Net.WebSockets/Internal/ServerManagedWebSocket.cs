@@ -74,6 +74,9 @@ internal class ServerManagedWebSocket : IServerManagedWebSocket, ILogSubject
     {
         this.Trace("start, unsubscribe from managed socket");
 
+        if (task.Exception is not null)
+            this.Error(task.Exception);
+
         _managedSocket.TextReceived -= OnTextReceived;
         _managedSocket.BinaryReceived -= OnBinaryReceived;
 

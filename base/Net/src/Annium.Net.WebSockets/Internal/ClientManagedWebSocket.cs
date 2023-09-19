@@ -140,6 +140,9 @@ internal class ClientManagedWebSocket : IClientManagedWebSocket, ILogSubject
     {
         this.Trace("start");
 
+        if (task.Exception is not null)
+            this.Error(task.Exception);
+
         if (_managedSocket is not null)
         {
             this.Trace("start, unsubscribe from managed socket");

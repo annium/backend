@@ -104,6 +104,9 @@ public class ServerWebSocket : IServerWebSocket
     {
         this.Trace("start");
 
+        if (task.Exception is not null)
+            this.Error(task.Exception);
+
         lock (_locker)
         {
             if (_status is Status.Disconnected)

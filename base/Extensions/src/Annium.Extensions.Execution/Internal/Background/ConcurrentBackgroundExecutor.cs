@@ -68,6 +68,9 @@ internal class ConcurrentBackgroundExecutor<TSource> : BackgroundExecutorBase
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void CompleteTask(Task task)
     {
+        if (task.Exception is not null)
+            this.Error(task.Exception);
+
         Interlocked.Decrement(ref _taskCounter);
         TryFinish();
     }

@@ -150,6 +150,9 @@ public class ClientWebSocket : IClientWebSocket
     {
         this.Trace("start");
 
+        if (task.Exception is not null)
+            this.Error(task.Exception);
+
         lock (_locker)
         {
             if (_status is Status.Connected or Status.Disconnected)
@@ -206,6 +209,9 @@ public class ClientWebSocket : IClientWebSocket
     private void HandleClosed(Task<WebSocketCloseResult> task)
     {
         this.Trace("start");
+
+        if (task.Exception is not null)
+            this.Error(task.Exception);
 
         lock (_locker)
         {
