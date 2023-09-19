@@ -56,11 +56,11 @@ public static class AsResponseExtensions
         try
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
-            if (!Equals(success, default))
+            if (!Equals(success, default(TSuccess)))
                 return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, success);
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
-            if (!Equals(failure, default))
+            if (!Equals(failure, default(TFailure)))
                 return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, failure);
 
             return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, default(TSuccess));
@@ -82,11 +82,11 @@ public static class AsResponseExtensions
         try
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
-            if (!Equals(success, default))
+            if (!Equals(success, default(TSuccess)))
                 return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, success);
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
-            if (!Equals(failure, default))
+            if (!Equals(failure, default(TFailure)))
                 return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, failure);
 
             return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultData);

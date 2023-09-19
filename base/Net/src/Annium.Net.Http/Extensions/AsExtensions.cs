@@ -54,11 +54,11 @@ public static class AsExtensions
         try
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
-            if (!Equals(success, default))
+            if (!Equals(success, default(TSuccess)))
                 return success;
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
-            if (!Equals(failure, default))
+            if (!Equals(failure, default(TFailure)))
                 return failure;
 
             return default(TSuccess)!;
@@ -80,11 +80,11 @@ public static class AsExtensions
         try
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
-            if (!Equals(success, default))
+            if (!Equals(success, default(TSuccess)))
                 return success;
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
-            if (!Equals(failure, default))
+            if (!Equals(failure, default(TFailure)))
                 return failure;
 
             return defaultData;
