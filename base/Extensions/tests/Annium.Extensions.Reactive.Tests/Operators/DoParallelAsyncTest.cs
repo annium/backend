@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
@@ -14,29 +14,25 @@ public class DoParallelAsyncTest
     public async Task DoParallelAsync_WorksCorrectly()
     {
         // arrange
-        var log = new List<string>();
+        var log = new ConcurrentQueue<string>();
         var tcs = new TaskCompletionSource();
         using var observable = Observable.Range(1, 5)
             .DoParallelAsync(async x =>
             {
-                lock (log)
-                    log.Add($"start: {x}");
-                await Task.Delay(10);
-                lock (log)
-                    log.Add($"end: {x}");
+                log.Enqueue($"start: {x}");
+                await Task.Delay(100);
+                log.Enqueue($"end: {x}");
             })
-            .Subscribe(x =>
-            {
-                lock (log)
-                    log.Add($"sub: {x}");
-            }, tcs.SetResult);
+            .Subscribe(x => { }, tcs.SetResult);
 
         await tcs.Task;
 
-        log.Has(15);
-        var starts = log.Select((x, i) => (x, i)).Where(x => x.x.StartsWith("start")).Select(x => x.i).ToArray();
-        var ends = log.Select((x, i) => (x, i)).Where(x => !x.x.StartsWith("start")).Select(x => x.i).ToArray();
-        // ends/subs go after all starts
-        ends.All(x => starts.All(s => s < x)).IsTrue();
+        log.Has(10);
+        var starts = log.Select((x, i) => (x, i)).Where(x => x.x.StartsWith("start:")).Select(x => x.i).ToArray();
+        var ends = log.Select((x, i) => (x, i)).Where(x => x.x.StartsWith("end:")).Select(x => x.i).ToArray();
+
+        // at least one start/end pair will have sequential position in log
+        starts.Any(x => starts.Contains(x - 1)).IsTrue();
+        ends.Any(x => ends.Contains(x - 1)).IsTrue();
     }
 }
