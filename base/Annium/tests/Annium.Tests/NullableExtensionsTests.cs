@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Annium.Testing;
 using Xunit;
 
@@ -46,5 +48,59 @@ public class NullableExtensionsTests
 
         var verifiedValue = validValue.NotNull();
         verifiedValue.Is(validValue.Value);
+    }
+
+    [Fact]
+    public async Task EnsureNotNull_ClassTask()
+    {
+        // arrange
+        var nullValue = Task.FromResult<string?>(null);
+        var validValue = Task.FromResult<string?>("data");
+
+        // assert
+        Wrap.It(() =>
+            {
+                try
+                {
+                    var failedValue = nullValue.NotNull().Result;
+                    return new string(failedValue);
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerExceptions.Single();
+                }
+            })
+            .Throws<NullReferenceException>()
+            .Reports($"{nameof(nullValue)} is null");
+
+        var verifiedValue = await validValue.NotNull();
+        verifiedValue.Is("data");
+    }
+
+    [Fact]
+    public async Task EnsureNotNull_StructTask()
+    {
+        // arrange
+        var nullValue = Task.FromResult<bool?>(null);
+        var validValue = Task.FromResult<bool?>(true);
+
+        // assert
+        Wrap.It(() =>
+            {
+                try
+                {
+                    var failedValue = nullValue.NotNull().Result;
+                    return failedValue;
+                }
+                catch (AggregateException ex)
+                {
+                    throw ex.InnerExceptions.Single();
+                }
+            })
+            .Throws<NullReferenceException>()
+            .Reports($"{nameof(nullValue)} is null");
+
+        var verifiedValue = await validValue.NotNull();
+        verifiedValue.Is(true);
     }
 }
