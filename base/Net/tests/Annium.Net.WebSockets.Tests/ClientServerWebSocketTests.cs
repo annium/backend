@@ -105,10 +105,11 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         });
 
         this.Trace("connect");
+        var disconnectionTask = _clientSocket.WhenDisconnected();
         await ConnectAsync();
 
         this.Trace("await until disconnected");
-        await _clientSocket.WhenDisconnected();
+        await disconnectionTask;
 
         // act
         this.Trace("send text");
@@ -287,6 +288,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         // act
         this.Trace("connect");
+        var disconnectionTask = _clientSocket.WhenDisconnected();
         await ConnectAsync();
 
         // assert
@@ -294,7 +296,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         serverStopTcs.SetResult();
 
         this.Trace("disconnect");
-        var result = await _clientSocket.WhenDisconnected();
+        var result = await disconnectionTask;
         result.Is(WebSocketCloseStatus.ClosedRemote);
 
         this.Trace("done");
@@ -331,6 +333,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         // act
         this.Trace("connect");
+        var disconnectionTask = _clientSocket.WhenDisconnected();
         await ConnectAsync();
 
         // assert
@@ -339,7 +342,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         serverStopTcs.SetResult();
 
         this.Trace("disconnect");
-        var result = await _clientSocket.WhenDisconnected();
+        var result = await disconnectionTask;
         result.Is(WebSocketCloseStatus.ClosedRemote);
 
         this.Trace("done");
