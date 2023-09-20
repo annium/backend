@@ -21,8 +21,7 @@ public abstract class TestBase : Testing.Lib.TestBase
 
     protected IAsyncDisposable RunServerBase(Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task> handleWebSocket)
     {
-        var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(Get<IServiceProvider>(), uri).WithWebSockets(handleWebSocket).Build();
+        var server = WebServerBuilder.New(Get<IServiceProvider>(), _port).WithWebSockets(handleWebSocket).Build();
         var cts = new CancellationTokenSource();
         var serverTask = server.RunAsync(cts.Token);
 

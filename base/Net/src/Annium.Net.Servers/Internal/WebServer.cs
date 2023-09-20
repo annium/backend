@@ -20,14 +20,14 @@ internal class WebServer : IWebServer
 
     public WebServer(
         IServiceProvider sp,
-        Uri uri,
+        int port,
         Func<IServiceProvider, HttpListenerContext, CancellationToken, Task>? handleHttp,
         Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task>? handleWebSocket
     )
     {
         _sp = sp;
         _listener = new HttpListener();
-        _listener.Prefixes.Add(uri.ToString());
+        _listener.Prefixes.Add($"http://*:{port}/");
         _handleHttpRequest = handleHttp ?? CloseConnection;
         if (handleWebSocket is null)
         {

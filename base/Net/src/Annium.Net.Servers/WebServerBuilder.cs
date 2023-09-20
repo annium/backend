@@ -9,12 +9,9 @@ namespace Annium.Net.Servers;
 
 public static class WebServerBuilder
 {
-    public static IWebServerBuilder New(IServiceProvider sp, Uri uri)
+    public static IWebServerBuilder New(IServiceProvider sp, int port)
     {
-        if (uri.Scheme != "http")
-            throw new InvalidOperationException("Only http uri is supported by web server");
-
-        return new WebServerBuilderInstance(sp, uri);
+        return new WebServerBuilderInstance(sp, port);
     }
 }
 
@@ -28,14 +25,14 @@ public interface IWebServerBuilder
 file class WebServerBuilderInstance : IWebServerBuilder
 {
     private readonly IServiceProvider _sp;
-    private readonly Uri _uri;
+    private readonly int _port;
     private Func<IServiceProvider, HttpListenerContext, CancellationToken, Task>? _handleHttp;
     private Func<IServiceProvider, HttpListenerWebSocketContext, CancellationToken, Task>? _handleWebSocket;
 
-    public WebServerBuilderInstance(IServiceProvider sp, Uri uri)
+    public WebServerBuilderInstance(IServiceProvider sp, int port)
     {
         _sp = sp;
-        _uri = uri;
+        _port = port;
     }
 
     public IWebServerBuilder WithHttp(Func<IServiceProvider, HttpListenerContext, CancellationToken, Task> handler)
@@ -54,6 +51,6 @@ file class WebServerBuilderInstance : IWebServerBuilder
 
     public IWebServer Build()
     {
-        return new WebServer(_sp, _uri, _handleHttp, _handleWebSocket);
+        return new WebServer(_sp, _port, _handleHttp, _handleWebSocket);
     }
 }

@@ -14,7 +14,7 @@ internal static class WorkloadServer
     public static async Task RunAsync(CancellationToken ct)
     {
         var sp = new ServiceCollection().BuildServiceProvider();
-        var server = WebServerBuilder.New(sp, new Uri($"http://127.0.0.1:{Constants.Port}")).WithHttp(HandleHttpRequest).Build();
+        var server = WebServerBuilder.New(sp, Constants.Port).WithHttp(HandleHttpRequest).Build();
         await server.RunAsync(ct);
     }
 

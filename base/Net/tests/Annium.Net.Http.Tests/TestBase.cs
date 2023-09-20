@@ -24,8 +24,7 @@ public abstract class TestBase : Testing.Lib.TestBase
         Func<HttpListenerRequest, HttpListenerResponse, Task> handle
     )
     {
-        var uri = new Uri($"http://127.0.0.1:{_port}");
-        var server = WebServerBuilder.New(Get<IServiceProvider>(), uri)
+        var server = WebServerBuilder.New(Get<IServiceProvider>(), _port)
             .WithHttp(async (_, ctx, _) =>
             {
                 this.Trace("start");

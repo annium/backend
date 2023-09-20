@@ -7,7 +7,7 @@ using Annium.Net.Servers;
 
 await using var entry = Entrypoint.Default.Setup();
 
-var server = WebServerBuilder.New(entry.Provider, new Uri("http://127.0.0.1:9898")).WithWebSockets(HandleWebSocket).Build();
+var server = WebServerBuilder.New(entry.Provider, 9898).WithWebSockets(HandleWebSocket).Build();
 await server.RunAsync(entry.Ct);
 return;
 
