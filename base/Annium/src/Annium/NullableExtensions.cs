@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
@@ -7,6 +8,7 @@ namespace Annium;
 public static class NullableExtensions
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    [return: NotNull]
     public static T NotNull<T>(
         this T? value,
         [CallerArgumentExpression("value")] string expression = ""
