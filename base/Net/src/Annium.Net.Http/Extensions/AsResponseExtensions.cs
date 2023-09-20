@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.Http.Internal;
@@ -27,6 +28,18 @@ public static class AsResponseExtensions
         }
     }
 
+    public static async Task<IHttpResponse<T>> AsResponseUnsafeAsync<T>(
+        this IHttpRequest request,
+        CancellationToken ct = default
+    )
+    {
+        var response = await request.RunAsync(ct);
+
+        var data = await ContentParser.ParseAsync<T>(request.Serializer, response.Content);
+
+        return new HttpResponse<T>(response, data);
+    }
+
     public static async Task<IHttpResponse<T>> AsResponseAsync<T>(
         this IHttpRequest request,
         T defaultData,
@@ -46,7 +59,7 @@ public static class AsResponseExtensions
         }
     }
 
-    public static async Task<IHttpResponse<OneOf<TSuccess?, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
+    public static async Task<IHttpResponse<OneOf<TSuccess?, TFailure>>> AsResponseAsync<TSuccess, TFailure>(
         this IHttpRequest request,
         CancellationToken ct = default
     )
@@ -57,21 +70,39 @@ public static class AsResponseExtensions
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
             if (!Equals(success, default(TSuccess)))
-                return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, success);
+                return new HttpResponse<OneOf<TSuccess?, TFailure>>(response, success);
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
             if (!Equals(failure, default(TFailure)))
-                return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, failure);
+                return new HttpResponse<OneOf<TSuccess?, TFailure>>(response, failure);
 
-            return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, default(TSuccess));
+            return new HttpResponse<OneOf<TSuccess?, TFailure>>(response, default(TSuccess));
         }
         catch
         {
-            return new HttpResponse<OneOf<TSuccess?, TFailure?>>(response, default(TSuccess));
+            return new HttpResponse<OneOf<TSuccess?, TFailure>>(response, default(TSuccess));
         }
     }
 
-    public static async Task<IHttpResponse<OneOf<TSuccess, TFailure?>>> AsResponseAsync<TSuccess, TFailure>(
+    public static async Task<IHttpResponse<OneOf<TSuccess, TFailure>>> AsResponseUnsafeAsync<TSuccess, TFailure>(
+        this IHttpRequest request,
+        CancellationToken ct = default
+    )
+    {
+        var response = await request.RunAsync(ct);
+
+        var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
+        if (!Equals(success, default(TSuccess)))
+            return new HttpResponse<OneOf<TSuccess, TFailure>>(response, success);
+
+        var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
+        if (!Equals(failure, default(TFailure)))
+            return new HttpResponse<OneOf<TSuccess, TFailure>>(response, failure);
+
+        throw new InvalidOperationException("Failed to parse response");
+    }
+
+    public static async Task<IHttpResponse<OneOf<TSuccess, TFailure>>> AsResponseAsync<TSuccess, TFailure>(
         this IHttpRequest request,
         TSuccess defaultData,
         CancellationToken ct = default
@@ -83,17 +114,17 @@ public static class AsResponseExtensions
         {
             var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
             if (!Equals(success, default(TSuccess)))
-                return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, success);
+                return new HttpResponse<OneOf<TSuccess, TFailure>>(response, success);
 
             var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
             if (!Equals(failure, default(TFailure)))
-                return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, failure);
+                return new HttpResponse<OneOf<TSuccess, TFailure>>(response, failure);
 
-            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultData);
+            return new HttpResponse<OneOf<TSuccess, TFailure>>(response, defaultData);
         }
         catch
         {
-            return new HttpResponse<OneOf<TSuccess, TFailure?>>(response, defaultData);
+            return new HttpResponse<OneOf<TSuccess, TFailure>>(response, defaultData);
         }
     }
 }
