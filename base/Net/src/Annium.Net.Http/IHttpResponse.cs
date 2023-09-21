@@ -12,6 +12,7 @@ public interface IHttpResponse<T> : IHttpResponse
 
 public interface IHttpResponse
 {
+    bool IsAbort { get; }
     bool IsSuccess { get; }
     bool IsFailure { get; }
     HttpStatusCode StatusCode { get; }

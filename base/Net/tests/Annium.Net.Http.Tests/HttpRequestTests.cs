@@ -37,8 +37,9 @@ public class HttpRequestTests : TestBase
         var response = await _httpRequestFactory.New(ServerUri).Get("/").RunAsync();
 
         // assert
+        response.IsAbort.IsTrue();
         response.IsSuccess.IsFalse();
-        response.IsFailure.IsTrue();
+        response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.ServiceUnavailable);
 
         this.Trace("done");
@@ -64,8 +65,9 @@ public class HttpRequestTests : TestBase
             .RunAsync(new CancellationToken(true));
 
         // assert
+        response.IsAbort.IsTrue();
         response.IsSuccess.IsFalse();
-        response.IsFailure.IsTrue();
+        response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.RequestTimeout);
 
         this.Trace("done");
@@ -91,8 +93,9 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsAbort.IsTrue();
         response.IsSuccess.IsFalse();
-        response.IsFailure.IsTrue();
+        response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.RequestTimeout);
 
         this.Trace("done");
@@ -118,6 +121,7 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsAbort.IsFalse();
         response.IsSuccess.IsTrue();
         response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.OK);
@@ -159,6 +163,7 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsAbort.IsFalse();
         response.IsSuccess.IsTrue();
         response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.OK);
@@ -192,6 +197,7 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsAbort.IsFalse();
         response.IsSuccess.IsTrue();
         response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.OK);
@@ -222,6 +228,7 @@ public class HttpRequestTests : TestBase
             .RunAsync();
 
         // assert
+        response.IsAbort.IsFalse();
         response.IsSuccess.IsTrue();
         response.IsFailure.IsFalse();
         response.StatusCode.Is(HttpStatusCode.OK);

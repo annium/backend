@@ -219,14 +219,7 @@ internal class HttpRequest : IHttpRequest
         if (ct.IsCancellationRequested)
         {
             this.Trace("canceled");
-
-            return new HttpResponse(
-                Uri,
-                new HttpResponseMessage(HttpStatusCode.RequestTimeout)
-                {
-                    ReasonPhrase = "Request canceled"
-                }
-            );
+            return new HttpResponse(Uri, HttpStatusCode.RequestTimeout, "Request canceled", string.Empty);
         }
 
         var middleware = _middlewares[middlewareIndex];
@@ -248,14 +241,7 @@ internal class HttpRequest : IHttpRequest
         if (ct.IsCancellationRequested)
         {
             this.Trace("canceled");
-
-            return new HttpResponse(
-                Uri,
-                new HttpResponseMessage(HttpStatusCode.RequestTimeout)
-                {
-                    ReasonPhrase = "Request canceled"
-                }
-            );
+            return new HttpResponse(Uri, HttpStatusCode.RequestTimeout, "Request canceled", string.Empty);
         }
 
         var uri = Uri;
@@ -281,24 +267,12 @@ internal class HttpRequest : IHttpRequest
         catch (HttpRequestException e)
         {
             this.Trace("handle connection refused");
-            return new HttpResponse(
-                false,
-                uri,
-                HttpStatusCode.ServiceUnavailable,
-                "Connection refused",
-                e.Message
-            );
+            return new HttpResponse(uri, HttpStatusCode.ServiceUnavailable, "Connection refused", e.Message);
         }
         catch (OperationCanceledException e)
         {
             this.Trace("handle task canceled");
-            return new HttpResponse(
-                false,
-                uri,
-                HttpStatusCode.RequestTimeout,
-                "Request canceled",
-                e.Message
-            );
+            return new HttpResponse(uri, HttpStatusCode.RequestTimeout, "Request canceled", e.Message);
         }
     }
 }

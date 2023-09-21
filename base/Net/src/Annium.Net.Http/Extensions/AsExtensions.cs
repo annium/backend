@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.Http.Internal;
@@ -15,6 +14,8 @@ public static class AsExtensions
     )
     {
         var response = await request.RunAsync(ct);
+        if (response.IsAbort)
+            return default;
 
         try
         {
@@ -28,18 +29,6 @@ public static class AsExtensions
         }
     }
 
-    public static async Task<T> AsUnsafeAsync<T>(
-        this IHttpRequest request,
-        CancellationToken ct = default
-    )
-    {
-        var response = await request.RunAsync(ct);
-
-        var data = await ContentParser.ParseAsync<T>(request.Serializer, response.Content);
-
-        return data;
-    }
-
     public static async Task<T> AsAsync<T>(
         this IHttpRequest request,
         T defaultData,
@@ -47,6 +36,8 @@ public static class AsExtensions
     )
     {
         var response = await request.RunAsync(ct);
+        if (response.IsAbort)
+            return defaultData;
 
         try
         {
@@ -66,6 +57,8 @@ public static class AsExtensions
     )
     {
         var response = await request.RunAsync(ct);
+        if (response.IsAbort)
+            return default(TSuccess);
 
         try
         {
@@ -85,24 +78,6 @@ public static class AsExtensions
         }
     }
 
-    public static async Task<OneOf<TSuccess, TFailure>> AsUnsafeAsync<TSuccess, TFailure>(
-        this IHttpRequest request,
-        CancellationToken ct = default
-    )
-    {
-        var response = await request.RunAsync(ct);
-
-        var success = await ContentParser.ParseAsync<TSuccess>(request.Serializer, response.Content);
-        if (!Equals(success, default(TSuccess)))
-            return success;
-
-        var failure = await ContentParser.ParseAsync<TFailure>(request.Serializer, response.Content);
-        if (!Equals(failure, default(TFailure)))
-            return failure;
-
-        throw new InvalidOperationException("Failed to parse response");
-    }
-
     public static async Task<OneOf<TSuccess, TFailure>> AsAsync<TSuccess, TFailure>(
         this IHttpRequest request,
         TSuccess defaultData,
@@ -110,6 +85,8 @@ public static class AsExtensions
     )
     {
         var response = await request.RunAsync(ct);
+        if (response.IsAbort)
+            return defaultData;
 
         try
         {

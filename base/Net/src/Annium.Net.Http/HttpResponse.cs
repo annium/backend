@@ -28,6 +28,7 @@ public class HttpResponse : IHttpResponse
         DefaultHeaders = message.Headers;
     }
 
+    public bool IsAbort { get; }
     public bool IsSuccess { get; }
     public bool IsFailure { get; }
     public HttpStatusCode StatusCode { get; }
@@ -38,6 +39,7 @@ public class HttpResponse : IHttpResponse
 
     public HttpResponse(Uri uri, HttpResponseMessage message)
     {
+        IsAbort = false;
         IsSuccess = message.IsSuccessStatusCode;
         IsFailure = !message.IsSuccessStatusCode;
         StatusCode = message.StatusCode;
@@ -47,16 +49,16 @@ public class HttpResponse : IHttpResponse
         Content = message.Content;
     }
 
-    public HttpResponse(
-        bool isSuccess,
+    internal HttpResponse(
         Uri uri,
         HttpStatusCode statusCode,
         string statusText,
         string message
     )
     {
-        IsSuccess = isSuccess;
-        IsFailure = !isSuccess;
+        IsAbort = true;
+        IsSuccess = false;
+        IsFailure = false;
         StatusCode = statusCode;
         StatusText = statusText;
         Uri = uri;
@@ -66,6 +68,7 @@ public class HttpResponse : IHttpResponse
 
     protected HttpResponse(IHttpResponse response)
     {
+        IsAbort = response.IsAbort;
         IsSuccess = response.IsSuccess;
         IsFailure = response.IsFailure;
         StatusCode = response.StatusCode;
