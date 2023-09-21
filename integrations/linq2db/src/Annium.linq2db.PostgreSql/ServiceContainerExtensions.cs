@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Configuration;
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.PostgreSql;
@@ -99,6 +98,7 @@ public static class ServiceContainerExtensions
         container.Add(sp =>
         {
             var cfg = getCfg(sp);
+            var logger = sp.Resolve<ILogger>();
 
             // configure data source and NodaTime
             var connectionString = cfg.ConnectionString;
@@ -106,8 +106,8 @@ public static class ServiceContainerExtensions
             dataSourceBuilder.UseNodaTime();
             var dataSource = dataSourceBuilder.Build();
 
-            return new DataSourceContainer<TConnection>(dataSource);
-        }).AsSelf().In(lifetime);
+            return new DataSourceContainer<TConnection>(dataSource, logger);
+        }).AsSelf().Singleton();
 
         container.Add(sp =>
         {
@@ -116,7 +116,7 @@ public static class ServiceContainerExtensions
             var connection = dataSource.CreateConnection();
 
             var options = new DataOptions()
-                .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection)
+                .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection, true)
                 .UseMappingSchema(mappingSchema)
                 .UseLogging(sp);
 
@@ -135,10 +135,21 @@ public static class ServiceContainerExtensions
 file sealed record MappingSchemaContainer<TConnection>(MappingSchema Schema);
 
 // ReSharper disable once UnusedTypeParameter
-file sealed record DataSourceContainer<TConnection>(NpgsqlDataSource DataSource) : IAsyncDisposable
+file sealed record DataSourceContainer<TConnection> : IDisposable, ILogSubject
 {
-    public ValueTask DisposeAsync()
+    public NpgsqlDataSource DataSource { get; }
+    public ILogger Logger { get; }
+
+    public DataSourceContainer(NpgsqlDataSource dataSource, ILogger logger)
     {
-        return DataSource.DisposeAsync();
+        DataSource = dataSource;
+        Logger = logger;
+        this.Trace("created");
+    }
+
+    public void Dispose()
+    {
+        DataSource.Dispose();
+        this.Trace("disposed");
     }
 }
