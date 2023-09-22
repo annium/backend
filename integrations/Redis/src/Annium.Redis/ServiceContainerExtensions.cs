@@ -1,7 +1,8 @@
-using Annium.Core.DependencyInjection;
+using Annium.Redis;
 using Annium.Redis.Internal;
 
-namespace Annium.Redis;
+// ReSharper disable once CheckNamespace
+namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
