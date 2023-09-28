@@ -26,8 +26,9 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     [Fact]
     public async Task Send_NotConnected()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string message = "demo";
 
         // act
@@ -35,16 +36,21 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var result = await SendTextAsync(message);
 
         // assert
+        this.Trace("assert closed");
         result.Is(WebSocketSendStatus.Closed);
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Send_Canceled()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string message = "demo";
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket => await serverSocket.WhenDisconnected());
 
         this.Trace("connect");
@@ -55,19 +61,25 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var result = await SendTextAsync(message, new CancellationToken(true));
 
         // assert
+        this.Trace("assert canceled");
         result.Is(WebSocketSendStatus.Canceled);
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ClientClosed()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string message = "demo";
         var serverConnectionTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("send signal to client");
             var disconnectionTask = serverSocket.WhenDisconnected();
             serverConnectionTcs.SetResult();
             await disconnectionTask;
@@ -87,18 +99,24 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var result = await SendTextAsync(message);
 
         // assert
+        this.Trace("assert closed");
         result.Is(WebSocketSendStatus.Closed);
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Send_ServerClosed()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string message = "demo";
+
+        this.Trace("run server");
         await using var _ = RunServer(serverSocket =>
         {
+            this.Trace("disconnect server socket");
             serverSocket.Disconnect();
 
             return Task.CompletedTask;
@@ -116,32 +134,40 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var result = await SendTextAsync(message);
 
         // assert
+        this.Trace("assert closed");
         result.Is(WebSocketSendStatus.Closed);
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Send_Normal()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
         var serverConnectionTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("subscribe to text messages");
             serverSocket.TextReceived += x => serverSocket
                 .SendTextAsync(x.ToArray(), CancellationToken.None)
                 .GetAwaiter()
                 .GetResult();
             this.Trace("server subscribed to text");
 
+            this.Trace("subscribe to binary messages");
             serverSocket.BinaryReceived += x => serverSocket
                 .SendBinaryAsync(x.ToArray(), CancellationToken.None)
                 .GetAwaiter()
                 .GetResult();
             this.Trace("server subscribed to binary");
 
+            this.Trace("send signal to client");
             var disconnectionTask = serverSocket.WhenDisconnected();
             serverConnectionTcs.TrySetResult();
             await disconnectionTask;
@@ -155,45 +181,58 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("server connected");
         await serverConnectionTcs.Task;
 
-        // act
+        // act && assert
         this.Trace("send text");
         var textResult = await SendTextAsync(text);
+
+        this.Trace("assert sent ok");
+        textResult.Is(WebSocketSendStatus.Ok);
+
+        this.Trace("assert text message arrived");
+        var expectedTexts = new[] { text };
+        await Expect.To(() => _texts.IsEqual(expectedTexts));
 
         this.Trace("send binary");
         var binaryResult = await SendBinaryAsync(binary);
 
-        // assert
-        textResult.Is(WebSocketSendStatus.Ok);
+        this.Trace("assert ok");
         binaryResult.Is(WebSocketSendStatus.Ok);
-        var expectedTexts = new[] { text };
+
+        this.Trace("assert binary message arrived");
         var expectedBinaries = new[] { binary };
-        await Expect.To(() => _texts.IsEqual(expectedTexts));
         await Expect.To(() => _binaries.IsEqual(expectedBinaries));
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Send_Reconnect()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         const string text = "demo";
         var binary = Encoding.UTF8.GetBytes(text);
         var serverConnectionTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("subscribe to text messages");
             serverSocket.TextReceived += x => serverSocket
                 .SendTextAsync(x.ToArray(), CancellationToken.None)
                 .GetAwaiter()
                 .GetResult();
             this.Trace("server subscribed to text");
 
+            this.Trace("subscribe to binary messages");
             serverSocket.BinaryReceived += x => serverSocket
                 .SendBinaryAsync(x.ToArray(), CancellationToken.None)
                 .GetAwaiter()
                 .GetResult();
             this.Trace("server subscribed to binary");
 
+            this.Trace("send signal to client");
             var disconnectionTask = serverSocket.WhenDisconnected();
             serverConnectionTcs.TrySetResult();
             await disconnectionTask;
@@ -207,9 +246,14 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("server connected");
         await serverConnectionTcs.Task;
 
+        // act - send text
         this.Trace("send text");
         var textResult = await SendTextAsync(text);
+
+        this.Trace("assert sent ok");
         textResult.Is(WebSocketSendStatus.Ok);
+
+        this.Trace("assert text message arrived");
         var expectedTexts = new[] { text };
         await Expect.To(() => _texts.IsEqual(expectedTexts));
 
@@ -226,7 +270,11 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
 
         this.Trace("send binary");
         var binaryResult = await SendBinaryAsync(binary);
+
+        this.Trace("assert sent ok");
         binaryResult.Is(WebSocketSendStatus.Ok);
+
+        this.Trace("assert binary message arrived");
         var expectedBinaries = new[] { binary };
         await Expect.To(() => _binaries.IsEqual(expectedBinaries));
 
@@ -239,19 +287,26 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     [Fact]
     public async Task Listen_Normal()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
         var serverStopTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("start sending messages");
+
             foreach (var message in messages)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message));
                 await Task.Delay(1, CancellationToken.None);
             }
+
+            this.Trace("done sending messages");
 
             await serverStopTcs.Task;
         });
@@ -261,27 +316,36 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         await ConnectAsync();
 
         // assert
+        this.Trace("assert text message arrived");
         await Expect.To(() => _texts.IsEqual(messages), 1000);
         serverStopTcs.SetResult();
+
         this.Trace("done");
     }
 
     [Fact]
     public async Task Listen_SmallBuffer()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 1_000_000))
             .ToArray();
         var serverStopTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("start sending messages");
+
             foreach (var message in messages)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message));
                 await Task.Delay(1, CancellationToken.None);
             }
+
+            this.Trace("done sending messages");
 
             await serverStopTcs.Task;
         });
@@ -292,11 +356,14 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         await ConnectAsync();
 
         // assert
+        this.Trace("assert text message arrived");
         await Expect.To(() => _texts.IsEqual(messages), 1000);
         serverStopTcs.SetResult();
 
         this.Trace("disconnect");
         var result = await disconnectionTask;
+
+        this.Trace("assert closed remote");
         result.Is(WebSocketCloseStatus.ClosedRemote);
 
         this.Trace("done");
@@ -305,8 +372,9 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     [Fact]
     public async Task Listen_BothTypes()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         var texts = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
@@ -314,8 +382,12 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
             .Select(Encoding.UTF8.GetBytes)
             .ToArray();
         var serverStopTcs = new TaskCompletionSource();
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("start sending messages");
+
             foreach (var message in texts)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message));
@@ -328,6 +400,8 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
                 await Task.Delay(1, CancellationToken.None);
             }
 
+            this.Trace("done sending messages");
+
             await serverStopTcs.Task;
         });
 
@@ -337,12 +411,17 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         await ConnectAsync();
 
         // assert
+        this.Trace("assert text messages arrived");
         await Expect.To(() => _texts.IsEqual(texts), 1000);
+
+        this.Trace("assert binary messages arrived");
         await Expect.To(() => _binaries.IsEqual(binaries), 1000);
         serverStopTcs.SetResult();
 
         this.Trace("disconnect");
         var result = await disconnectionTask;
+
+        this.Trace("assert closed remote");
         result.Is(WebSocketCloseStatus.ClosedRemote);
 
         this.Trace("done");
@@ -351,21 +430,28 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
     [Fact]
     public async Task Listen_Reconnect()
     {
-        // arrange
         this.Trace("start");
+
+        // arrange
         var messages = Enumerable.Range(0, 3)
             .Select(x => new string((char)x, 10))
             .ToArray();
         var serverStopTcs = new TaskCompletionSource();
         var connectionIndex = 0;
         var connectionsCount = 3;
+
+        this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            this.Trace("start sending messages");
+
             foreach (var message in messages)
             {
                 await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message));
                 await Task.Delay(1, CancellationToken.None);
             }
+
+            this.Trace("done sending messages");
 
             // await until 3-rd connection is handled
             if (++connectionIndex == connectionsCount)
@@ -384,8 +470,11 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         var expectedMessages = Enumerable.Range(0, connectionsCount)
             .SelectMany(_ => messages)
             .ToArray();
+
         this.Trace("wait for {messagesCount} messages", expectedMessages.Length);
         await Expect.To(() => _texts.IsEqual(expectedMessages), 1000);
+
+        this.Trace("send signal to stop server");
         serverStopTcs.SetResult();
 
         this.Trace("disconnect");
