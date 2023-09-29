@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Annium.Core.DependencyInjection;
 using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
-using Annium.Net.Types.Tests.Base.Mapper;
+using Annium.Net.Types.Tests.Lib.Mapper;
 using Annium.Serialization.Abstractions;
 using Namotion.Reflection;
 

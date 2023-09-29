@@ -7,7 +7,7 @@ using Annium.Testing;
 using Namotion.Reflection;
 using Xunit.Abstractions;
 
-namespace Annium.Net.Types.Tests.Base.Mapper;
+namespace Annium.Net.Types.Tests.Lib.Mapper;
 
 public abstract class MapperStructTestsBase : TestBase
 {

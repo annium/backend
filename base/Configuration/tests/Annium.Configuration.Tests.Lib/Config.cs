@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Annium.Core.Mapper.Attributes;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Configuration.Tests;
+namespace Annium.Configuration.Tests.Lib;
 
 public sealed record Config
 {

@@ -1,4 +1,4 @@
-using Annium.Net.Types.Tests.Base.Mapper;
+using Annium.Net.Types.Tests.Lib.Mapper;
 using Xunit;
 using Xunit.Abstractions;
 

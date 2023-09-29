@@ -2,7 +2,7 @@ using System;
 using Annium.Logging.Shared;
 using Xunit.Abstractions;
 
-namespace Annium.Logging.XUnit.Internal;
+namespace Annium.Logging.Xunit.Internal;
 
 internal class XunitLogHandler<TContext> : ILogHandler<TContext>
     where TContext : class, ILogContext

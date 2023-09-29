@@ -1,6 +1,6 @@
 using System;
 using Annium.Logging.Shared;
-using Annium.Logging.XUnit.Internal;
+using Annium.Logging.Xunit.Internal;
 using Xunit.Abstractions;
 using static Annium.Logging.Shared.LogMessageExtensions;
 

@@ -5,7 +5,7 @@ using Annium.Net.Types.Models;
 using Annium.Net.Types.Refs;
 using Namotion.Reflection;
 
-namespace Annium.Net.Types.Tests.Base.Mapper;
+namespace Annium.Net.Types.Tests.Lib.Mapper;
 
 public interface ITestProvider
 {
