@@ -433,7 +433,7 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("start");
 
         // arrange
-        var messages = Enumerable.Range(0, 3)
+        var messages = Enumerable.Range(0, 10)
             .Select(x => new string((char)x, 10))
             .ToArray();
         var serverStopTcs = new TaskCompletionSource();
@@ -443,36 +443,56 @@ public class ClientServerWebSocketTests : TestBase, IAsyncLifetime
         this.Trace("run server");
         await using var _ = RunServer(async serverSocket =>
         {
+            connectionIndex++;
+            if (connectionIndex > connectionsCount)
+            {
+                this.Trace("drop connection after limit");
+                return;
+            }
+
             this.Trace("start sending messages");
 
+            var complete = connectionIndex == connectionsCount;
+
+            var i = 0;
+            var breakAtChunk = complete ? int.MaxValue : new Random().Next(1, messages.Length - 1);
             foreach (var message in messages)
             {
-                await serverSocket.SendTextAsync(Encoding.UTF8.GetBytes(message));
+                i++;
+
+                // emulate disconnection
+                if (i == breakAtChunk)
+                {
+                    this.Trace("disconnect, connection {connectionIndex}/{connectionsCount} at message#{num}", connectionIndex, connectionsCount, i);
+                    return;
+                }
+
+                this.Trace("send chunk#{num}", i);
+                await serverSocket.SendTextAsync(message);
+
                 await Task.Delay(1, CancellationToken.None);
             }
 
-            this.Trace("done sending messages");
+            this.Trace("sending messages complete");
 
             // await until 3-rd connection is handled
-            if (++connectionIndex == connectionsCount)
-            {
-                this.Trace($"finally, {connectionIndex}/{connectionsCount} - wait for signal");
-                await serverStopTcs.Task;
-            }
-            else
-                this.Trace($"disconnect, {connectionIndex}/{connectionsCount}");
+            this.Trace("wait for signal from client");
+            await serverStopTcs.Task;
         });
+
+        this.Trace("set disconnect handler");
+        _clientSocket.OnDisconnected += _ =>
+        {
+            this.Trace("disconnected, clear stream");
+            _texts.Clear();
+        };
 
         this.Trace("connect");
         await ConnectAsync();
 
         // assert
-        var expectedMessages = Enumerable.Range(0, connectionsCount)
-            .SelectMany(_ => messages)
-            .ToArray();
-
-        this.Trace("wait for {messagesCount} messages", expectedMessages.Length);
-        await Expect.To(() => _texts.IsEqual(expectedMessages), 1000);
+        this.Trace("wait for {messagesCount} messages", messages.Length);
+        await Expect.To(() => _texts.IsEqual(messages), 1000);
 
         this.Trace("send signal to stop server");
         serverStopTcs.SetResult();
