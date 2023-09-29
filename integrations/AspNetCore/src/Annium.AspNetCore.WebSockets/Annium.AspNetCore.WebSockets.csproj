@@ -12,7 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Architecture/src/Annium.Architecture.Http/Annium.Architecture.Http.csproj" />
         <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.WebSockets.Server/Annium.Infrastructure.WebSockets.Server.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Annium.Architecture.Http" Version="0.1.0" />
     </ItemGroup>
 </Project>

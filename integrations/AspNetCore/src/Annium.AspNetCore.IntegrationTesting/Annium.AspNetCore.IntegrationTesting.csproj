@@ -12,11 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Logging/src/Annium.Logging.Microsoft/Annium.Logging.Microsoft.csproj" />
-        <ProjectReference Include="../../../../base/Net/src/Annium.Net.Http/Annium.Net.Http.csproj" />
-        <ProjectReference Include="../../../../base/Testing/src/Annium.Testing.Lib/Annium.Testing.Lib.csproj" />
-    </ItemGroup>
-    <ItemGroup>
+        <PackageReference Include="Annium.Logging.Microsoft" Version="0.1.0" />
+        <PackageReference Include="Annium.Net.Http" Version="0.1.0" />
+        <PackageReference Include="Annium.Testing.Lib" Version="0.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="7.0.11" />
     </ItemGroup>
 </Project>

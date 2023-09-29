@@ -12,9 +12,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Configuration/src/Annium.Configuration.Yaml/Annium.Configuration.Yaml.csproj" />
-        <ProjectReference Include="../../../Core/src/Annium.Core.Entrypoint/Annium.Core.Entrypoint.csproj" />
-        <ProjectReference Include="../../../Logging/src/Annium.Logging.Console/Annium.Logging.Console.csproj" />
         <ProjectReference Include="../../src/Annium.Infrastructure.MessageBus.Node/Annium.Infrastructure.MessageBus.Node.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Annium.Configuration.Yaml" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.Entrypoint" Version="0.1.0" />
+        <PackageReference Include="Annium.Logging.Console" Version="0.1.0" />
     </ItemGroup>
 </Project>

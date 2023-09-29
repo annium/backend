@@ -12,11 +12,9 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Data/src/Annium.Data.Operations/Annium.Data.Operations.csproj" />
-        <ProjectReference Include="../../../Extensions/src/Annium.Extensions.Reactive/Annium.Extensions.Reactive.csproj" />
-        <ProjectReference Include="../../../Serialization/src/Annium.Serialization.Json/Annium.Serialization.Json.csproj" />
-    </ItemGroup>
-    <ItemGroup>
+        <PackageReference Include="Annium.Data.Operations" Version="0.1.0" />
+        <PackageReference Include="Annium.Extensions.Reactive" Version="0.1.0" />
+        <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
         <PackageReference Include="NetMQ" Version="4.0.1.6" />
         <PackageReference Include="System.Text.Json" Version="7.0.3" />
         <PackageReference Include="System.Threading.Channels" Version="7.0.0" />

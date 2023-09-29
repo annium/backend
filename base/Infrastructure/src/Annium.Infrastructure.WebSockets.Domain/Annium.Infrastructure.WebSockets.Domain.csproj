@@ -12,6 +12,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Architecture/src/Annium.Architecture.Base/Annium.Architecture.Base.csproj" />
+        <PackageReference Include="Annium.Architecture.Base" Version="0.1.0" />
     </ItemGroup>
 </Project>

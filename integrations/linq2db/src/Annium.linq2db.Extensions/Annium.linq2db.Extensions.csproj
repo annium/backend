@@ -12,10 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Data/src/Annium.Data.Models/Annium.Data.Models.csproj" />
-        <ProjectReference Include="../../../../base/Serialization/src/Annium.Serialization.Abstractions/Annium.Serialization.Abstractions.csproj" />
-    </ItemGroup>
-    <ItemGroup>
+        <PackageReference Include="Annium.Data.Models" Version="0.1.0" />
+        <PackageReference Include="Annium.Serialization.Abstractions" Version="0.1.0" />
         <PackageReference Include="linq2db" Version="5.2.2" />
     </ItemGroup>
 </Project>

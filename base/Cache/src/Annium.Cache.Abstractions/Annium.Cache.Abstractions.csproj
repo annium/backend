@@ -12,6 +12,6 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Core/src/Annium.Core.DependencyInjection/Annium.Core.DependencyInjection.csproj" />
+        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
     </ItemGroup>
 </Project>

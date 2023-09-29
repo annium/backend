@@ -12,9 +12,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Data/src/Annium.Data.Models/Annium.Data.Models.csproj" />
-    </ItemGroup>
-    <ItemGroup>
+        <PackageReference Include="Annium.Data.Models" Version="0.1.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.11" />
     </ItemGroup>
 </Project>
