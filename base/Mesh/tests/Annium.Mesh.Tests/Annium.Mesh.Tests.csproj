@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Infrastructure.WebSockets.Tests</PackageId>
+        <PackageId>Annium.Mesh.Tests</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>Annium.Infrastructure.WebSockets.Tests</Description>
         <TargetFramework>net7.0</TargetFramework>
@@ -13,8 +13,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Client/Annium.Infrastructure.WebSockets.Client.csproj" />
-        <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Server/Annium.Infrastructure.WebSockets.Server.csproj" />
+        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
+        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />

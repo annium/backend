@@ -13,7 +13,7 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.WebSockets.Client/Annium.Infrastructure.WebSockets.Client.csproj" />
+        <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
         <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
         <ProjectReference Include="../Annium.AspNetCore.TestServer/Annium.AspNetCore.TestServer.csproj" />
     </ItemGroup>

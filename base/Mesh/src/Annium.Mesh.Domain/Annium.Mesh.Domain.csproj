@@ -1,20 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Demo.Infrastructure.WebSockets.Domain</PackageId>
+        <PackageId>Annium.Mesh.Domain</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Domain</Description>
+        <Description>Annium.Infrastructure.WebSockets.Domain</Description>
         <TargetFramework>net7.0</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>11.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>false</IsPackable>
+        <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Infrastructure.WebSockets.Domain/Annium.Infrastructure.WebSockets.Domain.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Humanizer" Version="2.14.1" />
+        <PackageReference Include="Annium.Architecture.Base" Version="0.1.0" />
     </ItemGroup>
 </Project>

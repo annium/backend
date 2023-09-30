@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <PackageId>Demo.Infrastructure.WebSockets.Server</PackageId>
+        <PackageId>Demo.Mesh.Server</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
         <Description>SocketsServer</Description>
         <TargetFramework>net7.0</TargetFramework>
@@ -14,8 +14,8 @@
     <ItemGroup>
         <ProjectReference Include="../../../../integrations/AspNetCore/src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
         <ProjectReference Include="../../../../integrations/AspNetCore/src/Annium.AspNetCore.WebSockets/Annium.AspNetCore.WebSockets.csproj" />
-        <ProjectReference Include="../../src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
-        <ProjectReference Include="../Demo.Infrastructure.WebSockets.Domain/Demo.Infrastructure.WebSockets.Domain.csproj" />
+        <ProjectReference Include="../../../Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
+        <ProjectReference Include="../../../Mesh/demo/Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Configuration.CommandLine" Version="0.1.0" />
