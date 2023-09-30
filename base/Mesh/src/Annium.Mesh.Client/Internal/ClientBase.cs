@@ -11,12 +11,12 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Collections.Generic;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     where TSocket : class, ISendingReceivingWebSocket

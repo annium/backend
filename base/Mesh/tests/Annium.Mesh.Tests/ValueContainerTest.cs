@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Models;
 using Annium.Testing;
 using Annium.Testing.Lib;
 using Xunit;
@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 // ReSharper disable UnusedType.Local
 
-namespace Annium.Infrastructure.WebSockets.Tests;
+namespace Annium.Mesh.Tests;
 
 public class ValueContainerTest : TestBase
 {

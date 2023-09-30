@@ -1,6 +1,6 @@
 using System.Threading;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class ServerLifetime : IServerLifetimeManager, IServerLifetime
 {

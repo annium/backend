@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
 
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public interface IClientBase : IAsyncDisposable
 {

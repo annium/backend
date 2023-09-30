@@ -1,6 +1,6 @@
 using Annium.Extensions.Arguments;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
+namespace Demo.Mesh.Client.Commands.Demo;
 
 internal class Group : Annium.Extensions.Arguments.Group, ICommandDescriptor
 {

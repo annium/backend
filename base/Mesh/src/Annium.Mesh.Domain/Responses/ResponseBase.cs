@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+namespace Annium.Mesh.Domain.Responses;
 
 public abstract class ResponseBase : AbstractResponseBase
 {

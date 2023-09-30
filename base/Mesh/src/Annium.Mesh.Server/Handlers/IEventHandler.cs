@@ -1,8 +1,8 @@
 using Annium.Core.Mediator;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Handlers;
+namespace Annium.Mesh.Server.Handlers;
 
 public interface IEventHandler<TEvent, TState> :
     IFinalRequestHandler<IRequestContext<TEvent, TState>, None>

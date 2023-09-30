@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Handlers;
+namespace Annium.Mesh.Server.Handlers;
 
 public interface IBroadcaster<TMessage>
     where TMessage : NotificationBase

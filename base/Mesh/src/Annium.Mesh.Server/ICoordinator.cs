@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server;
+namespace Annium.Mesh.Server;
 
 public interface ICoordinator
 {

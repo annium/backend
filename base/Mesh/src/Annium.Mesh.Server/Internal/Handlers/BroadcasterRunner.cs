@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Internal.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
+namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class BroadcasterRunner<TMessage> : IBroadcasterRunner
     where TMessage : NotificationBase

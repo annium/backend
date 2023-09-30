@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Server.Internal.Handlers;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class PusherCoordinator<TState>
     where TState : ConnectionStateBase

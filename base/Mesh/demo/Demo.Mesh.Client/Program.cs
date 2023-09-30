@@ -1,7 +1,7 @@
 using Annium.Core.Entrypoint;
 using Annium.Extensions.Arguments;
-using Demo.Infrastructure.WebSockets.Client;
-using Group = Demo.Infrastructure.WebSockets.Client.Commands.Group;
+using Demo.Mesh.Client;
+using Group = Demo.Mesh.Client.Commands.Group;
 
 await using var entry = Entrypoint.Default
     .UseServicePack<ServicePack>()

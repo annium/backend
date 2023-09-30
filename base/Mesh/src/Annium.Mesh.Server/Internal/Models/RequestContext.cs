@@ -1,8 +1,8 @@
 using System;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal static class RequestContext
 {

@@ -1,5 +1,5 @@
 using Annium.Core.DependencyInjection;
-using Demo.Infrastructure.WebSockets.Server;
+using Demo.Mesh.Server;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);

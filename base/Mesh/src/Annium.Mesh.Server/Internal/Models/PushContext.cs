@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Extensions.Execution;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, ILogSubject
     where TMessage : NotificationBase

@@ -1,4 +1,4 @@
-namespace Annium.Infrastructure.WebSockets.Server.Models;
+namespace Annium.Mesh.Server.Models;
 
 public interface IRequestContext<TRequest, TState>
     where TState : ConnectionStateBase

@@ -3,7 +3,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Constants = Annium.Serialization.Json.Constants;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal class Serializer
 {

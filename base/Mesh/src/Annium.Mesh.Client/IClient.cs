@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public interface IClient : IClientBase
 {

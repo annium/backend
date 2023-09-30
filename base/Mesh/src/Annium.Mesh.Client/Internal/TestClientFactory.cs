@@ -1,7 +1,7 @@
 using Annium.Logging;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal class TestClientFactory : ITestClientFactory
 {

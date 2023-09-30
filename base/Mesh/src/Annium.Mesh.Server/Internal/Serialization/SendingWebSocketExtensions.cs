@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
+namespace Annium.Mesh.Server.Internal.Serialization;
 
 internal static class SendingWebSocketExtensions
 {

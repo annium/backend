@@ -5,13 +5,13 @@ using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Annium.Extensions.Execution;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Internal.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal sealed record SubscriptionContext<TInit, TMessage, TState> :
     ISubscriptionContext<TInit, TMessage, TState>,

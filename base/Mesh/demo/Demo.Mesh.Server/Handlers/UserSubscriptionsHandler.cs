@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Annium;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Models;
-using Demo.Infrastructure.WebSockets.Domain.Requests.User;
-using Demo.Infrastructure.WebSockets.Domain.Responses.User;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Models;
+using Demo.Mesh.Domain.Requests.User;
+using Demo.Mesh.Domain.Responses.User;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+namespace Demo.Mesh.Server.Handlers;
 
 internal class UserSubscriptionsHandler :
     ISubscriptionHandler<UserBalanceSubscriptionInit, UserBalanceMessage, ConnectionState>

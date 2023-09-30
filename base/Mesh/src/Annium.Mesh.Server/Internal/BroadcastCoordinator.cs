@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Logging;
+using Annium.Mesh.Server.Internal.Handlers;
+using Annium.Mesh.Server.Internal.Serialization;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
 {

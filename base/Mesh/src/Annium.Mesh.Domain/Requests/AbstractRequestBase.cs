@@ -1,7 +1,7 @@
 using System;
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Requests;
+namespace Annium.Mesh.Domain.Requests;
 
 public abstract class AbstractRequestBase
 {

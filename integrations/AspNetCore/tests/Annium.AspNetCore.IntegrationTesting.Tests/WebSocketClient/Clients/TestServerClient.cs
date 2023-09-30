@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Client;
+using Annium.Mesh.Client;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 

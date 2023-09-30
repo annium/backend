@@ -1,11 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging;
-using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
+using Annium.Mesh.Client;
+using Demo.Mesh.Domain.Requests.Orders;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands;
+namespace Demo.Mesh.Client.Commands;
 
 internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

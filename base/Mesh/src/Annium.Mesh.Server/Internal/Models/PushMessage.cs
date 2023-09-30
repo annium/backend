@@ -1,6 +1,6 @@
 using System;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal static class PushMessage
 {

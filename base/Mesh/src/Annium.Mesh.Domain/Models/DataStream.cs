@@ -1,4 +1,4 @@
-namespace Annium.Infrastructure.WebSockets.Domain.Models;
+namespace Annium.Mesh.Domain.Models;
 
 public class DataStream<THead, TChunk>
 {

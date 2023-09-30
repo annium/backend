@@ -2,7 +2,7 @@ using System;
 using Annium.Logging;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class Connection : IDisposable, ILogSubject
 {

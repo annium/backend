@@ -2,16 +2,16 @@ using System;
 using System.Linq;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Internal.Handlers;
+using Annium.Mesh.Server.Internal.Handlers.Requests;
+using Annium.Mesh.Server.Internal.Handlers.Subscriptions;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Responses;
 
-namespace Annium.Infrastructure.WebSockets.Server;
+namespace Annium.Mesh.Server;
 
 public static class MediatorConfigurationExtensions
 {

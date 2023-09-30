@@ -1,6 +1,6 @@
 using Annium.Core.DependencyInjection;
 
-namespace Annium.Infrastructure.WebSockets.Domain;
+namespace Annium.Mesh.Domain;
 
 /// <summary>
 /// Is used to keep reference to types, defined in this Assembly

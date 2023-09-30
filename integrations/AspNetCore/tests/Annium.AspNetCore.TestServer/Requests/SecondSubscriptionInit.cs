@@ -1,4 +1,4 @@
-using Annium.Infrastructure.WebSockets.Domain.Requests;
+using Annium.Mesh.Domain.Requests;
 
 namespace Annium.AspNetCore.TestServer.Requests;
 

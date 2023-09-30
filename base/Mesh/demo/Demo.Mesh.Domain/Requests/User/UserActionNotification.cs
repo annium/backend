@@ -1,6 +1,6 @@
-using Annium.Infrastructure.WebSockets.Domain.Requests;
+using Annium.Mesh.Domain.Requests;
 
-namespace Demo.Infrastructure.WebSockets.Domain.Requests.User;
+namespace Demo.Mesh.Domain.Requests.User;
 
 public class UserActionNotification : EventBase
 {

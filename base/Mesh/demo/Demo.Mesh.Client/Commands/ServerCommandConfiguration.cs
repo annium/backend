@@ -1,7 +1,7 @@
 using System;
 using Annium.Extensions.Arguments;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands;
+namespace Demo.Mesh.Client.Commands;
 
 public record ServerCommandConfiguration
 {

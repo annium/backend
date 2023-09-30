@@ -1,7 +1,7 @@
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Models;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+namespace Demo.Mesh.Server.Handlers;
 
 internal class ConnectionState : ConnectionStateBase
 {

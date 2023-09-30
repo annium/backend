@@ -4,12 +4,12 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Internal.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Requests;
+namespace Annium.Mesh.Server.Internal.Handlers.Requests;
 
 internal class RequestHandler<TRequest, TState> :
     IPipeRequestHandler<IRequestContext<TRequest, TState>, IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>, ResultResponse>

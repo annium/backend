@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Handlers;
+namespace Annium.Mesh.Server.Handlers;
 
 public abstract class LifeCycleHandlerBase<TState>
     where TState : ConnectionStateBase

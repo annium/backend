@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Serialization;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class ConnectionHandlerFactory<TState>
     where TState : ConnectionStateBase

@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Internal.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
+namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 
 internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
 {

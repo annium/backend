@@ -1,6 +1,6 @@
 using Annium.Core.Runtime.Types;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+namespace Annium.Mesh.Domain.Responses;
 
 public abstract class AbstractResponseBase
 {

@@ -2,10 +2,10 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal class ValueContainer<TState, TValueLoader, TConfig, TValue> : ValueContainerBase<TState, TValue>, IValueContainer<TState, TConfig, TValue>
     where TState : ConnectionStateBase

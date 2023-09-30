@@ -1,4 +1,4 @@
-namespace Demo.Infrastructure.WebSockets.Domain.Responses.User;
+namespace Demo.Mesh.Domain.Responses.User;
 
 public class UserBalanceMessage
 {

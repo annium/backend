@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Client;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
 using Annium.Logging;
-using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
+using Annium.Mesh.Client;
+using Annium.Mesh.Domain.Requests;
+using Demo.Mesh.Domain.Requests.Orders;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands;
+namespace Demo.Mesh.Client.Commands;
 
 internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

@@ -1,7 +1,7 @@
 using System;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
+using Annium.Mesh.Domain.Requests;
 
-namespace Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
+namespace Demo.Mesh.Domain.Requests.Orders;
 
 // request -> response
 public class CreateOrderRequest : RequestBase

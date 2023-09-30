@@ -1,4 +1,4 @@
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public interface IClientFactory
 {

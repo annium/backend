@@ -6,7 +6,7 @@ using Annium.Extensions.Arguments;
 using Annium.Logging;
 using Annium.Net.WebSockets;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
+namespace Demo.Mesh.Client.Commands.Demo;
 
 internal class EchoCommand : AsyncCommand<EchoCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

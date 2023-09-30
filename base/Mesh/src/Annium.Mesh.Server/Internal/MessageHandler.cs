@@ -1,16 +1,16 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
-using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Responses;
+using Annium.Mesh.Server.Internal.Serialization;
+using Annium.Mesh.Server.Models;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class MessageHandler<TState> : ILogSubject
     where TState : ConnectionStateBase

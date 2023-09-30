@@ -2,7 +2,7 @@ using System;
 using Annium.Net.WebSockets;
 using NodaTime;
 
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public interface IClientConfiguration : IClientConfigurationBase
 {

@@ -1,5 +1,5 @@
-using Annium.Infrastructure.WebSockets.Client;
-using Annium.Infrastructure.WebSockets.Client.Internal;
+using Annium.Mesh.Client;
+using Annium.Mesh.Client.Internal;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;

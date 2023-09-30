@@ -1,11 +1,11 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
 using Annium.Logging;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Serialization;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
+namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class PushMessageHandler<T> :
     IFinalRequestHandler<PushMessage<T>, None>,

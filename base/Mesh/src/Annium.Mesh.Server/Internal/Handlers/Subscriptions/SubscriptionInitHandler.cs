@@ -2,21 +2,20 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
+namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 
 internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     IPipeRequestHandler<
         RequestContext<TInit, TState>,
         ISubscriptionContext<TInit, TMessage, TState>,
         None,
-        VoidResponse<TMessage>
-    >,
+        VoidResponse<TMessage>>,
     ILogSubject
     where TInit : SubscriptionInitRequestBase
     where TState : ConnectionStateBase

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal interface IConnectionBoundStore
 {

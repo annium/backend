@@ -1,7 +1,7 @@
 using System;
 using Annium.Data.Operations;
 
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public class WebSocketClientException : Exception
 {

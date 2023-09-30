@@ -2,7 +2,7 @@ using System;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Responses;
+namespace Annium.Mesh.Domain.Responses;
 
 public class ResultResponse<T> : ResponseBase
 {

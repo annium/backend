@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Reflection;
 
-namespace Annium.Infrastructure.WebSockets.Server.Models;
+namespace Annium.Mesh.Server.Models;
 
 public abstract class ConnectionStateBase : IAsyncDisposable
 {

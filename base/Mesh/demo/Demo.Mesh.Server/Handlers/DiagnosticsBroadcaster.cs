@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Models;
-using Demo.Infrastructure.WebSockets.Domain.Responses.System;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Models;
+using Demo.Mesh.Domain.Responses.System;
 using Humanizer;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+namespace Demo.Mesh.Server.Handlers;
 
 internal class DiagnosticsBroadcaster : IBroadcaster<DiagnosticsNotification>
 {

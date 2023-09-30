@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Annium.Infrastructure.WebSockets.Domain.Requests;
+namespace Annium.Mesh.Domain.Requests;
 
 public sealed class SubscriptionCancelRequest : AbstractRequestBase
 {

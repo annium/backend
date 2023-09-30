@@ -2,12 +2,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging;
+using Annium.Mesh.Client;
 using Annium.Threading;
-using Demo.Infrastructure.WebSockets.Domain.Responses.System;
+using Demo.Mesh.Domain.Responses.System;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands;
+namespace Demo.Mesh.Client.Commands;
 
 internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

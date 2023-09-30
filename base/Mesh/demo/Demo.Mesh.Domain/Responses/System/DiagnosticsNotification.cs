@@ -1,7 +1,7 @@
 using System;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Mesh.Domain.Responses;
 
-namespace Demo.Infrastructure.WebSockets.Domain.Responses.System;
+namespace Demo.Mesh.Domain.Responses.System;
 
 public sealed class DiagnosticsNotification : NotificationBase
 {

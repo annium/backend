@@ -1,9 +1,9 @@
 using System;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Mesh.Domain.Responses;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Responses;
+namespace Annium.Mesh.Server.Internal.Responses;
 
 internal static class Response
 {

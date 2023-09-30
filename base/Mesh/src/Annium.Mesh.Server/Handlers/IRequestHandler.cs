@@ -1,10 +1,10 @@
 using Annium.Architecture.Base;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Domain.Requests;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Handlers;
+namespace Annium.Mesh.Server.Handlers;
 
 // request -> void
 public interface IRequestHandler<TRequest, TState> :

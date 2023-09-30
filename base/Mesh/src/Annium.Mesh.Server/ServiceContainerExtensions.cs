@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Annium.Infrastructure.WebSockets.Server;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Internal.Handlers.Subscriptions;
-using Annium.Infrastructure.WebSockets.Server.Internal.Models;
-using Annium.Infrastructure.WebSockets.Server.Internal.Serialization;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Server;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Internal;
+using Annium.Mesh.Server.Internal.Handlers;
+using Annium.Mesh.Server.Internal.Handlers.Subscriptions;
+using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Internal.Serialization;
+using Annium.Mesh.Server.Models;
 using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace

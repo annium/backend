@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Server.Handlers;
-using Annium.Infrastructure.WebSockets.Server.Models;
-using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
+using Annium.Mesh.Server.Handlers;
+using Annium.Mesh.Server.Models;
+using Demo.Mesh.Domain.Requests.Orders;
 
-namespace Demo.Infrastructure.WebSockets.Server.Handlers;
+namespace Demo.Mesh.Server.Handlers;
 
 internal class OrderRequestHandler :
         IRequestHandler<DeleteOrderRequest, ConnectionState>,

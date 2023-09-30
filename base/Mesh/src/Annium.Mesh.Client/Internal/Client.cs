@@ -1,11 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
+using Annium.Mesh.Domain.Responses;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal class Client : ClientBase<ClientWebSocket>, IClient
 {

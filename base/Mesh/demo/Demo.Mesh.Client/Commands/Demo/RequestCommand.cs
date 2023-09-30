@@ -5,14 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
+using Annium.Mesh.Domain.Responses;
 using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
-using Demo.Infrastructure.WebSockets.Domain.Requests.Orders;
-using Demo.Infrastructure.WebSockets.Domain.Requests.User;
+using Demo.Mesh.Domain.Requests.Orders;
+using Demo.Mesh.Domain.Requests.User;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
+namespace Demo.Mesh.Client.Commands.Demo;
 
 internal class RequestCommand : AsyncCommand<RequestCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

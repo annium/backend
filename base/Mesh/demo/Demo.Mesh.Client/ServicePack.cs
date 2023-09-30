@@ -1,7 +1,7 @@
 using System;
 using Annium.Core.DependencyInjection;
 
-namespace Demo.Infrastructure.WebSockets.Client;
+namespace Demo.Mesh.Client;
 
 internal class ServicePack : ServicePackBase
 {

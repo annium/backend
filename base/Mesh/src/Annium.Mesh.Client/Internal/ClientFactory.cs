@@ -1,6 +1,6 @@
 using Annium.Logging;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal class ClientFactory : IClientFactory
 {

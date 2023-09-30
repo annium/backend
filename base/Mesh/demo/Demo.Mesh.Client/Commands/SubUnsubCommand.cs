@@ -2,12 +2,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Client;
 using Annium.Logging;
-using Demo.Infrastructure.WebSockets.Domain.Requests.User;
-using Demo.Infrastructure.WebSockets.Domain.Responses.User;
+using Annium.Mesh.Client;
+using Demo.Mesh.Domain.Requests.User;
+using Demo.Mesh.Domain.Responses.User;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands;
+namespace Demo.Mesh.Client.Commands;
 
 internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

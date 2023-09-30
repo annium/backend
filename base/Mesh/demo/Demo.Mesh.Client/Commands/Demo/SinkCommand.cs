@@ -4,12 +4,12 @@ using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Extensions.Arguments;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
 using Annium.Logging;
+using Annium.Mesh.Domain.Responses;
 using Annium.Net.WebSockets;
 using Annium.Serialization.Abstractions;
 
-namespace Demo.Infrastructure.WebSockets.Client.Commands.Demo;
+namespace Demo.Mesh.Client.Commands.Demo;
 
 internal class SinkCommand : AsyncCommand<SinkCommandConfiguration>, ICommandDescriptor, ILogSubject
 {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.AspNetCore.TestServer.Requests;
 using Annium.Data.Operations;
-using Annium.Infrastructure.WebSockets.Client;
+using Annium.Mesh.Client;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 

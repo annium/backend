@@ -1,6 +1,6 @@
-using Annium.Infrastructure.WebSockets.Domain.Responses;
+using Annium.Mesh.Domain.Responses;
 
-namespace Annium.Infrastructure.WebSockets.Server.Models;
+namespace Annium.Mesh.Server.Models;
 
 public interface IPushContext<TMessage, TState>
     where TMessage : NotificationBase

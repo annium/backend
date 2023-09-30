@@ -4,7 +4,7 @@ using Annium.Logging;
 using Annium.Net.WebSockets;
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
-namespace Annium.Infrastructure.WebSockets.Client.Internal;
+namespace Annium.Mesh.Client.Internal;
 
 internal class TestClient : ClientBase<ServerWebSocket>, ITestClient
 {

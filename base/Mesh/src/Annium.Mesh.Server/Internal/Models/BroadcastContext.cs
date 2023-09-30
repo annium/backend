@@ -1,8 +1,8 @@
 using System;
-using Annium.Infrastructure.WebSockets.Domain.Responses;
-using Annium.Infrastructure.WebSockets.Server.Models;
+using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Models;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal.Models;
+namespace Annium.Mesh.Server.Internal.Models;
 
 internal class BroadcastContext<TMessage> : IBroadcastContext<TMessage>
     where TMessage : NotificationBase

@@ -1,6 +1,6 @@
 using NativeWebSocket = System.Net.WebSockets.WebSocket;
 
-namespace Annium.Infrastructure.WebSockets.Client;
+namespace Annium.Mesh.Client;
 
 public interface ITestClientFactory
 {

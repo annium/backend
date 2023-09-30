@@ -7,7 +7,7 @@ using Annium.Extensions.Pooling;
 using Annium.Logging;
 using Annium.Net.WebSockets;
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class ConnectionTracker : IAsyncDisposable, ILogSubject
 {

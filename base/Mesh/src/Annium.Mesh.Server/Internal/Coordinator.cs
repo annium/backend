@@ -2,13 +2,13 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Infrastructure.WebSockets.Server.Models;
 using Annium.Logging;
+using Annium.Mesh.Server.Models;
 using Annium.Net.WebSockets;
 
 // ReSharper disable AccessToDisposedClosure
 
-namespace Annium.Infrastructure.WebSockets.Server.Internal;
+namespace Annium.Mesh.Server.Internal;
 
 internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
     where TState : ConnectionStateBase
