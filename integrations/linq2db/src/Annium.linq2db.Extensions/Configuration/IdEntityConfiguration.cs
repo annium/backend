@@ -1,7 +1,8 @@
 using Annium.Data.Models;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 public abstract class IdEntityConfiguration<TEntity, TId> : IEntityConfiguration<TEntity>
     where TEntity : class, IIdEntity<TId>

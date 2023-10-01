@@ -1,6 +1,5 @@
 using System;
-using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions;
 using Annium.linq2db.PostgreSql;
 using Annium.Logging;
 using LinqToDB;

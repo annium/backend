@@ -4,9 +4,9 @@ using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using LinqToDB;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
-// ReSharper disable once InconsistentNaming
 public static class DataOptionsExtensions
 {
     public static DataOptions UseLogging(this DataOptions options, IServiceProvider sp)

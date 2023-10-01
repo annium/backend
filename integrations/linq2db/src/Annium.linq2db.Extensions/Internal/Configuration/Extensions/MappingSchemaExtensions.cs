@@ -1,11 +1,10 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Extensions;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions.Internal;
 
 internal static class MappingSchemaExtensions
 {

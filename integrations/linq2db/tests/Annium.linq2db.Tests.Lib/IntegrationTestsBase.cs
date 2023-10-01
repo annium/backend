@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.linq2db.Extensions.Extensions;
+using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;
