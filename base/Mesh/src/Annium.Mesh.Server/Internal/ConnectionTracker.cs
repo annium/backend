@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Pooling;
 using Annium.Logging;
 using Annium.Net.WebSockets;
 
@@ -44,7 +43,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         return cn;
     }
 
-    public bool TryGet(Guid id, out ICacheReference<Connection> cn)
+    public bool TryGet(Guid id, out IDisposableReference<Connection> cn)
     {
         // not available, if already disposing
         if (_isDisposing)
@@ -64,7 +63,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             }
 
             cnRef.Acquire();
-            cn = CacheReference.Create(cnRef.Connection, () =>
+            cn = Disposable.Reference(cnRef.Connection, () =>
             {
                 cnRef.Release(_isDisposing);
                 return Task.CompletedTask;
