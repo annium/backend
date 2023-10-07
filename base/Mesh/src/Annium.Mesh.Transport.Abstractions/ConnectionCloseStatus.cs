@@ -1,6 +1,6 @@
 namespace Annium.Mesh.Transport.Abstractions;
 
-public enum CloseStatus
+public enum ConnectionCloseStatus
 {
     ClosedLocal,
     ClosedRemote,

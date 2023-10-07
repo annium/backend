@@ -6,11 +6,11 @@ namespace Annium.Mesh.Transport.Sockets.Internal;
 
 internal sealed class ClientConnectionFactory : IClientConnectionFactory
 {
-    private readonly TransportConfiguration _config;
+    private readonly ClientTransportConfiguration _config;
     private readonly ILogger _logger;
 
     public ClientConnectionFactory(
-        TransportConfiguration config,
+        ClientTransportConfiguration config,
         ILogger logger
     )
     {
@@ -28,6 +28,6 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory
 
         var clientSocket = new ClientSocket(clientSocketOptions, _logger);
 
-        return new ClientConnection(clientSocket, _config.Endpoint, _logger);
+        return new ClientConnection(clientSocket, _config.Endpoint, _config.AuthOptions, _logger);
     }
 }

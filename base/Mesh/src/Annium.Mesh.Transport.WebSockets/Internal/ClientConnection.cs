@@ -10,7 +10,7 @@ namespace Annium.Mesh.Transport.WebSockets.Internal;
 internal sealed class ClientConnection : IClientConnection, ILogSubject
 {
     public event Action OnConnected = delegate { };
-    public event Action<CloseStatus> OnDisconnected = delegate { };
+    public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
     public ILogger Logger { get; }
@@ -50,7 +50,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
         this.Trace("done");
     }
 
-    public async ValueTask<SendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
+    public async ValueTask<ConnectionSendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
         this.Trace("start");
 
@@ -58,7 +58,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
 
         this.Trace("done");
 
-        return SendStatusMap.Map(status);
+        return ConnectionSendStatusMap.Map(status);
     }
 
     private void HandleConnected()
@@ -69,7 +69,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
 
     private void HandleDisconnected(WebSocketCloseStatus status)
     {
-        var mappedStatus = CloseStatusMap.Map(status);
+        var mappedStatus = ConnectionCloseStatusMap.Map(status);
         this.Trace("trigger disconnected with {status}", mappedStatus);
         OnDisconnected(mappedStatus);
     }

@@ -11,4 +11,7 @@
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Reactive" Version="6.0.0" />
+    </ItemGroup>
 </Project>

@@ -6,11 +6,11 @@ namespace Annium.Mesh.Transport.WebSockets.Internal;
 
 internal sealed class ClientConnectionFactory : IClientConnectionFactory
 {
-    private readonly TransportConfiguration _config;
+    private readonly ClientTransportConfiguration _config;
     private readonly ILogger _logger;
 
     public ClientConnectionFactory(
-        TransportConfiguration config,
+        ClientTransportConfiguration config,
         ILogger logger
     )
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
@@ -11,16 +12,18 @@ namespace Annium.Mesh.Transport.Sockets.Internal;
 internal sealed class ClientConnection : IClientConnection, ILogSubject
 {
     public event Action OnConnected = delegate { };
-    public event Action<CloseStatus> OnDisconnected = delegate { };
+    public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
     public ILogger Logger { get; }
     private readonly IClientSocket _socket;
     private readonly IPEndPoint _endpoint;
+    private readonly SslClientAuthenticationOptions? _authOptions;
 
     public ClientConnection(
         IClientSocket socket,
         IPEndPoint endpoint,
+        SslClientAuthenticationOptions? authOptions,
         ILogger logger
     )
     {
@@ -31,13 +34,14 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
         _socket.OnError += HandleError;
         _socket.OnReceived += HandleReceived;
         _endpoint = endpoint;
+        _authOptions = authOptions;
     }
 
     public void Connect()
     {
         this.Trace("start");
 
-        _socket.Connect(_endpoint);
+        _socket.Connect(_endpoint, _authOptions);
 
         this.Trace("done");
     }
@@ -51,7 +55,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
         this.Trace("done");
     }
 
-    public async ValueTask<SendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
+    public async ValueTask<ConnectionSendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
         this.Trace("start");
 
@@ -59,7 +63,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
 
         this.Trace("done");
 
-        return SendStatusMap.Map(status);
+        return ConnectionSendStatusMap.Map(status);
     }
 
     private void HandleConnected()
@@ -70,7 +74,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
 
     private void HandleDisconnected(SocketCloseStatus status)
     {
-        var mappedStatus = CloseStatusMap.Map(status);
+        var mappedStatus = ConnectionCloseStatusMap.Map(status);
         this.Trace("trigger disconnected with {status}", mappedStatus);
         OnDisconnected(mappedStatus);
     }

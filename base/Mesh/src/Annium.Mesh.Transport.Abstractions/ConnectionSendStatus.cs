@@ -1,6 +1,6 @@
 namespace Annium.Mesh.Transport.Abstractions;
 
-public enum SendStatus
+public enum ConnectionSendStatus
 {
     Ok,
     Canceled,

@@ -12,5 +12,5 @@ public interface ISendingConnection
     /// <param name="data">data to be sent</param>
     /// <param name="ct">cancellation token</param>
     /// <returns>Send status</returns>
-    ValueTask<SendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default);
+    ValueTask<ConnectionSendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default);
 }

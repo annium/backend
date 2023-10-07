@@ -9,8 +9,9 @@ namespace Annium.Mesh.Transport.Sockets.Internal;
 
 internal sealed class ServerConnection : IServerConnection, ILogSubject
 {
+    public Guid Id { get; } = Guid.NewGuid();
     public ILogger Logger { get; }
-    public event Action<CloseStatus> OnDisconnected = delegate { };
+    public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
     private readonly IServerSocket _socket;
@@ -37,7 +38,7 @@ internal sealed class ServerConnection : IServerConnection, ILogSubject
         this.Trace("done");
     }
 
-    public async ValueTask<SendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
+    public async ValueTask<ConnectionSendStatus> SendAsync(ReadOnlyMemory<byte> data, CancellationToken ct = default)
     {
         this.Trace("start");
 
@@ -45,12 +46,12 @@ internal sealed class ServerConnection : IServerConnection, ILogSubject
 
         this.Trace("done");
 
-        return SendStatusMap.Map(status);
+        return ConnectionSendStatusMap.Map(status);
     }
 
     private void HandleDisconnected(SocketCloseStatus status)
     {
-        var mappedStatus = CloseStatusMap.Map(status);
+        var mappedStatus = ConnectionCloseStatusMap.Map(status);
         this.Trace("trigger disconnected with {status}", mappedStatus);
         OnDisconnected(mappedStatus);
     }

@@ -7,11 +7,11 @@ namespace Annium.Mesh.Transport.WebSockets.Internal;
 
 internal sealed class ServerConnectionFactory : IServerConnectionFactory
 {
-    private readonly TransportConfiguration _config;
+    private readonly ServerTransportConfiguration _config;
     private readonly ILogger _logger;
 
     public ServerConnectionFactory(
-        TransportConfiguration config,
+        ServerTransportConfiguration config,
         ILogger logger
     )
     {
