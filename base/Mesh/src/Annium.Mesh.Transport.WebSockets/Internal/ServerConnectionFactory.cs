@@ -1,11 +1,12 @@
 using System.Net.WebSockets;
+using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Transport.Abstractions;
 using Annium.Net.WebSockets;
 
 namespace Annium.Mesh.Transport.WebSockets.Internal;
 
-internal sealed class ServerConnectionFactory : IServerConnectionFactory
+internal sealed class ServerConnectionFactory : IServerConnectionFactory<WebSocket>
 {
     private readonly ServerTransportConfiguration _config;
     private readonly ILogger _logger;
@@ -19,7 +20,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory
         _logger = logger;
     }
 
-    public IServerConnection Create(WebSocket socket)
+    public Task<IServerConnection> CreateAsync(WebSocket socket)
     {
         var serverSocketOptions = new ServerWebSocketOptions
         {
@@ -27,7 +28,8 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory
         };
 
         var serverSocket = new ServerWebSocket(socket, serverSocketOptions, _logger);
+        var connection = new ServerConnection(serverSocket, _logger);
 
-        return new ServerConnection(serverSocket, _logger);
+        return Task.FromResult<IServerConnection>(connection);
     }
 }

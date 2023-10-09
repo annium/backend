@@ -8,7 +8,7 @@ using Annium.Net.Sockets;
 
 namespace Annium.Mesh.Transport.Sockets.Internal;
 
-internal sealed class ServerConnectionFactory : IServerConnectionFactory
+internal sealed class ServerConnectionFactory : IServerConnectionFactory<Socket>
 {
     private readonly ServerTransportConfiguration _config;
     private readonly ILogger _logger;
