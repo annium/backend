@@ -12,8 +12,8 @@ using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
-using Annium.Serialization.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
@@ -21,7 +21,7 @@ internal abstract class ClientBase : IClientBase, ILogSubject
 {
     public ILogger Logger { get; }
     private readonly ISendingReceivingConnection _connection;
-    private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+    private readonly ISerializer _serializer;
     private readonly IClientConfiguration _configuration;
     private readonly DisposableBox _disposable;
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
@@ -32,7 +32,7 @@ internal abstract class ClientBase : IClientBase, ILogSubject
     protected ClientBase(
         ISendingReceivingConnection connection,
         ITimeProvider timeProvider,
-        ISerializer<ReadOnlyMemory<byte>> serializer,
+        ISerializer serializer,
         IClientConfiguration configuration,
         ILogger logger
     )

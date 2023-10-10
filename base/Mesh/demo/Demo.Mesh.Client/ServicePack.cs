@@ -15,11 +15,6 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddSerializers()
-            .WithJson(opts => opts
-                .ConfigureForOperations()
-                .ConfigureForNodaTime()
-            );
         container.AddLogging();
         container.AddMapper();
         container.AddArguments();
@@ -28,6 +23,7 @@ internal class ServicePack : ServicePackBase
         {
             Uri = new Uri("ws://localhost:2727")
         });
+        container.AddMeshJsonSerialization();
 
         // commands
         container.AddAll(GetType().Assembly)

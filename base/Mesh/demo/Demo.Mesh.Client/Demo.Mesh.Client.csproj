@@ -14,12 +14,12 @@
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
         <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
         <ProjectReference Include="../Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Core.Entrypoint" Version="0.1.0" />
         <PackageReference Include="Annium.Extensions.Arguments" Version="0.1.0" />
         <PackageReference Include="Annium.Logging.Console" Version="0.1.0" />
-        <PackageReference Include="Annium.NodaTime.Serialization.Json" Version="0.1.0" />
     </ItemGroup>
 </Project>

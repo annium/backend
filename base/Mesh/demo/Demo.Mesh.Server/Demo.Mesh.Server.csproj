@@ -14,6 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.csproj" />
         <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
         <ProjectReference Include="../Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>

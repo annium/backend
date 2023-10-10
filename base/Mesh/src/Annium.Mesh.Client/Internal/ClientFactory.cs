@@ -1,9 +1,6 @@
-using System;
-using Annium.Core.DependencyInjection;
 using Annium.Logging;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
-using Annium.Serialization.Abstractions;
-using Constants = Annium.Serialization.Json.Constants;
 
 namespace Annium.Mesh.Client.Internal;
 
@@ -11,19 +8,19 @@ internal class ClientFactory : IClientFactory
 {
     private readonly ITimeProvider _timeProvider;
     private readonly IClientConnectionFactory _clientConnectionFactory;
-    private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+    private readonly ISerializer _serializer;
     private readonly ILogger _logger;
 
     public ClientFactory(
         ITimeProvider timeProvider,
         IClientConnectionFactory clientConnectionFactory,
-        IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers,
+        ISerializer serializer,
         ILogger logger
     )
     {
         _timeProvider = timeProvider;
         _clientConnectionFactory = clientConnectionFactory;
-        _serializer = serializers[SerializerKey.CreateDefault(Constants.MediaType)];
+        _serializer = serializer;
         _logger = logger;
     }
 

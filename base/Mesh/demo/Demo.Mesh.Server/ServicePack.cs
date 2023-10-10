@@ -19,10 +19,7 @@ internal class ServicePack : ServicePackBase
     {
         container.AddRuntime(GetType().Assembly);
         container.AddTime().WithRealTime().SetDefault();
-        container.AddSerializers()
-            .WithJson(opts => opts
-                .ConfigureForOperations()
-            );
+        container.AddMeshJsonSerialization();
         container.AddLogging();
         container.AddMapper();
         container.AddMediator();

@@ -2,8 +2,8 @@ using System;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
-using Annium.Serialization.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
@@ -21,7 +21,7 @@ internal class Client : ClientBase, IClient
     public Client(
         IClientConnection connection,
         ITimeProvider timeProvider,
-        ISerializer<ReadOnlyMemory<byte>> serializer,
+        ISerializer serializer,
         IClientConfiguration configuration,
         ILogger logger
     ) : base(

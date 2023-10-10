@@ -25,7 +25,7 @@ public class HttpTest : IntegrationTestBase
 
         // assert
         result.IsNotDefault();
-        result!.IsOk.IsTrue();
+        result.IsOk.IsTrue();
         result.Data.Is(value);
     }
 

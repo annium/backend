@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Annium.Logging;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -13,13 +13,13 @@ internal class ConnectionHandlerFactory<TState>
 {
     private readonly Func<Guid, TState> _stateFactory;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
-    private readonly Serializer _serializer;
+    private readonly ISerializer _serializer;
     private readonly ILogger _logger;
 
     public ConnectionHandlerFactory(
         Func<Guid, TState> stateFactory,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
-        Serializer serializer,
+        ISerializer serializer,
         ILogger logger
     )
     {

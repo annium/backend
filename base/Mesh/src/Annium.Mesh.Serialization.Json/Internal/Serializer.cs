@@ -1,11 +1,12 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;
 using Constants = Annium.Serialization.Json.Constants;
 
-namespace Annium.Mesh.Server.Internal.Serialization;
+namespace Annium.Mesh.Serialization.Json.Internal;
 
-internal class Serializer
+internal class Serializer : ISerializer
 {
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 

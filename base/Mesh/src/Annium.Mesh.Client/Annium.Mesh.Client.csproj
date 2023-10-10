@@ -13,11 +13,10 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Domain/Annium.Mesh.Domain.csproj" />
+        <ProjectReference Include="../Annium.Mesh.Serialization.Abstractions/Annium.Mesh.Serialization.Abstractions.csproj" />
         <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Data.Operations.Serialization.Json" Version="0.1.0" />
         <PackageReference Include="Annium.Extensions.Reactive" Version="0.1.0" />
-        <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
     </ItemGroup>
 </Project>

@@ -1,22 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Mesh.Server</PackageId>
+        <PackageId>Annium.Mesh.Serialization.Json</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.AspNetCore.Extensions</Description>
+        <Description>Annium.Mesh.Serialization.Json</Description>
         <TargetFramework>net7.0</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
         <LangVersion>11.0</LangVersion>
         <WarningsAsErrors>true</WarningsAsErrors>
-        <IsPackable>true</IsPackable>
+        <IsPackable>false</IsPackable>
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Domain/Annium.Mesh.Domain.csproj" />
         <ProjectReference Include="../Annium.Mesh.Serialization.Abstractions/Annium.Mesh.Serialization.Abstractions.csproj" />
-        <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Extensions.Execution" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
+        <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
     </ItemGroup>
 </Project>

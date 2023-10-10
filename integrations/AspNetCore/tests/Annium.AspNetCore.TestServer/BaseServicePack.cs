@@ -31,6 +31,7 @@ internal class BaseServicePack : ServicePackBase
         {
             ConnectionMonitor = ConnectionMonitor.None
         });
+        container.AddMeshJsonSerialization();
         container.AddMeshWebSocketsMiddleware(cfg => cfg.PathMatch = "/ws");
         container.Add<SharedDataContainer>().AsSelf().Singleton();
 

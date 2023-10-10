@@ -7,7 +7,6 @@ using Annium.Mesh.Server.Internal;
 using Annium.Mesh.Server.Internal.Handlers;
 using Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
 using Annium.Reflection;
 
@@ -38,7 +37,6 @@ public static class ServiceContainerExtensions
         container.Add<LifeCycleCoordinator<TState>>().AsSelf().Scoped();
         container.Add(typeof(MessageHandler<>)).AsSelf().Transient();
         container.Add<PusherCoordinator<TState>>().AsSelf().Singleton();
-        container.Add<Serializer>().AsSelf().Singleton();
 
         // internal - handlers
         container.Add<SubscriptionContextStore>().AsSelf().AsInterfaces().Singleton();

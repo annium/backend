@@ -2,8 +2,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.Mediator;
 using Annium.Logging;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Internal.Serialization;
 
 namespace Annium.Mesh.Server.Internal.Handlers;
 
@@ -13,11 +13,11 @@ internal class PushMessageHandler<T> :
 {
     public ILogger Logger { get; }
     private readonly ConnectionTracker _connectionTracker;
-    private readonly Serializer _serializer;
+    private readonly ISerializer _serializer;
 
     public PushMessageHandler(
         ConnectionTracker connectionTracker,
-        Serializer serializer,
+        ISerializer serializer,
         ILogger logger
     )
     {

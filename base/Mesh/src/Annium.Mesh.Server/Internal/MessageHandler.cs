@@ -4,9 +4,9 @@ using Annium.Core.Mediator;
 using Annium.Logging;
 using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Responses;
-using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -17,12 +17,12 @@ internal class MessageHandler<TState> : ILogSubject
 {
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
-    private readonly Serializer _serializer;
+    private readonly ISerializer _serializer;
     private readonly IMediator _mediator;
 
     public MessageHandler(
         IServiceProvider sp,
-        Serializer serializer,
+        ISerializer serializer,
         IMediator mediator,
         ILogger logger
     )

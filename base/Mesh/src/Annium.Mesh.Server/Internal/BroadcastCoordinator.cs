@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Handlers;
-using Annium.Mesh.Server.Internal.Serialization;
 
 namespace Annium.Mesh.Server.Internal;
 
@@ -14,14 +14,14 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
     public ILogger Logger { get; }
     private readonly ConnectionTracker _connectionTracker;
     private readonly IEnumerable<IBroadcasterRunner> _runners;
-    private readonly Serializer _serializer;
+    private readonly ISerializer _serializer;
     private readonly CancellationTokenSource _lifetimeCts;
     private Task _runnersTask = Task.CompletedTask;
 
     public BroadcastCoordinator(
         ConnectionTracker connectionTracker,
         IEnumerable<IBroadcasterRunner> runners,
-        Serializer serializer,
+        ISerializer serializer,
         ILogger logger
     )
     {

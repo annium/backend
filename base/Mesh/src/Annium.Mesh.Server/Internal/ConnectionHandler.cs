@@ -8,8 +8,8 @@ using Annium.Extensions.Execution;
 using Annium.Logging;
 using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -22,7 +22,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
     private readonly IServiceProvider _sp;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly IServerConnection _cn;
-    private readonly Serializer _serializer;
+    private readonly ISerializer _serializer;
     private readonly TState _state;
 
     public ConnectionHandler(
@@ -30,7 +30,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         Func<Guid, TState> stateFactory,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
         IServerConnection cn,
-        Serializer serializer,
+        ISerializer serializer,
         ILogger logger
     )
     {
