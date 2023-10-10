@@ -1,14 +1,16 @@
-using Annium.Core.DependencyInjection;
+using Annium.Core.Entrypoint;
+using Annium.Mesh.Server.Web;
+using Annium.Net.Servers.Web;
 using Demo.Mesh.Server;
-using Microsoft.AspNetCore.Builder;
 
-var builder = WebApplication.CreateBuilder(args);
-builder.Host.UseServicePack<ServicePack>();
-builder.Logging.ConfigureLoggingBridge();
-builder.WebHost.UseKestrelDefaults();
+await using var entry = Entrypoint.Default
+    .UseServicePack<ServicePack>()
+    .Setup();
 
-var app = builder.Build();
+var (sp, ct) = entry;
 
-app.UseWebSocketsServer();
+var server = ServerBuilder.New(sp, 2727)
+    .WithMeshHandler()
+    .Build();
 
-await app.RunAsync();
+await server.RunAsync(ct);

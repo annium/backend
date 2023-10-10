@@ -9,7 +9,7 @@ using Demo.Mesh.Domain.Responses.User;
 
 namespace Demo.Mesh.Client.Commands;
 
-internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
+internal class SubUnsubCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "sub-unsub";
     public static string Description => $"test {Id} flow";
@@ -25,24 +25,23 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
         Logger = logger;
     }
 
-    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var configuration = new ClientConfiguration()
-            .ConnectTo(cfg.Server)
             .WithResponseTimeout(600);
         await using var client = _clientFactory.Create(configuration);
-        client.ConnectionLost += () =>
+        client.OnDisconnected += status =>
         {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
+            //
+            this.Debug("disconnected: {status}", status);
         };
-        client.ConnectionRestored += () =>
+        client.OnConnected += () =>
         {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
+            //
+            this.Debug("connected");
         };
 
-        await client.ConnectAsync(ct);
+        await client.ConnectAsync();
 
         this.Debug("Init subscription");
         var result = await client.SubscribeAsync<UserBalanceSubscriptionInit, UserBalanceMessage>(new UserBalanceSubscriptionInit(), ct);
@@ -62,7 +61,7 @@ internal class SubUnsubCommand : AsyncCommand<ServerCommandConfiguration>, IComm
         else
             this.Error<string>("Subscription failed: {error}", result.PlainError);
 
-        await client.DisconnectAsync();
+        client.Disconnect();
 
         void Log(UserBalanceMessage msg) => this.Debug("<<< {msg}", msg);
     }

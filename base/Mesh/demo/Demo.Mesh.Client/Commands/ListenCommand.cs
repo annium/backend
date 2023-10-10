@@ -9,7 +9,7 @@ using Demo.Mesh.Domain.Responses.System;
 
 namespace Demo.Mesh.Client.Commands;
 
-internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
+internal class ListenCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "listen";
     public static string Description => $"test {Id} flow";
@@ -25,26 +25,25 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
         Logger = logger;
     }
 
-    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var configuration = new ClientConfiguration()
-            .ConnectTo(cfg.Server)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
-        client.ConnectionLost += () =>
+        client.OnDisconnected += status =>
         {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
+            //
+            this.Debug("disconnected: {status}", status);
         };
-        client.ConnectionRestored += () =>
+        client.OnConnected += () =>
         {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
+            //
+            this.Debug("connected");
         };
 
-        this.Debug("Connecting to {server}", cfg.Server);
-        await client.ConnectAsync(ct);
-        this.Debug("Connected to {server}", cfg.Server);
+        this.Debug("Connecting to server");
+        await client.ConnectAsync();
+        this.Debug("Connected to server");
 
         using var _ = client
             .Listen<DiagnosticsNotification>()
@@ -55,7 +54,7 @@ internal class ListenCommand : AsyncCommand<ServerCommandConfiguration>, IComman
 
         await ct;
         this.Debug("Disconnecting");
-        await client.DisconnectAsync();
+        client.Disconnect();
         this.Debug("Disconnected");
     }
 }

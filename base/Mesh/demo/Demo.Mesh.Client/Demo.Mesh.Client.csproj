@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
         <ProjectReference Include="../Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>

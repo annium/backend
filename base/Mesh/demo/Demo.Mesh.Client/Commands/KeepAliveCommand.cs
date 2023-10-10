@@ -7,7 +7,7 @@ using Annium.Mesh.Client;
 
 namespace Demo.Mesh.Client.Commands;
 
-internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
+internal class KeepAliveCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "keep-alive";
     public static string Description => $"test {Id} flow";
@@ -23,22 +23,22 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
         Logger = logger;
     }
 
-    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
-        this.Debug("Interacting to {server}", cfg.Server);
+        this.Debug("Interacting to server");
 
         this.Debug("create client");
-        var configuration = new ClientConfiguration().ConnectTo(cfg.Server);
+        var configuration = new ClientConfiguration();
         var client = _clientFactory.Create(configuration);
-        client.ConnectionLost += () =>
+        client.OnDisconnected += status =>
         {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
+            //
+            this.Debug("disconnected: {status}", status);
         };
-        client.ConnectionRestored += () =>
+        client.OnConnected += () =>
         {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
+            //
+            this.Debug("connected");
         };
 
         while (true)
@@ -49,14 +49,14 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
             if (key == ConsoleKey.C)
             {
                 this.Debug("connecting");
-                await client.ConnectAsync(ct);
+                await client.ConnectAsync();
                 this.Debug("connected");
             }
 
             if (key == ConsoleKey.D)
             {
                 this.Debug("disconnecting");
-                await client.DisconnectAsync();
+                client.Disconnect();
                 this.Debug("disconnected");
             }
 
@@ -71,7 +71,7 @@ internal class KeepAliveCommand : AsyncCommand<ServerCommandConfiguration>, ICom
         }
 
         this.Debug("Disconnecting");
-        await client.DisconnectAsync();
+        client.Disconnect();
 
         this.Debug("Disconnected");
     }

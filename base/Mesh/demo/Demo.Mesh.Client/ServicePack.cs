@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.Mesh.Transport.WebSockets;
 
 namespace Demo.Mesh.Client;
 
@@ -22,7 +23,11 @@ internal class ServicePack : ServicePackBase
         container.AddLogging();
         container.AddMapper();
         container.AddArguments();
-        container.AddWebSocketClient();
+        container.AddMeshClient();
+        container.AddMeshWebSocketsClientTransport(_ => new ClientTransportConfiguration
+        {
+            Uri = new Uri("ws://localhost:2727")
+        });
 
         // commands
         container.AddAll(GetType().Assembly)

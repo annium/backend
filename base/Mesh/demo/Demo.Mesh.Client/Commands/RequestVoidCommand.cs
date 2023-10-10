@@ -7,7 +7,7 @@ using Demo.Mesh.Domain.Requests.Orders;
 
 namespace Demo.Mesh.Client.Commands;
 
-internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
+internal class RequestVoidCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "request-void";
     public static string Description => $"test {Id} flow";
@@ -23,20 +23,19 @@ internal class RequestVoidCommand : AsyncCommand<ServerCommandConfiguration>, IC
         Logger = logger;
     }
 
-    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var configuration = new ClientConfiguration()
-            .ConnectTo(cfg.Server)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
 
-        await client.ConnectAsync(ct);
+        await client.ConnectAsync();
 
         var request = new DeleteOrderRequest();
         this.Debug(">>> {request}", request);
         var result = await client.SendAsync(request, ct);
         this.Debug("<<< {result}", result);
 
-        await client.DisconnectAsync();
+        client.Disconnect();
     }
 }

@@ -27,7 +27,7 @@ internal class SessionTimePusher : IPusher<SessionTimeNotification, ConnectionSt
         var start = _timeProvider.Now;
         while (!ct.IsCancellationRequested)
         {
-            await Task.Delay(TimeSpan.FromSeconds(1), ct);
+            await Task.Delay(TimeSpan.FromSeconds(1), CancellationToken.None);
 
             ctx.Send(new SessionTimeNotification { Duration = (_timeProvider.Now - start).ToTimeSpan() });
         }

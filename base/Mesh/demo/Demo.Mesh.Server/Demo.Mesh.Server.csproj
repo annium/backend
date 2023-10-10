@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageId>Demo.Mesh.Server</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
@@ -12,14 +12,12 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../../integrations/AspNetCore/src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
-        <ProjectReference Include="../../../../integrations/AspNetCore/src/Annium.AspNetCore.WebSockets/Annium.AspNetCore.WebSockets.csproj" />
-        <ProjectReference Include="../../../Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
-        <ProjectReference Include="../../../Mesh/demo/Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+        <ProjectReference Include="../Demo.Mesh.Domain/Demo.Mesh.Domain.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Configuration.CommandLine" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.Entrypoint" Version="0.1.0" />
         <PackageReference Include="Annium.Logging.Console" Version="0.1.0" />
-        <PackageReference Include="Annium.Logging.Microsoft" Version="0.1.0" />
     </ItemGroup>
 </Project>

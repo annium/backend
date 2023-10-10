@@ -16,7 +16,7 @@ public class ValueContainerTest : TestBase
 {
     public ValueContainerTest(ITestOutputHelper outputHelper) : base(outputHelper)
     {
-        Register(container => { container.AddWebSocketServer<ConnectionState>((_, _) => { }); });
+        Register(container => { container.AddMeshServer<ConnectionState>(); });
     }
 
     [Fact]

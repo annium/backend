@@ -13,7 +13,7 @@ using Demo.Mesh.Domain.Requests.Orders;
 
 namespace Demo.Mesh.Client.Commands;
 
-internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>, ICommandDescriptor, ILogSubject
+internal class RequestResponseCommand : AsyncCommand, ICommandDescriptor, ILogSubject
 {
     public static string Id => "request-response";
     public static string Description => $"test {Id} flow";
@@ -29,24 +29,23 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
         Logger = logger;
     }
 
-    public override async Task HandleAsync(ServerCommandConfiguration cfg, CancellationToken ct)
+    public override async Task HandleAsync(CancellationToken ct)
     {
         var configuration = new ClientConfiguration()
-            .ConnectTo(cfg.Server)
             .WithResponseTimeout(600);
         var client = _clientFactory.Create(configuration);
-        client.ConnectionLost += () =>
+        client.OnDisconnected += status =>
         {
-            this.Debug("connection lost");
-            return Task.CompletedTask;
+            //
+            this.Debug("disconnected: {status}", status);
         };
-        client.ConnectionRestored += () =>
+        client.OnConnected += () =>
         {
-            this.Debug("connection restored");
-            return Task.CompletedTask;
+            //
+            this.Debug("connected");
         };
 
-        await client.ConnectAsync(ct);
+        await client.ConnectAsync();
 
         var counter = 0;
         var sw = new Stopwatch();
@@ -78,7 +77,7 @@ internal class RequestResponseCommand : AsyncCommand<ServerCommandConfiguration>
 
         this.Debug("End: {elapsed}. Counter: {counter}", sw.Elapsed, counter);
 
-        await client.DisconnectAsync();
+        client.Disconnect();
 
         async Task<IStatusResult<OperationStatus, T>> Fetch<T>(RequestBase request, CancellationToken token)
         {

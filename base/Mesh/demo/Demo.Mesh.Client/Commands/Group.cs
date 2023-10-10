@@ -9,7 +9,6 @@ internal class Group : Annium.Extensions.Arguments.Group, ICommandDescriptor
 
     public Group()
     {
-        Add<Demo.Group>();
         Add<KeepAliveCommand>();
         Add<ListenCommand>();
         Add<RequestResponseCommand>();
