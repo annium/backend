@@ -1,101 +1,134 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Domain.Responses;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
+using Annium.Serialization.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
-internal class Client : ClientBase<ClientWebSocket>, IClient
+internal class Client : ClientBase, IClient
 {
-    public event Func<Task> ConnectionLost = () => Task.CompletedTask;
-    public event Func<Task> ConnectionRestored = () => Task.CompletedTask;
-    private readonly IClientConfiguration _configuration;
+    public event Action OnConnected = delegate { };
+    public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
+    public event Action<Exception> OnError = delegate { };
+    private readonly IClientConnection _connection;
     private readonly DisposableBox _disposable;
-    private bool _isDisposed;
-    private TaskCompletionSource _connectionTcs = new();
+    private readonly object _locker = new();
+    private bool _isConnected;
+    private bool _isConnectionReady;
 
     public Client(
+        IClientConnection connection,
         ITimeProvider timeProvider,
-        Serializer serializer,
+        ISerializer<ReadOnlyMemory<byte>> serializer,
         IClientConfiguration configuration,
         ILogger logger
     ) : base(
-        new ClientWebSocket(configuration.WebSocketOptions, logger),
+        connection,
         timeProvider,
         serializer,
         configuration,
         logger
     )
     {
-        _configuration = configuration;
+        _connection = connection;
         _disposable = Disposable.Box(logger);
-        Socket.OnDisconnected += _ => ConnectionLost.Invoke();
-        Socket.OnConnected += async () =>
-        {
-            this.Trace("wait for ConnectionReadyNotification");
-            await WaitConnectionReadyAsync(CancellationToken.None);
-            this.Trace("invoke ConnectionRestored");
-            await ConnectionRestored.Invoke();
-            this.Trace("done ConnectionRestored");
-        };
-        _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
+
+        _connection.OnConnected += HandleConnected;
+        _connection.OnDisconnected += HandleDisconnected;
+        _connection.OnError += HandleError;
+
+        _disposable += Listen<ConnectionReadyNotification>().Subscribe(HandleConnectionReady);
     }
 
-    public async Task ConnectAsync(CancellationToken ct = default)
+    public void Connect()
     {
         this.Trace("start");
-        Socket.Connect(_configuration.Uri);
-        await WaitConnectionReadyAsync(ct);
+        _connection.Connect();
         this.Trace("done");
     }
 
-    public Task DisconnectAsync()
+    public void Disconnect()
     {
-        Socket.Disconnect();
-
-        return Task.CompletedTask;
+        this.Trace("start");
+        _connection.Disconnect();
+        this.Trace("done");
     }
 
-
-    public override async ValueTask DisposeAsync()
+    protected override ValueTask HandleDisposeAsync()
     {
-        if (_isDisposed)
-        {
-            this.Trace("already disposed");
-            return;
-        }
-
         this.Trace("start");
+
+        this.Trace("dispose disposable");
         _disposable.Dispose();
-        this.Trace("dispose base");
-        await base.DisposeAsync();
-        this.Trace("disconnect socket");
-        Socket.Disconnect();
-        this.Trace("done");
 
-        _isDisposed = true;
-    }
-
-    private void HandleConnectionReady()
-    {
-        _connectionTcs.SetResult();
-        _connectionTcs = new();
-    }
-
-    private async Task WaitConnectionReadyAsync(CancellationToken ct)
-    {
-        this.Trace("start");
-
-        try
-        {
-            await Task.Run(() => _connectionTcs.Task, ct);
-        }
-        catch (OperationCanceledException)
-        {
-        }
+        this.Trace("disconnect connection");
+        _connection.Disconnect();
 
         this.Trace("done");
+
+        return ValueTask.CompletedTask;
+    }
+
+    private void HandleConnected()
+    {
+        lock (_locker)
+        {
+            // set connected flag
+            _isConnected = true;
+
+            // if not connected - don't set flag
+            if (!_isConnectionReady)
+                return;
+        }
+
+        // invoke event outside of lock
+        OnConnected();
+    }
+
+    private void HandleConnectionReady(ConnectionReadyNotification _)
+    {
+        lock (_locker)
+        {
+            // if not connected - don't set flag
+            if (!_isConnected)
+                return;
+
+            // set connection ready flag
+            _isConnectionReady = true;
+        }
+
+        // invoke event outside of lock
+        OnConnected();
+    }
+
+    private void HandleDisconnected(ConnectionCloseStatus status)
+    {
+        lock (_locker)
+        {
+            // set connected flag
+            _isConnected = false;
+
+            // set connection ready flag
+            _isConnectionReady = false;
+        }
+
+        // invoke event outside of lock
+        OnDisconnected(status);
+    }
+
+    private void HandleError(Exception exception)
+    {
+        lock (_locker)
+        {
+            // set connected flag
+            _isConnected = false;
+
+            // set connection ready flag
+            _isConnectionReady = false;
+        }
+
+        OnError(exception);
     }
 }

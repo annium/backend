@@ -1,21 +1,8 @@
-using System;
-using Annium.Net.WebSockets;
 using NodaTime;
 
 namespace Annium.Mesh.Client;
 
-public interface IClientConfiguration : IClientConfigurationBase
-{
-    Uri Uri { get; }
-    ClientWebSocketOptions WebSocketOptions { get; }
-}
-
-public interface ITestClientConfiguration : IClientConfigurationBase
-{
-    ServerWebSocketOptions WebSocketOptions { get; }
-}
-
-public interface IClientConfigurationBase
+public interface IClientConfiguration
 {
     Duration ResponseTimeout { get; }
 }

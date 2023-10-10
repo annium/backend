@@ -3,8 +3,6 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -14,45 +12,40 @@ using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
+using Annium.Serialization.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
-internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
-    where TSocket : class, ISendingReceivingWebSocket
+internal abstract class ClientBase : IClientBase, ILogSubject
 {
     public ILogger Logger { get; }
-    protected TSocket Socket { get; }
-    private readonly Serializer _serializer;
-    private readonly IClientConfigurationBase _configuration;
+    private readonly ISendingReceivingConnection _connection;
+    private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
+    private readonly IClientConfiguration _configuration;
+    private readonly DisposableBox _disposable;
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
-    private readonly ConcurrentDictionary<Guid, ValueTuple<CancellationTokenSource, IObservable<object>>> _subscriptions = new();
+    private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
     private readonly IObservable<AbstractResponseBase> _responseObservable;
-    private readonly AsyncDisposableBox _disposable;
+    private bool _isDisposed;
 
     protected ClientBase(
-        TSocket socket,
+        ISendingReceivingConnection connection,
         ITimeProvider timeProvider,
-        Serializer serializer,
-        IClientConfigurationBase configuration,
+        ISerializer<ReadOnlyMemory<byte>> serializer,
+        IClientConfiguration configuration,
         ILogger logger
     )
     {
-        _disposable = Disposable.AsyncBox(logger);
-
-        Socket = socket;
         Logger = logger;
+        _connection = connection;
         _serializer = serializer;
         _configuration = configuration;
+        _disposable = Disposable.Box(logger);
+
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
-        socket.ObserveBinary()
-            .Subscribe(x => this.Trace<string>("RAW!: {x}", Encoding.UTF8.GetString(x.ToArray())));
-        socket.ObserveBinary()
-            .Select(serializer.Deserialize<AbstractResponseBase>)
-            .Subscribe(x => this.Trace<string>("MSG!: {x}", JsonSerializer.Serialize(x)));
-
-        _responseObservable = socket.ObserveBinary().Select(serializer.Deserialize<AbstractResponseBase>);
+        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBase>);
         _disposable += _responseObservable.OfType<ResponseBase>()
             .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe(CompleteResponse);
@@ -101,105 +94,6 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     {
         return FetchInternal(request, defaultValue, ct);
     }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequest, TResponseChunk>(
-    //     TRequest request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : RequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponse, TResponseChunk>>>
-    //     FetchStream<TRequest, TResponse, TResponseChunk>(
-    //         TRequest request,
-    //         CancellationToken ct = default
-    //     )
-    //     where TRequest : RequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus>> SendAsync<TRequestChunk>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus>> SendAsync<TRequest, TRequestChunk>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequestChunk, TResponse>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequest, TRequestChunk, TResponse>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>>
-    //     FetchStream<TRequestChunk, TResponseChunk>(
-    //         DataStream<TRequestChunk> request,
-    //         CancellationToken ct = default
-    //     )
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>>
-    //     FetchStream<TRequestChunk, TResponse, TResponseChunk>(
-    //         DataStream<TRequestChunk> request,
-    //         CancellationToken ct = default
-    //     )
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>>
-    //     FetchStream<TRequest, TRequestChunk, TResponseChunk>(
-    //         DataStream<TRequest, TRequestChunk> request,
-    //         CancellationToken ct = default
-    //     )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
-    //
-    // public Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>>
-    //     FetchStream<TRequest, TRequestChunk, TResponse, TResponseChunk>(
-    //         DataStream<TRequest, TRequestChunk> request,
-    //         CancellationToken ct = default
-    //     )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase
-    // {
-    //     throw new NotImplementedException();
-    // }
 
     // init subscription
     public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
@@ -253,24 +147,41 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
             .ObserveOn(TaskPoolScheduler.Default);
 
         this.Trace("{type}#{subscriptionId} - track observable", type, subscriptionId);
-        if (!_subscriptions.TryAdd(subscriptionId, (cts, (IObservable<object>)observable)))
+        if (!_subscriptions.TryAdd(subscriptionId, new(cts, (IObservable<object>)observable)))
             throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 
         return Result.Status(response.Status, observable);
     }
 
-    public virtual async ValueTask DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
+        this.Trace("start");
+
+        if (_isDisposed)
+        {
+            this.Trace("already disposed");
+            return;
+        }
+
         this.Trace("start, dispose subscriptions");
         await Task.WhenAll(_subscriptions.Values.Select(async x =>
         {
-            x.Item1.Cancel();
-            await x.Item2.WhenCompleted(Logger);
+            x.Cts.Cancel();
+            await x.Observable.WhenCompleted(Logger);
         }));
+
         this.Trace("dispose disposable box");
         await _disposable.DisposeAsync();
+
+        this.Trace("handle disposal in inherited class");
+        await HandleDisposeAsync();
+
+        _isDisposed = true;
+
         this.Trace("done");
     }
+
+    protected abstract ValueTask HandleDisposeAsync();
 
     private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
         TRequest request,
@@ -353,9 +264,9 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
         where T : AbstractRequestBase
     {
         this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
-        var result = await Socket.SendBinaryAsync(_serializer.Serialize(request), CancellationToken.None);
+        var result = await _connection.SendAsync(_serializer.Serialize(request), CancellationToken.None);
 
-        return result is WebSocketSendStatus.Ok;
+        return result is ConnectionSendStatus.Ok;
     }
 
     private void CompleteResponse(ResponseBase response)
@@ -375,4 +286,6 @@ internal abstract class ClientBase<TSocket> : IClientBase, ILogSubject
     }
 
     private record struct RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
+
+    private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }

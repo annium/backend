@@ -8,7 +8,7 @@ using Annium.Mesh.Domain.Responses;
 
 namespace Annium.Mesh.Client;
 
-public interface IClientBase : IAsyncDisposable
+public interface IClientBase
 {
     // broadcast
     IObservable<TNotification> Listen<TNotification>()
