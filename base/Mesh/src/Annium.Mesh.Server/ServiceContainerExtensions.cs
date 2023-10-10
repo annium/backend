@@ -16,10 +16,7 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddWebSocketServer<TState>(
-        this IServiceContainer container,
-        Action<IServiceProvider, ServerConfiguration> configure
-    )
+    public static IServiceContainer AddMeshServer<TState>(this IServiceContainer container)
         where TState : ConnectionStateBase
     {
         // public
@@ -32,12 +29,6 @@ public static class ServiceContainerExtensions
             return state;
         }).AsSelf().Singleton();
         container.Add<TState>().AsSelf().Transient();
-        container.Add(sp =>
-        {
-            var cfg = new ServerConfiguration();
-            configure(sp, cfg);
-            return cfg;
-        }).AsSelf().Singleton();
 
         // internal
         container.Add<ServerLifetime>().AsInterfaces().Singleton();

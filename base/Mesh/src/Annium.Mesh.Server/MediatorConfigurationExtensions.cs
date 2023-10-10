@@ -15,7 +15,7 @@ namespace Annium.Mesh.Server;
 
 public static class MediatorConfigurationExtensions
 {
-    public static MediatorConfiguration AddWebSocketServerHandlers(
+    public static MediatorConfiguration AddMeshServerHandlers(
         this MediatorConfiguration cfg,
         ITypeManager tm
     )

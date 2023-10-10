@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Server.Models;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 
 // ReSharper disable AccessToDisposedClosure
 
@@ -36,17 +36,17 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
         broadcastCoordinator.Start();
     }
 
-    public async Task HandleAsync(IServerWebSocket socket)
+    public async Task HandleAsync(IServerConnection connection)
     {
-        using var cn = _connectionTracker.Track(socket);
-        this.Trace<string>("Start for {connectionId}", cn.GetFullId());
+        _connectionTracker.Track(connection);
+        this.Trace("Start for {connectionId}", connection.Id);
 
         await using var scope = _sp.CreateAsyncScope();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
 
-        socket.OnDisconnected += status =>
+        connection.OnDisconnected += status =>
         {
-            this.Trace("Notify lost {connectionId} - {status}", cn.GetFullId(), status);
+            this.Trace("Notify lost {connectionId} - {status}", connection.Id, status);
             // for case, when server stops, thus cancellation occurs before connection is lost
             if (!cts.IsCancellationRequested)
                 cts.Cancel();
@@ -54,16 +54,17 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
 
         try
         {
-            await using var handler = _handlerFactory.Create(scope.ServiceProvider, cn);
+            await using var handler = _handlerFactory.Create(scope.ServiceProvider, connection);
             await handler.HandleAsync(cts.Token);
         }
         finally
         {
-            this.Trace<string>("Release complete {connectionId}", cn.GetFullId());
-            await _connectionTracker.Release(cn.Id);
+            this.Trace("Release complete {connectionId}", connection.Id);
+            await _connectionTracker.Release(connection.Id);
+            connection.Disconnect();
         }
 
-        this.Trace<string>("End for {connectionId}", cn.GetFullId());
+        this.Trace("End for {connectionId}", connection.Id);
     }
 
     public void Shutdown()

@@ -1,11 +1,11 @@
 using System.Threading.Tasks;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server;
 
 public interface ICoordinator
 {
-    Task HandleAsync(IServerWebSocket socket);
+    Task HandleAsync(IServerConnection connection);
 
     void Shutdown();
 }

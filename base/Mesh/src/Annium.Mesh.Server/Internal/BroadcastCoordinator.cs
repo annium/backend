@@ -66,10 +66,11 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
 
     private void Broadcast(object message)
     {
-        var connections = _connectionTracker.Slice();
+        var connections = _connectionTracker.GetSendingConnections();
         if (connections.Count == 0)
             return;
+
         var data = _serializer.Serialize(message);
-        Task.WhenAll(connections.Select(async x => await x.Socket.SendBinaryAsync(data)));
+        Task.WhenAll(connections.Select(async x => await x.SendAsync(data)));
     }
 }

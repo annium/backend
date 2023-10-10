@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <PackageId>Annium.Mesh.Server</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
@@ -13,10 +13,11 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Domain/Annium.Mesh.Domain.csproj" />
+        <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Data.Operations.Serialization.Json" Version="0.1.0" />
-        <PackageReference Include="Annium.Net.WebSockets" Version="0.1.0" />
+        <PackageReference Include="Annium.Extensions.Execution" Version="0.1.0" />
         <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
     </ItemGroup>
 </Project>

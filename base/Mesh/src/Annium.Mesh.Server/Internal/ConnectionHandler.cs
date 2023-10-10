@@ -11,7 +11,7 @@ using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
@@ -21,7 +21,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
-    private readonly Connection _cn;
+    private readonly IServerConnection _cn;
     private readonly Serializer _serializer;
     private readonly TState _state;
 
@@ -29,7 +29,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         IServiceProvider sp,
         Func<Guid, TState> stateFactory,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
-        Connection cn,
+        IServerConnection cn,
         Serializer serializer,
         ILogger logger
     )
@@ -62,29 +62,28 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
                 tcs.TrySetResult();
             });
 
-            // use derived cts for socket subscription
+            // use derived cts for connection subscription
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
             // start listening to messages and adding them to scheduler
             this.Trace("cn {connectionId} - init subscription", cnId);
-            _cn.Socket
-                .ObserveBinary()
-                .Subscribe(HandleMessage,
-                    e =>
-                    {
-                        this.Trace("cn {connectionId} - handle error", cnId);
-                        cts.Cancel();
-                        this.Error(e);
-                        this.Trace("cn {connectionId} - complete tcs due to error", cnId);
-                        tcs.TrySetResult();
-                    },
-                    () =>
-                    {
-                        this.Trace("cn {connectionId} - complete tcs due to socket closed", cnId);
-                        tcs.TrySetResult();
-                    },
-                    cts.Token
-                );
+            _cn.Observe().Subscribe(
+                HandleMessage,
+                e =>
+                {
+                    this.Trace("cn {connectionId} - handle error", cnId);
+                    cts.Cancel();
+                    this.Error(e);
+                    this.Trace("cn {connectionId} - complete tcs due to error", cnId);
+                    tcs.TrySetResult();
+                },
+                () =>
+                {
+                    this.Trace("cn {connectionId} - complete tcs due to connection closed", cnId);
+                    tcs.TrySetResult();
+                },
+                cts.Token
+            );
 
             // execute start hook
             this.Trace("cn {connectionId} - handle lifecycle start - start", cnId);
@@ -93,7 +92,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
 
             // notify client, that connection is ready
             this.Trace("cn {connectionId} - notify connection ready", cnId);
-            await _cn.Socket.SendBinaryAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
+            await _cn.SendAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
 
             // execute run hook
             this.Trace("cn {connectionId} - push handlers start - start", cnId);
@@ -145,7 +144,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
                 this.Trace("cn {connectionId} - handle {requestType}#{requestId}", cnId, request.Tid, request.Rid);
                 await using var messageScope = _sp.CreateAsyncScope();
                 var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
-                await handler.HandleMessage(_cn.Socket, _state, request);
+                await handler.HandleMessage(_cn, _state, request);
             });
         }
     }

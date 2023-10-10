@@ -41,7 +41,7 @@ internal class PushMessageHandler<T> :
         try
         {
             this.Trace("cn {connectionId} - start send", request.ConnectionId);
-            var status = await cnRef.Value.Socket.SendBinaryAsync(_serializer.Serialize(request.Message), ct);
+            var status = await cnRef.Value.SendAsync(_serializer.Serialize(request.Message), ct);
             this.Trace("cn {connectionId} - send status - {status}", request.ConnectionId, status);
         }
         finally

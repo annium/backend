@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Logging;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
@@ -27,29 +28,31 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         _lifetime.Stopping.Register(TryStop);
     }
 
-    public Connection Track(IServerWebSocket socket)
+    public void Track(IServerConnection connection)
     {
+        this.Trace("cn {connectionId} - start", connection.Id);
+
         EnsureNotDisposing();
 
         if (_lifetime.Stopping.IsCancellationRequested)
             throw new InvalidOperationException("Server is already stopping");
 
-        var cn = new Connection(Guid.NewGuid(), socket, Logger);
-        this.Trace("cn {connectionId} - start", cn.Id);
         lock (_connections)
-            _connections[cn.Id] = new ConnectionRef(cn, Logger);
+            _connections[connection.Id] = new ConnectionRef(connection, Logger);
 
-        this.Trace("cn {connectionId} - done", cn.Id);
-        return cn;
+        this.Trace("cn {connectionId} - done", connection.Id);
     }
 
-    public bool TryGet(Guid id, out IDisposableReference<Connection> cn)
+    public bool TryGet(
+        Guid id,
+        [NotNullWhen(true)] out IDisposableReference<ISendingReceivingConnection>? connectionRef
+    )
     {
         // not available, if already disposing
         if (_isDisposing)
         {
             this.Trace("cn {connectionId} - unavailable, is disposing", id);
-            cn = null!;
+            connectionRef = null;
             return false;
         }
 
@@ -58,19 +61,19 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             if (!_connections.TryGetValue(id, out var cnRef))
             {
                 this.Trace("cn {connectionId} - missing", id);
-                cn = null!;
+                connectionRef = null;
                 return false;
             }
 
             cnRef.Acquire();
-            cn = Disposable.Reference(cnRef.Connection, () =>
+            connectionRef = Disposable.Reference(cnRef.Connection, () =>
             {
                 cnRef.Release(_isDisposing);
                 return Task.CompletedTask;
             });
-        }
 
-        return true;
+            return true;
+        }
     }
 
     public async Task Release(Guid id)
@@ -89,20 +92,23 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             }
         }
 
-        var cn = cnRef.Connection;
+        var connection = cnRef.Connection;
+        this.Trace("cn {connectionId} - try dispose", connection.Id);
         cnRef.TryDispose();
 
-        this.Trace("cn {connectionId} - wait until can be released", cn.Id);
+        this.Trace("cn {connectionId} - wait until can be released", connection.Id);
         await cnRef.CanBeReleased;
 
-        this.Trace("cn {connectionId} - dispose", cn.Id);
-
         if (_lifetime.Stopping.IsCancellationRequested)
+        {
+            this.Trace("cn {connectionId} - try stop", connection.Id);
             TryStop();
-        this.Trace("cn {connectionId} - done", cn.Id);
+        }
+
+        this.Trace("cn {connectionId} - done", connection.Id);
     }
 
-    public IReadOnlyCollection<Connection> Slice()
+    public IReadOnlyCollection<ISendingConnection> GetSendingConnections()
     {
         lock (_connections)
             return _connections.Values.Select(x => x.Connection).ToArray();
@@ -143,7 +149,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     }
 
     private sealed record ConnectionRef(
-        Connection Connection,
+        IServerConnection Connection,
         ILogger Logger
     ) : ILogSubject
     {

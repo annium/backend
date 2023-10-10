@@ -4,6 +4,7 @@ using Annium.Logging;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
+using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
@@ -28,7 +29,7 @@ internal class ConnectionHandlerFactory<TState>
         _logger = logger;
     }
 
-    public ConnectionHandler<TState> Create(IServiceProvider sp, Connection connection)
+    public ConnectionHandler<TState> Create(IServiceProvider sp, IServerConnection connection)
     {
         return new(
             sp,

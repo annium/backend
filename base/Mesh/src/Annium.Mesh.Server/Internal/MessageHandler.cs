@@ -8,7 +8,7 @@ using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Responses;
 using Annium.Mesh.Server.Internal.Serialization;
 using Annium.Mesh.Server.Models;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
@@ -33,10 +33,10 @@ internal class MessageHandler<TState> : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingWebSocket socket, TState state, AbstractRequestBase request)
+    public async Task HandleMessage(ISendingConnection connection, TState state, AbstractRequestBase request)
     {
         var response = await ProcessRequest(state, request);
-        await SendResponse(socket, response);
+        await SendResponse(connection, response);
 
         // TODO: implementation. Request/response streams should rely on modified IMediator implementation
         // request (and it's chunks, and error!) is sent via IMediator
@@ -73,27 +73,27 @@ internal class MessageHandler<TState> : ILogSubject
         }
     }
 
-    private async Task SendResponse(ISendingWebSocket socket, AbstractResponseBase response)
+    private async Task SendResponse(ISendingConnection connection, AbstractResponseBase response)
     {
         switch (response)
         {
             case IVoidResponse:
                 break;
             case IMetaResponse meta:
-                await SendInternal(socket, meta.Response);
+                await SendInternal(connection, meta.Response);
                 break;
             default:
-                await SendInternal(socket, response);
+                await SendInternal(connection, response);
                 break;
         }
     }
 
-    private async Task SendInternal(ISendingWebSocket socket, AbstractResponseBase response)
+    private async Task SendInternal(ISendingConnection connection, AbstractResponseBase response)
     {
         try
         {
             this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBase res ? res.Rid : Guid.Empty);
-            await socket.SendBinaryAsync(_serializer.Serialize(response));
+            await connection.SendAsync(_serializer.Serialize(response));
         }
         catch (Exception e)
         {
