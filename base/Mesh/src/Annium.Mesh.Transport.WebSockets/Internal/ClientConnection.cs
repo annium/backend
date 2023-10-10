@@ -9,11 +9,12 @@ namespace Annium.Mesh.Transport.WebSockets.Internal;
 
 internal sealed class ClientConnection : IClientConnection, ILogSubject
 {
+    public ILogger Logger { get; }
+    public Guid Id { get; } = Guid.NewGuid();
     public event Action OnConnected = delegate { };
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
-    public ILogger Logger { get; }
     private readonly IClientWebSocket _socket;
     private readonly Uri _uri;
 

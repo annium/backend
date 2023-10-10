@@ -1,7 +1,5 @@
 using System;
-using System.Net.WebSockets;
 using Annium.Core.DependencyInjection;
-using Annium.Mesh.Transport.Abstractions;
 using Annium.Mesh.Transport.WebSockets.Internal;
 
 namespace Annium.Mesh.Transport.WebSockets;
@@ -13,7 +11,7 @@ public static class ServiceContainerExtensions
         Func<IServiceProvider, ServerTransportConfiguration> getConfiguration
     )
     {
-        container.Add<IServerConnectionFactory<WebSocket>, ServerConnectionFactory>().Singleton();
+        container.Add<ServerConnectionFactory>().AsInterfaces().Singleton();
         container.Add(getConfiguration).AsSelf().Singleton();
 
         return container;
@@ -24,7 +22,7 @@ public static class ServiceContainerExtensions
         Func<IServiceProvider, ClientTransportConfiguration> getConfiguration
     )
     {
-        container.Add<IClientConnectionFactory, ClientConnectionFactory>().Singleton();
+        container.Add<ClientConnectionFactory>().AsInterfaces().Singleton();
         container.Add(getConfiguration).AsSelf().Singleton();
 
         return container;

@@ -1,11 +1,5 @@
-using System;
-
 namespace Annium.Mesh.Transport.Abstractions;
 
-public interface IServerConnection : ISendingReceivingConnection
+public interface IServerConnection : IManagedConnection
 {
-    Guid Id { get; }
-    event Action<ConnectionCloseStatus> OnDisconnected;
-    event Action<Exception> OnError;
-    void Disconnect();
 }
