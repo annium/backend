@@ -25,7 +25,7 @@ public class WebSocketPerfTest : IntegrationTestBase
     {
     }
 
-    private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
+    private Task<TestServerManagedClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerManagedClient>("/ws");
 
     [Theory]
     [MemberData(nameof(GetRange))]
@@ -183,7 +183,7 @@ public class WebSocketPerfTest : IntegrationTestBase
         this.Trace("start {index}", index);
 
         this.Trace("get client");
-        var client = await AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
+        var client = await GetClient();
 
         this.Trace("dispose client");
         await client.DisposeAsync();

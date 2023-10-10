@@ -9,7 +9,7 @@ builder.Logging.ConfigureLoggingBridge();
 var app = builder.Build();
 
 app.UseExceptionMiddleware();
-app.UseWebSocketsServer();
+app.UseMeshWebSocketsMiddleware();
 app.UseRouting();
 app.UseCorsDefaults();
 app.MapControllers();

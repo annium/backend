@@ -50,8 +50,8 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
         // delay before returning socket to let server init ReceiveAsync
         await Task.Delay(50);
 
-        var clientFactory = Resolve<Func<WebSocket, TWebSocketClient>>();
-        var client = clientFactory(ws);
+        var clientFactory = Resolve<Func<WebSocket, Task<TWebSocketClient>>>();
+        var client = await clientFactory(ws);
         _disposable += client;
 
         return client;

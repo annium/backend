@@ -1,51 +1,52 @@
 using System;
 using System.Net;
 using System.Net.Mime;
+using System.Net.WebSockets;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Server;
-using Annium.Net.WebSockets;
+using Annium.Mesh.Transport.Abstractions;
 using Annium.Serialization.Abstractions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
-namespace Annium.AspNetCore.WebSockets.Internal.Middleware;
+namespace Annium.AspNetCore.Mesh.Internal.Middleware;
 
-internal class WebSocketsMiddleware : ILogSubject
+internal class WebSocketsMiddleware : IMiddleware, ILogSubject
 {
     public ILogger Logger { get; }
-    private readonly RequestDelegate _next;
+    private readonly IServerConnectionFactory<WebSocket> _connectionFactory;
     private readonly ICoordinator _coordinator;
-    private readonly ServerConfiguration _cfg;
+    private readonly WebSocketsMiddlewareConfiguration _config;
     private readonly Helper _helper;
 
     public WebSocketsMiddleware(
-        RequestDelegate next,
+        IServerConnectionFactory<WebSocket> connectionFactory,
         ICoordinator coordinator,
-        ServerConfiguration cfg,
+        WebSocketsMiddlewareConfiguration config,
         IHostApplicationLifetime applicationLifetime,
         IIndex<SerializerKey, ISerializer<string>> serializers,
         ILogger logger
     )
     {
-        _next = next;
-        _coordinator = coordinator;
-        _cfg = cfg;
-        applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
         Logger = logger;
+        _connectionFactory = connectionFactory;
+        _coordinator = coordinator;
+        _config = config;
+        applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
         _helper = new Helper(
             serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
             MediaTypeNames.Application.Json
         );
     }
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        if (!context.Request.Path.StartsWithSegments(_cfg.PathMatch))
+        if (!context.Request.Path.StartsWithSegments(_config.PathMatch))
         {
-            await _next(context);
+            await next(context);
             return;
         }
 
@@ -62,11 +63,13 @@ internal class WebSocketsMiddleware : ILogSubject
         try
         {
             this.Trace("accept");
-            var rawSocket = await context.WebSockets.AcceptWebSocketAsync();
-            this.Trace("create socket");
-            var socket = new ServerWebSocket(rawSocket, _cfg.WebSocketOptions, Logger);
+            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+
+            this.Trace("create connection");
+            var connection = await _connectionFactory.CreateAsync(webSocket);
+
             this.Trace("handle");
-            await _coordinator.HandleAsync(socket);
+            await _coordinator.HandleAsync(connection);
         }
         catch (Exception ex)
         {

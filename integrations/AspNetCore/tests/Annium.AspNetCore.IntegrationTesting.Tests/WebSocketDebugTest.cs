@@ -22,7 +22,7 @@ public class WebSocketDebugTest : IntegrationTestBase
     {
     }
 
-    private Task<TestServerTestClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerTestClient>("/ws");
+    private Task<TestServerManagedClient> GetClient() => AppFactory.GetWebSocketClientAsync<TestServerManagedClient>("/ws");
 
     [Fact]
     public async Task DebugRequestResponse_Works()
@@ -32,7 +32,7 @@ public class WebSocketDebugTest : IntegrationTestBase
         // arrange
         var message = "test message";
         this.Trace("get client");
-        await using var client = await GetClient();
+         await using var client = await GetClient();
 
         // act
         this.Trace("send request");

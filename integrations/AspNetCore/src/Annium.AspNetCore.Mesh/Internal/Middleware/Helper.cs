@@ -4,7 +4,7 @@ using Annium.Data.Operations;
 using Annium.Serialization.Abstractions;
 using Microsoft.AspNetCore.Http;
 
-namespace Annium.AspNetCore.WebSockets.Internal.Middleware;
+namespace Annium.AspNetCore.Mesh.Internal.Middleware;
 
 internal class Helper
 {

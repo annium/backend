@@ -5,27 +5,20 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests.WebSocketClient.Clients;
 
-public class TestServerClient : IAsyncDisposable
+public class TestServerManagedClient : IAsyncDisposable
 {
     public DemoClient Demo { get; }
-    public event Action OnConnected = delegate { };
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
-    private readonly IClient _client;
+    private readonly IManagedClient _client;
 
-    public TestServerClient(IClient client)
+    public TestServerManagedClient(IManagedClient client)
     {
         Demo = new DemoClient(client);
         _client = client;
         _client.OnDisconnected += status => OnDisconnected(status);
         _client.OnError += exception => OnError(exception);
     }
-
-    public Task ConnectAsync() =>
-        _client.ConnectAsync();
-
-    public void Disconnect() =>
-        _client.Disconnect();
 
     public ValueTask DisposeAsync() => _client.DisposeAsync();
 }

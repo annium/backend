@@ -14,7 +14,7 @@
     <ItemGroup>
         <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
         <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
-        <ProjectReference Include="../../src/Annium.AspNetCore.WebSockets/Annium.AspNetCore.WebSockets.csproj" />
+        <ProjectReference Include="../../src/Annium.AspNetCore.Mesh/Annium.AspNetCore.Mesh.csproj" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Architecture.CQRS" Version="0.1.0" />
