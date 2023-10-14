@@ -26,6 +26,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<Socket>
     {
         var serverSocketOptions = new ServerSocketOptions
         {
+            Mode = SocketMode.Messaging,
             ConnectionMonitor = _config.ConnectionMonitor,
         };
 

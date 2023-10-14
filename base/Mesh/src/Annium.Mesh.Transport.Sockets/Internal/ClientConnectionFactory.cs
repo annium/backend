@@ -26,6 +26,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
     {
         var clientSocketOptions = new ClientSocketOptions
         {
+            Mode = SocketMode.Messaging,
             ConnectionMonitor = _config.ConnectionMonitor,
             ReconnectDelay = _config.ReconnectDelay
         };
@@ -38,6 +39,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
     {
         var serverSocketOptions = new ServerSocketOptions
         {
+            Mode = SocketMode.Messaging,
             ConnectionMonitor = _config.ConnectionMonitor,
         };
 
