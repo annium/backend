@@ -1,5 +1,4 @@
 using System;
-using System.Net.WebSockets;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Transport.WebSockets;
 using Annium.Net.WebSockets;
