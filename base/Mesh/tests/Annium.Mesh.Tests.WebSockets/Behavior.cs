@@ -14,7 +14,7 @@ namespace Annium.Mesh.Tests.WebSockets;
 public class Behavior : IBehavior, ILogSubject
 {
     public ILogger Logger { get; }
-    private static int _basePort = 10000;
+    private static int _basePort = 20000;
 
     public static void Register(IServiceContainer container)
     {
