@@ -45,7 +45,7 @@ internal abstract class ClientBase : IClientBase, ILogSubject
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
-        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBase>);
+        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBase>).Publish().RefCount();
         _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
         _disposable += _responseObservable.OfType<ResponseBase>()
             .SubscribeOn(TaskPoolScheduler.Default)
@@ -127,11 +127,7 @@ internal abstract class ClientBase : IClientBase, ILogSubject
         _responseObservable
             .OfType<SubscriptionMessage<TMessage>>()
             .Where(x => x.SubscriptionId == subscriptionId)
-            .Select(x =>
-            {
-                this.Trace("GOT!: {x}", x.Message);
-                return x.Message;
-            })
+            .Select(x => x.Message)
             .WriteToChannel(channel.Writer, cts.Token);
 
         this.Trace("{type}#{subscriptionId} - init", type, subscriptionId);
