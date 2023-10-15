@@ -19,4 +19,19 @@ public static class ClientExtensions
             client.OnConnected -= HandleConnected;
         }
     }
+
+    public static Task WhenConnectedAsync(this IManagedClient client)
+    {
+        var tcs = new TaskCompletionSource();
+
+        client.OnConnected += HandleConnected;
+
+        return tcs.Task;
+
+        void HandleConnected()
+        {
+            tcs.SetResult();
+            client.OnConnected -= HandleConnected;
+        }
+    }
 }

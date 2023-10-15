@@ -1,7 +1,5 @@
 using System;
-using System.Threading.Tasks;
 using Annium.Logging;
-using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -13,7 +11,6 @@ internal class Client : ClientBase, IClient
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     private readonly IClientConnection _connection;
-    private readonly DisposableBox _disposable;
     private readonly object _locker = new();
     private bool _isConnected;
     private bool _isConnectionReady;
@@ -33,13 +30,9 @@ internal class Client : ClientBase, IClient
     )
     {
         _connection = connection;
-        _disposable = Disposable.Box(logger);
-
         _connection.OnConnected += HandleConnected;
         _connection.OnDisconnected += HandleDisconnected;
         _connection.OnError += HandleError;
-
-        _disposable += Listen<ConnectionReadyNotification>().Subscribe(HandleConnectionReady);
     }
 
     public void Connect()
@@ -56,19 +49,26 @@ internal class Client : ClientBase, IClient
         this.Trace("done");
     }
 
-    protected override ValueTask HandleDisposeAsync()
+    protected override void HandleDispose()
     {
-        this.Trace("start");
-
-        this.Trace("dispose disposable");
-        _disposable.Dispose();
-
         this.Trace("disconnect connection");
         _connection.Disconnect();
+    }
 
-        this.Trace("done");
+    protected override void HandleConnectionReady()
+    {
+        lock (_locker)
+        {
+            // if not connected - don't set flag
+            if (!_isConnected)
+                return;
 
-        return ValueTask.CompletedTask;
+            // set connection ready flag
+            _isConnectionReady = true;
+        }
+
+        // invoke event outside of lock
+        OnConnected();
     }
 
     private void HandleConnected()
@@ -81,22 +81,6 @@ internal class Client : ClientBase, IClient
             // if not connected - don't set flag
             if (!_isConnectionReady)
                 return;
-        }
-
-        // invoke event outside of lock
-        OnConnected();
-    }
-
-    private void HandleConnectionReady(ConnectionReadyNotification _)
-    {
-        lock (_locker)
-        {
-            // if not connected - don't set flag
-            if (!_isConnected)
-                return;
-
-            // set connection ready flag
-            _isConnectionReady = true;
         }
 
         // invoke event outside of lock

@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
@@ -8,6 +7,7 @@ namespace Annium.Mesh.Client.Internal;
 
 internal class ManagedClient : ClientBase, IManagedClient
 {
+    public event Action OnConnected = delegate { };
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     private readonly IManagedConnection _connection;
@@ -27,7 +27,6 @@ internal class ManagedClient : ClientBase, IManagedClient
     )
     {
         _connection = connection;
-
         _connection.OnDisconnected += HandleDisconnected;
         _connection.OnError += HandleError;
     }
@@ -39,16 +38,15 @@ internal class ManagedClient : ClientBase, IManagedClient
         this.Trace("done");
     }
 
-    protected override ValueTask HandleDisposeAsync()
+    protected override void HandleDispose()
     {
-        this.Trace("start");
-
         this.Trace("disconnect connection");
         _connection.Disconnect();
+    }
 
-        this.Trace("done");
-
-        return ValueTask.CompletedTask;
+    protected override void HandleConnectionReady()
+    {
+        OnConnected();
     }
 
     private void HandleDisconnected(ConnectionCloseStatus status)

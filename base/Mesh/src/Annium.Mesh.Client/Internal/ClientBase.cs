@@ -46,6 +46,7 @@ internal abstract class ClientBase : IClientBase, ILogSubject
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
         _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBase>);
+        _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
         _disposable += _responseObservable.OfType<ResponseBase>()
             .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe(CompleteResponse);
@@ -174,14 +175,15 @@ internal abstract class ClientBase : IClientBase, ILogSubject
         await _disposable.DisposeAsync();
 
         this.Trace("handle disposal in inherited class");
-        await HandleDisposeAsync();
+        HandleDispose();
 
         _isDisposed = true;
 
         this.Trace("done");
     }
 
-    protected abstract ValueTask HandleDisposeAsync();
+    protected abstract void HandleDispose();
+    protected abstract void HandleConnectionReady();
 
     private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
         TRequest request,
