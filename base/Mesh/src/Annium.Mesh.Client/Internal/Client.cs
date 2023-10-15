@@ -38,37 +38,72 @@ internal class Client : ClientBase, IClient
     public void Connect()
     {
         this.Trace("start");
+
         _connection.Connect();
+
+        lock (_locker)
+        {
+            _isConnected = true;
+            _isConnectionReady = false;
+        }
+
         this.Trace("done");
     }
 
     public void Disconnect()
     {
         this.Trace("start");
+
+        lock (_locker)
+        {
+            _isConnected = false;
+            _isConnectionReady = false;
+        }
+
         _connection.Disconnect();
+
         this.Trace("done");
     }
 
     protected override void HandleDispose()
     {
+        this.Trace("start");
+
+        lock (_locker)
+        {
+            _isConnected = false;
+            _isConnectionReady = false;
+        }
+
         this.Trace("disconnect connection");
         _connection.Disconnect();
+
+        this.Trace("done");
     }
 
     protected override void HandleConnectionReady()
     {
+        this.Trace("start");
+
         lock (_locker)
         {
-            // if not connected - don't set flag
-            if (!_isConnected)
-                return;
-
-            // set connection ready flag
+            // flag is set anyway (concurrency possible)
             _isConnectionReady = true;
+
+            // if not connected - don't fire event
+            if (!_isConnected)
+            {
+                this.Trace("not connected");
+
+                return;
+            }
         }
 
         // invoke event outside of lock
+        this.Trace("fire OnConnected");
         OnConnected();
+
+        this.Trace("done");
     }
 
     private void HandleConnected()
@@ -78,41 +113,52 @@ internal class Client : ClientBase, IClient
             // set connected flag
             _isConnected = true;
 
-            // if not connected - don't set flag
+            // if not connection ready - don't fire event
             if (!_isConnectionReady)
+            {
+                this.Trace("not connection ready");
+
                 return;
+            }
         }
 
         // invoke event outside of lock
+        this.Trace("fire OnConnected");
         OnConnected();
+
+        this.Trace("done");
     }
 
     private void HandleDisconnected(ConnectionCloseStatus status)
     {
+        this.Trace("start");
+
         lock (_locker)
         {
-            // set connected flag
             _isConnected = false;
-
-            // set connection ready flag
             _isConnectionReady = false;
         }
 
         // invoke event outside of lock
+        this.Trace("fire OnDisconnected: {status}", status);
         OnDisconnected(status);
+
+        this.Trace("done");
     }
 
     private void HandleError(Exception exception)
     {
+        this.Trace("start");
+
         lock (_locker)
         {
-            // set connected flag
             _isConnected = false;
-
-            // set connection ready flag
             _isConnectionReady = false;
         }
 
+        this.Trace("fire OnError: {error}", exception);
         OnError(exception);
+
+        this.Trace("done");
     }
 }

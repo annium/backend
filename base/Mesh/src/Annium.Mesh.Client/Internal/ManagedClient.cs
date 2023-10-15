@@ -34,28 +34,49 @@ internal class ManagedClient : ClientBase, IManagedClient
     public void Disconnect()
     {
         this.Trace("start");
+
         _connection.Disconnect();
+
         this.Trace("done");
     }
 
     protected override void HandleDispose()
     {
+        this.Trace("start");
+
         this.Trace("disconnect connection");
         _connection.Disconnect();
+
+        this.Trace("done");
     }
 
     protected override void HandleConnectionReady()
     {
+        this.Trace("start");
+
+        this.Trace("fire OnConnected");
         OnConnected();
+
+        this.Trace("done");
     }
 
     private void HandleDisconnected(ConnectionCloseStatus status)
     {
+        this.Trace("start");
+
+        this.Trace("fire OnDisconnected: {status}", status);
         OnDisconnected(status);
+
+        this.Trace("done");
     }
 
     private void HandleError(Exception exception)
     {
+        this.Trace("start");
+
+        this.Trace("fire OnError: {error}", exception);
         OnError(exception);
+
+        this.Trace("done");
     }
 }

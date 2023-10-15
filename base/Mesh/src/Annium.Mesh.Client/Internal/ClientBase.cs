@@ -17,7 +17,7 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
-internal abstract class ClientBase : IClientBase, ILogSubject
+internal abstract class ClientBase : IClientBase
 {
     public ILogger Logger { get; }
     private readonly ISendingReceivingConnection _connection;

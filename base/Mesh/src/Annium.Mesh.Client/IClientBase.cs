@@ -3,12 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
+using Annium.Logging;
 using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
 
 namespace Annium.Mesh.Client;
 
-public interface IClientBase
+public interface IClientBase : ILogSubject
 {
     // broadcast
     IObservable<TNotification> Listen<TNotification>()
