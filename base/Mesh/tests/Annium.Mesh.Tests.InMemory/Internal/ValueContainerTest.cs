@@ -10,7 +10,7 @@ using Xunit.Abstractions;
 
 // ReSharper disable UnusedType.Local
 
-namespace Annium.Mesh.Tests.Internal;
+namespace Annium.Mesh.Tests.InMemory.Internal;
 
 public class ValueContainerTest : TestBase
 {

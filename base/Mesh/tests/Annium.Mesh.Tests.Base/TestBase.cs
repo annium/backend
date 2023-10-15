@@ -9,7 +9,7 @@ using Annium.Mesh.Tests.System.Server;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Annium.Mesh.Tests.EndToEnd.Base;
+namespace Annium.Mesh.Tests.Base;
 
 public abstract class TestBase<TBehavior> : Testing.Lib.TestBase, IAsyncLifetime
     where TBehavior : IBehavior

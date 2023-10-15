@@ -10,7 +10,7 @@ using Annium.Testing;
 using Annium.Testing.Assertions;
 using Xunit.Abstractions;
 
-namespace Annium.Mesh.Tests.EndToEnd.Base;
+namespace Annium.Mesh.Tests.Base;
 
 public abstract class SubscriptionTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : IBehavior

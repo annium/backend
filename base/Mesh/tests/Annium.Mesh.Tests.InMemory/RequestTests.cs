@@ -1,10 +1,10 @@
 using System.Threading.Tasks;
 using Annium.Logging;
-using Annium.Mesh.Tests.EndToEnd.Base;
+using Annium.Mesh.Tests.Base;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Annium.Mesh.Tests.EndToEnd.InMemory;
+namespace Annium.Mesh.Tests.InMemory;
 
 public class RequestTests : RequestTestsBase<Behavior>
 {

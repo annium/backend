@@ -9,7 +9,7 @@ using Annium.Mesh.Tests.System.Domain;
 using Annium.Testing;
 using Xunit.Abstractions;
 
-namespace Annium.Mesh.Tests.EndToEnd.Base;
+namespace Annium.Mesh.Tests.Base;
 
 public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : IBehavior

@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Mesh.Tests</PackageId>
+        <PackageId>Annium.Mesh.Tests.InMemory</PackageId>
         <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Infrastructure.WebSockets.Tests</Description>
+        <Description>Annium.Mesh.Tests.InMemory</Description>
         <TargetFramework>net7.0</TargetFramework>
         <OutputType>Library</OutputType>
         <DebugType>portable</DebugType>
@@ -13,19 +13,11 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
         <ProjectReference Include="../../src/Annium.Mesh.Server.InMemory/Annium.Mesh.Server.InMemory.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Server.Sockets/Annium.Mesh.Server.Sockets.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.csproj" />
-        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
         <ProjectReference Include="../../src/Annium.Mesh.Transport.InMemory/Annium.Mesh.Transport.InMemory.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Transport.Sockets/Annium.Mesh.Transport.Sockets.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+        <ProjectReference Include="../Annium.Mesh.Tests.Base/Annium.Mesh.Tests.Base.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing.Lib" Version="0.1.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
         <PackageReference Include="xunit" Version="2.5.0" />

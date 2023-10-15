@@ -3,11 +3,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Server.InMemory;
-using Annium.Mesh.Tests.EndToEnd.Base;
+using Annium.Mesh.Tests.Base;
 using Annium.Mesh.Tests.System.Client;
 using Annium.Mesh.Tests.System.Client.Clients;
 
-namespace Annium.Mesh.Tests.EndToEnd.InMemory;
+namespace Annium.Mesh.Tests.InMemory;
 
 public class Behavior : IBehavior
 {

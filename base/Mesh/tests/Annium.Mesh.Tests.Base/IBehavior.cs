@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Tests.System.Client.Clients;
 
-namespace Annium.Mesh.Tests.EndToEnd.Base;
+namespace Annium.Mesh.Tests.Base;
 
 public interface IBehavior
 {

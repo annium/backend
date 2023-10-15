@@ -17,6 +17,7 @@ public class TestServerClient : IAsyncDisposable
     {
         Demo = new DemoClient(client);
         _client = client;
+        _client.OnConnected += () => OnConnected();
         _client.OnDisconnected += status => OnDisconnected(status);
         _client.OnError += exception => OnError(exception);
     }
