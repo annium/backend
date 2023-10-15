@@ -52,5 +52,11 @@ public abstract class TestBase<TBehavior> : Testing.Lib.TestBase, IAsyncLifetime
         await _serverTask;
     }
 
-    protected Task<TestServerManagedClient> GetClient() => _behavior.Value.GetClient();
+    protected async Task<TestServerClient> GetClient()
+    {
+        var client = Get<TestServerClient>();
+        await client.ConnectAsync();
+
+        return client;
+    }
 }

@@ -1,11 +1,9 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Server.InMemory;
 using Annium.Mesh.Tests.Base;
 using Annium.Mesh.Tests.System.Client;
-using Annium.Mesh.Tests.System.Client.Clients;
 
 namespace Annium.Mesh.Tests.InMemory;
 
@@ -16,30 +14,20 @@ public class Behavior : IBehavior
         container.AddMeshInMemoryTransport();
         container.AddMeshInMemoryServer();
 
-        container.AddTestServerManagedClient<None>(x => x.WithResponseTimeout(6000));
+        container.AddTestServerClient(x => x.WithResponseTimeout(6000));
     }
 
     private readonly IServer _server;
-    private readonly Func<None, Task<TestServerManagedClient>> _clientFactory;
 
     public Behavior(
-        IServer server,
-        Func<None, Task<TestServerManagedClient>> clientFactory
+        IServer server
     )
     {
         _server = server;
-        _clientFactory = clientFactory;
     }
 
     public async Task RunServer(CancellationToken ct)
     {
         await _server.RunAsync(ct);
-    }
-
-    public async Task<TestServerManagedClient> GetClient()
-    {
-        var client = await _clientFactory(None.Default);
-
-        return client;
     }
 }
