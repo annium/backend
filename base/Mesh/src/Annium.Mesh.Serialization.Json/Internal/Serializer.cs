@@ -11,11 +11,11 @@ internal class Serializer : ISerializer
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 
     public Serializer(
-        IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> binarySerializers
+        IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers
     )
     {
         var key = SerializerKey.CreateDefault(Constants.MediaType);
-        _serializer = binarySerializers[key];
+        _serializer = serializers[key];
     }
 
     public ReadOnlyMemory<byte> Serialize<T>(T value) => _serializer.Serialize(value);

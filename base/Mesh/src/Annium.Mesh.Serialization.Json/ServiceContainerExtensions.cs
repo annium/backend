@@ -12,4 +12,10 @@ public static class ServiceContainerExtensions
 
         return container;
     }
+    public static IServiceContainer AddMeshJsonDebugSerialization(this IServiceContainer container)
+    {
+        container.Add<ISerializer, DebugSerializer>().Singleton();
+
+        return container;
+    }
 }
