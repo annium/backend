@@ -40,36 +40,32 @@ internal class Channel
         OnDisconnected(side);
     }
 
-    public async ValueTask<ConnectionSendStatus> SendToServerAsync(ReadOnlyMemory<byte> data, CancellationToken ct)
+    public ValueTask<ConnectionSendStatus> SendToServerAsync(ReadOnlyMemory<byte> data, CancellationToken ct)
     {
-        await DelayAsync();
-
         if (ct.IsCancellationRequested)
-            return ConnectionSendStatus.Canceled;
+            return ValueTask.FromResult(ConnectionSendStatus.Canceled);
 
         lock (_locker)
             if (!_isConnected)
-                return ConnectionSendStatus.Closed;
+                return ValueTask.FromResult(ConnectionSendStatus.Closed);
 
         OnServerReceived(data);
 
-        return ConnectionSendStatus.Ok;
+        return ValueTask.FromResult(ConnectionSendStatus.Ok);
     }
 
-    public async ValueTask<ConnectionSendStatus> SendToClientAsync(ReadOnlyMemory<byte> data, CancellationToken ct)
+    public ValueTask<ConnectionSendStatus> SendToClientAsync(ReadOnlyMemory<byte> data, CancellationToken ct)
     {
-        await DelayAsync();
-
         if (ct.IsCancellationRequested)
-            return ConnectionSendStatus.Canceled;
+            return ValueTask.FromResult(ConnectionSendStatus.Canceled);
 
         lock (_locker)
             if (!_isConnected)
-                return ConnectionSendStatus.Closed;
+                return ValueTask.FromResult(ConnectionSendStatus.Closed);
 
         OnClientReceived(data);
 
-        return ConnectionSendStatus.Ok;
+        return ValueTask.FromResult(ConnectionSendStatus.Ok);
     }
 }
 
