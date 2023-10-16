@@ -17,7 +17,7 @@
         <ProjectReference Include="../Annium.AspNetCore.TestServer/Annium.AspNetCore.TestServer.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />
+        <PackageReference Include="Annium.Testing" Version="0.1.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
         <PackageReference Include="xunit" Version="2.5.0" />

@@ -21,6 +21,6 @@
         <PackageReference Include="Annium.Architecture.CQRS" Version="0.1.0" />
         <PackageReference Include="Annium.Logging.Microsoft" Version="0.1.0" />
         <PackageReference Include="Annium.Net.Http" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing.Lib" Version="0.1.0" />
+        <PackageReference Include="Annium.Testing" Version="0.1.0" />
     </ItemGroup>
 </Project>

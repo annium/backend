@@ -16,7 +16,6 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing.Lib" Version="0.1.0" />
+        <PackageReference Include="Annium.Testing" Version="0.1.0" />
     </ItemGroup>
 </Project>

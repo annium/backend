@@ -16,8 +16,7 @@
         <ProjectReference Include="../../src/Annium.Redis/Annium.Redis.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Testing.Assertions" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing.Lib" Version="0.1.0" />
+        <PackageReference Include="Annium.Testing" Version="0.1.0" />
         <PackageReference Include="coverlet.collector" Version="6.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
         <PackageReference Include="Testcontainers.Redis" Version="3.5.0" />

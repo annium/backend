@@ -14,7 +14,6 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Mesh.Server.InMemory/Annium.Mesh.Server.InMemory.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Transport.InMemory/Annium.Mesh.Transport.InMemory.csproj" />
         <ProjectReference Include="../Annium.Mesh.Tests.Base/Annium.Mesh.Tests.Base.csproj" />
     </ItemGroup>
     <ItemGroup>

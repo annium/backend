@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting.Internal;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
-using Annium.Testing.Lib;
+using Annium.Testing;
 using Microsoft.Extensions.Hosting;
 using Xunit.Abstractions;
 

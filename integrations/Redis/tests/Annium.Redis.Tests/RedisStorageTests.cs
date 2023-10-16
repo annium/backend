@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Testing;
-using Annium.Testing.Lib;
 using NodaTime;
 using Xunit;
 using Xunit.Abstractions;

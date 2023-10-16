@@ -6,12 +6,13 @@ using Annium.Mesh.Server;
 using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Tests.System.Domain;
 using Annium.Mesh.Tests.System.Server;
+using Annium.Testing;
 using Xunit;
 using Xunit.Abstractions;
 
 namespace Annium.Mesh.Tests.Base;
 
-public abstract class TestBase<TBehavior> : Testing.Lib.TestBase, IAsyncLifetime
+public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
     where TBehavior : IBehavior
 {
     private readonly Lazy<TBehavior> _behavior;

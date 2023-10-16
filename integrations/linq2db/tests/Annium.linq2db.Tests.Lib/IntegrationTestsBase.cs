@@ -6,7 +6,6 @@ using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;
-using Annium.Testing.Lib;
 using LinqToDB;
 using NodaTime;
 using Xunit.Abstractions;

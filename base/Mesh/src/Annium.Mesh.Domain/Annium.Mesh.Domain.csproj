@@ -13,5 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Architecture.Base" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.Runtime" Version="0.1.0" />
+        <PackageReference Include="Annium.Data.Operations" Version="0.1.0" />
     </ItemGroup>
 </Project>
