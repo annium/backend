@@ -28,6 +28,8 @@ public class DemoClient
         CancellationToken ct = default
     ) => _client.FetchAsync(request, defaultValue, ct);
 
+    public IObservable<CounterMessage> ListenCounter() => _client.Listen<CounterMessage>();
+
 
     public Task<IStatusResult<OperationStatus, IObservable<string>>> SubscribeFirstAsync(
         FirstSubscriptionInit init,
