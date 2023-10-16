@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Annium.Mesh.Server;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal;
 using Annium.Mesh.Server.Internal.Handlers;
 using Annium.Mesh.Server.Internal.Handlers.Subscriptions;
-using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Models;
-using Annium.Reflection;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;
@@ -24,7 +21,7 @@ public static class ServiceContainerExtensions
         {
             var state = sp.Resolve<TState>();
             state.SetConnectionId(cnId);
-            state.BindValues();
+
             return state;
         }).AsSelf().Singleton();
         container.Add<TState>().AsSelf().Transient();
@@ -48,9 +45,6 @@ public static class ServiceContainerExtensions
         // handlers
         container.AddBroadcasters();
         container.AddPushers<TState>();
-
-        // models
-        container.AddValueLoaders<TState>();
 
         return container;
     }
@@ -83,35 +77,6 @@ public static class ServiceContainerExtensions
             container.Add(typeof(PusherRunner<,>).MakeGenericType(messageType, typeof(TState)))
                 .As(typeof(IPusherRunner<TState>))
                 .Singleton();
-        }
-    }
-
-    private static void AddValueLoaders<TState>(this IServiceContainer container)
-        where TState : ConnectionStateBase
-    {
-        var loaderInterfaces = new HashSet<Type>();
-
-        RegisterContainersAndLoaders(typeof(IValueLoader<,,>), typeof(ValueContainer<,,,>));
-        RegisterContainersAndLoaders(typeof(IValueLoader<,>), typeof(ValueContainer<,,>));
-
-        void RegisterContainersAndLoaders(Type valueLoader, Type valueContainer)
-        {
-            var loaderTypes = container.GetTypeManager().GetImplementations(valueLoader);
-            foreach (var loaderType in loaderTypes)
-            {
-                var loaderInterface = loaderType.GetTargetImplementation(valueLoader)!;
-                if (!loaderInterfaces.Add(loaderInterface))
-                    throw new InvalidOperationException($"Loader {loaderInterface.FriendlyName()} is registered twice");
-
-                var loaderArguments = loaderInterface.GetGenericArguments();
-                if (loaderArguments[0] != typeof(TState))
-                    continue;
-                var valueContainerType = valueContainer
-                    .MakeGenericType(new[] { typeof(TState), loaderType }.Concat(loaderArguments.Skip(1)).ToArray());
-
-                container.Add(loaderType).AsInterfaces().Transient();
-                container.Add(valueContainerType).AsInterfaces().Transient();
-            }
         }
     }
 }
