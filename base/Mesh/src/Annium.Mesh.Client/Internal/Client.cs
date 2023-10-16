@@ -39,13 +39,13 @@ internal class Client : ClientBase, IClient
     {
         this.Trace("start");
 
-        _connection.Connect();
-
         lock (_locker)
         {
             _isConnected = true;
             _isConnectionReady = false;
         }
+
+        _connection.Connect();
 
         this.Trace("done");
     }
