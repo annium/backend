@@ -79,9 +79,6 @@ internal class MessageHandler<TState> : ILogSubject
         {
             case IVoidResponse:
                 break;
-            case IMetaResponse meta:
-                await SendInternal(connection, meta.Response);
-                break;
             default:
                 await SendInternal(connection, response);
                 break;

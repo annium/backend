@@ -11,7 +11,7 @@ namespace Annium.Mesh.Client;
 
 public interface IClientBase : ILogSubject
 {
-    // broadcast
+    // broadcast/push
     IObservable<TNotification> Listen<TNotification>()
         where TNotification : NotificationBase;
 
@@ -40,85 +40,7 @@ public interface IClientBase : ILogSubject
         CancellationToken ct = default
     );
 
-    // // request -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStream<TRequest, TResponseChunk>(
-    //     TRequest request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : RequestBase;
-    //
-    // // request -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponse, TResponseChunk>>> FetchStream<TRequest, TResponse,
-    //     TResponseChunk>(
-    //     TRequest request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : RequestBase;
-    //
-    // // request stream -> void
-    // Task<IStatusResult<OperationStatus>> SendAsync<TRequestChunk>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> void
-    // Task<IStatusResult<OperationStatus>> SendAsync<TRequest, TRequestChunk>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response
-    // Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequestChunk, TResponse>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response
-    // Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TRequest, TRequestChunk, TResponse>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStreamAsync<TRequestChunk, TResponseChunk>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStreamAsync<TRequestChunk, TResponse,
-    //     TResponseChunk>(
-    //     DataStream<TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponseChunk>>> FetchStreamAsync<TRequest, TRequestChunk,
-    //     TResponseChunk>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase;
-    //
-    // // request stream -> response stream
-    // Task<IStatusResult<OperationStatus, DataStream<TResponse, TRequestChunk>>> FetchStreamAsync<TRequest, TRequestChunk,
-    //     TResponse, TResponseChunk>(
-    //     DataStream<TRequest, TRequestChunk> request,
-    //     CancellationToken ct = default
-    // )
-    //     where TRequest : StreamHeadRequestBase
-    //     where TRequestChunk : StreamChunkRequestBase;
-
-    // init subscription
+    // subscription
     Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
         TInit request,
         CancellationToken ct = default
