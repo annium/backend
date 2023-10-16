@@ -1,2 +1,0 @@
-pub_endpoint: tcp://proxy:9998
-sub_endpoint: tcp://proxy:9999

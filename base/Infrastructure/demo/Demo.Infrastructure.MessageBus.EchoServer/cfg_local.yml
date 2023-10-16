@@ -1,2 +1,0 @@
-pub_endpoint: tcp://localhost:8998
-sub_endpoint: tcp://localhost:8999
