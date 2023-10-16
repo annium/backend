@@ -28,6 +28,10 @@ public class DemoClient
         CancellationToken ct = default
     ) => _client.FetchAsync(request, defaultValue, ct);
 
+    public void Analytics(
+        AnalyticEvent e
+    ) => _client.Notify(e);
+
     public IObservable<CounterMessage> ListenCounter() => _client.Listen<CounterMessage>();
 
 
