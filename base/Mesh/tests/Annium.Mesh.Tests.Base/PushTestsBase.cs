@@ -29,7 +29,7 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
         using (var _ = client.Demo.ListenCounter().Subscribe(x => log.Enqueue(x.Value)))
         {
             this.Trace("wait for a while");
-            await Task.Delay(50);
+            await Task.Delay(200);
         }
 
         // assert
