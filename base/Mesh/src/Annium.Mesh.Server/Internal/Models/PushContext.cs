@@ -12,12 +12,12 @@ namespace Annium.Mesh.Server.Internal.Models;
 internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
     where TMessage : NotificationBase
 {
+    public ILogger Logger { get; }
     private readonly CancellationToken _ct;
     private readonly IMediator _mediator;
     private readonly IServiceProvider _sp;
-    public ConnectionState State { get; }
-    public ILogger Logger { get; }
     private readonly IBackgroundExecutor _executor;
+    private readonly ConnectionState _state;
 
     public PushContext(
         ConnectionState state,
@@ -30,7 +30,7 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
         _ct = ct;
         _mediator = mediator;
         _sp = sp;
-        State = state;
+        _state = state;
         Logger = logger;
         _executor = Executor.Background.Sequential<PushContext<TMessage>>(logger);
         _executor.Start();
@@ -47,11 +47,11 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
 
     public async ValueTask DisposeAsync()
     {
-        this.Trace("connection {connectionId} - start", State.ConnectionId);
+        this.Trace("connection {connectionId} - start", _state.ConnectionId);
         await _executor.DisposeAsync();
-        this.Trace("connection {connectionId} - done", State.ConnectionId);
+        this.Trace("connection {connectionId} - done", _state.ConnectionId);
     }
 
     private void SendInternal<T>(T msg) =>
-        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None));
+        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
 }

@@ -85,7 +85,7 @@ internal class ConnectionHandler : ILogSubject
 
             // execute start hook
             this.Trace("cn {connectionId} - handle lifecycle start - start", cnId);
-            await lifeCycleCoordinator.StartAsync(_state);
+            await lifeCycleCoordinator.StartAsync();
             this.Trace("cn {connectionId} - handle lifecycle start - done", cnId);
 
             // notify client, that connection is ready
@@ -122,7 +122,7 @@ internal class ConnectionHandler : ILogSubject
 
             // execute end hook
             this.Trace("cn {connectionId} - handle lifecycle end - start", cnId);
-            await lifeCycleCoordinator.EndAsync(_state);
+            await lifeCycleCoordinator.EndAsync();
             this.Trace("cn {connectionId} - handle lifecycle end - done", cnId);
         }
 

@@ -5,6 +5,6 @@ namespace Annium.Mesh.Server.Handlers;
 
 public abstract class LifeCycleHandlerBase
 {
-    public virtual Task StartAsync(ConnectionState state) => Task.CompletedTask;
-    public virtual Task EndAsync(ConnectionState state) => Task.CompletedTask;
+    public virtual Task StartAsync() => Task.CompletedTask;
+    public virtual Task EndAsync() => Task.CompletedTask;
 }

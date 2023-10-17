@@ -2,7 +2,7 @@ using System;
 
 namespace Annium.Mesh.Server.Internal.Models;
 
-public sealed class ConnectionState
+internal class ConnectionState
 {
     public Guid ConnectionId { get; private set; }
 

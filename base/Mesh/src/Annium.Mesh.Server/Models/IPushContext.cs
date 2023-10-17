@@ -6,6 +6,5 @@ namespace Annium.Mesh.Server.Models;
 public interface IPushContext<TMessage>
     where TMessage : NotificationBase
 {
-    ConnectionState State { get; }
     void Send(TMessage message);
 }

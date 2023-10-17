@@ -20,19 +20,19 @@ internal class LifeCycleCoordinator : ILogSubject
         Logger = logger;
     }
 
-    public async Task StartAsync(ConnectionState state)
+    public async Task StartAsync()
     {
         this.Trace("start");
 
         foreach (var handler in _handlers)
-            await handler.StartAsync(state);
+            await handler.StartAsync();
     }
 
-    public async Task EndAsync(ConnectionState state)
+    public async Task EndAsync()
     {
         this.Trace("start");
 
         foreach (var handler in _handlers)
-            await handler.EndAsync(state);
+            await handler.EndAsync();
     }
 }
