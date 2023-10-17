@@ -8,7 +8,7 @@ using Annium.Mesh.Server.Internal.Models;
 namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class BroadcasterRunner<TMessage> : IBroadcasterRunner
-    where TMessage : NotificationBase
+    where TMessage : NotificationBaseObsolete
 {
     private readonly IBroadcaster<TMessage> _broadcaster;
 

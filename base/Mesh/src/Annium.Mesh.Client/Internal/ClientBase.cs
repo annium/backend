@@ -26,7 +26,7 @@ internal abstract class ClientBase : IClientBase
     private readonly DisposableBox _disposable;
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
     private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
-    private readonly IObservable<AbstractResponseBase> _responseObservable;
+    private readonly IObservable<AbstractResponseBaseObsolete> _responseObservable;
     private bool _isDisposed;
 
     protected ClientBase(
@@ -45,16 +45,16 @@ internal abstract class ClientBase : IClientBase
 
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
-        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBase>).Publish().RefCount();
-        _disposable += Listen<ConnectionReadyNotification>().Subscribe(_ => HandleConnectionReady());
-        _disposable += _responseObservable.OfType<ResponseBase>()
+        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBaseObsolete>).Publish().RefCount();
+        _disposable += Listen<ConnectionReadyNotificationObsolete>().Subscribe(_ => HandleConnectionReady());
+        _disposable += _responseObservable.OfType<ResponseBaseObsolete>()
             .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe(CompleteResponse);
     }
 
     // broadcast
     public IObservable<TNotification> Listen<TNotification>()
-        where TNotification : NotificationBase
+        where TNotification : NotificationBaseObsolete
     {
         return _responseObservable.OfType<TNotification>();
     }
@@ -63,14 +63,14 @@ internal abstract class ClientBase : IClientBase
     public void Notify<TEvent>(
         TEvent ev
     )
-        where TEvent : EventBase
+        where TEvent : EventBaseObsolete
     {
         Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
     }
 
     // request -> void
     public Task<IStatusResult<OperationStatus>> SendAsync(
-        RequestBase request,
+        RequestBaseObsolete request,
         CancellationToken ct = default
     )
     {
@@ -79,7 +79,7 @@ internal abstract class ClientBase : IClientBase
 
     // request -> response
     public Task<IStatusResult<OperationStatus, TData>> FetchAsync<TData>(
-        RequestBase request,
+        RequestBaseObsolete request,
         CancellationToken ct = default
     )
     {
@@ -88,7 +88,7 @@ internal abstract class ClientBase : IClientBase
 
     // request -> response with default value
     public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-        RequestBase request,
+        RequestBaseObsolete request,
         TResponse defaultValue,
         CancellationToken ct = default
     )
@@ -101,7 +101,7 @@ internal abstract class ClientBase : IClientBase
         TInit request,
         CancellationToken ct = default
     )
-        where TInit : SubscriptionInitRequestBase
+        where TInit : SubscriptionInitRequestBaseObsolete
     {
         var type = typeof(TInit).FriendlyName();
         var subscriptionId = request.Rid;
@@ -119,13 +119,13 @@ internal abstract class ClientBase : IClientBase
             }
 
             this.Trace("{type}#{subId} - unsubscribe on server", type, subscriptionId);
-            await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
+            await FetchInternal(SubscriptionCancelRequestObsolete.New(subscriptionId), CancellationToken.None);
             this.Trace("{type}#{subId} - unsubscribed on server", type, subscriptionId);
         }
 
         this.Trace("{type}#{subId} - create observable", type, subscriptionId);
         _responseObservable
-            .OfType<SubscriptionMessage<TMessage>>()
+            .OfType<SubscriptionMessageObsolete<TMessage>>()
             .Where(x => x.SubscriptionId == subscriptionId)
             .Select(x => x.Message)
             .WriteToChannel(channel.Writer, cts.Token);
@@ -185,9 +185,9 @@ internal abstract class ClientBase : IClientBase
         TRequest request,
         CancellationToken ct
     )
-        where TRequest : AbstractRequestBase // because Subscription controls also go here
+        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
     {
-        var (result, response) = await FetchRaw<TRequest, ResultResponse>(request, ct);
+        var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete>(request, ct);
 
         return response?.Result ?? result;
     }
@@ -197,9 +197,9 @@ internal abstract class ClientBase : IClientBase
         TData defaultValue,
         CancellationToken ct
     )
-        where TRequest : AbstractRequestBase // because Subscription controls also go here
+        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
     {
-        var (result, response) = await FetchRaw<TRequest, ResultResponse<TData>>(request, ct);
+        var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete<TData>>(request, ct);
 
         return response?.Result ?? Result.Status(result.Status, defaultValue).Join(result);
     }
@@ -208,10 +208,10 @@ internal abstract class ClientBase : IClientBase
         TRequest request,
         CancellationToken ct
     )
-        where TRequest : AbstractRequestBase // because Subscription controls also go here
-        where TResponse : ResponseBase
+        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
+        where TResponse : ResponseBaseObsolete
     {
-        var tcs = new TaskCompletionSource<ResponseBase>();
+        var tcs = new TaskCompletionSource<ResponseBaseObsolete>();
         var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
         // external token - operation canceled
         ct.Register(() =>
@@ -259,7 +259,7 @@ internal abstract class ClientBase : IClientBase
     }
 
     private async Task<bool> SendInternal<T>(T request)
-        where T : AbstractRequestBase
+        where T : AbstractRequestBaseObsolete
     {
         this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
         var result = await _connection.SendAsync(_serializer.Serialize(request), CancellationToken.None);
@@ -267,7 +267,7 @@ internal abstract class ClientBase : IClientBase
         return result is ConnectionSendStatus.Ok;
     }
 
-    private void CompleteResponse(ResponseBase response)
+    private void CompleteResponse(ResponseBaseObsolete response)
     {
         if (_requestFutures.Remove(response.Rid, out var future))
         {
@@ -283,7 +283,7 @@ internal abstract class ClientBase : IClientBase
             this.Trace("dismiss unknown response {responseType}#{responseId}", response.Tid, response.Rid);
     }
 
-    private record struct RequestFuture(TaskCompletionSource<ResponseBase> TaskSource, CancellationTokenSource CancellationSource);
+    private record struct RequestFuture(TaskCompletionSource<ResponseBaseObsolete> TaskSource, CancellationTokenSource CancellationSource);
 
     private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }

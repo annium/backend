@@ -38,7 +38,7 @@ public static class MediatorConfigurationExtensions
             tm,
             typeof(IRequestResponseHandler<,>),
             args => Arr(
-                (Context(args[0]), Generic(typeof(ResultResponse<>), args[1]))
+                (Context(args[0]), Generic(typeof(ResultResponseObsolete<>), args[1]))
             )
         );
 
@@ -48,7 +48,7 @@ public static class MediatorConfigurationExtensions
             tm,
             typeof(IRequestHandler<>),
             args => Arr(
-                (Context(args[0]), typeof(ResultResponse))
+                (Context(args[0]), typeof(ResultResponseObsolete))
             )
         );
     }
@@ -69,7 +69,7 @@ public static class MediatorConfigurationExtensions
             typeof(ISubscriptionHandler<,>),
             args => Arr(
                 (Context(args[0]), Generic(typeof(VoidResponse<>), args[1])),
-                (Context(typeof(SubscriptionCancelRequest)), typeof(ResultResponse))
+                (Context(typeof(SubscriptionCancelRequestObsolete)), typeof(ResultResponseObsolete))
             )
         );
     }
@@ -91,7 +91,7 @@ public static class MediatorConfigurationExtensions
             {
                 var matches = resolveMatch(implementation.GetGenericArguments());
                 foreach (var (requestedType, resolvedType) in matches)
-                    cfg.AddMatch(requestedType, typeof(AbstractResponseBase), resolvedType);
+                    cfg.AddMatch(requestedType, typeof(AbstractResponseBaseObsolete), resolvedType);
             }
         }
     }

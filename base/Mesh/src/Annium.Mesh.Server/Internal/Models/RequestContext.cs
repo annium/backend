@@ -6,7 +6,7 @@ namespace Annium.Mesh.Server.Internal.Models;
 
 internal static class RequestContext
 {
-    public static object CreateDynamic(Guid cid, AbstractRequestBase request)
+    public static object CreateDynamic(Guid cid, AbstractRequestBaseObsolete request)
     {
         var type = typeof(RequestContext<>).MakeGenericType(request.GetType());
 

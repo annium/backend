@@ -6,7 +6,7 @@ using Annium.Mesh.Server.Models;
 namespace Annium.Mesh.Server.Handlers;
 
 public interface IBroadcaster<TMessage>
-    where TMessage : NotificationBase
+    where TMessage : NotificationBaseObsolete
 {
     public Task Run(IBroadcastContext<TMessage> context, CancellationToken ct);
 }

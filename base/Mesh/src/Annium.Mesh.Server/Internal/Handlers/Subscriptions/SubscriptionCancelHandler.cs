@@ -13,8 +13,8 @@ namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 
 internal class SubscriptionCancelHandler :
     IFinalRequestHandler<
-        IRequestContext<SubscriptionCancelRequest>,
-        ResultResponse
+        IRequestContext<SubscriptionCancelRequestObsolete>,
+        ResultResponseObsolete
     >,
     ILogSubject
 {
@@ -30,8 +30,8 @@ internal class SubscriptionCancelHandler :
         Logger = logger;
     }
 
-    public Task<ResultResponse> HandleAsync(
-        IRequestContext<SubscriptionCancelRequest> ctx,
+    public Task<ResultResponseObsolete> HandleAsync(
+        IRequestContext<SubscriptionCancelRequestObsolete> ctx,
         CancellationToken ct
     )
     {

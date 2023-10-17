@@ -17,7 +17,7 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
     ISubscriptionContext<TInit, TMessage>,
     ISubscriptionContext,
     ILogSubject
-    where TInit : SubscriptionInitRequestBase
+    where TInit : SubscriptionInitRequestBaseObsolete
 {
     public Guid ConnectionId { get; }
     public Guid SubscriptionId { get; }
@@ -80,7 +80,7 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
             return;
         }
 
-        SendInternal(new SubscriptionMessage<TMessage>(SubscriptionId, message));
+        SendInternal(new SubscriptionMessageObsolete<TMessage>(SubscriptionId, message));
     }
 
     public void OnInit(Action handle)

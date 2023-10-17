@@ -17,7 +17,7 @@ internal class SubscriptionInitHandler<TInit, TMessage> :
         None,
         VoidResponse<TMessage>>,
     ILogSubject
-    where TInit : SubscriptionInitRequestBase
+    where TInit : SubscriptionInitRequestBaseObsolete
 {
     public ILogger Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;

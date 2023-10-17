@@ -10,7 +10,7 @@ using Annium.Mesh.Server.Internal.Models;
 namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class PusherRunner<TMessage> : IPusherRunner
-    where TMessage : NotificationBase
+    where TMessage : NotificationBaseObsolete
 {
     private readonly IPusher<TMessage> _pusher;
     private readonly IMediator _mediator;

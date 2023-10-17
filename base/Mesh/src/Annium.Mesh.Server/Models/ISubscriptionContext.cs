@@ -5,7 +5,7 @@ using Annium.Mesh.Domain.Requests;
 namespace Annium.Mesh.Server.Models;
 
 public interface ISubscriptionContext<TInit, TMessage> : IRequestContext<TInit>
-    where TInit : SubscriptionInitRequestBase
+    where TInit : SubscriptionInitRequestBaseObsolete
 {
     void Handle(IStatusResult<OperationStatus> result);
     void Send(TMessage message);

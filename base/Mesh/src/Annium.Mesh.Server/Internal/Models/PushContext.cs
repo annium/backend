@@ -10,7 +10,7 @@ using Annium.Mesh.Server.Models;
 namespace Annium.Mesh.Server.Internal.Models;
 
 internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
-    where TMessage : NotificationBase
+    where TMessage : NotificationBaseObsolete
 {
     public ILogger Logger { get; }
     private readonly CancellationToken _ct;

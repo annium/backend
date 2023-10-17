@@ -31,7 +31,7 @@ internal class MessageHandler : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingConnection connection, Guid cid, AbstractRequestBase request)
+    public async Task HandleMessage(ISendingConnection connection, Guid cid, AbstractRequestBaseObsolete request)
     {
         var response = await ProcessRequest(cid, request);
         await SendResponse(connection, response);
@@ -56,13 +56,13 @@ internal class MessageHandler : ILogSubject
         //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
     }
 
-    private async Task<AbstractResponseBase> ProcessRequest(Guid cid, AbstractRequestBase request)
+    private async Task<AbstractResponseBaseObsolete> ProcessRequest(Guid cid, AbstractRequestBaseObsolete request)
     {
         try
         {
             var context = RequestContext.CreateDynamic(cid, request);
             this.Trace<string, Guid, string>("Process request {requestType}#{requestId} with context {context}", request.Tid, request.Rid, context.GetFullId());
-            return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
+            return await _mediator.SendAsync<AbstractResponseBaseObsolete>(_sp, context);
         }
         catch (Exception e)
         {
@@ -71,7 +71,7 @@ internal class MessageHandler : ILogSubject
         }
     }
 
-    private async Task SendResponse(ISendingConnection connection, AbstractResponseBase response)
+    private async Task SendResponse(ISendingConnection connection, AbstractResponseBaseObsolete response)
     {
         switch (response)
         {
@@ -83,11 +83,11 @@ internal class MessageHandler : ILogSubject
         }
     }
 
-    private async Task SendInternal(ISendingConnection connection, AbstractResponseBase response)
+    private async Task SendInternal(ISendingConnection connection, AbstractResponseBaseObsolete response)
     {
         try
         {
-            this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBase res ? res.Rid : Guid.Empty);
+            this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBaseObsolete res ? res.Rid : Guid.Empty);
             await connection.SendAsync(_serializer.Serialize(response));
         }
         catch (Exception e)

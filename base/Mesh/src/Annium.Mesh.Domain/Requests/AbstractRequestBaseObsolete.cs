@@ -3,7 +3,8 @@ using Annium.Core.Runtime.Types;
 
 namespace Annium.Mesh.Domain.Requests;
 
-public abstract class AbstractRequestBase
+[Obsolete("Old messaging model")]
+public abstract class AbstractRequestBaseObsolete
 {
     public Guid Rid { get; set; } = Guid.NewGuid();
 

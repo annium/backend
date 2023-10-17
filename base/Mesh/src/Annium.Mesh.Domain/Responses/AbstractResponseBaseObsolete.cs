@@ -1,8 +1,10 @@
+using System;
 using Annium.Core.Runtime.Types;
 
 namespace Annium.Mesh.Domain.Responses;
 
-public abstract class AbstractResponseBase
+[Obsolete("Old messaging model")]
+public abstract class AbstractResponseBaseObsolete
 {
     [ResolutionId]
     public string Tid => GetType().GetIdString();

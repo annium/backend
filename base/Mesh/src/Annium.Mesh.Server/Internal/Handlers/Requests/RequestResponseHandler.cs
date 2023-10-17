@@ -12,10 +12,10 @@ using Annium.Mesh.Server.Models;
 namespace Annium.Mesh.Server.Internal.Handlers.Requests;
 
 internal class RequestResponseHandler<TRequest, TResponse> :
-    IPipeRequestHandler<IRequestContext<TRequest>, IRequestContext<TRequest>, IStatusResult<OperationStatus, TResponse>, ResultResponse<TResponse>>
-    where TRequest : RequestBase
+    IPipeRequestHandler<IRequestContext<TRequest>, IRequestContext<TRequest>, IStatusResult<OperationStatus, TResponse>, ResultResponseObsolete<TResponse>>
+    where TRequest : RequestBaseObsolete
 {
-    public async Task<ResultResponse<TResponse>> HandleAsync(
+    public async Task<ResultResponseObsolete<TResponse>> HandleAsync(
         IRequestContext<TRequest> request,
         CancellationToken ct,
         Func<IRequestContext<TRequest>, CancellationToken, Task<IStatusResult<OperationStatus, TResponse>>> next

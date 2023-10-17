@@ -7,10 +7,10 @@ namespace Annium.Mesh.Server.Internal.Responses;
 
 internal static class Response
 {
-    public static ResultResponse Result(Guid id, IStatusResult<OperationStatus> result) =>
+    public static ResultResponseObsolete Result(Guid id, IStatusResult<OperationStatus> result) =>
         new(id, result);
 
-    public static ResultResponse<T> Result<T>(Guid id, IStatusResult<OperationStatus, T> result) =>
+    public static ResultResponseObsolete<T> Result<T>(Guid id, IStatusResult<OperationStatus, T> result) =>
         new(id, result);
 
     public static VoidResponse<T> Void<T>() =>

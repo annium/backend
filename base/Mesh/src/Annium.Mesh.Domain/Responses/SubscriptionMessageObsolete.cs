@@ -2,12 +2,13 @@ using System;
 
 namespace Annium.Mesh.Domain.Responses;
 
-public sealed class SubscriptionMessage<T> : AbstractResponseBase
+[Obsolete("Old messaging model")]
+public sealed class SubscriptionMessageObsolete<T> : AbstractResponseBaseObsolete
 {
     public Guid SubscriptionId { get; }
     public T Message { get; }
 
-    public SubscriptionMessage(Guid subscriptionId, T message)
+    public SubscriptionMessageObsolete(Guid subscriptionId, T message)
     {
         SubscriptionId = subscriptionId;
         Message = message;

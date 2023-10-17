@@ -13,29 +13,29 @@ public interface IClientBase : ILogSubject
 {
     // broadcast/push
     IObservable<TNotification> Listen<TNotification>()
-        where TNotification : NotificationBase;
+        where TNotification : NotificationBaseObsolete;
 
     // event
     void Notify<TEvent>(
         TEvent ev
     )
-        where TEvent : EventBase;
+        where TEvent : EventBaseObsolete;
 
     // request -> void
     Task<IStatusResult<OperationStatus>> SendAsync(
-        RequestBase request,
+        RequestBaseObsolete request,
         CancellationToken ct = default
     );
 
     // request -> response
     Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-        RequestBase request,
+        RequestBaseObsolete request,
         CancellationToken ct = default
     );
 
     // request -> response with default value
     Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-        RequestBase request,
+        RequestBaseObsolete request,
         TResponse defaultValue,
         CancellationToken ct = default
     );
@@ -45,5 +45,5 @@ public interface IClientBase : ILogSubject
         TInit request,
         CancellationToken ct = default
     )
-        where TInit : SubscriptionInitRequestBase;
+        where TInit : SubscriptionInitRequestBaseObsolete;
 }

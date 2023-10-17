@@ -4,11 +4,12 @@ using Annium.Data.Operations;
 
 namespace Annium.Mesh.Domain.Responses;
 
-public sealed class ResultResponse : ResponseBase
+[Obsolete("Old messaging model")]
+public sealed class ResultResponseObsolete : ResponseBaseObsolete
 {
     public IStatusResult<OperationStatus> Result { get; }
 
-    public ResultResponse(
+    public ResultResponseObsolete(
         Guid rid,
         IStatusResult<OperationStatus> result
     ) : base(rid)

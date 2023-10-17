@@ -89,7 +89,7 @@ internal class ConnectionHandler : ILogSubject
 
             // notify client, that connection is ready
             this.Trace("cn {id} - notify connection ready", _cid);
-            await _cn.SendAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
+            await _cn.SendAsync(_serializer.Serialize(new ConnectionReadyNotificationObsolete()), cts.Token);
 
             // execute run hook
             this.Trace("cn {id} - push handlers start - start", _cid);
@@ -146,11 +146,11 @@ internal class ConnectionHandler : ILogSubject
         }
     }
 
-    private AbstractRequestBase? ParseRequest(ReadOnlyMemory<byte> msg)
+    private AbstractRequestBaseObsolete? ParseRequest(ReadOnlyMemory<byte> msg)
     {
         try
         {
-            return _serializer.Deserialize<AbstractRequestBase>(msg);
+            return _serializer.Deserialize<AbstractRequestBaseObsolete>(msg);
         }
         catch (Exception e)
         {

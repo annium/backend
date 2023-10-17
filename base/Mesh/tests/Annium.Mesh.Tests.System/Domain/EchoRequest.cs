@@ -2,7 +2,7 @@ using Annium.Mesh.Domain.Requests;
 
 namespace Annium.Mesh.Tests.System.Domain;
 
-public class EchoRequest : RequestBase
+public class EchoRequest : RequestBaseObsolete
 {
     public string Message { get; }
 

@@ -3,9 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace Annium.Mesh.Domain.Requests;
 
-public sealed class SubscriptionCancelRequest : AbstractRequestBase
+[Obsolete("Old messaging model")]
+public sealed class SubscriptionCancelRequestObsolete : AbstractRequestBaseObsolete
 {
-    public static SubscriptionCancelRequest New(Guid subscriptionId) => new()
+    public static SubscriptionCancelRequestObsolete New(Guid subscriptionId) => new()
     {
         SubscriptionId = subscriptionId
     };

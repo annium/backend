@@ -6,6 +6,6 @@ namespace Annium.Mesh.Server.Handlers;
 
 public interface IEventHandler<TEvent> :
     IFinalRequestHandler<IRequestContext<TEvent>, None>
-    where TEvent : EventBase
+    where TEvent : EventBaseObsolete
 {
 }

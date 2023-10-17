@@ -9,7 +9,7 @@ namespace Annium.Mesh.Server.Handlers;
 // request -> void
 public interface IRequestHandler<TRequest> :
     IFinalRequestHandler<IRequestContext<TRequest>, IStatusResult<OperationStatus>>
-    where TRequest : RequestBase
+    where TRequest : RequestBaseObsolete
 
 {
 }
@@ -17,6 +17,6 @@ public interface IRequestHandler<TRequest> :
 // request -> response
 public interface IRequestResponseHandler<TRequest, TResponse> :
     IFinalRequestHandler<IRequestContext<TRequest>, IStatusResult<OperationStatus, TResponse>>
-    where TRequest : RequestBase
+    where TRequest : RequestBaseObsolete
 {
 }
