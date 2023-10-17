@@ -106,7 +106,7 @@ internal abstract class ClientBase : IClientBase
         var type = typeof(TInit).FriendlyName();
         var subscriptionId = request.Rid;
 
-        this.Trace("{type}#{subscriptionId} - start, create observable", type, subscriptionId);
+        this.Trace("{type}#{subId} - start, create observable", type, subscriptionId);
         var channel = Channel.CreateUnbounded<TMessage>();
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
@@ -114,36 +114,36 @@ internal abstract class ClientBase : IClientBase
         {
             if (!_subscriptions.TryRemove(subscriptionId, out _))
             {
-                this.Trace("{type}#{subscriptionId} - skipped disposal of untracked subscription", type, subscriptionId);
+                this.Trace("{type}#{subId} - skipped disposal of untracked subscription", type, subscriptionId);
                 return;
             }
 
-            this.Trace("{type}#{subscriptionId} - unsubscribe on server", type, subscriptionId);
+            this.Trace("{type}#{subId} - unsubscribe on server", type, subscriptionId);
             await FetchInternal(SubscriptionCancelRequest.New(subscriptionId), CancellationToken.None);
-            this.Trace("{type}#{subscriptionId} - unsubscribed on server", type, subscriptionId);
+            this.Trace("{type}#{subId} - unsubscribed on server", type, subscriptionId);
         }
 
-        this.Trace("{type}#{subscriptionId} - create observable", type, subscriptionId);
+        this.Trace("{type}#{subId} - create observable", type, subscriptionId);
         _responseObservable
             .OfType<SubscriptionMessage<TMessage>>()
             .Where(x => x.SubscriptionId == subscriptionId)
             .Select(x => x.Message)
             .WriteToChannel(channel.Writer, cts.Token);
 
-        this.Trace("{type}#{subscriptionId} - init", type, subscriptionId);
+        this.Trace("{type}#{subId} - init", type, subscriptionId);
         var response = await FetchInternal(request, Guid.Empty, ct);
         if (response.HasErrors)
         {
-            this.Trace("{type}#{subscriptionId} - failed: {response}", type, subscriptionId, response);
+            this.Trace("{type}#{subId} - failed: {response}", type, subscriptionId, response);
             cts.Cancel();
             return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
         }
 
-        this.Trace("{type}#{subscriptionId} - subscribe", type, subscriptionId);
+        this.Trace("{type}#{subId} - subscribe", type, subscriptionId);
         var observable = ObservableExt.FromChannel(channel.Reader, OnDisposed)
             .ObserveOn(TaskPoolScheduler.Default);
 
-        this.Trace("{type}#{subscriptionId} - track observable", type, subscriptionId);
+        this.Trace("{type}#{subId} - track observable", type, subscriptionId);
         if (!_subscriptions.TryAdd(subscriptionId, new(cts, (IObservable<object>)observable)))
             throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
 

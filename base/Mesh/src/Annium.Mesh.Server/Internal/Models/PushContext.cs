@@ -17,10 +17,10 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
     private readonly IMediator _mediator;
     private readonly IServiceProvider _sp;
     private readonly IBackgroundExecutor _executor;
-    private readonly ConnectionState _state;
+    private readonly Guid _cid;
 
     public PushContext(
-        ConnectionState state,
+        Guid cid,
         CancellationToken ct,
         IMediator mediator,
         ILogger logger,
@@ -30,7 +30,7 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
         _ct = ct;
         _mediator = mediator;
         _sp = sp;
-        _state = state;
+        _cid = cid;
         Logger = logger;
         _executor = Executor.Background.Sequential<PushContext<TMessage>>(logger);
         _executor.Start();
@@ -47,11 +47,11 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
 
     public async ValueTask DisposeAsync()
     {
-        this.Trace("connection {connectionId} - start", _state.ConnectionId);
+        this.Trace("connection {id} - start", _cid);
         await _executor.DisposeAsync();
-        this.Trace("connection {connectionId} - done", _state.ConnectionId);
+        this.Trace("connection {id} - done", _cid);
     }
 
     private void SendInternal<T>(T msg) =>
-        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(_state.ConnectionId, msg), CancellationToken.None));
+        _executor.Schedule(() => _mediator.SendAsync<None>(_sp, PushMessage.New(_cid, msg), CancellationToken.None));
 }

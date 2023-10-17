@@ -33,9 +33,13 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
         }
 
         // assert
-        this.Trace("validate received messages");
+        this.Trace("get log snapshot");
         var logData = log.ToArray();
+
+        this.Trace("ensure snapshot has log entries");
         logData.Length.IsGreater(0);
+
+        this.Trace("ensure snapshot entries are ordered");
         logData.OrderBy(x => x).ToArray().IsEqual(logData);
 
         this.Trace("done");

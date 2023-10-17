@@ -26,17 +26,17 @@ internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
 
     public bool TryCancel(Guid subscriptionId)
     {
-        this.Trace("subscription {subscriptionId} - init", subscriptionId);
+        this.Trace("subscription {subId} - init", subscriptionId);
         lock (_contexts)
         {
             var context = _contexts.SingleOrDefault(x => x.SubscriptionId == subscriptionId);
             if (context is null)
             {
-                this.Trace("subscription {subscriptionId} - context missing", subscriptionId);
+                this.Trace("subscription {subId} - context missing", subscriptionId);
                 return false;
             }
 
-            this.Trace("subscription {subscriptionId} - cancel context", subscriptionId);
+            this.Trace("subscription {subId} - cancel context", subscriptionId);
             _contexts.Remove(context);
             context.Cancel();
 
@@ -46,16 +46,16 @@ internal class SubscriptionContextStore : IConnectionBoundStore, ILogSubject
 
     public Task Cleanup(Guid connectionId)
     {
-        this.Trace("cleanup {connectionId} subscriptions - start", connectionId);
+        this.Trace("cleanup {id} subscriptions - start", connectionId);
         lock (_contexts)
             foreach (var context in _contexts.Where(x => x.ConnectionId == connectionId).ToArray())
             {
-                this.Trace("cancel {subscriptionId} subscription", context.SubscriptionId);
+                this.Trace("cancel {subId} subscription", context.SubscriptionId);
                 _contexts.Remove(context);
                 context.Cancel();
             }
 
-        this.Trace("cleanup {connectionId} subscriptions - done", connectionId);
+        this.Trace("cleanup {id} subscriptions - done", connectionId);
 
         return Task.CompletedTask;
     }

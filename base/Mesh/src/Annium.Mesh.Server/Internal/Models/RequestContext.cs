@@ -6,34 +6,15 @@ namespace Annium.Mesh.Server.Internal.Models;
 
 internal static class RequestContext
 {
-    public static object CreateDynamic(AbstractRequestBase request, ConnectionState state)
+    public static object CreateDynamic(Guid cid, AbstractRequestBase request)
     {
         var type = typeof(RequestContext<>).MakeGenericType(request.GetType());
 
-        return Activator.CreateInstance(type, request, state)!;
+        return Activator.CreateInstance(type, cid, request)!;
     }
 }
 
-internal record RequestContext<TRequest> : IRequestContext<TRequest>
-{
-    public TRequest Request { get; }
-    public ConnectionState State { get; }
-
-    public RequestContext(
-        TRequest request,
-        ConnectionState state
-    )
-    {
-        Request = request;
-        State = state;
-    }
-
-    public void Deconstruct(
-        out TRequest request,
-        out ConnectionState state
-    )
-    {
-        request = Request;
-        state = State;
-    }
-}
+internal record RequestContext<TRequest>(
+    Guid ConnectionId,
+    TRequest Request
+) : IRequestContext<TRequest>;

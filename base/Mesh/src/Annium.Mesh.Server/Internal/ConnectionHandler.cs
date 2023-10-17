@@ -19,31 +19,30 @@ internal class ConnectionHandler : ILogSubject
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
+    private readonly Guid _cid;
     private readonly IServerConnection _cn;
     private readonly ISerializer _serializer;
-    private readonly ConnectionState _state;
 
     public ConnectionHandler(
         IServiceProvider sp,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
+        Guid cid,
         IServerConnection cn,
         ISerializer serializer,
         ILogger logger
     )
     {
+        Logger = logger;
         _sp = sp;
         _connectionBoundStores = connectionBoundStores;
+        _cid = cid;
         _cn = cn;
         _serializer = serializer;
-        Logger = logger;
-        _state = new ConnectionState();
-        _state.SetConnectionId(cn.Id);
     }
 
     public async Task HandleAsync(CancellationToken ct)
     {
-        var cnId = _cn.Id;
-        this.Trace("cn {connectionId} - start", cnId);
+        this.Trace("cn {id} - start", _cid);
         await using var scope = _sp.CreateAsyncScope();
         var executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
         var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator>();
@@ -51,12 +50,12 @@ internal class ConnectionHandler : ILogSubject
         try
         {
             var tcs = new TaskCompletionSource();
-            tcs.Task.ContinueWith(_ => this.Trace("cn {connectionId} - listen ended"), CancellationToken.None).GetAwaiter();
+            tcs.Task.ContinueWith(_ => this.Trace("cn {id} - listen ended"), CancellationToken.None).GetAwaiter();
 
             // immediately subscribe to cancellation
             ct.Register(() =>
             {
-                this.Trace("cn {connectionId} - complete tcs due to cancellation", cnId);
+                this.Trace("cn {id} - complete tcs due to cancellation", _cid);
                 tcs.TrySetResult();
             });
 
@@ -64,50 +63,50 @@ internal class ConnectionHandler : ILogSubject
             var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
 
             // start listening to messages and adding them to scheduler
-            this.Trace("cn {connectionId} - init subscription", cnId);
+            this.Trace("cn {id} - init subscription", _cid);
             _cn.Observe().Subscribe(
                 HandleMessage,
                 e =>
                 {
-                    this.Trace("cn {connectionId} - handle error", cnId);
+                    this.Trace("cn {id} - handle error", _cid);
                     cts.Cancel();
                     this.Error(e);
-                    this.Trace("cn {connectionId} - complete tcs due to error", cnId);
+                    this.Trace("cn {id} - complete tcs due to error", _cid);
                     tcs.TrySetResult();
                 },
                 () =>
                 {
-                    this.Trace("cn {connectionId} - complete tcs due to connection closed", cnId);
+                    this.Trace("cn {id} - complete tcs due to connection closed", _cid);
                     tcs.TrySetResult();
                 },
                 cts.Token
             );
 
             // execute start hook
-            this.Trace("cn {connectionId} - handle lifecycle start - start", cnId);
+            this.Trace("cn {id} - handle lifecycle start - start", _cid);
             await lifeCycleCoordinator.StartAsync();
-            this.Trace("cn {connectionId} - handle lifecycle start - done", cnId);
+            this.Trace("cn {id} - handle lifecycle start - done", _cid);
 
             // notify client, that connection is ready
-            this.Trace("cn {connectionId} - notify connection ready", cnId);
+            this.Trace("cn {id} - notify connection ready", _cid);
             await _cn.SendAsync(_serializer.Serialize(new ConnectionReadyNotification()), cts.Token);
 
             // execute run hook
-            this.Trace("cn {connectionId} - push handlers start - start", cnId);
-            var pusherTask = pusherCoordinator.RunAsync(_state, cts.Token);
-            pusherTask.ContinueWith(_ => this.Trace("cn {connectionId} - push ended"), CancellationToken.None).GetAwaiter();
-            this.Trace("cn {connectionId} - push handlers start - done", cnId);
+            this.Trace("cn {id} - push handlers start - start", _cid);
+            var pusherTask = pusherCoordinator.RunAsync(_cid, cts.Token);
+            pusherTask.ContinueWith(_ => this.Trace("cn {id} - push ended"), CancellationToken.None).GetAwaiter();
+            this.Trace("cn {id} - push handlers start - done", _cid);
 
             // start scheduler to process backlog and run upcoming work immediately
-            this.Trace("cn {connectionId} - start executor", cnId);
+            this.Trace("cn {id} - start executor", _cid);
             executor.Start(CancellationToken.None);
 
             // wait until connection complete
-            this.Trace("cn {connectionId} - wait until connection complete", cnId);
+            this.Trace("cn {id} - wait until connection complete", _cid);
             await Task.WhenAll(tcs.Task, pusherTask);
-            this.Trace("cn {connectionId} - cleanup connection-bound stores - start", cnId);
-            await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cn.Id)));
-            this.Trace("cn {connectionId} - cleanup connection-bound stores - done", cnId);
+            this.Trace("cn {id} - cleanup connection-bound stores - start", _cid);
+            await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cid)));
+            this.Trace("cn {id} - cleanup connection-bound stores - done", _cid);
         }
         catch (Exception e)
         {
@@ -116,14 +115,14 @@ internal class ConnectionHandler : ILogSubject
         finally
         {
             // all handlers must be complete before teardown lifecycle hook
-            this.Trace("cn {connectionId} - dispose executor - start", cnId);
+            this.Trace("cn {id} - dispose executor - start", _cid);
             await executor.DisposeAsync();
-            this.Trace("cn {connectionId} - dispose executor - done", cnId);
+            this.Trace("cn {id} - dispose executor - done", _cid);
 
             // execute end hook
-            this.Trace("cn {connectionId} - handle lifecycle end - start", cnId);
+            this.Trace("cn {id} - handle lifecycle end - start", _cid);
             await lifeCycleCoordinator.EndAsync();
-            this.Trace("cn {connectionId} - handle lifecycle end - done", cnId);
+            this.Trace("cn {id} - handle lifecycle end - done", _cid);
         }
 
         void HandleMessage(ReadOnlyMemory<byte> raw)
@@ -136,13 +135,13 @@ internal class ConnectionHandler : ILogSubject
                 return;
             }
 
-            this.Trace("cn {connectionId} - schedule {requestType}#{requestId}", cnId, request.Tid, request.Rid);
+            this.Trace("cn {id} - schedule {requestType}#{requestId}", _cid, request.Tid, request.Rid);
             executor.TrySchedule(async () =>
             {
-                this.Trace("cn {connectionId} - handle {requestType}#{requestId}", cnId, request.Tid, request.Rid);
+                this.Trace("cn {id} - handle {requestType}#{requestId}", _cid, request.Tid, request.Rid);
                 await using var messageScope = _sp.CreateAsyncScope();
                 var handler = messageScope.ServiceProvider.Resolve<MessageHandler>();
-                await handler.HandleMessage(_cn, _state, request);
+                await handler.HandleMessage(_cn, _cid, request);
             });
         }
     }

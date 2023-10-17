@@ -19,10 +19,9 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
     ILogSubject
     where TInit : SubscriptionInitRequestBase
 {
-    public TInit Request { get; }
-    public ConnectionState State { get; }
     public Guid ConnectionId { get; }
     public Guid SubscriptionId { get; }
+    public TInit Request { get; }
     public ILogger Logger { get; }
     private readonly CancellationTokenSource _cts;
     private readonly IMediator _mediator;
@@ -32,19 +31,18 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
     private readonly IBackgroundExecutor _executor;
 
     public SubscriptionContext(
-        TInit request,
-        ConnectionState state,
+        Guid connectionId,
         Guid subscriptionId,
+        TInit request,
         CancellationTokenSource cts,
         IMediator mediator,
         ILogger logger,
         IServiceProvider sp
     )
     {
-        Request = request;
-        State = state;
-        ConnectionId = state.ConnectionId;
+        ConnectionId = connectionId;
         SubscriptionId = subscriptionId;
+        Request = request;
         _cts = cts;
         _mediator = mediator;
         Logger = logger;
@@ -78,7 +76,7 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
 
         if (_cts.IsCancellationRequested)
         {
-            this.Trace("connection {connectionId}, subscription {subscriptionId} - skip sending, cancellation requested");
+            this.Trace("connection {id}, subscription {subId} - skip sending, cancellation requested");
             return;
         }
 
@@ -88,15 +86,6 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
     public void OnInit(Action handle)
     {
         _handleInit = handle;
-    }
-
-    public void Deconstruct(
-        out TInit request,
-        out ConnectionState state
-    )
-    {
-        request = Request;
-        state = State;
     }
 
     public void Cancel()
@@ -111,20 +100,20 @@ internal sealed record SubscriptionContext<TInit, TMessage> :
         if (!_isInitiated)
             throw new InvalidOperationException("Can't cancel not initiated subscription");
 
-        this.Trace("connection {connectionId}, subscription {subscriptionId} - start", ConnectionId, SubscriptionId);
+        this.Trace("connection {id}, subscription {subId} - start", ConnectionId, SubscriptionId);
         _cts.Dispose();
-        this.Trace("connection {connectionId}, subscription {subscriptionId} - dispose executor", ConnectionId, SubscriptionId);
+        this.Trace("connection {id}, subscription {subId} - dispose executor", ConnectionId, SubscriptionId);
         await _executor.DisposeAsync();
-        this.Trace("connection {connectionId}, subscription {subscriptionId} - done", ConnectionId, SubscriptionId);
+        this.Trace("connection {id}, subscription {subId} - done", ConnectionId, SubscriptionId);
     }
 
     private void SendInternal<T>(T msg)
     {
-        this.Trace("connection {connectionId}, subscription {subscriptionId} - schedule message {message}", ConnectionId, SubscriptionId, msg);
+        this.Trace("connection {id}, subscription {subId} - schedule message {message}", ConnectionId, SubscriptionId, msg);
         _executor.Schedule(() =>
         {
-            this.Trace("connection {connectionId}, subscription {subscriptionId} - send message {message}", ConnectionId, SubscriptionId, msg);
-            _mediator.SendAsync<None>(_sp, PushMessage.New(State.ConnectionId, msg), CancellationToken.None);
+            this.Trace("connection {id}, subscription {subId} - send message {message}", ConnectionId, SubscriptionId, msg);
+            _mediator.SendAsync<None>(_sp, PushMessage.New(ConnectionId, msg), CancellationToken.None);
         });
     }
 }

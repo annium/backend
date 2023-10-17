@@ -24,11 +24,12 @@ internal class ConnectionHandlerFactory
         _logger = logger;
     }
 
-    public ConnectionHandler Create(IServiceProvider sp, IServerConnection connection)
+    public ConnectionHandler Create(IServiceProvider sp, Guid connectionId, IServerConnection connection)
     {
         return new(
             sp,
             _connectionBoundStores,
+            connectionId,
             connection,
             _serializer,
             _logger

@@ -30,9 +30,9 @@ internal class PusherRunner<TMessage> : IPusherRunner
         _sp = sp;
     }
 
-    public Task RunAsync(ConnectionState state, CancellationToken ct)
+    public Task RunAsync(Guid cid, CancellationToken ct)
     {
-        var ctx = new PushContext<TMessage>(state, ct, _mediator, _logger, _sp);
+        var ctx = new PushContext<TMessage>(cid, ct, _mediator, _logger, _sp);
 
         return _pusher.RunAsync(ctx, ct);
     }
@@ -40,5 +40,5 @@ internal class PusherRunner<TMessage> : IPusherRunner
 
 internal interface IPusherRunner
 {
-    Task RunAsync(ConnectionState state, CancellationToken ct);
+    Task RunAsync(Guid cid, CancellationToken ct);
 }

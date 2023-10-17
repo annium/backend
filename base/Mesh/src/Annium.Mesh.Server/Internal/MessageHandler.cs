@@ -31,9 +31,9 @@ internal class MessageHandler : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingConnection connection, ConnectionState state, AbstractRequestBase request)
+    public async Task HandleMessage(ISendingConnection connection, Guid cid, AbstractRequestBase request)
     {
-        var response = await ProcessRequest(state, request);
+        var response = await ProcessRequest(cid, request);
         await SendResponse(connection, response);
 
         // TODO: implementation. Request/response streams should rely on modified IMediator implementation
@@ -56,11 +56,11 @@ internal class MessageHandler : ILogSubject
         //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
     }
 
-    private async Task<AbstractResponseBase> ProcessRequest(ConnectionState state, AbstractRequestBase request)
+    private async Task<AbstractResponseBase> ProcessRequest(Guid cid, AbstractRequestBase request)
     {
         try
         {
-            var context = RequestContext.CreateDynamic(request, state);
+            var context = RequestContext.CreateDynamic(cid, request);
             this.Trace<string, Guid, string>("Process request {requestType}#{requestId} with context {context}", request.Tid, request.Rid, context.GetFullId());
             return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
         }

@@ -36,15 +36,15 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
 
     public async Task HandleAsync(IServerConnection connection)
     {
-        _connectionTracker.Track(connection);
-        this.Trace("Start for {connectionId}", connection.Id);
+        var cid = _connectionTracker.Track(connection);
+        this.Trace("Start for {id}", cid);
 
         await using var scope = _sp.CreateAsyncScope();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
 
         connection.OnDisconnected += status =>
         {
-            this.Trace("Notify lost {connectionId} - {status}", connection.Id, status);
+            this.Trace("Notify lost {id} - {status}", cid, status);
             // for case, when server stops, thus cancellation occurs before connection is lost
             if (!cts.IsCancellationRequested)
                 cts.Cancel();
@@ -52,17 +52,17 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
 
         try
         {
-            var handler = _handlerFactory.Create(scope.ServiceProvider, connection);
+            var handler = _handlerFactory.Create(scope.ServiceProvider, cid, connection);
             await handler.HandleAsync(cts.Token);
         }
         finally
         {
-            this.Trace("Release complete {connectionId}", connection.Id);
-            await _connectionTracker.Release(connection.Id);
+            this.Trace("Release complete {id}", cid);
+            await _connectionTracker.Release(cid);
             connection.Disconnect();
         }
 
-        this.Trace("End for {connectionId}", connection.Id);
+        this.Trace("End for {id}", cid);
     }
 
     public void Shutdown()
