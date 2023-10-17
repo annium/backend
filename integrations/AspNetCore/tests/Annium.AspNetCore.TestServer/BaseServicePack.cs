@@ -1,6 +1,5 @@
 using System;
 using Annium.AspNetCore.TestServer.Components;
-using Annium.AspNetCore.TestServer.Handlers;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
 using Annium.Core.Runtime.Types;
@@ -26,7 +25,7 @@ internal class BaseServicePack : ServicePackBase
         container.AddHttpRequestFactory(true);
         container.AddMediatorConfiguration(ConfigureMediator);
         container.AddMediator();
-        container.AddMeshServer<ConnectionState>();
+        container.AddMeshServer();
         container.AddMeshWebSocketsServerTransport(_ => new ServerTransportConfiguration
         {
             ConnectionMonitor = ConnectionMonitor.None

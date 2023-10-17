@@ -7,13 +7,11 @@ using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Responses;
-using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class MessageHandler<TState> : ILogSubject
-    where TState : ConnectionStateBase
+internal class MessageHandler : ILogSubject
 {
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
@@ -33,7 +31,7 @@ internal class MessageHandler<TState> : ILogSubject
         Logger = logger;
     }
 
-    public async Task HandleMessage(ISendingConnection connection, TState state, AbstractRequestBase request)
+    public async Task HandleMessage(ISendingConnection connection, ConnectionState state, AbstractRequestBase request)
     {
         var response = await ProcessRequest(state, request);
         await SendResponse(connection, response);
@@ -58,12 +56,12 @@ internal class MessageHandler<TState> : ILogSubject
         //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
     }
 
-    private async Task<AbstractResponseBase> ProcessRequest(TState state, AbstractRequestBase request)
+    private async Task<AbstractResponseBase> ProcessRequest(ConnectionState state, AbstractRequestBase request)
     {
         try
         {
-            this.Trace("Process request {requestType}#{requestId}", request.Tid, request.Rid);
             var context = RequestContext.CreateDynamic(request, state);
+            this.Trace<string, Guid, string>("Process request {requestType}#{requestId} with context {context}", request.Tid, request.Rid, context.GetFullId());
             return await _mediator.SendAsync<AbstractResponseBase>(_sp, context);
         }
         catch (Exception e)

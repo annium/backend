@@ -9,19 +9,18 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Models;
 
-internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, ILogSubject
+internal class PushContext<TMessage> : IPushContext<TMessage>, ILogSubject
     where TMessage : NotificationBase
-    where TState : ConnectionStateBase
 {
     private readonly CancellationToken _ct;
     private readonly IMediator _mediator;
     private readonly IServiceProvider _sp;
-    public TState State { get; }
+    public ConnectionState State { get; }
     public ILogger Logger { get; }
     private readonly IBackgroundExecutor _executor;
 
     public PushContext(
-        TState state,
+        ConnectionState state,
         CancellationToken ct,
         IMediator mediator,
         ILogger logger,
@@ -33,7 +32,7 @@ internal class PushContext<TMessage, TState> : IPushContext<TMessage, TState>, I
         _sp = sp;
         State = state;
         Logger = logger;
-        _executor = Executor.Background.Sequential<PushContext<TMessage, TState>>(logger);
+        _executor = Executor.Background.Sequential<PushContext<TMessage>>(logger);
         _executor.Start();
     }
 

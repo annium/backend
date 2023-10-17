@@ -3,27 +3,25 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
-using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 // ReSharper disable AccessToDisposedClosure
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
-    where TState : ConnectionStateBase
+internal class Coordinator : ICoordinator, IDisposable, ILogSubject
 {
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IServerLifetimeManager _lifetimeManager;
     private readonly ConnectionTracker _connectionTracker;
-    private readonly ConnectionHandlerFactory<TState> _handlerFactory;
+    private readonly ConnectionHandlerFactory _handlerFactory;
 
     public Coordinator(
         IServiceProvider sp,
         IServerLifetimeManager lifetimeManager,
         ConnectionTracker connectionTracker,
-        ConnectionHandlerFactory<TState> handlerFactory,
+        ConnectionHandlerFactory handlerFactory,
         BroadcastCoordinator broadcastCoordinator,
         ILogger logger
     )
@@ -54,7 +52,7 @@ internal class Coordinator<TState> : ICoordinator, IDisposable, ILogSubject
 
         try
         {
-            await using var handler = _handlerFactory.Create(scope.ServiceProvider, connection);
+            var handler = _handlerFactory.Create(scope.ServiceProvider, connection);
             await handler.HandleAsync(cts.Token);
         }
         finally

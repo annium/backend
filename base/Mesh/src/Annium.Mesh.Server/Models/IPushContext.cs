@@ -1,11 +1,11 @@
 using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Models;
 
-public interface IPushContext<TMessage, TState>
+public interface IPushContext<TMessage>
     where TMessage : NotificationBase
-    where TState : ConnectionStateBase
 {
-    TState State { get; }
+    ConnectionState State { get; }
     void Send(TMessage message);
 }

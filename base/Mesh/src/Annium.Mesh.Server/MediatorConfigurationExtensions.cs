@@ -32,23 +32,23 @@ public static class MediatorConfigurationExtensions
         ITypeManager tm
     )
     {
-        cfg.AddHandler(typeof(RequestResponseHandler<,,>));
-        // IRequestResponseHandler<TRequest, TResponse, TState>: TRequest -> ResultResponse<TResponse>
+        cfg.AddHandler(typeof(RequestResponseHandler<,>));
+        // IRequestResponseHandler<TRequest, TResponse>: TRequest -> ResultResponse<TResponse>
         cfg.AddHandlerImplementations(
             tm,
-            typeof(IRequestResponseHandler<,,>),
+            typeof(IRequestResponseHandler<,>),
             args => Arr(
-                (Context(args[0], args[2]), Generic(typeof(ResultResponse<>), args[1]))
+                (Context(args[0]), Generic(typeof(ResultResponse<>), args[1]))
             )
         );
 
-        cfg.AddHandler(typeof(RequestHandler<,>));
-        // IRequestHandler<TRequest, TState>: TRequest -> ResultResponse
+        cfg.AddHandler(typeof(RequestHandler<>));
+        // IRequestHandler<TRequest>: TRequest -> ResultResponse
         cfg.AddHandlerImplementations(
             tm,
-            typeof(IRequestHandler<,>),
+            typeof(IRequestHandler<>),
             args => Arr(
-                (Context(args[0], args[1]), typeof(ResultResponse))
+                (Context(args[0]), typeof(ResultResponse))
             )
         );
     }
@@ -58,18 +58,18 @@ public static class MediatorConfigurationExtensions
         ITypeManager tm
     )
     {
-        cfg.AddHandler(typeof(SubscriptionInitHandler<,,>));
-        cfg.AddHandler(typeof(SubscriptionCancelHandler<>));
-        // ISubscriptionHandler<TInit, TMessage, TState>:
+        cfg.AddHandler(typeof(SubscriptionInitHandler<,>));
+        cfg.AddHandler(typeof(SubscriptionCancelHandler));
+        // ISubscriptionHandler<TInit, TMessage>:
         // - TInit -> VoidResponse<TCancel, TMessage>
         // - TMessage -> VoidResponse<TInit, TCancel>
         // - TCancel -> VoidResponse<TInit, TMessage>
         cfg.AddHandlerImplementations(
             tm,
-            typeof(ISubscriptionHandler<,,>),
+            typeof(ISubscriptionHandler<,>),
             args => Arr(
-                (Context(args[0], args[2]), Generic(typeof(VoidResponse<>), args[1])),
-                (Context(typeof(SubscriptionCancelRequest), args[2]), typeof(ResultResponse))
+                (Context(args[0]), Generic(typeof(VoidResponse<>), args[1])),
+                (Context(typeof(SubscriptionCancelRequest)), typeof(ResultResponse))
             )
         );
     }
@@ -96,9 +96,9 @@ public static class MediatorConfigurationExtensions
         }
     }
 
-    // IRequestContext<TRequest, TState> -> RequestContext<TRequest, TState>
-    private static Type Context(Type requestType, Type stateType) =>
-        typeof(RequestContext<,>).MakeGenericType(requestType, stateType);
+    // IRequestContext<TRequest> -> RequestContext<TRequest>
+    private static Type Context(Type requestType) =>
+        typeof(RequestContext<>).MakeGenericType(requestType);
 
     private static Type Generic(Type type, params Type[] args) =>
         type.MakeGenericType(args);

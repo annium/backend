@@ -6,10 +6,10 @@ using Annium.Mesh.Tests.System.Domain;
 
 namespace Annium.Mesh.Tests.System.Server.Demo;
 
-internal class PushHandler : IPusher<CounterMessage, ConnectionState>
+internal class PushHandler : IPusher<CounterMessage>
 {
     public async Task RunAsync(
-        IPushContext<CounterMessage, ConnectionState> ctx,
+        IPushContext<CounterMessage> ctx,
         CancellationToken ct
     )
     {

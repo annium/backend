@@ -11,13 +11,12 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 
-internal class SubscriptionCancelHandler<TState> :
+internal class SubscriptionCancelHandler :
     IFinalRequestHandler<
-        IRequestContext<SubscriptionCancelRequest, TState>,
+        IRequestContext<SubscriptionCancelRequest>,
         ResultResponse
     >,
     ILogSubject
-    where TState : ConnectionStateBase
 {
     public ILogger Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;
@@ -32,7 +31,7 @@ internal class SubscriptionCancelHandler<TState> :
     }
 
     public Task<ResultResponse> HandleAsync(
-        IRequestContext<SubscriptionCancelRequest, TState> ctx,
+        IRequestContext<SubscriptionCancelRequest> ctx,
         CancellationToken ct
     )
     {

@@ -5,9 +5,8 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 
-public interface IPusher<TMessage, TState>
+public interface IPusher<TMessage>
     where TMessage : NotificationBase
-    where TState : ConnectionStateBase
 {
-    public Task RunAsync(IPushContext<TMessage, TState> ctx, CancellationToken ct);
+    public Task RunAsync(IPushContext<TMessage> ctx, CancellationToken ct);
 }

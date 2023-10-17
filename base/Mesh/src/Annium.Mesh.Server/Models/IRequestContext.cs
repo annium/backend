@@ -1,9 +1,10 @@
+using Annium.Mesh.Server.Internal.Models;
+
 namespace Annium.Mesh.Server.Models;
 
-public interface IRequestContext<TRequest, TState>
-    where TState : ConnectionStateBase
+public interface IRequestContext<TRequest>
 {
     TRequest Request { get; }
-    TState State { get; }
-    void Deconstruct(out TRequest request, out TState state);
+    ConnectionState State { get; }
+    void Deconstruct(out TRequest request, out ConnectionState state);
 }

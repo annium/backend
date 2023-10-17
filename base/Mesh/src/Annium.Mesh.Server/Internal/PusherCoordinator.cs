@@ -3,23 +3,22 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Mesh.Server.Internal.Handlers;
-using Annium.Mesh.Server.Models;
+using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class PusherCoordinator<TState>
-    where TState : ConnectionStateBase
+internal class PusherCoordinator
 {
-    private readonly IEnumerable<IPusherRunner<TState>> _runners;
+    private readonly IEnumerable<IPusherRunner> _runners;
 
     public PusherCoordinator(
-        IEnumerable<IPusherRunner<TState>> runners
+        IEnumerable<IPusherRunner> runners
     )
     {
         _runners = runners;
     }
 
-    public Task RunAsync(TState state, CancellationToken ct) => Task.WhenAll(_runners.Select(
+    public Task RunAsync(ConnectionState state, CancellationToken ct) => Task.WhenAll(_runners.Select(
         x => x.RunAsync(state, ct)
     ));
 }

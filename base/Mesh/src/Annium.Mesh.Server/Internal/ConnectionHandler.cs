@@ -10,24 +10,21 @@ using Annium.Mesh.Domain.Requests;
 using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
-    where TState : ConnectionStateBase
+internal class ConnectionHandler : ILogSubject
 {
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly IServerConnection _cn;
     private readonly ISerializer _serializer;
-    private readonly TState _state;
+    private readonly ConnectionState _state;
 
     public ConnectionHandler(
         IServiceProvider sp,
-        Func<Guid, TState> stateFactory,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
         IServerConnection cn,
         ISerializer serializer,
@@ -39,7 +36,8 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         _cn = cn;
         _serializer = serializer;
         Logger = logger;
-        _state = stateFactory(cn.Id);
+        _state = new ConnectionState();
+        _state.SetConnectionId(cn.Id);
     }
 
     public async Task HandleAsync(CancellationToken ct)
@@ -47,9 +45,9 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
         var cnId = _cn.Id;
         this.Trace("cn {connectionId} - start", cnId);
         await using var scope = _sp.CreateAsyncScope();
-        var executor = Executor.Background.Parallel<ConnectionHandler<TState>>(Logger);
-        var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator<TState>>();
-        var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator<TState>>();
+        var executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
+        var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator>();
+        var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator>();
         try
         {
             var tcs = new TaskCompletionSource();
@@ -143,7 +141,7 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             {
                 this.Trace("cn {connectionId} - handle {requestType}#{requestId}", cnId, request.Tid, request.Rid);
                 await using var messageScope = _sp.CreateAsyncScope();
-                var handler = messageScope.ServiceProvider.Resolve<MessageHandler<TState>>();
+                var handler = messageScope.ServiceProvider.Resolve<MessageHandler>();
                 await handler.HandleMessage(_cn, _state, request);
             });
         }
@@ -160,10 +158,5 @@ internal class ConnectionHandler<TState> : IAsyncDisposable, ILogSubject
             this.Warn(e.ToString());
             return default;
         }
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await _state.DisposeAsync();
     }
 }

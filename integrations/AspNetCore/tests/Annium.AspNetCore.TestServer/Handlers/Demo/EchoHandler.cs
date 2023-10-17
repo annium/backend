@@ -8,10 +8,10 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.AspNetCore.TestServer.Handlers.Demo;
 
-internal class EchoHandler : IRequestResponseHandler<EchoRequest, string, ConnectionState>
+internal class EchoHandler : IRequestResponseHandler<EchoRequest, string>
 {
     public Task<IStatusResult<OperationStatus, string>> HandleAsync(
-        IRequestContext<EchoRequest, ConnectionState> request,
+        IRequestContext<EchoRequest> request,
         CancellationToken ct
     )
     {

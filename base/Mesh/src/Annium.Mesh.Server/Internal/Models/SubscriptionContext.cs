@@ -13,15 +13,14 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Models;
 
-internal sealed record SubscriptionContext<TInit, TMessage, TState> :
-    ISubscriptionContext<TInit, TMessage, TState>,
+internal sealed record SubscriptionContext<TInit, TMessage> :
+    ISubscriptionContext<TInit, TMessage>,
     ISubscriptionContext,
     ILogSubject
     where TInit : SubscriptionInitRequestBase
-    where TState : ConnectionStateBase
 {
     public TInit Request { get; }
-    public TState State { get; }
+    public ConnectionState State { get; }
     public Guid ConnectionId { get; }
     public Guid SubscriptionId { get; }
     public ILogger Logger { get; }
@@ -34,7 +33,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
 
     public SubscriptionContext(
         TInit request,
-        TState state,
+        ConnectionState state,
         Guid subscriptionId,
         CancellationTokenSource cts,
         IMediator mediator,
@@ -50,7 +49,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
         _mediator = mediator;
         Logger = logger;
         _sp = sp;
-        _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage, TState>>(logger);
+        _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage>>(logger);
         _executor.Start();
     }
 
@@ -93,7 +92,7 @@ internal sealed record SubscriptionContext<TInit, TMessage, TState> :
 
     public void Deconstruct(
         out TInit request,
-        out TState state
+        out ConnectionState state
     )
     {
         request = Request;

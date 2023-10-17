@@ -4,9 +4,8 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 
-public interface IEventHandler<TEvent, TState> :
-    IFinalRequestHandler<IRequestContext<TEvent, TState>, None>
+public interface IEventHandler<TEvent> :
+    IFinalRequestHandler<IRequestContext<TEvent>, None>
     where TEvent : EventBase
-    where TState : ConnectionStateBase
 {
 }

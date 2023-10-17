@@ -5,7 +5,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Mesh.Server;
 using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Tests.System.Domain;
-using Annium.Mesh.Tests.System.Server;
 using Annium.Testing;
 using Xunit;
 using Xunit.Abstractions;
@@ -25,7 +24,7 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
     {
         Register(container =>
         {
-            container.AddMeshServer<ConnectionState>();
+            container.AddMeshServer();
 
             container.AddMediatorConfiguration((cfg, tm) => cfg.AddMeshServerHandlers(tm));
             container.AddMediator();

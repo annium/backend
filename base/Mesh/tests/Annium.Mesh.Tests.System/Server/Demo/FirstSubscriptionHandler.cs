@@ -11,7 +11,7 @@ using Annium.Threading;
 namespace Annium.Mesh.Tests.System.Server.Demo;
 
 internal class FirstSubscriptionHandler :
-    ISubscriptionHandler<FirstSubscriptionInit, string, ConnectionState>,
+    ISubscriptionHandler<FirstSubscriptionInit, string>,
     ILogSubject
 {
     public ILogger Logger { get; }
@@ -27,7 +27,7 @@ internal class FirstSubscriptionHandler :
     }
 
     public async Task<None> HandleAsync(
-        ISubscriptionContext<FirstSubscriptionInit, string, ConnectionState> ctx,
+        ISubscriptionContext<FirstSubscriptionInit, string> ctx,
         CancellationToken ct
     )
     {

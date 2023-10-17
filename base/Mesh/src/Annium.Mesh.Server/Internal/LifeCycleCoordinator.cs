@@ -2,18 +2,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Server.Handlers;
-using Annium.Mesh.Server.Models;
+using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class LifeCycleCoordinator<TState> : ILogSubject
-    where TState : ConnectionStateBase
+internal class LifeCycleCoordinator : ILogSubject
 {
     public ILogger Logger { get; }
-    private readonly IEnumerable<LifeCycleHandlerBase<TState>> _handlers;
+    private readonly IEnumerable<LifeCycleHandlerBase> _handlers;
 
     public LifeCycleCoordinator(
-        IEnumerable<LifeCycleHandlerBase<TState>> handlers,
+        IEnumerable<LifeCycleHandlerBase> handlers,
         ILogger logger
     )
     {
@@ -21,7 +20,7 @@ internal class LifeCycleCoordinator<TState> : ILogSubject
         Logger = logger;
     }
 
-    public async Task StartAsync(TState state)
+    public async Task StartAsync(ConnectionState state)
     {
         this.Trace("start");
 
@@ -29,7 +28,7 @@ internal class LifeCycleCoordinator<TState> : ILogSubject
             await handler.StartAsync(state);
     }
 
-    public async Task EndAsync(TState state)
+    public async Task EndAsync(ConnectionState state)
     {
         this.Trace("start");
 

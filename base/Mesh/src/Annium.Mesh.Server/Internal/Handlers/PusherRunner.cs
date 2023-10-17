@@ -6,21 +6,19 @@ using Annium.Logging;
 using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Handlers;
 
-internal class PusherRunner<TMessage, TState> : IPusherRunner<TState>
+internal class PusherRunner<TMessage> : IPusherRunner
     where TMessage : NotificationBase
-    where TState : ConnectionStateBase
 {
-    private readonly IPusher<TMessage, TState> _pusher;
+    private readonly IPusher<TMessage> _pusher;
     private readonly IMediator _mediator;
     private readonly ILogger _logger;
     private readonly IServiceProvider _sp;
 
     public PusherRunner(
-        IPusher<TMessage, TState> pusher,
+        IPusher<TMessage> pusher,
         IMediator mediator,
         ILogger logger,
         IServiceProvider sp
@@ -32,16 +30,15 @@ internal class PusherRunner<TMessage, TState> : IPusherRunner<TState>
         _sp = sp;
     }
 
-    public Task RunAsync(TState state, CancellationToken ct)
+    public Task RunAsync(ConnectionState state, CancellationToken ct)
     {
-        var ctx = new PushContext<TMessage, TState>(state, ct, _mediator, _logger, _sp);
+        var ctx = new PushContext<TMessage>(state, ct, _mediator, _logger, _sp);
 
         return _pusher.RunAsync(ctx, ct);
     }
 }
 
-internal interface IPusherRunner<TState>
-    where TState : ConnectionStateBase
+internal interface IPusherRunner
 {
-    Task RunAsync(TState state, CancellationToken ct);
+    Task RunAsync(ConnectionState state, CancellationToken ct);
 }

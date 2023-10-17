@@ -1,11 +1,10 @@
 using System.Threading.Tasks;
-using Annium.Mesh.Server.Models;
+using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 
-public abstract class LifeCycleHandlerBase<TState>
-    where TState : ConnectionStateBase
+public abstract class LifeCycleHandlerBase
 {
-    public virtual Task StartAsync(TState state) => Task.CompletedTask;
-    public virtual Task EndAsync(TState state) => Task.CompletedTask;
+    public virtual Task StartAsync(ConnectionState state) => Task.CompletedTask;
+    public virtual Task EndAsync(ConnectionState state) => Task.CompletedTask;
 }

@@ -10,15 +10,14 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 
-internal class SubscriptionInitHandler<TInit, TMessage, TState> :
+internal class SubscriptionInitHandler<TInit, TMessage> :
     IPipeRequestHandler<
-        RequestContext<TInit, TState>,
-        ISubscriptionContext<TInit, TMessage, TState>,
+        RequestContext<TInit>,
+        ISubscriptionContext<TInit, TMessage>,
         None,
         VoidResponse<TMessage>>,
     ILogSubject
     where TInit : SubscriptionInitRequestBase
-    where TState : ConnectionStateBase
 {
     public ILogger Logger { get; }
     private readonly SubscriptionContextStore _subscriptionContextStore;
@@ -39,15 +38,15 @@ internal class SubscriptionInitHandler<TInit, TMessage, TState> :
     }
 
     public async Task<VoidResponse<TMessage>> HandleAsync(
-        RequestContext<TInit, TState> ctx,
+        RequestContext<TInit> ctx,
         CancellationToken ct,
-        Func<ISubscriptionContext<TInit, TMessage, TState>, CancellationToken, Task<None>> next
+        Func<ISubscriptionContext<TInit, TMessage>, CancellationToken, Task<None>> next
     )
     {
         var subscriptionId = ctx.Request.Rid;
         this.Trace("subscription {subscriptionId} - init", subscriptionId);
         var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        await using var context = new SubscriptionContext<TInit, TMessage, TState>(
+        await using var context = new SubscriptionContext<TInit, TMessage>(
             ctx.Request,
             ctx.State,
             subscriptionId,

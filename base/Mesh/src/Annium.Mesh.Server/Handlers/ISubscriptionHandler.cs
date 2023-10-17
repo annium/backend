@@ -4,9 +4,8 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 
-public interface ISubscriptionHandler<TInit, TMessage, TState> :
-    IFinalRequestHandler<ISubscriptionContext<TInit, TMessage, TState>, None>
+public interface ISubscriptionHandler<TInit, TMessage> :
+    IFinalRequestHandler<ISubscriptionContext<TInit, TMessage>, None>
     where TInit : SubscriptionInitRequestBase
-    where TState : ConnectionStateBase
 {
 }

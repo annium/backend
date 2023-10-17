@@ -12,7 +12,7 @@ using Annium.Threading;
 namespace Annium.AspNetCore.TestServer.Handlers.Demo;
 
 internal class SecondSubscriptionHandler :
-    ISubscriptionHandler<SecondSubscriptionInit, string, ConnectionState>,
+    ISubscriptionHandler<SecondSubscriptionInit, string>,
     ILogSubject
 {
     public ILogger Logger { get; }
@@ -28,7 +28,7 @@ internal class SecondSubscriptionHandler :
     }
 
     public async Task<None> HandleAsync(
-        ISubscriptionContext<SecondSubscriptionInit, string, ConnectionState> ctx,
+        ISubscriptionContext<SecondSubscriptionInit, string> ctx,
         CancellationToken ct
     )
     {

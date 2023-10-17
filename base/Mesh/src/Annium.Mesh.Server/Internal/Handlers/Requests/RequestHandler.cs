@@ -11,15 +11,14 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Internal.Handlers.Requests;
 
-internal class RequestHandler<TRequest, TState> :
-    IPipeRequestHandler<IRequestContext<TRequest, TState>, IRequestContext<TRequest, TState>, IStatusResult<OperationStatus>, ResultResponse>
+internal class RequestHandler<TRequest> :
+    IPipeRequestHandler<IRequestContext<TRequest>, IRequestContext<TRequest>, IStatusResult<OperationStatus>, ResultResponse>
     where TRequest : RequestBase
-    where TState : ConnectionStateBase
 {
     public async Task<ResultResponse> HandleAsync(
-        IRequestContext<TRequest, TState> request,
+        IRequestContext<TRequest> request,
         CancellationToken ct,
-        Func<IRequestContext<TRequest, TState>, CancellationToken, Task<IStatusResult<OperationStatus>>> next
+        Func<IRequestContext<TRequest>, CancellationToken, Task<IStatusResult<OperationStatus>>> next
     )
     {
         var result = await next(request, ct);

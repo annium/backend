@@ -6,7 +6,7 @@ using Annium.Mesh.Tests.System.Domain;
 
 namespace Annium.Mesh.Tests.System.Server.Demo;
 
-internal class AnalyticsHandler : IEventHandler<AnalyticEvent, ConnectionState>
+internal class AnalyticsHandler : IEventHandler<AnalyticEvent>
 {
     private readonly SharedDataContainer _container;
 
@@ -15,7 +15,7 @@ internal class AnalyticsHandler : IEventHandler<AnalyticEvent, ConnectionState>
         _container = container;
     }
 
-    public Task<None> HandleAsync(IRequestContext<AnalyticEvent, ConnectionState> request, CancellationToken ct)
+    public Task<None> HandleAsync(IRequestContext<AnalyticEvent> request, CancellationToken ct)
     {
         _container.Log.Enqueue(request.Request.Message);
 
