@@ -7,7 +7,6 @@ namespace Annium.Mesh.Transport.InMemory.Internal;
 
 internal class ClientConnection : IClientConnection
 {
-    public Guid Id { get; } = Guid.NewGuid();
     public event Action OnConnected = delegate { };
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };

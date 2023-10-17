@@ -10,7 +10,6 @@ namespace Annium.Mesh.Transport.WebSockets.Internal;
 internal sealed class ManagedConnection : IManagedConnection, ILogSubject
 {
     public ILogger Logger { get; }
-    public Guid Id { get; } = Guid.NewGuid();
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };

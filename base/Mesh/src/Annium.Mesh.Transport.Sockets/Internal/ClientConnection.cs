@@ -12,7 +12,6 @@ namespace Annium.Mesh.Transport.Sockets.Internal;
 internal sealed class ClientConnection : IClientConnection, ILogSubject
 {
     public ILogger Logger { get; }
-    public Guid Id { get; } = Guid.NewGuid();
     public event Action OnConnected = delegate { };
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
