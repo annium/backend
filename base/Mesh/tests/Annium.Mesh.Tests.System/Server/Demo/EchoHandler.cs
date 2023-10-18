@@ -8,8 +8,11 @@ using Annium.Mesh.Tests.System.Domain;
 
 namespace Annium.Mesh.Tests.System.Server.Demo;
 
-internal class EchoHandler : IRequestResponseHandler<EchoRequest, string>
+internal class EchoHandler : IRequestResponseHandler<Action, EchoRequest, string>
 {
+    public static ushort Version => 1;
+    public static Action Action => Action.Echo;
+
     public Task<IStatusResult<OperationStatus, string>> HandleAsync(
         IRequestContext<EchoRequest> request,
         CancellationToken ct

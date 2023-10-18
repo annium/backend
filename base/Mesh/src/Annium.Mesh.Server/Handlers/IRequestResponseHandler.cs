@@ -7,10 +7,10 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 
-public interface IRequestHandler<TAction, TRequest> : IHandlerBase<TAction>
+public interface IRequestResponseHandler<TAction, TRequest, TResponse> : IHandlerBase<TAction>
     where TAction : struct, Enum
 {
-    Task<IStatusResult<OperationStatus>> HandleAsync(
+    Task<IStatusResult<OperationStatus, TResponse>> HandleAsync(
         IRequestContext<TRequest> request,
         CancellationToken ct
     );

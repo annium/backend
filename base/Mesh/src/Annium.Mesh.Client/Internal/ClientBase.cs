@@ -1,17 +1,13 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
-using System.Threading.Channels;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
-using Annium.Collections.Generic;
 using Annium.Data.Operations;
 using Annium.Logging;
-using Annium.Mesh.Domain.Requests;
-using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -23,10 +19,12 @@ internal abstract class ClientBase : IClientBase
     private readonly ISendingReceivingConnection _connection;
     private readonly ISerializer _serializer;
     private readonly IClientConfiguration _configuration;
+
     private readonly DisposableBox _disposable;
-    private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
+
+    // private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
     private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
-    private readonly IObservable<AbstractResponseBaseObsolete> _responseObservable;
+    private readonly IObservable<Message> _messageObservable;
     private bool _isDisposed;
 
     protected ClientBase(
@@ -43,112 +41,116 @@ internal abstract class ClientBase : IClientBase
         _configuration = configuration;
         _disposable = Disposable.Box(logger);
 
-        _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
+        // _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
-        _responseObservable = _connection.Observe().Select(serializer.Deserialize<AbstractResponseBaseObsolete>).Publish().RefCount();
-        _disposable += Listen<ConnectionReadyNotificationObsolete>().Subscribe(_ => HandleConnectionReady());
-        _disposable += _responseObservable.OfType<ResponseBaseObsolete>()
-            .SubscribeOn(TaskPoolScheduler.Default)
-            .Subscribe(CompleteResponse);
+        _messageObservable = _connection.Observe().Select(serializer.Deserialize<Message>).Publish().RefCount();
+        _disposable += _messageObservable
+            .Where(x => x.Type is MessageType.ConnectionReady)
+            .Subscribe(_ => HandleConnectionReady());
+        // _disposable += _messageObservable.OfType<ResponseBaseObsolete>()
+        //     .SubscribeOn(TaskPoolScheduler.Default)
+        //     .Subscribe(CompleteResponse);
     }
-
-    // broadcast
-    public IObservable<TNotification> Listen<TNotification>()
-        where TNotification : NotificationBaseObsolete
-    {
-        return _responseObservable.OfType<TNotification>();
-    }
-
-    // event
-    public void Notify<TEvent>(
-        TEvent ev
-    )
-        where TEvent : EventBaseObsolete
-    {
-        Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
-    }
+    //
+    // // broadcast
+    // public IObservable<TNotification> Listen<TNotification>()
+    //     where TNotification : NotificationBaseObsolete
+    // {
+    //     return _messageObservable.OfType<TNotification>();
+    // }
+    //
+    // // event
+    // public void Notify<TEvent>(
+    //     TEvent ev
+    // )
+    //     where TEvent : EventBaseObsolete
+    // {
+    //     Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
+    // }
 
     // request -> void
     public Task<IStatusResult<OperationStatus>> SendAsync(
-        RequestBaseObsolete request,
+        RequestBase request,
         CancellationToken ct = default
     )
     {
-        return FetchInternal(request, ct);
+        throw new NotImplementedException();
+        // return FetchInternal(request, ct);
     }
 
     // request -> response
     public Task<IStatusResult<OperationStatus, TData>> FetchAsync<TData>(
-        RequestBaseObsolete request,
+        RequestBase request,
         CancellationToken ct = default
     )
     {
-        return FetchInternal(request, default(TData)!, ct);
+        throw new NotImplementedException();
+        // return FetchInternal(request, default(TData)!, ct);
     }
 
-    // request -> response with default value
-    public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-        RequestBaseObsolete request,
-        TResponse defaultValue,
-        CancellationToken ct = default
-    )
-    {
-        return FetchInternal(request, defaultValue, ct);
-    }
-
-    // init subscription
-    public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
-        TInit request,
-        CancellationToken ct = default
-    )
-        where TInit : SubscriptionInitRequestBaseObsolete
-    {
-        var type = typeof(TInit).FriendlyName();
-        var subscriptionId = request.Rid;
-
-        this.Trace("{type}#{subId} - start, create observable", type, subscriptionId);
-        var channel = Channel.CreateUnbounded<TMessage>();
-        var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-
-        async void OnDisposed()
-        {
-            if (!_subscriptions.TryRemove(subscriptionId, out _))
-            {
-                this.Trace("{type}#{subId} - skipped disposal of untracked subscription", type, subscriptionId);
-                return;
-            }
-
-            this.Trace("{type}#{subId} - unsubscribe on server", type, subscriptionId);
-            await FetchInternal(SubscriptionCancelRequestObsolete.New(subscriptionId), CancellationToken.None);
-            this.Trace("{type}#{subId} - unsubscribed on server", type, subscriptionId);
-        }
-
-        this.Trace("{type}#{subId} - create observable", type, subscriptionId);
-        _responseObservable
-            .OfType<SubscriptionMessageObsolete<TMessage>>()
-            .Where(x => x.SubscriptionId == subscriptionId)
-            .Select(x => x.Message)
-            .WriteToChannel(channel.Writer, cts.Token);
-
-        this.Trace("{type}#{subId} - init", type, subscriptionId);
-        var response = await FetchInternal(request, Guid.Empty, ct);
-        if (response.HasErrors)
-        {
-            this.Trace("{type}#{subId} - failed: {response}", type, subscriptionId, response);
-            cts.Cancel();
-            return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
-        }
-
-        this.Trace("{type}#{subId} - subscribe", type, subscriptionId);
-        var observable = ObservableExt.FromChannel(channel.Reader, OnDisposed)
-            .ObserveOn(TaskPoolScheduler.Default);
-
-        this.Trace("{type}#{subId} - track observable", type, subscriptionId);
-        if (!_subscriptions.TryAdd(subscriptionId, new(cts, (IObservable<object>)observable)))
-            throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
-
-        return Result.Status(response.Status, observable);
-    }
+    // // request -> response with default value
+    // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
+    //     RequestBaseObsolete request,
+    //     TResponse defaultValue,
+    //     CancellationToken ct = default
+    // )
+    // {
+    //     return FetchInternal(request, defaultValue, ct);
+    // }
+    //
+    // // init subscription
+    // public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
+    //     TInit request,
+    //     CancellationToken ct = default
+    // )
+    //     where TInit : SubscriptionInitRequestBaseObsolete
+    // {
+    //     var type = typeof(TInit).FriendlyName();
+    //     var subscriptionId = request.Rid;
+    //
+    //     this.Trace("{type}#{subId} - start, create observable", type, subscriptionId);
+    //     var channel = Channel.CreateUnbounded<TMessage>();
+    //     var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+    //
+    //     async void OnDisposed()
+    //     {
+    //         if (!_subscriptions.TryRemove(subscriptionId, out _))
+    //         {
+    //             this.Trace("{type}#{subId} - skipped disposal of untracked subscription", type, subscriptionId);
+    //             return;
+    //         }
+    //
+    //         this.Trace("{type}#{subId} - unsubscribe on server", type, subscriptionId);
+    //         await FetchInternal(SubscriptionCancelRequestObsolete.New(subscriptionId), CancellationToken.None);
+    //         this.Trace("{type}#{subId} - unsubscribed on server", type, subscriptionId);
+    //     }
+    //
+    //     this.Trace("{type}#{subId} - create observable", type, subscriptionId);
+    //     _messageObservable
+    //         .OfType<SubscriptionMessageObsolete<TMessage>>()
+    //         .Where(x => x.SubscriptionId == subscriptionId)
+    //         .Select(x => x.Message)
+    //         .WriteToChannel(channel.Writer, cts.Token);
+    //
+    //     this.Trace("{type}#{subId} - init", type, subscriptionId);
+    //     var response = await FetchInternal(request, Guid.Empty, ct);
+    //     if (response.HasErrors)
+    //     {
+    //         this.Trace("{type}#{subId} - failed: {response}", type, subscriptionId, response);
+    //         cts.Cancel();
+    //         return Result.Status(response.Status, Observable.Empty<TMessage>()).Join(response);
+    //     }
+    //
+    //     this.Trace("{type}#{subId} - subscribe", type, subscriptionId);
+    //     var observable = ObservableExt.FromChannel(channel.Reader, OnDisposed)
+    //         .ObserveOn(TaskPoolScheduler.Default);
+    //
+    //     this.Trace("{type}#{subId} - track observable", type, subscriptionId);
+    //     if (!_subscriptions.TryAdd(subscriptionId, new(cts, (IObservable<object>)observable)))
+    //         throw new InvalidOperationException($"Subscription {subscriptionId} is already tracked");
+    //
+    //     return Result.Status(response.Status, observable);
+    // }
 
     public async ValueTask DisposeAsync()
     {
@@ -179,111 +181,112 @@ internal abstract class ClientBase : IClientBase
     }
 
     protected abstract void HandleDispose();
+
     protected abstract void HandleConnectionReady();
-
-    private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
-        TRequest request,
-        CancellationToken ct
-    )
-        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-    {
-        var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete>(request, ct);
-
-        return response?.Result ?? result;
-    }
-
-    private async Task<IStatusResult<OperationStatus, TData>> FetchInternal<TRequest, TData>(
-        TRequest request,
-        TData defaultValue,
-        CancellationToken ct
-    )
-        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-    {
-        var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete<TData>>(request, ct);
-
-        return response?.Result ?? Result.Status(result.Status, defaultValue).Join(result);
-    }
-
-    private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TRequest, TResponse>(
-        TRequest request,
-        CancellationToken ct
-    )
-        where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-        where TResponse : ResponseBaseObsolete
-    {
-        var tcs = new TaskCompletionSource<ResponseBaseObsolete>();
-        var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
-        // external token - operation canceled
-        ct.Register(() =>
-        {
-            // if not arrived and not expired - cancel
-            if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
-            {
-                this.Trace("request {requestId} - cancel operation", request.Rid);
-                cts.Cancel();
-                tcs.TrySetException(new OperationCanceledException(ct));
-            }
-        });
-        cts.Token.Register(() =>
-        {
-            // if not arrived and not canceled - expire
-            if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
-            {
-                this.Trace("request {requestId} - cancel by timeout", request.Rid);
-                tcs.TrySetException(new TimeoutException());
-            }
-        });
-
-        _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
-
-        try
-        {
-            if (!await SendInternal(request))
-                return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
-
-            var response = (TResponse)await tcs.Task;
-            return (Result.Status(OperationStatus.Ok), response);
-        }
-        catch (OperationCanceledException)
-        {
-            return (Result.Status(OperationStatus.Aborted), null);
-        }
-        catch (TimeoutException)
-        {
-            return (Result.Status(OperationStatus.Timeout).Error("Operation timed out"), null);
-        }
-        catch (Exception e)
-        {
-            return (Result.Status(OperationStatus.UncaughtError).Error(e.Message), null);
-        }
-    }
-
-    private async Task<bool> SendInternal<T>(T request)
-        where T : AbstractRequestBaseObsolete
-    {
-        this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
-        var result = await _connection.SendAsync(_serializer.Serialize(request), CancellationToken.None);
-
-        return result is ConnectionSendStatus.Ok;
-    }
-
-    private void CompleteResponse(ResponseBaseObsolete response)
-    {
-        if (_requestFutures.Remove(response.Rid, out var future))
-        {
-            if (!future.CancellationSource.IsCancellationRequested)
-            {
-                this.Trace("complete response {responseType}#{responseId}", response.Tid, response.Rid);
-                future.TaskSource.TrySetResult(response);
-            }
-            else
-                this.Trace("dismiss cancelled response {responseType}#{responseId}", response.Tid, response.Rid);
-        }
-        else
-            this.Trace("dismiss unknown response {responseType}#{responseId}", response.Tid, response.Rid);
-    }
-
-    private record struct RequestFuture(TaskCompletionSource<ResponseBaseObsolete> TaskSource, CancellationTokenSource CancellationSource);
+    //
+    // private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
+    //     TRequest request,
+    //     CancellationToken ct
+    // )
+    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
+    // {
+    //     var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete>(request, ct);
+    //
+    //     return response?.Result ?? result;
+    // }
+    //
+    // private async Task<IStatusResult<OperationStatus, TData>> FetchInternal<TRequest, TData>(
+    //     TRequest request,
+    //     TData defaultValue,
+    //     CancellationToken ct
+    // )
+    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
+    // {
+    //     var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete<TData>>(request, ct);
+    //
+    //     return response?.Result ?? Result.Status(result.Status, defaultValue).Join(result);
+    // }
+    //
+    // private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TRequest, TResponse>(
+    //     TRequest request,
+    //     CancellationToken ct
+    // )
+    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
+    //     where TResponse : ResponseBaseObsolete
+    // {
+    //     var tcs = new TaskCompletionSource<ResponseBaseObsolete>();
+    //     var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
+    //     // external token - operation canceled
+    //     ct.Register(() =>
+    //     {
+    //         // if not arrived and not expired - cancel
+    //         if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
+    //         {
+    //             this.Trace("request {requestId} - cancel operation", request.Rid);
+    //             cts.Cancel();
+    //             tcs.TrySetException(new OperationCanceledException(ct));
+    //         }
+    //     });
+    //     cts.Token.Register(() =>
+    //     {
+    //         // if not arrived and not canceled - expire
+    //         if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
+    //         {
+    //             this.Trace("request {requestId} - cancel by timeout", request.Rid);
+    //             tcs.TrySetException(new TimeoutException());
+    //         }
+    //     });
+    //
+    //     _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
+    //
+    //     try
+    //     {
+    //         if (!await SendInternal(request))
+    //             return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
+    //
+    //         var response = (TResponse)await tcs.Task;
+    //         return (Result.Status(OperationStatus.Ok), response);
+    //     }
+    //     catch (OperationCanceledException)
+    //     {
+    //         return (Result.Status(OperationStatus.Aborted), null);
+    //     }
+    //     catch (TimeoutException)
+    //     {
+    //         return (Result.Status(OperationStatus.Timeout).Error("Operation timed out"), null);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         return (Result.Status(OperationStatus.UncaughtError).Error(e.Message), null);
+    //     }
+    // }
+    //
+    // private async Task<bool> SendInternal<T>(T request)
+    //     where T : AbstractRequestBaseObsolete
+    // {
+    //     this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
+    //     var result = await _connection.SendAsync(_serializer.Serialize(request), CancellationToken.None);
+    //
+    //     return result is ConnectionSendStatus.Ok;
+    // }
+    //
+    // private void CompleteResponse(ResponseBaseObsolete response)
+    // {
+    //     if (_requestFutures.Remove(response.Rid, out var future))
+    //     {
+    //         if (!future.CancellationSource.IsCancellationRequested)
+    //         {
+    //             this.Trace("complete response {responseType}#{responseId}", response.Tid, response.Rid);
+    //             future.TaskSource.TrySetResult(response);
+    //         }
+    //         else
+    //             this.Trace("dismiss cancelled response {responseType}#{responseId}", response.Tid, response.Rid);
+    //     }
+    //     else
+    //         this.Trace("dismiss unknown response {responseType}#{responseId}", response.Tid, response.Rid);
+    // }
+    //
+    // private record struct RequestFuture(TaskCompletionSource<ResponseBaseObsolete> TaskSource, CancellationTokenSource CancellationSource);
 
     private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }

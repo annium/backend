@@ -2,7 +2,6 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;
-using Constants = Annium.Serialization.Json.Constants;
 
 namespace Annium.Mesh.Serialization.Json.Internal;
 
@@ -14,7 +13,7 @@ internal class Serializer : ISerializer
         IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers
     )
     {
-        var key = SerializerKey.CreateDefault(Constants.MediaType);
+        var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);
         _serializer = serializers[key];
     }
 

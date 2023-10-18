@@ -1,12 +1,8 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Core.Mediator;
 using Annium.Logging;
-using Annium.Mesh.Domain.Requests;
-using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
-using Annium.Mesh.Server.Internal.Models;
-using Annium.Mesh.Server.Internal.Responses;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
@@ -14,86 +10,88 @@ namespace Annium.Mesh.Server.Internal;
 internal class MessageHandler : ILogSubject
 {
     public ILogger Logger { get; }
-    private readonly IServiceProvider _sp;
     private readonly ISerializer _serializer;
-    private readonly IMediator _mediator;
 
     public MessageHandler(
-        IServiceProvider sp,
         ISerializer serializer,
-        IMediator mediator,
         ILogger logger
     )
     {
-        _sp = sp;
-        _serializer = serializer;
-        _mediator = mediator;
         Logger = logger;
+        _serializer = serializer;
     }
 
-    public async Task HandleMessage(ISendingConnection connection, Guid cid, AbstractRequestBaseObsolete request)
+    public Task HandleMessage(ISendingConnection connection, Guid cid, Message message) => message.Type switch
     {
-        var response = await ProcessRequest(cid, request);
-        await SendResponse(connection, response);
+        MessageType.Request            => HandleRequest(connection, message),
+        MessageType.Event              => HandleEvent(connection, message),
+        MessageType.SubscriptionInit   => HandleSubscriptionInit(connection, message),
+        MessageType.SubscriptionCancel => HandleSubscriptionCancel(connection, message),
+        _                              => Task.CompletedTask,
+    };
 
-        // TODO: implementation. Request/response streams should rely on modified IMediator implementation
-        // request (and it's chunks, and error!) is sent via IMediator
-        // just before exact handler, sits STATEFUL! request tracker, that:
-        // works with Container<T> - object with request ID, identifying it in stateful environment
-        // for requests:
-        //  - creates request objects
-        //  - passes them down to handler
-        //  - tracks request chunks (IDictionary<RequestId,Request> and passes them inside IObservable request along with End event
-        // for responses:
-        //  - receives notification from IObservable response object
-        //  - invokes IMediator BACK! to Coordinator
-        //  - Coordinator's generic handler method identifies connection by request id, serializes and sends response
-        // corner cases:
-        //  - it's up to exact handler to handle request error (if needed)
-        //  - Coordinator for now will have configurable default policy to terminate requests, not closed in 1 minute since last chunk
-        //  - when request is terminated, error is propagated to handler, so it can handle this (remove allocated resources, log exception, etc)
-        //  - Coordinator for now will have configurable default policy to terminate responses, not closed in 1 minute since last chunk
-        //  - when response is terminated, response message is sent to receiver with close marker and error message, so it can handle it appropriately
-    }
-
-    private async Task<AbstractResponseBaseObsolete> ProcessRequest(Guid cid, AbstractRequestBaseObsolete request)
+    private async Task HandleRequest(ISendingConnection connection, Message message)
     {
-        try
-        {
-            var context = RequestContext.CreateDynamic(cid, request);
-            this.Trace<string, Guid, string>("Process request {requestType}#{requestId} with context {context}", request.Tid, request.Rid, context.GetFullId());
-            return await _mediator.SendAsync<AbstractResponseBaseObsolete>(_sp, context);
-        }
-        catch (Exception e)
-        {
-            this.Error(e);
-            throw;
-        }
+        this.Trace("ignore");
+        await Task.CompletedTask;
     }
 
-    private async Task SendResponse(ISendingConnection connection, AbstractResponseBaseObsolete response)
+    private async Task HandleEvent(ISendingConnection connection, Message message)
     {
-        switch (response)
-        {
-            case IVoidResponse:
-                break;
-            default:
-                await SendInternal(connection, response);
-                break;
-        }
+        this.Trace("ignore");
+        await Task.CompletedTask;
     }
 
-    private async Task SendInternal(ISendingConnection connection, AbstractResponseBaseObsolete response)
+    private async Task HandleSubscriptionInit(ISendingConnection connection, Message message)
     {
-        try
-        {
-            this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBaseObsolete res ? res.Rid : Guid.Empty);
-            await connection.SendAsync(_serializer.Serialize(response));
-        }
-        catch (Exception e)
-        {
-            this.Error(e);
-            throw;
-        }
+        this.Trace("ignore");
+        await Task.CompletedTask;
     }
+
+    private async Task HandleSubscriptionCancel(ISendingConnection connection, Message message)
+    {
+        this.Trace("ignore");
+        await Task.CompletedTask;
+    }
+    //
+    // private async Task<AbstractResponseBaseObsolete> ProcessRequest(Guid cid, AbstractRequestBaseObsolete request)
+    // {
+    //     try
+    //     {
+    //         var context = RequestContext.CreateDynamic(cid, request);
+    //         this.Trace<string, Guid, string>("Process request {requestType}#{requestId} with context {context}", request.Tid, request.Rid, context.GetFullId());
+    //         return await _mediator.SendAsync<AbstractResponseBaseObsolete>(_sp, context);
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         this.Error(e);
+    //         throw;
+    //     }
+    // }
+    //
+    // private async Task SendResponse(ISendingConnection connection, AbstractResponseBaseObsolete response)
+    // {
+    //     switch (response)
+    //     {
+    //         case IVoidResponse:
+    //             break;
+    //         default:
+    //             await SendInternal(connection, response);
+    //             break;
+    //     }
+    // }
+    //
+    // private async Task SendInternal(ISendingConnection connection, AbstractResponseBaseObsolete response)
+    // {
+    //     try
+    //     {
+    //         this.Trace("Send response {responseType}#{responseId}", response.Tid, response is ResponseBaseObsolete res ? res.Rid : Guid.Empty);
+    //         await connection.SendAsync(_serializer.Serialize(response));
+    //     }
+    //     catch (Exception e)
+    //     {
+    //         this.Error(e);
+    //         throw;
+    //     }
+    // }
 }

@@ -4,7 +4,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;
-using Constants = Annium.Serialization.Json.Constants;
 
 namespace Annium.Mesh.Serialization.Json.Internal;
 
@@ -19,7 +18,7 @@ internal class DebugSerializer : ISerializer, ILogSubject
     )
     {
         Logger = logger;
-        var key = SerializerKey.CreateDefault(Constants.MediaType);
+        var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);
         _serializer = serializers[key];
     }
 

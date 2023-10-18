@@ -1,8 +1,8 @@
-using Annium.Mesh.Domain.Requests;
+using Annium.Mesh.Domain;
 
 namespace Annium.Mesh.Tests.System.Domain;
 
-public class EchoRequest : RequestBaseObsolete
+public class EchoRequest : RequestBase
 {
     public string Message { get; }
 

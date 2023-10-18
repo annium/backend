@@ -26,6 +26,8 @@ internal class LifeCycleCoordinator : ILogSubject
 
         foreach (var handler in _handlers)
             await handler.StartAsync();
+
+        this.Trace("done");
     }
 
     public async Task EndAsync()
@@ -34,5 +36,7 @@ internal class LifeCycleCoordinator : ILogSubject
 
         foreach (var handler in _handlers)
             await handler.EndAsync();
+
+        this.Trace("done");
     }
 }

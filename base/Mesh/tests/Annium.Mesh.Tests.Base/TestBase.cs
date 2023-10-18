@@ -2,12 +2,12 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
-using Annium.Mesh.Server;
 using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Tests.System.Domain;
 using Annium.Testing;
 using Xunit;
 using Xunit.Abstractions;
+using Action = Annium.Mesh.Tests.System.Domain.Action;
 
 namespace Annium.Mesh.Tests.Base;
 
@@ -24,10 +24,7 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
     {
         Register(container =>
         {
-            container.AddMeshServer();
-
-            container.AddMediatorConfiguration((cfg, tm) => cfg.AddMeshServerHandlers(tm));
-            container.AddMediator();
+            container.AddMeshServer(opts => opts.WithApi<Action>(1));
 
             container.AddMeshJsonSerialization();
             container.AddSerializers().WithJson(isDefault: true);

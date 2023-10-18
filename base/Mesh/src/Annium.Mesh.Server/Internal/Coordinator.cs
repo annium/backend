@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
+using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 // ReSharper disable AccessToDisposedClosure
@@ -15,13 +16,11 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
     private readonly IServiceProvider _sp;
     private readonly IServerLifetimeManager _lifetimeManager;
     private readonly ConnectionTracker _connectionTracker;
-    private readonly ConnectionHandlerFactory _handlerFactory;
 
     public Coordinator(
         IServiceProvider sp,
         IServerLifetimeManager lifetimeManager,
         ConnectionTracker connectionTracker,
-        ConnectionHandlerFactory handlerFactory,
         BroadcastCoordinator broadcastCoordinator,
         ILogger logger
     )
@@ -29,7 +28,6 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         _sp = sp;
         _lifetimeManager = lifetimeManager;
         _connectionTracker = connectionTracker;
-        _handlerFactory = handlerFactory;
         Logger = logger;
         broadcastCoordinator.Start();
     }
@@ -40,6 +38,7 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         this.Trace("Start for {id}", cid);
 
         await using var scope = _sp.CreateAsyncScope();
+        var sp = scope.ServiceProvider;
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
 
         connection.OnDisconnected += status =>
@@ -52,8 +51,11 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
 
         try
         {
-            var handler = _handlerFactory.Create(scope.ServiceProvider, cid, connection);
-            await handler.HandleAsync(cts.Token);
+            // handle connection
+            var ctx = sp.Resolve<ConnectionContext>();
+            ctx.Init(cid, connection, cts);
+            await using var handler = sp.Resolve<ConnectionHandler>();
+            await handler.HandleAsync();
         }
         finally
         {

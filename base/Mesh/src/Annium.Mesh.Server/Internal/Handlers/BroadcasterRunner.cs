@@ -1,14 +1,12 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Mesh.Domain.Responses;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class BroadcasterRunner<TMessage> : IBroadcasterRunner
-    where TMessage : NotificationBaseObsolete
 {
     private readonly IBroadcaster<TMessage> _broadcaster;
 

@@ -3,159 +3,178 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Extensions.Execution;
 using Annium.Logging;
-using Annium.Mesh.Domain.Requests;
-using Annium.Mesh.Domain.Responses;
+using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class ConnectionHandler : ILogSubject
+internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 {
     public ILogger Logger { get; }
-    private readonly IServiceProvider _sp;
-    private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly Guid _cid;
-    private readonly IServerConnection _cn;
+    private readonly ISendingReceivingConnection _cn;
+    private readonly CancellationTokenSource _cts;
+    private readonly TaskCompletionSource _tcs = new();
+    private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
+    private readonly LifeCycleCoordinator _lifeCycleCoordinator;
+    private readonly MessageHandler _messageHandler;
+    private readonly PusherCoordinator _pusherCoordinator;
     private readonly ISerializer _serializer;
+    private readonly IBackgroundExecutor _executor;
 
     public ConnectionHandler(
-        IServiceProvider sp,
+        ConnectionContext ctx,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
-        Guid cid,
-        IServerConnection cn,
+        LifeCycleCoordinator lifeCycleCoordinator,
+        MessageHandler messageHandler,
+        PusherCoordinator pusherCoordinator,
         ISerializer serializer,
         ILogger logger
     )
     {
         Logger = logger;
-        _sp = sp;
+        _cid = ctx.ConnectionId;
+        _cn = ctx.Connection;
+        _cts = ctx.Cts;
         _connectionBoundStores = connectionBoundStores;
-        _cid = cid;
-        _cn = cn;
+        _lifeCycleCoordinator = lifeCycleCoordinator;
+        _messageHandler = messageHandler;
+        _pusherCoordinator = pusherCoordinator;
         _serializer = serializer;
+
+        _executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
     }
 
-    public async Task HandleAsync(CancellationToken ct)
+    public async Task HandleAsync()
     {
         this.Trace("cn {id} - start", _cid);
-        await using var scope = _sp.CreateAsyncScope();
-        var executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
-        var lifeCycleCoordinator = scope.ServiceProvider.Resolve<LifeCycleCoordinator>();
-        var pusherCoordinator = scope.ServiceProvider.Resolve<PusherCoordinator>();
+
         try
         {
-            var tcs = new TaskCompletionSource();
-            tcs.Task.ContinueWith(_ => this.Trace("cn {id} - listen ended"), CancellationToken.None).GetAwaiter();
-
             // immediately subscribe to cancellation
-            ct.Register(() =>
-            {
-                this.Trace("cn {id} - complete tcs due to cancellation", _cid);
-                tcs.TrySetResult();
-            });
-
-            // use derived cts for connection subscription
-            var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
+            _cts.Token.Register(HandleConnectionCancellation);
 
             // start listening to messages and adding them to scheduler
             this.Trace("cn {id} - init subscription", _cid);
-            _cn.Observe().Subscribe(
-                HandleMessage,
-                e =>
-                {
-                    this.Trace("cn {id} - handle error", _cid);
-                    cts.Cancel();
-                    this.Error(e);
-                    this.Trace("cn {id} - complete tcs due to error", _cid);
-                    tcs.TrySetResult();
-                },
-                () =>
-                {
-                    this.Trace("cn {id} - complete tcs due to connection closed", _cid);
-                    tcs.TrySetResult();
-                },
-                cts.Token
-            );
+            _cn.Observe().Subscribe(OnMessage, OnError, OnCompleted, _cts.Token);
 
             // execute start hook
-            this.Trace("cn {id} - handle lifecycle start - start", _cid);
-            await lifeCycleCoordinator.StartAsync();
-            this.Trace("cn {id} - handle lifecycle start - done", _cid);
+            this.Trace("cn {id} - handle lifecycle start", _cid);
+            await _lifeCycleCoordinator.StartAsync();
 
             // notify client, that connection is ready
             this.Trace("cn {id} - notify connection ready", _cid);
-            await _cn.SendAsync(_serializer.Serialize(new ConnectionReadyNotificationObsolete()), cts.Token);
+            await _cn.SendAsync(_serializer.Serialize(new Message { Type = MessageType.ConnectionReady }), _cts.Token);
 
             // execute run hook
-            this.Trace("cn {id} - push handlers start - start", _cid);
-            var pusherTask = pusherCoordinator.RunAsync(_cid, cts.Token);
-            pusherTask.ContinueWith(_ => this.Trace("cn {id} - push ended"), CancellationToken.None).GetAwaiter();
-            this.Trace("cn {id} - push handlers start - done", _cid);
+            this.Trace("cn {id} - start push handlers", _cid);
+            var pusherTask = _pusherCoordinator.RunAsync(_cid, _cts.Token);
 
             // start scheduler to process backlog and run upcoming work immediately
             this.Trace("cn {id} - start executor", _cid);
-            executor.Start(CancellationToken.None);
+            _executor.Start(_cts.Token);
 
             // wait until connection complete
-            this.Trace("cn {id} - wait until connection complete", _cid);
-            await Task.WhenAll(tcs.Task, pusherTask);
-            this.Trace("cn {id} - cleanup connection-bound stores - start", _cid);
+            this.Trace("cn {id} - wait until connection complete (handlers & pushers)", _cid);
+            await Task.WhenAll(_tcs.Task, pusherTask);
+
+            this.Trace("cn {id} - cleanup connection-bound stores", _cid);
             await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cid)));
-            this.Trace("cn {id} - cleanup connection-bound stores - done", _cid);
         }
         catch (Exception e)
         {
             this.Error(e);
         }
-        finally
-        {
-            // all handlers must be complete before teardown lifecycle hook
-            this.Trace("cn {id} - dispose executor - start", _cid);
-            await executor.DisposeAsync();
-            this.Trace("cn {id} - dispose executor - done", _cid);
-
-            // execute end hook
-            this.Trace("cn {id} - handle lifecycle end - start", _cid);
-            await lifeCycleCoordinator.EndAsync();
-            this.Trace("cn {id} - handle lifecycle end - done", _cid);
-        }
-
-        void HandleMessage(ReadOnlyMemory<byte> raw)
-        {
-            var request = ParseRequest(raw);
-            if (request is null)
-            {
-                this.Warn("Failed to parse msg of size {size} bytes", raw.Length);
-
-                return;
-            }
-
-            this.Trace("cn {id} - schedule {requestType}#{requestId}", _cid, request.Tid, request.Rid);
-            executor.TrySchedule(async () =>
-            {
-                this.Trace("cn {id} - handle {requestType}#{requestId}", _cid, request.Tid, request.Rid);
-                await using var messageScope = _sp.CreateAsyncScope();
-                var handler = messageScope.ServiceProvider.Resolve<MessageHandler>();
-                await handler.HandleMessage(_cn, _cid, request);
-            });
-        }
     }
 
-    private AbstractRequestBaseObsolete? ParseRequest(ReadOnlyMemory<byte> msg)
+    public async ValueTask DisposeAsync()
+    {
+        this.Trace("cn {id} - start", _cid);
+
+        // all handlers must be complete before teardown lifecycle hook
+        this.Trace("cn {id} - dispose executor", _cid);
+        await _executor.DisposeAsync();
+
+        // execute end hook
+        this.Trace("cn {id} - handle lifecycle end", _cid);
+        await _lifeCycleCoordinator.EndAsync();
+
+        this.Trace("cn {id} - done", _cid);
+    }
+
+    private void OnMessage(ReadOnlyMemory<byte> raw)
+    {
+        this.Trace("cn {id} - start", _cid);
+
+        var message = ParseMessage(raw);
+        if (message is null)
+            return;
+
+        this.Trace("cn {id} - schedule {msg}", _cid, message);
+        if (_executor.TrySchedule(HandleMessage(message)))
+            this.Trace("cn {id} - scheduled {msg}", _cid, message);
+        else
+            this.Trace("cn {id} - skipped {msg} (connection is canceled", _cid, message);
+
+        this.Trace("cn {id} - start", _cid);
+    }
+
+    private void OnError(Exception exception)
+    {
+        this.Trace("cn {id} - start", _cid);
+
+        this.Trace("cn {id} - cancel cts", _cid);
+        _cts.Cancel();
+
+        this.Error(exception);
+
+        this.Trace("cn {id} - complete tcs due to error", _cid);
+        _tcs.TrySetResult();
+
+        this.Trace("cn {id} - done", _cid);
+    }
+
+    private void OnCompleted()
+    {
+        this.Trace("cn {id} - start", _cid);
+
+        this.Trace("cn {id} - complete tcs due to connection closed", _cid);
+        _tcs.TrySetResult();
+
+        this.Trace("cn {id} - done", _cid);
+    }
+
+    private void HandleConnectionCancellation()
+    {
+        this.Trace("cn {id} - start", _cid);
+
+        _tcs.TrySetResult();
+
+        this.Trace("cn {id} - done", _cid);
+    }
+
+    private Message? ParseMessage(ReadOnlyMemory<byte> raw)
     {
         try
         {
-            return _serializer.Deserialize<AbstractRequestBaseObsolete>(msg);
+            return _serializer.Deserialize<Message>(raw);
         }
         catch (Exception e)
         {
+            this.Warn("Failed to parse msg of size {size} bytes", raw.Length);
             this.Warn(e.ToString());
             return default;
         }
     }
+
+    private Func<ValueTask> HandleMessage(Message message) => async () =>
+    {
+        this.Trace("cn {id} - start {msg}", _cid, message);
+        await _messageHandler.HandleMessage(_cn, _cid, message);
+        this.Trace("cn {id} - done {msg}", _cid, message);
+    };
 }
