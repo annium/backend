@@ -16,10 +16,10 @@ public class DemoClient
         _client = client;
     }
 
-    public Task<IStatusResult<OperationStatus, string>> EchoAsync(
+    public Task<IStatusResult<OperationStatus, string?>> EchoAsync(
         EchoRequest request,
         CancellationToken ct = default
-    ) => _client.FetchAsync<string>(request, ct);
+    ) => _client.FetchAsync<string>(1, Action.Echo, request, ct);
 
     // public Task<IStatusResult<OperationStatus, string>> EchoAsync(
     //     EchoRequest request,

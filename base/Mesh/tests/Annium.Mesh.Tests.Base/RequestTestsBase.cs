@@ -47,7 +47,7 @@ public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
         // arrange
         this.Trace("get client");
         await using var client = await GetClient();
-        var responses = new ConcurrentBag<string>();
+        var responses = new ConcurrentBag<string?>();
         var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
 
         // act
@@ -63,7 +63,7 @@ public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
         );
 
         // assert
-        var set = new HashSet<string>(responses);
+        var set = new HashSet<string?>(responses);
         set.Has(range.Length);
         foreach (var x in range)
             set.Contains(x).IsTrue();

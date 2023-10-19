@@ -1,8 +1,6 @@
-using Annium.Mesh.Domain;
-
 namespace Annium.Mesh.Tests.System.Domain;
 
-public class EchoRequest : RequestBase
+public class EchoRequest
 {
     public string Message { get; }
 
