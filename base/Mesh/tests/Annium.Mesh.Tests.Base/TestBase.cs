@@ -12,7 +12,7 @@ using Action = Annium.Mesh.Tests.System.Domain.Action;
 namespace Annium.Mesh.Tests.Base;
 
 public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
-    where TBehavior : IBehavior
+    where TBehavior : class, IBehavior
 {
     private readonly Lazy<TBehavior> _behavior;
     private readonly CancellationTokenSource _serverCts = new();

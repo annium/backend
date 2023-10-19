@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 namespace Annium.Mesh.Tests.Base;
 
 public abstract class EventTestsBase<TBehavior> : TestBase<TBehavior>
-    where TBehavior : IBehavior
+    where TBehavior : class, IBehavior
 {
     protected EventTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {

@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 namespace Annium.Mesh.Tests.Base;
 
 public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
-    where TBehavior : IBehavior
+    where TBehavior : class, IBehavior
 {
     protected RequestTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
@@ -51,16 +51,13 @@ public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
         var range = Enumerable.Range(0, 500).Select(x => x.ToString()).ToArray();
 
         // act
-        await Task.WhenAll(
-            range
-                .Select(async x =>
-                {
-                    this.Trace("send request");
-                    var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetData();
-                    this.Trace("add response");
-                    responses.Add(response);
-                })
-        );
+        await Task.WhenAll(range.Select(async x =>
+        {
+            this.Trace("send request");
+            var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetData();
+            this.Trace("add response");
+            responses.Add(response);
+        }));
 
         // assert
         var set = new HashSet<string?>(responses);

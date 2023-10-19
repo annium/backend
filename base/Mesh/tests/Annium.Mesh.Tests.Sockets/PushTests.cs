@@ -18,7 +18,7 @@ public class PushTests : PushTestsBase<Behavior>
     {
         this.Trace("start");
 
-        await Push_Base();
+        await Counter_Base();
 
         this.Trace("done");
     }

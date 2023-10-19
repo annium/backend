@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 namespace Annium.Mesh.Tests.Base;
 
 public abstract class SubscriptionTestsBase<TBehavior> : TestBase<TBehavior>
-    where TBehavior : IBehavior
+    where TBehavior : class, IBehavior
 {
     protected SubscriptionTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
     {
