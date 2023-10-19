@@ -1,7 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Mesh.Domain;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Reflection;
@@ -46,8 +49,9 @@ public class ServerConfigurationOptions
             if (!actions.Remove(action))
                 throw new InvalidOperationException($"Action {action} is outside of known actions");
 
-            var actionKey = new ActionKey(version, Convert.ToInt32(action), action.ToString());
+            var actionKey = new ActionKey(version, Convert.ToInt32(action));
             RegisterHandler(actionKey, implementation);
+            _container.Add(implementation).AsSelf().Singleton();
         }
 
         if (actions.Count > 0)
@@ -56,32 +60,67 @@ public class ServerConfigurationOptions
 
     private void RegisterHandler(ActionKey actionKey, Type implementation)
     {
-        if (TryResolveHandler(implementation, typeof(IRequestHandler<,>), out var args))
-        {
-            _container.Add(implementation).AsSelf().Singleton();
-            _routeStore.RequestRoutes.Register(actionKey, new RequestData(implementation, args[1]));
+        if (RegisterRequestHandler(actionKey, implementation))
             return;
-        }
 
-        if (TryResolveHandler(implementation, typeof(IRequestResponseHandler<,,>), out args))
-        {
-            _routeStore.RequestResponseRoutes.Register(actionKey, new RequestResponseData(implementation, args[1], args[2]));
+        if (RegisterRequestResponseHandler(actionKey, implementation))
             return;
-        }
 
         throw new InvalidOperationException($"Failed to resolve handler type {implementation.FriendlyName()} ({actionKey})");
     }
 
-    private static bool TryResolveHandler(Type handlerType, Type targetType, [NotNullWhen(true)] out Type[]? args)
+    private bool RegisterRequestHandler(ActionKey actionKey, Type implementation)
+    {
+        if (!TryResolveHandler(
+            implementation,
+            typeof(IRequestHandler<,>),
+            nameof(IRequestHandler<MessageType, object>.HandleAsync),
+            out var info
+        ))
+            return false;
+
+        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
+        _routeStore.RequestRoutes.Register(actionKey, new RequestData(implementation, info.Handle, info.Args[1], resultProperty));
+
+        return true;
+    }
+
+    private bool RegisterRequestResponseHandler(ActionKey actionKey, Type implementation)
+    {
+        if (!TryResolveHandler(
+            implementation,
+            typeof(IRequestResponseHandler<,,>),
+            nameof(IRequestResponseHandler<MessageType, object, object>.HandleAsync),
+            out var info
+        ))
+            return false;
+
+        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
+        _routeStore.RequestRoutes.Register(actionKey, new RequestData(implementation, info.Handle, info.Args[1], resultProperty));
+
+        return true;
+    }
+
+    private static bool TryResolveHandler(
+        Type handlerType,
+        Type targetType,
+        string handleName,
+        [NotNullWhen(true)] out HandlerInfo? info
+    )
     {
         var implementationType = handlerType.GetInterfaces()
             .SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == targetType);
 
-        args = null;
+        info = null;
         if (implementationType is null)
             return false;
 
-        args = implementationType.GetGenericArguments();
+        var handle = implementationType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+            .Single(x => x.Name == handleName);
+        var args = implementationType.GetGenericArguments();
+        info = new HandlerInfo(handle, args);
         return true;
     }
+
+    private record HandlerInfo(MethodInfo Handle, Type[] Args);
 }

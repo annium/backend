@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Annium.Mesh.Server.Internal.Routing;
 
@@ -12,5 +13,10 @@ internal class RouteTypeStore<T>
         if (_routes.TryGetValue(actionKey, out var existing))
             throw new InvalidOperationException($"Action {actionKey} is already registered by {existing}");
         _routes.Add(actionKey, data);
+    }
+
+    public bool TryGet(ActionKey actionKey, [MaybeNullWhen(false)] out T route)
+    {
+        return _routes.TryGetValue(actionKey, out route);
     }
 }

@@ -70,7 +70,7 @@ internal class BroadcastCoordinator : ILogSubject, IAsyncDisposable
         if (connections.Count == 0)
             return;
 
-        var data = _serializer.Serialize(message);
+        var data = _serializer.SerializeData(message);
         Task.WhenAll(connections.Select(async x => await x.SendAsync(data)));
     }
 }
