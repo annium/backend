@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
@@ -42,20 +43,26 @@ public class ServerConfigurationOptions
             .ToArray();
 
         var actions = Enum.GetValues<TAction>().ToHashSet();
+        var registrations = new Dictionary<TAction, Type>();
 
         foreach (var implementation in implementations)
         {
             var action = implementation.GetProperty(nameof(IHandlerBase<TAction>.Action))!.GetPropertyOrFieldValue<TAction>();
-            if (!actions.Remove(action))
-                throw new InvalidOperationException($"Action {action} is outside of known actions");
+            if (!actions.Contains(action))
+                throw new InvalidOperationException($"Action {action} is outside of known action values");
+
+            if (registrations.TryGetValue(action, out var existingImplementation))
+                throw new InvalidOperationException($"Action {action} is already used by {existingImplementation.FriendlyName()}");
 
             var actionKey = new ActionKey(version, Convert.ToInt32(action));
             RegisterHandler(actionKey, implementation);
             _container.Add(implementation).AsSelf().Singleton();
+            registrations.Add(action, implementation);
         }
 
-        if (actions.Count > 0)
-            throw new InvalidOperationException($"Actions {string.Join(", ", actions)} are not mapped to any handlers");
+        var unregisteredActions = actions.Except(registrations.Keys).ToArray();
+        if (unregisteredActions.Length > 0)
+            throw new InvalidOperationException($"Actions: {string.Join(", ", unregisteredActions)} - are not mapped to any handlers");
     }
 
     private void RegisterHandler(ActionKey actionKey, Type implementation)
@@ -64,6 +71,9 @@ public class ServerConfigurationOptions
             return;
 
         if (RegisterRequestResponseHandler(actionKey, implementation))
+            return;
+
+        if (RegisterPushHandler(actionKey, implementation))
             return;
 
         throw new InvalidOperationException($"Failed to resolve handler type {implementation.FriendlyName()} ({actionKey})");
@@ -80,7 +90,7 @@ public class ServerConfigurationOptions
             return false;
 
         var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
-        _routeStore.RequestRoutes.Register(actionKey, new RequestData(implementation, info.Handle, info.Args[1], resultProperty));
+        _routeStore.RequestRoutes.Register(actionKey, new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty));
 
         return true;
     }
@@ -96,7 +106,22 @@ public class ServerConfigurationOptions
             return false;
 
         var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
-        _routeStore.RequestRoutes.Register(actionKey, new RequestData(implementation, info.Handle, info.Args[1], resultProperty));
+        _routeStore.RequestRoutes.Register(actionKey, new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty));
+
+        return true;
+    }
+
+    private bool RegisterPushHandler(ActionKey actionKey, Type implementation)
+    {
+        if (!TryResolveHandler(
+            implementation,
+            typeof(IPushHandler<,>),
+            nameof(IPushHandler<MessageType, object>.RunAsync),
+            out var info
+        ))
+            return false;
+
+        _routeStore.PushRoutes.Register(actionKey, new PushRoute(implementation, info.Handle, info.Args[1]));
 
         return true;
     }

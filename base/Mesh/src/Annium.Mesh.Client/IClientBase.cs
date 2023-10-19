@@ -9,10 +9,9 @@ namespace Annium.Mesh.Client;
 
 public interface IClientBase : ILogSubject
 {
-    // // broadcast/push
-    // IObservable<TNotification> Listen<TNotification>()
-    //     where TNotification : NotificationBaseObsolete;
-    //
+    // broadcast/push
+    IObservable<TNotification> Listen<TNotification>();
+
     // // event
     // void Notify<TEvent>(
     //     TEvent ev

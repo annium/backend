@@ -24,7 +24,7 @@ internal abstract class ClientBase : IClientBase
     private readonly DisposableBox _disposable;
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
     private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
-    private readonly IObservable<Message> _messageObservable;
+    private readonly IObservable<Message> _messages;
     private bool _isDisposed;
 
     protected ClientBase(
@@ -39,27 +39,35 @@ internal abstract class ClientBase : IClientBase
         _connection = connection;
         _serializer = serializer;
         _configuration = configuration;
+
+        this.Trace("start");
         _disposable = Disposable.Box(logger);
-
-
         _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
-        _messageObservable = _connection.Observe().Select(serializer.DeserializeMessage).Publish().RefCount();
-        _disposable += _messageObservable
+        _messages = _connection.Observe().Select(serializer.DeserializeMessage).Publish().RefCount();
+        _disposable += _messages
             .Where(x => x.Type is MessageType.ConnectionReady)
             .Subscribe(_ => HandleConnectionReady());
-        _disposable += _messageObservable
+        _disposable += _messages
             .Where(x => x.Type is MessageType.Response or MessageType.SubscriptionConfirm)
             .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe(HandleResponseMessage);
+        this.Trace("done");
     }
-    //
-    // // broadcast
-    // public IObservable<TNotification> Listen<TNotification>()
-    //     where TNotification : NotificationBaseObsolete
-    // {
-    //     return _messageObservable.OfType<TNotification>();
-    // }
-    //
+
+    // broadcast
+    public IObservable<TNotification> Listen<TNotification>()
+    {
+        return _messages
+            .Where(x => x.Type is MessageType.Push)
+            .Select(x =>
+            {
+                this.Trace<Message, string>("try parse {message} as {type}", x, typeof(TNotification).FriendlyName());
+                return _serializer.DeserializeData(x.Data, typeof(TNotification));
+            })!
+            .OfType<TNotification>()
+            .SubscribeOn(TaskPoolScheduler.Default);
+    }
+
     // // event
     // public void Notify<TEvent>(
     //     TEvent ev

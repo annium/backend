@@ -2,5 +2,6 @@ namespace Annium.Mesh.Server.Internal.Routing;
 
 internal class RouteStore
 {
-    public RouteTypeStore<RequestData> RequestRoutes { get; } = new();
+    public RouteTypeStore<RequestRoute> RequestRoutes { get; } = new();
+    public RouteTypeStore<PushRoute> PushRoutes { get; } = new();
 }

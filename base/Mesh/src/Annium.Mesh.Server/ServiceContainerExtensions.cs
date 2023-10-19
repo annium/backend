@@ -33,7 +33,7 @@ public static class ServiceContainerExtensions
         container.Add<ConnectionContext>().AsSelf().Scoped();
         container.Add<LifeCycleCoordinator>().AsSelf().Scoped();
         container.Add<MessageHandler>().AsSelf().Scoped();
-        container.Add<PusherCoordinator>().AsSelf().Singleton();
+        container.Add<PushCoordinator>().AsSelf().Scoped();
 
         // internal - handlers
         container.AddAll()

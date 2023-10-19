@@ -22,7 +22,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly LifeCycleCoordinator _lifeCycleCoordinator;
     private readonly MessageHandler _messageHandler;
-    private readonly PusherCoordinator _pusherCoordinator;
+    private readonly PushCoordinator _pushCoordinator;
     private readonly ISerializer _serializer;
     private readonly IBackgroundExecutor _executor;
 
@@ -31,7 +31,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
         LifeCycleCoordinator lifeCycleCoordinator,
         MessageHandler messageHandler,
-        PusherCoordinator pusherCoordinator,
+        PushCoordinator pushCoordinator,
         ISerializer serializer,
         ILogger logger
     )
@@ -43,7 +43,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         _connectionBoundStores = connectionBoundStores;
         _lifeCycleCoordinator = lifeCycleCoordinator;
         _messageHandler = messageHandler;
-        _pusherCoordinator = pusherCoordinator;
+        _pushCoordinator = pushCoordinator;
         _serializer = serializer;
 
         _executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
@@ -72,7 +72,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 
             // execute run hook
             this.Trace("cn {id} - start push handlers", _cid);
-            var pusherTask = _pusherCoordinator.RunAsync(_cid, _cts.Token);
+            var pushTask = _pushCoordinator.RunAsync(_cid, _cn, _cts.Token);
 
             // start scheduler to process backlog and run upcoming work immediately
             this.Trace("cn {id} - start executor", _cid);
@@ -80,7 +80,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 
             // wait until connection complete
             this.Trace("cn {id} - wait until connection complete (handlers & pushers)", _cid);
-            await Task.WhenAll(_tcs.Task, pusherTask);
+            await Task.WhenAll(_tcs.Task, pushTask);
 
             this.Trace("cn {id} - cleanup connection-bound stores", _cid);
             await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cid)));

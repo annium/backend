@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Annium.Mesh.Server.Internal.Routing;
 
@@ -18,5 +19,10 @@ internal class RouteTypeStore<T>
     public bool TryGet(ActionKey actionKey, [MaybeNullWhen(false)] out T route)
     {
         return _routes.TryGetValue(actionKey, out route);
+    }
+
+    public IReadOnlyCollection<KeyValuePair<ActionKey, T>> List()
+    {
+        return _routes.ToArray();
     }
 }

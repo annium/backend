@@ -29,10 +29,12 @@ internal class Client : ClientBase, IClient
         logger
     )
     {
+        this.Trace("start");
         _connection = connection;
         _connection.OnConnected += HandleConnected;
         _connection.OnDisconnected += HandleDisconnected;
         _connection.OnError += HandleError;
+        this.Trace("done");
     }
 
     public void Connect()
