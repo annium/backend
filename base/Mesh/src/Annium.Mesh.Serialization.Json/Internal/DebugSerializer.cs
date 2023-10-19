@@ -1,7 +1,9 @@
 using System;
 using System.Text;
+using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
+using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;
 
@@ -9,6 +11,14 @@ namespace Annium.Mesh.Serialization.Json.Internal;
 
 internal class DebugSerializer : ISerializer, ILogSubject
 {
+    private static readonly JsonSerializerOptions MessageOpts;
+
+    static DebugSerializer()
+    {
+        MessageOpts = new JsonSerializerOptions();
+        MessageOpts.Converters.Add(new MessageConverter());
+    }
+
     public ILogger Logger { get; }
     private readonly ISerializer<string> _serializer;
 
@@ -22,7 +32,29 @@ internal class DebugSerializer : ISerializer, ILogSubject
         _serializer = serializers[key];
     }
 
-    public ReadOnlyMemory<byte> Serialize<T>(T value)
+    public ReadOnlyMemory<byte> SerializeMessage(Message message)
+    {
+        this.Trace("start: {message}", message);
+
+        var data = JsonSerializer.SerializeToUtf8Bytes(message, MessageOpts);
+
+        this.Trace("done: {length} bytes", data.Length);
+
+        return data;
+    }
+
+    public Message DeserializeMessage(ReadOnlyMemory<byte> data)
+    {
+        this.Trace("start: {size} bytes", data.Length);
+
+        var message = JsonSerializer.Deserialize<Message>(data.Span, MessageOpts)!;
+
+        this.Trace("done: {message}", message);
+
+        return message;
+    }
+
+    public ReadOnlyMemory<byte> SerializeData<T>(T value)
     {
         var str = _serializer.Serialize(value);
         this.Trace<string>("string: {value}", str);
@@ -33,14 +65,14 @@ internal class DebugSerializer : ISerializer, ILogSubject
         return raw;
     }
 
-    public T Deserialize<T>(ReadOnlyMemory<byte> data)
+    public object? DeserializeData(ReadOnlyMemory<byte> data, Type type)
     {
         this.Trace<int, string>("raw({length}): {value}", data.Length, string.Join(',', data.ToArray()));
 
         var str = Encoding.UTF8.GetString(data.Span);
         this.Trace<string>("string: {value}", str);
 
-        var value = _serializer.Deserialize<T>(str);
+        var value = _serializer.Deserialize(type, str);
 
         return value;
     }

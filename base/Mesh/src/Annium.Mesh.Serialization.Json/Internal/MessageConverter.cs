@@ -16,6 +16,7 @@ internal class MessageConverter : JsonConverter<Message>
 
         var currentDepth = reader.CurrentDepth;
 
+        var id = Guid.Empty;
         ushort version = 0;
         var type = MessageType.None;
         var action = 0;
@@ -25,13 +26,14 @@ internal class MessageConverter : JsonConverter<Message>
         {
             if (reader.TokenType == JsonTokenType.EndObject && reader.CurrentDepth == currentDepth)
             {
-                if (type is MessageType.None)
+                if (id == Guid.Empty || type is MessageType.None)
                 {
                     return default;
                 }
 
                 var message = new Message
                 {
+                    Id = id,
                     Version = version,
                     Type = type,
                     Action = action,
@@ -49,6 +51,9 @@ internal class MessageConverter : JsonConverter<Message>
 
                 switch (propertyName)
                 {
+                    case "i":
+                        id = reader.GetGuid();
+                        break;
                     case "v":
                         version = reader.GetUInt16();
                         break;
@@ -74,6 +79,7 @@ internal class MessageConverter : JsonConverter<Message>
     public override void Write(Utf8JsonWriter writer, Message value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
+        writer.WriteString("i", value.Id.ToString());
         writer.WriteNumber("v", value.Version);
         writer.WriteNumber("t", (int)value.Type);
         writer.WriteNumber("a", value.Action);

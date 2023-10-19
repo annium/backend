@@ -14,12 +14,7 @@ public static class ServiceContainerExtensions
     )
     {
         container.Add<ISerializer, Serializer>().Singleton();
-        container.AddSerializers(Constants.SerializerKey)
-            .WithJson(opts =>
-            {
-                //
-                opts.Converters.Add(new MessageConverter());
-            });
+        container.AddSerializers(Constants.SerializerKey).WithJson();
 
         return container;
     }
