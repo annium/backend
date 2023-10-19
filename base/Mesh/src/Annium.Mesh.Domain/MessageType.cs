@@ -6,7 +6,6 @@ public enum MessageType
     ConnectionReady = 1,
     Request = 10,
     Response = 11,
-    DataResponse = 12,
     Event = 20,
     Push = 21,
     SubscriptionInit = 30,

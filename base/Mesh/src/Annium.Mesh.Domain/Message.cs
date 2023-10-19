@@ -4,6 +4,7 @@ namespace Annium.Mesh.Domain;
 
 public sealed class Message
 {
+    public Guid Id { get; init; } = Guid.NewGuid();
     public ushort Version { get; init; }
     public MessageType Type { get; init; }
     public int Action { get; init; }
