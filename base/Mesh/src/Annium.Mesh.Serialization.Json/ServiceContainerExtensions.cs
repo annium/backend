@@ -22,6 +22,7 @@ public static class ServiceContainerExtensions
     public static IServiceContainer AddMeshJsonDebugSerialization(this IServiceContainer container)
     {
         container.Add<ISerializer, DebugSerializer>().Singleton();
+        container.AddSerializers(Constants.SerializerKey).WithJson();
 
         return container;
     }
