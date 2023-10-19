@@ -1,9 +1,9 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Logging;
-using Annium.Mesh.Domain;
 
 namespace Annium.Mesh.Client;
 
@@ -21,23 +21,29 @@ public interface IClientBase : ILogSubject
 
     // request -> void
     Task<IStatusResult<OperationStatus>> SendAsync(
-        RequestBase request,
+        ushort version,
+        Enum action,
+        object request,
         CancellationToken ct = default
     );
 
     // request -> response
-    Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-        RequestBase request,
+    Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
+        ushort version,
+        Enum action,
+        object request,
         CancellationToken ct = default
-    );
+    ) where TData : notnull;
 
-    // // request -> response with default value
-    // Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-    //     RequestBaseObsolete request,
-    //     TResponse defaultValue,
-    //     CancellationToken ct = default
-    // );
-    //
+    // request -> response with default value
+    Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
+        ushort version,
+        Enum action,
+        object request,
+        TData defaultValue,
+        CancellationToken ct = default
+    ) where TData : notnull;
+
     // // subscription
     // Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
     //     TInit request,

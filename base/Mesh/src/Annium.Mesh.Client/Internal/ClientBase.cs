@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
+using Annium.Collections.Generic;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Domain;
@@ -19,10 +21,8 @@ internal abstract class ClientBase : IClientBase
     private readonly ISendingReceivingConnection _connection;
     private readonly ISerializer _serializer;
     private readonly IClientConfiguration _configuration;
-
     private readonly DisposableBox _disposable;
-
-    // private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
+    private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
     private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
     private readonly IObservable<Message> _messageObservable;
     private bool _isDisposed;
@@ -41,15 +41,16 @@ internal abstract class ClientBase : IClientBase
         _configuration = configuration;
         _disposable = Disposable.Box(logger);
 
-        // _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
 
-        _messageObservable = _connection.Observe().Select(serializer.Deserialize<Message>).Publish().RefCount();
+        _requestFutures = new ExpiringDictionary<Guid, RequestFuture>(timeProvider);
+        _messageObservable = _connection.Observe().Select(serializer.DeserializeMessage).Publish().RefCount();
         _disposable += _messageObservable
             .Where(x => x.Type is MessageType.ConnectionReady)
             .Subscribe(_ => HandleConnectionReady());
-        // _disposable += _messageObservable.OfType<ResponseBaseObsolete>()
-        //     .SubscribeOn(TaskPoolScheduler.Default)
-        //     .Subscribe(CompleteResponse);
+        _disposable += _messageObservable
+            .Where(x => x.Type is MessageType.Response or MessageType.SubscriptionConfirm)
+            .SubscribeOn(TaskPoolScheduler.Default)
+            .Subscribe(HandleResponseMessage);
     }
     //
     // // broadcast
@@ -70,34 +71,40 @@ internal abstract class ClientBase : IClientBase
 
     // request -> void
     public Task<IStatusResult<OperationStatus>> SendAsync(
-        RequestBase request,
+        ushort version,
+        Enum action,
+        object request,
         CancellationToken ct = default
     )
     {
-        throw new NotImplementedException();
-        // return FetchInternal(request, ct);
+        return FetchInternal(version, action, request, ct);
     }
 
     // request -> response
-    public Task<IStatusResult<OperationStatus, TData>> FetchAsync<TData>(
-        RequestBase request,
+    public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
+        ushort version,
+        Enum action,
+        object request,
         CancellationToken ct = default
     )
+        where TData : notnull
     {
-        throw new NotImplementedException();
-        // return FetchInternal(request, default(TData)!, ct);
+        return FetchInternal(version, action, request, default(TData)!, ct);
     }
 
-    // // request -> response with default value
-    // public Task<IStatusResult<OperationStatus, TResponse>> FetchAsync<TResponse>(
-    //     RequestBaseObsolete request,
-    //     TResponse defaultValue,
-    //     CancellationToken ct = default
-    // )
-    // {
-    //     return FetchInternal(request, defaultValue, ct);
-    // }
-    //
+    // request -> response with default value
+    public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
+        ushort version,
+        Enum action,
+        object request,
+        TData defaultValue,
+        CancellationToken ct = default
+    )
+        where TData : notnull
+    {
+        return FetchInternal(version, action, request, defaultValue, ct);
+    }
+
     // // init subscription
     // public async Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(
     //     TInit request,
@@ -183,110 +190,145 @@ internal abstract class ClientBase : IClientBase
     protected abstract void HandleDispose();
 
     protected abstract void HandleConnectionReady();
-    //
-    // private async Task<IStatusResult<OperationStatus>> FetchInternal<TRequest>(
-    //     TRequest request,
-    //     CancellationToken ct
-    // )
-    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-    // {
-    //     var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete>(request, ct);
-    //
-    //     return response?.Result ?? result;
-    // }
-    //
-    // private async Task<IStatusResult<OperationStatus, TData>> FetchInternal<TRequest, TData>(
-    //     TRequest request,
-    //     TData defaultValue,
-    //     CancellationToken ct
-    // )
-    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-    // {
-    //     var (result, response) = await FetchRaw<TRequest, ResultResponseObsolete<TData>>(request, ct);
-    //
-    //     return response?.Result ?? Result.Status(result.Status, defaultValue).Join(result);
-    // }
-    //
-    // private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TRequest, TResponse>(
-    //     TRequest request,
-    //     CancellationToken ct
-    // )
-    //     where TRequest : AbstractRequestBaseObsolete // because Subscription controls also go here
-    //     where TResponse : ResponseBaseObsolete
-    // {
-    //     var tcs = new TaskCompletionSource<ResponseBaseObsolete>();
-    //     var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
-    //     // external token - operation canceled
-    //     ct.Register(() =>
-    //     {
-    //         // if not arrived and not expired - cancel
-    //         if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
-    //         {
-    //             this.Trace("request {requestId} - cancel operation", request.Rid);
-    //             cts.Cancel();
-    //             tcs.TrySetException(new OperationCanceledException(ct));
-    //         }
-    //     });
-    //     cts.Token.Register(() =>
-    //     {
-    //         // if not arrived and not canceled - expire
-    //         if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
-    //         {
-    //             this.Trace("request {requestId} - cancel by timeout", request.Rid);
-    //             tcs.TrySetException(new TimeoutException());
-    //         }
-    //     });
-    //
-    //     _requestFutures.Add(request.Rid, new RequestFuture(tcs, cts), _configuration.ResponseTimeout);
-    //
-    //     try
-    //     {
-    //         if (!await SendInternal(request))
-    //             return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), null);
-    //
-    //         var response = (TResponse)await tcs.Task;
-    //         return (Result.Status(OperationStatus.Ok), response);
-    //     }
-    //     catch (OperationCanceledException)
-    //     {
-    //         return (Result.Status(OperationStatus.Aborted), null);
-    //     }
-    //     catch (TimeoutException)
-    //     {
-    //         return (Result.Status(OperationStatus.Timeout).Error("Operation timed out"), null);
-    //     }
-    //     catch (Exception e)
-    //     {
-    //         return (Result.Status(OperationStatus.UncaughtError).Error(e.Message), null);
-    //     }
-    // }
-    //
-    // private async Task<bool> SendInternal<T>(T request)
-    //     where T : AbstractRequestBaseObsolete
-    // {
-    //     this.Trace("send request {requestType}#{requestId}", request.Tid, request.Rid);
-    //     var result = await _connection.SendAsync(_serializer.Serialize(request), CancellationToken.None);
-    //
-    //     return result is ConnectionSendStatus.Ok;
-    // }
-    //
-    // private void CompleteResponse(ResponseBaseObsolete response)
-    // {
-    //     if (_requestFutures.Remove(response.Rid, out var future))
-    //     {
-    //         if (!future.CancellationSource.IsCancellationRequested)
-    //         {
-    //             this.Trace("complete response {responseType}#{responseId}", response.Tid, response.Rid);
-    //             future.TaskSource.TrySetResult(response);
-    //         }
-    //         else
-    //             this.Trace("dismiss cancelled response {responseType}#{responseId}", response.Tid, response.Rid);
-    //     }
-    //     else
-    //         this.Trace("dismiss unknown response {responseType}#{responseId}", response.Tid, response.Rid);
-    // }
-    //
-    // private record struct RequestFuture(TaskCompletionSource<ResponseBaseObsolete> TaskSource, CancellationTokenSource CancellationSource);
+
+    private async Task<IStatusResult<OperationStatus>> FetchInternal(
+        ushort version,
+        Enum action,
+        object request,
+        CancellationToken ct
+    )
+    {
+        var (result, response) = await FetchRaw<IStatusResult<OperationStatus>>(version, action, request, ct);
+
+        return response ?? result;
+    }
+
+    private async Task<IStatusResult<OperationStatus, TData?>> FetchInternal<TData>(
+        ushort version,
+        Enum action,
+        object request,
+        TData defaultValue,
+        CancellationToken ct
+    )
+        where TData : notnull
+    {
+        var (result, response) = await FetchRaw<IStatusResult<OperationStatus, TData?>>(version, action, request, ct);
+
+        return response ?? Result.Status<OperationStatus, TData?>(result.Status, defaultValue).Join(result);
+    }
+
+    private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TResponse>(
+        ushort version,
+        Enum action,
+        object request,
+        CancellationToken ct
+    )
+        where TResponse : notnull
+    {
+        var id = Guid.NewGuid();
+        var tcs = new TaskCompletionSource<object>();
+        using var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
+        // external token - operation canceled
+        ct.Register(() =>
+        {
+            // if not arrived and not expired - cancel
+            if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)
+            {
+                this.Trace("request {id} - cancel operation", id);
+                cts.Cancel();
+                tcs.TrySetException(new OperationCanceledException(ct));
+            }
+        });
+        cts.Token.Register(() =>
+        {
+            // if not arrived and not canceled - expire
+            if (!tcs.Task.IsCompleted && !ct.IsCancellationRequested)
+            {
+                this.Trace("request {id} - cancel by timeout", id);
+                tcs.TrySetException(new TimeoutException());
+            }
+        });
+
+        _requestFutures.Add(id, new RequestFuture(tcs, cts, typeof(TResponse)), _configuration.ResponseTimeout);
+
+        try
+        {
+            var data = _serializer.SerializeData(request);
+            var message = new Message
+            {
+                Id = id,
+                Version = version,
+                Type = MessageType.Request,
+                Action = Convert.ToInt32(action),
+                Data = data
+            };
+            if (!await SendInternal(message))
+                return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), default);
+
+            var response = (TResponse)await tcs.Task;
+            return (Result.Status(OperationStatus.Ok), response);
+        }
+        catch (OperationCanceledException)
+        {
+            return (Result.Status(OperationStatus.Aborted), default);
+        }
+        catch (TimeoutException)
+        {
+            return (Result.Status(OperationStatus.Timeout).Error("Operation timed out"), default);
+        }
+        catch (Exception e)
+        {
+            return (Result.Status(OperationStatus.UncaughtError).Error(e.Message), default);
+        }
+    }
+
+    private async Task<bool> SendInternal(Message message)
+    {
+        this.Trace("send message {message}", message);
+        var result = await _connection.SendAsync(_serializer.SerializeMessage(message), CancellationToken.None);
+
+        return result is ConnectionSendStatus.Ok;
+    }
+
+    private void HandleResponseMessage(Message message)
+    {
+        if (!_requestFutures.Remove(message.Id, out var future))
+            return;
+
+        if (future.CancellationSource.IsCancellationRequested)
+        {
+            this.Trace("dismiss message {message} - request was cancelled", message);
+            return;
+        }
+
+        var response = ParseResponseMessage(message, future.ResponseType);
+        if (response is null)
+        {
+            this.Error("failed to parse response from message {message}", message);
+            return;
+        }
+
+        this.Trace("complete future with response from message {message}", message);
+        future.TaskSource.TrySetResult(response);
+    }
+
+    private object? ParseResponseMessage(Message message, Type? responseType)
+    {
+        this.Trace("parse message {message} to response", message);
+
+        if (responseType is null)
+        {
+            this.Trace("parsing message {message} to data response failed - no response type stored with future", message);
+            return null;
+        }
+
+        var response = _serializer.DeserializeData(message.Data, responseType);
+        this.Trace("parsed message {message} to response {response}", message, response);
+
+        return response;
+    }
+
+    private record struct RequestFuture(TaskCompletionSource<object> TaskSource, CancellationTokenSource CancellationSource, Type? ResponseType);
 
     private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }
