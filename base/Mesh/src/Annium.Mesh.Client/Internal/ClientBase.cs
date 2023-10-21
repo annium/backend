@@ -62,7 +62,7 @@ internal abstract class ClientBase : IClientBase
             .Select(x =>
             {
                 this.Trace<Message, string>("try parse {message} as {type}", x, typeof(TNotification).FriendlyName());
-                return _serializer.DeserializeData(x.Data, typeof(TNotification));
+                return _serializer.DeserializeData(typeof(TNotification), x.Data);
             })!
             .OfType<TNotification>()
             .SubscribeOn(TaskPoolScheduler.Default);
@@ -261,7 +261,7 @@ internal abstract class ClientBase : IClientBase
 
         try
         {
-            var data = _serializer.SerializeData(request);
+            var data = _serializer.SerializeData(request.GetType(), request);
             var message = new Message
             {
                 Id = id,
@@ -330,7 +330,7 @@ internal abstract class ClientBase : IClientBase
             return null;
         }
 
-        var response = _serializer.DeserializeData(message.Data, responseType);
+        var response = _serializer.DeserializeData(responseType, message.Data);
         this.Trace("parsed message {message} to response {response}", message, response);
 
         return response;

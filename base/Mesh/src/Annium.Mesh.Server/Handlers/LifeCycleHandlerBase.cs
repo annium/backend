@@ -1,5 +1,4 @@
 using System.Threading.Tasks;
-using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Handlers;
 

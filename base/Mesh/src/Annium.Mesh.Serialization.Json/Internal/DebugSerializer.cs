@@ -54,9 +54,9 @@ internal class DebugSerializer : ISerializer, ILogSubject
         return message;
     }
 
-    public ReadOnlyMemory<byte> SerializeData<T>(T value)
+    public ReadOnlyMemory<byte> SerializeData(Type type, object? value)
     {
-        var str = _serializer.Serialize(value);
+        var str = _serializer.Serialize(type, value);
         this.Trace<string>("string: {value}", str);
 
         var raw = Encoding.UTF8.GetBytes(str);
@@ -65,7 +65,7 @@ internal class DebugSerializer : ISerializer, ILogSubject
         return raw;
     }
 
-    public object? DeserializeData(ReadOnlyMemory<byte> data, Type type)
+    public object? DeserializeData(Type type, ReadOnlyMemory<byte> data)
     {
         this.Trace<int, string>("raw({length}): {value}", data.Length, string.Join(',', data.ToArray()));
 

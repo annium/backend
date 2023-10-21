@@ -23,7 +23,7 @@ public static class ServiceContainerExtensions
         // internal - server level components
         container.Add<ServerLifetime>().AsInterfaces().Singleton();
         container.Add<ConnectionTracker>().AsSelf().Singleton();
-        container.Add<BroadcastCoordinator>().AsSelf().Singleton();
+        // container.Add<BroadcastCoordinator>().AsSelf().Singleton();
 
         // internal - server level stores
         // container.Add<SubscriptionContextStore>().AsSelf().AsInterfaces().Singleton();

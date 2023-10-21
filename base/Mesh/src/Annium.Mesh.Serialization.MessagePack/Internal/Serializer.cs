@@ -1,20 +1,24 @@
 using System;
-using System.Text.Json;
 using Annium.Core.DependencyInjection;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;
+using MessagePack;
+using MessagePack.Resolvers;
 
-namespace Annium.Mesh.Serialization.Json.Internal;
+namespace Annium.Mesh.Serialization.MessagePack.Internal;
 
 internal class Serializer : ISerializer
 {
-    private static readonly JsonSerializerOptions MessageOpts;
+    private static readonly MessagePackSerializerOptions MessageOpts;
 
     static Serializer()
     {
-        MessageOpts = new JsonSerializerOptions();
-        MessageOpts.Converters.Add(new MessageConverter());
+        var resolver = CompositeResolver.Create(
+            new FormatterResolver(),
+            MessagePackSerializerOptions.Standard.Resolver
+        );
+        MessageOpts = new MessagePackSerializerOptions(resolver);
     }
 
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
@@ -23,20 +27,20 @@ internal class Serializer : ISerializer
         IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers
     )
     {
-        var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);
+        var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.MessagePack.Constants.MediaType);
         _serializer = serializers[key];
     }
 
     public ReadOnlyMemory<byte> SerializeMessage(Message message)
     {
-        var data = JsonSerializer.SerializeToUtf8Bytes(message, MessageOpts);
+        var data = MessagePackSerializer.Serialize(message, MessageOpts);
 
         return data;
     }
 
     public Message DeserializeMessage(ReadOnlyMemory<byte> data)
     {
-        var message = JsonSerializer.Deserialize<Message>(data.Span, MessageOpts)!;
+        var message = MessagePackSerializer.Deserialize<Message>(data, MessageOpts);
 
         return message;
     }

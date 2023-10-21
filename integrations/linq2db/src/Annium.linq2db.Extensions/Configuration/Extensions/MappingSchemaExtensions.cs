@@ -22,7 +22,7 @@ public static class MappingSchemaExtensions
     {
         var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>();
         var serializer = serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)];
-        var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] { typeof(object) })!;
+        var serialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Serialize), new[] { typeof(Type), typeof(object) })!;
         var deserialize = typeof(ISerializer<string>).GetMethod(nameof(ISerializer<string>.Deserialize), new[] { typeof(Type), typeof(string) })!;
 
         return schema.Configure(db =>
@@ -55,7 +55,7 @@ public static class MappingSchemaExtensions
                     var instance = Expression.Constant(serializer);
                     var serializeValue = Expression.Parameter(column.Type);
                     var serializeFn = Expression.Lambda(
-                        Expression.Call(instance, serialize, serializeValue),
+                        Expression.Call(instance, serialize, new Expression[] { Expression.Constant(column.Type), serializeValue }),
                         serializeValue
                     ).Compile();
                     var deserializeType = Expression.Constant(column.Type);

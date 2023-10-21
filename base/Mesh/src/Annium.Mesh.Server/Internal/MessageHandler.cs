@@ -50,7 +50,7 @@ internal class MessageHandler : ILogSubject
             return;
         }
 
-        var request = _serializer.DeserializeData(message.Data, route.RequestType);
+        var request = _serializer.DeserializeData(route.RequestType, message.Data);
         if (request is null)
         {
             this.Error("failed to parse {type} request from {message}", route.RequestType.FriendlyName(), message);
@@ -74,7 +74,7 @@ internal class MessageHandler : ILogSubject
             Version = message.Version,
             Type = MessageType.Response,
             Action = message.Action,
-            Data = _serializer.SerializeData(data)
+            Data = _serializer.SerializeData(route.ResultProperty.PropertyType, data)
         };
         var response = _serializer.SerializeMessage(responseMessage);
 

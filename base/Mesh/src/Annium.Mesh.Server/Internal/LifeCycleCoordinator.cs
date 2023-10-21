@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Annium.Logging;
 using Annium.Mesh.Server.Handlers;
-using Annium.Mesh.Server.Internal.Models;
 
 namespace Annium.Mesh.Server.Internal;
 

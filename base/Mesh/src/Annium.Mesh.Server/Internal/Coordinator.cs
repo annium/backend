@@ -21,7 +21,7 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         IServiceProvider sp,
         IServerLifetimeManager lifetimeManager,
         ConnectionTracker connectionTracker,
-        BroadcastCoordinator broadcastCoordinator,
+        // BroadcastCoordinator broadcastCoordinator,
         ILogger logger
     )
     {
@@ -29,7 +29,7 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         _lifetimeManager = lifetimeManager;
         _connectionTracker = connectionTracker;
         Logger = logger;
-        broadcastCoordinator.Start();
+        // broadcastCoordinator.Start();
     }
 
     public async Task HandleAsync(IServerConnection connection)

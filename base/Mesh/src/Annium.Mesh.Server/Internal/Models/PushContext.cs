@@ -65,7 +65,7 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
         _executor.Schedule(async () =>
         {
             this.Trace("cn {id}: serialize {message}", _cid, msg);
-            var data = _serializer.SerializeData(msg);
+            var data = _serializer.SerializeData(typeof(T), msg);
             var message = new Message
             {
                 Version = _actionKey.Version,

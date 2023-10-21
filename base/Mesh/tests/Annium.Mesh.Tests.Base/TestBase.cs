@@ -26,7 +26,8 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
         {
             container.AddMeshServer(opts => opts.WithApi<Action>(1));
 
-            container.AddMeshJsonSerialization();
+            // container.AddMeshJsonSerialization();
+            container.AddMeshMessagePackSerialization();
             container.AddSerializers().WithJson(isDefault: true);
             container.Add<SharedDataContainer>().AsSelf().Singleton();
 

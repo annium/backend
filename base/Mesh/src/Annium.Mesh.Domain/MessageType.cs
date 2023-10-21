@@ -1,6 +1,6 @@
 namespace Annium.Mesh.Domain;
 
-public enum MessageType
+public enum MessageType : byte
 {
     None = 0,
     ConnectionReady = 1,

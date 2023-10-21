@@ -13,6 +13,7 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
+        <ProjectReference Include="../../src/Annium.Mesh.Serialization.MessagePack/Annium.Mesh.Serialization.MessagePack.csproj" />
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
     </ItemGroup>
 </Project>

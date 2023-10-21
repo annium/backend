@@ -1,5 +1,3 @@
-using System;
-using System.Text.Json;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Serialization.Json.Internal;
 
@@ -10,19 +8,52 @@ public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddMeshJsonSerialization(
         this IServiceContainer container,
-        Action<JsonSerializerOptions>? configure = null
+        ConfigureSerializer configure
     )
     {
-        container.Add<ISerializer, Serializer>().Singleton();
-        container.AddSerializers(Constants.SerializerKey).WithJson();
+        return AddSerializers<Serializer>(container, configure);
+    }
+
+    public static IServiceContainer AddMeshJsonSerialization(
+        this IServiceContainer container
+    )
+    {
+        return AddSerializers<Serializer>(container);
+    }
+
+    public static IServiceContainer AddMeshJsonDebugSerialization(
+        this IServiceContainer container,
+        ConfigureSerializer configure
+    )
+    {
+        return AddSerializers<DebugSerializer>(container, configure);
+    }
+
+    public static IServiceContainer AddMeshJsonDebugSerialization(
+        this IServiceContainer container
+    )
+    {
+        return AddSerializers<DebugSerializer>(container);
+    }
+
+    private static IServiceContainer AddSerializers<TSerializer>(IServiceContainer container, ConfigureSerializer configure)
+        where TSerializer : ISerializer
+    {
+        container.Add<ISerializer, TSerializer>().Singleton();
+        container.AddSerializers(Constants.SerializerKey).WithJson((sp, opts) =>
+        {
+            opts.ConfigureForOperations();
+            configure(sp, opts);
+        });
 
         return container;
     }
 
-    public static IServiceContainer AddMeshJsonDebugSerialization(this IServiceContainer container)
+    private static IServiceContainer AddSerializers<TSerializer>(IServiceContainer container)
+        where TSerializer : ISerializer
     {
-        container.Add<ISerializer, DebugSerializer>().Singleton();
-        container.AddSerializers(Constants.SerializerKey).WithJson();
+        container.Add<ISerializer, TSerializer>().Singleton();
+        container.AddSerializers(Constants.SerializerKey).WithJson(opts => opts.ConfigureForOperations());
 
         return container;
     }
