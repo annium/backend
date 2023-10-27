@@ -56,7 +56,7 @@ public class ServerConfigurationOptions
 
             var actionKey = new ActionKey(version, Convert.ToInt32(action));
             RegisterHandler(actionKey, implementation);
-            _container.Add(implementation).AsSelf().Singleton();
+            _container.Add(implementation).AsSelf().Scoped();
             registrations.Add(action, implementation);
         }
 
