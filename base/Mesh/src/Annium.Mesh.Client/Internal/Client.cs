@@ -21,13 +21,8 @@ internal class Client : ClientBase, IClient
         ISerializer serializer,
         IClientConfiguration configuration,
         ILogger logger
-    ) : base(
-        connection,
-        timeProvider,
-        serializer,
-        configuration,
-        logger
     )
+        : base(connection, timeProvider, serializer, configuration, logger)
     {
         this.Trace("start");
         _connection = connection;

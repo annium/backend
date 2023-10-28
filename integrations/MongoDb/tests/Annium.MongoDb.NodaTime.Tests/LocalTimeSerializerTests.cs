@@ -27,14 +27,18 @@ public class LocalTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", "bleh")))).Throws<FormatException>();
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", BsonNull.Value)))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", "bleh"))))
+            .Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalTime", BsonNull.Value))))
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalTime", BsonNull.Value))).NullableLocalTime.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalTime", BsonNull.Value)))
+            .NullableLocalTime.IsDefault();
     }
 
     private class Test

@@ -19,9 +19,7 @@ internal class Serializer : ISerializer
 
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 
-    public Serializer(
-        IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers
-    )
+    public Serializer(IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers)
     {
         var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);
         _serializer = serializers[key];

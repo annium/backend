@@ -7,9 +7,8 @@ namespace Annium.Mesh.Tests.Base;
 public abstract class EventTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : class, IBehavior
 {
-    protected EventTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
+    protected EventTestsBase(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
 
     protected async Task Analytics_Base()
     {

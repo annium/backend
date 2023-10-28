@@ -13,7 +13,4 @@ namespace Annium.Mesh.Server.Internal.Models;
 //     }
 // }
 
-internal record RequestContext<TRequest>(
-    Guid ConnectionId,
-    TRequest Request
-) : IRequestContext<TRequest>;
+internal record RequestContext<TRequest>(Guid ConnectionId, TRequest Request) : IRequestContext<TRequest>;

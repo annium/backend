@@ -4,6 +4,4 @@ using Annium.Storage.Abstractions;
 namespace Annium.Storage.InMemory;
 
 [ResolutionKeyValue("memory")]
-public class Configuration : ConfigurationBase
-{
-}
+public class Configuration : ConfigurationBase { }

@@ -13,10 +13,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<Socket>
     private readonly ServerTransportConfiguration _config;
     private readonly ILogger _logger;
 
-    public ServerConnectionFactory(
-        ServerTransportConfiguration config,
-        ILogger logger
-    )
+    public ServerConnectionFactory(ServerTransportConfiguration config, ILogger logger)
     {
         _config = config;
         _logger = logger;

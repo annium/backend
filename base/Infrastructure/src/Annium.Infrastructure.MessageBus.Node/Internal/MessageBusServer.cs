@@ -8,9 +8,7 @@ internal class MessageBusServer : IMessageBusServer
 {
     private readonly IMessageBusNode _node;
 
-    public MessageBusServer(
-        IMessageBusNode node
-    )
+    public MessageBusServer(IMessageBusNode node)
     {
         _node = node;
     }
@@ -18,21 +16,22 @@ internal class MessageBusServer : IMessageBusServer
     public IDisposable Handle<TRequest, TResponse>(
         string topic,
         Func<IMessageBusRequestContext<TRequest, TResponse>, Task> process
-    ) => _node
-        .Listen<MessageBusEnvelope<TRequest>>()
-        .DoSequentialAsync(async x =>
-        {
-            try
+    ) =>
+        _node
+            .Listen<MessageBusEnvelope<TRequest>>()
+            .DoSequentialAsync(async x =>
             {
-                var ctx = new MessageBusRequestContext<TRequest, TResponse>(x.Data);
-                await process(ctx);
-                if (ctx.IsResponded)
-                    await _node.Send(MessageBusEnvelope.Data(x.Id, ctx.Response));
-            }
-            catch (Exception e)
-            {
-                await _node.Send(MessageBusEnvelope.Error(x.Id, e.Message));
-            }
-        })
-        .Subscribe();
+                try
+                {
+                    var ctx = new MessageBusRequestContext<TRequest, TResponse>(x.Data);
+                    await process(ctx);
+                    if (ctx.IsResponded)
+                        await _node.Send(MessageBusEnvelope.Data(x.Id, ctx.Response));
+                }
+                catch (Exception e)
+                {
+                    await _node.Send(MessageBusEnvelope.Error(x.Id, e.Message));
+                }
+            })
+            .Subscribe();
 }

@@ -10,13 +10,7 @@ internal class DynamicControllerModel
     public string Name { get; }
     public string Route { get; }
 
-    public DynamicControllerModel(
-        Type type,
-        string? area,
-        string? key,
-        string name,
-        string route
-    )
+    public DynamicControllerModel(Type type, string? area, string? key, string name, string route)
     {
         Type = type;
         Area = area;

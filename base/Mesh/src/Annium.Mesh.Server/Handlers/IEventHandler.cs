@@ -6,8 +6,5 @@ namespace Annium.Mesh.Server.Handlers;
 
 public interface IEventHandler<TEvent>
 {
-    Task HandleAsync(
-        IRequestContext<TEvent> request,
-        CancellationToken ct
-    );
+    Task HandleAsync(IRequestContext<TEvent> request, CancellationToken ct);
 }

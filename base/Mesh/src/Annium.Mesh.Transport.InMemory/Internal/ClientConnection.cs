@@ -17,7 +17,10 @@ internal class ClientConnection : IClientConnection
     {
         _channel = channel;
         _channel.OnConnected += () => OnConnected();
-        _channel.OnDisconnected += side => OnDisconnected(side is CloseSide.Client ? ConnectionCloseStatus.ClosedLocal : ConnectionCloseStatus.ClosedRemote);
+        _channel.OnDisconnected += side =>
+            OnDisconnected(
+                side is CloseSide.Client ? ConnectionCloseStatus.ClosedLocal : ConnectionCloseStatus.ClosedRemote
+            );
         _channel.OnClientReceived += data => OnReceived(data);
     }
 

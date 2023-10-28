@@ -18,10 +18,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
     private bool _isDisposing;
     private bool _isDisposed;
 
-    public ConnectionTracker(
-        IServerLifetime lifetime,
-        ILogger logger
-    )
+    public ConnectionTracker(IServerLifetime lifetime, ILogger logger)
     {
         _lifetime = lifetime;
         Logger = logger;
@@ -70,11 +67,14 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             }
 
             cnRef.Acquire();
-            connectionRef = Disposable.Reference(cnRef.Connection, () =>
-            {
-                cnRef.Release(_isDisposing);
-                return Task.CompletedTask;
-            });
+            connectionRef = Disposable.Reference(
+                cnRef.Connection,
+                () =>
+                {
+                    cnRef.Release(_isDisposing);
+                    return Task.CompletedTask;
+                }
+            );
 
             return true;
         }
@@ -151,10 +151,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
             throw new ObjectDisposedException(nameof(ConnectionTracker));
     }
 
-    private sealed record ConnectionRef(
-        Guid Id,
-        IServerConnection Connection,
-        ILogger Logger) : ILogSubject
+    private sealed record ConnectionRef(Guid Id, IServerConnection Connection, ILogger Logger) : ILogSubject
     {
         public Task CanBeReleased => _disposeTcs.Task;
         private readonly TaskCompletionSource<object?> _disposeTcs = new();

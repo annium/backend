@@ -36,10 +36,7 @@ public static class ServiceContainerExtensions
         container.Add<PushCoordinator>().AsSelf().Scoped();
 
         // internal - handlers
-        container.AddAll()
-            .AssignableTo<LifeCycleHandlerBase>()
-            .As<LifeCycleHandlerBase>()
-            .Scoped();
+        container.AddAll().AssignableTo<LifeCycleHandlerBase>().As<LifeCycleHandlerBase>().Scoped();
 
         return container;
     }

@@ -39,13 +39,7 @@ internal class MessageBusComplexEnvelope<T>
     [JsonPropertyName("e")]
     public string Error { get; }
 
-    public MessageBusComplexEnvelope(
-        Guid id,
-        EnvelopeType type,
-        T data,
-        string error
-    )
-
+    public MessageBusComplexEnvelope(Guid id, EnvelopeType type, T data, string error)
     {
         Id = id;
         Type = type;

@@ -27,7 +27,12 @@ public class OffsetDateTimeSerializerTests
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
-        var obj = new Test { OffsetDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithOffset(Offset.FromHours(1)).WithCalendar(CalendarSystem.PersianSimple) };
+        var obj = new Test
+        {
+            OffsetDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5)
+                .WithOffset(Offset.FromHours(1))
+                .WithCalendar(CalendarSystem.PersianSimple)
+        };
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
@@ -37,14 +42,23 @@ public class OffsetDateTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", "bleh")))).Throws<FormatException>();
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value)))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", "bleh"))))
+            .Throws<FormatException>();
+        Wrap.It(
+                () =>
+                    BsonSerializer.Deserialize<Test>(
+                        new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value))
+                    )
+            )
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableOffsetDateTime", BsonNull.Value))).NullableOffsetDateTime.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("NullableOffsetDateTime", BsonNull.Value)))
+            .NullableOffsetDateTime.IsDefault();
     }
 
     private class Test

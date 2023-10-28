@@ -27,9 +27,7 @@ public sealed record Employee
         Chief = chief;
     }
 
-    private Employee()
-    {
-    }
+    private Employee() { }
 
     public void SetChief(Employee? chief)
     {

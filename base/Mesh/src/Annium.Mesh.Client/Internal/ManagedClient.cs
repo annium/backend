@@ -18,13 +18,8 @@ internal class ManagedClient : ClientBase, IManagedClient
         ISerializer serializer,
         IClientConfiguration configuration,
         ILogger logger
-    ) : base(
-        connection,
-        timeProvider,
-        serializer,
-        configuration,
-        logger
     )
+        : base(connection, timeProvider, serializer, configuration, logger)
     {
         _connection = connection;
         _connection.OnDisconnected += HandleDisconnected;

@@ -178,11 +178,13 @@ internal abstract class ClientBase : IClientBase
         }
 
         this.Trace("start, dispose subscriptions");
-        await Task.WhenAll(_subscriptions.Values.Select(async x =>
-        {
-            x.Cts.Cancel();
-            await x.Observable.WhenCompleted(Logger);
-        }));
+        await Task.WhenAll(
+            _subscriptions.Values.Select(async x =>
+            {
+                x.Cts.Cancel();
+                await x.Observable.WhenCompleted(Logger);
+            })
+        );
 
         this.Trace("dispose disposable box");
         await _disposable.DisposeAsync();
@@ -326,7 +328,10 @@ internal abstract class ClientBase : IClientBase
 
         if (responseType is null)
         {
-            this.Trace("parsing message {message} to data response failed - no response type stored with future", message);
+            this.Trace(
+                "parsing message {message} to data response failed - no response type stored with future",
+                message
+            );
             return null;
         }
 
@@ -336,7 +341,11 @@ internal abstract class ClientBase : IClientBase
         return response;
     }
 
-    private record struct RequestFuture(TaskCompletionSource<object> TaskSource, CancellationTokenSource CancellationSource, Type? ResponseType);
+    private record struct RequestFuture(
+        TaskCompletionSource<object> TaskSource,
+        CancellationTokenSource CancellationSource,
+        Type? ResponseType
+    );
 
     private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }

@@ -8,6 +8,7 @@ namespace Annium.Mesh.Transport.InMemory.Internal;
 internal class Channel
 {
     private static Task DelayAsync() => Task.Delay(10);
+
     private static void Delay(Action handle) => DelayAsync().ContinueWith(_ => handle());
 
     public event Action OnConnected = delegate { };

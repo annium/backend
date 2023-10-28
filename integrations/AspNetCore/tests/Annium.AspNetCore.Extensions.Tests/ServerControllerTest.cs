@@ -13,19 +13,19 @@ namespace Annium.AspNetCore.Extensions.Tests;
 
 public class ServerControllerTest : IntegrationTest
 {
-    public ServerControllerTest(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
+    public ServerControllerTest(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
 
-    private IHttpRequest Http => GetAppFactory<Program>(
-        builder => builder.UseServicePack<TestServicePack>()
-    ).GetHttpRequest();
+    private IHttpRequest Http =>
+        GetAppFactory<Program>(builder => builder.UseServicePack<TestServicePack>()).GetHttpRequest();
 
     [Fact]
     public async Task Command_BadRequest_Works()
     {
         // act
-        var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = false }).AsResponseAsync<IResult>();
+        var response = await Http.Post("/command")
+            .JsonContent(new DemoCommand { IsOk = false })
+            .AsResponseAsync<IResult>();
 
         // assert
         response.StatusCode.Is(HttpStatusCode.BadRequest);
@@ -36,7 +36,9 @@ public class ServerControllerTest : IntegrationTest
     public async Task Command_Ok_Works()
     {
         // act
-        var response = await Http.Post("/command").JsonContent(new DemoCommand { IsOk = true }).AsResponseAsync<IResult>();
+        var response = await Http.Post("/command")
+            .JsonContent(new DemoCommand { IsOk = true })
+            .AsResponseAsync<IResult>();
 
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);

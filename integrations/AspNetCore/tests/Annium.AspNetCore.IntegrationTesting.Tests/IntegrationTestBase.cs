@@ -7,10 +7,9 @@ public abstract class IntegrationTestBase : IntegrationTest
 {
     protected IWebApplicationFactory AppFactory { get; }
 
-    protected IntegrationTestBase(ITestOutputHelper outputHelper) : base(outputHelper)
+    protected IntegrationTestBase(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
-        AppFactory = GetAppFactory<Program>(
-            builder => builder.UseServicePack<TestServicePack>()
-        );
+        AppFactory = GetAppFactory<Program>(builder => builder.UseServicePack<TestServicePack>());
     }
 }

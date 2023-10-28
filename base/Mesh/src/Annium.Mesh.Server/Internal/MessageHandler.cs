@@ -17,12 +17,7 @@ internal class MessageHandler : ILogSubject
     private readonly RouteStore _routeStore;
     private readonly ISerializer _serializer;
 
-    public MessageHandler(
-        IServiceProvider sp,
-        RouteStore routeStore,
-        ISerializer serializer,
-        ILogger logger
-    )
+    public MessageHandler(IServiceProvider sp, RouteStore routeStore, ISerializer serializer, ILogger logger)
     {
         Logger = logger;
         _sp = sp;
@@ -30,14 +25,15 @@ internal class MessageHandler : ILogSubject
         _serializer = serializer;
     }
 
-    public Task HandleMessage(ISendingConnection connection, Message message, CancellationToken ct) => message.Type switch
-    {
-        MessageType.Request            => HandleRequest(connection, message, ct),
-        MessageType.Event              => HandleEvent(connection, message),
-        MessageType.SubscriptionInit   => HandleSubscriptionInit(connection, message),
-        MessageType.SubscriptionCancel => HandleSubscriptionCancel(connection, message),
-        _                              => Task.CompletedTask,
-    };
+    public Task HandleMessage(ISendingConnection connection, Message message, CancellationToken ct) =>
+        message.Type switch
+        {
+            MessageType.Request => HandleRequest(connection, message, ct),
+            MessageType.Event => HandleEvent(connection, message),
+            MessageType.SubscriptionInit => HandleSubscriptionInit(connection, message),
+            MessageType.SubscriptionCancel => HandleSubscriptionCancel(connection, message),
+            _ => Task.CompletedTask,
+        };
 
     private async Task HandleRequest(ISendingConnection connection, Message message, CancellationToken ct)
     {

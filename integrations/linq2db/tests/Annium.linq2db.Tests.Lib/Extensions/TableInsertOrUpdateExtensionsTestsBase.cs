@@ -12,7 +12,8 @@ namespace Annium.linq2db.Tests.Lib.Extensions;
 
 public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 {
-    protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
+    protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }

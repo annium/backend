@@ -11,9 +11,7 @@ namespace Annium.Mesh.Tests.Sockets;
 public class SubscriptionPerfTests : SubscriptionTestsBase<Behavior>
 {
     public SubscriptionPerfTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Theory]
     [MemberData(nameof(GetPerfRange))]

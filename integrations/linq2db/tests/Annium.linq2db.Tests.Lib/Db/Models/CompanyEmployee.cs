@@ -19,9 +19,7 @@ public sealed record CompanyEmployee
         Role = role;
     }
 
-    private CompanyEmployee()
-    {
-    }
+    private CompanyEmployee() { }
 
     public void SetRole(string role) => Role = role;
 }

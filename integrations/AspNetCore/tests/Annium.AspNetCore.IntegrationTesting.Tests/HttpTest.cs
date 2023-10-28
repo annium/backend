@@ -29,7 +29,6 @@ public class HttpTest : IntegrationTestBase
         result.Data.Is(value);
     }
 
-    public HttpTest(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
+    public HttpTest(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
 }

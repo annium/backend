@@ -5,11 +5,10 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddEntityConfigurations(
-        this IServiceContainer container
-    )
+    public static IServiceContainer AddEntityConfigurations(this IServiceContainer container)
     {
-        container.AddAll()
+        container
+            .AddAll()
             .Where(x => x is { IsClass: true, IsAbstract: false })
             .AssignableTo(typeof(IEntityConfiguration<>))
             .As<IEntityConfiguration>()

@@ -27,7 +27,10 @@ public class LocalDateTimeSerializerTests
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
-        var obj = new Test { LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple) };
+        var obj = new Test
+        {
+            LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple)
+        };
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
@@ -37,14 +40,21 @@ public class LocalDateTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", "bleh")))).Throws<FormatException>();
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", BsonNull.Value)))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", "bleh"))))
+            .Throws<FormatException>();
+        Wrap.It(
+                () =>
+                    BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", BsonNull.Value)))
+            )
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDateTime", BsonNull.Value))).NullableLocalDateTime.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDateTime", BsonNull.Value)))
+            .NullableLocalDateTime.IsDefault();
     }
 
     private class Test

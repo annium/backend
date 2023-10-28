@@ -14,7 +14,8 @@ namespace Annium.linq2db.Tests.Lib;
 
 public class IntegrationTestsBase : TestBase
 {
-    protected IntegrationTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
+    protected IntegrationTestsBase(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }
@@ -41,9 +42,12 @@ public class IntegrationTestsBase : TestBase
 
         // assert
         company = await conn.Companies
-            .LoadWith(x => x.Employees).ThenLoad(x => x.Company)
-            .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Chief)
-            .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Subordinates)
+            .LoadWith(x => x.Employees)
+            .ThenLoad(x => x.Company)
+            .LoadWith(x => x.Employees)
+            .ThenLoad(x => x.Employee.Chief)
+            .LoadWith(x => x.Employees)
+            .ThenLoad(x => x.Employee.Subordinates)
             .SingleAsync(x => x.Name == companyName);
         company.Name.Is(companyName);
         company.CreatedAt.Is(createdAt);
@@ -83,19 +87,26 @@ public class IntegrationTestsBase : TestBase
         }
 
         // assert
-        await Task.WhenAll(Enumerable.Range(0, 1000).Select(async _ =>
-        {
-            await using var scope = CreateAsyncScope();
-            await using var conn = scope.ServiceProvider.Resolve<Connection>();
-            var loadedCompany = await conn.Companies
-                .LoadWith(x => x.Employees).ThenLoad(x => x.Company)
-                .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Chief)
-                .LoadWith(x => x.Employees).ThenLoad(x => x.Employee.Subordinates)
-                .SingleAsync(x => x.Name == companyName);
+        await Task.WhenAll(
+            Enumerable
+                .Range(0, 1000)
+                .Select(async _ =>
+                {
+                    await using var scope = CreateAsyncScope();
+                    await using var conn = scope.ServiceProvider.Resolve<Connection>();
+                    var loadedCompany = await conn.Companies
+                        .LoadWith(x => x.Employees)
+                        .ThenLoad(x => x.Company)
+                        .LoadWith(x => x.Employees)
+                        .ThenLoad(x => x.Employee.Chief)
+                        .LoadWith(x => x.Employees)
+                        .ThenLoad(x => x.Employee.Subordinates)
+                        .SingleAsync(x => x.Name == companyName);
 
-            loadedCompany.Id.Is(company.Id);
-            loadedCompany.Name.Is(company.Name);
-            loadedCompany.Metadata.Is(metadata);
-        }));
+                    loadedCompany.Id.Is(company.Id);
+                    loadedCompany.Name.Is(company.Name);
+                    loadedCompany.Metadata.Is(metadata);
+                })
+        );
     }
 }

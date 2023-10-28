@@ -19,19 +19,18 @@ public static class MappingSchemaExtensionsBase
     private static readonly ConcurrentDictionary<DescriptionCacheKey, DatabaseMetadata> DatabaseMetadataCache = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static DatabaseMetadata Describe(
-        this MappingSchema schema,
-        MetadataFlags flags = MetadataFlags.None
-    ) => MetadataProvider.Describe(schema, flags);
+    public static DatabaseMetadata Describe(this MappingSchema schema, MetadataFlags flags = MetadataFlags.None) =>
+        MetadataProvider.Describe(schema, flags);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DatabaseMetadata CachedDescribe(
         this MappingSchema schema,
         MetadataFlags flags = MetadataFlags.None
-    ) => DatabaseMetadataCache.GetOrAdd(
-        new DescriptionCacheKey(schema, flags),
-        key => MetadataProvider.Describe(key.Schema, key.Flags)
-    );
+    ) =>
+        DatabaseMetadataCache.GetOrAdd(
+            new DescriptionCacheKey(schema, flags),
+            key => MetadataProvider.Describe(key.Schema, key.Flags)
+        );
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static MappingSchema Configure(
@@ -55,12 +54,16 @@ public static class MappingSchemaExtensionsBase
         {
             var configurationType = configuration.GetType().GetTargetImplementation(typeof(IEntityConfiguration<>));
             if (configurationType is null)
-                throw new InvalidOperationException($"Configuration {configuration} doesn't implement {typeof(IEntityConfiguration<>).FriendlyName()}");
+                throw new InvalidOperationException(
+                    $"Configuration {configuration} doesn't implement {typeof(IEntityConfiguration<>).FriendlyName()}"
+                );
 
             var entityType = configurationType.GenericTypeArguments.Single();
-            var entityMappingBuilder = entityMappingBuilderFactory.MakeGenericMethod(entityType)
+            var entityMappingBuilder = entityMappingBuilderFactory
+                .MakeGenericMethod(entityType)
                 .Invoke(mappingBuilder, new object?[] { null })!;
-            var configureMethod = typeof(IEntityConfiguration<>).MakeGenericType(entityType)
+            var configureMethod = typeof(IEntityConfiguration<>)
+                .MakeGenericType(entityType)
                 .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
             configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }

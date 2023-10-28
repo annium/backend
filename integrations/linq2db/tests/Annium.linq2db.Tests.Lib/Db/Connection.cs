@@ -12,10 +12,8 @@ public sealed class Connection : DataConnection, ILogSubject
     public ITable<Employee> Employees { get; }
     public ITable<CompanyEmployee> CompanyEmployees { get; }
 
-    public Connection(
-        DataOptions<Connection> config,
-        ILogger logger
-    ) : base(config.Options)
+    public Connection(DataOptions<Connection> config, ILogger logger)
+        : base(config.Options)
     {
         Logger = logger;
         Companies = this.GetTable<Company>();

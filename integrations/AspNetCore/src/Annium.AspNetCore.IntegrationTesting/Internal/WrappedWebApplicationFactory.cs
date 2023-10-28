@@ -18,9 +18,7 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     private readonly IHttpRequestFactory _httpRequestFactory;
     private AsyncDisposableBox _disposable = Disposable.AsyncBox(VoidLogger.Instance);
 
-    public WrappedWebApplicationFactory(
-        WebApplicationFactory<TEntryPoint> appFactory
-    )
+    public WrappedWebApplicationFactory(WebApplicationFactory<TEntryPoint> appFactory)
     {
         _appFactory = appFactory;
         _httpClient = new Lazy<HttpClient>(InitHttpClient, true);
@@ -29,11 +27,9 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     }
 
     public T Resolve<T>()
-        where T : notnull
-        => _appFactory.Services.Resolve<T>();
+        where T : notnull => _appFactory.Services.Resolve<T>();
 
-    public object Resolve(Type type)
-        => _appFactory.Services.Resolve(type);
+    public object Resolve(Type type) => _appFactory.Services.Resolve(type);
 
     public IHttpRequest GetHttpRequest()
     {

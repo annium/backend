@@ -9,9 +9,7 @@ namespace Annium.Mesh.Tests.InMemory;
 public class EventTests : EventTestsBase<Behavior>
 {
     public EventTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Fact]
     public async Task Analytics()

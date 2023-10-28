@@ -19,9 +19,7 @@ public sealed record Company
         Metadata = metadata;
     }
 
-    private Company()
-    {
-    }
+    private Company() { }
 
     public void SetCreatedAt(Instant createdAt)
     {

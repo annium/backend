@@ -13,17 +13,13 @@ public abstract class PatternSerializer<TValue> : SerializerBase<TValue>
 
     private readonly Func<TValue, TValue> _valueConverter = v => v;
 
-    protected PatternSerializer(
-        IPattern<TValue> pattern,
-        Func<TValue, TValue> valueConverter
-    ) : this(pattern)
+    protected PatternSerializer(IPattern<TValue> pattern, Func<TValue, TValue> valueConverter)
+        : this(pattern)
     {
         _valueConverter = valueConverter;
     }
 
-    protected PatternSerializer(
-        IPattern<TValue> pattern
-    )
+    protected PatternSerializer(IPattern<TValue> pattern)
     {
         _pattern = pattern;
     }
@@ -37,11 +33,13 @@ public abstract class PatternSerializer<TValue> : SerializerBase<TValue>
                 return _valueConverter(_pattern.CheckedParse(context.Reader.ReadString()));
             case BsonType.Null:
                 if (typeof(TValue).GetTypeInfo().IsValueType)
-                    throw new InvalidOperationException($"{typeof(TValue).Name} is a value type, but the BsonValue is null.");
+                    throw new InvalidOperationException(
+                        $"{typeof(TValue).Name} is a value type, but the BsonValue is null."
+                    );
 
                 context.Reader.ReadNull();
 
-                return default !;
+                return default!;
             default:
                 throw new NotSupportedException($"Cannot convert a {type} to a {typeof(TValue).Name}.");
         }

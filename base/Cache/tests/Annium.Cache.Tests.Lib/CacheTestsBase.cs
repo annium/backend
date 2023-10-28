@@ -15,21 +15,22 @@ public class CacheTestsBase : TestBase
     private int _factoryCounter;
 
     protected CacheTestsBase(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     protected async Task GetOrCreateAsync_Default_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>().UseManagedTime();
+        Get<ITimeProviderSwitcher>()
+            .UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var key = Guid.NewGuid();
         var options = CacheOptions.WithSlidingExpiration(Duration.FromMinutes(1));
         var count = 1000;
 
         // act
-        var items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options)));
+        var items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options))
+        );
 
         // assert
         EnsureItems(1, key, count, items);
@@ -38,7 +39,8 @@ public class CacheTestsBase : TestBase
     protected async Task GetOrCreateAsync_AbsoluteExpiration_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>().UseManagedTime();
+        Get<ITimeProviderSwitcher>()
+            .UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
@@ -50,7 +52,9 @@ public class CacheTestsBase : TestBase
         var count = 1000;
 
         // act
-        var items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options1)));
+        var items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options1))
+        );
 
         // assert
         EnsureItems(1, key, count, items);
@@ -61,7 +65,9 @@ public class CacheTestsBase : TestBase
         var options2 = CacheOptions.WithAbsoluteExpiration(expiresAt);
 
         // act
-        items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options2)));
+        items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options2))
+        );
 
         // assert
         EnsureItems(2, key, count, items);
@@ -70,7 +76,8 @@ public class CacheTestsBase : TestBase
     protected async Task GetOrCreateAsync_SlidingExpiration_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>().UseManagedTime();
+        Get<ITimeProviderSwitcher>()
+            .UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
@@ -82,7 +89,9 @@ public class CacheTestsBase : TestBase
         var count = 1000;
 
         // act
-        var items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options)));
+        var items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options))
+        );
 
         // assert
         EnsureItems(1, key, count, items);
@@ -91,7 +100,9 @@ public class CacheTestsBase : TestBase
         timeManager.SetNow(timeProvider.Now + lifetime);
 
         // act
-        items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options)));
+        items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options))
+        );
 
         // assert
         EnsureItems(2, key, count, items);
@@ -100,7 +111,8 @@ public class CacheTestsBase : TestBase
     protected async Task RemoveAsync_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>().UseManagedTime();
+        Get<ITimeProviderSwitcher>()
+            .UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
@@ -111,7 +123,9 @@ public class CacheTestsBase : TestBase
         var count = 1000;
 
         // act
-        var items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options)));
+        var items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options))
+        );
 
         // assert
         EnsureItems(1, key, count, items);
@@ -120,7 +134,9 @@ public class CacheTestsBase : TestBase
         await cache.RemoveAsync(key);
 
         // act
-        items = await Task.WhenAll(Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options)));
+        items = await Task.WhenAll(
+            Enumerable.Range(0, count).Select(async _ => await cache.GetOrCreateAsync(key, GetPageAsync, options))
+        );
 
         // assert
         EnsureItems(2, key, count, items);

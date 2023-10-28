@@ -9,8 +9,5 @@ namespace Annium.Mesh.Server.Handlers;
 public interface IRequestResponseHandler<TAction, TRequest, TResponse> : IHandlerBase<TAction>
     where TAction : struct, Enum
 {
-    Task<IStatusResult<OperationStatus, TResponse>> HandleAsync(
-        TRequest request,
-        CancellationToken ct
-    );
+    Task<IStatusResult<OperationStatus, TResponse>> HandleAsync(TRequest request, CancellationToken ct);
 }

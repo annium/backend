@@ -13,11 +13,7 @@ internal class BaseServicePack : ServicePackBase
     {
         // register and setup services
         container.AddRuntime(GetType().Assembly);
-        container.AddSerializers()
-            .WithJson(opts => opts
-                .ConfigureForOperations()
-                .ConfigureForNodaTime()
-            );
+        container.AddSerializers().WithJson(opts => opts.ConfigureForOperations().ConfigureForNodaTime());
         container.AddLogging();
         container.AddHttpRequestFactory(true);
         container.AddMediatorConfiguration(ConfigureMediator);
@@ -27,8 +23,7 @@ internal class BaseServicePack : ServicePackBase
         // server
         container.Collection.AddControllers();
         container.Collection.AddCors();
-        container.Collection.AddMvc()
-            .AddDefaultJsonOptions();
+        container.Collection.AddMvc().AddDefaultJsonOptions();
     }
 
     public override void Setup(IServiceProvider provider)

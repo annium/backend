@@ -16,10 +16,8 @@ internal class Storage : StorageBase
     private readonly Configuration _configuration;
     private readonly string _directory;
 
-    public Storage(
-        Configuration configuration,
-        ILogger logger
-    ) : base(logger)
+    public Storage(Configuration configuration, ILogger logger)
+        : base(logger)
     {
         _configuration = configuration;
 
@@ -49,15 +47,18 @@ internal class Storage : StorageBase
     protected override async Task<string[]> DoListAsync()
     {
         this.Trace("start");
-        var listRequest = new ListObjectsRequest { BucketName = _configuration.Bucket, MaxKeys = 100, Prefix = _directory };
+        var listRequest = new ListObjectsRequest
+        {
+            BucketName = _configuration.Bucket,
+            MaxKeys = 100,
+            Prefix = _directory
+        };
 
         using var s3 = GetClient();
 
         var objects = (await s3.ListObjectsAsync(listRequest)).S3Objects;
 
-        var result = objects
-            .Select(o => ReadKey(o.Key))
-            .ToArray();
+        var result = objects.Select(o => ReadKey(o.Key)).ToArray();
 
         this.Trace("done");
 
@@ -71,7 +72,12 @@ internal class Storage : StorageBase
         VerifyName(name);
 
         source.Position = 0;
-        var putRequest = new PutObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(name), InputStream = source, };
+        var putRequest = new PutObjectRequest
+        {
+            BucketName = _configuration.Bucket,
+            Key = GetKey(name),
+            InputStream = source,
+        };
 
         using var s3 = GetClient();
 
@@ -154,9 +160,7 @@ internal class Storage : StorageBase
         return new AmazonS3Client(_configuration.AccessKey, _configuration.AccessSecret, s3Cfg);
     }
 
-    private string GetKey(string name) =>
-        _directory == string.Empty ? name : $"{_directory}/{name}";
+    private string GetKey(string name) => _directory == string.Empty ? name : $"{_directory}/{name}";
 
-    private string ReadKey(string key) =>
-        Path.GetFileName(key);
+    private string ReadKey(string key) => Path.GetFileName(key);
 }

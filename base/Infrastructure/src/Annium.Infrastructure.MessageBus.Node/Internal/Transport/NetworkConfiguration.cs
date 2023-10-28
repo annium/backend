@@ -7,10 +7,7 @@ internal class NetworkConfiguration : IConfiguration
     public EndpointsConfiguration Endpoints { get; }
     public ISerializer<string> Serializer { get; }
 
-    public NetworkConfiguration(
-        EndpointsConfiguration endpoints,
-        ISerializer<string> serializer
-    )
+    public NetworkConfiguration(EndpointsConfiguration endpoints, ISerializer<string> serializer)
     {
         Endpoints = endpoints;
         Serializer = serializer;

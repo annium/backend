@@ -68,7 +68,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 
             // notify client, that connection is ready
             this.Trace("cn {id} - notify connection ready", _cid);
-            await _cn.SendAsync(_serializer.SerializeMessage(new Message { Type = MessageType.ConnectionReady }), _cts.Token);
+            await _cn.SendAsync(
+                _serializer.SerializeMessage(new Message { Type = MessageType.ConnectionReady }),
+                _cts.Token
+            );
 
             // execute run hook
             this.Trace("cn {id} - start push handlers", _cid);
@@ -171,10 +174,11 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         }
     }
 
-    private Func<ValueTask> HandleMessage(Message message) => async () =>
-    {
-        this.Trace("cn {id} - start {msg}", _cid, message);
-        await _messageHandler.HandleMessage(_cn, message, _cts.Token);
-        this.Trace("cn {id} - done {msg}", _cid, message);
-    };
+    private Func<ValueTask> HandleMessage(Message message) =>
+        async () =>
+        {
+            this.Trace("cn {id} - start {msg}", _cid, message);
+            await _messageHandler.HandleMessage(_cn, message, _cts.Token);
+            this.Trace("cn {id} - done {msg}", _cid, message);
+        };
 }

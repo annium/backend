@@ -11,10 +11,7 @@ internal class CounterHandler : IPushHandler<Action, CounterMessage>
     public static ushort Version => 1;
     public static Action Action => Action.Counter;
 
-    public async Task RunAsync(
-        IPushContext<CounterMessage> ctx,
-        CancellationToken ct
-    )
+    public async Task RunAsync(IPushContext<CounterMessage> ctx, CancellationToken ct)
     {
         var counter = 0;
         while (!ct.IsCancellationRequested)

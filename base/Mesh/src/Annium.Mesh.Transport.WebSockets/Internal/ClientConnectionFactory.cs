@@ -13,10 +13,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
     private readonly ClientTransportConfiguration _config;
     private readonly ILogger _logger;
 
-    public ClientConnectionFactory(
-        ClientTransportConfiguration config,
-        ILogger logger
-    )
+    public ClientConnectionFactory(ClientTransportConfiguration config, ILogger logger)
     {
         _config = config;
         _logger = logger;
@@ -36,10 +33,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
 
     public Task<IManagedConnection> CreateAsync(WebSocket context)
     {
-        var serverSocketOptions = new ServerWebSocketOptions
-        {
-            ConnectionMonitor = _config.ConnectionMonitor,
-        };
+        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor, };
         var serverSocket = new ServerWebSocket(context, serverSocketOptions, _logger);
 
         var connection = new ManagedConnection(serverSocket, _logger);

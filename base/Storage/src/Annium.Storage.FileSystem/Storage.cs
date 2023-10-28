@@ -11,10 +11,8 @@ internal class Storage : StorageBase
 {
     private readonly string _directory;
 
-    public Storage(
-        Configuration configuration,
-        ILogger logger
-    ) : base(logger)
+    public Storage(Configuration configuration, ILogger logger)
+        : base(logger)
     {
         VerifyPath(configuration.Directory);
 

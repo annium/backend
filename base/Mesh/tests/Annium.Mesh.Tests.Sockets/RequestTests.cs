@@ -9,9 +9,7 @@ namespace Annium.Mesh.Tests.Sockets;
 public class RequestTests : RequestTestsBase<Behavior>
 {
     public RequestTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Fact]
     public async Task Echo()

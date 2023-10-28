@@ -33,12 +33,7 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnection, ILogSubject
     {
-        return container
-            .AddPostgreSql<TConnection>(
-                sp => sp.Resolve<PostgreSqlConfiguration>(),
-                configure,
-                lifetime
-            );
+        return container.AddPostgreSql<TConnection>(sp => sp.Resolve<PostgreSqlConfiguration>(), configure, lifetime);
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
@@ -48,12 +43,7 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnection, ILogSubject
     {
-        return container
-            .AddPostgreSql<TConnection>(
-                _ => cfg,
-                (_, _) => { },
-                lifetime
-            );
+        return container.AddPostgreSql<TConnection>(_ => cfg, (_, _) => { }, lifetime);
     }
 
     public static IServiceContainer AddPostgreSql<TConnection>(
@@ -64,12 +54,7 @@ public static class ServiceContainerExtensions
     )
         where TConnection : DataConnection, ILogSubject
     {
-        return container
-            .AddPostgreSql<TConnection>(
-                _ => cfg,
-                configure,
-                lifetime
-            );
+        return container.AddPostgreSql<TConnection>(_ => cfg, configure, lifetime);
     }
 
     private static IServiceContainer AddPostgreSql<TConnection>(
@@ -81,46 +66,52 @@ public static class ServiceContainerExtensions
         where TConnection : DataConnection, ILogSubject
     {
         // mapping schema
-        container.Add(sp =>
-        {
-            var mappingSchema = new MappingSchema();
-            mappingSchema
-                .ApplyConfigurations(sp)
-                .UseSnakeCaseColumns()
-                .UseJsonSupport(sp);
-            configure(sp, mappingSchema);
+        container
+            .Add(sp =>
+            {
+                var mappingSchema = new MappingSchema();
+                mappingSchema.ApplyConfigurations(sp).UseSnakeCaseColumns().UseJsonSupport(sp);
+                configure(sp, mappingSchema);
 
-            return new MappingSchemaContainer<TConnection>(mappingSchema);
-        }).AsSelf().Singleton();
+                return new MappingSchemaContainer<TConnection>(mappingSchema);
+            })
+            .AsSelf()
+            .Singleton();
 
         // data source
-        container.Add(sp =>
-        {
-            var cfg = getCfg(sp);
-            var logger = sp.Resolve<ILogger>();
+        container
+            .Add(sp =>
+            {
+                var cfg = getCfg(sp);
+                var logger = sp.Resolve<ILogger>();
 
-            // configure data source and NodaTime
-            var connectionString = cfg.ConnectionString;
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-            dataSourceBuilder.UseNodaTime();
-            var dataSource = dataSourceBuilder.Build();
+                // configure data source and NodaTime
+                var connectionString = cfg.ConnectionString;
+                var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+                dataSourceBuilder.UseNodaTime();
+                var dataSource = dataSourceBuilder.Build();
 
-            return new DataSourceContainer<TConnection>(dataSource, logger);
-        }).AsSelf().Singleton();
+                return new DataSourceContainer<TConnection>(dataSource, logger);
+            })
+            .AsSelf()
+            .Singleton();
 
-        container.Add(sp =>
-        {
-            var mappingSchema = sp.Resolve<MappingSchemaContainer<TConnection>>().Schema;
-            var dataSource = sp.Resolve<DataSourceContainer<TConnection>>().DataSource;
-            var connection = dataSource.CreateConnection();
+        container
+            .Add(sp =>
+            {
+                var mappingSchema = sp.Resolve<MappingSchemaContainer<TConnection>>().Schema;
+                var dataSource = sp.Resolve<DataSourceContainer<TConnection>>().DataSource;
+                var connection = dataSource.CreateConnection();
 
-            var options = new DataOptions()
-                .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection, true)
-                .UseMappingSchema(mappingSchema)
-                .UseLogging(sp);
+                var options = new DataOptions()
+                    .UseConnection(PostgreSQLTools.GetDataProvider(PostgreSQLVersion.v15), connection, true)
+                    .UseMappingSchema(mappingSchema)
+                    .UseLogging(sp);
 
-            return new DataOptions<TConnection>(options);
-        }).AsSelf().In(lifetime);
+                return new DataOptions<TConnection>(options);
+            })
+            .AsSelf()
+            .In(lifetime);
 
         container.Add<TConnection>().AsSelf().In(lifetime);
 

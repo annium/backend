@@ -11,10 +11,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<WebSock
     private readonly ServerTransportConfiguration _config;
     private readonly ILogger _logger;
 
-    public ServerConnectionFactory(
-        ServerTransportConfiguration config,
-        ILogger logger
-    )
+    public ServerConnectionFactory(ServerTransportConfiguration config, ILogger logger)
     {
         _config = config;
         _logger = logger;
@@ -22,10 +19,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<WebSock
 
     public Task<IServerConnection> CreateAsync(WebSocket socket)
     {
-        var serverSocketOptions = new ServerWebSocketOptions
-        {
-            ConnectionMonitor = _config.ConnectionMonitor,
-        };
+        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor, };
 
         var serverSocket = new ServerWebSocket(socket, serverSocketOptions, _logger);
         var connection = new ServerConnection(serverSocket, _logger);

@@ -12,14 +12,18 @@ namespace Annium.Infrastructure.MessageBus.Node.Tests;
 
 public class InMemoryMessageBusTest : TestBase
 {
-    public InMemoryMessageBusTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    public InMemoryMessageBusTest(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         Register(container =>
         {
             container.AddSerializers().WithJson(isDefault: true);
             container.AddInMemoryMessageBus((sp, builder) => builder.WithSerializer(sp.Resolve<ISerializer<string>>()));
         });
-        Setup(sp => { sp.UseLogging(route => route.UseInMemory()); });
+        Setup(sp =>
+        {
+            sp.UseLogging(route => route.UseInMemory());
+        });
     }
 
     [Fact]
@@ -81,7 +85,5 @@ public class InMemoryMessageBusTest : TestBase
         }
     }
 
-    private interface IX
-    {
-    }
+    private interface IX { }
 }

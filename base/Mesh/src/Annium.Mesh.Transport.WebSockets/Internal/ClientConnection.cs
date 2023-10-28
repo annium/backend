@@ -17,11 +17,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
     private readonly IClientWebSocket _socket;
     private readonly Uri _uri;
 
-    public ClientConnection(
-        IClientWebSocket socket,
-        Uri uri,
-        ILogger logger
-    )
+    public ClientConnection(IClientWebSocket socket, Uri uri, ILogger logger)
     {
         Logger = logger;
         _socket = socket;

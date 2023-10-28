@@ -10,7 +10,8 @@ namespace Annium.Redis.Tests;
 
 public class RedisStorageTests : TestBase
 {
-    public RedisStorageTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    public RedisStorageTests(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

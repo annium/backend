@@ -17,11 +17,8 @@ public class IndexController : ServerController
 {
     private readonly SharedDataContainer _sharedDataContainer;
 
-    public IndexController(
-        SharedDataContainer sharedDataContainer,
-        IMediator mediator,
-        IServiceProvider sp
-    ) : base(mediator, sp)
+    public IndexController(SharedDataContainer sharedDataContainer, IMediator mediator, IServiceProvider sp)
+        : base(mediator, sp)
     {
         _sharedDataContainer = sharedDataContainer;
     }
@@ -66,7 +63,9 @@ public class DemoQueryHandler : IQueryHandler<DemoQuery, DemoResponse>
     public Task<IStatusResult<OperationStatus, DemoResponse>> HandleAsync(DemoQuery request, CancellationToken ct)
     {
         if (request.Q == 0)
-            return Task.FromResult(Result.Status<OperationStatus, DemoResponse>(OperationStatus.NotFound, default!).Error("Not found"));
+            return Task.FromResult(
+                Result.Status<OperationStatus, DemoResponse>(OperationStatus.NotFound, default!).Error("Not found")
+            );
 
         return Task.FromResult(Result.Status(OperationStatus.Ok, new DemoResponse { X = request.Q }));
     }

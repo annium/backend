@@ -14,9 +14,7 @@ public static class ServiceContainerExtensions
         return AddSerializers<Serializer>(container, configure);
     }
 
-    public static IServiceContainer AddMeshJsonSerialization(
-        this IServiceContainer container
-    )
+    public static IServiceContainer AddMeshJsonSerialization(this IServiceContainer container)
     {
         return AddSerializers<Serializer>(container);
     }
@@ -29,22 +27,27 @@ public static class ServiceContainerExtensions
         return AddSerializers<DebugSerializer>(container, configure);
     }
 
-    public static IServiceContainer AddMeshJsonDebugSerialization(
-        this IServiceContainer container
-    )
+    public static IServiceContainer AddMeshJsonDebugSerialization(this IServiceContainer container)
     {
         return AddSerializers<DebugSerializer>(container);
     }
 
-    private static IServiceContainer AddSerializers<TSerializer>(IServiceContainer container, ConfigureSerializer configure)
+    private static IServiceContainer AddSerializers<TSerializer>(
+        IServiceContainer container,
+        ConfigureSerializer configure
+    )
         where TSerializer : ISerializer
     {
         container.Add<ISerializer, TSerializer>().Singleton();
-        container.AddSerializers(Constants.SerializerKey).WithJson((sp, opts) =>
-        {
-            opts.ConfigureForOperations();
-            configure(sp, opts);
-        });
+        container
+            .AddSerializers(Constants.SerializerKey)
+            .WithJson(
+                (sp, opts) =>
+                {
+                    opts.ConfigureForOperations();
+                    configure(sp, opts);
+                }
+            );
 
         return container;
     }

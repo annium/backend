@@ -9,9 +9,7 @@ namespace Annium.Mesh.Tests.WebSockets;
 public class PushTests : PushTestsBase<Behavior>
 {
     public PushTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Fact]
     public async Task Counter()

@@ -11,10 +11,7 @@ namespace Annium.linq2db.Extensions;
 
 public static class TableSaveExtensions
 {
-    public static Task<int> InsertAsync<T>(
-        this ITable<T> table,
-        T value
-    )
+    public static Task<int> InsertAsync<T>(this ITable<T> table, T value)
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
@@ -24,10 +21,7 @@ public static class TableSaveExtensions
         return table.InsertAsync(insertSetter, CancellationToken.None);
     }
 
-    public static Task<int> UpdateAsync<T>(
-        this ITable<T> table,
-        T value
-    )
+    public static Task<int> UpdateAsync<T>(this ITable<T> table, T value)
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
@@ -38,10 +32,7 @@ public static class TableSaveExtensions
         return table.Where(primaryKeyPredicate).UpdateAsync(updateSetter, CancellationToken.None);
     }
 
-    public static Task<int> InsertOrUpdateAsync<T>(
-        this ITable<T> table,
-        T value
-    )
+    public static Task<int> InsertOrUpdateAsync<T>(this ITable<T> table, T value)
         where T : notnull
     {
         var tableMetadata = table.GetMetadata();
@@ -64,12 +55,7 @@ public static class TableSaveExtensions
             })
             .ToArray();
 
-        return Expression.Lambda<Func<T>>(
-            Expression.MemberInit(
-                Expression.New(typeof(T)),
-                bindings
-            )
-        );
+        return Expression.Lambda<Func<T>>(Expression.MemberInit(Expression.New(typeof(T)), bindings));
     }
 
     private static Expression<Func<T, bool>> BuildPrimaryKeyPredicate<T>(TableMetadata table, T value)
@@ -82,7 +68,10 @@ public static class TableSaveExtensions
             .Select(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
-                return Expression.Equal(Expression.PropertyOrField(param, c.Member.Name), Expression.Constant(memberValue, c.Type));
+                return Expression.Equal(
+                    Expression.PropertyOrField(param, c.Member.Name),
+                    Expression.Constant(memberValue, c.Type)
+                );
             })
             .Aggregate(Expression.AndAlso);
 
@@ -102,10 +91,7 @@ public static class TableSaveExtensions
             .ToArray();
 
         return Expression.Lambda<Func<TIn, TOut>>(
-            Expression.MemberInit(
-                Expression.New(typeof(TIn)),
-                bindings
-            ),
+            Expression.MemberInit(Expression.New(typeof(TIn)), bindings),
             Expression.Parameter(typeof(TIn))
         );
     }

@@ -15,7 +15,10 @@ internal class ServerConnection : IServerConnection
     public ServerConnection(Channel channel)
     {
         _channel = channel;
-        _channel.OnDisconnected += side => OnDisconnected(side is CloseSide.Client ? ConnectionCloseStatus.ClosedRemote : ConnectionCloseStatus.ClosedLocal);
+        _channel.OnDisconnected += side =>
+            OnDisconnected(
+                side is CloseSide.Client ? ConnectionCloseStatus.ClosedRemote : ConnectionCloseStatus.ClosedLocal
+            );
         _channel.OnServerReceived += data => OnReceived(data);
     }
 

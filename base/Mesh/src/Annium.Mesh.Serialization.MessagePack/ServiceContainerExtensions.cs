@@ -15,13 +15,25 @@ public static class ServiceContainerExtensions
     )
     {
         container.Add<ISerializer, Serializer>().Singleton();
-        container.AddSerializers(Constants.SerializerKey).WithMessagePack(configure ?? (_ =>
-        {
-            var resolver = CompositeResolver.Create(Resolver.Instance, MessagePackSerializerOptions.Standard.Resolver);
-            var opts = new MessagePackSerializerOptions(resolver).WithCompression(MessagePackCompression.Lz4BlockArray);
+        container
+            .AddSerializers(Constants.SerializerKey)
+            .WithMessagePack(
+                configure
+                    ?? (
+                        _ =>
+                        {
+                            var resolver = CompositeResolver.Create(
+                                Resolver.Instance,
+                                MessagePackSerializerOptions.Standard.Resolver
+                            );
+                            var opts = new MessagePackSerializerOptions(resolver).WithCompression(
+                                MessagePackCompression.Lz4BlockArray
+                            );
 
-            return opts;
-        }));
+                            return opts;
+                        }
+                    )
+            );
 
         return container;
     }

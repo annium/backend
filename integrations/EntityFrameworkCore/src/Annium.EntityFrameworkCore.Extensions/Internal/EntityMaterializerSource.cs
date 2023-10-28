@@ -12,9 +12,7 @@ namespace Annium.EntityFrameworkCore.Extensions.Internal;
 internal class EntityMaterializerSource : EntityMaterializerSourceBase
 {
     public EntityMaterializerSource(EntityMaterializerSourceDependencies dependencies)
-        : base(dependencies)
-    {
-    }
+        : base(dependencies) { }
 
     public override Expression CreateMaterializeExpression(
         IEntityType entityType,
@@ -22,7 +20,11 @@ internal class EntityMaterializerSource : EntityMaterializerSourceBase
         Expression materializationContextExpression
     )
     {
-        var baseExpression = base.CreateMaterializeExpression(entityType, entityInstanceName, materializationContextExpression);
+        var baseExpression = base.CreateMaterializeExpression(
+            entityType,
+            entityInstanceName,
+            materializationContextExpression
+        );
         var clrType = entityType.ClrType;
         if (!clrType.GetInterfaces().Contains(typeof(IMaterializable)))
             return baseExpression;

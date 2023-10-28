@@ -13,10 +13,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
     private readonly ClientTransportConfiguration _config;
     private readonly ILogger _logger;
 
-    public ClientConnectionFactory(
-        ClientTransportConfiguration config,
-        ILogger logger
-    )
+    public ClientConnectionFactory(ClientTransportConfiguration config, ILogger logger)
     {
         _config = config;
         _logger = logger;
@@ -56,7 +53,12 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
         if (_config.AuthOptions is null)
             return networkStream;
 
-        var sslStream = new SslStream(networkStream, false, _config.AuthOptions.RemoteCertificateValidationCallback, null);
+        var sslStream = new SslStream(
+            networkStream,
+            false,
+            _config.AuthOptions.RemoteCertificateValidationCallback,
+            null
+        );
         await sslStream.AuthenticateAsClientAsync(_config.AuthOptions);
 
         return sslStream;

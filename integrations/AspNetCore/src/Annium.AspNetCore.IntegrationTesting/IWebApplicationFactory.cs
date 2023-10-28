@@ -6,7 +6,8 @@ namespace Annium.AspNetCore.IntegrationTesting;
 
 public interface IWebApplicationFactory : IAsyncDisposable
 {
-    T Resolve<T>() where T : notnull;
+    T Resolve<T>()
+        where T : notnull;
 
     object Resolve(Type type);
 

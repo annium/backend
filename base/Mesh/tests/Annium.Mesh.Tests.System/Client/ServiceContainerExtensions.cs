@@ -15,16 +15,19 @@ public static class TestServerClientServiceContainerExtensions
     )
     {
         // client
-        container.Add(sp =>
-        {
-            var configuration = new ClientConfiguration();
-            configure(configuration);
+        container
+            .Add(sp =>
+            {
+                var configuration = new ClientConfiguration();
+                configure(configuration);
 
-            var clientFactory = sp.Resolve<IClientFactory>();
-            var client = clientFactory.Create(configuration);
+                var clientFactory = sp.Resolve<IClientFactory>();
+                var client = clientFactory.Create(configuration);
 
-            return new TestServerClient(client);
-        }).AsSelf().Singleton();
+                return new TestServerClient(client);
+            })
+            .AsSelf()
+            .Singleton();
 
         // system
         container.AddMeshClient();
@@ -38,23 +41,26 @@ public static class TestServerClientServiceContainerExtensions
     )
     {
         // test client
-        container.Add<Func<TContext, Task<TestServerManagedClient>>>(sp =>
-        {
-            var configuration = new ClientConfiguration();
-            configure?.Invoke(configuration);
-
-            var clientConnectionFactory = sp.Resolve<IClientConnectionFactory<TContext>>();
-            var clientFactory = sp.Resolve<IClientFactory>();
-
-            return async context =>
+        container
+            .Add<Func<TContext, Task<TestServerManagedClient>>>(sp =>
             {
-                var connection = await clientConnectionFactory.CreateAsync(context);
-                var client = clientFactory.Create(connection, configuration);
-                await client.WhenConnectedAsync();
+                var configuration = new ClientConfiguration();
+                configure?.Invoke(configuration);
 
-                return new TestServerManagedClient(client);
-            };
-        }).AsSelf().Singleton();
+                var clientConnectionFactory = sp.Resolve<IClientConnectionFactory<TContext>>();
+                var clientFactory = sp.Resolve<IClientFactory>();
+
+                return async context =>
+                {
+                    var connection = await clientConnectionFactory.CreateAsync(context);
+                    var client = clientFactory.Create(connection, configuration);
+                    await client.WhenConnectedAsync();
+
+                    return new TestServerManagedClient(client);
+                };
+            })
+            .AsSelf()
+            .Singleton();
 
         // system
         container.AddMeshClient();

@@ -19,9 +19,7 @@ public class Behavior : IBehavior
 
     private readonly IServer _server;
 
-    public Behavior(
-        IServer server
-    )
+    public Behavior(IServer server)
     {
         _server = server;
     }

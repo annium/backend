@@ -6,8 +6,5 @@ namespace Annium.Mesh.Server.Handlers;
 
 public interface ISubscriptionHandler<TInit, TMessage>
 {
-    Task HandleAsync(
-        ISubscriptionContext<TInit, TMessage> request,
-        CancellationToken ct
-    );
+    Task HandleAsync(ISubscriptionContext<TInit, TMessage> request, CancellationToken ct);
 }

@@ -46,14 +46,16 @@ public static class ModelBuilderExtensions
     public static void UseDateTimeUtc(this ModelBuilder builder)
     {
         foreach (var entity in builder.Model.GetEntityTypes())
-        foreach (var property in entity.GetProperties().Where(x => x.ClrType == typeof(DateTime)))
-            property.SetValueConverter(new ValueConverter<DateTime, DateTime>(x => x, x => DateTime.SpecifyKind(x, DateTimeKind.Utc)));
+            foreach (var property in entity.GetProperties().Where(x => x.ClrType == typeof(DateTime)))
+                property.SetValueConverter(
+                    new ValueConverter<DateTime, DateTime>(x => x, x => DateTime.SpecifyKind(x, DateTimeKind.Utc))
+                );
     }
 
     public static void UseDeleteBehavior(this ModelBuilder builder, DeleteBehavior behavior)
     {
         foreach (var entity in builder.Model.GetEntityTypes())
-        foreach (var key in entity.GetForeignKeys())
-            key.DeleteBehavior = behavior;
+            foreach (var key in entity.GetForeignKeys())
+                key.DeleteBehavior = behavior;
     }
 }

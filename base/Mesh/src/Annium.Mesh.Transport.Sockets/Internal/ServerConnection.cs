@@ -15,11 +15,7 @@ internal sealed class ServerConnection : IServerConnection, ILogSubject
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
     private readonly IServerSocket _socket;
 
-
-    public ServerConnection(
-        IServerSocket socket,
-        ILogger logger
-    )
+    public ServerConnection(IServerSocket socket, ILogger logger)
     {
         Logger = logger;
         _socket = socket;

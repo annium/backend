@@ -7,7 +7,8 @@ namespace Annium.linq2db.Tests.Lib.Configuration;
 
 public class ConfigurationTestsBase : TestBase
 {
-    protected ConfigurationTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
+    protected ConfigurationTestsBase(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<LibServicePack>();
     }

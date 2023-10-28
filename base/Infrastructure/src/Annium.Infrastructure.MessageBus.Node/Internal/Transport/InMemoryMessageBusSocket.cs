@@ -17,20 +17,22 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     private readonly AsyncDisposableBox _disposable;
     private readonly ILogger _logger;
 
-    public InMemoryMessageBusSocket(
-        ILogger logger
-    )
+    public InMemoryMessageBusSocket(ILogger logger)
     {
-        var taskChannel = Channel.CreateUnbounded<string>(new UnboundedChannelOptions
-        {
-            AllowSynchronousContinuations = true,
-            SingleWriter = false,
-            SingleReader = true
-        });
+        var taskChannel = Channel.CreateUnbounded<string>(
+            new UnboundedChannelOptions
+            {
+                AllowSynchronousContinuations = true,
+                SingleWriter = false,
+                SingleReader = true
+            }
+        );
         _messageWriter = taskChannel.Writer;
         _messageReader = taskChannel.Reader;
 
-        _observable = ObservableExt.StaticSyncInstance<string>(CreateObservable, _observableCts.Token, logger).TrackCompletion(logger);
+        _observable = ObservableExt
+            .StaticSyncInstance<string>(CreateObservable, _observableCts.Token, logger)
+            .TrackCompletion(logger);
         _disposable = Disposable.AsyncBox(logger);
         _logger = logger;
     }
@@ -58,12 +60,8 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
             }
         }
         // token was canceled
-        catch (OperationCanceledException)
-        {
-        }
-        catch (ChannelClosedException)
-        {
-        }
+        catch (OperationCanceledException) { }
+        catch (ChannelClosedException) { }
         catch (Exception e)
         {
             ctx.OnError(e);

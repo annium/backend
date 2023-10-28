@@ -7,7 +7,8 @@ namespace Annium.linq2db.PostgreSql.Tests.Extensions;
 
 public class TableInsertOrUpdateExtensionsTests : TableInsertOrUpdateExtensionsTestsBase
 {
-    public TableInsertOrUpdateExtensionsTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    public TableInsertOrUpdateExtensionsTests(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

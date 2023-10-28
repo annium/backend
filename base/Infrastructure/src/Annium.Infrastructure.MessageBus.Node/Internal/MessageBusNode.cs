@@ -12,10 +12,7 @@ internal class MessageBusNode : IMessageBusNode
     private readonly ISerializer<string> _serializer;
     private readonly IObservable<Message> _observable;
 
-    public MessageBusNode(
-        IConfiguration cfg,
-        IMessageBusSocket socket
-    )
+    public MessageBusNode(IConfiguration cfg, IMessageBusSocket socket)
     {
         _socket = socket;
         _serializer = cfg.Serializer;
@@ -32,9 +29,7 @@ internal class MessageBusNode : IMessageBusNode
 
     public IObservable<object> Listen() => Listen<object>();
 
-    public IObservable<T> Listen<T>() => _observable
-        .OfType<IMessage<T>>()
-        .Select(x => x.Content);
+    public IObservable<T> Listen<T>() => _observable.OfType<IMessage<T>>().Select(x => x.Content);
 
     public IDisposable Subscribe(IObserver<string> observer) => _socket.Subscribe(observer);
 }

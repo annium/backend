@@ -9,9 +9,7 @@ internal class DynamicControllerFeatureProvider : IApplicationFeatureProvider<Co
 {
     private readonly IReadOnlyCollection<DynamicControllerModel> _models;
 
-    public DynamicControllerFeatureProvider(
-        IReadOnlyCollection<DynamicControllerModel> models
-    )
+    public DynamicControllerFeatureProvider(IReadOnlyCollection<DynamicControllerModel> models)
     {
         _models = models;
     }

@@ -12,10 +12,7 @@ internal class EchoHandler : IRequestResponseHandler<Action, EchoRequest, string
     public static ushort Version => 1;
     public static Action Action => Action.Echo;
 
-    public Task<IStatusResult<OperationStatus, string>> HandleAsync(
-        EchoRequest request,
-        CancellationToken ct
-    )
+    public Task<IStatusResult<OperationStatus, string>> HandleAsync(EchoRequest request, CancellationToken ct)
     {
         return Task.FromResult(Result.Status(OperationStatus.Ok, request.Message));
     }

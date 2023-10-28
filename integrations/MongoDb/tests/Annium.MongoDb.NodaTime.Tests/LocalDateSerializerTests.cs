@@ -37,14 +37,18 @@ public class LocalDateSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", "bleh")))).Throws<FormatException>();
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", BsonNull.Value)))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", "bleh"))))
+            .Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDate", BsonNull.Value))))
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDate", BsonNull.Value))).NullableLocalDate.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDate", BsonNull.Value)))
+            .NullableLocalDate.IsDefault();
     }
 
     private class Test

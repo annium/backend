@@ -14,52 +14,48 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
     private AsyncDisposableBox _disposable = Disposable.AsyncBox(VoidLogger.Instance);
     private readonly ITestOutputHelper _outputHelper;
 
-    protected IntegrationTest(ITestOutputHelper outputHelper) : base(outputHelper)
+    protected IntegrationTest(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         _outputHelper = outputHelper;
     }
 
     #region host configuration & setup
 
-    private Action<IHostBuilder> ConfigureHost(
-        Action<IServiceProviderBuilder> configureBuilder
-    ) => ConfigureHost(configureBuilder, _ => { });
+    private Action<IHostBuilder> ConfigureHost(Action<IServiceProviderBuilder> configureBuilder) =>
+        ConfigureHost(configureBuilder, _ => { });
 
     private Action<IHostBuilder> ConfigureHost(
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceContainer> configureServices
-    ) => hostBuilder =>
-    {
-        var serviceProviderFactory = new ServiceProviderFactory(configureBuilder);
-        hostBuilder.ConfigureServices((_, services) =>
+    ) =>
+        hostBuilder =>
         {
-            var container = new ServiceContainer(services);
-            configureServices(container);
-            container.Add(_outputHelper).AsSelf().Singleton();
-        });
-        hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
-    };
+            var serviceProviderFactory = new ServiceProviderFactory(configureBuilder);
+            hostBuilder.ConfigureServices(
+                (_, services) =>
+                {
+                    var container = new ServiceContainer(services);
+                    configureServices(container);
+                    container.Add(_outputHelper).AsSelf().Singleton();
+                }
+            );
+            hostBuilder.UseServiceProviderFactory(serviceProviderFactory);
+        };
 
-    private void SetupHost(
-        IServiceProvider sp
-    )
+    private void SetupHost(IServiceProvider sp)
     {
         SetupHost(_ => { })(sp);
     }
 
-    private Action<IServiceProvider> SetupHost(
-        Action<IServiceProvider> setupServices
-    ) => setupServices;
+    private Action<IServiceProvider> SetupHost(Action<IServiceProvider> setupServices) => setupServices;
 
     #endregion
 
     #region WebAppFactory instantiation
 
-    protected IWebApplicationFactory GetAppFactory<TStartup>(
-        Action<IServiceProviderBuilder> configureBuilder
-    )
-        where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost);
+    protected IWebApplicationFactory GetAppFactory<TStartup>(Action<IServiceProviderBuilder> configureBuilder)
+        where TStartup : class => GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost);
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,
@@ -72,8 +68,7 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
         Action<IServiceProviderBuilder> configureBuilder,
         Action<IServiceProvider> setupServices
     )
-        where TStartup : class =>
-        GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost(setupServices));
+        where TStartup : class => GetAppFactory<TStartup>(ConfigureHost(configureBuilder), SetupHost(setupServices));
 
     protected IWebApplicationFactory GetAppFactory<TStartup>(
         Action<IServiceProviderBuilder> configureBuilder,

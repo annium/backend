@@ -34,7 +34,9 @@ public class DurationSerializerTests
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("DurationNullable", BsonNull.Value))).DurationNullable.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("DurationNullable", BsonNull.Value)))
+            .DurationNullable.IsDefault();
     }
 
     private class Test

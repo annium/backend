@@ -22,10 +22,7 @@ internal class DebugSerializer : ISerializer, ILogSubject
     public ILogger Logger { get; }
     private readonly ISerializer<string> _serializer;
 
-    public DebugSerializer(
-        IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILogger logger
-    )
+    public DebugSerializer(IIndex<SerializerKey, ISerializer<string>> serializers, ILogger logger)
     {
         Logger = logger;
         var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);

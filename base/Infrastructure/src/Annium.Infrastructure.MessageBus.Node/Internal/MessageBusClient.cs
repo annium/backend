@@ -10,9 +10,7 @@ internal class MessageBusClient : IMessageBusClient
 {
     private readonly IMessageBusNode _node;
 
-    public MessageBusClient(
-        IMessageBusNode node
-    )
+    public MessageBusClient(IMessageBusNode node)
     {
         _node = node;
     }
@@ -23,7 +21,8 @@ internal class MessageBusClient : IMessageBusClient
 
         var tcs = new TaskCompletionSource<IResult<T>>();
         ct.Register(() => tcs.TrySetCanceled());
-        _node.Listen<MessageBusEnvelope<T>>()
+        _node
+            .Listen<MessageBusEnvelope<T>>()
             .Where(x => x.Id == id)
             .Subscribe(
                 x =>

@@ -25,7 +25,10 @@ internal class ExceptionMiddleware : ILogSubject
     )
     {
         _next = next;
-        _helper = new Helper(serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)], MediaTypeNames.Application.Json);
+        _helper = new Helper(
+            serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
+            MediaTypeNames.Application.Json
+        );
         Logger = logger;
     }
 

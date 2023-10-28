@@ -5,7 +5,6 @@ namespace Annium.MongoDb.NodaTime;
 
 public class DurationSerializer : PatternSerializer<Duration>
 {
-    public DurationSerializer() : base(DurationPattern.Roundtrip)
-    {
-    }
+    public DurationSerializer()
+        : base(DurationPattern.Roundtrip) { }
 }

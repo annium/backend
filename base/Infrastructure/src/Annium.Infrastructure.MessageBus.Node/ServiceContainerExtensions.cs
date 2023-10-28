@@ -16,12 +16,16 @@ public static class ServiceContainerExtensions
         Action<IServiceProvider, INetworkConfigurationBuilder> configure
     )
     {
-        container.Add(sp =>
-        {
-            var builder = sp.Resolve<NetworkConfigurationBuilder>();
-            configure(sp, builder);
-            return builder.Build();
-        }).AsSelf().AsInterfaces().Singleton();
+        container
+            .Add(sp =>
+            {
+                var builder = sp.Resolve<NetworkConfigurationBuilder>();
+                configure(sp, builder);
+                return builder.Build();
+            })
+            .AsSelf()
+            .AsInterfaces()
+            .Singleton();
         container.Add<IMessageBusSocket, NetMQMessageBusSocket>().Singleton();
         container.Add<NetworkConfigurationBuilder>().AsSelf().Singleton();
 
@@ -33,12 +37,16 @@ public static class ServiceContainerExtensions
         Action<IServiceProvider, IInMemoryConfigurationBuilder> configure
     )
     {
-        container.Add(sp =>
-        {
-            var builder = sp.Resolve<InMemoryConfigurationBuilder>();
-            configure(sp, builder);
-            return builder.Build();
-        }).AsSelf().AsInterfaces().Singleton();
+        container
+            .Add(sp =>
+            {
+                var builder = sp.Resolve<InMemoryConfigurationBuilder>();
+                configure(sp, builder);
+                return builder.Build();
+            })
+            .AsSelf()
+            .AsInterfaces()
+            .Singleton();
         container.Add<IMessageBusSocket, InMemoryMessageBusSocket>().Singleton();
         container.Add<InMemoryConfigurationBuilder>().AsSelf().Singleton();
 

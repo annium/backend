@@ -10,9 +10,7 @@ internal class BroadcasterRunner<TMessage> : IBroadcasterRunner
 {
     private readonly IBroadcaster<TMessage> _broadcaster;
 
-    public BroadcasterRunner(
-        IBroadcaster<TMessage> broadcaster
-    )
+    public BroadcasterRunner(IBroadcaster<TMessage> broadcaster)
     {
         _broadcaster = broadcaster;
     }

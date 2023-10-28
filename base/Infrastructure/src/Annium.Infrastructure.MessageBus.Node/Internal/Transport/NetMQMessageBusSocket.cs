@@ -20,10 +20,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     private readonly AsyncDisposableBox _disposable;
     private readonly ILogger _logger;
 
-    public NetMQMessageBusSocket(
-        NetworkConfiguration cfg,
-        ILogger logger
-    )
+    public NetMQMessageBusSocket(NetworkConfiguration cfg, ILogger logger)
     {
         _disposable = Disposable.AsyncBox(logger);
         _disposable += _publisher = new PublisherSocket();
@@ -33,12 +30,14 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
         _subscriber.Connect(cfg.Endpoints.SubEndpoint);
         _subscriber.SubscribeToAnyTopic();
 
-        _observable = ObservableExt.StaticAsyncInstance<string>(CreateObservable, _observableCts.Token, logger).TrackCompletion(logger);
+        _observable = ObservableExt
+            .StaticAsyncInstance<string>(CreateObservable, _observableCts.Token, logger)
+            .TrackCompletion(logger);
         _logger = logger;
     }
 
-    public IObservable<Unit> Send(string message)
-        => Observable.FromAsync(() =>
+    public IObservable<Unit> Send(string message) =>
+        Observable.FromAsync(() =>
         {
             lock (_publisher)
                 _publisher.SendFrame(message);
@@ -64,9 +63,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
             }
         }
         // token was canceled
-        catch (OperationCanceledException)
-        {
-        }
+        catch (OperationCanceledException) { }
         catch (Exception e)
         {
             ctx.OnError(e);

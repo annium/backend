@@ -5,9 +5,7 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddAspNetCoreExtensions(
-        this IServiceContainer container
-    )
+    public static IServiceContainer AddAspNetCoreExtensions(this IServiceContainer container)
     {
         container.AddProfile<HttpStatusCodeProfile>();
 

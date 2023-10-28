@@ -11,7 +11,12 @@ public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddS3Storage(this IServiceContainer container)
     {
-        container.Add<Func<Configuration, IStorage>>(sp => configuration => new S3Storage(configuration, sp.Resolve<ILogger>())).AsSelf().Singleton();
+        container
+            .Add<Func<Configuration, IStorage>>(
+                sp => configuration => new S3Storage(configuration, sp.Resolve<ILogger>())
+            )
+            .AsSelf()
+            .Singleton();
 
         return container;
     }

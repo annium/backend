@@ -17,11 +17,7 @@ internal class Server : IServer, ILogSubject
     private readonly IBackgroundExecutor _executor;
     private int _isListening;
 
-    public Server(
-        IConnectionHub hub,
-        ICoordinator coordinator,
-        ILogger logger
-    )
+    public Server(IConnectionHub hub, ICoordinator coordinator, ILogger logger)
     {
         _hub = hub;
         _coordinator = coordinator;
@@ -61,20 +57,21 @@ internal class Server : IServer, ILogSubject
             this.Trace("connection handle skipped (server is already stopping)");
     }
 
-    private Func<ValueTask> HandleConnection(IServerConnection connection) => async () =>
-    {
-        try
+    private Func<ValueTask> HandleConnection(IServerConnection connection) =>
+        async () =>
         {
-            this.Trace("start");
+            try
+            {
+                this.Trace("start");
 
-            this.Trace("handle connection");
-            await _coordinator.HandleAsync(connection);
+                this.Trace("handle connection");
+                await _coordinator.HandleAsync(connection);
 
-            this.Trace("done");
-        }
-        catch (Exception ex)
-        {
-            this.Error(ex);
-        }
-    };
+                this.Trace("done");
+            }
+            catch (Exception ex)
+            {
+                this.Error(ex);
+            }
+        };
 }

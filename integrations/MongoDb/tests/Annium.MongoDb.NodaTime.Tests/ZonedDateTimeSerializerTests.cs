@@ -9,7 +9,9 @@ namespace Annium.MongoDb.NodaTime.Tests;
 
 public class ZonedDateTimeSerializerTests
 {
-    private readonly static DateTimeZone EasternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull("America/New_York")!;
+    private static readonly DateTimeZone EasternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(
+        "America/New_York"
+    )!;
 
     static ZonedDateTimeSerializerTests()
     {
@@ -45,14 +47,21 @@ public class ZonedDateTimeSerializerTests
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", "bleh")))).Throws<FormatException>();
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value)))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", "bleh"))))
+            .Throws<FormatException>();
+        Wrap.It(
+                () =>
+                    BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value)))
+            )
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("NullableZonedDateTime", BsonNull.Value))).NullableZonedDateTime.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("NullableZonedDateTime", BsonNull.Value)))
+            .NullableZonedDateTime.IsDefault();
     }
 
     private class Test

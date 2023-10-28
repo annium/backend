@@ -14,11 +14,7 @@ internal class Handler : IHandler, ILogSubject
     private readonly IServerConnectionFactory<Socket> _connectionFactory;
     private readonly ICoordinator _coordinator;
 
-    public Handler(
-        IServerConnectionFactory<Socket> connectionFactory,
-        ICoordinator coordinator,
-        ILogger logger
-    )
+    public Handler(IServerConnectionFactory<Socket> connectionFactory, ICoordinator coordinator, ILogger logger)
     {
         Logger = logger;
         _connectionFactory = connectionFactory;

@@ -9,12 +9,13 @@ namespace Annium.linq2db.PostgreSql.Tests.Db;
 
 public static class Database
 {
-    public static PostgreSqlConfiguration Config { get; } = new()
-    {
-        Database = "db",
-        User = "postgres",
-        Password = "postgres",
-    };
+    public static PostgreSqlConfiguration Config { get; } =
+        new()
+        {
+            Database = "db",
+            User = "postgres",
+            Password = "postgres",
+        };
 
     private static readonly PostgreSqlContainer Db;
     private static readonly TaskCompletionSource InitTcs = new();

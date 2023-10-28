@@ -11,10 +11,7 @@ internal class Helper
     private readonly ISerializer<string> _serializer;
     private readonly string _mediaType;
 
-    public Helper(
-        ISerializer<string> serializer,
-        string mediaType
-    )
+    public Helper(ISerializer<string> serializer, string mediaType)
     {
         _serializer = serializer;
         _mediaType = mediaType;

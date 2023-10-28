@@ -10,10 +10,7 @@ internal class LifeCycleCoordinator : ILogSubject
     public ILogger Logger { get; }
     private readonly IEnumerable<LifeCycleHandlerBase> _handlers;
 
-    public LifeCycleCoordinator(
-        IEnumerable<LifeCycleHandlerBase> handlers,
-        ILogger logger
-    )
+    public LifeCycleCoordinator(IEnumerable<LifeCycleHandlerBase> handlers, ILogger logger)
     {
         _handlers = handlers;
         Logger = logger;

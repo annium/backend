@@ -11,9 +11,7 @@ namespace Annium.Mesh.Tests.InMemory;
 public class PushPerfTests : PushTestsBase<Behavior>
 {
     public PushPerfTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Theory]
     [MemberData(nameof(GetPerfRange))]

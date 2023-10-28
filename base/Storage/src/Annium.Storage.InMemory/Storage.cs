@@ -11,11 +11,8 @@ internal class Storage : StorageBase
 {
     private readonly IDictionary<string, byte[]> _storage = new Dictionary<string, byte[]>();
 
-    public Storage(
-        ILogger logger
-    ) : base(logger)
-    {
-    }
+    public Storage(ILogger logger)
+        : base(logger) { }
 
     protected override Task DoSetupAsync() => Task.CompletedTask;
 

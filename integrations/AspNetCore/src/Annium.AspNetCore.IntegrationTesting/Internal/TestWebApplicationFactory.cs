@@ -4,7 +4,8 @@ using Microsoft.Extensions.Hosting;
 
 namespace Annium.AspNetCore.IntegrationTesting.Internal;
 
-internal class TestWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint> where TEntryPoint : class
+internal class TestWebApplicationFactory<TEntryPoint> : WebApplicationFactory<TEntryPoint>
+    where TEntryPoint : class
 {
     private readonly Action<IHostBuilder> _configureHost;
 

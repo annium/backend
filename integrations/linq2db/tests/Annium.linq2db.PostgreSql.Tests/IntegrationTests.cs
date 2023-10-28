@@ -7,7 +7,8 @@ namespace Annium.linq2db.PostgreSql.Tests;
 
 public class IntegrationTests : IntegrationTestsBase
 {
-    public IntegrationTests(ITestOutputHelper outputHelper) : base(outputHelper)
+    public IntegrationTests(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         AddServicePack<ServicePack>();
     }

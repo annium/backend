@@ -13,10 +13,7 @@ public class ServerController : ControllerBase
     private readonly IMediator _mediator;
     private readonly IServiceProvider _serviceProvider;
 
-    protected ServerController(
-        IMediator mediator,
-        IServiceProvider serviceProvider
-    )
+    protected ServerController(IMediator mediator, IServiceProvider serviceProvider)
     {
         _mediator = mediator;
         _serviceProvider = serviceProvider;
@@ -33,10 +30,7 @@ public class ServerController : ControllerBase
     }
 
     [NonAction]
-    protected Task<IResult> HandleAsync<TRequest>(
-        TRequest request,
-        CancellationToken ct = default
-    )
+    protected Task<IResult> HandleAsync<TRequest>(TRequest request, CancellationToken ct = default)
         where TRequest : notnull
     {
         return _mediator.SendAsync<IResult>(_serviceProvider, request, ct);

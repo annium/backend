@@ -17,7 +17,5 @@ await app.RunAsync();
 
 namespace Annium.AspNetCore.TestServer
 {
-    public partial class Program
-    {
-    }
+    public partial class Program { }
 }

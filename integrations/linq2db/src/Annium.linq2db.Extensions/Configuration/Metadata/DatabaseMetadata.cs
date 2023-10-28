@@ -8,9 +8,7 @@ public class DatabaseMetadata
 {
     public IReadOnlyDictionary<Type, TableMetadata> Tables { get; }
 
-    public DatabaseMetadata(
-        IReadOnlyDictionary<Type, TableMetadata> tables
-    )
+    public DatabaseMetadata(IReadOnlyDictionary<Type, TableMetadata> tables)
     {
         Tables = tables;
     }

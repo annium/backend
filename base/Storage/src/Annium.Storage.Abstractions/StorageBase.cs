@@ -9,11 +9,10 @@ namespace Annium.Storage.Abstractions;
 public abstract class StorageBase : IStorage, ILogSubject
 {
     public ILogger Logger { get; }
-    private static readonly Regex NameRe = new(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex NameRe =
+        new(@"^(?:[A-z0-9]|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
 
-    public StorageBase(
-        ILogger logger
-    )
+    public StorageBase(ILogger logger)
     {
         Logger = logger;
     }
@@ -94,8 +93,6 @@ public abstract class StorageBase : IStorage, ILogSubject
             if (!NameRe.IsMatch(part))
                 throw new ArgumentException($"Path part {part} has invalid format");
 
-        string[] GetPathParts() => path
-            .TrimStart('/')
-            .Split('/');
+        string[] GetPathParts() => path.TrimStart('/').Split('/');
     }
 }

@@ -5,11 +5,9 @@ namespace Annium.Infrastructure.MessageBus.Node.Internal;
 
 internal static class MessageBusEnvelope
 {
-    public static MessageBusEnvelope<T> Data<T>(Guid id, T data) =>
-        new(id, data, string.Empty);
+    public static MessageBusEnvelope<T> Data<T>(Guid id, T data) => new(id, data, string.Empty);
 
-    public static MessageBusEnvelope<object> Error(Guid id, string error) =>
-        new(id, default!, error);
+    public static MessageBusEnvelope<object> Error(Guid id, string error) => new(id, default!, error);
 }
 
 internal class MessageBusEnvelope<T>
@@ -25,11 +23,7 @@ internal class MessageBusEnvelope<T>
 
     public bool IsSuccess => string.IsNullOrWhiteSpace(Error);
 
-    public MessageBusEnvelope(
-        Guid id,
-        T data,
-        string error
-    )
+    public MessageBusEnvelope(Guid id, T data, string error)
     {
         Id = id;
         Data = data;

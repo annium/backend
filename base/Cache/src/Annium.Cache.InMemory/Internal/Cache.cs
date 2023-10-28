@@ -17,10 +17,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, IAsyncDisposable, ILo
     private readonly Dictionary<TKey, Entry> _data = new();
     private readonly IBackgroundExecutor _executor;
 
-    public Cache(
-        ITimeProvider timeProvider,
-        ILogger logger
-    )
+    public Cache(ITimeProvider timeProvider, ILogger logger)
     {
         _timeProvider = timeProvider;
         _executor = Executor.Background.Concurrent<Cache<TKey, TValue>>(logger);
@@ -28,7 +25,12 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, IAsyncDisposable, ILo
         Logger = logger;
     }
 
-    public async ValueTask<TValue> GetOrCreateAsync<TContext>(TKey key, Func<TKey, TContext, ValueTask<TValue>> factory, TContext context, CacheOptions options)
+    public async ValueTask<TValue> GetOrCreateAsync<TContext>(
+        TKey key,
+        Func<TKey, TContext, ValueTask<TValue>> factory,
+        TContext context,
+        CacheOptions options
+    )
         where TContext : notnull
     {
         return await GetOrCreateEntry(key, factory, context, options).Tcs.Task;
@@ -42,13 +44,17 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, IAsyncDisposable, ILo
         return ValueTask.CompletedTask;
     }
 
-
     public async ValueTask DisposeAsync()
     {
         await _executor.DisposeAsync();
     }
 
-    private Entry GetOrCreateEntry<TContext>(TKey key, Func<TKey, TContext, ValueTask<TValue>> factory, TContext context, CacheOptions options)
+    private Entry GetOrCreateEntry<TContext>(
+        TKey key,
+        Func<TKey, TContext, ValueTask<TValue>> factory,
+        TContext context,
+        CacheOptions options
+    )
     {
         lock (_data)
         {

@@ -22,11 +22,9 @@ public class TestServerClient : IAsyncDisposable
         _client.OnError += exception => OnError(exception);
     }
 
-    public Task ConnectAsync() =>
-        _client.ConnectAsync();
+    public Task ConnectAsync() => _client.ConnectAsync();
 
-    public void Disconnect() =>
-        _client.Disconnect();
+    public void Disconnect() => _client.Disconnect();
 
     public ValueTask DisposeAsync() => _client.DisposeAsync();
 }

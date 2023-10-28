@@ -40,7 +40,6 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
         _executor.Start();
     }
 
-
     public void Send(TMessage message)
     {
         if (_ct.IsCancellationRequested)

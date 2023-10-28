@@ -21,10 +21,13 @@ public class Behavior : IBehavior, ILogSubject
     {
         container.Add(new TransportConfiguration(Interlocked.Increment(ref _basePort))).AsSelf().Singleton();
 
-        container.AddMeshSocketsClientTransport(sp => new ClientTransportConfiguration
-        {
-            Endpoint = new IPEndPoint(IPAddress.Loopback, sp.Resolve<TransportConfiguration>().Port)
-        });
+        container.AddMeshSocketsClientTransport(
+            sp =>
+                new ClientTransportConfiguration
+                {
+                    Endpoint = new IPEndPoint(IPAddress.Loopback, sp.Resolve<TransportConfiguration>().Port)
+                }
+        );
         container.AddMeshSocketsServerTransport(_ => new ServerTransportConfiguration());
         container.AddSocketServerMeshHandler();
 
@@ -34,11 +37,7 @@ public class Behavior : IBehavior, ILogSubject
     private readonly IServiceProvider _sp;
     private readonly TransportConfiguration _config;
 
-    public Behavior(
-        IServiceProvider sp,
-        TransportConfiguration config,
-        ILogger logger
-    )
+    public Behavior(IServiceProvider sp, TransportConfiguration config, ILogger logger)
     {
         Logger = logger;
         _sp = sp;

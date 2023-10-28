@@ -11,7 +11,10 @@ public static class ServiceContainerExtensions
 {
     public static IServiceContainer AddInMemoryStorage(this IServiceContainer container)
     {
-        container.Add<Func<Configuration, IStorage>>(sp => _ => new MemoryStorage(sp.Resolve<ILogger>())).AsSelf().Singleton();
+        container
+            .Add<Func<Configuration, IStorage>>(sp => _ => new MemoryStorage(sp.Resolve<ILogger>()))
+            .AsSelf()
+            .Singleton();
 
         return container;
     }

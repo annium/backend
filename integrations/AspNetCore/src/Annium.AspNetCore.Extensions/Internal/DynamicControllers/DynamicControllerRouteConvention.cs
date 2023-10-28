@@ -9,9 +9,7 @@ internal class DynamicControllerRouteConvention : IControllerModelConvention
 {
     private readonly IReadOnlyCollection<DynamicControllerModel> _models;
 
-    public DynamicControllerRouteConvention(
-        IReadOnlyCollection<DynamicControllerModel> models
-    )
+    public DynamicControllerRouteConvention(IReadOnlyCollection<DynamicControllerModel> models)
     {
         _models = models;
     }
@@ -30,9 +28,8 @@ internal class DynamicControllerRouteConvention : IControllerModelConvention
         controller.RouteValues["area"] = area;
         controller.RouteValues["controller"] = name;
         controller.RouteValues["dynamicKey"] = key;
-        controller.Selectors.Add(new SelectorModel
-        {
-            AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(route))
-        });
+        controller.Selectors.Add(
+            new SelectorModel { AttributeRouteModel = new AttributeRouteModel(new RouteAttribute(route)) }
+        );
     }
 }

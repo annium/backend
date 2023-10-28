@@ -27,7 +27,9 @@ public class ServerConfigurationOptions
         where TAction : struct, Enum
     {
         if (typeof(TAction).GetEnumUnderlyingType() != typeof(int))
-            throw new InvalidOperationException($"Action {typeof(TAction).FriendlyName()} underlying type must be {nameof(Int32)}");
+            throw new InvalidOperationException(
+                $"Action {typeof(TAction).FriendlyName()} underlying type must be {nameof(Int32)}"
+            );
 
         RegisterHandlers<TAction>(version);
     }
@@ -35,10 +37,14 @@ public class ServerConfigurationOptions
     private void RegisterHandlers<TAction>(ushort version)
         where TAction : struct, Enum
     {
-        var implementations = _container.GetTypeManager().GetImplementations(typeof(IHandlerBase<TAction>))
-            .Where(x =>
-                x is { IsClass: true, IsGenericType: false } &&
-                x.GetProperty(nameof(IHandlerBase<TAction>.Version))!.GetPropertyOrFieldValue<ushort>() == version
+        var implementations = _container
+            .GetTypeManager()
+            .GetImplementations(typeof(IHandlerBase<TAction>))
+            .Where(
+                x =>
+                    x is { IsClass: true, IsGenericType: false }
+                    && x.GetProperty(nameof(IHandlerBase<TAction>.Version))!.GetPropertyOrFieldValue<ushort>()
+                        == version
             )
             .ToArray();
 
@@ -47,12 +53,16 @@ public class ServerConfigurationOptions
 
         foreach (var implementation in implementations)
         {
-            var action = implementation.GetProperty(nameof(IHandlerBase<TAction>.Action))!.GetPropertyOrFieldValue<TAction>();
+            var action = implementation
+                .GetProperty(nameof(IHandlerBase<TAction>.Action))!
+                .GetPropertyOrFieldValue<TAction>();
             if (!actions.Contains(action))
                 throw new InvalidOperationException($"Action {action} is outside of known action values");
 
             if (registrations.TryGetValue(action, out var existingImplementation))
-                throw new InvalidOperationException($"Action {action} is already used by {existingImplementation.FriendlyName()}");
+                throw new InvalidOperationException(
+                    $"Action {action} is already used by {existingImplementation.FriendlyName()}"
+                );
 
             var actionKey = new ActionKey(version, Convert.ToInt32(action));
             RegisterHandler(actionKey, implementation);
@@ -62,7 +72,9 @@ public class ServerConfigurationOptions
 
         var unregisteredActions = actions.Except(registrations.Keys).ToArray();
         if (unregisteredActions.Length > 0)
-            throw new InvalidOperationException($"Actions: {string.Join(", ", unregisteredActions)} - are not mapped to any handlers");
+            throw new InvalidOperationException(
+                $"Actions: {string.Join(", ", unregisteredActions)} - are not mapped to any handlers"
+            );
     }
 
     private void RegisterHandler(ActionKey actionKey, Type implementation)
@@ -76,49 +88,63 @@ public class ServerConfigurationOptions
         if (RegisterPushHandler(actionKey, implementation))
             return;
 
-        throw new InvalidOperationException($"Failed to resolve handler type {implementation.FriendlyName()} ({actionKey})");
+        throw new InvalidOperationException(
+            $"Failed to resolve handler type {implementation.FriendlyName()} ({actionKey})"
+        );
     }
 
     private bool RegisterRequestHandler(ActionKey actionKey, Type implementation)
     {
-        if (!TryResolveHandler(
-            implementation,
-            typeof(IRequestHandler<,>),
-            nameof(IRequestHandler<MessageType, object>.HandleAsync),
-            out var info
-        ))
+        if (
+            !TryResolveHandler(
+                implementation,
+                typeof(IRequestHandler<,>),
+                nameof(IRequestHandler<MessageType, object>.HandleAsync),
+                out var info
+            )
+        )
             return false;
 
         var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
-        _routeStore.RequestRoutes.Register(actionKey, new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty));
+        _routeStore.RequestRoutes.Register(
+            actionKey,
+            new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)
+        );
 
         return true;
     }
 
     private bool RegisterRequestResponseHandler(ActionKey actionKey, Type implementation)
     {
-        if (!TryResolveHandler(
-            implementation,
-            typeof(IRequestResponseHandler<,,>),
-            nameof(IRequestResponseHandler<MessageType, object, object>.HandleAsync),
-            out var info
-        ))
+        if (
+            !TryResolveHandler(
+                implementation,
+                typeof(IRequestResponseHandler<,,>),
+                nameof(IRequestResponseHandler<MessageType, object, object>.HandleAsync),
+                out var info
+            )
+        )
             return false;
 
         var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
-        _routeStore.RequestRoutes.Register(actionKey, new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty));
+        _routeStore.RequestRoutes.Register(
+            actionKey,
+            new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)
+        );
 
         return true;
     }
 
     private bool RegisterPushHandler(ActionKey actionKey, Type implementation)
     {
-        if (!TryResolveHandler(
-            implementation,
-            typeof(IPushHandler<,>),
-            nameof(IPushHandler<MessageType, object>.RunAsync),
-            out var info
-        ))
+        if (
+            !TryResolveHandler(
+                implementation,
+                typeof(IPushHandler<,>),
+                nameof(IPushHandler<MessageType, object>.RunAsync),
+                out var info
+            )
+        )
             return false;
 
         _routeStore.PushRoutes.Register(actionKey, new PushRoute(implementation, info.Handle, info.Args[1]));
@@ -133,14 +159,16 @@ public class ServerConfigurationOptions
         [NotNullWhen(true)] out HandlerInfo? info
     )
     {
-        var implementationType = handlerType.GetInterfaces()
+        var implementationType = handlerType
+            .GetInterfaces()
             .SingleOrDefault(x => x.IsGenericType && x.GetGenericTypeDefinition() == targetType);
 
         info = null;
         if (implementationType is null)
             return false;
 
-        var handle = implementationType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+        var handle = implementationType
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Single(x => x.Name == handleName);
         var args = implementationType.GetGenericArguments();
         info = new HandlerInfo(handle, args);

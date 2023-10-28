@@ -18,9 +18,8 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
     private readonly CancellationTokenSource _serverCts = new();
     private Task _serverTask = Task.CompletedTask;
 
-    protected TestBase(
-        ITestOutputHelper outputHelper
-    ) : base(outputHelper)
+    protected TestBase(ITestOutputHelper outputHelper)
+        : base(outputHelper)
     {
         Register(container =>
         {

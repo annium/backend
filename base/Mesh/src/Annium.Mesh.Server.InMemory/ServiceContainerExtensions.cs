@@ -6,9 +6,7 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddMeshInMemoryServer(
-        this IServiceContainer container
-    )
+    public static IServiceContainer AddMeshInMemoryServer(this IServiceContainer container)
     {
         container.AddMeshInMemoryTransport();
 

@@ -31,8 +31,8 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         var keys = new HashSet<string>();
 
         foreach (var server in _redis.GetServers())
-        await foreach (var key in server.KeysAsync(pattern: keyPattern))
-            keys.Add(key.ToString());
+            await foreach (var key in server.KeysAsync(pattern: keyPattern))
+                keys.Add(key.ToString());
 
         return keys;
     }
@@ -50,7 +50,9 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     {
         await ConnectionTask;
 
-        var result = await _redis.GetDatabase().StringSetAsync(key, value, expires == Duration.Zero ? null : expires.ToTimeSpan());
+        var result = await _redis
+            .GetDatabase()
+            .StringSetAsync(key, value, expires == Duration.Zero ? null : expires.ToTimeSpan());
 
         return result;
     }
@@ -64,8 +66,11 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         return result;
     }
 
-    private void HandleConnectionFailed(object? sender, ConnectionFailedEventArgs args) => _connectionTcs = new TaskCompletionSource();
-    private void HandleConnectionRestored(object? sender, ConnectionFailedEventArgs args) => _connectionTcs.TrySetResult();
+    private void HandleConnectionFailed(object? sender, ConnectionFailedEventArgs args) =>
+        _connectionTcs = new TaskCompletionSource();
+
+    private void HandleConnectionRestored(object? sender, ConnectionFailedEventArgs args) =>
+        _connectionTcs.TrySetResult();
 
     public async ValueTask DisposeAsync()
     {

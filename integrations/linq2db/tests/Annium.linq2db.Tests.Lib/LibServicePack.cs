@@ -7,7 +7,6 @@ public class LibServicePack : ServicePackBase
 {
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
-        container.AddSerializers()
-            .WithJson(opts => opts.UseCamelCaseNamingPolicy());
+        container.AddSerializers().WithJson(opts => opts.UseCamelCaseNamingPolicy());
     }
 }

@@ -6,9 +6,7 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ApplicationBuilderExtensions
 {
-    public static IApplicationBuilder UseMeshWebSocketsMiddleware(
-        this IApplicationBuilder builder
-    )
+    public static IApplicationBuilder UseMeshWebSocketsMiddleware(this IApplicationBuilder builder)
     {
         builder.UseWebSockets();
         builder.UseMiddleware<WebSocketsMiddleware>();

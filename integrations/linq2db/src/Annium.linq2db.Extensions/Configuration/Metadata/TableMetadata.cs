@@ -14,11 +14,7 @@ public class TableMetadata
     public TableAttribute Attribute { get; }
     public IReadOnlyDictionary<MemberInfo, ColumnMetadata> Columns { get; }
 
-    public TableMetadata(
-        Type type,
-        TableAttribute attribute,
-        IReadOnlyDictionary<MemberInfo, ColumnMetadata> columns
-    )
+    public TableMetadata(Type type, TableAttribute attribute, IReadOnlyDictionary<MemberInfo, ColumnMetadata> columns)
     {
         Type = type;
         Attribute = attribute;

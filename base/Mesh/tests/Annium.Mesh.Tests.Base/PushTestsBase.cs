@@ -11,9 +11,8 @@ namespace Annium.Mesh.Tests.Base;
 public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : class, IBehavior
 {
-    protected PushTestsBase(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
+    protected PushTestsBase(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
 
     protected async Task Counter_Base()
     {
@@ -48,19 +47,21 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
 
         // arrange
         var range = Enumerable.Range(0, 10).ToArray();
-        await Task.WhenAll(range.Select(async _ =>
-        {
-            var sample = new PushSample<TBehavior>(Get<ITestOutputHelper>());
-            try
+        await Task.WhenAll(
+            range.Select(async _ =>
             {
-                await sample.InitializeAsync();
-                await sample.RunAsync();
-            }
-            finally
-            {
-                await sample.DisposeAsync();
-            }
-        }));
+                var sample = new PushSample<TBehavior>(Get<ITestOutputHelper>());
+                try
+                {
+                    await sample.InitializeAsync();
+                    await sample.RunAsync();
+                }
+                finally
+                {
+                    await sample.DisposeAsync();
+                }
+            })
+        );
 
         this.Trace("done");
     }
@@ -69,9 +70,8 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
 file class PushSample<TBehavior> : TestBase<TBehavior>
     where TBehavior : class, IBehavior
 {
-    public PushSample(ITestOutputHelper outputHelper) : base(outputHelper)
-    {
-    }
+    public PushSample(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
 
     public async Task RunAsync()
     {

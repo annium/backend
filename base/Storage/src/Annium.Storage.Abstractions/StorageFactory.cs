@@ -8,9 +8,7 @@ internal class StorageFactory : IStorageFactory
 {
     private readonly IServiceProvider _provider;
 
-    public StorageFactory(
-        IServiceProvider provider
-    )
+    public StorageFactory(IServiceProvider provider)
     {
         _provider = provider;
     }

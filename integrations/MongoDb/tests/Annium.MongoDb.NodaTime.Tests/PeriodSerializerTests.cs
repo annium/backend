@@ -27,13 +27,16 @@ public class PeriodSerializerTests
     [Fact]
     public void ThrowsWhenValueIsInvalid()
     {
-        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Period", "bleh")))).Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Period", "bleh"))))
+            .Throws<FormatException>();
     }
 
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Period", BsonNull.Value))).Period.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("Period", BsonNull.Value)))
+            .Period.IsDefault();
     }
 
     private class Test

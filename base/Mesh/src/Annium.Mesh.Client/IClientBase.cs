@@ -32,7 +32,8 @@ public interface IClientBase : ILogSubject
         Enum action,
         object request,
         CancellationToken ct = default
-    ) where TData : notnull;
+    )
+        where TData : notnull;
 
     // request -> response with default value
     Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
@@ -41,7 +42,8 @@ public interface IClientBase : ILogSubject
         object request,
         TData defaultValue,
         CancellationToken ct = default
-    ) where TData : notnull;
+    )
+        where TData : notnull;
 
     // // subscription
     // Task<IStatusResult<OperationStatus, IObservable<TMessage>>> SubscribeAsync<TInit, TMessage>(

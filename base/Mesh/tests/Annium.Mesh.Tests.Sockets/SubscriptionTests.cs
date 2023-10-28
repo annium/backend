@@ -9,9 +9,7 @@ namespace Annium.Mesh.Tests.Sockets;
 public class SubscriptionTests : SubscriptionTestsBase<Behavior>
 {
     public SubscriptionTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Fact]
     public async Task Subscription()

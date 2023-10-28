@@ -11,9 +11,7 @@ namespace Annium.Mesh.Tests.WebSockets;
 public class RequestPerfTests : RequestTestsBase<Behavior>
 {
     public RequestPerfTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     [Theory]
     [MemberData(nameof(GetPerfRange))]

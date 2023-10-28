@@ -7,9 +7,7 @@ internal class BroadcastContext<TMessage> : IBroadcastContext<TMessage>
 {
     private readonly Action<object> _send;
 
-    public BroadcastContext(
-        Action<object> send
-    )
+    public BroadcastContext(Action<object> send)
     {
         _send = send;
     }

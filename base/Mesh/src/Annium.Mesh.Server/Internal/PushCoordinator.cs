@@ -19,12 +19,7 @@ internal class PushCoordinator : ILogSubject
     public ILogger Logger { get; }
     private readonly IReadOnlyCollection<KeyValuePair<ActionKey, PushRoute>> _routes;
 
-    public PushCoordinator(
-        IServiceProvider sp,
-        ISerializer serializer,
-        RouteStore routeStore,
-        ILogger logger
-    )
+    public PushCoordinator(IServiceProvider sp, ISerializer serializer, RouteStore routeStore, ILogger logger)
     {
         _sp = sp;
         _serializer = serializer;
@@ -35,7 +30,13 @@ internal class PushCoordinator : ILogSubject
     public Task RunAsync(Guid cid, ISendingConnection cn, CancellationToken ct) =>
         Task.WhenAll(_routes.Select(x => RunRouteAsync(x.Key, x.Value, cid, cn, ct)));
 
-    private async Task RunRouteAsync(ActionKey actionKey, PushRoute route, Guid cid, ISendingConnection cn, CancellationToken ct)
+    private async Task RunRouteAsync(
+        ActionKey actionKey,
+        PushRoute route,
+        Guid cid,
+        ISendingConnection cn,
+        CancellationToken ct
+    )
     {
         this.Trace("start");
 

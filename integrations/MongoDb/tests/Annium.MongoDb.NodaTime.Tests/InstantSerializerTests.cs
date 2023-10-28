@@ -79,7 +79,9 @@ public class InstantSerializerTests
     [Fact]
     public void CanParseNullable()
     {
-        BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("InstantNullable", BsonNull.Value))).InstantNullable.IsDefault();
+        BsonSerializer
+            .Deserialize<Test>(new BsonDocument(new BsonElement("InstantNullable", BsonNull.Value)))
+            .InstantNullable.IsDefault();
     }
 
     private class Test
