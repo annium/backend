@@ -2,9 +2,9 @@ using System;
 using System.Threading;
 using Annium.Mesh.Transport.Abstractions;
 
-namespace Annium.Mesh.Server.Internal.Models;
+namespace Annium.Mesh.Server.Models;
 
-internal sealed class ConnectionContext
+public sealed class ConnectionContext
 {
     public Guid ConnectionId { get; private set; }
     public ISendingReceivingConnection Connection => _connection.NotNull();

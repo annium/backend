@@ -8,6 +8,7 @@ using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;

@@ -2,7 +2,7 @@ using System;
 using Annium.Mesh.Server;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal;
-using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Models;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;

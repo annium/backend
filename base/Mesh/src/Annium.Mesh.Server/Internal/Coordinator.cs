@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Server.Internal.Models;
+using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 
 // ReSharper disable AccessToDisposedClosure
