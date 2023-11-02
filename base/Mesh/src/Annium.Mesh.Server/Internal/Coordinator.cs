@@ -40,22 +40,22 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
 
         await using var scope = _sp.CreateAsyncScope();
         var sp = scope.ServiceProvider;
+        var ctx = sp.Resolve<ConnectionContext>();
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
+        ctx.Init(cid, connection, cts);
 
         connection.OnDisconnected += status =>
         {
             this.Trace("Notify lost {id} - {status}", cid, status);
             // for case, when server stops, thus cancellation occurs before connection is lost
-            if (!cts.IsCancellationRequested)
-                cts.Cancel();
+            if (!ctx.Cts.IsCancellationRequested)
+                ctx.Cts.Cancel();
         };
 
         try
         {
             // handle connection
-            var ctx = sp.Resolve<ConnectionContext>();
-            ctx.Init(cid, connection, cts);
-            await using var handler = sp.Resolve<ConnectionHandler>();
+            var handler = sp.Resolve<ConnectionHandler>();
             await handler.HandleAsync();
         }
         finally
