@@ -29,7 +29,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
         };
         var clientSocket = new ClientSocket(clientSocketOptions, _logger);
 
-        return new ClientConnection(clientSocket, _config.Endpoint, _config.AuthOptions, _logger);
+        return new ClientConnection(clientSocket, _config.Uri, _config.AuthOptions, _logger);
     }
 
     public async Task<IManagedConnection> CreateAsync(Socket context)

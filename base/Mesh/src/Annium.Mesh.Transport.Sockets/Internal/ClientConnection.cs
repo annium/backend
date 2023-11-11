@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Net.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,12 +16,12 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
     public event Action<Exception> OnError = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
     private readonly IClientSocket _socket;
-    private readonly IPEndPoint _endpoint;
+    private readonly Uri _uri;
     private readonly SslClientAuthenticationOptions? _authOptions;
 
     public ClientConnection(
         IClientSocket socket,
-        IPEndPoint endpoint,
+        Uri uri,
         SslClientAuthenticationOptions? authOptions,
         ILogger logger
     )
@@ -33,7 +32,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
         _socket.OnDisconnected += HandleDisconnected;
         _socket.OnError += HandleError;
         _socket.OnReceived += HandleReceived;
-        _endpoint = endpoint;
+        _uri = uri;
         _authOptions = authOptions;
     }
 
@@ -41,7 +40,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
     {
         this.Trace("start");
 
-        _socket.Connect(_endpoint, _authOptions);
+        _socket.Connect(_uri, _authOptions);
 
         this.Trace("done");
     }

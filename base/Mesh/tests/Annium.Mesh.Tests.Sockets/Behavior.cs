@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
@@ -25,7 +24,7 @@ public class Behavior : IBehavior, ILogSubject
             sp =>
                 new ClientTransportConfiguration
                 {
-                    Endpoint = new IPEndPoint(IPAddress.Loopback, sp.Resolve<TransportConfiguration>().Port)
+                    Uri = new Uri($"tcp://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}")
                 }
         );
         container.AddMeshSocketsServerTransport(_ => new ServerTransportConfiguration());
