@@ -5,7 +5,7 @@ namespace Annium.Core.DependencyInjection;
 
 public static class ServiceContainerExtensions
 {
-    public static IServiceContainer AddSocketServerMeshHandler(this IServiceContainer container)
+    public static IServiceContainer AddWebServerMeshHandler(this IServiceContainer container)
     {
         container.Add<Handler>().AsSelf().Singleton();
 
