@@ -12,7 +12,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Extensions.Execution" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
+        <PackageReference Include="Annium.Execution.Background" Version="0.1.0" />
         <PackageReference Include="StackExchange.Redis" Version="2.6.122" />
     </ItemGroup>
 </Project>

@@ -17,6 +17,6 @@
         <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Extensions.Execution" Version="0.1.0" />
+        <PackageReference Include="Annium.Execution.Background" Version="0.1.0" />
     </ItemGroup>
 </Project>

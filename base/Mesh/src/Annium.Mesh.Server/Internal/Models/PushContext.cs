@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Execution;
+using Annium.Execution.Background;
 using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
@@ -19,7 +19,7 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
     private readonly Guid _cid;
     private readonly ISendingConnection _cn;
     private readonly CancellationToken _ct;
-    private readonly IBackgroundExecutor _executor;
+    private readonly IExecutor _executor;
 
     public PushContext(
         ActionKey actionKey,
@@ -36,7 +36,7 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
         _cid = cid;
         _cn = cn;
         _ct = ct;
-        _executor = Executor.Background.Sequential<PushContext<TMessage>>(logger);
+        _executor = Executor.Sequential<PushContext<TMessage>>(logger);
         _executor.Start();
     }
 

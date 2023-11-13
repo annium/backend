@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Execution;
+using Annium.Execution.Background;
 using Annium.Logging;
 using Annium.Mesh.Transport.Abstractions;
 using Annium.Mesh.Transport.InMemory;
@@ -14,7 +14,7 @@ internal class Server : IServer, ILogSubject
     public ILogger Logger { get; }
     private readonly IConnectionHub _hub;
     private readonly ICoordinator _coordinator;
-    private readonly IBackgroundExecutor _executor;
+    private readonly IExecutor _executor;
     private int _isListening;
 
     public Server(IConnectionHub hub, ICoordinator coordinator, ILogger logger)
@@ -22,7 +22,7 @@ internal class Server : IServer, ILogSubject
         _hub = hub;
         _coordinator = coordinator;
         Logger = logger;
-        _executor = Executor.Background.Parallel<Server>(Logger);
+        _executor = Executor.Parallel<Server>(Logger);
     }
 
     public async Task RunAsync(CancellationToken ct = default)

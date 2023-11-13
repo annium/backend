@@ -4,7 +4,7 @@
 // using Annium.Architecture.Base;
 // using Annium.Core.Mediator;
 // using Annium.Data.Operations;
-// using Annium.Extensions.Execution;
+// using Annium.Execution.Background;
 // using Annium.Logging;
 // using Annium.Mesh.Domain.Requests;
 // using Annium.Mesh.Domain.Responses;
@@ -28,7 +28,7 @@
 //     private readonly IServiceProvider _sp;
 //     private bool _isInitiated;
 //     private Action _handleInit = () => { };
-//     private readonly IBackgroundExecutor _executor;
+//     private readonly IExecutor _executor;
 //
 //     public SubscriptionContext(
 //         Guid connectionId,
@@ -47,7 +47,7 @@
 //         _mediator = mediator;
 //         Logger = logger;
 //         _sp = sp;
-//         _executor = Executor.Background.Sequential<SubscriptionContext<TInit, TMessage>>(logger);
+//         _executor = Executor.Sequential<SubscriptionContext<TInit, TMessage>>(logger);
 //         _executor.Start();
 //     }
 //

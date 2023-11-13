@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Execution;
+using Annium.Execution.Background;
 using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
@@ -25,7 +25,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
     private readonly MessageHandler _messageHandler;
     private readonly PushCoordinator _pushCoordinator;
     private readonly ISerializer _serializer;
-    private readonly IBackgroundExecutor _executor;
+    private readonly IExecutor _executor;
 
     public ConnectionHandler(
         ConnectionContext ctx,
@@ -47,7 +47,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         _pushCoordinator = pushCoordinator;
         _serializer = serializer;
 
-        _executor = Executor.Background.Parallel<ConnectionHandler>(Logger);
+        _executor = Executor.Parallel<ConnectionHandler>(Logger);
     }
 
     public async Task HandleAsync()
