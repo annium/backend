@@ -35,7 +35,7 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
         _connectionFactory = connectionFactory;
         _coordinator = coordinator;
         _config = config;
-        applicationLifetime.ApplicationStopping.Register(_coordinator.Shutdown);
+        applicationLifetime.ApplicationStopping.Register(_coordinator.Dispose);
         _helper = new Helper(
             serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
             MediaTypeNames.Application.Json

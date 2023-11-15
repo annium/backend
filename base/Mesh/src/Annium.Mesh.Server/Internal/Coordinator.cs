@@ -67,15 +67,10 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         this.Trace("End for {id}", cid);
     }
 
-    public void Shutdown()
-    {
-        this.Trace("start");
-        _lifetimeManager.Stop();
-    }
-
     public void Dispose()
     {
         this.Trace("start");
-        Shutdown();
+        _lifetimeManager.Stop();
+        this.Trace("done");
     }
 }
