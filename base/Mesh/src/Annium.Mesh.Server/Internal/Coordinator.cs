@@ -10,7 +10,7 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
-internal class Coordinator : ICoordinator, IDisposable, ILogSubject
+internal class Coordinator : ICoordinator, ILogSubject
 {
     public ILogger Logger { get; }
     private readonly IServiceProvider _sp;
@@ -47,8 +47,7 @@ internal class Coordinator : ICoordinator, IDisposable, ILogSubject
         {
             this.Trace("Notify lost {id} - {status}", cid, status);
             // for case, when server stops, thus cancellation occurs before connection is lost
-            if (!ctx.Cts.IsCancellationRequested)
-                ctx.Cts.Cancel();
+            ctx.Cancel();
         };
 
         try

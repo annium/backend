@@ -16,9 +16,10 @@ namespace Annium.Mesh.Server.Internal;
 internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 {
     public ILogger Logger { get; }
+    private readonly ConnectionContext _ctx;
     private readonly Guid _cid;
     private readonly ISendingReceivingConnection _cn;
-    private readonly CancellationTokenSource _cts;
+    private readonly CancellationToken _ct;
     private readonly TaskCompletionSource _tcs = new();
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
     private readonly LifeCycleCoordinator _lifeCycleCoordinator;
@@ -38,9 +39,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
     )
     {
         Logger = logger;
+        _ctx = ctx;
         _cid = ctx.ConnectionId;
         _cn = ctx.Connection;
-        _cts = ctx.Cts;
+        _ct = ctx.Ct;
         _connectionBoundStores = connectionBoundStores;
         _lifeCycleCoordinator = lifeCycleCoordinator;
         _messageHandler = messageHandler;
@@ -57,11 +59,11 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         try
         {
             // immediately subscribe to cancellation
-            _cts.Token.Register(HandleConnectionCancellation);
+            _ct.Register(HandleConnectionCancellation);
 
             // start listening to messages and adding them to scheduler
             this.Trace("cn {id} - init subscription", _cid);
-            _cn.Observe().Subscribe(OnMessage, OnError, OnCompleted, _cts.Token);
+            _cn.Observe().Subscribe(OnMessage, OnError, OnCompleted, _ct);
 
             // execute start hook
             this.Trace("cn {id} - handle lifecycle start", _cid);
@@ -71,16 +73,16 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
             this.Trace("cn {id} - notify connection ready", _cid);
             await _cn.SendAsync(
                 _serializer.SerializeMessage(new Message { Type = MessageType.ConnectionReady }),
-                _cts.Token
+                _ct
             );
 
             // execute run hook
             this.Trace("cn {id} - start push handlers", _cid);
-            var pushTask = _pushCoordinator.RunAsync(_cid, _cn, _cts.Token);
+            var pushTask = _pushCoordinator.RunAsync(_cid, _cn, _ct);
 
             // start scheduler to process backlog and run upcoming work immediately
             this.Trace("cn {id} - start executor", _cid);
-            _executor.Start(_cts.Token);
+            _executor.Start(_ct);
 
             // wait until connection complete
             this.Trace("cn {id} - wait until connection complete (handlers & pushers)", _cid);
@@ -132,7 +134,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - start", _cid);
 
         this.Trace("cn {id} - cancel cts", _cid);
-        _cts.Cancel();
+        _ctx.Cancel();
 
         this.Error(exception);
 
@@ -179,7 +181,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         async () =>
         {
             this.Trace("cn {id} - start {msg}", _cid, message);
-            await _messageHandler.HandleMessage(_cn, message, _cts.Token);
+            await _messageHandler.HandleMessage(_cn, message, _ct);
             this.Trace("cn {id} - done {msg}", _cid, message);
         };
 }
