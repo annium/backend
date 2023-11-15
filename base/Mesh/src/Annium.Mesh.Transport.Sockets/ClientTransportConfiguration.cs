@@ -8,6 +8,6 @@ public class ClientTransportConfiguration
 {
     public Uri Uri { get; init; } = default!;
     public SslClientAuthenticationOptions? AuthOptions { get; init; }
-    public IConnectionMonitor ConnectionMonitor { get; init; } = Net.Sockets.ConnectionMonitor.None;
+    public ConnectionMonitorOptions ConnectionMonitor { get; init; } = new();
     public int ReconnectDelay { get; init; }
 }

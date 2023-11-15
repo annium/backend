@@ -6,5 +6,5 @@ namespace Annium.Mesh.Transport.Sockets;
 public class ServerTransportConfiguration
 {
     public X509Certificate? Certificate { get; init; } = default!;
-    public IConnectionMonitor ConnectionMonitor { get; init; } = Net.Sockets.ConnectionMonitor.None;
+    public ConnectionMonitorOptions ConnectionMonitor { get; init; } = new();
 }
