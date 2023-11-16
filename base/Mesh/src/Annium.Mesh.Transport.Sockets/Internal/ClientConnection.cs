@@ -19,12 +19,7 @@ internal sealed class ClientConnection : IClientConnection, ILogSubject
     private readonly Uri _uri;
     private readonly SslClientAuthenticationOptions? _authOptions;
 
-    public ClientConnection(
-        IClientSocket socket,
-        Uri uri,
-        SslClientAuthenticationOptions? authOptions,
-        ILogger logger
-    )
+    public ClientConnection(IClientSocket socket, Uri uri, SslClientAuthenticationOptions? authOptions, ILogger logger)
     {
         Logger = logger;
         _socket = socket;

@@ -71,10 +71,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 
             // notify client, that connection is ready
             this.Trace("cn {id} - notify connection ready", _cid);
-            await _cn.SendAsync(
-                _serializer.SerializeMessage(new Message { Type = MessageType.ConnectionReady }),
-                _ct
-            );
+            await _cn.SendAsync(_serializer.SerializeMessage(new Message { Type = MessageType.ConnectionReady }), _ct);
 
             // execute run hook
             this.Trace("cn {id} - start push handlers", _cid);
