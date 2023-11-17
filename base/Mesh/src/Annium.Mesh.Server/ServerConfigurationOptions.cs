@@ -69,12 +69,6 @@ public class ServerConfigurationOptions
             _container.Add(implementation).AsSelf().Scoped();
             registrations.Add(action, implementation);
         }
-
-        var unregisteredActions = actions.Except(registrations.Keys).ToArray();
-        if (unregisteredActions.Length > 0)
-            throw new InvalidOperationException(
-                $"Actions: {string.Join(", ", unregisteredActions)} - are not mapped to any handlers"
-            );
     }
 
     private void RegisterHandler(ActionKey actionKey, Type implementation)
