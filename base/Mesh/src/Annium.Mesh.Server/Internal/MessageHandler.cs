@@ -5,6 +5,8 @@ using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
+using Annium.Mesh.Server.Components;
+using Annium.Mesh.Server.Internal.Components;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Mesh.Transport.Abstractions;
 
@@ -16,26 +18,34 @@ internal class MessageHandler : ILogSubject
     private readonly IServiceProvider _sp;
     private readonly RouteStore _routeStore;
     private readonly ISerializer _serializer;
+    private readonly IMessageSender _sender;
 
-    public MessageHandler(IServiceProvider sp, RouteStore routeStore, ISerializer serializer, ILogger logger)
+    public MessageHandler(
+        IServiceProvider sp,
+        RouteStore routeStore,
+        ISerializer serializer,
+        IMessageSender sender,
+        ILogger logger
+    )
     {
         Logger = logger;
         _sp = sp;
         _routeStore = routeStore;
         _serializer = serializer;
+        _sender = sender;
     }
 
-    public Task HandleMessage(ISendingConnection connection, Message message, CancellationToken ct) =>
+    public Task HandleMessage(Guid cid, ISendingConnection cn, Message message, CancellationToken ct) =>
         message.Type switch
         {
-            MessageType.Request => HandleRequest(connection, message, ct),
-            MessageType.Event => HandleEvent(connection, message),
-            MessageType.SubscriptionInit => HandleSubscriptionInit(connection, message),
-            MessageType.SubscriptionCancel => HandleSubscriptionCancel(connection, message),
+            MessageType.Request => HandleRequest(cid, cn, message, ct),
+            MessageType.Event => HandleEvent(cid, cn, message),
+            MessageType.SubscriptionInit => HandleSubscriptionInit(cid, cn, message),
+            MessageType.SubscriptionCancel => HandleSubscriptionCancel(cid, cn, message),
             _ => Task.CompletedTask,
         };
 
-    private async Task HandleRequest(ISendingConnection connection, Message message, CancellationToken ct)
+    private async Task HandleRequest(Guid cid, ISendingConnection cn, Message message, CancellationToken ct)
     {
         this.Trace("start");
 
@@ -60,40 +70,29 @@ internal class MessageHandler : ILogSubject
         this.Trace<string>("execute handler {handlerType}", route.HandlerType.FriendlyName());
         var resultTask = route.HandleMethod.Invoke(handler, new[] { request, ct })!;
         await (Task)resultTask;
+
+        var dataType = route.ResultProperty.PropertyType;
         var data = route.ResultProperty.GetValue(resultTask);
 
-        // serialize to message
-        this.Trace("convert {data} to message", data);
-        var responseMessage = new Message
-        {
-            Id = message.Id,
-            Version = message.Version,
-            Type = MessageType.Response,
-            Action = message.Action,
-            Data = _serializer.SerializeData(route.ResultProperty.PropertyType, data)
-        };
-        var response = _serializer.SerializeMessage(responseMessage);
-
-        // send message back
-        this.Trace("send message {message} to client", message);
-        await connection.SendAsync(response, ct);
+        this.Trace("send response {data} to client", data);
+        await _sender.SendAsync(cid, cn, message.Id, actionKey, MessageType.Response, dataType, data, ct);
 
         this.Trace("done");
     }
 
-    private async Task HandleEvent(ISendingConnection connection, Message message)
+    private async Task HandleEvent(Guid cid, ISendingConnection cn, Message message)
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionInit(ISendingConnection connection, Message message)
+    private async Task HandleSubscriptionInit(Guid cid, ISendingConnection cn, Message message)
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionCancel(ISendingConnection connection, Message message)
+    private async Task HandleSubscriptionCancel(Guid cid, ISendingConnection cn, Message message)
     {
         this.Trace("ignore");
         await Task.CompletedTask;

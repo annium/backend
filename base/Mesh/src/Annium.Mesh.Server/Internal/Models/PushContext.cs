@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Annium.Execution.Background;
 using Annium.Logging;
 using Annium.Mesh.Domain;
-using Annium.Mesh.Serialization.Abstractions;
+using Annium.Mesh.Server.Components;
+using Annium.Mesh.Server.Internal.Components;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
@@ -12,18 +13,19 @@ using Annium.Mesh.Transport.Abstractions;
 namespace Annium.Mesh.Server.Internal.Models;
 
 internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable, ILogSubject
+    where TMessage : notnull
 {
     public ILogger Logger { get; }
+    private readonly IMessageSender _sender;
     private readonly ActionKey _actionKey;
-    private readonly ISerializer _serializer;
     private readonly Guid _cid;
     private readonly ISendingConnection _cn;
     private readonly CancellationToken _ct;
     private readonly IExecutor _executor;
 
     public PushContext(
+        IMessageSender sender,
         ActionKey actionKey,
-        ISerializer serializer,
         Guid cid,
         ISendingConnection cn,
         CancellationToken ct,
@@ -31,8 +33,8 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
     )
     {
         Logger = logger;
+        _sender = sender;
         _actionKey = actionKey;
-        _serializer = serializer;
         _cid = cid;
         _cn = cn;
         _ct = ct;
@@ -58,26 +60,11 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
         this.Trace("connection {id} - done", _cid);
     }
 
-    private void SendInternal<T>(T msg)
+    private void SendInternal(TMessage msg)
     {
         this.Trace("cn {id}: schedule send of {message}", _cid, msg);
-        _executor.Schedule(async () =>
-        {
-            this.Trace("cn {id}: serialize {message}", _cid, msg);
-            var data = _serializer.SerializeData(typeof(T), msg);
-            var message = new Message
-            {
-                Version = _actionKey.Version,
-                Type = MessageType.Push,
-                Action = _actionKey.Action,
-                Data = data
-            };
-            var push = _serializer.SerializeMessage(message);
-
-            this.Trace("cn {id}: send {message}", _cid, message);
-            var status = await _cn.SendAsync(push, _ct);
-
-            this.Trace("cn {id}: sent {message} with {status}", _cid, message, status);
-        });
+        _executor.Schedule(
+            async () => await _sender.SendAsync(_cid, _cn, _actionKey, MessageType.Push, msg, _ct).ConfigureAwait(false)
+        );
     }
 }

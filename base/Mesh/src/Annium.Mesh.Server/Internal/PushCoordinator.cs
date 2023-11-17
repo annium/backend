@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
-using Annium.Mesh.Serialization.Abstractions;
+using Annium.Mesh.Server.Components;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Mesh.Transport.Abstractions;
@@ -14,15 +14,15 @@ namespace Annium.Mesh.Server.Internal;
 
 internal class PushCoordinator : ILogSubject
 {
-    private readonly IServiceProvider _sp;
-    private readonly ISerializer _serializer;
     public ILogger Logger { get; }
+    private readonly IServiceProvider _sp;
+    private readonly IMessageSender _sender;
     private readonly IReadOnlyCollection<KeyValuePair<ActionKey, PushRoute>> _routes;
 
-    public PushCoordinator(IServiceProvider sp, ISerializer serializer, RouteStore routeStore, ILogger logger)
+    public PushCoordinator(IServiceProvider sp, IMessageSender sender, RouteStore routeStore, ILogger logger)
     {
         _sp = sp;
-        _serializer = serializer;
+        _sender = sender;
         Logger = logger;
         _routes = routeStore.PushRoutes.List();
     }
@@ -45,7 +45,7 @@ internal class PushCoordinator : ILogSubject
 
         var contextType = typeof(PushContext<>).MakeGenericType(route.MessageType);
         this.Trace<string>("create context {contextType}", contextType.FriendlyName());
-        var context = Activator.CreateInstance(contextType, actionKey, _serializer, cid, cn, ct, Logger);
+        var context = Activator.CreateInstance(contextType, _sender, actionKey, cid, cn, ct, Logger);
 
         // execute and resolve result data
         this.Trace<string>("execute handler {handlerType}", route.HandlerType.FriendlyName());

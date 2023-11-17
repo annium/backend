@@ -1,7 +1,9 @@
 using System;
 using Annium.Mesh.Server;
+using Annium.Mesh.Server.Components;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal;
+using Annium.Mesh.Server.Internal.Components;
 using Annium.Mesh.Server.Models;
 
 // ReSharper disable once CheckNamespace
@@ -34,6 +36,7 @@ public static class ServiceContainerExtensions
         container.Add<LifeCycleCoordinator>().AsSelf().Scoped();
         container.Add<MessageHandler>().AsSelf().Scoped();
         container.Add<PushCoordinator>().AsSelf().Scoped();
+        container.Add<IMessageSender, MessageSender>().Singleton();
 
         // internal - handlers
         container.AddAll().AssignableTo<LifeCycleHandlerBase>().As<LifeCycleHandlerBase>().Scoped();

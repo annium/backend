@@ -178,7 +178,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         async () =>
         {
             this.Trace("cn {id} - start {msg}", _cid, message);
-            await _messageHandler.HandleMessage(_cn, message, _ct);
+            await _messageHandler.HandleMessage(_cid, _cn, message, _ct);
             this.Trace("cn {id} - done {msg}", _cid, message);
         };
 }
