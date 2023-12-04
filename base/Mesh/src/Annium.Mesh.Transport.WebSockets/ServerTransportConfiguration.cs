@@ -1,8 +1,8 @@
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Mesh.Transport.WebSockets;
 
 public class ServerTransportConfiguration
 {
-    public IConnectionMonitor ConnectionMonitor { get; init; } = Net.WebSockets.ConnectionMonitor.None;
+    public ConnectionMonitorOptions ConnectionMonitor { get; init; } = new();
 }

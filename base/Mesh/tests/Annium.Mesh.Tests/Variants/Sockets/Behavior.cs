@@ -7,6 +7,7 @@ using Annium.Mesh.Server.Sockets;
 using Annium.Mesh.Tests.System.Client;
 using Annium.Mesh.Transport.Sockets;
 using Annium.Net.Servers.Sockets;
+using Annium.Net.Sockets;
 
 namespace Annium.Mesh.Tests.Variants.Sockets;
 
@@ -18,15 +19,29 @@ public class Behavior : IBehavior, ILogSubject
     public static void Register(IServiceContainer container)
     {
         container.Add(new TransportConfiguration(Interlocked.Increment(ref _basePort))).AsSelf().Singleton();
+        container.AddSocketsDefaultConnectionMonitorFactory();
 
         container.AddMeshSocketsClientTransport(
             sp =>
                 new ClientTransportConfiguration
                 {
-                    Uri = new Uri($"tcp://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}")
+                    Uri = new Uri($"tcp://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}"),
+                    ConnectionMonitor = new ConnectionMonitorOptions
+                    {
+                        Factory = sp.Resolve<IConnectionMonitorFactory>()
+                    }
                 }
         );
-        container.AddMeshSocketsServerTransport(_ => new ServerTransportConfiguration());
+        container.AddMeshSocketsServerTransport(
+            sp =>
+                new ServerTransportConfiguration
+                {
+                    ConnectionMonitor = new ConnectionMonitorOptions
+                    {
+                        Factory = sp.Resolve<IConnectionMonitorFactory>()
+                    }
+                }
+        );
         container.AddSocketServerMeshHandler();
 
         container.AddTestServerClient(x => x.WithResponseTimeout(6000));

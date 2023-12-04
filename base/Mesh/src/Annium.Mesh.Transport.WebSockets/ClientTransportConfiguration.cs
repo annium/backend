@@ -1,11 +1,11 @@
 using System;
-using Annium.Net.WebSockets;
+using Annium.Net.WebSockets.Internal;
 
 namespace Annium.Mesh.Transport.WebSockets;
 
 public class ClientTransportConfiguration
 {
     public Uri Uri { get; init; } = default!;
-    public IConnectionMonitor ConnectionMonitor { get; init; } = Net.WebSockets.ConnectionMonitor.None;
+    public ConnectionMonitorOptions ConnectionMonitor { get; init; } = new();
     public int ReconnectDelay { get; init; }
 }
