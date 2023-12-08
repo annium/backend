@@ -1,5 +1,5 @@
 using System;
-using Annium.Net.WebSockets.Internal;
+using Annium.Net.WebSockets;
 
 namespace Annium.Mesh.Transport.WebSockets;
 
