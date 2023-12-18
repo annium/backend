@@ -24,8 +24,8 @@ public static class MappingSchemaExtensions
 
     public static MappingSchema UseJsonSupport(this MappingSchema schema, IServiceProvider sp)
     {
-        var serializers = sp.Resolve<IIndex<SerializerKey, ISerializer<string>>>();
-        var serializer = serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)];
+        var serializerKey = SerializerKey.CreateDefault(MediaTypeNames.Application.Json);
+        var serializer = sp.ResolveKeyed<ISerializer<string>>(serializerKey);
         var serialize = typeof(ISerializer<string>).GetMethod(
             nameof(ISerializer<string>.Serialize),
             new[] { typeof(Type), typeof(object) }

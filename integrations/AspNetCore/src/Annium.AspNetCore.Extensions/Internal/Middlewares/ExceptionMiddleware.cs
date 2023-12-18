@@ -18,17 +18,12 @@ internal class ExceptionMiddleware : ILogSubject
     private readonly RequestDelegate _next;
     private readonly Helper _helper;
 
-    public ExceptionMiddleware(
-        RequestDelegate next,
-        IIndex<SerializerKey, ISerializer<string>> serializers,
-        ILogger logger
-    )
+    public ExceptionMiddleware(RequestDelegate next, IServiceProvider sp, ILogger logger)
     {
         _next = next;
-        _helper = new Helper(
-            serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
-            MediaTypeNames.Application.Json
-        );
+        var serializerKey = SerializerKey.CreateDefault(MediaTypeNames.Application.Json);
+        var serializer = sp.ResolveKeyed<ISerializer<string>>(serializerKey);
+        _helper = new Helper(serializer, MediaTypeNames.Application.Json);
         Logger = logger;
     }
 

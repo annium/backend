@@ -23,11 +23,11 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
     private readonly Helper _helper;
 
     public WebSocketsMiddleware(
+        IServiceProvider sp,
         IServerConnectionFactory<WebSocket> connectionFactory,
         ICoordinator coordinator,
         WebSocketsMiddlewareConfiguration config,
         IHostApplicationLifetime applicationLifetime,
-        IIndex<SerializerKey, ISerializer<string>> serializers,
         ILogger logger
     )
     {
@@ -36,10 +36,9 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
         _coordinator = coordinator;
         _config = config;
         applicationLifetime.ApplicationStopping.Register(_coordinator.Dispose);
-        _helper = new Helper(
-            serializers[SerializerKey.CreateDefault(MediaTypeNames.Application.Json)],
-            MediaTypeNames.Application.Json
-        );
+        var serializerKey = SerializerKey.CreateDefault(MediaTypeNames.Application.Json);
+        var serializer = sp.ResolveKeyed<ISerializer<string>>(serializerKey);
+        _helper = new Helper(serializer, MediaTypeNames.Application.Json);
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)

@@ -22,11 +22,11 @@ internal class DebugSerializer : ISerializer, ILogSubject
     public ILogger Logger { get; }
     private readonly ISerializer<string> _serializer;
 
-    public DebugSerializer(IIndex<SerializerKey, ISerializer<string>> serializers, ILogger logger)
+    public DebugSerializer(IServiceProvider sp, ILogger logger)
     {
         Logger = logger;
         var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.Json.Constants.MediaType);
-        _serializer = serializers[key];
+        _serializer = sp.ResolveKeyed<ISerializer<string>>(key);
     }
 
     public ReadOnlyMemory<byte> SerializeMessage(Message message)

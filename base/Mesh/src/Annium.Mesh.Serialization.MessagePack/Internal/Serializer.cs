@@ -23,10 +23,10 @@ internal class Serializer : ISerializer
 
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
 
-    public Serializer(IIndex<SerializerKey, ISerializer<ReadOnlyMemory<byte>>> serializers)
+    public Serializer(IServiceProvider sp)
     {
         var key = SerializerKey.Create(Constants.SerializerKey, Annium.Serialization.MessagePack.Constants.MediaType);
-        _serializer = serializers[key];
+        _serializer = sp.ResolveKeyed<ISerializer<ReadOnlyMemory<byte>>>(key);
     }
 
     public ReadOnlyMemory<byte> SerializeMessage(Message message)
