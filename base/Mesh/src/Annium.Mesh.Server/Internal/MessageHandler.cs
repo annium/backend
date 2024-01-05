@@ -72,7 +72,7 @@ internal class MessageHandler : ILogSubject
         await (Task)resultTask;
 
         var dataType = route.ResultProperty.PropertyType;
-        var data = route.ResultProperty.GetValue(resultTask);
+        var data = route.ResultProperty.GetValue(resultTask).NotNull();
 
         this.Trace("send response {data} to client", data);
         await _sender.SendAsync(cid, cn, message.Id, actionKey, MessageType.Response, dataType, data, ct);

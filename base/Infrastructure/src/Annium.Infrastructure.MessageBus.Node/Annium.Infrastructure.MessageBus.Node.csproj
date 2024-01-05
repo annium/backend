@@ -9,6 +9,7 @@
         <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
         <Nullable>enable</Nullable>
+        <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Annium.Data.Operations" Version="0.1.0" />

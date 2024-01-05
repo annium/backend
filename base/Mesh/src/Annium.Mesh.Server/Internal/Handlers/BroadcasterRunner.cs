@@ -7,6 +7,7 @@ using Annium.Mesh.Server.Internal.Models;
 namespace Annium.Mesh.Server.Internal.Handlers;
 
 internal class BroadcasterRunner<TMessage> : IBroadcasterRunner
+    where TMessage : notnull
 {
     private readonly IBroadcaster<TMessage> _broadcaster;
 

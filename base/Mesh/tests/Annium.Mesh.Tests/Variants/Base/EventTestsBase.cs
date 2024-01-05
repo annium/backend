@@ -10,7 +10,7 @@ public abstract class EventTestsBase<TBehavior> : TestBase<TBehavior>
     protected EventTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper) { }
 
-    protected async Task Analytics_Base()
+    protected Task Analytics_Base()
     {
         this.Trace("start");
 
@@ -37,5 +37,7 @@ public abstract class EventTestsBase<TBehavior> : TestBase<TBehavior>
         //     snapshot.Contains(x).IsTrue();
 
         this.Trace("done");
+
+        return Task.CompletedTask;
     }
 }
