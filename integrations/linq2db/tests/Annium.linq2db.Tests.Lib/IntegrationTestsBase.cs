@@ -5,8 +5,10 @@ using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
+using Annium.Logging;
 using Annium.Testing;
 using LinqToDB;
+using LinqToDB.Data;
 using NodaTime;
 using Xunit.Abstractions;
 
@@ -74,7 +76,51 @@ public class IntegrationTestsBase : TestBase
         workerEmployee.Employee.Subordinates.IsEmpty();
     }
 
-    protected async Task HighLoad_Base()
+    protected async Task HighLoad_Insert_Base()
+    {
+        this.Trace("start");
+
+        var chunksCount = 500;
+        var chunkSize = 1000;
+
+        await Task.WhenAll(
+            Enumerable
+                .Range(0, chunksCount)
+                .Select(async id =>
+                {
+                    this.Trace("{id} - start", id);
+                    await using var scope = CreateAsyncScope();
+
+                    this.Trace("{id} - generate rows", id);
+                    var companies = Enumerable
+                        .Range(0, 1000)
+                        .Select(x =>
+                        {
+                            var companyName = $"demo:{Guid.NewGuid()}";
+                            var createdAt = Instant.FromUnixTimeSeconds(1000 + x);
+                            var metadata = new CompanyMetadata($"somewhere for {companyName}");
+
+                            return new Company(companyName, createdAt, metadata);
+                        })
+                        .ToArray();
+
+                    this.Trace("{id} - create connection", id);
+                    await using var conn = scope.ServiceProvider.Resolve<Connection>();
+
+                    this.Trace("{id} - bulk copy", id);
+                    var result = await conn.BulkCopyAsync(new BulkCopyOptions { KeepIdentity = true }, companies);
+
+                    this.Trace("{id} - verify", id);
+                    result.RowsCopied.Is(chunkSize);
+
+                    this.Trace("{id} - done", id);
+                })
+        );
+
+        this.Trace("done");
+    }
+
+    protected async Task HighLoad_Select_Base()
     {
         // arrange
         var companyName = $"demo:{Guid.NewGuid()}";

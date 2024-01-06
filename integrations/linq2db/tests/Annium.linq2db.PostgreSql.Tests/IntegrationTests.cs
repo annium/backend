@@ -20,8 +20,14 @@ public class IntegrationTests : IntegrationTestsBase
     }
 
     [Fact]
-    public async Task HighLoad()
+    public async Task HighLoad_Insert()
     {
-        await HighLoad_Base();
+        await HighLoad_Insert_Base();
+    }
+
+    [Fact]
+    public async Task HighLoad_Select()
+    {
+        await HighLoad_Select_Base();
     }
 }
