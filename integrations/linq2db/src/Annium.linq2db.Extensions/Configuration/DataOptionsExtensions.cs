@@ -28,9 +28,9 @@ public static class DataOptionsExtensions
                         case TraceLevel.Warning:
                             logger.Warn(msg ?? string.Empty);
                             break;
-                        // all other levels are handled as Trace by design (at the moment linq2db traces with Info level)
+                        // all other levels are handled as Debug by design (at the moment linq2db traces with Info level)
                         default:
-                            logger.Trace(msg ?? string.Empty);
+                            logger.Debug(msg ?? string.Empty);
                             break;
                     }
                 }
