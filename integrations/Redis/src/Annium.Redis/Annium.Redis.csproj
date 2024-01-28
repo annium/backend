@@ -13,6 +13,6 @@
     <ItemGroup>
         <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
         <PackageReference Include="Annium.Execution.Background" Version="0.1.0" />
-        <PackageReference Include="StackExchange.Redis" Version="2.7.4" />
+        <PackageReference Include="StackExchange.Redis" Version="2.7.17" />
     </ItemGroup>
 </Project>

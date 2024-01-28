@@ -16,7 +16,7 @@
         <PackageReference Include="Annium.Extensions.Reactive" Version="0.1.0" />
         <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
         <PackageReference Include="NetMQ" Version="4.0.1.6" />
-        <PackageReference Include="System.Text.Json" Version="8.0.0" />
+        <PackageReference Include="System.Text.Json" Version="8.0.1" />
         <PackageReference Include="System.Threading.Channels" Version="8.0.0" />
     </ItemGroup>
 </Project>
