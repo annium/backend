@@ -4,10 +4,11 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Tests.Lib.Db.Configurations;
 
-internal class CompanyEmployeeConfiguration : IEntityConfiguration<CompanyEmployee>
+internal class CompanyEmployeeConfiguration : ICreatedUpdatedTimeEntityConfiguration<CompanyEmployee>
 {
     public void Configure(EntityMappingBuilder<CompanyEmployee> builder)
     {
+        this.ConfigureCreatedUpdatedTime(builder);
         builder.HasTableName("company_employees");
         builder.HasPrimaryKey(x => new { x.CompanyId, x.EmployeeId });
         builder.Association(x => x.Company, x => x.CompanyId, x => x.Id, false);

@@ -9,7 +9,6 @@ using Annium.Logging;
 using Annium.Testing;
 using LinqToDB;
 using LinqToDB.Data;
-using NodaTime;
 using Xunit.Abstractions;
 
 namespace Annium.linq2db.Tests.Lib;
@@ -27,9 +26,8 @@ public class IntegrationTestsBase : TestBase
         // arrange
         await using var conn = Get<Connection>();
         var companyName = $"demo:{Guid.NewGuid()}";
-        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(companyName, createdAt, metadata);
+        var company = new Company(companyName, metadata);
         var chief = new Employee("A", null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
         var worker = new Employee("B", chief);
@@ -52,7 +50,7 @@ public class IntegrationTestsBase : TestBase
             .ThenLoad(x => x.Employee.Subordinates)
             .SingleAsync(x => x.Name == companyName);
         company.Name.Is(companyName);
-        company.CreatedAt.Is(createdAt);
+        // company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(2);
         // chief
@@ -97,10 +95,9 @@ public class IntegrationTestsBase : TestBase
                         .Select(x =>
                         {
                             var companyName = $"demo:{Guid.NewGuid()}";
-                            var createdAt = Instant.FromUnixTimeSeconds(1000 + x);
                             var metadata = new CompanyMetadata($"somewhere for {companyName}");
 
-                            return new Company(companyName, createdAt, metadata);
+                            return new Company(companyName, metadata);
                         })
                         .ToArray();
 
@@ -124,9 +121,8 @@ public class IntegrationTestsBase : TestBase
     {
         // arrange
         var companyName = $"demo:{Guid.NewGuid()}";
-        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(companyName, createdAt, metadata);
+        var company = new Company(companyName, metadata);
         await using (var conn = Get<Connection>())
         {
             await conn.Companies.InsertAsync(company);

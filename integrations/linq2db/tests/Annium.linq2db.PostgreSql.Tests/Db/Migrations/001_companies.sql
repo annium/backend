@@ -3,5 +3,6 @@ create table companies (
   name text not null,
   metadata text not null,
   created_at timestamptz not null,
+  updated_at timestamptz not null,
   constraint pk_companies primary key (id)
 );

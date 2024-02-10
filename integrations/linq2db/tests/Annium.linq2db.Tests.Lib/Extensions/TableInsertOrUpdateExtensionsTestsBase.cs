@@ -21,10 +21,10 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     protected async Task Insert_Base()
     {
         // arrange
+        var now = SystemClock.Instance.GetCurrentInstant();
         await using var conn = Get<Connection>();
-        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), createdAt, metadata);
+        var company = new Company(Name(), metadata);
         var chief = new Employee(Name(), null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
         var worker = new Employee(Name(), chief);
@@ -39,7 +39,8 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.Is(createdAt);
+        company.CreatedAt.IsGreater(now);
+        company.UpdatedAt.IsGreater(company.CreatedAt);
         company.Metadata.Is(metadata);
     }
 
@@ -47,10 +48,12 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     {
         // arrange
         await using var conn = Get<Connection>();
-        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), createdAt, metadata);
+        var company = new Company(Name(), metadata);
         await conn.Companies.InsertAsync(company);
+        company = await conn.Companies.SingleAsync(x => x.Id == company.Id);
+        var companyCreatedAt = company.CreatedAt;
+        var companyUpdatedAt = company.UpdatedAt;
         var chief = new Employee(Name(), null);
         await conn.Employees.InsertAsync(chief);
         var companyChief = new CompanyEmployee(company, chief, "chief");
@@ -61,8 +64,6 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         await conn.CompanyEmployees.InsertAsync(companyWorker);
 
         // act
-        createdAt += Duration.FromMinutes(1);
-        company.SetCreatedAt(createdAt);
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
         await conn.Companies.UpdateAsync(company);
@@ -72,20 +73,30 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.Is(createdAt);
+        company.CreatedAt.Is(companyCreatedAt);
+        company.UpdatedAt.IsGreater(companyUpdatedAt);
         company.Metadata.Is(metadata);
         worker = await conn.Employees.LoadWith(x => x.Chief).SingleAsync(x => x.Name == worker.Name);
         worker.ChiefId.IsDefault();
         worker.Chief.IsDefault();
+
+        // act
+        var name = company.Name;
+        companyUpdatedAt = company.UpdatedAt;
+        await conn.Companies.Set(x => x.Name, x => x.Name + " Main").WithUpdatedAt().UpdateAsync();
+
+        // assert
+        company = await conn.Companies.SingleAsync(x => x.Id == company.Id);
+        company.Name.Is(name + " Main");
+        company.UpdatedAt.IsGreater(companyUpdatedAt);
     }
 
     protected async Task InsertOrUpdate_Base()
     {
         // arrange
         await using var conn = Get<Connection>();
-        var createdAt = Instant.FromUnixTimeSeconds(1000);
         var metadata = new CompanyMetadata("somewhere");
-        var company = new Company(Name(), createdAt, metadata);
+        var company = new Company(Name(), metadata);
         var chief = new Employee(Name(), null);
         var companyChief = new CompanyEmployee(company, chief, "chief");
 
@@ -96,14 +107,13 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.LoadWith(x => x.Employees).SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.Is(createdAt);
+        var companyCreatedAt = company.CreatedAt;
+        var companyUpdatedAt = company.UpdatedAt;
         company.Metadata.Is(metadata);
         company.Employees.Has(1);
         company.Employees.At(0).Role.Is("chief");
 
         // act
-        createdAt += Duration.FromMinutes(1);
-        company.SetCreatedAt(createdAt);
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
         await conn.Companies.InsertOrUpdateAsync(company);
@@ -112,7 +122,8 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.LoadWith(x => x.Employees).SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.Is(createdAt);
+        company.CreatedAt.Is(companyCreatedAt);
+        company.UpdatedAt.IsGreater(companyUpdatedAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(1);
         company.Employees.At(0).Role.Is("main chief");

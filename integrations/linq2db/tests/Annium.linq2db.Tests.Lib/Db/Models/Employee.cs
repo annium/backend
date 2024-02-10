@@ -1,15 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Annium.Data.Models;
+using NodaTime;
 
 namespace Annium.linq2db.Tests.Lib.Db.Models;
 
-public sealed record Employee
+public sealed record Employee : IIdEntity<Guid>, ICreatedUpdatedTimeEntity
 {
     public Guid Id { get; private init; } = Guid.NewGuid();
     public string Name { get; private init; } = string.Empty;
     public Guid? ChiefId { get; private set; }
     public Employee? Chief { get; private set; }
+    public Instant CreatedAt { get; private set; }
+    public Instant UpdatedAt { get; private set; }
 
     public IReadOnlyCollection<Employee> Subordinates
     {
