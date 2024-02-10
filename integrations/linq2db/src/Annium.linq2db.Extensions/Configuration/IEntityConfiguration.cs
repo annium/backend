@@ -9,4 +9,4 @@ public interface IEntityConfiguration<TEntity> : IEntityConfiguration
     void Configure(EntityMappingBuilder<TEntity> builder);
 }
 
-public interface IEntityConfiguration { }
+public interface IEntityConfiguration;

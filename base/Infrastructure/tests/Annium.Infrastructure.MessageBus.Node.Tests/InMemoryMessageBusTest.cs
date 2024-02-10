@@ -85,5 +85,5 @@ public class InMemoryMessageBusTest : TestBase
         }
     }
 
-    private interface IX { }
+    private interface IX;
 }
