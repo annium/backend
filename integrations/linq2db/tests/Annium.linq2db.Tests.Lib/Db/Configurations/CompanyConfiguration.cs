@@ -11,7 +11,7 @@ internal class CompanyConfiguration : IIdEntityConfiguration<Company, Guid>, ICr
     public void Configure(EntityMappingBuilder<Company> builder)
     {
         this.ConfigureId(builder);
-        this.ConfigureCreatedUpdatedTime(builder);
+        this.ConfigureAutoCreatedUpdatedTime(builder);
         builder.HasTableName("companies");
         builder.HasPrimaryKey(x => x.Id);
         builder.Property(x => x.Id).IsColumn();

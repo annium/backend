@@ -13,23 +13,42 @@ public interface ICreatedUpdatedTimeEntityConfiguration<TEntity> : ICreatedTimeE
 
 public static class TimedEntityConfigurationExtensions
 {
-    public static void ConfigureCreatedUpdatedTime<TEntity>(
+    public static void ConfigureAutoCreatedUpdatedTime<TEntity>(
         this ICreatedUpdatedTimeEntityConfiguration<TEntity> configuration,
         EntityMappingBuilder<TEntity> builder
     )
         where TEntity : class, ICreatedUpdatedTimeEntity
     {
-        configuration.ConfigureCreatedTime(builder);
+        configuration.ConfigureAutoCreatedTime(builder);
         builder.Property(x => x.UpdatedAt).IsColumn().HasConversionFunc(SetUpdatedDate, GetDate);
     }
 
-    public static void ConfigureCreatedTime<TEntity>(
+    public static void ConfigureAutoCreatedTime<TEntity>(
         this ICreatedTimeEntityConfiguration<TEntity> configuration,
         EntityMappingBuilder<TEntity> builder
     )
         where TEntity : class, ICreatedTimeEntity
     {
         builder.Property(x => x.CreatedAt).IsColumn().HasConversionFunc(SetCreatedDate, GetDate);
+    }
+
+    public static void ConfigureManualCreatedUpdatedTime<TEntity>(
+        this ICreatedUpdatedTimeEntityConfiguration<TEntity> configuration,
+        EntityMappingBuilder<TEntity> builder
+    )
+        where TEntity : class, ICreatedUpdatedTimeEntity
+    {
+        configuration.ConfigureAutoCreatedTime(builder);
+        builder.Property(x => x.UpdatedAt).IsColumn();
+    }
+
+    public static void ConfigureManualCreatedTime<TEntity>(
+        this ICreatedTimeEntityConfiguration<TEntity> configuration,
+        EntityMappingBuilder<TEntity> builder
+    )
+        where TEntity : class, ICreatedTimeEntity
+    {
+        builder.Property(x => x.CreatedAt).IsColumn();
     }
 
     private static Instant SetCreatedDate(Instant value)

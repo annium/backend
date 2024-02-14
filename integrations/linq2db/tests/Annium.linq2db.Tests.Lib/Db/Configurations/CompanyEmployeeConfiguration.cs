@@ -8,7 +8,7 @@ internal class CompanyEmployeeConfiguration : ICreatedUpdatedTimeEntityConfigura
 {
     public void Configure(EntityMappingBuilder<CompanyEmployee> builder)
     {
-        this.ConfigureCreatedUpdatedTime(builder);
+        this.ConfigureAutoCreatedUpdatedTime(builder);
         builder.HasTableName("company_employees");
         builder.HasPrimaryKey(x => new { x.CompanyId, x.EmployeeId });
         builder.Association(x => x.Company, x => x.CompanyId, x => x.Id, false);

@@ -10,7 +10,7 @@ internal class EmployeeConfiguration : IIdEntityConfiguration<Employee, Guid>, I
     public void Configure(EntityMappingBuilder<Employee> builder)
     {
         this.ConfigureId(builder);
-        this.ConfigureCreatedUpdatedTime(builder);
+        this.ConfigureAutoCreatedUpdatedTime(builder);
         builder.HasTableName("employees");
         builder.HasPrimaryKey(x => x.Id);
         builder.Property(x => x.Id).IsColumn();
