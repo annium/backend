@@ -5,7 +5,9 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Tests.Lib.Db.Configurations;
 
-internal class EmployeeConfiguration : IIdEntityConfiguration<Employee, Guid>, ICreatedUpdatedTimeEntityConfiguration<Employee>
+internal class EmployeeConfiguration
+    : IIdEntityConfiguration<Employee, Guid>,
+        ICreatedUpdatedTimeEntityConfiguration<Employee>
 {
     public void Configure(EntityMappingBuilder<Employee> builder)
     {
