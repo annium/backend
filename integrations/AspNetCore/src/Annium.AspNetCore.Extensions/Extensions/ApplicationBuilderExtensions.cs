@@ -11,12 +11,11 @@ public static class ApplicationBuilderExtensions
         builder.UseMiddleware<ExceptionMiddleware>();
 
     public static IApplicationBuilder UseCorsDefaults(this IApplicationBuilder builder) =>
-        builder.UseCors(
-            b =>
-                b.SetIsOriginAllowed(_ => true)
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowCredentials()
-                    .SetPreflightMaxAge(TimeSpan.FromDays(7))
+        builder.UseCors(b =>
+            b.SetIsOriginAllowed(_ => true)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials()
+                .SetPreflightMaxAge(TimeSpan.FromDays(7))
         );
 }

@@ -40,11 +40,9 @@ public class ServerConfigurationOptions
         var implementations = _container
             .GetTypeManager()
             .GetImplementations(typeof(IHandlerBase<TAction>))
-            .Where(
-                x =>
-                    x is { IsClass: true, IsGenericType: false }
-                    && x.GetProperty(nameof(IHandlerBase<TAction>.Version))!.GetPropertyOrFieldValue<ushort>()
-                        == version
+            .Where(x =>
+                x is { IsClass: true, IsGenericType: false }
+                && x.GetProperty(nameof(IHandlerBase<TAction>.Version))!.GetPropertyOrFieldValue<ushort>() == version
             )
             .ToArray();
 

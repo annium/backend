@@ -41,8 +41,8 @@ public class IntegrationTestsBase : TestBase
         await conn.CompanyEmployees.InsertAsync(companyWorker);
 
         // assert
-        company = await conn.Companies
-            .LoadWith(x => x.Employees)
+        company = await conn
+            .Companies.LoadWith(x => x.Employees)
             .ThenLoad(x => x.Company)
             .LoadWith(x => x.Employees)
             .ThenLoad(x => x.Employee.Chief)
@@ -136,8 +136,8 @@ public class IntegrationTestsBase : TestBase
                 {
                     await using var scope = CreateAsyncScope();
                     await using var conn = scope.ServiceProvider.Resolve<Connection>();
-                    var loadedCompany = await conn.Companies
-                        .LoadWith(x => x.Employees)
+                    var loadedCompany = await conn
+                        .Companies.LoadWith(x => x.Employees)
                         .ThenLoad(x => x.Company)
                         .LoadWith(x => x.Employees)
                         .ThenLoad(x => x.Employee.Chief)

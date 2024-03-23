@@ -46,8 +46,8 @@ public static class TableSaveExtensions
     private static Expression<Func<T>> BuildInsertSetter<T>(TableMetadata table, T value)
         where T : notnull
     {
-        var bindings = table.Columns.Values
-            .Where(c => c.Association is null)
+        var bindings = table
+            .Columns.Values.Where(c => c.Association is null)
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
@@ -63,8 +63,8 @@ public static class TableSaveExtensions
     {
         var param = Expression.Parameter(typeof(T));
 
-        var condition = table.Columns.Values
-            .Where(c => c.PrimaryKey is not null)
+        var condition = table
+            .Columns.Values.Where(c => c.PrimaryKey is not null)
             .Select(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
@@ -81,8 +81,8 @@ public static class TableSaveExtensions
     private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value)
         where TIn : notnull
     {
-        var bindings = table.Columns.Values
-            .Where(c => c.Association is null && !c.Attribute.IsPrimaryKey)
+        var bindings = table
+            .Columns.Values.Where(c => c.Association is null && !c.Attribute.IsPrimaryKey)
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);

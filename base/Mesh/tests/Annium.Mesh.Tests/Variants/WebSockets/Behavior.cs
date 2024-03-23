@@ -19,13 +19,10 @@ public class Behavior : IBehavior, ILogSubject
     {
         container.Add(new TransportConfiguration(Interlocked.Increment(ref _basePort))).AsSelf().Singleton();
 
-        container.AddMeshWebSocketsClientTransport(
-            sp =>
-                new ClientTransportConfiguration
-                {
-                    Uri = new Uri($"ws://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}")
-                }
-        );
+        container.AddMeshWebSocketsClientTransport(sp => new ClientTransportConfiguration
+        {
+            Uri = new Uri($"ws://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}")
+        });
         container.AddMeshWebSocketsServerTransport(_ => new ServerTransportConfiguration());
         container.AddWebServerMeshHandler();
 

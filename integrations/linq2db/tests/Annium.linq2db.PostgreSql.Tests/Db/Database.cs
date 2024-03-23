@@ -42,8 +42,8 @@ public static class Database
         await Db.StartAsync();
         Config.Host = Db.Hostname;
         Config.Port = Db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
-        var result = DeployChanges.To
-            .PostgresqlDatabase(Db.GetConnectionString())
+        var result = DeployChanges
+            .To.PostgresqlDatabase(Db.GetConnectionString())
             .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
             .WithTransactionPerScript()
             .LogToConsole()

@@ -15,20 +15,20 @@ internal static class MappingSchemaExtensions
                 var mappingBuilder = new FluentMappingBuilder(schema);
 
                 foreach (var table in db.Tables.Values)
-                    foreach (var column in table.Columns.Values)
-                    {
-                        if (column.Attribute.IsColumn)
-                            continue;
+                foreach (var column in table.Columns.Values)
+                {
+                    if (column.Attribute.IsColumn)
+                        continue;
 
-                        // check if is foreign key
-                        var isForeignKey = table.Columns.Values
-                            .Where(x => x.Attribute.IsColumn)
-                            .Any(x => x.Association?.ThisKey == column.Member.Name);
+                    // check if is foreign key
+                    var isForeignKey = table
+                        .Columns.Values.Where(x => x.Attribute.IsColumn)
+                        .Any(x => x.Association?.ThisKey == column.Member.Name);
 
-                        // set as basic column
-                        if (isForeignKey)
-                            mappingBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
-                    }
+                    // set as basic column
+                    if (isForeignKey)
+                        mappingBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
+                }
 
                 mappingBuilder.Build();
             },

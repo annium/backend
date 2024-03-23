@@ -12,10 +12,9 @@ public static class NodaTimeSerializers
     {
         var types = typeof(NodaTimeSerializers)
             .GetTypeInfo()
-            .Assembly.DefinedTypes.Where(
-                t =>
-                    t is { BaseType: not null, ContainsGenericParameters: false }
-                    && t.ImplementedInterfaces.Contains(typeof(IBsonSerializer))
+            .Assembly.DefinedTypes.Where(t =>
+                t is { BaseType: not null, ContainsGenericParameters: false }
+                && t.ImplementedInterfaces.Contains(typeof(IBsonSerializer))
             )
             .ToList();
 

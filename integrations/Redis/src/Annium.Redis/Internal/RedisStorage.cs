@@ -31,8 +31,8 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         var keys = new HashSet<string>();
 
         foreach (var server in _redis.GetServers())
-            await foreach (var key in server.KeysAsync(pattern: keyPattern))
-                keys.Add(key.ToString());
+        await foreach (var key in server.KeysAsync(pattern: keyPattern))
+            keys.Add(key.ToString());
 
         return keys;
     }

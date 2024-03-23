@@ -16,8 +16,8 @@ public static class MappingSchemaExtensions
             db =>
             {
                 foreach (var table in db.Tables.Values)
-                    foreach (var column in table.Columns.Values)
-                        column.Attribute.Name = column.Member.Name.SnakeCase();
+                foreach (var column in table.Columns.Values)
+                    column.Attribute.Name = column.Member.Name.SnakeCase();
             },
             MetadataFlags.IncludeMembersNotMarkedAsColumns
         );

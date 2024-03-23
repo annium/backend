@@ -19,13 +19,13 @@ public static class MvcBuilderExtensions
         var models = pack.Models;
 
         // add feature provider
-        builder.ConfigureApplicationPartManager(
-            apm => apm.FeatureProviders.Add(new DynamicControllerFeatureProvider(models))
+        builder.ConfigureApplicationPartManager(apm =>
+            apm.FeatureProviders.Add(new DynamicControllerFeatureProvider(models))
         );
 
         // add route convention
-        builder.Services.Configure<MvcOptions>(
-            opts => opts.Conventions.Add(new DynamicControllerRouteConvention(models))
+        builder.Services.Configure<MvcOptions>(opts =>
+            opts.Conventions.Add(new DynamicControllerRouteConvention(models))
         );
 
         return builder;
