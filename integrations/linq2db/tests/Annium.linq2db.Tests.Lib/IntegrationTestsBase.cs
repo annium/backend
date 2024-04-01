@@ -91,7 +91,7 @@ public class IntegrationTestsBase : TestBase
 
                     this.Trace("{id} - generate rows", id);
                     var companies = Enumerable
-                        .Range(0, 1000)
+                        .Range(0, chunkSize)
                         .Select(x =>
                         {
                             var companyName = $"demo:{Guid.NewGuid()}";
@@ -123,7 +123,9 @@ public class IntegrationTestsBase : TestBase
         var companyName = $"demo:{Guid.NewGuid()}";
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(companyName, metadata);
-        await using (var conn = Get<Connection>())
+
+        await using (var scope = CreateAsyncScope())
+        await using (var conn = scope.ServiceProvider.Resolve<Connection>())
         {
             await conn.Companies.InsertAsync(company);
         }

@@ -24,7 +24,7 @@ public static class Database
     static Database()
     {
         Db = new PostgreSqlBuilder()
-            .WithImage("registry.annium.com/postgres:15")
+            .WithImage("registry.annium.com/postgres:16.0-alpine")
             .WithDatabase(Config.Database)
             .WithUsername(Config.User)
             .WithPassword(Config.Password)
