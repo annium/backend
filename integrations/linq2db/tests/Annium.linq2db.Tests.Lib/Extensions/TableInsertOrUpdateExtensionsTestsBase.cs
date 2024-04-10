@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Annium.Core.Runtime.Time;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
@@ -21,7 +22,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     protected async Task Insert_Base()
     {
         // arrange
-        var now = SystemClock.Instance.GetCurrentInstant();
+        var timeManager = Get<ITimeManager>();
+        timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
+        var now = timeManager.Now;
         await using var conn = Get<Connection>();
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
@@ -31,6 +34,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         var companyWorker = new CompanyEmployee(company, worker, "worker");
 
         // act
+        timeManager.AddSecond();
         await conn.Companies.InsertAsync(company);
         await conn.Employees.InsertAsync(chief);
         await conn.CompanyEmployees.InsertAsync(companyChief);
@@ -39,14 +43,16 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.IsGreater(now);
-        company.UpdatedAt.IsGreater(company.CreatedAt);
+        company.CreatedAt.Is(now + Duration.FromSeconds(1));
+        company.UpdatedAt.Is(company.CreatedAt);
         company.Metadata.Is(metadata);
     }
 
     protected async Task Update_Base()
     {
         // arrange
+        var timeManager = Get<ITimeManager>();
+        timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
         await using var conn = Get<Connection>();
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
@@ -66,6 +72,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // act
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
+        timeManager.AddSecond();
         await conn.Companies.UpdateAsync(company);
 
         worker.SetChief(null);
@@ -74,7 +81,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
         company.CreatedAt.Is(companyCreatedAt);
-        company.UpdatedAt.IsGreater(companyUpdatedAt);
+        company.UpdatedAt.Is(companyUpdatedAt + Duration.FromSeconds(1));
         company.Metadata.Is(metadata);
         worker = await conn.Employees.LoadWith(x => x.Chief).SingleAsync(x => x.Name == worker.Name);
         worker.ChiefId.IsDefault();
@@ -83,17 +90,20 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // act
         var name = company.Name;
         companyUpdatedAt = company.UpdatedAt;
-        await conn.Companies.Set(x => x.Name, x => x.Name + " Main").WithUpdatedAt().UpdateAsync();
+        timeManager.AddSecond();
+        await conn.Companies.Set(x => x.Name, x => x.Name + " Main").UpdateAsync();
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Id == company.Id);
         company.Name.Is(name + " Main");
-        company.UpdatedAt.IsGreater(companyUpdatedAt);
+        company.UpdatedAt.Is(companyUpdatedAt + Duration.FromSeconds(1));
     }
 
     protected async Task InsertOrUpdate_Base()
     {
         // arrange
+        var timeManager = Get<ITimeManager>();
+        timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
         await using var conn = Get<Connection>();
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
@@ -116,6 +126,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // act
         metadata = new CompanyMetadata("outdoors");
         company.SetMetadata(metadata);
+        timeManager.AddSecond();
         await conn.Companies.InsertOrUpdateAsync(company);
         companyChief.SetRole("main chief");
         await conn.CompanyEmployees.InsertOrUpdateAsync(companyChief);
@@ -123,7 +134,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // assert
         company = await conn.Companies.LoadWith(x => x.Employees).SingleAsync(x => x.Name == company.Name);
         company.CreatedAt.Is(companyCreatedAt);
-        company.UpdatedAt.IsGreater(companyUpdatedAt);
+        company.UpdatedAt.Is(companyUpdatedAt + Duration.FromSeconds(1));
         company.Metadata.Is(metadata);
         company.Employees.Has(1);
         company.Employees.At(0).Role.Is("main chief");
