@@ -10,7 +10,11 @@ namespace Annium.linq2db.Extensions.Configuration;
 
 public static class DataConnectionExtensions
 {
-    public static SqlStatement ProcessCreatedUpdatedTimeQuery(this DataConnection dc, SqlStatement statement, ITimeProvider timeProvider)
+    public static SqlStatement ProcessCreatedUpdatedTimeQuery(
+        this DataConnection dc,
+        SqlStatement statement,
+        ITimeProvider timeProvider
+    )
     {
         return statement.QueryType switch
         {
@@ -21,7 +25,11 @@ public static class DataConnectionExtensions
         };
     }
 
-    private static SqlStatement ProcessInsertTimeQuery(this DataConnection cn, SqlStatement statement, ITimeProvider timeProvider)
+    private static SqlStatement ProcessInsertTimeQuery(
+        this DataConnection cn,
+        SqlStatement statement,
+        ITimeProvider timeProvider
+    )
     {
         var source = statement.RequireInsertClause().Into.NotNull();
         var descriptor = cn.MappingSchema.GetEntityDescriptor(source.ObjectType);
@@ -50,7 +58,11 @@ public static class DataConnectionExtensions
         return stmt;
     }
 
-    private static SqlStatement ProcessUpdateTimeQuery(this DataConnection cn, SqlStatement statement, ITimeProvider timeProvider)
+    private static SqlStatement ProcessUpdateTimeQuery(
+        this DataConnection cn,
+        SqlStatement statement,
+        ITimeProvider timeProvider
+    )
     {
         var updateTable = GetUpdateTable(statement);
         if (updateTable is null)
@@ -75,7 +87,11 @@ public static class DataConnectionExtensions
         return stmt;
     }
 
-    private static SqlStatement ProcessInsertOrUpdateTimeQuery(this DataConnection cn, SqlStatement statement, ITimeProvider timeProvider)
+    private static SqlStatement ProcessInsertOrUpdateTimeQuery(
+        this DataConnection cn,
+        SqlStatement statement,
+        ITimeProvider timeProvider
+    )
     {
         var source = statement.RequireInsertClause().Into.NotNull();
         var updateTable = GetUpdateTable(statement);
@@ -116,7 +132,12 @@ public static class DataConnectionExtensions
         return stmt;
     }
 
-    private static void AddSetColumnTimeExpression(SqlTable table, List<SqlSetExpression> expressions, ColumnDescriptor desc, Instant now)
+    private static void AddSetColumnTimeExpression(
+        SqlTable table,
+        List<SqlSetExpression> expressions,
+        ColumnDescriptor desc,
+        Instant now
+    )
     {
         var field = table.FindFieldByMemberName(desc.MemberName).NotNull();
         var column = expressions.FindField(field);
@@ -126,7 +147,11 @@ public static class DataConnectionExtensions
             column.Expression = new SqlValue(typeof(Instant), now);
     }
 
-    private static void DeleteSetColumnTimeExpression(SqlTable table, List<SqlSetExpression> expressions, ColumnDescriptor desc)
+    private static void DeleteSetColumnTimeExpression(
+        SqlTable table,
+        List<SqlSetExpression> expressions,
+        ColumnDescriptor desc
+    )
     {
         var field = table.FindFieldByMemberName(desc.MemberName).NotNull();
         var column = expressions.FindField(field);
@@ -136,7 +161,10 @@ public static class DataConnectionExtensions
     private static ColumnDescriptor? FindColumn(this IEnumerable<ColumnDescriptor> columns, string name)
     {
         foreach (var column in columns)
-            if (column.MemberAccessor.MemberInfo.Name == name && column is { HasValuesToSkipOnInsert: false, HasValuesToSkipOnUpdate: false })
+            if (
+                column.MemberAccessor.MemberInfo.Name == name
+                && column is { HasValuesToSkipOnInsert: false, HasValuesToSkipOnUpdate: false }
+            )
                 return column;
 
         return null;
@@ -166,8 +194,10 @@ public static class DataConnectionExtensions
         if (statement.SelectQuery == null)
             return null;
 
-        if (statement.SelectQuery.From.Tables.Count > 0 &&
-            statement.SelectQuery?.From.Tables[0].Source is SqlTable source)
+        if (
+            statement.SelectQuery.From.Tables.Count > 0
+            && statement.SelectQuery?.From.Tables[0].Source is SqlTable source
+        )
         {
             return source;
         }
