@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
@@ -24,7 +23,9 @@ public class IntegrationTestsBase : TestBase
     protected async Task EndToEnd_Base()
     {
         // arrange
-        await using var conn = Get<Connection>();
+        await using var scope = Provider.GetConnectionScope<Connection>();
+        scope.ThrowIfDisposed();
+        var conn = scope.Cn;
         var companyName = $"demo:{Guid.NewGuid()}";
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(companyName, metadata);
@@ -87,12 +88,11 @@ public class IntegrationTestsBase : TestBase
                 .Select(async id =>
                 {
                     this.Trace("{id} - start", id);
-                    await using var scope = CreateAsyncScope();
 
                     this.Trace("{id} - generate rows", id);
                     var companies = Enumerable
                         .Range(0, chunkSize)
-                        .Select(x =>
+                        .Select(_ =>
                         {
                             var companyName = $"demo:{Guid.NewGuid()}";
                             var metadata = new CompanyMetadata($"somewhere for {companyName}");
@@ -102,7 +102,9 @@ public class IntegrationTestsBase : TestBase
                         .ToArray();
 
                     this.Trace("{id} - create connection", id);
-                    await using var conn = scope.ServiceProvider.Resolve<Connection>();
+                    await using var scope = Provider.GetConnectionScope<Connection>();
+                    scope.ThrowIfDisposed();
+                    var conn = scope.Cn;
 
                     this.Trace("{id} - bulk copy", id);
                     var result = await conn.BulkCopyAsync(new BulkCopyOptions { KeepIdentity = true }, companies);
@@ -124,9 +126,10 @@ public class IntegrationTestsBase : TestBase
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(companyName, metadata);
 
-        await using (var scope = CreateAsyncScope())
-        await using (var conn = scope.ServiceProvider.Resolve<Connection>())
+        await using (var scope = Provider.GetConnectionScope<Connection>())
         {
+            scope.ThrowIfDisposed();
+            var conn = scope.Cn;
             await conn.Companies.InsertAsync(company);
         }
 
@@ -136,8 +139,9 @@ public class IntegrationTestsBase : TestBase
                 .Range(0, 1000)
                 .Select(async _ =>
                 {
-                    await using var scope = CreateAsyncScope();
-                    await using var conn = scope.ServiceProvider.Resolve<Connection>();
+                    await using var scope = Provider.GetConnectionScope<Connection>();
+                    scope.ThrowIfDisposed();
+                    var conn = scope.Cn;
                     var loadedCompany = await conn
                         .Companies.LoadWith(x => x.Employees)
                         .ThenLoad(x => x.Company)

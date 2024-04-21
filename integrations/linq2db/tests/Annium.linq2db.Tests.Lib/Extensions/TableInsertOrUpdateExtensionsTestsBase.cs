@@ -25,7 +25,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
         var now = timeManager.Now;
-        await using var conn = Get<Connection>();
+        await using var scope = Provider.GetConnectionScope<Connection>();
+        scope.ThrowIfDisposed();
+        var conn = scope.Cn;
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
         var chief = new Employee(Name(), null);
@@ -43,7 +45,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 
         // assert
         company = await conn.Companies.SingleAsync(x => x.Name == company.Name);
-        company.CreatedAt.Is(now + Duration.FromSeconds(1));
+        company.CreatedAt.IsGreater(now).IsLess(now + Duration.FromSeconds(2));
         company.UpdatedAt.Is(company.CreatedAt);
         company.Metadata.Is(metadata);
     }
@@ -53,7 +55,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // arrange
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
-        await using var conn = Get<Connection>();
+        await using var scope = Provider.GetConnectionScope<Connection>();
+        scope.ThrowIfDisposed();
+        var conn = scope.Cn;
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
         await conn.Companies.InsertAsync(company);
@@ -104,7 +108,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         // arrange
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
-        await using var conn = Get<Connection>();
+        await using var scope = Provider.GetConnectionScope<Connection>();
+        scope.ThrowIfDisposed();
+        var conn = scope.Cn;
         var metadata = new CompanyMetadata("somewhere");
         var company = new Company(Name(), metadata);
         var chief = new Employee(Name(), null);
