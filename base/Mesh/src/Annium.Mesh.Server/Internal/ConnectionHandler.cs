@@ -118,7 +118,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
             return;
 
         this.Trace("cn {id} - schedule {msg}", _cid, message);
-        if (_executor.TrySchedule(HandleMessage(message)))
+        if (_executor.Schedule(HandleMessage(message)))
             this.Trace("cn {id} - scheduled {msg}", _cid, message);
         else
             this.Trace("cn {id} - skipped {msg} (connection is canceled", _cid, message);

@@ -49,7 +49,7 @@ internal class Server : IServer, ILogSubject
     private void OnConnection(IServerConnection connection)
     {
         // try schedule socket handling
-        if (_executor.TrySchedule(HandleConnection(connection)))
+        if (_executor.Schedule(HandleConnection(connection)))
         {
             this.Trace("connection handle scheduled");
         }
