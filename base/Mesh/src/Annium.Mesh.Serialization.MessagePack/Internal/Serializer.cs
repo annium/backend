@@ -10,7 +10,7 @@ namespace Annium.Mesh.Serialization.MessagePack.Internal;
 
 internal class Serializer : ISerializer
 {
-    private static readonly MessagePackSerializerOptions MessageOpts;
+    private static readonly MessagePackSerializerOptions _messageOpts;
 
     static Serializer()
     {
@@ -18,7 +18,7 @@ internal class Serializer : ISerializer
             new FormatterResolver(),
             MessagePackSerializerOptions.Standard.Resolver
         );
-        MessageOpts = new MessagePackSerializerOptions(resolver);
+        _messageOpts = new MessagePackSerializerOptions(resolver);
     }
 
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
@@ -31,14 +31,14 @@ internal class Serializer : ISerializer
 
     public ReadOnlyMemory<byte> SerializeMessage(Message message)
     {
-        var data = MessagePackSerializer.Serialize(message, MessageOpts);
+        var data = MessagePackSerializer.Serialize(message, _messageOpts);
 
         return data;
     }
 
     public Message DeserializeMessage(ReadOnlyMemory<byte> data)
     {
-        var message = MessagePackSerializer.Deserialize<Message>(data, MessageOpts);
+        var message = MessagePackSerializer.Deserialize<Message>(data, _messageOpts);
 
         return message;
     }

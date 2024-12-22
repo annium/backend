@@ -8,7 +8,7 @@ namespace Annium.linq2db.Extensions.Internal;
 
 internal static class MetadataProvider
 {
-    private static readonly BindingFlags ColumnMemberFlags =
+    private static readonly BindingFlags _columnMemberFlags =
         BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
     public static DatabaseMetadata Describe(MappingSchema schema, MetadataFlags flags)
@@ -24,8 +24,8 @@ internal static class MetadataProvider
     {
         var table = schema.GetAttribute<TableAttribute>(type)!;
 
-        var properties = type.GetProperties(ColumnMemberFlags);
-        var fields = type.GetFields(ColumnMemberFlags);
+        var properties = type.GetProperties(_columnMemberFlags);
+        var fields = type.GetFields(_columnMemberFlags);
         var members = properties.Concat<MemberInfo>(fields).ToArray();
 
         var columns = members

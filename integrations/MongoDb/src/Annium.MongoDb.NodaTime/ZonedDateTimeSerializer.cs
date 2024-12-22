@@ -5,11 +5,11 @@ namespace Annium.MongoDb.NodaTime;
 
 public class ZonedDateTimeSerializer : PatternSerializer<ZonedDateTime>
 {
-    private static readonly IPattern<ZonedDateTime> Pattern = ZonedDateTimePattern.CreateWithInvariantCulture(
+    private static readonly IPattern<ZonedDateTime> _pattern = ZonedDateTimePattern.CreateWithInvariantCulture(
         "G",
         DateTimeZoneProviders.Tzdb
     );
 
     public ZonedDateTimeSerializer()
-        : base(Pattern) { }
+        : base(_pattern) { }
 }

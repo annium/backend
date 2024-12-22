@@ -17,13 +17,13 @@ public static class Database
             Password = "postgres",
         };
 
-    private static readonly PostgreSqlContainer Db;
-    private static readonly TaskCompletionSource InitTcs = new();
+    private static readonly PostgreSqlContainer _db;
+    private static readonly TaskCompletionSource _initTcs = new();
     private static volatile int _refs;
 
     static Database()
     {
-        Db = new PostgreSqlBuilder()
+        _db = new PostgreSqlBuilder()
             .WithImage("registry.annium.com/postgres:16.0-alpine")
             .WithDatabase(Config.Database)
             .WithUsername(Config.User)
@@ -35,15 +35,15 @@ public static class Database
     {
         if (Interlocked.Increment(ref _refs) > 1)
         {
-            await InitTcs.Task;
+            await _initTcs.Task;
             return;
         }
 
-        await Db.StartAsync();
-        Config.Host = Db.Hostname;
-        Config.Port = Db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
+        await _db.StartAsync();
+        Config.Host = _db.Hostname;
+        Config.Port = _db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
         var result = DeployChanges
-            .To.PostgresqlDatabase(Db.GetConnectionString())
+            .To.PostgresqlDatabase(_db.GetConnectionString())
             .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
             .WithTransactionPerScript()
             .LogToConsole()
@@ -51,6 +51,6 @@ public static class Database
             .PerformUpgrade();
         if (!result.Successful)
             throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
-        InitTcs.SetResult();
+        _initTcs.SetResult();
     }
 }

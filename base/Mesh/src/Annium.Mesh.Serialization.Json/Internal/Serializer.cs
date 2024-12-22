@@ -9,12 +9,12 @@ namespace Annium.Mesh.Serialization.Json.Internal;
 
 internal class Serializer : ISerializer
 {
-    private static readonly JsonSerializerOptions MessageOpts;
+    private static readonly JsonSerializerOptions _messageOpts;
 
     static Serializer()
     {
-        MessageOpts = new JsonSerializerOptions();
-        MessageOpts.Converters.Add(new MessageConverter());
+        _messageOpts = new JsonSerializerOptions();
+        _messageOpts.Converters.Add(new MessageConverter());
     }
 
     private readonly ISerializer<ReadOnlyMemory<byte>> _serializer;
@@ -27,14 +27,14 @@ internal class Serializer : ISerializer
 
     public ReadOnlyMemory<byte> SerializeMessage(Message message)
     {
-        var data = JsonSerializer.SerializeToUtf8Bytes(message, MessageOpts);
+        var data = JsonSerializer.SerializeToUtf8Bytes(message, _messageOpts);
 
         return data;
     }
 
     public Message DeserializeMessage(ReadOnlyMemory<byte> data)
     {
-        var message = JsonSerializer.Deserialize<Message>(data.Span, MessageOpts)!;
+        var message = JsonSerializer.Deserialize<Message>(data.Span, _messageOpts)!;
 
         return message;
     }

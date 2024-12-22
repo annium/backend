@@ -16,7 +16,7 @@ public static class MappingSchemaExtensionsBase
 {
     private readonly record struct DescriptionCacheKey(MappingSchema Schema, MetadataFlags Flags);
 
-    private static readonly ConcurrentDictionary<DescriptionCacheKey, DatabaseMetadata> DatabaseMetadataCache = new();
+    private static readonly ConcurrentDictionary<DescriptionCacheKey, DatabaseMetadata> _databaseMetadataCache = new();
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static DatabaseMetadata Describe(this MappingSchema schema, MetadataFlags flags = MetadataFlags.None) =>
@@ -27,7 +27,7 @@ public static class MappingSchemaExtensionsBase
         this MappingSchema schema,
         MetadataFlags flags = MetadataFlags.None
     ) =>
-        DatabaseMetadataCache.GetOrAdd(
+        _databaseMetadataCache.GetOrAdd(
             new DescriptionCacheKey(schema, flags),
             key => MetadataProvider.Describe(key.Schema, key.Flags)
         );

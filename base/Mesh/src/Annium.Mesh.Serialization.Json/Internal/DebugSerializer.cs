@@ -11,12 +11,12 @@ namespace Annium.Mesh.Serialization.Json.Internal;
 
 internal class DebugSerializer : ISerializer, ILogSubject
 {
-    private static readonly JsonSerializerOptions MessageOpts;
+    private static readonly JsonSerializerOptions _messageOpts;
 
     static DebugSerializer()
     {
-        MessageOpts = new JsonSerializerOptions();
-        MessageOpts.Converters.Add(new MessageConverter());
+        _messageOpts = new JsonSerializerOptions();
+        _messageOpts.Converters.Add(new MessageConverter());
     }
 
     public ILogger Logger { get; }
@@ -33,7 +33,7 @@ internal class DebugSerializer : ISerializer, ILogSubject
     {
         this.Trace("start: {message}", message);
 
-        var data = JsonSerializer.SerializeToUtf8Bytes(message, MessageOpts);
+        var data = JsonSerializer.SerializeToUtf8Bytes(message, _messageOpts);
 
         this.Trace("done: {length} bytes", data.Length);
 
@@ -44,7 +44,7 @@ internal class DebugSerializer : ISerializer, ILogSubject
     {
         this.Trace("start: {size} bytes", data.Length);
 
-        var message = JsonSerializer.Deserialize<Message>(data.Span, MessageOpts)!;
+        var message = JsonSerializer.Deserialize<Message>(data.Span, _messageOpts)!;
 
         this.Trace("done: {message}", message);
 

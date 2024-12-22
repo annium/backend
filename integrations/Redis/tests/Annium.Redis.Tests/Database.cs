@@ -8,25 +8,25 @@ public static class Database
 {
     public static RedisConfiguration Config { get; } = new();
 
-    private static readonly RedisContainer Db;
-    private static readonly TaskCompletionSource InitTcs = new();
+    private static readonly RedisContainer _db;
+    private static readonly TaskCompletionSource _initTcs = new();
     private static volatile int _refs;
 
     static Database()
     {
-        Db = new RedisBuilder().Build();
+        _db = new RedisBuilder().Build();
     }
 
     public static async Task AcquireAsync()
     {
         if (Interlocked.Increment(ref _refs) > 1)
         {
-            await InitTcs.Task;
+            await _initTcs.Task;
             return;
         }
 
-        await Db.StartAsync();
-        Config.Hosts = new[] { new RedisHost(Db.Hostname, Db.GetMappedPublicPort(RedisBuilder.RedisPort)) };
-        InitTcs.SetResult();
+        await _db.StartAsync();
+        Config.Hosts = new[] { new RedisHost(_db.Hostname, _db.GetMappedPublicPort(RedisBuilder.RedisPort)) };
+        _initTcs.SetResult();
     }
 }
