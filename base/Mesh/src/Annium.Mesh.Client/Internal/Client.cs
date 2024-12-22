@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using Annium.Logging;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
@@ -11,7 +12,7 @@ internal class Client : ClientBase, IClient
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
     public event Action<Exception> OnError = delegate { };
     private readonly IClientConnection _connection;
-    private readonly object _locker = new();
+    private readonly Lock _locker = new();
     private bool _isConnected;
     private bool _isConnectionReady;
 

@@ -72,8 +72,8 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
 
     public async ValueTask DisposeAsync()
     {
-        _observableCts.Cancel();
-        await _observable.WhenCompleted(_logger);
+        await _observableCts.CancelAsync();
+        await _observable.WhenCompletedAsync(_logger);
 
         await _disposable.DisposeAsync();
     }

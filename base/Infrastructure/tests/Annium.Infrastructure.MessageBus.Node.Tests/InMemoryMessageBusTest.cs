@@ -43,7 +43,7 @@ public class InMemoryMessageBusTest : TestBase
         foreach (var x in values)
             await node.Send(x);
 
-        await Expect.To(
+        await Expect.ToAsync(
             () =>
             {
                 sink1.Has(2);

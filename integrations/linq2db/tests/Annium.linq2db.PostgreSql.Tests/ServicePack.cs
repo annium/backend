@@ -15,6 +15,8 @@ internal class ServicePack : ServicePackBase
 
     public override void Setup(IServiceProvider provider)
     {
+#pragma warning disable VSTHRD002
         Database.AcquireAsync().GetAwaiter().GetResult();
+#pragma warning restore VSTHRD002
     }
 }

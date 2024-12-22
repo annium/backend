@@ -6,7 +6,7 @@ using MessagePack.Formatters;
 
 namespace Annium.Mesh.Serialization.MessagePack.Internal;
 
-internal class MessageFormatter : IMessagePackFormatter<Message>
+internal class MessageFormatter : IMessagePackFormatter<Message?>
 {
     public Message Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
     {
@@ -64,7 +64,7 @@ internal class MessageFormatter : IMessagePackFormatter<Message>
         return message;
     }
 
-    public void Serialize(ref MessagePackWriter writer, Message value, MessagePackSerializerOptions options)
+    public void Serialize(ref MessagePackWriter writer, Message? value, MessagePackSerializerOptions options)
     {
         if (value == null!)
         {

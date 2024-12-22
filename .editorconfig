@@ -312,8 +312,9 @@ resharper_csharp_wrap_after_declaration_lpar = true
 resharper_csharp_wrap_parameters_style = chop_if_long
 
 # Threading
-dotnet_diagnostic.VSTHDR003.severity = none
+dotnet_diagnostic.VSTHRD003.severity = none
 dotnet_diagnostic.VSTHRD105.severity = none
+dotnet_diagnostic.VSTHRD200.severity = none
 
 [*Test{s.cs,.cs,sBase.cs,Base.cs}]
 dotnet_diagnostic.VSTHRD200.severity = none

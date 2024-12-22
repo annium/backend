@@ -54,7 +54,7 @@ public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
             range.Select(async x =>
             {
                 this.Trace("send request");
-                var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetData();
+                var response = await client.Demo.EchoAsync(new EchoRequest(x)).GetDataAsync();
                 this.Trace("add response");
                 responses.Add(response);
             })

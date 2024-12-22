@@ -28,7 +28,7 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
         using (var _ = client.Demo.ListenCounter().Subscribe(x => log.Enqueue(x.Value)))
         {
             this.Trace("wait for log entries");
-            await Expect.To(() => log.Count.IsGreaterOrEqual(5));
+            await Expect.ToAsync(() => log.Count.IsGreaterOrEqual(5));
         }
 
         // assert
@@ -84,7 +84,7 @@ file class PushSample<TBehavior> : TestBase<TBehavior>
         using (var _ = client.Demo.ListenCounter().Subscribe(x => log.Enqueue(x.Value)))
         {
             this.Trace("wait for log entries");
-            await Expect.To(() => log.Count.IsGreaterOrEqual(5));
+            await Expect.ToAsync(() => log.Count.IsGreaterOrEqual(5));
         }
 
         // assert

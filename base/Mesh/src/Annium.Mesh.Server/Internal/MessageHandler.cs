@@ -39,9 +39,9 @@ internal class MessageHandler : ILogSubject
         message.Type switch
         {
             MessageType.Request => HandleRequest(cid, cn, message, ct),
-            MessageType.Event => HandleEvent(cid, cn, message),
-            MessageType.SubscriptionInit => HandleSubscriptionInit(cid, cn, message),
-            MessageType.SubscriptionCancel => HandleSubscriptionCancel(cid, cn, message),
+            MessageType.Event => HandleEvent(),
+            MessageType.SubscriptionInit => HandleSubscriptionInit(),
+            MessageType.SubscriptionCancel => HandleSubscriptionCancel(),
             _ => Task.CompletedTask,
         };
 
@@ -80,19 +80,19 @@ internal class MessageHandler : ILogSubject
         this.Trace("done");
     }
 
-    private async Task HandleEvent(Guid cid, ISendingConnection cn, Message message)
+    private async Task HandleEvent()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionInit(Guid cid, ISendingConnection cn, Message message)
+    private async Task HandleSubscriptionInit()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionCancel(Guid cid, ISendingConnection cn, Message message)
+    private async Task HandleSubscriptionCancel()
     {
         this.Trace("ignore");
         await Task.CompletedTask;

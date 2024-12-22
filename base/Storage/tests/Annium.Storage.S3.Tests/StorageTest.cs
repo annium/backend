@@ -16,7 +16,7 @@ public class StorageTest : IAsyncDisposable
 
     public StorageTest()
     {
-        _directory = $"/storage_test/{Guid.NewGuid().ToString()}";
+        _directory = $"/storage_test/{Guid.NewGuid()}";
     }
 
     [Fact(Skip = "Needs durable test basis")]

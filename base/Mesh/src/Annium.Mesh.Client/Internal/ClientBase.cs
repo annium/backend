@@ -181,8 +181,8 @@ internal abstract class ClientBase : IClientBase
         await Task.WhenAll(
             _subscriptions.Values.Select(async x =>
             {
-                x.Cts.Cancel();
-                await x.Observable.WhenCompleted(Logger);
+                await x.Cts.CancelAsync();
+                await x.Observable.WhenCompletedAsync(Logger);
             })
         );
 

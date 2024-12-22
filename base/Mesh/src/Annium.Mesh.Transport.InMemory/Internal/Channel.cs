@@ -9,13 +9,15 @@ internal class Channel
 {
     private static Task DelayAsync() => Task.Delay(10);
 
+#pragma warning disable VSTHRD110
     private static void Delay(Action handle) => DelayAsync().ContinueWith(_ => handle());
+#pragma warning restore VSTHRD110
 
     public event Action OnConnected = delegate { };
     public event Action<CloseSide> OnDisconnected = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnClientReceived = delegate { };
     public event Action<ReadOnlyMemory<byte>> OnServerReceived = delegate { };
-    private readonly object _locker = new();
+    private readonly Lock _locker = new();
     private bool _isConnected;
 
     public void Connect()

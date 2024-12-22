@@ -45,7 +45,7 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
 
     public async Task DisposeAsync()
     {
-        _serverCts.Cancel();
+        await _serverCts.CancelAsync();
         await _serverTask;
     }
 
