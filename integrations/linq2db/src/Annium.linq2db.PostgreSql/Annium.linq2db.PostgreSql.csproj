@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.linq2db.PostgreSql</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.linq2db.PostgreSql</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Npgsql" Version="8.0.1" />
-        <PackageReference Include="Npgsql.NodaTime" Version="8.0.1" />
+        <PackageReference Include="Npgsql" />
+        <PackageReference Include="Npgsql.NodaTime" />
     </ItemGroup>
 </Project>

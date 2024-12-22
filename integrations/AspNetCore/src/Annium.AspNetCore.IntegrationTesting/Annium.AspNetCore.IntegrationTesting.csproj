@@ -1,20 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.AspNetCore.IntegrationTesting</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.AspNetCore.IntegrationTesting</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Logging.Microsoft" Version="0.1.0" />
-        <PackageReference Include="Annium.Net.Http" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing" Version="0.1.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1" />
+        <PackageReference Include="Annium.Logging.Microsoft" />
+        <PackageReference Include="Annium.Net.Http" />
+        <PackageReference Include="Annium.Testing" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     </ItemGroup>
 </Project>

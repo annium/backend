@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Mesh.Transport.WebSockets</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Mesh.Transport.WebSockets</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Core.DependencyInjection" Version="0.1.0" />
-        <PackageReference Include="Annium.Net.WebSockets" Version="0.1.0" />
+        <PackageReference Include="Annium.Core.DependencyInjection" />
+        <PackageReference Include="Annium.Net.WebSockets" />
     </ItemGroup>
 </Project>

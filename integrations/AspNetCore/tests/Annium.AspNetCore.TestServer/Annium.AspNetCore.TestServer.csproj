@@ -1,15 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <PackageId>Annium.AspNetCore.TestServer</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Demo.AspNetCore</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Exe</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
@@ -18,9 +12,9 @@
         <ProjectReference Include="../../src/Annium.AspNetCore.Mesh/Annium.AspNetCore.Mesh.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Architecture.CQRS" Version="0.1.0" />
-        <PackageReference Include="Annium.Logging.Microsoft" Version="0.1.0" />
-        <PackageReference Include="Annium.Net.Http" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing" Version="0.1.0" />
+        <PackageReference Include="Annium.Architecture.CQRS" />
+        <PackageReference Include="Annium.Logging.Microsoft" />
+        <PackageReference Include="Annium.Net.Http" />
+        <PackageReference Include="Annium.Testing" />
     </ItemGroup>
 </Project>

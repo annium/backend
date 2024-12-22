@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.linq2db.Tests.Lib</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.linq2db.Tests.Lib</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.linq2db.Extensions/Annium.linq2db.Extensions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
-        <PackageReference Include="Annium.Testing" Version="0.1.0" />
+        <PackageReference Include="Annium.Serialization.Json" />
+        <PackageReference Include="Annium.Testing" />
     </ItemGroup>
 </Project>

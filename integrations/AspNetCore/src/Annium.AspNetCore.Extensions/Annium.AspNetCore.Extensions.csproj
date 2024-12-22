@@ -1,21 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
-        <PackageId>Annium.AspNetCore.Extensions</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.AspNetCore.Extensions</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Architecture.Http" Version="0.1.0" />
-        <PackageReference Include="Annium.Data.Operations.Serialization.Json" Version="0.1.0" />
-        <PackageReference Include="Annium.Localization.Abstractions" Version="0.1.0" />
-        <PackageReference Include="Annium.NodaTime.Serialization.Json" Version="0.1.0" />
-        <PackageReference Include="Annium.Serialization.Json" Version="0.1.0" />
+        <PackageReference Include="Annium.Architecture.Http" />
+        <PackageReference Include="Annium.Data.Operations.Serialization.Json" />
+        <PackageReference Include="Annium.Localization.Abstractions" />
+        <PackageReference Include="Annium.NodaTime.Serialization.Json" />
+        <PackageReference Include="Annium.Serialization.Json" />
     </ItemGroup>
 </Project>

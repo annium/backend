@@ -1,25 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Cache.Redis.Tests</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.Cache.Redis.Tests</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Cache.Redis/Annium.Cache.Redis.csproj" />
         <ProjectReference Include="../Annium.Cache.Tests.Lib/Annium.Cache.Tests.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Include="xunit" Version="2.6.6" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
     </ItemGroup>
 </Project>

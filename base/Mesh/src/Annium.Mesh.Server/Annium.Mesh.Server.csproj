@@ -1,15 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.Mesh.Server</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.AspNetCore.Extensions</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>true</IsPackable>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Domain/Annium.Mesh.Domain.csproj" />
@@ -17,6 +11,6 @@
         <ProjectReference Include="../Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Execution.Background" Version="0.1.0" />
+        <PackageReference Include="Annium.Execution.Background" />
     </ItemGroup>
 </Project>

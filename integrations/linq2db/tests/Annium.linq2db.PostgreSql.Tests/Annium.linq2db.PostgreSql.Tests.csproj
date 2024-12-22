@@ -1,28 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <PackageId>Annium.linq2db.PostgreSql.Tests</PackageId>
-        <PackageVersion>0.1.0</PackageVersion>
-        <Description>Annium.linq2db.PostgreSql.Tests</Description>
         <Solutions>Annium.Backend</Solutions>
-        <TargetFramework>net8.0</TargetFramework>
         <OutputType>Library</OutputType>
-        <DebugType>portable</DebugType>
-        <WarningsAsErrors>true</WarningsAsErrors>
         <IsPackable>false</IsPackable>
         <IsTestProject>true</IsTestProject>
-        <Nullable>enable</Nullable>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.linq2db.PostgreSql/Annium.linq2db.PostgreSql.csproj" />
         <ProjectReference Include="../Annium.linq2db.Tests.Lib/Annium.linq2db.Tests.Lib.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="coverlet.collector" Version="6.0.0" />
-        <PackageReference Include="dbup-postgresql" Version="5.0.39" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
-        <PackageReference Include="Testcontainers.PostgreSql" Version="3.7.0" />
-        <PackageReference Include="xunit" Version="2.6.6" />
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.6" />
+        <PackageReference Include="coverlet.collector" />
+        <PackageReference Include="dbup-postgresql" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" />
+        <PackageReference Include="Testcontainers.PostgreSql" />
+        <PackageReference Include="xunit" />
+        <PackageReference Include="xunit.runner.visualstudio" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Include="Db/Migrations/*.sql" />
