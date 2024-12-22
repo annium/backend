@@ -1,10 +1,10 @@
-format:
-	xx format -sc -ic
-	dotnet csharpier .
-
 setup:
 	xx remote restore -user $(user) -password $(pass)
 	dotnet tool restore
+
+format:
+	xx format -sc -ic
+	dotnet csharpier .
 
 update:
 	xx update all -sc -ic
