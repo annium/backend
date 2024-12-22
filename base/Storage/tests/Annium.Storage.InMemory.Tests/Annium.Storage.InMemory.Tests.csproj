@@ -8,9 +8,9 @@
     </PropertyGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/Annium.Storage.InMemory/Annium.Storage.InMemory.csproj" />
+        <ProjectReference Include="../Annium.Storage.Base.Tests/Annium.Storage.Base.Tests.csproj" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Annium.Logging.InMemory" />
         <PackageReference Include="Annium.Testing" />
         <PackageReference Include="coverlet.collector" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />

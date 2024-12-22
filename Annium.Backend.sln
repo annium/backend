@@ -149,6 +149,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.S3", "base\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.S3.Tests", "base\Storage\tests\Annium.Storage.S3.Tests\Annium.Storage.S3.Tests.csproj", "{46651502-C475-4CAD-8900-DC561299952A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.Base.Tests", "base\Storage\tests\Annium.Storage.Base.Tests\Annium.Storage.Base.Tests.csproj", "{342956EE-406C-4F1B-8AAC-41B9ECA9226A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -338,6 +340,10 @@ Global
 		{46651502-C475-4CAD-8900-DC561299952A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46651502-C475-4CAD-8900-DC561299952A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46651502-C475-4CAD-8900-DC561299952A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{342956EE-406C-4F1B-8AAC-41B9ECA9226A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{342956EE-406C-4F1B-8AAC-41B9ECA9226A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{342956EE-406C-4F1B-8AAC-41B9ECA9226A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{342956EE-406C-4F1B-8AAC-41B9ECA9226A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{FC3B3C24-56FB-46DC-9274-F0DD1E84E740} = {9422856C-1A3B-446D-96BB-4B3A8545D151}
@@ -411,5 +417,6 @@ Global
 		{8C2FD2F1-A969-499B-891F-43BED82B5820} = {A0EA2633-C84C-4360-9B56-0273137518A3}
 		{EDFA1CBB-DE81-402A-818C-E0F77236D2F2} = {37ABAD9A-D081-4343-88E7-5E9E3B7AFFF3}
 		{46651502-C475-4CAD-8900-DC561299952A} = {A0EA2633-C84C-4360-9B56-0273137518A3}
+		{342956EE-406C-4F1B-8AAC-41B9ECA9226A} = {A0EA2633-C84C-4360-9B56-0273137518A3}
 	EndGlobalSection
 EndGlobal

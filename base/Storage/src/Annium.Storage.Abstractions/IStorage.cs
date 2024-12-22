@@ -5,13 +5,8 @@ namespace Annium.Storage.Abstractions;
 
 public interface IStorage
 {
-    Task SetupAsync();
-
-    Task<string[]> ListAsync();
-
-    Task UploadAsync(Stream source, string name);
-
-    Task<Stream> DownloadAsync(string name);
-
-    Task<bool> DeleteAsync(string name);
+    Task<string[]> ListAsync(string prefix = "");
+    Task UploadAsync(Stream source, string path);
+    Task<Stream> DownloadAsync(string path);
+    Task<bool> DeleteAsync(string path);
 }

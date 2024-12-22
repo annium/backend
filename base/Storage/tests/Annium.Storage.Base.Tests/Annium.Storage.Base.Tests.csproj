@@ -7,10 +7,10 @@
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
     </PropertyGroup>
     <ItemGroup>
-        <ProjectReference Include="../../src/Annium.Storage.S3/Annium.Storage.S3.csproj" />
-        <ProjectReference Include="../Annium.Storage.Base.Tests/Annium.Storage.Base.Tests.csproj" />
+        <ProjectReference Include="../../src/Annium.Storage.Abstractions/Annium.Storage.Abstractions.csproj" />
     </ItemGroup>
     <ItemGroup>
+        <PackageReference Include="Annium.Logging.InMemory" />
         <PackageReference Include="Annium.Testing" />
         <PackageReference Include="coverlet.collector" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" />
