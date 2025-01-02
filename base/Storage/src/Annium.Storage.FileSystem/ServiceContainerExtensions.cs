@@ -17,7 +17,9 @@ public static class ServiceContainerExtensions
     )
     {
         container
-            .Add<IStorage>((sp, k) => new Storage.FileSystem.Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>()))
+            .Add<IStorage>(
+                (sp, k) => new Storage.FileSystem.Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>())
+            )
             .AsKeyedSelf(key)
             .Singleton();
 

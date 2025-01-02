@@ -4,5 +4,5 @@ public enum ConnectionSendStatus
 {
     Ok,
     Canceled,
-    Closed
+    Closed,
 }

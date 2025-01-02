@@ -13,7 +13,10 @@ public static class ServiceContainerExtensions
         bool isDefault = false
     )
     {
-        container.Add<IStorage>((sp, _) => new Storage.InMemory.Internal.Storage(sp.Resolve<ILogger>())).AsKeyedSelf(key).Singleton();
+        container
+            .Add<IStorage>((sp, _) => new Storage.InMemory.Internal.Storage(sp.Resolve<ILogger>()))
+            .AsKeyedSelf(key)
+            .Singleton();
 
         if (isDefault)
             container.Add<IStorage>(sp => sp.ResolveKeyed<IStorage>(key)).AsSelf().Singleton();

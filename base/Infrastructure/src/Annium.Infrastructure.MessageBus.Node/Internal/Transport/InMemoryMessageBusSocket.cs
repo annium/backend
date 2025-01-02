@@ -24,7 +24,7 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
             {
                 AllowSynchronousContinuations = true,
                 SingleWriter = false,
-                SingleReader = true
+                SingleReader = true,
             }
         );
         _messageWriter = taskChannel.Writer;

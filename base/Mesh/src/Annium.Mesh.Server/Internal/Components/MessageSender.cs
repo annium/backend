@@ -87,7 +87,7 @@ internal class MessageSender : IMessageSender, ILogSubject
             Version = version,
             Type = messageType,
             Action = action,
-            Data = _serializer.SerializeData(dataType, data)
+            Data = _serializer.SerializeData(dataType, data),
         };
         var raw = _serializer.SerializeMessage(message);
 

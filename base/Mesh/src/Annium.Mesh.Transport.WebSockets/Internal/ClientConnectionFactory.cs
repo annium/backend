@@ -24,7 +24,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
         var clientSocketOptions = new ClientWebSocketOptions
         {
             ConnectionMonitor = _config.ConnectionMonitor,
-            ReconnectDelay = _config.ReconnectDelay
+            ReconnectDelay = _config.ReconnectDelay,
         };
         var clientSocket = new ClientWebSocket(clientSocketOptions, _logger);
 
@@ -33,7 +33,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
 
     public Task<IManagedConnection> CreateAsync(WebSocket context)
     {
-        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor, };
+        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor };
         var serverSocket = new ServerWebSocket(context, serverSocketOptions, _logger);
 
         var connection = new ManagedConnection(serverSocket, _logger);

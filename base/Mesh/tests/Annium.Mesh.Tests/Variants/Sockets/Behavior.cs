@@ -24,11 +24,11 @@ public class Behavior : IBehavior, ILogSubject
         container.AddMeshSocketsClientTransport(sp => new ClientTransportConfiguration
         {
             Uri = new Uri($"tcp://127.0.0.1:{sp.Resolve<TransportConfiguration>().Port}"),
-            ConnectionMonitor = new ConnectionMonitorOptions { Factory = sp.Resolve<IConnectionMonitorFactory>() }
+            ConnectionMonitor = new ConnectionMonitorOptions { Factory = sp.Resolve<IConnectionMonitorFactory>() },
         });
         container.AddMeshSocketsServerTransport(sp => new ServerTransportConfiguration
         {
-            ConnectionMonitor = new ConnectionMonitorOptions { Factory = sp.Resolve<IConnectionMonitorFactory>() }
+            ConnectionMonitor = new ConnectionMonitorOptions { Factory = sp.Resolve<IConnectionMonitorFactory>() },
         });
         container.AddSocketServerMeshHandler();
 

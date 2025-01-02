@@ -42,7 +42,7 @@ internal static class MetadataProvider
         {
             PropertyInfo property => property.PropertyType,
             FieldInfo field => field.FieldType,
-            _ => throw new InvalidOperationException($"Member {member} is not supported")
+            _ => throw new InvalidOperationException($"Member {member} is not supported"),
         };
         var column = schema.GetAttribute<ColumnAttribute>(type, member);
 

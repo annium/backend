@@ -12,6 +12,6 @@ internal static class ConnectionSendStatusMap
             SocketSendStatus.Ok => ConnectionSendStatus.Ok,
             SocketSendStatus.Canceled => ConnectionSendStatus.Canceled,
             SocketSendStatus.Closed => ConnectionSendStatus.Closed,
-            _ => throw new InvalidOperationException($"Unsupported {nameof(SocketSendStatus)}: {status}")
+            _ => throw new InvalidOperationException($"Unsupported {nameof(SocketSendStatus)}: {status}"),
         };
 }

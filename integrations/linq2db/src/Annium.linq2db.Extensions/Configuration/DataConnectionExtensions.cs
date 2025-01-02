@@ -21,7 +21,7 @@ public static class DataConnectionExtensions
             QueryType.Insert => dc.ProcessInsertTimeQuery(statement, timeProvider),
             QueryType.Update => dc.ProcessUpdateTimeQuery(statement, timeProvider),
             QueryType.InsertOrUpdate => dc.ProcessInsertOrUpdateTimeQuery(statement, timeProvider),
-            _ => statement
+            _ => statement,
         };
     }
 

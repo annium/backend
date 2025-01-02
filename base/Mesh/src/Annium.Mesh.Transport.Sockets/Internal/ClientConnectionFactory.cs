@@ -25,7 +25,7 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
         {
             Mode = SocketMode.Messaging,
             ConnectionMonitor = _config.ConnectionMonitor,
-            ReconnectDelay = _config.ReconnectDelay
+            ReconnectDelay = _config.ReconnectDelay,
         };
         var clientSocket = new ClientSocket(clientSocketOptions, _logger);
 

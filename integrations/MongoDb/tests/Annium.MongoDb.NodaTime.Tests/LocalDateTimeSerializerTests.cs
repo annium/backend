@@ -29,7 +29,7 @@ public class LocalDateTimeSerializerTests
     {
         var obj = new Test
         {
-            LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple)
+            LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple),
         };
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 

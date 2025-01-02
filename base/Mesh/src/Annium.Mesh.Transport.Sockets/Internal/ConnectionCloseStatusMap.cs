@@ -12,6 +12,6 @@ internal static class ConnectionCloseStatusMap
             SocketCloseStatus.ClosedLocal => ConnectionCloseStatus.ClosedLocal,
             SocketCloseStatus.ClosedRemote => ConnectionCloseStatus.ClosedRemote,
             SocketCloseStatus.Error => ConnectionCloseStatus.Error,
-            _ => throw new InvalidOperationException($"Unsupported {nameof(SocketCloseStatus)}: {status}")
+            _ => throw new InvalidOperationException($"Unsupported {nameof(SocketCloseStatus)}: {status}"),
         };
 }

@@ -19,7 +19,7 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<WebSock
 
     public Task<IServerConnection> CreateAsync(WebSocket socket)
     {
-        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor, };
+        var serverSocketOptions = new ServerWebSocketOptions { ConnectionMonitor = _config.ConnectionMonitor };
 
         var serverSocket = new ServerWebSocket(socket, serverSocketOptions, _logger);
         var connection = new ServerConnection(serverSocket, _logger);

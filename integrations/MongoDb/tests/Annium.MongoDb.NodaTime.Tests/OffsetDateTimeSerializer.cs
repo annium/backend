@@ -31,7 +31,7 @@ public class OffsetDateTimeSerializerTests
         {
             OffsetDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5)
                 .WithOffset(Offset.FromHours(1))
-                .WithCalendar(CalendarSystem.PersianSimple)
+                .WithCalendar(CalendarSystem.PersianSimple),
         };
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 

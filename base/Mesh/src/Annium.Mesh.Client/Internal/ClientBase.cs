@@ -270,7 +270,7 @@ internal abstract class ClientBase : IClientBase
                 Version = version,
                 Type = MessageType.Request,
                 Action = Convert.ToInt32(action),
-                Data = data
+                Data = data,
             };
             if (!await SendInternal(message))
                 return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), default);

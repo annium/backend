@@ -67,7 +67,7 @@ public static class MappingSchemaExtensions
                                     Expression.Lambda(
                                         Expression.PropertyOrField(typeParameter, column.Member.Name),
                                         typeParameter
-                                    )
+                                    ),
                                 }
                             )!;
                         var hasConversionFunc = propertyMappingBuilder

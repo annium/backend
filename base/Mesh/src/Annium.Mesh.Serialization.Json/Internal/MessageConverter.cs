@@ -37,7 +37,7 @@ internal class MessageConverter : JsonConverter<Message>
                     Version = version,
                     Type = type,
                     Action = action,
-                    Data = data
+                    Data = data,
                 };
 
                 return message;

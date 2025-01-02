@@ -68,7 +68,7 @@ internal static class MappingSchemaExtensions
                                     Expression.Lambda(
                                         Expression.PropertyOrField(typeParameter, column.Member.Name),
                                         typeParameter
-                                    )
+                                    ),
                                 }
                             )!;
                         var isNotColumn = propertyMappingBuilder

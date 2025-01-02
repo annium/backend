@@ -4,5 +4,5 @@ public enum ConnectionCloseStatus
 {
     ClosedLocal,
     ClosedRemote,
-    Error
+    Error,
 }
