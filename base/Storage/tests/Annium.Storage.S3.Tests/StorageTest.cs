@@ -6,7 +6,7 @@ using Annium.Storage.Base.Tests;
 
 namespace Annium.Storage.S3.Tests;
 
-public class StorageTest : StorageTestBase, IAsyncDisposable
+internal class StorageTest : StorageTestBase, IAsyncDisposable
 {
     protected override IStorage GetStorage()
     {
