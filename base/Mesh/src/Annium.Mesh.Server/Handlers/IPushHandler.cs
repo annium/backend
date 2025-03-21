@@ -9,5 +9,5 @@ public interface IPushHandler<TAction, TMessage> : IHandlerBase<TAction>
     where TAction : struct, Enum
     where TMessage : notnull
 {
-    public Task RunAsync(IPushContext<TMessage> ctx, CancellationToken ct);
+    Task RunAsync(IPushContext<TMessage> ctx, CancellationToken ct);
 }
