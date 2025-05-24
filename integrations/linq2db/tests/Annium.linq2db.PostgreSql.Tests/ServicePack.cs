@@ -10,13 +10,14 @@ internal class ServicePack : ServicePackBase
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
         container.AddPostgreSql<Connection>();
-        container.Add(Database.Config).AsSelf().Singleton();
+        container.Add<Database>().AsSelf().Singleton();
+        container.Add(sp => sp.Resolve<Database>().Config).AsSelf().Singleton();
     }
 
     public override void Setup(IServiceProvider provider)
     {
 #pragma warning disable VSTHRD002
-        Database.AcquireAsync().GetAwaiter().GetResult();
+        provider.Resolve<Database>().InitAsync().GetAwaiter().GetResult();
 #pragma warning restore VSTHRD002
     }
 }

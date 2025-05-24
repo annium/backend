@@ -1,15 +1,14 @@
 using System;
 using System.Reflection;
-using System.Threading;
 using System.Threading.Tasks;
 using DbUp;
 using Testcontainers.PostgreSql;
 
 namespace Annium.linq2db.PostgreSql.Tests.Db;
 
-public static class Database
+public class Database
 {
-    public static PostgreSqlConfiguration Config { get; } =
+    public PostgreSqlConfiguration Config { get; } =
         new()
         {
             Database = "db",
@@ -17,28 +16,20 @@ public static class Database
             Password = "postgres",
         };
 
-    private static readonly PostgreSqlContainer _db;
-    private static readonly TaskCompletionSource _initTcs = new();
-    private static volatile int _refs;
+    private readonly PostgreSqlContainer _db;
 
-    static Database()
+    public Database()
     {
         _db = new PostgreSqlBuilder()
-            .WithImage("registry.annium.com/postgres:16.0-alpine")
+            .WithImage("postgres:16-alpine")
             .WithDatabase(Config.Database)
             .WithUsername(Config.User)
             .WithPassword(Config.Password)
             .Build();
     }
 
-    public static async Task AcquireAsync()
+    public async Task InitAsync()
     {
-        if (Interlocked.Increment(ref _refs) > 1)
-        {
-            await _initTcs.Task;
-            return;
-        }
-
         await _db.StartAsync();
         Config.Host = _db.Hostname;
         Config.Port = _db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
@@ -51,6 +42,5 @@ public static class Database
             .PerformUpgrade();
         if (!result.Successful)
             throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
-        _initTcs.SetResult();
     }
 }

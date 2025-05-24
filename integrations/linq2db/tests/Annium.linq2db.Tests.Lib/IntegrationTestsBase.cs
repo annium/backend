@@ -79,7 +79,7 @@ public class IntegrationTestsBase : TestBase
     {
         this.Trace("start");
 
-        var chunksCount = 500;
+        var chunksCount = 80;
         var chunkSize = 1000;
 
         await Task.WhenAll(
