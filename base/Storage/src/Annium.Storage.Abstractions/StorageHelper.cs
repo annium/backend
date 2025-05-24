@@ -5,8 +5,10 @@ namespace Annium.Storage.Abstractions;
 
 public static class StorageHelper
 {
-    private static readonly Regex _nameRe =
-        new(@"^(?:[A-z0-9]+|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$", RegexOptions.Compiled | RegexOptions.Singleline);
+    private static readonly Regex _nameRe = new(
+        @"^(?:[A-z0-9]+|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$",
+        RegexOptions.Compiled | RegexOptions.Singleline
+    );
 
     public static void VerifyRoot(string root)
     {

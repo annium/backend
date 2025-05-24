@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>true</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
-        <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Architecture.Http" />
-        <PackageReference Include="Annium.Serialization.Json" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
+    <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Architecture.Http" />
+    <PackageReference Include="Annium.Serialization.Json" />
+  </ItemGroup>
 </Project>

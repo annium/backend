@@ -1,10 +1,9 @@
 setup:
-	xx remote restore -user $(user) -password $(pass)
 	dotnet tool restore
 
 format:
+	dotnet csharpier format .
 	xx format -sc -ic
-	dotnet csharpier .
 
 format-full: format
 	dotnet format style
@@ -15,6 +14,7 @@ update:
 
 clean:
 	xx clean -sc -ic
+	find . -type f -name '*.nupkg' | xargs rm
 
 buildNumber?=0
 build:

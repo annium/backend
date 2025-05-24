@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>true</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Architecture.Base" />
-        <PackageReference Include="Annium.Data.Operations" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Architecture.Base" />
+    <PackageReference Include="Annium.Data.Operations" />
+  </ItemGroup>
 </Project>

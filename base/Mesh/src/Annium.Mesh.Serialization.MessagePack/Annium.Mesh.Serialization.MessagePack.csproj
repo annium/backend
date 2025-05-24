@@ -1,15 +1,15 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>false</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../Annium.Mesh.Serialization.Abstractions/Annium.Mesh.Serialization.Abstractions.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Data.Operations.Serialization.MessagePack" />
-        <PackageReference Include="Annium.Serialization.MessagePack" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Annium.Mesh.Serialization.Abstractions/Annium.Mesh.Serialization.Abstractions.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Data.Operations.Serialization.MessagePack" />
+    <PackageReference Include="Annium.Serialization.MessagePack" />
+  </ItemGroup>
 </Project>

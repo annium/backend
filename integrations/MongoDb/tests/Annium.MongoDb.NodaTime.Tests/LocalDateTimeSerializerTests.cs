@@ -42,9 +42,8 @@ public class LocalDateTimeSerializerTests
     {
         Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", "bleh"))))
             .Throws<FormatException>();
-        Wrap.It(
-                () =>
-                    BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", BsonNull.Value)))
+        Wrap.It(() =>
+                BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("LocalDateTime", BsonNull.Value)))
             )
             .Throws<FormatException>();
     }

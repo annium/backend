@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>true</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Data.Models" />
-        <PackageReference Include="Annium.Serialization.Abstractions" />
-        <PackageReference Include="linq2db" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Data.Models" />
+    <PackageReference Include="Annium.Serialization.Abstractions" />
+    <PackageReference Include="linq2db" />
+  </ItemGroup>
 </Project>

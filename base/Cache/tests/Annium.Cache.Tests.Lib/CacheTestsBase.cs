@@ -20,8 +20,7 @@ public class CacheTestsBase : TestBase
     protected async Task GetOrCreateAsync_Default_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>()
-            .UseManagedTime();
+        Get<ITimeProviderSwitcher>().UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var key = Guid.NewGuid();
         var options = CacheOptions.WithSlidingExpiration(Duration.FromMinutes(1));
@@ -39,8 +38,7 @@ public class CacheTestsBase : TestBase
     protected async Task GetOrCreateAsync_AbsoluteExpiration_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>()
-            .UseManagedTime();
+        Get<ITimeProviderSwitcher>().UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
@@ -76,8 +74,7 @@ public class CacheTestsBase : TestBase
     protected async Task GetOrCreateAsync_SlidingExpiration_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>()
-            .UseManagedTime();
+        Get<ITimeProviderSwitcher>().UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());
@@ -111,8 +108,7 @@ public class CacheTestsBase : TestBase
     protected async Task RemoveAsync_Base()
     {
         // arrange
-        Get<ITimeProviderSwitcher>()
-            .UseManagedTime();
+        Get<ITimeProviderSwitcher>().UseManagedTime();
         var cache = Get<ICache<Guid, Page>>();
         var timeManager = Get<ITimeManager>();
         timeManager.SetNow(SystemClock.Instance.GetCurrentInstant());

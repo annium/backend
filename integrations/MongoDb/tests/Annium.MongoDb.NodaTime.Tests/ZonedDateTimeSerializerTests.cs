@@ -49,9 +49,8 @@ public class ZonedDateTimeSerializerTests
     {
         Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", "bleh"))))
             .Throws<FormatException>();
-        Wrap.It(
-                () =>
-                    BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value)))
+        Wrap.It(() =>
+                BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("ZonedDateTime", BsonNull.Value)))
             )
             .Throws<FormatException>();
     }

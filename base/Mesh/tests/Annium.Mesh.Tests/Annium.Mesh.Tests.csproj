@@ -1,27 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Serialization.MessagePack/Annium.Mesh.Serialization.MessagePack.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Server.InMemory/Annium.Mesh.Server.InMemory.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Server.Sockets/Annium.Mesh.Server.Sockets.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.csproj" />
-        <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Transport.Sockets/Annium.Mesh.Transport.Sockets.csproj" />
-        <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Testing" />
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="xunit" />
-        <PackageReference Include="xunit.runner.visualstudio" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Serialization.MessagePack/Annium.Mesh.Serialization.MessagePack.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Server.InMemory/Annium.Mesh.Server.InMemory.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Server.Sockets/Annium.Mesh.Server.Sockets.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.csproj" />
+    <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Server/Annium.Mesh.Server.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Transport.Sockets/Annium.Mesh.Transport.Sockets.csproj" />
+    <ProjectReference Include="../../src/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Testing" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
 </Project>

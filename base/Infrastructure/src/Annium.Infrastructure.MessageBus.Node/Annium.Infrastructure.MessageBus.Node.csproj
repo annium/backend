@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>true</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
-    </PropertyGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Data.Operations" />
-        <PackageReference Include="Annium.Extensions.Reactive" />
-        <PackageReference Include="Annium.Serialization.Json" />
-        <PackageReference Include="NetMQ" />
-        <PackageReference Include="System.Text.Json" />
-        <PackageReference Include="System.Threading.Channels" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>true</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Data.Operations" />
+    <PackageReference Include="Annium.Extensions.Reactive" />
+    <PackageReference Include="Annium.Serialization.Json" />
+    <PackageReference Include="NetMQ" />
+    <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="System.Threading.Channels" />
+  </ItemGroup>
 </Project>

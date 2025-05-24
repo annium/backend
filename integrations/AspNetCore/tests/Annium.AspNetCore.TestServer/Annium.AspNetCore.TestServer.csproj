@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Exe</OutputType>
-        <IsPackable>false</IsPackable>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
-        <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
-        <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
-        <ProjectReference Include="../../src/Annium.AspNetCore.Mesh/Annium.AspNetCore.Mesh.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="Annium.Architecture.CQRS" />
-        <PackageReference Include="Annium.Logging.Microsoft" />
-        <PackageReference Include="Annium.Net.Http" />
-        <PackageReference Include="Annium.Testing" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../../../base/Infrastructure/src/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.csproj" />
+    <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.csproj" />
+    <ProjectReference Include="../../src/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.csproj" />
+    <ProjectReference Include="../../src/Annium.AspNetCore.Mesh/Annium.AspNetCore.Mesh.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Architecture.CQRS" />
+    <PackageReference Include="Annium.Logging.Microsoft" />
+    <PackageReference Include="Annium.Net.Http" />
+    <PackageReference Include="Annium.Testing" />
+  </ItemGroup>
 </Project>

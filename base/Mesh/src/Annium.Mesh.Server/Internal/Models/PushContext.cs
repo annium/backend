@@ -63,8 +63,8 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
     private void SendInternal(TMessage msg)
     {
         this.Trace("cn {id}: schedule send of {message}", _cid, msg);
-        _executor.Schedule(
-            async () => await _sender.SendAsync(_cid, _cn, _actionKey, MessageType.Push, msg, _ct).ConfigureAwait(false)
+        _executor.Schedule(async () =>
+            await _sender.SendAsync(_cid, _cn, _actionKey, MessageType.Push, msg, _ct).ConfigureAwait(false)
         );
     }
 }

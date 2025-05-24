@@ -44,11 +44,8 @@ public class OffsetDateTimeSerializerTests
     {
         Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", "bleh"))))
             .Throws<FormatException>();
-        Wrap.It(
-                () =>
-                    BsonSerializer.Deserialize<Test>(
-                        new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value))
-                    )
+        Wrap.It(() =>
+                BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("OffsetDateTime", BsonNull.Value)))
             )
             .Throws<FormatException>();
     }

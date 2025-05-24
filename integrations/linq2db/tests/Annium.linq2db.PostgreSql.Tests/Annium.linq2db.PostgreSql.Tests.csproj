@@ -1,24 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <Solutions>Annium.Backend</Solutions>
-        <OutputType>Library</OutputType>
-        <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    </PropertyGroup>
-    <ItemGroup>
-        <ProjectReference Include="../../src/Annium.linq2db.PostgreSql/Annium.linq2db.PostgreSql.csproj" />
-        <ProjectReference Include="../Annium.linq2db.Tests.Lib/Annium.linq2db.Tests.Lib.csproj" />
-    </ItemGroup>
-    <ItemGroup>
-        <PackageReference Include="coverlet.collector" />
-        <PackageReference Include="dbup-postgresql" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" />
-        <PackageReference Include="Testcontainers.PostgreSql" />
-        <PackageReference Include="xunit" />
-        <PackageReference Include="xunit.runner.visualstudio" />
-    </ItemGroup>
-    <ItemGroup>
-        <EmbeddedResource Include="Db/Migrations/*.sql" />
-    </ItemGroup>
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Library</OutputType>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Annium.linq2db.PostgreSql/Annium.linq2db.PostgreSql.csproj" />
+    <ProjectReference Include="../Annium.linq2db.Tests.Lib/Annium.linq2db.Tests.Lib.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="dbup-postgresql" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Db/Migrations/*.sql" />
+  </ItemGroup>
 </Project>
