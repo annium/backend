@@ -39,14 +39,16 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
 
     public Task InitializeAsync()
     {
-        _serverTask = _behavior.Value.RunServer(_serverCts.Token);
+        _serverTask = _behavior.Value.RunServerAsync(_serverCts.Token);
         return Task.CompletedTask;
     }
 
     public async Task DisposeAsync()
     {
         await _serverCts.CancelAsync();
+#pragma warning disable VSTHRD003
         await _serverTask;
+#pragma warning restore VSTHRD003
     }
 
     protected async Task<TestServerClient> GetClient()

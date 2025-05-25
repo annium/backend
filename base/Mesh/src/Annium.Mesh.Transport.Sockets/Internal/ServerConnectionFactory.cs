@@ -27,13 +27,13 @@ internal sealed class ServerConnectionFactory : IServerConnectionFactory<Socket>
             ConnectionMonitor = _config.ConnectionMonitor,
         };
 
-        var stream = await GetStream(socket);
+        var stream = await GetStreamAsync(socket);
         var serverSocket = new ServerSocket(stream, serverSocketOptions, _logger);
 
         return new ServerConnection(serverSocket, _logger);
     }
 
-    private async Task<Stream> GetStream(Socket socket)
+    private async Task<Stream> GetStreamAsync(Socket socket)
     {
         var networkStream = new NetworkStream(socket);
 

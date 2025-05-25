@@ -15,7 +15,7 @@ internal class MessageBusClient : IMessageBusClient
         _node = node;
     }
 
-    public async Task<IResult<T>> Fetch<T>(string topic, object request, CancellationToken ct = default)
+    public async Task<IResult<T>> FetchAsync<T>(string topic, object request, CancellationToken ct = default)
     {
         var id = Guid.NewGuid();
 

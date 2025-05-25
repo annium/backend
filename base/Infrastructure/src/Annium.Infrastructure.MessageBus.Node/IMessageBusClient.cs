@@ -6,5 +6,5 @@ namespace Annium.Infrastructure.MessageBus.Node;
 
 public interface IMessageBusClient
 {
-    Task<IResult<T>> Fetch<T>(string topic, object request, CancellationToken ct = default);
+    Task<IResult<T>> FetchAsync<T>(string topic, object request, CancellationToken ct = default);
 }

@@ -7,5 +7,5 @@ namespace Annium.Mesh.Server.Handlers;
 public interface IBroadcaster<TMessage>
     where TMessage : notnull
 {
-    Task Run(IBroadcastContext<TMessage> context, CancellationToken ct);
+    Task RunAsync(IBroadcastContext<TMessage> context, CancellationToken ct);
 }

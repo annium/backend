@@ -31,7 +31,7 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
         _messageReader = taskChannel.Reader;
 
         _observable = ObservableExt
-            .StaticSyncInstance<string>(CreateObservable, _observableCts.Token, logger)
+            .StaticSyncInstance<string>(CreateObservableAsync, _observableCts.Token, logger)
             .TrackCompletion(logger);
         _disposable = Disposable.AsyncBox(logger);
         _logger = logger;
@@ -48,7 +48,7 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
 
     public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-    private async Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
+    private async Task<Func<Task>> CreateObservableAsync(ObserverContext<string> ctx)
     {
         try
         {

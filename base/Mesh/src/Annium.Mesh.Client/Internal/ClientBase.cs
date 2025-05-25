@@ -85,7 +85,7 @@ internal abstract class ClientBase : IClientBase
         CancellationToken ct = default
     )
     {
-        return FetchInternal(version, action, request, ct);
+        return FetchInternalAsync(version, action, request, ct);
     }
 
     // request -> response
@@ -97,7 +97,7 @@ internal abstract class ClientBase : IClientBase
     )
         where TData : notnull
     {
-        return FetchInternal(version, action, request, default(TData)!, ct);
+        return FetchInternalAsync(version, action, request, default(TData)!, ct);
     }
 
     // request -> response with default value
@@ -110,7 +110,7 @@ internal abstract class ClientBase : IClientBase
     )
         where TData : notnull
     {
-        return FetchInternal(version, action, request, defaultValue, ct);
+        return FetchInternalAsync(version, action, request, defaultValue, ct);
     }
 
     // // init subscription
@@ -201,19 +201,19 @@ internal abstract class ClientBase : IClientBase
 
     protected abstract void HandleConnectionReady();
 
-    private async Task<IStatusResult<OperationStatus>> FetchInternal(
+    private async Task<IStatusResult<OperationStatus>> FetchInternalAsync(
         ushort version,
         Enum action,
         object request,
         CancellationToken ct
     )
     {
-        var (result, response) = await FetchRaw<IStatusResult<OperationStatus>>(version, action, request, ct);
+        var (result, response) = await FetchRawAsync<IStatusResult<OperationStatus>>(version, action, request, ct);
 
         return response ?? result;
     }
 
-    private async Task<IStatusResult<OperationStatus, TData?>> FetchInternal<TData>(
+    private async Task<IStatusResult<OperationStatus, TData?>> FetchInternalAsync<TData>(
         ushort version,
         Enum action,
         object request,
@@ -222,12 +222,17 @@ internal abstract class ClientBase : IClientBase
     )
         where TData : notnull
     {
-        var (result, response) = await FetchRaw<IStatusResult<OperationStatus, TData?>>(version, action, request, ct);
+        var (result, response) = await FetchRawAsync<IStatusResult<OperationStatus, TData?>>(
+            version,
+            action,
+            request,
+            ct
+        );
 
         return response ?? Result.Status<OperationStatus, TData?>(result.Status, defaultValue).Join(result);
     }
 
-    private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRaw<TResponse>(
+    private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRawAsync<TResponse>(
         ushort version,
         Enum action,
         object request,
@@ -272,7 +277,7 @@ internal abstract class ClientBase : IClientBase
                 Action = Convert.ToInt32(action),
                 Data = data,
             };
-            if (!await SendInternal(message))
+            if (!await SendInternalAsync(message))
                 return (Result.Status(OperationStatus.NetworkError).Error("Socket is closed"), default);
 
             var response = (TResponse)await tcs.Task;
@@ -292,7 +297,7 @@ internal abstract class ClientBase : IClientBase
         }
     }
 
-    private async Task<bool> SendInternal(Message message)
+    private async Task<bool> SendInternalAsync(Message message)
     {
         this.Trace("send message {message}", message);
         var result = await _connection.SendAsync(_serializer.SerializeMessage(message), CancellationToken.None);

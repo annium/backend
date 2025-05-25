@@ -7,5 +7,5 @@ namespace Annium.Mesh.Tests;
 public interface IBehavior
 {
     static abstract void Register(IServiceContainer container);
-    Task RunServer(CancellationToken ct);
+    Task RunServerAsync(CancellationToken ct);
 }

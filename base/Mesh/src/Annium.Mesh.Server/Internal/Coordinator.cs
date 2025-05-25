@@ -60,7 +60,7 @@ internal class Coordinator : ICoordinator, ILogSubject
         finally
         {
             this.Trace("Release complete {id}", cid);
-            await _connectionTracker.Release(cid);
+            await _connectionTracker.ReleaseAsync(cid);
             connection.Disconnect();
         }
 

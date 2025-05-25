@@ -39,7 +39,7 @@ public class Behavior : IBehavior, ILogSubject
         _config = config;
     }
 
-    public Task RunServer(CancellationToken ct)
+    public Task RunServerAsync(CancellationToken ct)
     {
         this.Trace("start, bind server to port {port}", _config.Port);
         var server = ServerBuilder.New(_sp, _config.Port).WithMeshHandler().Build();

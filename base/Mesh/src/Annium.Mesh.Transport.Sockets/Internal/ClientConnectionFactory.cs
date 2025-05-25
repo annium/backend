@@ -40,13 +40,13 @@ internal sealed class ClientConnectionFactory : IClientConnectionFactory, IClien
             ConnectionMonitor = _config.ConnectionMonitor,
         };
 
-        var stream = await GetStream(context);
+        var stream = await GetStreamAsync(context);
         var serverSocket = new ServerSocket(stream, serverSocketOptions, _logger);
 
         return new ManagedConnection(serverSocket, _logger);
     }
 
-    private async Task<Stream> GetStream(Socket socket)
+    private async Task<Stream> GetStreamAsync(Socket socket)
     {
         var networkStream = new NetworkStream(socket);
 

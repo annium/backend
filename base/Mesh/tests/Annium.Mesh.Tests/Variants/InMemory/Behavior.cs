@@ -23,7 +23,7 @@ public class Behavior : IBehavior
         _server = server;
     }
 
-    public async Task RunServer(CancellationToken ct)
+    public async Task RunServerAsync(CancellationToken ct)
     {
         await _server.RunAsync(ct);
     }

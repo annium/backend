@@ -35,31 +35,31 @@ internal class ExceptionMiddleware : ILogSubject
         }
         catch (ValidationException e)
         {
-            await _helper.WriteResponse(context, HttpStatusCode.BadRequest, e.Result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.BadRequest, e.Result);
         }
         catch (ForbiddenException e)
         {
-            await _helper.WriteResponse(context, HttpStatusCode.Forbidden, e.Result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.Forbidden, e.Result);
         }
         catch (NotFoundException e)
         {
-            await _helper.WriteResponse(context, HttpStatusCode.NotFound, e.Result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.NotFound, e.Result);
         }
         catch (ConflictException e)
         {
-            await _helper.WriteResponse(context, HttpStatusCode.Conflict, e.Result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.Conflict, e.Result);
         }
         catch (ServerException e)
         {
             this.Error(e);
 
-            await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, e.Result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.InternalServerError, e.Result);
         }
         catch (Exception e)
         {
             this.Error(e);
             var result = Result.Status(OperationStatus.UncaughtError).Error(e.ToString());
-            await _helper.WriteResponse(context, HttpStatusCode.InternalServerError, result);
+            await _helper.WriteResponseAsync(context, HttpStatusCode.InternalServerError, result);
         }
     }
 }

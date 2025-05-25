@@ -83,10 +83,12 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 
             // wait until connection complete
             this.Trace("cn {id} - wait until connection complete (handlers & pushers)", _cid);
+#pragma warning disable VSTHRD003
             await Task.WhenAll(_tcs.Task, pushTask);
+#pragma warning restore VSTHRD003
 
             this.Trace("cn {id} - cleanup connection-bound stores", _cid);
-            await Task.WhenAll(_connectionBoundStores.Select(x => x.Cleanup(_cid)));
+            await Task.WhenAll(_connectionBoundStores.Select(x => x.CleanupAsync(_cid)));
         }
         catch (Exception e)
         {
@@ -178,7 +180,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         async () =>
         {
             this.Trace("cn {id} - start {msg}", _cid, message);
-            await _messageHandler.HandleMessage(_cid, _cn, message, _ct);
+            await _messageHandler.HandleMessageAsync(_cid, _cn, message, _ct);
             this.Trace("cn {id} - done {msg}", _cid, message);
         };
 }

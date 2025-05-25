@@ -17,7 +17,7 @@ internal class Helper
         _mediaType = mediaType;
     }
 
-    public Task WriteResponse(HttpContext context, HttpStatusCode status, IResultBase result)
+    public Task WriteResponseAsync(HttpContext context, HttpStatusCode status, IResultBase result)
     {
         context.Response.StatusCode = (int)status;
         context.Response.ContentType = _mediaType;

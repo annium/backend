@@ -31,7 +31,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
         _subscriber.SubscribeToAnyTopic();
 
         _observable = ObservableExt
-            .StaticAsyncInstance<string>(CreateObservable, _observableCts.Token, logger)
+            .StaticAsyncInstance<string>(CreateObservableAsync, _observableCts.Token, logger)
             .TrackCompletion(logger);
         _logger = logger;
     }
@@ -47,7 +47,7 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
 
     public IDisposable Subscribe(IObserver<string> observer) => _observable.Subscribe(observer);
 
-    private Task<Func<Task>> CreateObservable(ObserverContext<string> ctx)
+    private Task<Func<Task>> CreateObservableAsync(ObserverContext<string> ctx)
     {
         try
         {

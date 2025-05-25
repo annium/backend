@@ -14,8 +14,8 @@ public static class CacheExtensions
         where TKey : IEquatable<TKey>
         where TValue : notnull
     {
-        static ValueTask<TValue> Factory(TKey key, Func<TKey, ValueTask<TValue>> factory) => factory(key);
+        static ValueTask<TValue> FactoryAsync(TKey key, Func<TKey, ValueTask<TValue>> factory) => factory(key);
 
-        return cache.GetOrCreateAsync(key, Factory, factory, options);
+        return cache.GetOrCreateAsync(key, FactoryAsync, factory, options);
     }
 }

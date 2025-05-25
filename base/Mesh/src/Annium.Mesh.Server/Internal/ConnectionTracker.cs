@@ -80,7 +80,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         }
     }
 
-    public async Task Release(Guid id)
+    public async Task ReleaseAsync(Guid id)
     {
         // can be called after disposing starts, but invalid, if already disposed
         EnsureNotDisposed();
@@ -100,7 +100,9 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         cnRef.TryDispose();
 
         this.Trace("cn {id} - wait until can be released", id);
+#pragma warning disable VSTHRD003
         await cnRef.CanBeReleased;
+#pragma warning restore VSTHRD003
 
         if (_lifetime.Stopping.IsCancellationRequested)
         {
@@ -123,7 +125,9 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
         _isDisposing = true;
 
         this.Trace("start");
+#pragma warning disable VSTHRD003
         await _disposeTcs.Task;
+#pragma warning restore VSTHRD003
         this.Trace("done");
 
         _isDisposed = true;

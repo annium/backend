@@ -23,9 +23,11 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
             _connectionTcs.SetResult();
     }
 
-    public async Task<IReadOnlyCollection<string>> GetKeys(string pattern = "")
+    public async Task<IReadOnlyCollection<string>> GetKeysAsync(string pattern = "")
     {
+#pragma warning disable VSTHRD003
         await ConnectionTask;
+#pragma warning restore VSTHRD003
 
         var keyPattern = string.IsNullOrWhiteSpace(pattern) ? default : new RedisValue(pattern);
         var keys = new HashSet<string>();
@@ -37,18 +39,22 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         return keys;
     }
 
-    public async Task<string?> Get(string key)
+    public async Task<string?> GetAsync(string key)
     {
+#pragma warning disable VSTHRD003
         await ConnectionTask;
+#pragma warning restore VSTHRD003
 
         var value = await _redis.GetDatabase().StringGetAsync(key);
 
         return value.IsNull ? null : value.ToString();
     }
 
-    public async Task<bool> Set(string key, string value, Duration expires = default)
+    public async Task<bool> SetAsync(string key, string value, Duration expires = default)
     {
+#pragma warning disable VSTHRD003
         await ConnectionTask;
+#pragma warning restore VSTHRD003
 
         var result = await _redis
             .GetDatabase()
@@ -57,9 +63,11 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         return result;
     }
 
-    public async Task<bool> Delete(string key)
+    public async Task<bool> DeleteAsync(string key)
     {
+#pragma warning disable VSTHRD003
         await ConnectionTask;
+#pragma warning restore VSTHRD003
 
         var result = await _redis.GetDatabase().KeyDeleteAsync(key);
 

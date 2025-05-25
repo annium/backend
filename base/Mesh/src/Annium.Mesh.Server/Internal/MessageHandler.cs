@@ -35,17 +35,17 @@ internal class MessageHandler : ILogSubject
         _sender = sender;
     }
 
-    public Task HandleMessage(Guid cid, ISendingConnection cn, Message message, CancellationToken ct) =>
+    public Task HandleMessageAsync(Guid cid, ISendingConnection cn, Message message, CancellationToken ct) =>
         message.Type switch
         {
-            MessageType.Request => HandleRequest(cid, cn, message, ct),
-            MessageType.Event => HandleEvent(),
-            MessageType.SubscriptionInit => HandleSubscriptionInit(),
-            MessageType.SubscriptionCancel => HandleSubscriptionCancel(),
+            MessageType.Request => HandleRequestAsync(cid, cn, message, ct),
+            MessageType.Event => HandleEventAsync(),
+            MessageType.SubscriptionInit => HandleSubscriptionInitAsync(),
+            MessageType.SubscriptionCancel => HandleSubscriptionCancelAsync(),
             _ => Task.CompletedTask,
         };
 
-    private async Task HandleRequest(Guid cid, ISendingConnection cn, Message message, CancellationToken ct)
+    private async Task HandleRequestAsync(Guid cid, ISendingConnection cn, Message message, CancellationToken ct)
     {
         this.Trace("start");
 
@@ -80,19 +80,19 @@ internal class MessageHandler : ILogSubject
         this.Trace("done");
     }
 
-    private async Task HandleEvent()
+    private async Task HandleEventAsync()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionInit()
+    private async Task HandleSubscriptionInitAsync()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
-    private async Task HandleSubscriptionCancel()
+    private async Task HandleSubscriptionCancelAsync()
     {
         this.Trace("ignore");
         await Task.CompletedTask;

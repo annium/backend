@@ -30,13 +30,13 @@ public class IndexController : ServerController
     }
 
     [HttpPost("command")]
-    public Task<IResult> RequestOnly([FromBody] DemoCommand request)
+    public Task<IResult> RequestOnlyAsync([FromBody] DemoCommand request)
     {
         return HandleAsync(request);
     }
 
     [HttpGet("query")]
-    public Task<IResult<DemoResponse>> RequestOnly([FromQuery] DemoQuery request)
+    public Task<IResult<DemoResponse>> RequestOnlyAsync([FromQuery] DemoQuery request)
     {
         return HandleAsync<DemoQuery, DemoResponse>(request);
     }

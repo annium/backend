@@ -33,7 +33,9 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, IAsyncDisposable, ILo
     )
         where TContext : notnull
     {
+#pragma warning disable VSTHRD003
         return await GetOrCreateEntry(key, factory, context, options).Tcs.Task;
+#pragma warning restore VSTHRD003
     }
 
     public ValueTask RemoveAsync(TKey key)

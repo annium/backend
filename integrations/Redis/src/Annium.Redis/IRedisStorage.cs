@@ -6,8 +6,8 @@ namespace Annium.Redis;
 
 public interface IRedisStorage
 {
-    Task<IReadOnlyCollection<string>> GetKeys(string pattern = "");
-    Task<string?> Get(string key);
-    Task<bool> Set(string key, string value, Duration expires = default);
-    Task<bool> Delete(string key);
+    Task<IReadOnlyCollection<string>> GetKeysAsync(string pattern = "");
+    Task<string?> GetAsync(string key);
+    Task<bool> SetAsync(string key, string value, Duration expires = default);
+    Task<bool> DeleteAsync(string key);
 }

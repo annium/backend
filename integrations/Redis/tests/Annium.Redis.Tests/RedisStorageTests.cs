@@ -28,7 +28,7 @@ public class RedisStorageTests : TestBase
         await EnsureDataIsEmpty(storage, key);
 
         // set key without ttl
-        var result = await storage.Set(key, value);
+        var result = await storage.SetAsync(key, value);
         result.IsTrue();
 
         // ensure data is present
@@ -48,7 +48,7 @@ public class RedisStorageTests : TestBase
         await EnsureDataIsEmpty(storage, key);
 
         // set key with ttl
-        var result = await storage.Set(key, value, ttl);
+        var result = await storage.SetAsync(key, value, ttl);
         result.IsTrue();
 
         // ensure data is present
@@ -73,14 +73,14 @@ public class RedisStorageTests : TestBase
         await EnsureDataIsEmpty(storage, key);
 
         // set key
-        var result = await storage.Set(key, value);
+        var result = await storage.SetAsync(key, value);
         result.IsTrue();
 
         // ensure data is present
         await EnsureDataIsPresent(storage, key, value);
 
         // delete key
-        result = await storage.Delete(key);
+        result = await storage.DeleteAsync(key);
         result.IsTrue();
 
         // ensure no data
@@ -110,8 +110,8 @@ public class RedisStorageTests : TestBase
         var pattern = $"*{key[2..10]}*";
 
         // find keys and try get value
-        var keys = await storage.GetKeys(pattern);
-        var value = await storage.Get(key);
+        var keys = await storage.GetKeysAsync(pattern);
+        var value = await storage.GetAsync(key);
 
         return (keys, value);
     }

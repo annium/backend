@@ -5,5 +5,5 @@ namespace Annium.Mesh.Server.Internal.Models;
 
 internal interface IConnectionBoundStore
 {
-    Task Cleanup(Guid connectionId);
+    Task CleanupAsync(Guid connectionId);
 }
