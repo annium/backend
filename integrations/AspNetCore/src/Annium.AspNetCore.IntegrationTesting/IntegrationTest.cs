@@ -5,7 +5,7 @@ using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Testing;
 using Microsoft.Extensions.Hosting;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting;
 

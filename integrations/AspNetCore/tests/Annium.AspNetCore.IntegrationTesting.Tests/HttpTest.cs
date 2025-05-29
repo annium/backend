@@ -4,7 +4,6 @@ using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
@@ -21,7 +20,7 @@ public class HttpTest : IntegrationTestBase
         sharedDataContainer.Value = value;
 
         // act
-        var result = await Http.Get("/").AsAsync<IResult<string>>();
+        var result = await Http.Get("/").AsAsync<IResult<string>>(TestContext.Current.CancellationToken);
 
         // assert
         result.IsNotDefault();

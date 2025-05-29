@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 using Annium.Logging;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.Mesh.Tests.Variants.Base;
 

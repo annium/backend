@@ -6,7 +6,7 @@ using Annium.Cache.Abstractions;
 using Annium.Core.Runtime.Time;
 using Annium.Testing;
 using NodaTime;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.Cache.Tests.Lib;
 

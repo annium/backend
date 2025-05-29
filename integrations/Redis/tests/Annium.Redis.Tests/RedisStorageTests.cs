@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Annium.Testing;
 using NodaTime;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Annium.Redis.Tests;
 
@@ -55,7 +54,7 @@ public class RedisStorageTests : TestBase
         await EnsureDataIsPresent(storage, key, value);
 
         // wait until expiration
-        await Task.Delay((ttl + Duration.FromMilliseconds(1)).ToTimeSpan());
+        await Task.Delay((ttl + Duration.FromMilliseconds(1)).ToTimeSpan(), TestContext.Current.CancellationToken);
 
         // ensure no data
         await EnsureDataIsEmpty(storage, key);

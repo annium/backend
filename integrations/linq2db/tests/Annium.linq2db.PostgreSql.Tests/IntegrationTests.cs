@@ -1,7 +1,6 @@
 using System.Threading.Tasks;
 using Annium.linq2db.Tests.Lib;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Annium.linq2db.PostgreSql.Tests;
 

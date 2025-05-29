@@ -6,7 +6,6 @@ using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Tests.System.Domain;
 using Annium.Testing;
 using Xunit;
-using Xunit.Abstractions;
 using Action = Annium.Mesh.Tests.System.Domain.Action;
 
 namespace Annium.Mesh.Tests;
@@ -37,13 +36,13 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncLifetime
         _behavior = new Lazy<TBehavior>(Get<TBehavior>, isThreadSafe: true);
     }
 
-    public Task InitializeAsync()
+    public ValueTask InitializeAsync()
     {
         _serverTask = _behavior.Value.RunServerAsync(_serverCts.Token);
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 
-    public async Task DisposeAsync()
+    public async ValueTask DisposeAsync()
     {
         await _serverCts.CancelAsync();
 #pragma warning disable VSTHRD003

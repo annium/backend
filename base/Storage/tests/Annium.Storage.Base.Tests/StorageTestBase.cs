@@ -86,7 +86,7 @@ public abstract class StorageTestBase
 
         using (var ms = new MemoryStream())
         {
-            await (await storage.DownloadAsync("download_test")).CopyToAsync(ms);
+            await (await storage.DownloadAsync("download_test")).CopyToAsync(ms, TestContext.Current.CancellationToken);
             result = ms.ToArray();
         }
 

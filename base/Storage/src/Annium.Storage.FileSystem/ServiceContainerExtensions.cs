@@ -2,7 +2,6 @@ using System;
 using Annium.Logging;
 using Annium.Storage.Abstractions;
 using Annium.Storage.FileSystem;
-using Annium.Storage.FileSystem.Internal;
 
 // ReSharper disable once CheckNamespace
 namespace Annium.Core.DependencyInjection;

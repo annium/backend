@@ -7,7 +7,7 @@ using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Tests.System.Domain;
 using Annium.Testing;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.Mesh.Tests.Variants.Base;
 

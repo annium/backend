@@ -7,7 +7,6 @@ using Annium.Data.Operations;
 using Annium.Net.Http;
 using Annium.Testing;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Annium.AspNetCore.Extensions.Tests;
 
@@ -25,7 +24,7 @@ public class ServerControllerTest : IntegrationTest
         // act
         var response = await Http.Post("/command")
             .JsonContent(new DemoCommand { IsOk = false })
-            .AsResponseAsync<IResult>();
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
 
         // assert
         response.StatusCode.Is(HttpStatusCode.BadRequest);
@@ -38,7 +37,7 @@ public class ServerControllerTest : IntegrationTest
         // act
         var response = await Http.Post("/command")
             .JsonContent(new DemoCommand { IsOk = true })
-            .AsResponseAsync<IResult>();
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
 
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);
@@ -49,7 +48,9 @@ public class ServerControllerTest : IntegrationTest
     public async Task Query_NotFound_Works()
     {
         // act
-        var response = await Http.Get("/query").Param(nameof(DemoQuery.Q), 0).AsResponseAsync<IResult<DemoResponse>>();
+        var response = await Http.Get("/query")
+            .Param(nameof(DemoQuery.Q), 0)
+            .AsResponseAsync<IResult<DemoResponse>>(TestContext.Current.CancellationToken);
 
         // assert
         response.StatusCode.Is(HttpStatusCode.NotFound);
@@ -60,7 +61,9 @@ public class ServerControllerTest : IntegrationTest
     public async Task Query_Ok_Works()
     {
         // act
-        var response = await Http.Get("/query").Param(nameof(DemoQuery.Q), 1).AsResponseAsync<IResult<DemoResponse>>();
+        var response = await Http.Get("/query")
+            .Param(nameof(DemoQuery.Q), 1)
+            .AsResponseAsync<IResult<DemoResponse>>(TestContext.Current.CancellationToken);
 
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);

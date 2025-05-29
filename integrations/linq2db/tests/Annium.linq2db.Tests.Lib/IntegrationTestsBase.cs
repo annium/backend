@@ -8,7 +8,7 @@ using Annium.Logging;
 using Annium.Testing;
 using LinqToDB;
 using LinqToDB.Data;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.linq2db.Tests.Lib;
 

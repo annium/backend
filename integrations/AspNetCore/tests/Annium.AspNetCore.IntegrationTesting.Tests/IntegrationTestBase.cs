@@ -1,5 +1,5 @@
 using Annium.AspNetCore.TestServer;
-using Xunit.Abstractions;
+using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
