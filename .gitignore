@@ -7,6 +7,6 @@
 *.nupkg
 
 # xx ignore patterns
-.xx.ignore
-.xx.credentials
+.xs.ignore
+.xs.credentials
 lcov.info
