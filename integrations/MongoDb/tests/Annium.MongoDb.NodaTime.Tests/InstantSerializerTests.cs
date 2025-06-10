@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the Instant serializer functionality
+/// </summary>
 public class InstantSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the Instant serializer
+    /// </summary>
     static InstantSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new InstantSerializer());
     }
 
+    /// <summary>
+    /// Tests that valid Instant values can be serialized and deserialized correctly
+    /// </summary>
     [Fact]
     public void CanConvertValid()
     {
@@ -25,6 +34,9 @@ public class InstantSerializerTests
         obj.Instant.Is(instant);
     }
 
+    /// <summary>
+    /// Tests that nullable Instant values can be serialized and deserialized correctly
+    /// </summary>
     [Fact]
     public void CanConvertNullableValid()
     {
@@ -36,6 +48,9 @@ public class InstantSerializerTests
         obj.InstantNullable.Is(instant);
     }
 
+    /// <summary>
+    /// Tests that nullable Instant properties serialize to null when not set
+    /// </summary>
     [Fact]
     public void CanConvertNullableNull()
     {
@@ -49,6 +64,9 @@ public class InstantSerializerTests
         obj.InstantNullable.IsDefault();
     }
 
+    /// <summary>
+    /// Tests that the serializer supports deserializing old string format for Instant values
+    /// </summary>
     [Fact]
     public void SupportsOldFormat()
     {
@@ -59,6 +77,9 @@ public class InstantSerializerTests
         obj.Instant.Is(instant);
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid BSON types
+    /// </summary>
     [Fact]
     public void ThrowsForInvalidTypes()
     {
@@ -69,6 +90,9 @@ public class InstantSerializerTests
         Wrap.It(() => BsonSerializer.Deserialize<Test>(doc2)).Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException when null is provided for non-nullable Instant
+    /// </summary>
     [Fact]
     public void ThrowsForNullWhenNotNullable()
     {
@@ -76,6 +100,9 @@ public class InstantSerializerTests
         Wrap.It(() => BsonSerializer.Deserialize<Test>(doc)).Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable Instant values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -84,10 +111,19 @@ public class InstantSerializerTests
             .InstantNullable.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing Instant properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets an Instant value
+        /// </summary>
         public Instant Instant { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable Instant value
+        /// </summary>
         public Instant? InstantNullable { get; set; }
     }
 }

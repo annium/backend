@@ -7,17 +7,29 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the ZonedDateTime serializer functionality
+/// </summary>
 public class ZonedDateTimeSerializerTests
 {
+    /// <summary>
+    /// Eastern timezone used for testing timezone-specific serialization
+    /// </summary>
     private static readonly DateTimeZone _easternTimezone = DateTimeZoneProviders.Tzdb.GetZoneOrNull(
         "America/New_York"
     )!;
 
+    /// <summary>
+    /// Static constructor to register the ZonedDateTime serializer
+    /// </summary>
     static ZonedDateTimeSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new ZonedDateTimeSerializer());
     }
 
+    /// <summary>
+    /// Tests that ZonedDateTime values with Eastern timezone can be round-tripped correctly
+    /// </summary>
     [Fact]
     public void CanRoundTripValue_Eastern()
     {
@@ -31,6 +43,9 @@ public class ZonedDateTimeSerializerTests
         obj.ZonedDateTime.Zone.Is(_easternTimezone);
     }
 
+    /// <summary>
+    /// Tests that ZonedDateTime values with UTC timezone can be round-tripped correctly
+    /// </summary>
     [Fact]
     public void CanRoundTripValue_UTC()
     {
@@ -44,6 +59,9 @@ public class ZonedDateTimeSerializerTests
         obj.ZonedDateTime.Zone.Is(DateTimeZone.Utc);
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid ZonedDateTime strings and null values
+    /// </summary>
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
@@ -55,6 +73,9 @@ public class ZonedDateTimeSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable ZonedDateTime values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -63,10 +84,19 @@ public class ZonedDateTimeSerializerTests
             .NullableZonedDateTime.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing ZonedDateTime properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets a ZonedDateTime value
+        /// </summary>
         public ZonedDateTime ZonedDateTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable ZonedDateTime value
+        /// </summary>
         public ZonedDateTime? NullableZonedDateTime { get; set; }
     }
 }

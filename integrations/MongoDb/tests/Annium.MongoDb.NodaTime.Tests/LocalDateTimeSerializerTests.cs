@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the LocalDateTime serializer functionality
+/// </summary>
 public class LocalDateTimeSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the LocalDateTime serializer
+    /// </summary>
     static LocalDateTimeSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new LocalDateTimeSerializer());
     }
 
+    /// <summary>
+    /// Tests that LocalDateTime values with ISO calendar can be round-tripped correctly
+    /// </summary>
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
@@ -24,6 +33,9 @@ public class LocalDateTimeSerializerTests
         obj.LocalDateTime.Is(obj.LocalDateTime);
     }
 
+    /// <summary>
+    /// Tests that LocalDateTime values are converted to ISO calendar when serializing
+    /// </summary>
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
@@ -37,6 +49,9 @@ public class LocalDateTimeSerializerTests
         obj.LocalDateTime.Is(obj.LocalDateTime.WithCalendar(CalendarSystem.Iso));
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid LocalDateTime strings and null values
+    /// </summary>
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
@@ -48,6 +63,9 @@ public class LocalDateTimeSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable LocalDateTime values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -56,10 +74,19 @@ public class LocalDateTimeSerializerTests
             .NullableLocalDateTime.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing LocalDateTime properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets a LocalDateTime value
+        /// </summary>
         public LocalDateTime LocalDateTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable LocalDateTime value
+        /// </summary>
         public LocalDateTime? NullableLocalDateTime { get; set; }
     }
 }

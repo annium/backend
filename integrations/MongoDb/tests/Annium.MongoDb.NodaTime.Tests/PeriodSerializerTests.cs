@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the Period serializer functionality
+/// </summary>
 public class PeriodSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the Period serializer
+    /// </summary>
     static PeriodSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new PeriodSerializer());
     }
 
+    /// <summary>
+    /// Tests that Period values can be serialized and deserialized correctly
+    /// </summary>
     [Fact]
     public void CanConvertValue()
     {
@@ -24,6 +33,9 @@ public class PeriodSerializerTests
         obj.Period.Is(obj.Period);
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid Period strings
+    /// </summary>
     [Fact]
     public void ThrowsWhenValueIsInvalid()
     {
@@ -31,6 +43,9 @@ public class PeriodSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that Period properties can handle null BSON values when defaulted to Period.Zero
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -39,8 +54,14 @@ public class PeriodSerializerTests
             .Period.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing Period properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets a Period value, defaults to Period.Zero
+        /// </summary>
         public Period Period { get; set; } = Period.Zero;
     }
 }

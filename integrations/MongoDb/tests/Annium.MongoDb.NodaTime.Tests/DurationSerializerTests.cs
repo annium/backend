@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the Duration serializer functionality
+/// </summary>
 public class DurationSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the Duration serializer
+    /// </summary>
     static DurationSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new DurationSerializer());
     }
 
+    /// <summary>
+    /// Tests that Duration values can be serialized and deserialized correctly
+    /// </summary>
     [Fact]
     public void CanConvertValue()
     {
@@ -24,6 +33,9 @@ public class DurationSerializerTests
         obj.Duration.Is(obj.Duration);
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid Duration strings
+    /// </summary>
     [Fact]
     public void ThrowsWhenValueIsInvalid()
     {
@@ -31,6 +43,9 @@ public class DurationSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable Duration values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -39,10 +54,19 @@ public class DurationSerializerTests
             .DurationNullable.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing Duration properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets a Duration value
+        /// </summary>
         public Duration Duration { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable Duration value
+        /// </summary>
         public Duration? DurationNullable { get; set; }
     }
 }
