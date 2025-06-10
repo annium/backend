@@ -11,13 +11,38 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.Mesh.Server.Internal;
 
+/// <summary>
+/// Core coordinator implementation that manages the lifecycle of mesh server connections.
+/// </summary>
 internal class Coordinator : ICoordinator, ILogSubject
 {
+    /// <summary>
+    /// Gets the logger for this coordinator.
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The service provider for creating connection-scoped services.
+    /// </summary>
     private readonly IServiceProvider _sp;
+
+    /// <summary>
+    /// The server lifetime manager for controlling server shutdown.
+    /// </summary>
     private readonly IServerLifetimeManager _lifetimeManager;
+
+    /// <summary>
+    /// The connection tracker for managing active connections.
+    /// </summary>
     private readonly ConnectionTracker _connectionTracker;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Coordinator"/> class.
+    /// </summary>
+    /// <param name="sp">The service provider for creating connection-scoped services.</param>
+    /// <param name="lifetimeManager">The server lifetime manager.</param>
+    /// <param name="connectionTracker">The connection tracker for managing active connections.</param>
+    /// <param name="logger">The logger for this coordinator.</param>
     public Coordinator(
         IServiceProvider sp,
         IServerLifetimeManager lifetimeManager,
@@ -33,6 +58,11 @@ internal class Coordinator : ICoordinator, ILogSubject
         // broadcastCoordinator.Start();
     }
 
+    /// <summary>
+    /// Handles an incoming server connection by setting up its context and managing its lifecycle.
+    /// </summary>
+    /// <param name="connection">The server connection to handle.</param>
+    /// <returns>A task representing the asynchronous connection handling operation.</returns>
     public async Task HandleAsync(IServerConnection connection)
     {
         var cid = _connectionTracker.Track(connection);
@@ -67,6 +97,9 @@ internal class Coordinator : ICoordinator, ILogSubject
         this.Trace("End for {id}", cid);
     }
 
+    /// <summary>
+    /// Disposes the coordinator and stops the server lifetime manager.
+    /// </summary>
     public void Dispose()
     {
         this.Trace("start");

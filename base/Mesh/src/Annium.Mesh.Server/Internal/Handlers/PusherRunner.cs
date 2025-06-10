@@ -4,8 +4,17 @@ using System.Threading.Tasks;
 
 namespace Annium.Mesh.Server.Internal.Handlers;
 
+/// <summary>
+/// Defines a contract for running pushers in the mesh server infrastructure.
+/// </summary>
 internal interface IPusherRunner
 {
+    /// <summary>
+    /// Runs the pusher for the specified connection.
+    /// </summary>
+    /// <param name="cid">The connection identifier.</param>
+    /// <param name="ct">The cancellation token for the operation.</param>
+    /// <returns>A task representing the asynchronous push operation.</returns>
     Task RunAsync(Guid cid, CancellationToken ct);
 }
 

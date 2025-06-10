@@ -2,6 +2,9 @@ using System;
 
 namespace Annium.Mesh.Transport.Abstractions;
 
+/// <summary>
+/// Represents a connection that can receive messages
+/// </summary>
 public interface IReceivingConnection
 {
     /// <summary>

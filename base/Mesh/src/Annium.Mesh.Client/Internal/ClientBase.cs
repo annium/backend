@@ -16,18 +16,64 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Client.Internal;
 
+/// <summary>
+/// Base implementation for mesh clients providing core communication functionality
+/// </summary>
 internal abstract class ClientBase : IClientBase
 {
+    /// <summary>
+    /// Gets the logger instance for diagnostics
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The underlying connection for sending and receiving messages
+    /// </summary>
     private readonly ISendingReceivingConnection _connection;
+
+    /// <summary>
+    /// The serializer for message data
+    /// </summary>
     private readonly ISerializer _serializer;
+
+    /// <summary>
+    /// The client configuration settings
+    /// </summary>
     private readonly IClientConfiguration _configuration;
+
+    /// <summary>
+    /// Container for disposable resources
+    /// </summary>
     private readonly DisposableBox _disposable;
+
+    /// <summary>
+    /// Dictionary of pending request futures with expiration support
+    /// </summary>
     private readonly ExpiringDictionary<Guid, RequestFuture> _requestFutures;
+
+    /// <summary>
+    /// Dictionary of active subscriptions
+    /// </summary>
     private readonly ConcurrentDictionary<Guid, Subscription> _subscriptions = new();
+
+    /// <summary>
+    /// Observable stream of incoming messages
+    /// </summary>
     private readonly IObservable<Message> _messages;
+
+    /// <summary>
+    /// Flag indicating whether the client has been disposed
+    /// </summary>
     private bool _isDisposed;
 
+    /// <summary>
+    /// Initializes a new instance of the ClientBase class
+    /// </summary>
+    /// <param name="connection">The connection for sending and receiving messages</param>
+    /// <param name="timeProvider">The time provider for timeout operations</param>
+    /// <param name="serializer">The serializer for message data</param>
+    /// <param name="configuration">The client configuration</param>
+    /// <param name="logger">The logger for diagnostics</param>
     protected ClientBase(
         ISendingReceivingConnection connection,
         ITimeProvider timeProvider,
@@ -55,7 +101,11 @@ internal abstract class ClientBase : IClientBase
         this.Trace("done");
     }
 
-    // broadcast
+    /// <summary>
+    /// Creates an observable stream for listening to broadcast/push notifications of the specified type
+    /// </summary>
+    /// <typeparam name="TNotification">The type of notifications to listen for</typeparam>
+    /// <returns>An observable stream of notifications</returns>
     public IObservable<TNotification> Listen<TNotification>()
     {
         return _messages
@@ -78,7 +128,14 @@ internal abstract class ClientBase : IClientBase
     //     Task.Run(() => SendInternal(ev)).ConfigureAwait(false);
     // }
 
-    // request -> void
+    /// <summary>
+    /// Sends a request without expecting a response
+    /// </summary>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status result</returns>
     public Task<IStatusResult<OperationStatus>> SendAsync(
         ushort version,
         Enum action,
@@ -89,7 +146,15 @@ internal abstract class ClientBase : IClientBase
         return FetchInternalAsync(version, action, request, ct);
     }
 
-    // request -> response
+    /// <summary>
+    /// Sends a request and expects a typed response
+    /// </summary>
+    /// <typeparam name="TData">The expected response data type</typeparam>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status and response data</returns>
     public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
         ushort version,
         Enum action,
@@ -101,7 +166,16 @@ internal abstract class ClientBase : IClientBase
         return FetchInternalAsync(version, action, request, default(TData)!, ct);
     }
 
-    // request -> response with default value
+    /// <summary>
+    /// Sends a request and expects a typed response with a default value fallback
+    /// </summary>
+    /// <typeparam name="TData">The expected response data type</typeparam>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="defaultValue">The default value to return if the request fails</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status and response data or default value</returns>
     public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
         ushort version,
         Enum action,
@@ -168,6 +242,10 @@ internal abstract class ClientBase : IClientBase
     //     return Result.Status(response.Status, observable);
     // }
 
+    /// <summary>
+    /// Asynchronously disposes the client and its resources
+    /// </summary>
+    /// <returns>A task representing the disposal operation</returns>
     public async ValueTask DisposeAsync()
     {
         this.Trace("start");
@@ -198,10 +276,24 @@ internal abstract class ClientBase : IClientBase
         this.Trace("done");
     }
 
+    /// <summary>
+    /// Handles disposal of client-specific resources in derived classes
+    /// </summary>
     protected abstract void HandleDispose();
 
+    /// <summary>
+    /// Handles the connection ready event in derived classes
+    /// </summary>
     protected abstract void HandleConnectionReady();
 
+    /// <summary>
+    /// Internal method for sending requests without expecting a typed response
+    /// </summary>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status result</returns>
     private async Task<IStatusResult<OperationStatus>> FetchInternalAsync(
         ushort version,
         Enum action,
@@ -214,6 +306,16 @@ internal abstract class ClientBase : IClientBase
         return response ?? result;
     }
 
+    /// <summary>
+    /// Internal method for sending requests and expecting a typed response
+    /// </summary>
+    /// <typeparam name="TData">The expected response data type</typeparam>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="defaultValue">The default value to return if the request fails</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status and response data or default value</returns>
     private async Task<IStatusResult<OperationStatus, TData?>> FetchInternalAsync<TData>(
         ushort version,
         Enum action,
@@ -233,6 +335,15 @@ internal abstract class ClientBase : IClientBase
         return response ?? Result.Status<OperationStatus, TData?>(result.Status, defaultValue).Join(result);
     }
 
+    /// <summary>
+    /// Internal method for sending raw requests and handling the response
+    /// </summary>
+    /// <typeparam name="TResponse">The expected response type</typeparam>
+    /// <param name="version">The API version</param>
+    /// <param name="action">The action to perform</param>
+    /// <param name="request">The request object</param>
+    /// <param name="ct">Cancellation token</param>
+    /// <returns>A task containing the operation status result and response data</returns>
     private async Task<(IStatusResult<OperationStatus>, TResponse?)> FetchRawAsync<TResponse>(
         ushort version,
         Enum action,
@@ -298,6 +409,11 @@ internal abstract class ClientBase : IClientBase
         }
     }
 
+    /// <summary>
+    /// Internal method for sending a message through the connection
+    /// </summary>
+    /// <param name="message">The message to send</param>
+    /// <returns>A task containing a value indicating whether the send operation was successful</returns>
     private async Task<bool> SendInternalAsync(Message message)
     {
         this.Trace("send message {message}", message);
@@ -306,6 +422,10 @@ internal abstract class ClientBase : IClientBase
         return result is ConnectionSendStatus.Ok;
     }
 
+    /// <summary>
+    /// Handles incoming response messages from the server
+    /// </summary>
+    /// <param name="message">The response message to handle</param>
     private void HandleResponseMessage(Message message)
     {
         if (!_requestFutures.Remove(message.Id, out var future))
@@ -328,6 +448,12 @@ internal abstract class ClientBase : IClientBase
         future.TaskSource.TrySetResult(response);
     }
 
+    /// <summary>
+    /// Parses a response message into the expected response type
+    /// </summary>
+    /// <param name="message">The message to parse</param>
+    /// <param name="responseType">The expected response type</param>
+    /// <returns>The parsed response object or null if parsing failed</returns>
     private object? ParseResponseMessage(Message message, Type? responseType)
     {
         this.Trace("parse message {message} to response", message);
@@ -347,11 +473,22 @@ internal abstract class ClientBase : IClientBase
         return response;
     }
 
+    /// <summary>
+    /// Represents a future request awaiting a response
+    /// </summary>
+    /// <param name="TaskSource">The task completion source for the response</param>
+    /// <param name="CancellationSource">The cancellation token source for timeout handling</param>
+    /// <param name="ResponseType">The expected response type</param>
     private record struct RequestFuture(
         TaskCompletionSource<object> TaskSource,
         CancellationTokenSource CancellationSource,
         Type? ResponseType
     );
 
+    /// <summary>
+    /// Represents an active subscription with cancellation support
+    /// </summary>
+    /// <param name="Cts">The cancellation token source for the subscription</param>
+    /// <param name="Observable">The observable stream for the subscription</param>
     private record struct Subscription(CancellationTokenSource Cts, IObservable<object> Observable);
 }

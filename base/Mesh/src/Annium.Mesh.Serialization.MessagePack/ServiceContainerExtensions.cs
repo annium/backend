@@ -11,8 +11,18 @@ using Serializer = Annium.Mesh.Serialization.MessagePack.Internal.Serializer;
 
 namespace Annium.Mesh.Serialization.MessagePack;
 
+/// <summary>
+/// Provides extension methods for configuring MessagePack serialization for mesh communication.
+/// </summary>
 public static class ServiceContainerExtensions
 {
+    /// <summary>
+    /// Adds mesh MessagePack serialization to the service container with optional custom configuration.
+    /// Uses LZ4 block array compression by default for optimal performance.
+    /// </summary>
+    /// <param name="container">The service container to configure.</param>
+    /// <param name="configure">Optional delegate to configure the MessagePack serializer options. If null, uses default configuration with LZ4 compression.</param>
+    /// <returns>The configured service container.</returns>
     public static IServiceContainer AddMeshMessagePackSerialization(
         this IServiceContainer container,
         ConfigureSerializer? configure = null

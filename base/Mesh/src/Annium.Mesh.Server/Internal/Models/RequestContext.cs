@@ -13,4 +13,10 @@ namespace Annium.Mesh.Server.Internal.Models;
 //     }
 // }
 
+/// <summary>
+/// Represents the context for a request, containing the connection ID and the request data.
+/// </summary>
+/// <typeparam name="TRequest">The type of the request.</typeparam>
+/// <param name="ConnectionId">The identifier of the connection that made the request.</param>
+/// <param name="Request">The request data.</param>
 internal record RequestContext<TRequest>(Guid ConnectionId, TRequest Request) : IRequestContext<TRequest>;

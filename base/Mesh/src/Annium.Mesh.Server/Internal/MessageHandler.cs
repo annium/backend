@@ -12,14 +12,44 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
+/// <summary>
+/// Handles incoming messages from clients by routing them to appropriate handlers based on message type and action.
+/// </summary>
 internal class MessageHandler : ILogSubject
 {
+    /// <summary>
+    /// Gets the logger for this message handler.
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The service provider for resolving handler instances.
+    /// </summary>
     private readonly IServiceProvider _sp;
+
+    /// <summary>
+    /// The route store containing registered message routes.
+    /// </summary>
     private readonly RouteStore _routeStore;
+
+    /// <summary>
+    /// The serializer for message data.
+    /// </summary>
     private readonly ISerializer _serializer;
+
+    /// <summary>
+    /// The message sender for sending responses back to clients.
+    /// </summary>
     private readonly IMessageSender _sender;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MessageHandler"/> class.
+    /// </summary>
+    /// <param name="sp">The service provider for resolving handler instances.</param>
+    /// <param name="routeStore">The route store containing registered message routes.</param>
+    /// <param name="serializer">The serializer for message data.</param>
+    /// <param name="sender">The message sender for sending responses.</param>
+    /// <param name="logger">The logger for this message handler.</param>
     public MessageHandler(
         IServiceProvider sp,
         RouteStore routeStore,
@@ -35,6 +65,14 @@ internal class MessageHandler : ILogSubject
         _sender = sender;
     }
 
+    /// <summary>
+    /// Handles an incoming message by routing it to the appropriate handler based on message type.
+    /// </summary>
+    /// <param name="cid">The connection identifier.</param>
+    /// <param name="cn">The sending connection for responses.</param>
+    /// <param name="message">The message to handle.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous message handling operation.</returns>
     public Task HandleMessageAsync(Guid cid, ISendingConnection cn, Message message, CancellationToken ct) =>
         message.Type switch
         {
@@ -45,6 +83,14 @@ internal class MessageHandler : ILogSubject
             _ => Task.CompletedTask,
         };
 
+    /// <summary>
+    /// Handles a request message by finding the appropriate handler, executing it, and sending the response.
+    /// </summary>
+    /// <param name="cid">The connection identifier.</param>
+    /// <param name="cn">The sending connection for the response.</param>
+    /// <param name="message">The request message to handle.</param>
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous request handling operation.</returns>
     private async Task HandleRequestAsync(Guid cid, ISendingConnection cn, Message message, CancellationToken ct)
     {
         this.Trace("start");
@@ -80,18 +126,30 @@ internal class MessageHandler : ILogSubject
         this.Trace("done");
     }
 
+    /// <summary>
+    /// Handles an event message. Currently events are ignored by the server.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     private async Task HandleEventAsync()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Handles a subscription initialization message. Currently subscription init messages are ignored by the server.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     private async Task HandleSubscriptionInitAsync()
     {
         this.Trace("ignore");
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Handles a subscription cancellation message. Currently subscription cancel messages are ignored by the server.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     private async Task HandleSubscriptionCancelAsync()
     {
         this.Trace("ignore");

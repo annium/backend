@@ -11,8 +11,17 @@ using Annium.Mesh.Server.Models;
 
 namespace Annium.Mesh.Server;
 
+/// <summary>
+/// Provides extension methods for configuring mesh server services in the dependency injection container.
+/// </summary>
 public static class ServiceContainerExtensions
 {
+    /// <summary>
+    /// Adds mesh server services to the container with the specified configuration.
+    /// </summary>
+    /// <param name="container">The service container to configure.</param>
+    /// <param name="configure">The configuration action for setting up server options.</param>
+    /// <returns>The configured service container for method chaining.</returns>
     public static IServiceContainer AddMeshServer(
         this IServiceContainer container,
         Action<ServerConfigurationOptions> configure

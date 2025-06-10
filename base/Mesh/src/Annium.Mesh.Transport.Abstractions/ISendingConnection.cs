@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace Annium.Mesh.Transport.Abstractions;
 
+/// <summary>
+/// Represents a connection that can send messages
+/// </summary>
 public interface ISendingConnection
 {
     /// <summary>

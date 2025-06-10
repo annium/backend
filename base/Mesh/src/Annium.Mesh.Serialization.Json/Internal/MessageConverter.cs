@@ -5,8 +5,18 @@ using Annium.Mesh.Domain;
 
 namespace Annium.Mesh.Serialization.Json.Internal;
 
+/// <summary>
+/// Custom JSON converter for mesh Message objects that provides compact serialization using short property names.
+/// </summary>
 internal class MessageConverter : JsonConverter<Message>
 {
+    /// <summary>
+    /// Reads and converts JSON to a Message object.
+    /// </summary>
+    /// <param name="reader">The Utf8JsonReader to read from.</param>
+    /// <param name="typeToConvert">The type to convert.</param>
+    /// <param name="options">Serializer options.</param>
+    /// <returns>The deserialized Message object.</returns>
     public override Message? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.StartObject)
@@ -76,6 +86,13 @@ internal class MessageConverter : JsonConverter<Message>
         throw new JsonException("Unexpected end of json");
     }
 
+    /// <summary>
+    /// Writes a Message object to JSON using compact property names.
+    /// Property mapping: Id='i', Version='v', Type='t', Action='a', Data='d'.
+    /// </summary>
+    /// <param name="writer">The Utf8JsonWriter to write to.</param>
+    /// <param name="value">The Message value to convert.</param>
+    /// <param name="options">Serializer options.</param>
     public override void Write(Utf8JsonWriter writer, Message value, JsonSerializerOptions options)
     {
         writer.WriteStartObject();
