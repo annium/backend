@@ -12,12 +12,32 @@ using Microsoft.AspNetCore.Http;
 
 namespace Annium.AspNetCore.Extensions.Internal.Middlewares;
 
+/// <summary>
+/// Middleware that handles exceptions and converts them to appropriate HTTP responses
+/// </summary>
 internal class ExceptionMiddleware : ILogSubject
 {
+    /// <summary>
+    /// Gets the logger for this middleware
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The next middleware in the pipeline
+    /// </summary>
     private readonly RequestDelegate _next;
+
+    /// <summary>
+    /// The helper for writing HTTP responses
+    /// </summary>
     private readonly Helper _helper;
 
+    /// <summary>
+    /// Initializes a new instance of the ExceptionMiddleware class
+    /// </summary>
+    /// <param name="next">The next middleware in the pipeline</param>
+    /// <param name="sp">The service provider for dependency resolution</param>
+    /// <param name="logger">The logger for error reporting</param>
     public ExceptionMiddleware(RequestDelegate next, IServiceProvider sp, ILogger logger)
     {
         _next = next;
@@ -27,6 +47,11 @@ internal class ExceptionMiddleware : ILogSubject
         Logger = logger;
     }
 
+    /// <summary>
+    /// Invokes the middleware to handle the HTTP request
+    /// </summary>
+    /// <param name="context">The HTTP context for the current request</param>
+    /// <returns>A task that represents the asynchronous operation</returns>
     public async Task InvokeAsync(HttpContext context)
     {
         try
