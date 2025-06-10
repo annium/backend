@@ -13,8 +13,17 @@ using Xunit;
 
 namespace Annium.Infrastructure.MessageBus.Node.Tests;
 
+/// <summary>
+/// Tests for the in-memory message bus implementation, verifying message sending and receiving functionality
+/// across multiple subscribers.
+/// </summary>
 public class InMemoryMessageBusTest : TestBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InMemoryMessageBusTest"/> class with test output helper
+    /// and configures the message bus with JSON serialization.
+    /// </summary>
+    /// <param name="outputHelper">The test output helper for logging test output.</param>
     public InMemoryMessageBusTest(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
@@ -29,6 +38,11 @@ public class InMemoryMessageBusTest : TestBase
         });
     }
 
+    /// <summary>
+    /// Tests that the message bus correctly sends messages to multiple subscribers and that all subscribers
+    /// receive the same messages in the correct order.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task Works()
     {
@@ -68,8 +82,14 @@ public class InMemoryMessageBusTest : TestBase
         sink3.At(1).Is(values[1]);
     }
 
+    /// <summary>
+    /// Test record implementing IX interface for message bus testing.
+    /// </summary>
     private record A : IX
     {
+        /// <summary>
+        /// Gets the integer value for this record.
+        /// </summary>
         public int Value { get; }
 
         public A(int value)
@@ -78,8 +98,14 @@ public class InMemoryMessageBusTest : TestBase
         }
     }
 
+    /// <summary>
+    /// Test record implementing IX interface for message bus testing.
+    /// </summary>
     private record B : IX
     {
+        /// <summary>
+        /// Gets the integer value for this record.
+        /// </summary>
         public int Value { get; }
 
         public B(int value)
@@ -88,5 +114,8 @@ public class InMemoryMessageBusTest : TestBase
         }
     }
 
+    /// <summary>
+    /// Marker interface for test messages in the message bus testing.
+    /// </summary>
     private interface IX;
 }
