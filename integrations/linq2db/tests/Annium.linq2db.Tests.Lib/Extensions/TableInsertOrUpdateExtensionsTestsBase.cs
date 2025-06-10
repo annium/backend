@@ -12,6 +12,9 @@ using Xunit;
 
 namespace Annium.linq2db.Tests.Lib.Extensions;
 
+/// <summary>
+/// Base class providing shared test methods for table insert or update extensions functionality.
+/// </summary>
 public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 {
     protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper)
@@ -20,6 +23,10 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         AddServicePack<LibServicePack>();
     }
 
+    /// <summary>
+    /// Tests basic insert functionality with automatic timestamp tracking.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task Insert_Base()
     {
         // arrange
@@ -51,6 +58,10 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         company.Metadata.Is(metadata);
     }
 
+    /// <summary>
+    /// Tests update functionality with automatic timestamp tracking and field modifications.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task Update_Base()
     {
         // arrange
@@ -104,6 +115,10 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         company.UpdatedAt.Is(companyUpdatedAt + Duration.FromSeconds(1));
     }
 
+    /// <summary>
+    /// Tests insert or update functionality with automatic timestamp tracking.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task InsertOrUpdate_Base()
     {
         // arrange
@@ -147,5 +162,9 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
         company.Employees.At(0).Role.Is("main chief");
     }
 
+    /// <summary>
+    /// Generates a unique name for test entities.
+    /// </summary>
+    /// <returns>A unique string identifier.</returns>
     private static string Name() => Guid.NewGuid().ToString();
 }

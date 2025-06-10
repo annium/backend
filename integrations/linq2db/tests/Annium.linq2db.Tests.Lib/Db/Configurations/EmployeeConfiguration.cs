@@ -5,10 +5,17 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Tests.Lib.Db.Configurations;
 
+/// <summary>
+/// linq2db entity configuration for Employee entities with hierarchical relationships, ID and timestamp management
+/// </summary>
 internal class EmployeeConfiguration
     : IIdEntityConfiguration<Employee, Guid>,
         ICreatedUpdatedTimeEntityConfiguration<Employee>
 {
+    /// <summary>
+    /// Configures the Employee entity mapping including table name, primary key, columns, and self-referential associations
+    /// </summary>
+    /// <param name="builder">Entity mapping builder for Employee</param>
     public void Configure(EntityMappingBuilder<Employee> builder)
     {
         this.ConfigureId(builder);

@@ -8,8 +8,16 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Configuration.Extensions;
 
+/// <summary>
+/// Extension methods for MappingSchema to provide common configuration scenarios.
+/// </summary>
 public static class MappingSchemaExtensions
 {
+    /// <summary>
+    /// Configures the mapping schema to use snake_case naming for database columns.
+    /// </summary>
+    /// <param name="schema">The mapping schema to configure.</param>
+    /// <returns>The configured mapping schema.</returns>
     public static MappingSchema UseSnakeCaseColumns(this MappingSchema schema) =>
         schema.Configure(
             db =>
@@ -21,6 +29,12 @@ public static class MappingSchemaExtensions
             MetadataFlags.IncludeMembersNotMarkedAsColumns
         );
 
+    /// <summary>
+    /// Configures the mapping schema to support JSON serialization/deserialization for columns marked with JSON data types.
+    /// </summary>
+    /// <param name="schema">The mapping schema to configure.</param>
+    /// <param name="sp">The service provider to resolve the JSON serializer.</param>
+    /// <returns>The configured mapping schema with JSON support.</returns>
     public static MappingSchema UseJsonSupport(this MappingSchema schema, IServiceProvider sp)
     {
         var serializerKey = SerializerKey.CreateDefault(MediaTypeNames.Application.Json);
