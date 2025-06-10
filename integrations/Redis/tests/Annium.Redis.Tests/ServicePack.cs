@@ -5,8 +5,16 @@ using Annium.Core.DependencyInjection.Packs;
 
 namespace Annium.Redis.Tests;
 
+/// <summary>
+/// Service pack for configuring Redis test dependencies and database setup
+/// </summary>
 internal class ServicePack : ServicePackBase
 {
+    /// <summary>
+    /// Registers Redis services and test database configuration
+    /// </summary>
+    /// <param name="container">Service container for dependency registration</param>
+    /// <param name="provider">Service provider for dependency resolution</param>
     public override void Register(IServiceContainer container, IServiceProvider provider)
     {
         container.AddRedis();
@@ -14,6 +22,10 @@ internal class ServicePack : ServicePackBase
         container.Add(sp => sp.Resolve<Database>().Config).AsSelf().Singleton();
     }
 
+    /// <summary>
+    /// Sets up the test environment by initializing the Redis database container
+    /// </summary>
+    /// <param name="provider">Service provider for dependency resolution</param>
     public override void Setup(IServiceProvider provider)
     {
 #pragma warning disable VSTHRD002
