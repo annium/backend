@@ -8,8 +8,17 @@ using Annium.Storage.Base.Tests;
 
 namespace Annium.Storage.InMemory.Tests;
 
+/// <summary>
+/// Test class for in-memory storage implementation.
+/// Inherits from StorageTestBase to run common storage tests against the in-memory provider.
+/// </summary>
 public class StorageTest : StorageTestBase
 {
+    /// <summary>
+    /// Creates and configures an in-memory storage instance for testing.
+    /// Sets up dependency injection container with in-memory storage provider.
+    /// </summary>
+    /// <returns>A configured in-memory storage instance.</returns>
     protected override IStorage GetStorage()
     {
         var services = new ServiceContainer();

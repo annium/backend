@@ -13,12 +13,31 @@ using static Annium.Storage.Abstractions.StorageHelper;
 
 namespace Annium.Storage.S3.Internal;
 
+/// <summary>
+/// S3-compatible storage implementation of the IStorage interface that stores files in AWS S3 or S3-compatible services
+/// </summary>
 internal class Storage : IStorage, ILogSubject
 {
+    /// <summary>
+    /// Logger instance for this storage implementation
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The configuration containing S3 connection details
+    /// </summary>
     private readonly Configuration _configuration;
+
+    /// <summary>
+    /// The directory prefix within the S3 bucket where files are stored
+    /// </summary>
     private readonly string _directory;
 
+    /// <summary>
+    /// Initializes a new instance of the S3 storage with the specified configuration
+    /// </summary>
+    /// <param name="configuration">The configuration containing S3 connection details</param>
+    /// <param name="logger">The logger instance for logging operations</param>
     public Storage(Configuration configuration, ILogger logger)
     {
         VerifyRoot(configuration.Directory);
@@ -28,6 +47,11 @@ internal class Storage : IStorage, ILogSubject
         Logger = logger;
     }
 
+    /// <summary>
+    /// Lists all files in the storage with an optional prefix filter
+    /// </summary>
+    /// <param name="prefix">Optional prefix to filter files. Empty string returns all files</param>
+    /// <returns>Array of file paths matching the prefix</returns>
     public async Task<string[]> ListAsync(string prefix = "")
     {
         VerifyPrefix(prefix);
@@ -50,6 +74,12 @@ internal class Storage : IStorage, ILogSubject
         return objects.Select(x => x.Key[shift..]).ToArray();
     }
 
+    /// <summary>
+    /// Uploads a stream to the specified path in storage
+    /// </summary>
+    /// <param name="source">The stream containing the data to upload</param>
+    /// <param name="path">The destination path in storage</param>
+    /// <returns>A task that represents the asynchronous upload operation</returns>
     public async Task UploadAsync(Stream source, string path)
     {
         VerifyPath(path);
@@ -67,6 +97,11 @@ internal class Storage : IStorage, ILogSubject
         await s3.PutObjectAsync(putRequest);
     }
 
+    /// <summary>
+    /// Downloads a file from storage as a stream
+    /// </summary>
+    /// <param name="path">The path of the file to download</param>
+    /// <returns>A stream containing the file content</returns>
     public async Task<Stream> DownloadAsync(string path)
     {
         VerifyPath(path);
@@ -90,6 +125,11 @@ internal class Storage : IStorage, ILogSubject
         }
     }
 
+    /// <summary>
+    /// Deletes a file from storage
+    /// </summary>
+    /// <param name="path">The path of the file to delete</param>
+    /// <returns>True if the file was deleted, false if it did not exist</returns>
     public async Task<bool> DeleteAsync(string path)
     {
         VerifyPath(path);
@@ -113,6 +153,10 @@ internal class Storage : IStorage, ILogSubject
         return true;
     }
 
+    /// <summary>
+    /// Creates and configures an Amazon S3 client using the provided configuration
+    /// </summary>
+    /// <returns>A configured AmazonS3Client instance</returns>
     private AmazonS3Client GetClient()
     {
         if (string.IsNullOrWhiteSpace(_configuration.AccessKey))
@@ -137,6 +181,11 @@ internal class Storage : IStorage, ILogSubject
         return new AmazonS3Client(credentials, s3Cfg);
     }
 
+    /// <summary>
+    /// Combines the configured directory prefix with the given file name to create the full S3 object key
+    /// </summary>
+    /// <param name="name">The file name to combine with the directory prefix</param>
+    /// <returns>The full S3 object key</returns>
     private string GetKey(string name)
     {
         return _directory == string.Empty ? name : Path.Combine(_directory, name);
