@@ -1,7 +1,8 @@
+using Annium.Core.DependencyInjection.Packs;
+using Annium.Core.DependencyInjection.Plugins;
 using Microsoft.Extensions.Hosting;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Infrastructure.Hosting.Extensions;
 
 public static class HostBuilderExtensions
 {

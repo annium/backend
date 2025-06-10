@@ -1,10 +1,10 @@
 using System;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
+using Annium.linq2db.Extensions.Models;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Extensions;
 
 public static class ServiceProviderConnectionScopeExtensions
 {

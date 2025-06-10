@@ -1,8 +1,8 @@
-using Annium.Mesh.Server.InMemory;
-using Annium.Mesh.Server.InMemory.Internal;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
+using Annium.Mesh.Transport.InMemory;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Mesh.Server.InMemory;
 
 public static class ServiceContainerExtensions
 {
@@ -10,7 +10,7 @@ public static class ServiceContainerExtensions
     {
         container.AddMeshInMemoryTransport();
 
-        container.Add<IServer, Server>().Singleton();
+        container.Add<IServer, Internal.Server>().Singleton();
 
         return container;
     }

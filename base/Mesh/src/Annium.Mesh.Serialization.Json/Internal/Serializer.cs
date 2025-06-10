@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;

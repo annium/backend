@@ -1,10 +1,10 @@
 using System;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Logging;
 using Annium.Storage.Abstractions;
-using Annium.Storage.FileSystem;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Storage.FileSystem;
 
 public static class ServiceContainerExtensions
 {
@@ -16,9 +16,7 @@ public static class ServiceContainerExtensions
     )
     {
         container
-            .Add<IStorage>(
-                (sp, k) => new Storage.FileSystem.Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>())
-            )
+            .Add<IStorage>((sp, k) => new Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>()))
             .AsKeyedSelf(key)
             .Singleton();
 

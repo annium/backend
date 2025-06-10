@@ -1,9 +1,9 @@
 using System;
-using Annium.AspNetCore.Mesh;
 using Annium.AspNetCore.Mesh.Internal.Middleware;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.AspNetCore.Mesh;
 
 public static class ServiceContainerExtensions
 {

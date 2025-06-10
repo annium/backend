@@ -5,6 +5,7 @@ using Annium.AspNetCore.TestServer;
 using Annium.AspNetCore.TestServer.Controllers;
 using Annium.Data.Operations;
 using Annium.Net.Http;
+using Annium.Net.Http.Extensions;
 using Annium.Testing;
 using Xunit;
 

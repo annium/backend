@@ -1,6 +1,10 @@
 using System;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Descriptors;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.linq2db.Extensions;
-using Annium.linq2db.PostgreSql;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.Logging;
 using LinqToDB;
 using LinqToDB.Data;
@@ -8,8 +12,7 @@ using LinqToDB.DataProvider.PostgreSQL;
 using LinqToDB.Mapping;
 using Npgsql;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.linq2db.PostgreSql;
 
 public static class ServiceContainerExtensions
 {

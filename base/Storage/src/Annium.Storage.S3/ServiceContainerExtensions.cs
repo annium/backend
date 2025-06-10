@@ -1,10 +1,10 @@
 using System;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Logging;
 using Annium.Storage.Abstractions;
-using Annium.Storage.S3;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Storage.S3;
 
 public static class ServiceContainerExtensions
 {
@@ -16,7 +16,7 @@ public static class ServiceContainerExtensions
     )
     {
         container
-            .Add<IStorage>((sp, k) => new Storage.S3.Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>()))
+            .Add<IStorage>((sp, k) => new Internal.Storage(getConfiguration(sp, k), sp.Resolve<ILogger>()))
             .AsKeyedSelf(key)
             .Singleton();
 

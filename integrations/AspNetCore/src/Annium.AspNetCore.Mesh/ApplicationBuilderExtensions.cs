@@ -1,8 +1,7 @@
 using Annium.AspNetCore.Mesh.Internal.Middleware;
 using Microsoft.AspNetCore.Builder;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.AspNetCore.Mesh;
 
 public static class ApplicationBuilderExtensions
 {

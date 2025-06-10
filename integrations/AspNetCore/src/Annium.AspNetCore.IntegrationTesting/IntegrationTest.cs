@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting.Internal;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Packs;
+using Annium.Core.DependencyInjection.Plugins;
 using Annium.Logging;
 using Annium.Testing;
 using Microsoft.Extensions.Hosting;

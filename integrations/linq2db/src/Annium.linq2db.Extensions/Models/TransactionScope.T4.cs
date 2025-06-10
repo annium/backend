@@ -5,8 +5,7 @@ using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Dct = LinqToDB.Data.DataConnectionTransaction;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Models;
 
 public readonly struct TransactionScope<T1, T2, T3, T4> : IAsyncDisposable
     where T1 : DataConnection

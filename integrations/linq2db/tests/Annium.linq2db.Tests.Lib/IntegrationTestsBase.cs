@@ -1,11 +1,12 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.linq2db.Extensions;
+using Annium.linq2db.Extensions.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Logging;
 using Annium.Testing;
+using Annium.Testing.Collection;
 using LinqToDB;
 using LinqToDB.Data;
 using Xunit;

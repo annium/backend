@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Logging;
 using Annium.Net.Http;
 using Microsoft.AspNetCore.Mvc.Testing;

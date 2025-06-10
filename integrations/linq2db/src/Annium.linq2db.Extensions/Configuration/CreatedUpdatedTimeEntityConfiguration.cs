@@ -1,8 +1,7 @@
 using Annium.Data.Models;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 public interface ICreatedTimeEntityConfiguration<TEntity> : IEntityConfiguration<TEntity>
     where TEntity : class, ICreatedTimeEntity;

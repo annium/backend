@@ -1,11 +1,15 @@
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Data.Operations.Serialization.MessagePack;
 using Annium.Mesh.Serialization.Abstractions;
-using Annium.Mesh.Serialization.MessagePack.Internal;
+using Annium.Serialization.Abstractions;
+using Annium.Serialization.MessagePack;
 using MessagePack;
 using MessagePack.Resolvers;
+using Constants = Annium.Mesh.Serialization.MessagePack.Internal.Constants;
+using Serializer = Annium.Mesh.Serialization.MessagePack.Internal.Serializer;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Mesh.Serialization.MessagePack;
 
 public static class ServiceContainerExtensions
 {

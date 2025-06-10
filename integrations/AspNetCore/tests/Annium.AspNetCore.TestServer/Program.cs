@@ -1,5 +1,7 @@
+using Annium.AspNetCore.Extensions.Extensions;
 using Annium.AspNetCore.TestServer;
-using Annium.Core.DependencyInjection;
+using Annium.Infrastructure.Hosting.Extensions;
+using Annium.Logging.Microsoft;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);

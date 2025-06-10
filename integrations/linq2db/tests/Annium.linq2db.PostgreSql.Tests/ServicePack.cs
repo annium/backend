@@ -1,5 +1,7 @@
 using System;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection.Packs;
 using Annium.linq2db.PostgreSql.Tests.Db;
 using Annium.linq2db.Tests.Lib.Db;
 

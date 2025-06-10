@@ -2,8 +2,7 @@ using System;
 using Annium.AspNetCore.Extensions.Internal.Middlewares;
 using Microsoft.AspNetCore.Builder;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.AspNetCore.Extensions.Extensions;
 
 public static class ApplicationBuilderExtensions
 {

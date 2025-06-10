@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Collection;
 using Xunit;
 
 namespace Annium.Storage.Base.Tests;

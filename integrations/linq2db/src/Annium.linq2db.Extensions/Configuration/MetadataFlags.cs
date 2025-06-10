@@ -1,7 +1,6 @@
 using System;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 [Flags]
 public enum MetadataFlags

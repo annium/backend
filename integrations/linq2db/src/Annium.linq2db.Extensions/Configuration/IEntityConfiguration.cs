@@ -1,7 +1,6 @@
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
 public interface IEntityConfiguration<TEntity> : IEntityConfiguration
     where TEntity : class

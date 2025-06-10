@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Annium.Core.DependencyInjection;
-using Annium.linq2db.Extensions.Internal;
-using Annium.Reflection;
+using Annium.Core.DependencyInjection.Extensions;
+using Annium.linq2db.Extensions.Configuration.Metadata;
+using Annium.linq2db.Extensions.Internal.Configuration;
+using Annium.linq2db.Extensions.Internal.Configuration.Extensions;
+using Annium.Reflection.Types;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration.Extensions;
 
 public static class MappingSchemaExtensionsBase
 {

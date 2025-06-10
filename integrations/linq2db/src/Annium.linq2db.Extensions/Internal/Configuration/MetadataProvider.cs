@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions.Internal;
+namespace Annium.linq2db.Extensions.Internal.Configuration;
 
 internal static class MetadataProvider
 {

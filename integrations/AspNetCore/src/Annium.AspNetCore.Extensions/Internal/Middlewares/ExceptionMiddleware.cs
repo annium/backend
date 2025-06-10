@@ -4,7 +4,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Architecture.Http.Exceptions;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Serialization.Abstractions;

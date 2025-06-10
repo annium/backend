@@ -3,8 +3,7 @@ using System.Reflection;
 using LinqToDB.Extensions;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration.Metadata;
 
 public class ColumnMetadata
 {

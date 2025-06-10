@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Net.WebSockets;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Server;

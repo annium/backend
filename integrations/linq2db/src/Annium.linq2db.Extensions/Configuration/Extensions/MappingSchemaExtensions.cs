@@ -1,13 +1,12 @@
 using System;
 using System.Linq.Expressions;
 using System.Net.Mime;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Serialization.Abstractions;
 using LinqToDB;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration.Extensions;
 
 public static class MappingSchemaExtensions
 {

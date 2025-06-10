@@ -1,10 +1,13 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions.Internal;
+namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 
 internal static class MappingSchemaExtensions
 {
@@ -21,13 +24,13 @@ internal static class MappingSchemaExtensions
                         continue;
 
                     // check if is foreign key
-                    var isForeignKey = table
-                        .Columns.Values.Where(x => x.Attribute.IsColumn)
+                    var isForeignKey = Enumerable
+                        .Where<ColumnMetadata>(table.Columns.Values, x => x.Attribute.IsColumn)
                         .Any(x => x.Association?.ThisKey == column.Member.Name);
 
                     // set as basic column
                     if (isForeignKey)
-                        mappingBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
+                        mappingBuilder.HasAttribute((MemberInfo)column.Member, new ColumnAttribute { IsColumn = true });
                 }
 
                 mappingBuilder.Build();

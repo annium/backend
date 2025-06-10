@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Container;
 
 namespace Annium.Mesh.Tests;
 

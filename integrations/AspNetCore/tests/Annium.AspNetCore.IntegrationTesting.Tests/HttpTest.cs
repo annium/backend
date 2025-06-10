@@ -2,6 +2,7 @@ using System.Threading.Tasks;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.Data.Operations;
 using Annium.Net.Http;
+using Annium.Net.Http.Extensions;
 using Annium.Testing;
 using Xunit;
 

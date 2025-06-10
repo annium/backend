@@ -1,7 +1,8 @@
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Mesh.Server.Sockets.Internal;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Mesh.Server.Sockets;
 
 public static class ServiceContainerExtensions
 {

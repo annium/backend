@@ -1,8 +1,9 @@
 using System;
+using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Extensions;
 
 public static class TableMetadataExtensions
 {
