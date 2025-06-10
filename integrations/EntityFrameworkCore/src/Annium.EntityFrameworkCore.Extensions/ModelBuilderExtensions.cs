@@ -6,8 +6,16 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Annium.EntityFrameworkCore.Extensions;
 
+/// <summary>
+/// Extension methods for configuring Entity Framework Core ModelBuilder
+/// </summary>
 public static class ModelBuilderExtensions
 {
+    /// <summary>
+    /// Applies all entity configurations from assemblies containing the DbContext and its interfaces
+    /// </summary>
+    /// <typeparam name="TContext">The DbContext type</typeparam>
+    /// <param name="builder">The ModelBuilder to configure</param>
     public static void ApplyConfigurations<TContext>(this ModelBuilder builder)
         where TContext : DbContext
     {
@@ -22,6 +30,10 @@ public static class ModelBuilderExtensions
             builder.ApplyConfigurationsFromAssembly(assembly);
     }
 
+    /// <summary>
+    /// Configures all entity names, property names, and constraint names to use snake_case naming convention
+    /// </summary>
+    /// <param name="builder">The ModelBuilder to configure</param>
     public static void UseSnakeCase(this ModelBuilder builder)
     {
         foreach (var entity in builder.Model.GetEntityTypes().Where(x => x.BaseType is null))
@@ -43,6 +55,10 @@ public static class ModelBuilderExtensions
         }
     }
 
+    /// <summary>
+    /// Configures all DateTime properties to be treated as UTC when materializing from the database
+    /// </summary>
+    /// <param name="builder">The ModelBuilder to configure</param>
     public static void UseDateTimeUtc(this ModelBuilder builder)
     {
         foreach (var entity in builder.Model.GetEntityTypes())
@@ -52,6 +68,11 @@ public static class ModelBuilderExtensions
             );
     }
 
+    /// <summary>
+    /// Sets the delete behavior for all foreign key relationships in the model
+    /// </summary>
+    /// <param name="builder">The ModelBuilder to configure</param>
+    /// <param name="behavior">The delete behavior to apply to all foreign keys</param>
     public static void UseDeleteBehavior(this ModelBuilder builder, DeleteBehavior behavior)
     {
         foreach (var entity in builder.Model.GetEntityTypes())

@@ -11,11 +11,25 @@ using EntityMaterializerSourceBase = Microsoft.EntityFrameworkCore.Query.Interna
 
 namespace Annium.EntityFrameworkCore.Extensions.Internal;
 
+/// <summary>
+/// Custom entity materializer source that supports materialization hooks for entities implementing IMaterializable
+/// </summary>
 internal class EntityMaterializerSource : EntityMaterializerSourceBase
 {
+    /// <summary>
+    /// Initializes a new instance of the EntityMaterializerSource class
+    /// </summary>
+    /// <param name="dependencies">The dependencies required by the entity materializer source</param>
     public EntityMaterializerSource(EntityMaterializerSourceDependencies dependencies)
         : base(dependencies) { }
 
+    /// <summary>
+    /// Creates a materialization expression that includes calling OnMaterialized for entities implementing IMaterializable
+    /// </summary>
+    /// <param name="entityType">The entity type being materialized</param>
+    /// <param name="entityInstanceName">The name of the entity instance variable</param>
+    /// <param name="materializationContextExpression">The materialization context expression</param>
+    /// <returns>An expression that materializes the entity and calls OnMaterialized if applicable</returns>
     [Obsolete("Use the overload that accepts an EntityMaterializerSourceParameters object.")]
     public override Expression CreateMaterializeExpression(
         IEntityType entityType,
