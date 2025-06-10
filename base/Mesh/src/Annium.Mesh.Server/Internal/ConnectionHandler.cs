@@ -13,21 +13,81 @@ using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Server.Internal;
 
+/// <summary>
+/// Handles the lifecycle and message processing for a single client connection.
+/// </summary>
 internal class ConnectionHandler : IAsyncDisposable, ILogSubject
 {
+    /// <summary>
+    /// Gets the logger for this connection handler.
+    /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// The connection context for this handler.
+    /// </summary>
     private readonly ConnectionContext _ctx;
+
+    /// <summary>
+    /// The unique connection identifier.
+    /// </summary>
     private readonly Guid _cid;
+
+    /// <summary>
+    /// The bidirectional connection for sending and receiving messages.
+    /// </summary>
     private readonly ISendingReceivingConnection _cn;
+
+    /// <summary>
+    /// The cancellation token for this connection.
+    /// </summary>
     private readonly CancellationToken _ct;
+
+    /// <summary>
+    /// Task completion source for signaling connection completion.
+    /// </summary>
     private readonly TaskCompletionSource _tcs = new();
+
+    /// <summary>
+    /// Collection of connection-bound stores that need cleanup when connection ends.
+    /// </summary>
     private readonly IEnumerable<IConnectionBoundStore> _connectionBoundStores;
+
+    /// <summary>
+    /// Coordinator for handling connection lifecycle events.
+    /// </summary>
     private readonly LifeCycleCoordinator _lifeCycleCoordinator;
+
+    /// <summary>
+    /// Handler for processing incoming messages.
+    /// </summary>
     private readonly MessageHandler _messageHandler;
+
+    /// <summary>
+    /// Coordinator for handling push operations.
+    /// </summary>
     private readonly PushCoordinator _pushCoordinator;
+
+    /// <summary>
+    /// Serializer for message data.
+    /// </summary>
     private readonly ISerializer _serializer;
+
+    /// <summary>
+    /// Executor for parallel processing of messages.
+    /// </summary>
     private readonly IExecutor _executor;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConnectionHandler"/> class.
+    /// </summary>
+    /// <param name="ctx">The connection context.</param>
+    /// <param name="connectionBoundStores">Collection of connection-bound stores.</param>
+    /// <param name="lifeCycleCoordinator">Coordinator for lifecycle events.</param>
+    /// <param name="messageHandler">Handler for processing messages.</param>
+    /// <param name="pushCoordinator">Coordinator for push operations.</param>
+    /// <param name="serializer">Serializer for message data.</param>
+    /// <param name="logger">Logger for this connection handler.</param>
     public ConnectionHandler(
         ConnectionContext ctx,
         IEnumerable<IConnectionBoundStore> connectionBoundStores,
@@ -52,6 +112,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         _executor = Executor.Parallel<ConnectionHandler>(Logger);
     }
 
+    /// <summary>
+    /// Handles the connection lifecycle including message processing, lifecycle events, and cleanup.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous connection handling operation.</returns>
     public async Task HandleAsync()
     {
         this.Trace("cn {id} - start", _cid);
@@ -96,6 +160,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         }
     }
 
+    /// <summary>
+    /// Disposes the connection handler asynchronously, ensuring proper cleanup of resources and lifecycle events.
+    /// </summary>
+    /// <returns>A value task that represents the asynchronous dispose operation.</returns>
     public async ValueTask DisposeAsync()
     {
         this.Trace("cn {id} - start", _cid);
@@ -111,6 +179,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - done", _cid);
     }
 
+    /// <summary>
+    /// Handles incoming raw message data by parsing and scheduling it for processing.
+    /// </summary>
+    /// <param name="raw">The raw message data received from the connection.</param>
     private void OnMessage(ReadOnlyMemory<byte> raw)
     {
         this.Trace("cn {id} - start", _cid);
@@ -128,6 +200,10 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - start", _cid);
     }
 
+    /// <summary>
+    /// Handles errors that occur during message processing by canceling the connection and completing the task.
+    /// </summary>
+    /// <param name="exception">The exception that occurred.</param>
     private void OnError(Exception exception)
     {
         this.Trace("cn {id} - start", _cid);
@@ -143,6 +219,9 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - done", _cid);
     }
 
+    /// <summary>
+    /// Handles connection completion by signaling that the connection has been closed normally.
+    /// </summary>
     private void OnCompleted()
     {
         this.Trace("cn {id} - start", _cid);
@@ -153,6 +232,9 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - done", _cid);
     }
 
+    /// <summary>
+    /// Handles connection cancellation by completing the connection task.
+    /// </summary>
     private void HandleConnectionCancellation()
     {
         this.Trace("cn {id} - start", _cid);
@@ -162,6 +244,11 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         this.Trace("cn {id} - done", _cid);
     }
 
+    /// <summary>
+    /// Parses raw message data into a Message object.
+    /// </summary>
+    /// <param name="raw">The raw message data to parse.</param>
+    /// <returns>The parsed message, or null if parsing failed.</returns>
     private Message? ParseMessage(ReadOnlyMemory<byte> raw)
     {
         try
@@ -176,6 +263,11 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         }
     }
 
+    /// <summary>
+    /// Creates a handler function for processing a parsed message.
+    /// </summary>
+    /// <param name="message">The message to handle.</param>
+    /// <returns>A function that asynchronously handles the message.</returns>
     private Func<ValueTask> HandleMessage(Message message) =>
         async () =>
         {

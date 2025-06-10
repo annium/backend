@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Solutions>Annium.Backend</Solutions>
     <OutputType>Library</OutputType>
-    <IsPackable>false</IsPackable>
+    <IsPackable>true</IsPackable>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>

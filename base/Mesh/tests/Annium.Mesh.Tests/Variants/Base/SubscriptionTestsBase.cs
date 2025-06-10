@@ -4,12 +4,24 @@ using Xunit;
 
 namespace Annium.Mesh.Tests.Variants.Base;
 
+/// <summary>
+/// Base class for subscription-based mesh tests, providing common functionality for testing subscription scenarios.
+/// </summary>
+/// <typeparam name="TBehavior">The behavior type that defines server configuration and running logic.</typeparam>
 public abstract class SubscriptionTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : class, IBehavior
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SubscriptionTestsBase{TBehavior}"/> class with the specified test output helper.
+    /// </summary>
+    /// <param name="outputHelper">The test output helper for logging test output.</param>
     protected SubscriptionTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper) { }
 
+    /// <summary>
+    /// Base test method for subscription functionality (currently commented out).
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task Subscription_Base()
     {
         this.Trace("start");

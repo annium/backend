@@ -6,8 +6,14 @@ using MongoDB.Bson.Serialization;
 
 namespace Annium.MongoDb.NodaTime;
 
+/// <summary>
+/// Provides registration functionality for all NodaTime BSON serializers
+/// </summary>
 public static class NodaTimeSerializers
 {
+    /// <summary>
+    /// Registers all NodaTime BSON serializers with the MongoDB driver
+    /// </summary>
     public static void Register()
     {
         var types = typeof(NodaTimeSerializers)

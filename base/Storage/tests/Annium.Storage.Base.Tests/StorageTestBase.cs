@@ -5,12 +5,21 @@ using System.Linq;
 using System.Threading.Tasks;
 using Annium.Storage.Abstractions;
 using Annium.Testing;
+using Annium.Testing.Collection;
 using Xunit;
 
 namespace Annium.Storage.Base.Tests;
 
+/// <summary>
+/// Abstract base class containing common test scenarios for storage implementations.
+/// Provides a standardized test suite that can be inherited by concrete storage provider tests.
+/// </summary>
 public abstract class StorageTestBase
 {
+    /// <summary>
+    /// Tests that the List operation returns all stored items.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task List_Works()
     {
@@ -26,6 +35,10 @@ public abstract class StorageTestBase
         keys.Contains("list_test").IsTrue();
     }
 
+    /// <summary>
+    /// Tests that the List operation with prefix filtering returns only items matching the specified prefix.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task List_Prefixed_Works()
     {
@@ -48,6 +61,10 @@ public abstract class StorageTestBase
         keysTwo.Contains("list_prefixed_two/a").IsTrue();
     }
 
+    /// <summary>
+    /// Tests that the Upload operation successfully stores data and makes it listable.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task Upload_Works()
     {
@@ -63,6 +80,10 @@ public abstract class StorageTestBase
         keys.Contains("upload_test").IsTrue();
     }
 
+    /// <summary>
+    /// Tests that attempting to download a non-existent item throws a KeyNotFoundException.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task Download_Missing_ThrowsKeyNotFoundException()
     {
@@ -73,6 +94,10 @@ public abstract class StorageTestBase
         await Wrap.It(async () => await storage.DownloadAsync("download_missing")).ThrowsAsync<KeyNotFoundException>();
     }
 
+    /// <summary>
+    /// Tests that the Download operation successfully retrieves previously uploaded data.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task Download_Works()
     {
@@ -94,6 +119,10 @@ public abstract class StorageTestBase
         result.SequenceEqual(blob).IsTrue();
     }
 
+    /// <summary>
+    /// Tests that invalid item names are properly validated and rejected.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task NameVerification_Works()
     {
@@ -104,6 +133,10 @@ public abstract class StorageTestBase
         await Wrap.It(async () => await storage.DownloadAsync(".")).ThrowsAsync<ArgumentException>();
     }
 
+    /// <summary>
+    /// Tests that the Delete operation removes items and returns appropriate status indicators.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
     [Fact]
     public async Task Delete_Works()
     {
@@ -122,8 +155,17 @@ public abstract class StorageTestBase
         second.IsFalse();
     }
 
+    /// <summary>
+    /// Creates and configures a storage instance for testing.
+    /// Must be implemented by concrete test classes to provide their specific storage implementation.
+    /// </summary>
+    /// <returns>A configured storage instance for testing.</returns>
     protected abstract IStorage GetStorage();
 
+    /// <summary>
+    /// Generates a sample byte array for testing storage operations.
+    /// </summary>
+    /// <returns>A byte array containing test data.</returns>
     private static byte[] GenerateBlob()
     {
         return "sample text file"u8.ToArray();

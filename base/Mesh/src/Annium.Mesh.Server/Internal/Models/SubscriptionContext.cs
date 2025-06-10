@@ -11,6 +11,9 @@
 // using Annium.Mesh.Server.Internal.Responses;
 // using Annium.Mesh.Server.Models;
 //
+// This file contains commented-out subscription context implementation.
+// The actual subscription context functionality may be implemented elsewhere or deprecated.
+//
 // namespace Annium.Mesh.Server.Internal.Models;
 //
 // internal sealed record SubscriptionContext<TInit, TMessage> :

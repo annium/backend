@@ -1,13 +1,26 @@
 using System;
 using Annium.AspNetCore.Extensions.Internal.DynamicControllers;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.Runtime;
+using Annium.Data.Operations.Serialization.Json;
+using Annium.NodaTime.Serialization.Json;
+using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.AspNetCore.Extensions.Extensions;
 
+/// <summary>
+/// Extension methods for configuring MVC builder with additional functionality
+/// </summary>
 public static class MvcBuilderExtensions
 {
+    /// <summary>
+    /// Adds dynamic controller support to the MVC application
+    /// </summary>
+    /// <param name="builder">The MVC builder to configure</param>
+    /// <param name="configure">Action to configure the dynamic controller models</param>
+    /// <returns>The configured MVC builder</returns>
     public static IMvcBuilder AddDynamicControllers(
         this IMvcBuilder builder,
         Action<IDynamicControllerModelPack> configure
@@ -31,6 +44,12 @@ public static class MvcBuilderExtensions
         return builder;
     }
 
+    /// <summary>
+    /// Configures JSON serialization options with default settings for operations and NodaTime support
+    /// </summary>
+    /// <param name="builder">The MVC builder to configure</param>
+    /// <param name="configure">Action to configure additional JSON options</param>
+    /// <returns>The configured MVC builder</returns>
     public static IMvcBuilder AddDefaultJsonOptions(this IMvcBuilder builder, Action<JsonOptions> configure) =>
         builder.AddJsonOptions(opts =>
         {
@@ -41,6 +60,11 @@ public static class MvcBuilderExtensions
             configure(opts);
         });
 
+    /// <summary>
+    /// Configures JSON serialization options with default settings for operations and NodaTime support
+    /// </summary>
+    /// <param name="builder">The MVC builder to configure</param>
+    /// <returns>The configured MVC builder</returns>
     public static IMvcBuilder AddDefaultJsonOptions(this IMvcBuilder builder) =>
         builder.AddDefaultJsonOptions(_ => { });
 }

@@ -1,14 +1,24 @@
 using System;
 using System.Data;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
+using Annium.linq2db.Extensions.Models;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Extensions;
 
+/// <summary>
+/// Extension methods for IServiceProvider to create transaction scopes for database operations.
+/// </summary>
 public static class ServiceProviderTransactionScopeExtensions
 {
+    /// <summary>
+    /// Creates a transaction scope for a single DataConnection type.
+    /// </summary>
+    /// <typeparam name="T">The DataConnection type.</typeparam>
+    /// <param name="sp">The service provider.</param>
+    /// <param name="isolationLevel">The transaction isolation level.</param>
+    /// <returns>A transaction scope wrapping the DataConnection, transaction, and service scope.</returns>
     public static TransactionScope<T> GetTransactionScope<T>(
         this IServiceProvider sp,
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted
@@ -29,6 +39,14 @@ public static class ServiceProviderTransactionScopeExtensions
         }
     }
 
+    /// <summary>
+    /// Creates a transaction scope for two DataConnection types.
+    /// </summary>
+    /// <typeparam name="T1">The first DataConnection type.</typeparam>
+    /// <typeparam name="T2">The second DataConnection type.</typeparam>
+    /// <param name="sp">The service provider.</param>
+    /// <param name="isolationLevel">The transaction isolation level.</param>
+    /// <returns>A transaction scope wrapping both DataConnections, their transactions, and service scope.</returns>
     public static TransactionScope<T1, T2> GetTransactionScope<T1, T2>(
         this IServiceProvider sp,
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted
@@ -52,6 +70,15 @@ public static class ServiceProviderTransactionScopeExtensions
         }
     }
 
+    /// <summary>
+    /// Creates a transaction scope for three DataConnection types.
+    /// </summary>
+    /// <typeparam name="T1">The first DataConnection type.</typeparam>
+    /// <typeparam name="T2">The second DataConnection type.</typeparam>
+    /// <typeparam name="T3">The third DataConnection type.</typeparam>
+    /// <param name="sp">The service provider.</param>
+    /// <param name="isolationLevel">The transaction isolation level.</param>
+    /// <returns>A transaction scope wrapping all three DataConnections, their transactions, and service scope.</returns>
     public static TransactionScope<T1, T2, T3> GetTransactionScope<T1, T2, T3>(
         this IServiceProvider sp,
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted
@@ -78,6 +105,16 @@ public static class ServiceProviderTransactionScopeExtensions
         }
     }
 
+    /// <summary>
+    /// Creates a transaction scope for four DataConnection types.
+    /// </summary>
+    /// <typeparam name="T1">The first DataConnection type.</typeparam>
+    /// <typeparam name="T2">The second DataConnection type.</typeparam>
+    /// <typeparam name="T3">The third DataConnection type.</typeparam>
+    /// <typeparam name="T4">The fourth DataConnection type.</typeparam>
+    /// <param name="sp">The service provider.</param>
+    /// <param name="isolationLevel">The transaction isolation level.</param>
+    /// <returns>A transaction scope wrapping all four DataConnections, their transactions, and service scope.</returns>
     public static TransactionScope<T1, T2, T3, T4> GetTransactionScope<T1, T2, T3, T4>(
         this IServiceProvider sp,
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted

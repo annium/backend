@@ -1,0 +1,109 @@
+- name: Home
+  href: index.md
+- name: API Reference
+  items:
+    - name: Cache
+      href: api/base/Cache/Annium.Cache.Abstractions/Annium.Cache.Abstractions.yml
+      items:
+        - name: Annium.Cache.Abstractions
+          href: api/base/Cache/Annium.Cache.Abstractions/Annium.Cache.Abstractions.yml
+        - name: Annium.Cache.InMemory
+          href: api/base/Cache/Annium.Cache.InMemory/Annium.Cache.InMemory.yml
+        - name: Annium.Cache.Redis
+          href: api/base/Cache/Annium.Cache.Redis/Annium.Cache.Redis.yml
+    - name: Infrastructure
+      href: api/base/Infrastructure/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.yml
+      items:
+        - name: Annium.Infrastructure.Hosting
+          href: api/base/Infrastructure/Annium.Infrastructure.Hosting/Annium.Infrastructure.Hosting.yml
+        - name: Annium.Infrastructure.MessageBus.Node
+          href: api/base/Infrastructure/Annium.Infrastructure.MessageBus.Node/Annium.Infrastructure.MessageBus.Node.yml
+    - name: Mesh Communication
+      href: api/base/Mesh/Annium.Mesh.Client/Annium.Mesh.Client.yml
+      items:
+        - name: Core
+          items:
+            - name: Annium.Mesh.Client
+              href: api/base/Mesh/Annium.Mesh.Client/Annium.Mesh.Client.yml
+            - name: Annium.Mesh.Domain
+              href: api/base/Mesh/Annium.Mesh.Domain/Annium.Mesh.Domain.yml
+        - name: Server
+          items:
+            - name: Annium.Mesh.Server
+              href: api/base/Mesh/Annium.Mesh.Server/Annium.Mesh.Server.yml
+            - name: Annium.Mesh.Server.InMemory
+              href: api/base/Mesh/Annium.Mesh.Server.InMemory/Annium.Mesh.Server.InMemory.yml
+            - name: Annium.Mesh.Server.Sockets
+              href: api/base/Mesh/Annium.Mesh.Server.Sockets/Annium.Mesh.Server.Sockets.yml
+            - name: Annium.Mesh.Server.Web
+              href: api/base/Mesh/Annium.Mesh.Server.Web/Annium.Mesh.Server.Web.yml
+        - name: Serialization
+          items:
+            - name: Annium.Mesh.Serialization.Abstractions
+              href: api/base/Mesh/Annium.Mesh.Serialization.Abstractions/Annium.Mesh.Serialization.Abstractions.yml
+            - name: Annium.Mesh.Serialization.Json
+              href: api/base/Mesh/Annium.Mesh.Serialization.Json/Annium.Mesh.Serialization.Json.yml
+            - name: Annium.Mesh.Serialization.MessagePack
+              href: api/base/Mesh/Annium.Mesh.Serialization.MessagePack/Annium.Mesh.Serialization.MessagePack.yml
+        - name: Transport
+          items:
+            - name: Annium.Mesh.Transport.Abstractions
+              href: api/base/Mesh/Annium.Mesh.Transport.Abstractions/Annium.Mesh.Transport.Abstractions.yml
+            - name: Annium.Mesh.Transport.InMemory
+              href: api/base/Mesh/Annium.Mesh.Transport.InMemory/Annium.Mesh.Transport.InMemory.yml
+            - name: Annium.Mesh.Transport.Sockets
+              href: api/base/Mesh/Annium.Mesh.Transport.Sockets/Annium.Mesh.Transport.Sockets.yml
+            - name: Annium.Mesh.Transport.WebSockets
+              href: api/base/Mesh/Annium.Mesh.Transport.WebSockets/Annium.Mesh.Transport.WebSockets.yml
+    - name: Storage
+      href: api/base/Storage/Annium.Storage.Abstractions/Annium.Storage.Abstractions.yml
+      items:
+        - name: Annium.Storage.Abstractions
+          href: api/base/Storage/Annium.Storage.Abstractions/Annium.Storage.Abstractions.yml
+        - name: Annium.Storage.FileSystem
+          href: api/base/Storage/Annium.Storage.FileSystem/Annium.Storage.FileSystem.yml
+        - name: Annium.Storage.InMemory
+          href: api/base/Storage/Annium.Storage.InMemory/Annium.Storage.InMemory.yml
+        - name: Annium.Storage.S3
+          href: api/base/Storage/Annium.Storage.S3/Annium.Storage.S3.yml
+    - name: Integrations
+      href: api/integrations/AspNetCore/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.yml
+      items:
+        - name: ASP.NET Core
+          href: api/integrations/AspNetCore/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.yml
+          items:
+            - name: Annium.AspNetCore.Extensions
+              href: api/integrations/AspNetCore/Annium.AspNetCore.Extensions/Annium.AspNetCore.Extensions.yml
+            - name: Annium.AspNetCore.IntegrationTesting
+              href: api/integrations/AspNetCore/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.yml
+            - name: Annium.AspNetCore.Mesh
+              href: api/integrations/AspNetCore/Annium.AspNetCore.Mesh/Annium.AspNetCore.Mesh.yml
+        - name: DbUp
+          href: api/integrations/DbUp/Annium.DbUp.Core/Annium.DbUp.Core.yml
+          items:
+            - name: Annium.DbUp.Core
+              href: api/integrations/DbUp/Annium.DbUp.Core/Annium.DbUp.Core.yml
+            - name: Annium.DbUp.PostgreSql
+              href: api/integrations/DbUp/Annium.DbUp.PostgreSql/Annium.DbUp.PostgreSql.yml
+        - name: EntityFrameworkCore
+          href: api/integrations/EntityFrameworkCore/Annium.EntityFrameworkCore.Extensions/Annium.EntityFrameworkCore.Extensions.yml
+          items:
+            - name: Annium.EntityFrameworkCore.Extensions
+              href: api/integrations/EntityFrameworkCore/Annium.EntityFrameworkCore.Extensions/Annium.EntityFrameworkCore.Extensions.yml
+        - name: linq2db
+          href: api/integrations/linq2db/Annium.linq2db.Extensions/Annium.linq2db.Extensions.yml
+          items:
+            - name: Annium.linq2db.Extensions
+              href: api/integrations/linq2db/Annium.linq2db.Extensions/Annium.linq2db.Extensions.yml
+            - name: Annium.linq2db.PostgreSql
+              href: api/integrations/linq2db/Annium.linq2db.PostgreSql/Annium.linq2db.PostgreSql.yml
+        - name: MongoDb
+          href: api/integrations/MongoDb/Annium.MongoDb.NodaTime/Annium.MongoDb.NodaTime.yml
+          items:
+            - name: Annium.MongoDb.NodaTime
+              href: api/integrations/MongoDb/Annium.MongoDb.NodaTime/Annium.MongoDb.NodaTime.yml
+        - name: Redis
+          href: api/integrations/Redis/Annium.Redis/Annium.Redis.yml
+          items:
+            - name: Annium.Redis
+              href: api/integrations/Redis/Annium.Redis/Annium.Redis.yml

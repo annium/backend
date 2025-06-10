@@ -1,14 +1,24 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Mesh.Client;
 using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Transport.Abstractions;
 
 namespace Annium.Mesh.Tests.System.Client;
 
+/// <summary>
+/// Service container extensions for registering test server client services.
+/// </summary>
 public static class TestServerClientServiceContainerExtensions
 {
+    /// <summary>
+    /// Registers a test server client with the specified configuration.
+    /// </summary>
+    /// <param name="container">The service container to register services in.</param>
+    /// <param name="configure">The action to configure the client.</param>
+    /// <returns>The service container for chaining.</returns>
     public static IServiceContainer AddTestServerClient(
         this IServiceContainer container,
         Action<ClientConfiguration> configure
@@ -35,6 +45,13 @@ public static class TestServerClientServiceContainerExtensions
         return container;
     }
 
+    /// <summary>
+    /// Registers a test server managed client factory with the specified configuration.
+    /// </summary>
+    /// <typeparam name="TContext">The context type for client connection.</typeparam>
+    /// <param name="container">The service container to register services in.</param>
+    /// <param name="configure">The optional action to configure the client.</param>
+    /// <returns>The service container for chaining.</returns>
     public static IServiceContainer AddTestServerManagedClient<TContext>(
         this IServiceContainer container,
         Action<ClientConfiguration>? configure = default

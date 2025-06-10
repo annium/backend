@@ -4,12 +4,24 @@ using Xunit;
 
 namespace Annium.Mesh.Tests.Variants.Base;
 
+/// <summary>
+/// Base class for event-based mesh tests, providing common functionality for testing event handling scenarios.
+/// </summary>
+/// <typeparam name="TBehavior">The behavior type that defines server configuration and running logic.</typeparam>
 public abstract class EventTestsBase<TBehavior> : TestBase<TBehavior>
     where TBehavior : class, IBehavior
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EventTestsBase{TBehavior}"/> class with the specified test output helper.
+    /// </summary>
+    /// <param name="outputHelper">The test output helper for logging test output.</param>
     protected EventTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper) { }
 
+    /// <summary>
+    /// Base test method for analytics event testing (currently commented out).
+    /// </summary>
+    /// <returns>A completed task.</returns>
     protected Task Analytics_Base()
     {
         this.Trace("start");

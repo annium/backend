@@ -1,11 +1,19 @@
-using Annium.Mesh.Client;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Mesh.Client.Internal;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Mesh.Client;
 
+/// <summary>
+/// Extension methods for registering mesh client services in the dependency injection container
+/// </summary>
 public static class ServiceContainerExtensions
 {
+    /// <summary>
+    /// Registers mesh client services in the dependency injection container
+    /// </summary>
+    /// <param name="container">The service container to register services in</param>
+    /// <returns>The service container for fluent chaining</returns>
     public static IServiceContainer AddMeshClient(this IServiceContainer container)
     {
         // public

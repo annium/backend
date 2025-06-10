@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the LocalDate serializer functionality
+/// </summary>
 public class LocalDateSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the LocalDate serializer
+    /// </summary>
     static LocalDateSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new LocalDateSerializer());
     }
 
+    /// <summary>
+    /// Tests that LocalDate values with ISO calendar can be round-tripped correctly
+    /// </summary>
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
@@ -24,6 +33,9 @@ public class LocalDateSerializerTests
         obj.LocalDate.Is(obj.LocalDate);
     }
 
+    /// <summary>
+    /// Tests that LocalDate values are converted to ISO calendar when serializing
+    /// </summary>
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
@@ -34,6 +46,9 @@ public class LocalDateSerializerTests
         obj.LocalDate.Is(obj.LocalDate.WithCalendar(CalendarSystem.Iso));
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid LocalDate strings and null values
+    /// </summary>
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
@@ -43,6 +58,9 @@ public class LocalDateSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable LocalDate values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -51,10 +69,19 @@ public class LocalDateSerializerTests
             .NullableLocalDate.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing LocalDate properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets a LocalDate value
+        /// </summary>
         public LocalDate LocalDate { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable LocalDate value
+        /// </summary>
         public LocalDate? NullableLocalDate { get; set; }
     }
 }

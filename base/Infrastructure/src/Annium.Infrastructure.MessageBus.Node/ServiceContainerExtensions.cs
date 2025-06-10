@@ -1,16 +1,25 @@
 using System;
-using Annium.Infrastructure.MessageBus.Node;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Infrastructure.MessageBus.Node.Internal;
 using Annium.Infrastructure.MessageBus.Node.Internal.Transport;
 using Annium.Infrastructure.MessageBus.Node.Transport;
 
 // ReSharper disable InconsistentNaming
 
-// ReSharper disable once CheckNamespace
-namespace Annium.Core.DependencyInjection;
+namespace Annium.Infrastructure.MessageBus.Node;
 
+/// <summary>
+/// Provides extension methods for configuring message bus services in the service container.
+/// </summary>
 public static class ServiceContainerExtensions
 {
+    /// <summary>
+    /// Adds NetMQ-based message bus services to the service container.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
+    /// <param name="configure">A configuration action for setting up network endpoints and options.</param>
+    /// <returns>The service container for method chaining.</returns>
     public static IServiceContainer AddNetMQMessageBus(
         this IServiceContainer container,
         Action<IServiceProvider, INetworkConfigurationBuilder> configure
@@ -32,6 +41,12 @@ public static class ServiceContainerExtensions
         return container.AddMessageBusBase();
     }
 
+    /// <summary>
+    /// Adds in-memory message bus services to the service container for testing and development scenarios.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
+    /// <param name="configure">A configuration action for setting up in-memory message bus options.</param>
+    /// <returns>The service container for method chaining.</returns>
     public static IServiceContainer AddInMemoryMessageBus(
         this IServiceContainer container,
         Action<IServiceProvider, IInMemoryConfigurationBuilder> configure
@@ -53,6 +68,11 @@ public static class ServiceContainerExtensions
         return container.AddMessageBusBase();
     }
 
+    /// <summary>
+    /// Adds the core message bus services that are common to all transport implementations.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
+    /// <returns>The service container for method chaining.</returns>
     private static IServiceContainer AddMessageBusBase(this IServiceContainer container)
     {
         container.Add<IMessageBusNode, MessageBusNode>().Singleton();

@@ -1,13 +1,25 @@
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
+using Annium.linq2db.Extensions.Configuration;
+using Annium.linq2db.Extensions.Configuration.Extensions;
+using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB.Mapping;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions.Internal;
+namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;
 
+/// <summary>
+/// Internal extension methods for configuring MappingSchema instances with additional metadata handling.
+/// </summary>
 internal static class MappingSchemaExtensions
 {
+    /// <summary>
+    /// Configures the mapping schema to include association foreign key properties as columns.
+    /// This method identifies properties that serve as foreign keys in associations and marks them as columns.
+    /// </summary>
+    /// <param name="schema">The mapping schema to configure</param>
+    /// <returns>The configured mapping schema with association keys marked as columns</returns>
     public static MappingSchema IncludeAssociationKeysAsColumns(this MappingSchema schema) =>
         schema.Configure(
             db =>
@@ -21,13 +33,13 @@ internal static class MappingSchemaExtensions
                         continue;
 
                     // check if is foreign key
-                    var isForeignKey = table
-                        .Columns.Values.Where(x => x.Attribute.IsColumn)
+                    var isForeignKey = Enumerable
+                        .Where<ColumnMetadata>(table.Columns.Values, x => x.Attribute.IsColumn)
                         .Any(x => x.Association?.ThisKey == column.Member.Name);
 
                     // set as basic column
                     if (isForeignKey)
-                        mappingBuilder.HasAttribute(column.Member, new ColumnAttribute { IsColumn = true });
+                        mappingBuilder.HasAttribute((MemberInfo)column.Member, new ColumnAttribute { IsColumn = true });
                 }
 
                 mappingBuilder.Build();
@@ -35,6 +47,12 @@ internal static class MappingSchemaExtensions
             MetadataFlags.IncludeMembersNotMarkedAsColumns
         );
 
+    /// <summary>
+    /// Configures the mapping schema to explicitly mark non-column properties with IsNotColumn.
+    /// This method uses reflection to dynamically build property mappings for members that are not marked as columns.
+    /// </summary>
+    /// <param name="schema">The mapping schema to configure</param>
+    /// <returns>The configured mapping schema with non-columns explicitly marked</returns>
     public static MappingSchema MarkNotColumnsExplicitly(this MappingSchema schema) =>
         schema.Configure(
             db =>

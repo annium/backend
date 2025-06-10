@@ -1,17 +1,21 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Annium.linq2db.Extensions;
+using Annium.linq2db.Extensions.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Logging;
 using Annium.Testing;
+using Annium.Testing.Collection;
 using LinqToDB;
 using LinqToDB.Data;
 using Xunit;
 
 namespace Annium.linq2db.Tests.Lib;
 
+/// <summary>
+/// Base class providing integration tests for database operations and data access functionality.
+/// </summary>
 public class IntegrationTestsBase : TestBase
 {
     protected IntegrationTestsBase(ITestOutputHelper outputHelper)
@@ -20,6 +24,10 @@ public class IntegrationTestsBase : TestBase
         AddServicePack<LibServicePack>();
     }
 
+    /// <summary>
+    /// Tests complete end-to-end database operations including entity creation, relationships, and complex queries.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task EndToEnd_Base()
     {
         // arrange
@@ -75,6 +83,10 @@ public class IntegrationTestsBase : TestBase
         workerEmployee.Employee.Subordinates.IsEmpty();
     }
 
+    /// <summary>
+    /// Tests high-load concurrent insert operations to validate database performance and thread safety.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task HighLoad_Insert_Base()
     {
         this.Trace("start");
@@ -119,6 +131,10 @@ public class IntegrationTestsBase : TestBase
         this.Trace("done");
     }
 
+    /// <summary>
+    /// Tests high-load concurrent select operations to validate database performance and connection handling.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
     protected async Task HighLoad_Select_Base()
     {
         // arrange

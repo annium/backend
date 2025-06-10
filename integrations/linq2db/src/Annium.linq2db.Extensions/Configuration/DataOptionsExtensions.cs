@@ -1,14 +1,22 @@
 using System;
 using System.Diagnostics;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Extensions;
 using Annium.Logging;
 using LinqToDB;
 
-// ReSharper disable once CheckNamespace
-namespace Annium.linq2db.Extensions;
+namespace Annium.linq2db.Extensions.Configuration;
 
+/// <summary>
+/// Extension methods for configuring linq2db DataOptions
+/// </summary>
 public static class DataOptionsExtensions
 {
+    /// <summary>
+    /// Configures logging for linq2db using the Annium logging framework
+    /// </summary>
+    /// <param name="options">The DataOptions to configure</param>
+    /// <param name="sp">The service provider for resolving logging dependencies</param>
+    /// <returns>The configured DataOptions for chaining</returns>
     public static DataOptions UseLogging(this DataOptions options, IServiceProvider sp)
     {
         var logBridgeFactory = sp.Resolve<ILogBridgeFactory>();

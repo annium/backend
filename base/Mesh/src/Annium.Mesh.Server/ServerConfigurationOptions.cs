@@ -4,25 +4,45 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
+using Annium.Core.DependencyInjection.Container;
+using Annium.Core.Runtime;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Server.Handlers;
 using Annium.Mesh.Server.Internal.Routing;
-using Annium.Reflection;
+using Annium.Reflection.Members;
 
 namespace Annium.Mesh.Server;
 
+/// <summary>
+/// Provides configuration options for the mesh server, including API registration and handler management.
+/// </summary>
 public class ServerConfigurationOptions
 {
+    /// <summary>
+    /// The service container for dependency injection.
+    /// </summary>
     private readonly IServiceContainer _container;
+
+    /// <summary>
+    /// The route store for managing request and push routes.
+    /// </summary>
     private readonly RouteStore _routeStore = new();
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ServerConfigurationOptions"/> class.
+    /// </summary>
+    /// <param name="container">The service container for dependency injection.</param>
     internal ServerConfigurationOptions(IServiceContainer container)
     {
         _container = container;
         _container.Add(_routeStore).AsSelf().Singleton();
     }
 
+    /// <summary>
+    /// Registers an API with the specified action enum type and version, automatically discovering and registering all handlers.
+    /// </summary>
+    /// <typeparam name="TAction">The enum type representing actions for this API.</typeparam>
+    /// <param name="version">The version of the API to register.</param>
     public void WithApi<TAction>(ushort version)
         where TAction : struct, Enum
     {
@@ -34,6 +54,11 @@ public class ServerConfigurationOptions
         RegisterHandlers<TAction>(version);
     }
 
+    /// <summary>
+    /// Discovers and registers all handlers for the specified action type and version.
+    /// </summary>
+    /// <typeparam name="TAction">The enum type representing actions for the API.</typeparam>
+    /// <param name="version">The version of the API.</param>
     private void RegisterHandlers<TAction>(ushort version)
         where TAction : struct, Enum
     {
@@ -69,6 +94,11 @@ public class ServerConfigurationOptions
         }
     }
 
+    /// <summary>
+    /// Registers a specific handler implementation by determining its type and configuring appropriate routes.
+    /// </summary>
+    /// <param name="actionKey">The action key identifying the handler.</param>
+    /// <param name="implementation">The handler implementation type.</param>
     private void RegisterHandler(ActionKey actionKey, Type implementation)
     {
         if (RegisterRequestHandler(actionKey, implementation))
@@ -85,6 +115,12 @@ public class ServerConfigurationOptions
         );
     }
 
+    /// <summary>
+    /// Attempts to register a request handler implementation.
+    /// </summary>
+    /// <param name="actionKey">The action key identifying the handler.</param>
+    /// <param name="implementation">The handler implementation type.</param>
+    /// <returns>True if the handler was successfully registered as a request handler; otherwise, false.</returns>
     private bool RegisterRequestHandler(ActionKey actionKey, Type implementation)
     {
         if (
@@ -106,6 +142,12 @@ public class ServerConfigurationOptions
         return true;
     }
 
+    /// <summary>
+    /// Attempts to register a request-response handler implementation.
+    /// </summary>
+    /// <param name="actionKey">The action key identifying the handler.</param>
+    /// <param name="implementation">The handler implementation type.</param>
+    /// <returns>True if the handler was successfully registered as a request-response handler; otherwise, false.</returns>
     private bool RegisterRequestResponseHandler(ActionKey actionKey, Type implementation)
     {
         if (
@@ -127,6 +169,12 @@ public class ServerConfigurationOptions
         return true;
     }
 
+    /// <summary>
+    /// Attempts to register a push handler implementation.
+    /// </summary>
+    /// <param name="actionKey">The action key identifying the handler.</param>
+    /// <param name="implementation">The handler implementation type.</param>
+    /// <returns>True if the handler was successfully registered as a push handler; otherwise, false.</returns>
     private bool RegisterPushHandler(ActionKey actionKey, Type implementation)
     {
         if (
@@ -144,6 +192,14 @@ public class ServerConfigurationOptions
         return true;
     }
 
+    /// <summary>
+    /// Attempts to resolve handler information from a handler type.
+    /// </summary>
+    /// <param name="handlerType">The handler type to analyze.</param>
+    /// <param name="targetType">The target interface type to look for.</param>
+    /// <param name="handleName">The name of the handle method.</param>
+    /// <param name="info">When this method returns, contains the handler information if found.</param>
+    /// <returns>True if the handler information was successfully resolved; otherwise, false.</returns>
     private static bool TryResolveHandler(
         Type handlerType,
         Type targetType,
@@ -167,5 +223,10 @@ public class ServerConfigurationOptions
         return true;
     }
 
+    /// <summary>
+    /// Contains information about a handler method and its generic type arguments.
+    /// </summary>
+    /// <param name="Handle">The method info for the handler method.</param>
+    /// <param name="Args">The generic type arguments for the handler.</param>
     private record HandlerInfo(MethodInfo Handle, Type[] Args);
 }

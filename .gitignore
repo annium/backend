@@ -7,7 +7,11 @@
 *.nupkg
 *.trx
 
-# xx ignore patterns
+# docs
+/api/
+/_site/
+
+# xs ignore patterns
 .xs.ignore
 .xs.credentials
 lcov.info

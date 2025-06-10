@@ -6,8 +6,18 @@ using MessagePack.Formatters;
 
 namespace Annium.Mesh.Serialization.MessagePack.Internal;
 
+/// <summary>
+/// MessagePack formatter for mesh Message objects that provides efficient binary serialization.
+/// Serializes messages as arrays with fixed ordering: [Id, Version, Type, Action, Data].
+/// </summary>
 internal class MessageFormatter : IMessagePackFormatter<Message?>
 {
+    /// <summary>
+    /// Deserializes a MessagePack array to a Message object.
+    /// </summary>
+    /// <param name="reader">The MessagePack reader to read from.</param>
+    /// <param name="options">Serializer options.</param>
+    /// <returns>The deserialized Message object.</returns>
     public Message Deserialize(ref MessagePackReader reader, MessagePackSerializerOptions options)
     {
         if (reader.TryReadNil())
@@ -64,6 +74,13 @@ internal class MessageFormatter : IMessagePackFormatter<Message?>
         return message;
     }
 
+    /// <summary>
+    /// Serializes a Message object to MessagePack format as an array.
+    /// Array format: [Id, Version, Type, Action, Data].
+    /// </summary>
+    /// <param name="writer">The MessagePack writer to write to.</param>
+    /// <param name="value">The Message value to serialize.</param>
+    /// <param name="options">Serializer options.</param>
     public void Serialize(ref MessagePackWriter writer, Message? value, MessagePackSerializerOptions options)
     {
         if (value == null!)

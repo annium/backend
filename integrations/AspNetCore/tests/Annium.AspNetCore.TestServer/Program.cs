@@ -1,5 +1,7 @@
+using Annium.AspNetCore.Extensions.Extensions;
 using Annium.AspNetCore.TestServer;
-using Annium.Core.DependencyInjection;
+using Annium.Infrastructure.Hosting.Extensions;
+using Annium.Logging.Microsoft;
 using Microsoft.AspNetCore.Builder;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,5 +19,8 @@ await app.RunAsync();
 
 namespace Annium.AspNetCore.TestServer
 {
+    /// <summary>
+    /// Entry point class for the AspNetCore test server
+    /// </summary>
     public partial class Program;
 }

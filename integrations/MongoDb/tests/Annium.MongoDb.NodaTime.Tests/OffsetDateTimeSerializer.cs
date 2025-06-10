@@ -7,13 +7,22 @@ using Xunit;
 
 namespace Annium.MongoDb.NodaTime.Tests;
 
+/// <summary>
+/// Tests for the OffsetDateTime serializer functionality
+/// </summary>
 public class OffsetDateTimeSerializerTests
 {
+    /// <summary>
+    /// Static constructor to register the OffsetDateTime serializer
+    /// </summary>
     static OffsetDateTimeSerializerTests()
     {
         BsonSerializer.RegisterSerializer(new OffsetDateTimeSerializer());
     }
 
+    /// <summary>
+    /// Tests that OffsetDateTime values with ISO calendar can be round-tripped correctly
+    /// </summary>
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
@@ -24,6 +33,9 @@ public class OffsetDateTimeSerializerTests
         obj.OffsetDateTime.Is(obj.OffsetDateTime);
     }
 
+    /// <summary>
+    /// Tests that OffsetDateTime values are converted to ISO calendar when serializing
+    /// </summary>
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
@@ -39,6 +51,9 @@ public class OffsetDateTimeSerializerTests
         obj.OffsetDateTime.Is(obj.OffsetDateTime.WithCalendar(CalendarSystem.Iso));
     }
 
+    /// <summary>
+    /// Tests that deserialization throws FormatException for invalid OffsetDateTime strings and null values
+    /// </summary>
     [Fact]
     public void ThrowsWhenDateIsInvalid()
     {
@@ -50,6 +65,9 @@ public class OffsetDateTimeSerializerTests
             .Throws<FormatException>();
     }
 
+    /// <summary>
+    /// Tests that nullable OffsetDateTime values can be deserialized from null BSON values
+    /// </summary>
     [Fact]
     public void CanParseNullable()
     {
@@ -58,10 +76,19 @@ public class OffsetDateTimeSerializerTests
             .NullableOffsetDateTime.IsDefault();
     }
 
+    /// <summary>
+    /// Test class containing OffsetDateTime properties for serialization testing
+    /// </summary>
     private class Test
     {
+        /// <summary>
+        /// Gets or sets an OffsetDateTime value
+        /// </summary>
         public OffsetDateTime OffsetDateTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets a nullable OffsetDateTime value
+        /// </summary>
         public OffsetDateTime? NullableOffsetDateTime { get; set; }
     }
 }
