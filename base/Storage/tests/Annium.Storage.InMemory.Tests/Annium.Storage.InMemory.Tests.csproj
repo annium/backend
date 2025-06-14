@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Annium.Storage.InMemory/Annium.Storage.InMemory.csproj" />
-    <ProjectReference Include="../Annium.Storage.Base.Tests/Annium.Storage.Base.Tests.csproj" />
+    <ProjectReference Include="../Annium.Storage.Tests.Lib/Annium.Storage.Tests.Lib.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Annium.Testing" />

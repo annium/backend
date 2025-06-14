@@ -8,7 +8,7 @@ using Annium.Testing;
 using Annium.Testing.Collection;
 using Xunit;
 
-namespace Annium.Storage.Base.Tests;
+namespace Annium.Storage.Tests.Lib;
 
 /// <summary>
 /// Abstract base class containing common test scenarios for storage implementations.

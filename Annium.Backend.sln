@@ -149,7 +149,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.S3", "base\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.S3.Tests", "base\Storage\tests\Annium.Storage.S3.Tests\Annium.Storage.S3.Tests.csproj", "{46651502-C475-4CAD-8900-DC561299952A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.Base.Tests", "base\Storage\tests\Annium.Storage.Base.Tests\Annium.Storage.Base.Tests.csproj", "{342956EE-406C-4F1B-8AAC-41B9ECA9226A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.Tests.Lib", "base\Storage\tests\Annium.Storage.Tests.Lib\Annium.Storage.Tests.Lib.csproj", "{342956EE-406C-4F1B-8AAC-41B9ECA9226A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DbUp", "DbUp", "{4A5BC08F-3B81-4F10-9B35-ED658C012A02}"
 EndProject

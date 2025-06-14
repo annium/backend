@@ -6,7 +6,7 @@ using Annium.Core.Runtime;
 using Annium.Logging.InMemory;
 using Annium.Logging.Shared;
 using Annium.Storage.Abstractions;
-using Annium.Storage.Base.Tests;
+using Annium.Storage.Tests.Lib;
 
 namespace Annium.Storage.S3.Tests;
 
