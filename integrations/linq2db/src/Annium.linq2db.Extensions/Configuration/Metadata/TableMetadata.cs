@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration.Metadata;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Represents metadata information for a database table including its schema, name, and column information.

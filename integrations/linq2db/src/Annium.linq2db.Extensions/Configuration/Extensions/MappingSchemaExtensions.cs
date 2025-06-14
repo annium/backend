@@ -6,7 +6,8 @@ using Annium.Serialization.Abstractions;
 using LinqToDB;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Extension methods for MappingSchema to provide common configuration scenarios.

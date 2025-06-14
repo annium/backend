@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 
-namespace Annium.linq2db.Extensions.Configuration.Metadata;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Represents metadata information for a database, containing information about all mapped tables.

@@ -1,6 +1,5 @@
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;
-using Annium.linq2db.Extensions.Configuration;
 
 namespace Annium.linq2db.Extensions;
 

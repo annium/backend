@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Annium.Core.Runtime.Time;
-using Annium.linq2db.Extensions.Extensions;
+using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Testing;

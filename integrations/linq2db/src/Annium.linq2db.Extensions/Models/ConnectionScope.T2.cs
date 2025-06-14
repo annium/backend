@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.linq2db.Extensions.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Represents a scoped database connection that manages the lifetime of two DataConnection instances.
