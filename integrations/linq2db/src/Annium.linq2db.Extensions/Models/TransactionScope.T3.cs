@@ -5,7 +5,8 @@ using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 using Dct = LinqToDB.Data.DataConnectionTransaction;
 
-namespace Annium.linq2db.Extensions.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Represents a scoped database transaction that manages the lifetime of three DataConnections and their transactions.

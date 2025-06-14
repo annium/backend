@@ -3,7 +3,6 @@
     <Solutions>Annium.Backend</Solutions>
     <OutputType>Library</OutputType>
     <IsPackable>false</IsPackable>
-    <IsTestProject>true</IsTestProject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
@@ -12,9 +11,5 @@
   <ItemGroup>
     <PackageReference Include="Annium.Logging.InMemory" />
     <PackageReference Include="Annium.Testing" />
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="xunit.runner.visualstudio" />
-    <PackageReference Include="xunit.v3" />
   </ItemGroup>
 </Project>

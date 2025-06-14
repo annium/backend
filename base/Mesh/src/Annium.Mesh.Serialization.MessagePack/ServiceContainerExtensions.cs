@@ -1,5 +1,4 @@
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Data.Operations.Serialization.MessagePack;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;

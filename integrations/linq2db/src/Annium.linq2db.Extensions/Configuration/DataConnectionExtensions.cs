@@ -6,7 +6,8 @@ using LinqToDB.Mapping;
 using LinqToDB.SqlQuery;
 using NodaTime;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Extension methods for DataConnection to handle automatic created/updated time management in SQL queries.

@@ -2,9 +2,6 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Extensions;
-using Annium.linq2db.Extensions.Configuration.Metadata;
 using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Internal.Configuration.Extensions;

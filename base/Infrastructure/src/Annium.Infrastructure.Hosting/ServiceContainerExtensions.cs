@@ -1,4 +1,4 @@
-using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 

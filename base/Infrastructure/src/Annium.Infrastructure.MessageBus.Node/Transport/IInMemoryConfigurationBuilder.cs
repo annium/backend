@@ -1,6 +1,7 @@
 using Annium.Serialization.Abstractions;
 
-namespace Annium.Infrastructure.MessageBus.Node.Transport;
+// ReSharper disable once CheckNamespace
+namespace Annium.Infrastructure.MessageBus.Node;
 
 /// <summary>
 /// Defines a builder interface for configuring in-memory MessageBus transport.

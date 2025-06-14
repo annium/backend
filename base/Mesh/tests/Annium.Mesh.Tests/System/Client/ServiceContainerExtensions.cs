@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Mesh.Client;
 using Annium.Mesh.Tests.System.Client.Clients;
 using Annium.Mesh.Transport.Abstractions;

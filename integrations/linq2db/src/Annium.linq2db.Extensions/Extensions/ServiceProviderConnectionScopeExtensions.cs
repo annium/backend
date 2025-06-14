@@ -1,10 +1,10 @@
 using System;
-using Annium.Core.DependencyInjection.Extensions;
-using Annium.linq2db.Extensions.Models;
+using Annium.Core.DependencyInjection;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.linq2db.Extensions.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Extension methods for IServiceProvider to create connection scopes for database operations.

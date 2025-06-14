@@ -1,10 +1,6 @@
 using System;
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Descriptors;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions;
-using Annium.linq2db.Extensions.Configuration;
-using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.Logging;
 using LinqToDB;
 using LinqToDB.Data;

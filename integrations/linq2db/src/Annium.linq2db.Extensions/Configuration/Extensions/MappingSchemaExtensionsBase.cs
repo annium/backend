@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Annium.Core.DependencyInjection.Extensions;
-using Annium.linq2db.Extensions.Configuration.Metadata;
+using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions.Internal.Configuration;
 using Annium.linq2db.Extensions.Internal.Configuration.Extensions;
-using Annium.Reflection.Types;
+using Annium.Reflection;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Base extension methods for MappingSchema providing core functionality for metadata description and configuration application.

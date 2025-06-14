@@ -1,8 +1,8 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Mesh.Server.Models;
 
-namespace Annium.Mesh.Server.Handlers;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Defines a broadcaster that can send messages to multiple connected clients in a mesh network.

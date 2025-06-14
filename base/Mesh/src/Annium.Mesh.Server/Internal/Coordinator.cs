@@ -1,9 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
-using Annium.Mesh.Server.Models;
 using Annium.Mesh.Transport.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 

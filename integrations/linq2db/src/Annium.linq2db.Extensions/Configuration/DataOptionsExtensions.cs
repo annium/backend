@@ -1,10 +1,11 @@
 using System;
 using System.Diagnostics;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using LinqToDB;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Extension methods for configuring linq2db DataOptions

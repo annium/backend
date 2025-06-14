@@ -1,7 +1,6 @@
 using System;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using Annium.Extensions.Reactive.Operators;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal;
 

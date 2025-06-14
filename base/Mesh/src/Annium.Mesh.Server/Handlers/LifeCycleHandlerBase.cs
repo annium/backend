@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 
-namespace Annium.Mesh.Server.Handlers;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Base class for handlers that need to perform operations during connection lifecycle events.

@@ -1,7 +1,6 @@
 using System;
 using Annium.AspNetCore.Mesh.Internal.Middleware;
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.AspNetCore.Mesh;
 

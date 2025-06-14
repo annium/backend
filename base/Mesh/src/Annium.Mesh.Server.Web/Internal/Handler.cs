@@ -2,7 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Transport.Abstractions;
 using Annium.Net.Servers.Web;

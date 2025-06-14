@@ -1,8 +1,9 @@
 using Annium.Architecture.Http.Profiles;
-using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper;
 
-namespace Annium.AspNetCore.Extensions.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.AspNetCore.Extensions;
 
 /// <summary>
 /// Extension methods for configuring ASP.NET Core extensions in the service container

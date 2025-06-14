@@ -1,7 +1,8 @@
 using Annium.Data.Models;
 using LinqToDB.Mapping;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Entity configuration interface for entities with ID properties

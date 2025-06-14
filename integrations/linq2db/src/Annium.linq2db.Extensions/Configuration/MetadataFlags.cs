@@ -1,6 +1,7 @@
 using System;
 
-namespace Annium.linq2db.Extensions.Configuration;
+// ReSharper disable once CheckNamespace
+namespace Annium.linq2db.Extensions;
 
 /// <summary>
 /// Flags for controlling metadata generation behavior

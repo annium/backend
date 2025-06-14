@@ -2,7 +2,8 @@ using System;
 using Annium.AspNetCore.Extensions.Internal.Middlewares;
 using Microsoft.AspNetCore.Builder;
 
-namespace Annium.AspNetCore.Extensions.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.AspNetCore.Extensions;
 
 /// <summary>
 /// Extension methods for configuring the ASP.NET Core application builder

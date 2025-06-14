@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 
-namespace Annium.Mesh.Server.Handlers;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Defines a handler for processing requests that return only a status result without response data.

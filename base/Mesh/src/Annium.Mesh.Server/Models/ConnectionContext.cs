@@ -3,7 +3,8 @@ using System.Threading;
 using Annium.Logging;
 using Annium.Mesh.Transport.Abstractions;
 
-namespace Annium.Mesh.Server.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Manages the context and lifecycle of a mesh server connection, including connection state, cancellation, and logging.

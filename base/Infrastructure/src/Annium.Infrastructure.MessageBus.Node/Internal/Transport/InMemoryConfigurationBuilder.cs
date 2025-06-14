@@ -1,5 +1,4 @@
 using System;
-using Annium.Infrastructure.MessageBus.Node.Transport;
 using Annium.Serialization.Abstractions;
 
 namespace Annium.Infrastructure.MessageBus.Node.Internal.Transport;

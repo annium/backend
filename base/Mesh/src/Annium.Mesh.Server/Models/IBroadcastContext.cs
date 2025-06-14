@@ -1,4 +1,5 @@
-namespace Annium.Mesh.Server.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Provides context for broadcasting messages to multiple connected clients in a mesh network.
