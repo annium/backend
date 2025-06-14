@@ -1,4 +1,5 @@
-namespace Annium.Mesh.Server.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Provides context for handling incoming requests from mesh clients.

@@ -5,7 +5,6 @@ using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
-using Annium.Mesh.Server.Components;
 using Annium.Mesh.Server.Internal.Components;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Mesh.Transport.Abstractions;

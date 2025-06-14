@@ -6,8 +6,7 @@
 // using Annium.Mesh.Domain.Requests;
 // using Annium.Mesh.Server.Internal.Models;
 // using Annium.Mesh.Server.Internal.Responses;
-// using Annium.Mesh.Server.Models;
-//
+// //
 // namespace Annium.Mesh.Server.Internal.Handlers.Subscriptions;
 //
 // internal class SubscriptionInitHandler<TInit, TMessage> :

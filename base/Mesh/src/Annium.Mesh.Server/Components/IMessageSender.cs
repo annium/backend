@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Transport.Abstractions;
 
-namespace Annium.Mesh.Server.Components;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Provides methods to send messages over mesh connections with various overloads for different data types and message configurations.

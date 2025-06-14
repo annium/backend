@@ -1,7 +1,8 @@
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 
-namespace Annium.Mesh.Server.Models;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Provides context for managing subscriptions where clients can receive continuous updates after initialization.

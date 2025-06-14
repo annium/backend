@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
-using Annium.Mesh.Server.Components;
 using Annium.Mesh.Server.Internal.Models;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Mesh.Transport.Abstractions;

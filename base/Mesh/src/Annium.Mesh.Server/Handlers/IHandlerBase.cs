@@ -1,6 +1,7 @@
 using System;
 
-namespace Annium.Mesh.Server.Handlers;
+// ReSharper disable once CheckNamespace
+namespace Annium.Mesh.Server;
 
 /// <summary>
 /// Base interface for all mesh handlers providing common properties for action identification and versioning.
