@@ -1,5 +1,5 @@
 using System;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Serialization.Abstractions;

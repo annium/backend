@@ -1,5 +1,5 @@
 using Annium.Architecture.Http.Profiles;
-using Annium.Core.DependencyInjection.Container;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Mapper;
 
 namespace Annium.AspNetCore.Extensions.Extensions;

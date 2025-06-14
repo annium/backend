@@ -1,7 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Mesh.Serialization.MessagePack;
 using Annium.Mesh.Server;
 using Annium.Mesh.Tests.System.Client.Clients;

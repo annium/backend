@@ -4,8 +4,6 @@ using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Extensions.Reactive;
-using Annium.Extensions.Reactive.Operators;
 using Annium.Logging;
 using NetMQ;
 using NetMQ.Sockets;

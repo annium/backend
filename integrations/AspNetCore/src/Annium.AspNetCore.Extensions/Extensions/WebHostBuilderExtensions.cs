@@ -1,5 +1,5 @@
 using System.IO;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Microsoft.AspNetCore.Hosting;
 
 namespace Annium.AspNetCore.Extensions.Extensions;

@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using LinqToDB;
 

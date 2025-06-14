@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.linq2db.Extensions.Configuration.Metadata;
-using Annium.Reflection.Members;
+using Annium.Reflection;
 using LinqToDB;
 
 namespace Annium.linq2db.Extensions.Extensions;

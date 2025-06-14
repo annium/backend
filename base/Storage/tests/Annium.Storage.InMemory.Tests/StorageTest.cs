@@ -1,5 +1,4 @@
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;
 using Annium.Logging.InMemory;
 using Annium.Logging.Shared;

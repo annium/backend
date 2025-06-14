@@ -1,7 +1,6 @@
 using Annium.linq2db.Extensions.Configuration.Extensions;
 using Annium.linq2db.Tests.Lib.Db;
 using Annium.Testing;
-using Annium.Testing.Collection;
 using Xunit;
 
 namespace Annium.linq2db.Tests.Lib.Configuration;

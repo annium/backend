@@ -1,7 +1,5 @@
 using System;
-using Annium.Core.DependencyInjection.Container;
-using Annium.Core.DependencyInjection.Descriptors;
-using Annium.Core.DependencyInjection.Packs;
+using Annium.Core.DependencyInjection;
 
 namespace Annium.Cache.InMemory.Tests;
 

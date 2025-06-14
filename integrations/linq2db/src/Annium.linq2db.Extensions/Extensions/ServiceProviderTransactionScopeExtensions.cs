@@ -1,6 +1,6 @@
 using System;
 using System.Data;
-using Annium.Core.DependencyInjection.Extensions;
+using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions.Models;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,5 +1,4 @@
-using Annium.Core.DependencyInjection.Packs;
-using Annium.Core.DependencyInjection.Plugins;
+using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Annium.Infrastructure.Hosting.Extensions;
