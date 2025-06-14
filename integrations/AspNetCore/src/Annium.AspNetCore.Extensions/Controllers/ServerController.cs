@@ -5,7 +5,8 @@ using Annium.Core.Mediator;
 using Annium.Data.Operations;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Annium.AspNetCore.Extensions.Controllers;
+// ReSharper disable once CheckNamespace
+namespace Annium.AspNetCore.Extensions;
 
 /// <summary>
 /// Base controller that provides mediator-based request handling capabilities for ASP.NET Core controllers

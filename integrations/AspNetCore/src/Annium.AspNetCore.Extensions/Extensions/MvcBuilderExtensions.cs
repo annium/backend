@@ -8,7 +8,8 @@ using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Annium.AspNetCore.Extensions.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.AspNetCore.Extensions;
 
 /// <summary>
 /// Extension methods for configuring MVC builder with additional functionality

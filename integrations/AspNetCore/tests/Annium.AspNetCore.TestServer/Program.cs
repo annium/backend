@@ -1,4 +1,4 @@
-using Annium.AspNetCore.Extensions.Extensions;
+using Annium.AspNetCore.Extensions;
 using Annium.AspNetCore.TestServer;
 using Annium.Infrastructure.Hosting.Extensions;
 using Annium.Logging.Microsoft;

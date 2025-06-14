@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Architecture.CQRS.Commands;
 using Annium.Architecture.CQRS.Queries;
-using Annium.AspNetCore.Extensions.Controllers;
+using Annium.AspNetCore.Extensions;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.Core.Mediator;
 using Annium.Data.Operations;

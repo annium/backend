@@ -1,7 +1,7 @@
 using System;
 using Annium.Architecture.CQRS;
 using Annium.Architecture.Http;
-using Annium.AspNetCore.Extensions.Extensions;
+using Annium.AspNetCore.Extensions;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Mediator;
