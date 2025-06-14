@@ -2,7 +2,6 @@ using System;
 using Annium.Core.DependencyInjection;
 using Annium.Infrastructure.MessageBus.Node.Internal;
 using Annium.Infrastructure.MessageBus.Node.Internal.Transport;
-using Annium.Infrastructure.MessageBus.Node.Transport;
 
 // ReSharper disable InconsistentNaming
 

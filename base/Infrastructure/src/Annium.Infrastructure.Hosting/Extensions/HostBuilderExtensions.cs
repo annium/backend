@@ -1,7 +1,8 @@
 using Annium.Core.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Annium.Infrastructure.Hosting.Extensions;
+// ReSharper disable once CheckNamespace
+namespace Annium.Infrastructure.Hosting;
 
 /// <summary>
 /// Provides extension methods for configuring IHostBuilder with service packs.

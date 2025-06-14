@@ -1,6 +1,6 @@
 using Annium.AspNetCore.Extensions;
 using Annium.AspNetCore.TestServer;
-using Annium.Infrastructure.Hosting.Extensions;
+using Annium.Infrastructure.Hosting;
 using Annium.Logging.Microsoft;
 using Microsoft.AspNetCore.Builder;
 
