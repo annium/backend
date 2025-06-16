@@ -15,7 +15,7 @@
     <PackageVersion Include="Annium.Data.Operations.Serialization.MessagePack" Version="1.1.14" />
     <PackageVersion Include="Annium.Execution.Background" Version="1.1.14" />
     <PackageVersion Include="Annium.Extensions.Reactive" Version="1.1.14" />
-    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.13" />
+    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.14" />
     <PackageVersion Include="Annium.Logging.InMemory" Version="1.1.14" />
     <PackageVersion Include="Annium.Logging.Microsoft" Version="1.1.14" />
     <PackageVersion Include="Annium.Net.Http" Version="1.1.14" />
