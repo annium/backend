@@ -3,31 +3,31 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
-    <PackageVersion Include="AWSSDK.S3" Version="4.0.1" />
-    <PackageVersion Include="Annium.Architecture.Base" Version="1.1.14" />
-    <PackageVersion Include="Annium.Architecture.CQRS" Version="1.1.14" />
-    <PackageVersion Include="Annium.Architecture.Http" Version="1.1.14" />
-    <PackageVersion Include="Annium.Core.DependencyInjection" Version="1.1.14" />
-    <PackageVersion Include="Annium.Core.Runtime" Version="1.1.14" />
-    <PackageVersion Include="Annium.Data.Models" Version="1.1.14" />
-    <PackageVersion Include="Annium.Data.Operations" Version="1.1.14" />
-    <PackageVersion Include="Annium.Data.Operations.Serialization.Json" Version="1.1.14" />
-    <PackageVersion Include="Annium.Data.Operations.Serialization.MessagePack" Version="1.1.14" />
-    <PackageVersion Include="Annium.Execution.Background" Version="1.1.14" />
-    <PackageVersion Include="Annium.Extensions.Reactive" Version="1.1.14" />
-    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.14" />
-    <PackageVersion Include="Annium.Logging.InMemory" Version="1.1.14" />
-    <PackageVersion Include="Annium.Logging.Microsoft" Version="1.1.14" />
-    <PackageVersion Include="Annium.Net.Http" Version="1.1.14" />
-    <PackageVersion Include="Annium.Net.Servers.Sockets" Version="1.1.14" />
-    <PackageVersion Include="Annium.Net.Servers.Web" Version="1.1.14" />
-    <PackageVersion Include="Annium.Net.Sockets" Version="1.1.14" />
-    <PackageVersion Include="Annium.Net.WebSockets" Version="1.1.14" />
-    <PackageVersion Include="Annium.NodaTime.Serialization.Json" Version="1.1.14" />
-    <PackageVersion Include="Annium.Serialization.Abstractions" Version="1.1.14" />
-    <PackageVersion Include="Annium.Serialization.Json" Version="1.1.14" />
-    <PackageVersion Include="Annium.Serialization.MessagePack" Version="1.1.14" />
-    <PackageVersion Include="Annium.Testing" Version="1.1.14" />
+    <PackageVersion Include="AWSSDK.S3" Version="4.0.2" />
+    <PackageVersion Include="Annium.Architecture.Base" Version="1.1.15" />
+    <PackageVersion Include="Annium.Architecture.CQRS" Version="1.1.15" />
+    <PackageVersion Include="Annium.Architecture.Http" Version="1.1.15" />
+    <PackageVersion Include="Annium.Core.DependencyInjection" Version="1.1.15" />
+    <PackageVersion Include="Annium.Core.Runtime" Version="1.1.15" />
+    <PackageVersion Include="Annium.Data.Models" Version="1.1.15" />
+    <PackageVersion Include="Annium.Data.Operations" Version="1.1.15" />
+    <PackageVersion Include="Annium.Data.Operations.Serialization.Json" Version="1.1.15" />
+    <PackageVersion Include="Annium.Data.Operations.Serialization.MessagePack" Version="1.1.15" />
+    <PackageVersion Include="Annium.Execution.Background" Version="1.1.15" />
+    <PackageVersion Include="Annium.Extensions.Reactive" Version="1.1.15" />
+    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.15" />
+    <PackageVersion Include="Annium.Logging.InMemory" Version="1.1.15" />
+    <PackageVersion Include="Annium.Logging.Microsoft" Version="1.1.15" />
+    <PackageVersion Include="Annium.Net.Http" Version="1.1.15" />
+    <PackageVersion Include="Annium.Net.Servers.Sockets" Version="1.1.15" />
+    <PackageVersion Include="Annium.Net.Servers.Web" Version="1.1.15" />
+    <PackageVersion Include="Annium.Net.Sockets" Version="1.1.15" />
+    <PackageVersion Include="Annium.Net.WebSockets" Version="1.1.15" />
+    <PackageVersion Include="Annium.NodaTime.Serialization.Json" Version="1.1.15" />
+    <PackageVersion Include="Annium.Serialization.Abstractions" Version="1.1.15" />
+    <PackageVersion Include="Annium.Serialization.Json" Version="1.1.15" />
+    <PackageVersion Include="Annium.Serialization.MessagePack" Version="1.1.15" />
+    <PackageVersion Include="Annium.Testing" Version="1.1.15" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.6" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.6" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="9.0.6" />
