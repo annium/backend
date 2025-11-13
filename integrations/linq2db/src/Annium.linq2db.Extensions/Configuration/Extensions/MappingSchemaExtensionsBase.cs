@@ -101,7 +101,7 @@ public static class MappingSchemaExtensionsBase
                 .Invoke(mappingBuilder, new object?[] { null })!;
             var configureMethod = typeof(IEntityConfiguration<>)
                 .MakeGenericType(entityType)
-                .GetMethod(nameof(IEntityConfiguration<object>.Configure))!;
+                .GetMethod(nameof(IEntityConfiguration<>.Configure))!;
             configureMethod.Invoke(configuration, new[] { entityMappingBuilder });
         }
 

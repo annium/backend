@@ -66,7 +66,7 @@ internal static class MappingSchemaExtensions
                         .Invoke(mappingBuilder, new object?[] { null })!;
                     var getPropertyMappingBuilder = entityMappingBuilder
                         .GetType()
-                        .GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
+                        .GetMethod(nameof(EntityMappingBuilder<>.Property))!;
 
                     foreach (var column in table.Columns.Values)
                     {
@@ -88,7 +88,7 @@ internal static class MappingSchemaExtensions
                             )!;
                         var isNotColumn = propertyMappingBuilder
                             .GetType()
-                            .GetMethod(nameof(PropertyMappingBuilder<object, object>.IsNotColumn))!;
+                            .GetMethod(nameof(PropertyMappingBuilder<,>.IsNotColumn))!;
                         isNotColumn.Invoke(propertyMappingBuilder, Array.Empty<object>());
                     }
                 }

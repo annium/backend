@@ -41,11 +41,11 @@ public static class MappingSchemaExtensions
         var serializerKey = SerializerKey.CreateDefault(MediaTypeNames.Application.Json);
         var serializer = sp.ResolveKeyed<ISerializer<string>>(serializerKey);
         var serialize = typeof(ISerializer<string>).GetMethod(
-            nameof(ISerializer<string>.Serialize),
+            nameof(ISerializer<>.Serialize),
             new[] { typeof(Type), typeof(object) }
         )!;
         var deserialize = typeof(ISerializer<string>).GetMethod(
-            nameof(ISerializer<string>.Deserialize),
+            nameof(ISerializer<>.Deserialize),
             new[] { typeof(Type), typeof(string) }
         )!;
 
@@ -64,7 +64,7 @@ public static class MappingSchemaExtensions
                         .Invoke(mappingBuilder, new object?[] { null })!;
                     var getPropertyMappingBuilder = entityMappingBuilder
                         .GetType()
-                        .GetMethod(nameof(EntityMappingBuilder<object>.Property))!;
+                        .GetMethod(nameof(EntityMappingBuilder<>.Property))!;
 
                     foreach (var column in table.Columns.Values)
                     {
@@ -86,7 +86,7 @@ public static class MappingSchemaExtensions
                             )!;
                         var hasConversionFunc = propertyMappingBuilder
                             .GetType()
-                            .GetMethod(nameof(PropertyMappingBuilder<object, object>.HasConversionFunc))!
+                            .GetMethod(nameof(PropertyMappingBuilder<,>.HasConversionFunc))!
                             .MakeGenericMethod(typeof(string));
                         var instance = Expression.Constant(serializer);
                         var serializeValue = Expression.Parameter(column.Type);

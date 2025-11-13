@@ -93,7 +93,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
 
         var result = await _redis
             .GetDatabase()
-            .StringSetAsync(key, value, expires == Duration.Zero ? null : expires.ToTimeSpan());
+            .StringSetAsync(key, value, expires == Duration.Zero ? null : expires.ToTimeSpan(), When.Always);
 
         return result;
     }

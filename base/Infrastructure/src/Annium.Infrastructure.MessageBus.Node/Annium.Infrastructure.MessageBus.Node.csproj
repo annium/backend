@@ -11,7 +11,5 @@
     <PackageReference Include="Annium.Extensions.Reactive" />
     <PackageReference Include="Annium.Serialization.Json" />
     <PackageReference Include="NetMQ" />
-    <PackageReference Include="System.Text.Json" />
-    <PackageReference Include="System.Threading.Channels" />
   </ItemGroup>
 </Project>

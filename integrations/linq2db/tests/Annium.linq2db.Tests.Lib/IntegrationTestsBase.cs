@@ -56,6 +56,7 @@ public class IntegrationTestsBase : TestBase
             .ThenLoad(x => x.Employee.Chief)
             .LoadWith(x => x.Employees)
             .ThenLoad(x => x.Employee.Subordinates)
+            .AsQueryable()
             .SingleAsync(x => x.Name == companyName);
         company.Name.Is(companyName);
         // company.CreatedAt.Is(createdAt);
@@ -164,6 +165,7 @@ public class IntegrationTestsBase : TestBase
                         .ThenLoad(x => x.Employee.Chief)
                         .LoadWith(x => x.Employees)
                         .ThenLoad(x => x.Employee.Subordinates)
+                        .AsQueryable()
                         .SingleAsync(x => x.Name == companyName);
 
                     loadedCompany.Id.Is(company.Id);
