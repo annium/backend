@@ -75,9 +75,7 @@ public class ServerConfigurationOptions
 
         foreach (var implementation in implementations)
         {
-            var action = implementation
-                .GetProperty(nameof(IHandlerBase<>.Action))!
-                .GetPropertyOrFieldValue<TAction>();
+            var action = implementation.GetProperty(nameof(IHandlerBase<>.Action))!.GetPropertyOrFieldValue<TAction>();
             if (!actions.Contains(action))
                 throw new InvalidOperationException($"Action {action} is outside of known action values");
 
@@ -176,14 +174,7 @@ public class ServerConfigurationOptions
     /// <returns>True if the handler was successfully registered as a push handler; otherwise, false.</returns>
     private bool RegisterPushHandler(ActionKey actionKey, Type implementation)
     {
-        if (
-            !TryResolveHandler(
-                implementation,
-                typeof(IPushHandler<,>),
-                nameof(IPushHandler<,>.RunAsync),
-                out var info
-            )
-        )
+        if (!TryResolveHandler(implementation, typeof(IPushHandler<,>), nameof(IPushHandler<,>.RunAsync), out var info))
             return false;
 
         _routeStore.PushRoutes.Register(actionKey, new PushRoute(implementation, info.Handle, info.Args[1]));
