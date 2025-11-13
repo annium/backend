@@ -41,8 +41,6 @@
     <PackageVersion Include="Npgsql.NodaTime" Version="9.0.4" />
     <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.0" />
-    <PackageVersion Include="System.Threading.Channels" Version="10.0.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.8.1" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.8.1" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />

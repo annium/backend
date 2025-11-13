@@ -66,7 +66,7 @@ public class ServerConfigurationOptions
             .GetImplementations(typeof(IHandlerBase<TAction>))
             .Where(x =>
                 x is { IsClass: true, IsGenericType: false }
-                && x.GetProperty(nameof(IHandlerBase<TAction>.Version))!.GetPropertyOrFieldValue<ushort>() == version
+                && x.GetProperty(nameof(IHandlerBase<>.Version))!.GetPropertyOrFieldValue<ushort>() == version
             )
             .ToArray();
 
@@ -76,7 +76,7 @@ public class ServerConfigurationOptions
         foreach (var implementation in implementations)
         {
             var action = implementation
-                .GetProperty(nameof(IHandlerBase<TAction>.Action))!
+                .GetProperty(nameof(IHandlerBase<>.Action))!
                 .GetPropertyOrFieldValue<TAction>();
             if (!actions.Contains(action))
                 throw new InvalidOperationException($"Action {action} is outside of known action values");
@@ -126,13 +126,13 @@ public class ServerConfigurationOptions
             !TryResolveHandler(
                 implementation,
                 typeof(IRequestHandler<,>),
-                nameof(IRequestHandler<MessageType, object>.HandleAsync),
+                nameof(IRequestHandler<,>.HandleAsync),
                 out var info
             )
         )
             return false;
 
-        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
+        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<>.Result))!;
         _routeStore.RequestRoutes.Register(
             actionKey,
             new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)
@@ -153,13 +153,13 @@ public class ServerConfigurationOptions
             !TryResolveHandler(
                 implementation,
                 typeof(IRequestResponseHandler<,,>),
-                nameof(IRequestResponseHandler<MessageType, object, object>.HandleAsync),
+                nameof(IRequestResponseHandler<,,>.HandleAsync),
                 out var info
             )
         )
             return false;
 
-        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<object>.Result))!;
+        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<>.Result))!;
         _routeStore.RequestRoutes.Register(
             actionKey,
             new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)
@@ -180,7 +180,7 @@ public class ServerConfigurationOptions
             !TryResolveHandler(
                 implementation,
                 typeof(IPushHandler<,>),
-                nameof(IPushHandler<MessageType, object>.RunAsync),
+                nameof(IPushHandler<,>.RunAsync),
                 out var info
             )
         )
