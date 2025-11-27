@@ -8,8 +8,8 @@
   <ItemGroup>
     <PackageReference Include="Annium.Logging.Microsoft" />
     <PackageReference Include="Annium.Net.Http" />
-    <PackageReference Include="Annium.Testing" />
     <PackageReference Include="Annium.Serialization.Json" />
+    <PackageReference Include="Annium.Testing" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
   </ItemGroup>
 </Project>
