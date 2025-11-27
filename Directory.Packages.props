@@ -4,45 +4,45 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageVersion Include="AWSSDK.S3" Version="4.0.13" />
-    <PackageVersion Include="Annium.Architecture.Base" Version="1.1.24" />
-    <PackageVersion Include="Annium.Architecture.CQRS" Version="1.1.24" />
-    <PackageVersion Include="Annium.Architecture.Http" Version="1.1.24" />
-    <PackageVersion Include="Annium.Core.DependencyInjection" Version="1.1.24" />
-    <PackageVersion Include="Annium.Core.Runtime" Version="1.1.24" />
-    <PackageVersion Include="Annium.Data.Models" Version="1.1.24" />
-    <PackageVersion Include="Annium.Data.Operations" Version="1.1.24" />
-    <PackageVersion Include="Annium.Data.Operations.Serialization.Json" Version="1.1.24" />
-    <PackageVersion Include="Annium.Data.Operations.Serialization.MessagePack" Version="1.1.24" />
-    <PackageVersion Include="Annium.Execution.Background" Version="1.1.24" />
-    <PackageVersion Include="Annium.Extensions.Reactive" Version="1.1.24" />
-    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.24" />
-    <PackageVersion Include="Annium.Logging.InMemory" Version="1.1.24" />
-    <PackageVersion Include="Annium.Logging.Microsoft" Version="1.1.24" />
-    <PackageVersion Include="Annium.Net.Http" Version="1.1.24" />
-    <PackageVersion Include="Annium.Net.Servers.Sockets" Version="1.1.24" />
-    <PackageVersion Include="Annium.Net.Servers.Web" Version="1.1.24" />
-    <PackageVersion Include="Annium.Net.Sockets" Version="1.1.24" />
-    <PackageVersion Include="Annium.Net.WebSockets" Version="1.1.24" />
-    <PackageVersion Include="Annium.NodaTime.Serialization.Json" Version="1.1.24" />
-    <PackageVersion Include="Annium.Serialization.Abstractions" Version="1.1.24" />
-    <PackageVersion Include="Annium.Serialization.Json" Version="1.1.24" />
-    <PackageVersion Include="Annium.Serialization.MessagePack" Version="1.1.24" />
-    <PackageVersion Include="Annium.Testing" Version="1.1.24" />
+    <PackageVersion Include="Annium.Architecture.Base" Version="1.1.26" />
+    <PackageVersion Include="Annium.Architecture.CQRS" Version="1.1.26" />
+    <PackageVersion Include="Annium.Architecture.Http" Version="1.1.26" />
+    <PackageVersion Include="Annium.Core.DependencyInjection" Version="1.1.26" />
+    <PackageVersion Include="Annium.Core.Runtime" Version="1.1.26" />
+    <PackageVersion Include="Annium.Data.Models" Version="1.1.26" />
+    <PackageVersion Include="Annium.Data.Operations" Version="1.1.26" />
+    <PackageVersion Include="Annium.Data.Operations.Serialization.Json" Version="1.1.26" />
+    <PackageVersion Include="Annium.Data.Operations.Serialization.MessagePack" Version="1.1.26" />
+    <PackageVersion Include="Annium.Execution.Background" Version="1.1.26" />
+    <PackageVersion Include="Annium.Extensions.Reactive" Version="1.1.26" />
+    <PackageVersion Include="Annium.Localization.Abstractions" Version="1.1.26" />
+    <PackageVersion Include="Annium.Logging.InMemory" Version="1.1.26" />
+    <PackageVersion Include="Annium.Logging.Microsoft" Version="1.1.26" />
+    <PackageVersion Include="Annium.Net.Http" Version="1.1.26" />
+    <PackageVersion Include="Annium.Net.Servers.Sockets" Version="1.1.26" />
+    <PackageVersion Include="Annium.Net.Servers.Web" Version="1.1.26" />
+    <PackageVersion Include="Annium.Net.Sockets" Version="1.1.26" />
+    <PackageVersion Include="Annium.Net.WebSockets" Version="1.1.26" />
+    <PackageVersion Include="Annium.NodaTime.Serialization.Json" Version="1.1.26" />
+    <PackageVersion Include="Annium.Serialization.Abstractions" Version="1.1.26" />
+    <PackageVersion Include="Annium.Serialization.Json" Version="1.1.26" />
+    <PackageVersion Include="Annium.Serialization.MessagePack" Version="1.1.26" />
+    <PackageVersion Include="Annium.Testing" Version="1.1.26" />
     <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.0" />
     <PackageVersion Include="Microsoft.Extensions.Hosting" Version="10.0.0" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
     <PackageVersion Include="Microsoft.VisualStudio.Threading.Analyzers" Version="17.12.19" />
-    <PackageVersion Include="MongoDB.Driver" Version="3.5.1" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.5.2" />
     <PackageVersion Include="NetMQ" Version="4.0.2" />
     <PackageVersion Include="NodaTime" Version="3.2.2" />
-    <PackageVersion Include="Npgsql" Version="9.0.4" />
-    <PackageVersion Include="Npgsql.NodaTime" Version="9.0.4" />
+    <PackageVersion Include="Npgsql" Version="10.0.0" />
+    <PackageVersion Include="Npgsql.NodaTime" Version="10.0.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
-    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.8.1" />
-    <PackageVersion Include="Testcontainers.Redis" Version="4.8.1" />
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.9.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.9.0" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="dbup-core" Version="6.0.15" />
     <PackageVersion Include="dbup-postgresql" Version="6.1.5" />
