@@ -1,12 +1,17 @@
 using System;
-using System.Net.Http;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
+using Annium.Core.Runtime;
 using Annium.Logging;
+using Annium.Logging.Shared;
+using Annium.Logging.Xunit;
 using Annium.Net.Http;
+using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Xunit;
 
 namespace Annium.AspNetCore.IntegrationTesting.Internal;
 
@@ -23,14 +28,14 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     private readonly WebApplicationFactory<TEntryPoint> _appFactory;
 
     /// <summary>
-    /// The lazy-initialized HTTP client for making test requests
+    /// Output helper
     /// </summary>
-    private readonly Lazy<HttpClient> _httpClient;
+    private readonly ITestOutputHelper _outputHelper;
 
     /// <summary>
     /// The factory for creating HTTP requests
     /// </summary>
-    private readonly IHttpRequestFactory _httpRequestFactory;
+    private readonly Lazy<IHttpRequestFactory> _httpRequestFactory;
 
     /// <summary>
     /// The disposable box for managing resources that need cleanup
@@ -41,11 +46,12 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     /// Initializes a new instance of the WrappedWebApplicationFactory class
     /// </summary>
     /// <param name="appFactory">The underlying web application factory</param>
-    public WrappedWebApplicationFactory(WebApplicationFactory<TEntryPoint> appFactory)
+    /// <param name="outputHelper">Output helper</param>
+    public WrappedWebApplicationFactory(WebApplicationFactory<TEntryPoint> appFactory, ITestOutputHelper outputHelper)
     {
         _appFactory = appFactory;
-        _httpClient = new Lazy<HttpClient>(InitHttpClient, true);
-        _httpRequestFactory = Resolve<IHttpRequestFactory>();
+        _outputHelper = outputHelper;
+        _httpRequestFactory = new Lazy<IHttpRequestFactory>(InitHttpRequestFactory, true);
         _disposable += _appFactory as IAsyncDisposable;
     }
 
@@ -70,7 +76,7 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     /// <returns>An HTTP request instance</returns>
     public IHttpRequest GetHttpRequest()
     {
-        return _httpRequestFactory.New().UseClient(_httpClient.Value);
+        return _httpRequestFactory.Value.New();
     }
 
     /// <summary>
@@ -100,12 +106,25 @@ internal class WrappedWebApplicationFactory<TEntryPoint> : IWebApplicationFactor
     /// Initializes and configures the HTTP client for testing
     /// </summary>
     /// <returns>The configured HTTP client</returns>
-    private HttpClient InitHttpClient()
+    private IHttpRequestFactory InitHttpRequestFactory()
     {
         var httpClient = _appFactory.CreateClient();
-        _disposable += httpClient;
 
-        return httpClient;
+        var services = new ServiceContainer();
+        services.AddRuntime(GetType().Assembly);
+        services.AddTime().WithRelativeTime().SetDefault();
+        services.AddLogging();
+        services.Add(_outputHelper).AsSelf().Singleton();
+        services.AddHttpRequestFactory(_ => httpClient, true);
+        services.AddSerializers().WithJson();
+
+        var sp = services.BuildServiceProvider();
+        _disposable += sp as IAsyncDisposable;
+        sp.UseLogging(x => x.UseTestOutput());
+
+        var httpRequestFactory = sp.Resolve<IHttpRequestFactory>();
+
+        return httpRequestFactory;
     }
 
     /// <summary>

@@ -156,7 +156,7 @@ public abstract class IntegrationTest : TestBase, IAsyncDisposable
         var appFactory = new TestWebApplicationFactory<TEntryPoint>(configureHost);
         setupServices(appFactory.Services);
         // _disposable += () => appFactory.Server.Host.StopAsync();
-        var wrappedAppFactory = new WrappedWebApplicationFactory<TEntryPoint>(appFactory);
+        var wrappedAppFactory = new WrappedWebApplicationFactory<TEntryPoint>(appFactory, _outputHelper);
         _disposable += wrappedAppFactory;
 
         return wrappedAppFactory;
