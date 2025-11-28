@@ -1,5 +1,6 @@
 using System.Net;
 using System.Threading.Tasks;
+using Annium.AspNetCore.IntegrationTesting.Http;
 using Annium.AspNetCore.TestServer.Controllers;
 using Annium.Data.Operations;
 using Annium.Data.Operations.Serialization.Json;
@@ -16,7 +17,6 @@ namespace Annium.AspNetCore.Extensions.Tests;
 /// </summary>
 public class ServerControllerTests : TestBase
 {
-    private readonly ITestOutputHelper _outputHelper;
 
     /// <summary>
     /// Initializes a new instance of the ServerControllerTest class
@@ -25,7 +25,6 @@ public class ServerControllerTests : TestBase
     public ServerControllerTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        _outputHelper = outputHelper;
     }
 
     /// <summary>
@@ -36,14 +35,11 @@ public class ServerControllerTests : TestBase
     public async Task Command_BadRequest_Works()
     {
         // arrange
-        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
 
-        Register(container =>
-            container
-                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
-                .AddSerializers()
-                .WithJson(opts => opts.ConfigureForOperations())
-        );
+        this.RegisterHttpRequestFactory(testHost, true);
+        Register(container => container.AddSerializers().WithJson(opts => opts.ConfigureForOperations()));
+
         var httpRequestFactory = Get<IHttpRequestFactory>();
 
         // act
@@ -66,14 +62,11 @@ public class ServerControllerTests : TestBase
     public async Task Command_Ok_Works()
     {
         // arrange
-        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
 
-        Register(container =>
-            container
-                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
-                .AddSerializers()
-                .WithJson(opts => opts.ConfigureForOperations())
-        );
+        this.RegisterHttpRequestFactory(testHost, true);
+        Register(container => container.AddSerializers().WithJson(opts => opts.ConfigureForOperations()));
+
         var httpRequestFactory = Get<IHttpRequestFactory>();
 
         // act
@@ -96,14 +89,11 @@ public class ServerControllerTests : TestBase
     public async Task Query_NotFound_Works()
     {
         // arrange
-        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
 
-        Register(container =>
-            container
-                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
-                .AddSerializers()
-                .WithJson(opts => opts.ConfigureForOperations())
-        );
+        this.RegisterHttpRequestFactory(testHost, true);
+        Register(container => container.AddSerializers().WithJson(opts => opts.ConfigureForOperations()));
+
         var httpRequestFactory = Get<IHttpRequestFactory>();
 
         // act
@@ -126,14 +116,11 @@ public class ServerControllerTests : TestBase
     public async Task Query_Ok_Works()
     {
         // arrange
-        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
 
-        Register(container =>
-            container
-                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
-                .AddSerializers()
-                .WithJson(opts => opts.ConfigureForOperations())
-        );
+        this.RegisterHttpRequestFactory(testHost, true);
+        Register(container => container.AddSerializers().WithJson(opts => opts.ConfigureForOperations()));
+
         var httpRequestFactory = Get<IHttpRequestFactory>();
 
         // act

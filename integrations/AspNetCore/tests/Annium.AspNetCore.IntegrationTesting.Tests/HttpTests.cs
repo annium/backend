@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Annium.AspNetCore.IntegrationTesting.Http;
 using Annium.AspNetCore.TestServer.Components;
 using Annium.Data.Operations;
 using Annium.Data.Operations.Serialization.Json;
@@ -15,38 +16,30 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests;
 /// </summary>
 public class HttpTests : TestBase
 {
-    private readonly ITestOutputHelper _outputHelper;
-
     /// <summary>
     /// Initializes a new instance of the HttpTest class
     /// </summary>
     /// <param name="outputHelper">The test output helper for logging</param>
     public HttpTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-        _outputHelper = outputHelper;
-    }
+        : base(outputHelper) { }
 
     /// <summary>
     /// Tests that HTTP requests work correctly with shared data containers
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation</returns>
     [Fact]
-    public async Task True_IsTrue()
+    public async Task SimpleRequest_Works()
     {
         // arrange
-        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
 
         const string value = "custom value";
         var sharedDataContainer = testHost.Get<SharedDataContainer>();
         sharedDataContainer.Value = value;
 
-        Register(container =>
-            container
-                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
-                .AddSerializers()
-                .WithJson(opts => opts.ConfigureForOperations())
-        );
+        this.RegisterHttpRequestFactory(testHost, true);
+        Register(container => container.AddSerializers().WithJson(opts => opts.ConfigureForOperations()));
+
         var httpRequestFactory = Get<IHttpRequestFactory>();
 
         // act

@@ -14,7 +14,6 @@
   <ItemGroup>
     <PackageReference Include="Annium.Architecture.CQRS" />
     <PackageReference Include="Annium.Logging.Microsoft" />
-    <PackageReference Include="Annium.Net.Http" />
     <PackageReference Include="Annium.Testing" />
   </ItemGroup>
 </Project>

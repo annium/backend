@@ -10,7 +10,6 @@ using Annium.Core.Runtime.Types;
 using Annium.Data.Operations.Serialization.Json;
 using Annium.Logging.Shared;
 using Annium.Logging.Xunit;
-using Annium.Net.Http;
 using Annium.NodaTime.Serialization.Json;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;
@@ -34,7 +33,6 @@ internal class BaseServicePack : ServicePackBase
         container.AddRuntime(GetType().Assembly);
         container.AddSerializers().WithJson(opts => opts.ConfigureForOperations().ConfigureForNodaTime());
         container.AddLogging();
-        container.AddHttpRequestFactory(true);
         container.AddMediatorConfiguration(ConfigureMediator);
         container.AddMediator();
         container.Add<SharedDataContainer>().AsSelf().Singleton();
