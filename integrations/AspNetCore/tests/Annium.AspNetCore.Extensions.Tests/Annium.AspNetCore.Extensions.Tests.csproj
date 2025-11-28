@@ -7,7 +7,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
+    <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting.Http/Annium.AspNetCore.IntegrationTesting.Http.csproj" />
     <ProjectReference Include="../Annium.AspNetCore.TestServer/Annium.AspNetCore.TestServer.csproj" />
   </ItemGroup>
   <ItemGroup>

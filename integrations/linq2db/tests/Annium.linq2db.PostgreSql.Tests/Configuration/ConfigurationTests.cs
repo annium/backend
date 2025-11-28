@@ -15,7 +15,7 @@ public class ConfigurationTests : ConfigurationTestsBase
     public ConfigurationTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<ServicePack>();
+        RegisterServicePack<ServicePack>();
     }
 
     /// <summary>

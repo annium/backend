@@ -16,7 +16,7 @@ public class IntegrationTests : IntegrationTestsBase
     public IntegrationTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<ServicePack>();
+        RegisterServicePack<ServicePack>();
     }
 
     /// <summary>

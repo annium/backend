@@ -19,7 +19,7 @@ public class RedisStorageTests : TestBase
     public RedisStorageTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<ServicePack>();
+        RegisterServicePack<ServicePack>();
     }
 
     /// <summary>

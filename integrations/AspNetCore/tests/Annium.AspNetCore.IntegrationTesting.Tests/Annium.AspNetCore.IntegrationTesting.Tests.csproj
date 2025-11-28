@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Solutions>Annium.Backend</Solutions>
     <OutputType>Library</OutputType>
@@ -8,12 +8,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../../../base/Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
-    <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting/Annium.AspNetCore.IntegrationTesting.csproj" />
+    <ProjectReference Include="../../src/Annium.AspNetCore.IntegrationTesting.Http/Annium.AspNetCore.IntegrationTesting.Http.csproj" />
     <ProjectReference Include="../Annium.AspNetCore.TestServer/Annium.AspNetCore.TestServer.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.v3" />
