@@ -16,7 +16,7 @@ public class TableInsertOrUpdateExtensionsTests : TableInsertOrUpdateExtensionsT
     public TableInsertOrUpdateExtensionsTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<ServicePack>();
+        RegisterServicePack<ServicePack>();
     }
 
     /// <summary>

@@ -19,7 +19,7 @@ public class TableInsertOrUpdateExtensionsTestsBase : TestBase
     protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<LibServicePack>();
+        RegisterServicePack<LibServicePack>();
     }
 
     /// <summary>

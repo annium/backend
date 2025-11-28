@@ -17,7 +17,7 @@ public class ConfigurationTestsBase : TestBase
     protected ConfigurationTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<LibServicePack>();
+        RegisterServicePack<LibServicePack>();
     }
 
     /// <summary>

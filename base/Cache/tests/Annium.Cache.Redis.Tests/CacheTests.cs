@@ -16,7 +16,7 @@ public class CacheTests : CacheTestsBase
     public CacheTests(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<ServicePack>();
+        RegisterServicePack<ServicePack>();
     }
 
     /// <summary>

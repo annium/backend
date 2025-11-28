@@ -20,7 +20,7 @@ public class IntegrationTestsBase : TestBase
     protected IntegrationTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
-        AddServicePack<LibServicePack>();
+        RegisterServicePack<LibServicePack>();
     }
 
     /// <summary>
