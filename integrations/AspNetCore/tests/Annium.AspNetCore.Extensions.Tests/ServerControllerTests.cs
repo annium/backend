@@ -1,10 +1,11 @@
 using System.Net;
 using System.Threading.Tasks;
-using Annium.AspNetCore.IntegrationTesting;
-using Annium.AspNetCore.TestServer;
 using Annium.AspNetCore.TestServer.Controllers;
 using Annium.Data.Operations;
+using Annium.Data.Operations.Serialization.Json;
 using Annium.Net.Http;
+using Annium.Serialization.Abstractions;
+using Annium.Serialization.Json;
 using Annium.Testing;
 using Xunit;
 
@@ -13,20 +14,19 @@ namespace Annium.AspNetCore.Extensions.Tests;
 /// <summary>
 /// Integration tests for ServerController functionality
 /// </summary>
-public class ServerControllerTest : IntegrationTest
+public class ServerControllerTests : TestBase
 {
+    private readonly ITestOutputHelper _outputHelper;
+
     /// <summary>
     /// Initializes a new instance of the ServerControllerTest class
     /// </summary>
     /// <param name="outputHelper">The test output helper for logging</param>
-    public ServerControllerTest(ITestOutputHelper outputHelper)
-        : base(outputHelper) { }
-
-    /// <summary>
-    /// Gets the HTTP request instance configured for the test server
-    /// </summary>
-    private IHttpRequest Http =>
-        GetAppFactory<Program>(builder => builder.UseServicePack<TestServicePack>()).GetHttpRequest();
+    public ServerControllerTests(ITestOutputHelper outputHelper)
+        : base(outputHelper)
+    {
+        _outputHelper = outputHelper;
+    }
 
     /// <summary>
     /// Tests that command endpoint returns BadRequest status when command validation fails
@@ -35,8 +35,21 @@ public class ServerControllerTest : IntegrationTest
     [Fact]
     public async Task Command_BadRequest_Works()
     {
+        // arrange
+        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+
+        Register(container =>
+            container
+                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
+                .AddSerializers()
+                .WithJson(opts => opts.ConfigureForOperations())
+        );
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
         // act
-        var response = await Http.Post("/command")
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command")
             .JsonContent(new DemoCommand { IsOk = false })
             .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
 
@@ -52,8 +65,21 @@ public class ServerControllerTest : IntegrationTest
     [Fact]
     public async Task Command_Ok_Works()
     {
+        // arrange
+        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+
+        Register(container =>
+            container
+                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
+                .AddSerializers()
+                .WithJson(opts => opts.ConfigureForOperations())
+        );
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
         // act
-        var response = await Http.Post("/command")
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command")
             .JsonContent(new DemoCommand { IsOk = true })
             .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
 
@@ -69,8 +95,21 @@ public class ServerControllerTest : IntegrationTest
     [Fact]
     public async Task Query_NotFound_Works()
     {
+        // arrange
+        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+
+        Register(container =>
+            container
+                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
+                .AddSerializers()
+                .WithJson(opts => opts.ConfigureForOperations())
+        );
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
         // act
-        var response = await Http.Get("/query")
+        var response = await httpRequestFactory
+            .New()
+            .Get("/query")
             .Param(nameof(DemoQuery.Q), 0)
             .AsResponseAsync<IResult<DemoResponse>>(TestContext.Current.CancellationToken);
 
@@ -86,8 +125,21 @@ public class ServerControllerTest : IntegrationTest
     [Fact]
     public async Task Query_Ok_Works()
     {
+        // arrange
+        await using var testHost = await new TestHost(_outputHelper).StartAsync();
+
+        Register(container =>
+            container
+                .AddHttpRequestFactory(_ => testHost.Server.CreateClient(), true)
+                .AddSerializers()
+                .WithJson(opts => opts.ConfigureForOperations())
+        );
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
         // act
-        var response = await Http.Get("/query")
+        var response = await httpRequestFactory
+            .New()
+            .Get("/query")
             .Param(nameof(DemoQuery.Q), 1)
             .AsResponseAsync<IResult<DemoResponse>>(TestContext.Current.CancellationToken);
 

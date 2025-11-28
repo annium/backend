@@ -16,11 +16,3 @@ app.UseCorsDefaults();
 app.MapControllers();
 
 await app.RunAsync();
-
-namespace Annium.AspNetCore.TestServer
-{
-    /// <summary>
-    /// Entry point class for the AspNetCore test server
-    /// </summary>
-    public partial class Program;
-}
