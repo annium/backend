@@ -17,15 +17,12 @@ namespace Annium.AspNetCore.Extensions.Tests;
 /// </summary>
 public class ServerControllerTests : TestBase
 {
-
     /// <summary>
     /// Initializes a new instance of the ServerControllerTest class
     /// </summary>
     /// <param name="outputHelper">The test output helper for logging</param>
     public ServerControllerTests(ITestOutputHelper outputHelper)
-        : base(outputHelper)
-    {
-    }
+        : base(outputHelper) { }
 
     /// <summary>
     /// Tests that command endpoint returns BadRequest status when command validation fails
