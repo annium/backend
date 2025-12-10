@@ -69,7 +69,6 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
                 var sample = new PushSample<TBehavior>(Get<ITestOutputHelper>());
                 try
                 {
-                    await sample.InitializeAsync();
                     await sample.RunAsync();
                 }
                 finally

@@ -25,9 +25,19 @@ public class Behavior : IBehavior
     }
 
     /// <summary>
+    /// Cancellation token source for controlling server lifetime.
+    /// </summary>
+    private readonly CancellationTokenSource _serverCts;
+
+    /// <summary>
     /// The in-memory mesh server instance.
     /// </summary>
     private readonly IServer _server;
+
+    /// <summary>
+    /// Server instance run task to await for in disposal
+    /// </summary>
+    private Task _serverTask = Task.CompletedTask;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Behavior"/> class with the specified server.
@@ -35,16 +45,22 @@ public class Behavior : IBehavior
     /// <param name="server">The in-memory mesh server instance.</param>
     public Behavior(IServer server)
     {
+        _serverCts = new CancellationTokenSource();
         _server = server;
     }
 
-    /// <summary>
-    /// Runs the in-memory mesh server asynchronously for the duration of the test.
-    /// </summary>
-    /// <param name="ct">The cancellation token to stop the server.</param>
-    /// <returns>A task representing the asynchronous server operation.</returns>
-    public async Task RunServerAsync(CancellationToken ct)
+    public ValueTask InitializeAsync()
     {
-        await _server.RunAsync(ct);
+        _serverTask = _server.RunAsync(_serverCts.Token);
+
+        return ValueTask.CompletedTask;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await _serverCts.CancelAsync();
+#pragma warning disable VSTHRD003
+        await _serverTask;
+#pragma warning restore VSTHRD003
     }
 }

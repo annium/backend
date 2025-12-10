@@ -1,4 +1,4 @@
-using System.Threading;
+using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 
@@ -7,7 +7,7 @@ namespace Annium.Mesh.Tests;
 /// <summary>
 /// Defines the contract for test behaviors that configure and run mesh servers for testing purposes.
 /// </summary>
-public interface IBehavior
+public interface IBehavior : IAsyncDisposable
 {
     /// <summary>
     /// Registers services required for the behavior in the dependency injection container.
@@ -16,9 +16,7 @@ public interface IBehavior
     static abstract void Register(IServiceContainer container);
 
     /// <summary>
-    /// Runs the mesh server asynchronously for the duration of the test.
+    /// Initializes behavior instance
     /// </summary>
-    /// <param name="ct">The cancellation token to stop the server.</param>
-    /// <returns>A task representing the asynchronous server operation.</returns>
-    Task RunServerAsync(CancellationToken ct);
+    ValueTask InitializeAsync();
 }
