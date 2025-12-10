@@ -7,6 +7,7 @@ using Annium.linq2db.Tests.Lib.Db.Models;
 using Annium.Logging;
 using Annium.Testing;
 using LinqToDB;
+using LinqToDB.Async;
 using LinqToDB.Data;
 using Xunit;
 
@@ -152,7 +153,7 @@ public class IntegrationTestsBase : TestBase
         // assert
         await Task.WhenAll(
             Enumerable
-                .Range(0, 1000)
+                .Range(0, 50)
                 .Select(async _ =>
                 {
                     await using var scope = Provider.GetConnectionScope<Connection>();

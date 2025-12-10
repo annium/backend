@@ -2,7 +2,7 @@ using Annium.linq2db.Extensions;
 using Annium.linq2db.Tests.Lib.Db.Models;
 using LinqToDB;
 using LinqToDB.Data;
-using LinqToDB.SqlQuery;
+using LinqToDB.Internal.SqlQuery;
 
 namespace Annium.linq2db.Tests.Lib.Db;
 

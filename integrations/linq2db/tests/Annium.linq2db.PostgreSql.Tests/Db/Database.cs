@@ -33,7 +33,7 @@ public class Database
     public Database()
     {
         _db = new PostgreSqlBuilder()
-            .WithImage("postgres:16-alpine")
+            .WithImage("postgres:18-alpine")
             .WithDatabase(Config.Database)
             .WithUsername(Config.User)
             .WithPassword(Config.Password)
