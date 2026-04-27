@@ -16,7 +16,15 @@ public class Database
     /// <summary>
     /// Redis container instance for testing
     /// </summary>
-    private readonly RedisContainer _db = new RedisBuilder().Build();
+    private readonly RedisContainer _db;
+
+    /// <summary>
+    /// Initializes a new instance of the Database class with Redis container configuration
+    /// </summary>
+    public Database()
+    {
+        _db = new RedisBuilder("redis:7-alpine").Build();
+    }
 
     /// <summary>
     /// Initializes the Redis test database by starting the container and configuring connection

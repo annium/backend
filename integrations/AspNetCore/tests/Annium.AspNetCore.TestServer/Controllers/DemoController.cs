@@ -42,7 +42,7 @@ public class IndexController : ServerController
     [HttpGet]
     public IResult<string> Base()
     {
-        return Result.New(_sharedDataContainer.Value);
+        return Result.Create(_sharedDataContainer.Value);
     }
 
     /// <summary>

@@ -91,7 +91,7 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
             await _helper.WriteResponseAsync(
                 context,
                 HttpStatusCode.BadRequest,
-                Result.New().Error("Not a WebSocket connection")
+                Result.Create().Error("Not a WebSocket connection")
             );
             return;
         }
@@ -113,7 +113,7 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
             await _helper.WriteResponseAsync(
                 context,
                 HttpStatusCode.InternalServerError,
-                Result.New().Error("WebSocket unhandled failure")
+                Result.Create().Error("WebSocket unhandled failure")
             );
         }
     }
