@@ -46,7 +46,7 @@ internal class MessageBusClient : IMessageBusClient
                 x =>
                 {
                     if (x.IsSuccess)
-                        tcs.TrySetResult(Result.New(x.Data));
+                        tcs.TrySetResult(Result.Create(x.Data));
                     else
                         tcs.TrySetException(new Exception(x.Error));
                 },

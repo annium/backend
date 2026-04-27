@@ -312,8 +312,35 @@ resharper_csharp_wrap_after_declaration_lpar = true
 resharper_csharp_wrap_parameters_style = chop_if_long
 
 # Threading
-dotnet_diagnostic.VSTHDR003.severity = none
 dotnet_diagnostic.VSTHRD105.severity = none
+
+# === Backend Audit (kb/specs/2026.04/2026.04.26-backend-audit-execution.md) — Bucket 7 elevations ===
+# Elevate to errors — these should not exist in library code
+# VSTHRD100 async void
+dotnet_diagnostic.VSTHRD100.severity = error
+# VSTHRD103 sync API in async context
+dotnet_diagnostic.VSTHRD103.severity = error
+# VSTHRD110 unobserved Task result
+dotnet_diagnostic.VSTHRD110.severity = error
+# VSTHRD200 Async suffix missing (overrides existing 'none' for production code; test override at [*Test{...}] still applies)
+dotnet_diagnostic.VSTHRD200.severity = error
+
+# Keep as warnings — legitimate use cases / known false positives
+# VSTHRD002 .Result / .Wait()
+dotnet_diagnostic.VSTHRD002.severity = warning
+# VSTHRD003 awaiting foreign Task
+dotnet_diagnostic.VSTHRD003.severity = warning
+
+# CA rules off by default in .NET 10 — opt in
+# CA2007 missing ConfigureAwait(false) (overrides existing 'none' on line 38)
+dotnet_diagnostic.CA2007.severity = warning
+# CA2012 ValueTask misuse
+dotnet_diagnostic.CA2012.severity = error
+# CA2016 CT not forwarded
+dotnet_diagnostic.CA2016.severity = error
+# CA1816 missing GC.SuppressFinalize
+dotnet_diagnostic.CA1816.severity = warning
+# === End Backend Audit elevations ===
 
 [*Test{s.cs,.cs,sBase.cs,Base.cs}]
 dotnet_diagnostic.VSTHRD200.severity = none

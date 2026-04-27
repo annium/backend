@@ -48,7 +48,7 @@ public class ServerControllerTests : TestBase
 
         // assert
         response.StatusCode.Is(HttpStatusCode.BadRequest);
-        response.Data.IsEqual(Result.New().Error("Not ok"));
+        response.Data.IsEqual(Result.Create().Error("Not ok"));
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class ServerControllerTests : TestBase
 
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);
-        response.Data.IsEqual(Result.New());
+        response.Data.IsEqual(Result.Create());
     }
 
     /// <summary>
@@ -102,7 +102,7 @@ public class ServerControllerTests : TestBase
 
         // assert
         response.StatusCode.Is(HttpStatusCode.NotFound);
-        response.Data.IsEqual(Result.New(default(DemoResponse)).Error("Not found"));
+        response.Data.IsEqual(Result.Create(default(DemoResponse)).Error("Not found"));
     }
 
     /// <summary>
@@ -129,6 +129,6 @@ public class ServerControllerTests : TestBase
 
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);
-        response.Data.IsEqual(Result.New(new DemoResponse { X = 1 }));
+        response.Data.IsEqual(Result.Create(new DemoResponse { X = 1 }));
     }
 }
