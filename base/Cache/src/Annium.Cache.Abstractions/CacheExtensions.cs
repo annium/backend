@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Annium.Cache.Abstractions;
@@ -15,18 +16,26 @@ public static class CacheExtensions
     /// <param name="key">The cache key</param>
     /// <param name="factory">Factory function to create the value if not found in cache</param>
     /// <param name="options">Cache options including expiration settings</param>
+    /// <param name="ct">Cancellation token for the awaiting caller</param>
     /// <returns>The cached or newly created value</returns>
     public static ValueTask<TValue> GetOrCreateAsync<TKey, TValue>(
         this ICache<TKey, TValue> cache,
         TKey key,
-        Func<TKey, ValueTask<TValue>> factory,
-        CacheOptions options
+        Func<TKey, CancellationToken, ValueTask<TValue>> factory,
+        CacheOptions options,
+        CancellationToken ct = default
     )
         where TKey : IEquatable<TKey>
         where TValue : notnull
     {
-        static ValueTask<TValue> FactoryAsync(TKey key, Func<TKey, ValueTask<TValue>> factory) => factory(key);
+        // The third parameter is supplied by the cache implementation when invoking the factory
+        // (typically CancellationToken.None — factory work is shared across waiters and not bound to any single caller).
+        static ValueTask<TValue> FactoryAsync(
+            TKey key,
+            Func<TKey, CancellationToken, ValueTask<TValue>> factory,
+            CancellationToken factoryCt
+        ) => factory(key, factoryCt);
 
-        return cache.GetOrCreateAsync(key, FactoryAsync, factory, options);
+        return cache.GetOrCreateAsync(key, FactoryAsync, factory, options, ct);
     }
 }

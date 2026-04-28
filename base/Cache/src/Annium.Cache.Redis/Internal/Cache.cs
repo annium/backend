@@ -1,11 +1,12 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Cache.Abstractions;
 
 namespace Annium.Cache.Redis.Internal;
 
 /// <summary>
-/// Redis-based cache implementation
+/// Redis-based cache implementation (stub — pending dedicated design; see kb/concepts for upcoming Cache.Redis design)
 /// </summary>
 /// <typeparam name="TKey">The type of cache keys</typeparam>
 /// <typeparam name="TValue">The type of cached values</typeparam>
@@ -20,12 +21,14 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>
     /// <param name="factory">Factory function to create the value if not found in cache</param>
     /// <param name="context">Context object passed to the factory function</param>
     /// <param name="options">Cache options including expiration settings</param>
+    /// <param name="ct">Cancellation token for the awaiting caller</param>
     /// <returns>The cached or newly created value</returns>
     public ValueTask<TValue> GetOrCreateAsync<TContext>(
         TKey key,
-        Func<TKey, TContext, ValueTask<TValue>> factory,
+        Func<TKey, TContext, CancellationToken, ValueTask<TValue>> factory,
         TContext context,
-        CacheOptions options
+        CacheOptions options,
+        CancellationToken ct = default
     )
         where TContext : notnull
     {
@@ -36,8 +39,9 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>
     /// Removes an item from the cache
     /// </summary>
     /// <param name="key">The cache key to remove</param>
+    /// <param name="ct">Cancellation token</param>
     /// <returns>A task that represents the asynchronous operation</returns>
-    public ValueTask RemoveAsync(TKey key)
+    public ValueTask RemoveAsync(TKey key, CancellationToken ct = default)
     {
         throw new NotImplementedException();
     }

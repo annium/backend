@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Annium.Cache.Abstractions;
@@ -19,12 +20,14 @@ public interface ICache<TKey, TValue>
     /// <param name="factory">Factory function to create the value if not found in cache</param>
     /// <param name="context">Context object passed to the factory function</param>
     /// <param name="options">Cache options including expiration settings</param>
+    /// <param name="ct">Cancellation token for the awaiting caller</param>
     /// <returns>The cached or newly created value</returns>
     ValueTask<TValue> GetOrCreateAsync<TContext>(
         TKey key,
-        Func<TKey, TContext, ValueTask<TValue>> factory,
+        Func<TKey, TContext, CancellationToken, ValueTask<TValue>> factory,
         TContext context,
-        CacheOptions options
+        CacheOptions options,
+        CancellationToken ct = default
     )
         where TContext : notnull;
 
@@ -32,6 +35,7 @@ public interface ICache<TKey, TValue>
     /// Removes an item from the cache
     /// </summary>
     /// <param name="key">The cache key to remove</param>
+    /// <param name="ct">Cancellation token</param>
     /// <returns>A task that represents the asynchronous operation</returns>
-    ValueTask RemoveAsync(TKey key);
+    ValueTask RemoveAsync(TKey key, CancellationToken ct = default);
 }
