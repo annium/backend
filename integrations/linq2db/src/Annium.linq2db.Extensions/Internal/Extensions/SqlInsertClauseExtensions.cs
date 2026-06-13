@@ -3,6 +3,9 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Internal.Extensions;
 
+/// <summary>
+/// Extension methods for manipulating linq2db <see cref="LinqToDB.Internal.SqlQuery.SqlInsertClause"/> items — setting or ignoring column values by column descriptor.
+/// </summary>
 internal static class SqlInsertClauseExtensions
 {
     /// <summary>

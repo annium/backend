@@ -16,6 +16,7 @@ public class ServicePack : ServicePackBase
     /// <param name="container">The service container to register services with.</param>
     /// <param name="provider">The service provider for resolving dependencies.</param>
     /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous registration.</returns>
     public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddRedisCache(ServiceLifetime.Singleton);

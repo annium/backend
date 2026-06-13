@@ -4,8 +4,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Annium.AspNetCore.IntegrationTesting;
 
+/// <summary>
+/// Abstraction over a started in-memory ASP.NET Core test host.
+/// </summary>
 public interface ITestHost : IAsyncDisposable
 {
+    /// <summary>
+    /// Gets the underlying <see cref="TestServer"/> created by the in-memory host.
+    /// </summary>
     TestServer Server { get; }
 
     /// <summary>

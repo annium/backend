@@ -43,6 +43,9 @@ public class Behavior : IBehavior, ILogSubject
     /// </summary>
     public ILogger Logger { get; }
 
+    /// <summary>
+    /// The managed Mesh socket server instance used by this test behavior.
+    /// </summary>
     private readonly IServer _server;
 
     /// <summary>
@@ -56,11 +59,19 @@ public class Behavior : IBehavior, ILogSubject
         _server = server;
     }
 
+    /// <summary>
+    /// Performs no additional setup, as the socket server is started during service registration.
+    /// </summary>
+    /// <returns>A completed <see cref="ValueTask"/>.</returns>
     public ValueTask InitializeAsync()
     {
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Suppresses finalization and disposes the underlying socket server, releasing all bound ports and connections.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> that completes when the server has been fully disposed.</returns>
     public ValueTask DisposeAsync()
     {
         global::System.GC.SuppressFinalize(this);

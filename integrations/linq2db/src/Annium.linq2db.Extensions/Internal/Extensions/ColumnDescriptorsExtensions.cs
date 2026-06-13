@@ -3,6 +3,9 @@ using LinqToDB.Mapping;
 
 namespace Annium.linq2db.Extensions.Internal.Extensions;
 
+/// <summary>
+/// Extension methods for querying collections of linq2db <see cref="LinqToDB.Mapping.ColumnDescriptor"/> by member name, excluding columns that have skip-on-insert or skip-on-update values configured.
+/// </summary>
 internal static class ColumnDescriptorsExtensions
 {
     /// <summary>

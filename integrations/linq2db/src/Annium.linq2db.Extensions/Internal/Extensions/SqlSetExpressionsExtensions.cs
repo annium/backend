@@ -3,6 +3,9 @@ using LinqToDB.Internal.SqlQuery;
 
 namespace Annium.linq2db.Extensions.Internal.Extensions;
 
+/// <summary>
+/// Extension methods for searching a collection of linq2db <see cref="LinqToDB.Internal.SqlQuery.SqlSetExpression"/> items by target SQL field.
+/// </summary>
 internal static class SqlSetExpressionsExtensions
 {
     /// <summary>

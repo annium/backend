@@ -16,6 +16,7 @@ internal class ServicePack : ServicePackBase
     /// <param name="container">Service container for dependency registration</param>
     /// <param name="provider">Service provider for dependency resolution</param>
     /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous registration.</returns>
     public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddRedis();
@@ -29,6 +30,7 @@ internal class ServicePack : ServicePackBase
     /// </summary>
     /// <param name="provider">Service provider for dependency resolution</param>
     /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous setup.</returns>
     public override async Task SetupAsync(IServiceProvider provider, CancellationToken ct)
     {
         await provider.Resolve<Database>().InitAsync();

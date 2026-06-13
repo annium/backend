@@ -95,38 +95,43 @@ public class IntegrationTestsBase : TestBase
         var chunksCount = 80;
         var chunkSize = 1000;
 
-        await Task.WhenAll(
-            Enumerable
-                .Range(0, chunksCount)
-                .Select(async id =>
-                {
-                    this.Trace("{id} - start", id);
+        // Bound concurrency: opening all 80 connections at once is a connect-storm that
+        // exhausts the pool / times out under constrained CI Postgres. Total load
+        // (80 x 1000 rows) is unchanged — chunks are pipelined through a fixed-width gate.
+        var options = new ParallelOptions { MaxDegreeOfParallelism = 16 };
 
-                    this.Trace("{id} - generate rows", id);
-                    var companies = Enumerable
-                        .Range(0, chunkSize)
-                        .Select(_ =>
-                        {
-                            var companyName = $"demo:{Guid.NewGuid()}";
-                            var metadata = new CompanyMetadata($"somewhere for {companyName}");
+        await Parallel.ForEachAsync(
+            Enumerable.Range(0, chunksCount),
+            options,
+            async (id, ct) =>
+            {
+                this.Trace("{id} - start", id);
 
-                            return new Company(companyName, metadata);
-                        })
-                        .ToArray();
+                this.Trace("{id} - generate rows", id);
+                var companies = Enumerable
+                    .Range(0, chunkSize)
+                    .Select(_ =>
+                    {
+                        var companyName = $"demo:{Guid.NewGuid()}";
+                        var metadata = new CompanyMetadata($"somewhere for {companyName}");
 
-                    this.Trace("{id} - create connection", id);
-                    await using var scope = Provider.GetConnectionScope<Connection>();
-                    scope.ThrowIfDisposed();
-                    var conn = scope.Cn;
+                        return new Company(companyName, metadata);
+                    })
+                    .ToArray();
 
-                    this.Trace("{id} - bulk copy", id);
-                    var result = await conn.BulkCopyAsync(new BulkCopyOptions { KeepIdentity = true }, companies);
+                this.Trace("{id} - create connection", id);
+                await using var scope = Provider.GetConnectionScope<Connection>();
+                scope.ThrowIfDisposed();
+                var conn = scope.Cn;
 
-                    this.Trace("{id} - verify", id);
-                    result.RowsCopied.Is(chunkSize);
+                this.Trace("{id} - bulk copy", id);
+                var result = await conn.BulkCopyAsync(new BulkCopyOptions { KeepIdentity = true }, companies, ct);
 
-                    this.Trace("{id} - done", id);
-                })
+                this.Trace("{id} - verify", id);
+                result.RowsCopied.Is(chunkSize);
+
+                this.Trace("{id} - done", id);
+            }
         );
 
         this.Trace("done");
@@ -151,28 +156,32 @@ public class IntegrationTestsBase : TestBase
         }
 
         // assert
-        await Task.WhenAll(
-            Enumerable
-                .Range(0, 50)
-                .Select(async _ =>
-                {
-                    await using var scope = Provider.GetConnectionScope<Connection>();
-                    scope.ThrowIfDisposed();
-                    var conn = scope.Cn;
-                    var loadedCompany = await conn
-                        .Companies.LoadWith(x => x.Employees)
-                        .ThenLoad(x => x.Company)
-                        .LoadWith(x => x.Employees)
-                        .ThenLoad(x => x.Employee.Chief)
-                        .LoadWith(x => x.Employees)
-                        .ThenLoad(x => x.Employee.Subordinates)
-                        .AsQueryable()
-                        .SingleAsync(x => x.Name == companyName);
+        // Bound concurrency for the same reason as HighLoad_Insert — cap simultaneous
+        // connection-opens so a slow CI Postgres doesn't time out the connect storm.
+        var options = new ParallelOptions { MaxDegreeOfParallelism = 16 };
 
-                    loadedCompany.Id.Is(company.Id);
-                    loadedCompany.Name.Is(company.Name);
-                    loadedCompany.Metadata.Is(metadata);
-                })
+        await Parallel.ForEachAsync(
+            Enumerable.Range(0, 50),
+            options,
+            async (_, ct) =>
+            {
+                await using var scope = Provider.GetConnectionScope<Connection>();
+                scope.ThrowIfDisposed();
+                var conn = scope.Cn;
+                var loadedCompany = await conn
+                    .Companies.LoadWith(x => x.Employees)
+                    .ThenLoad(x => x.Company)
+                    .LoadWith(x => x.Employees)
+                    .ThenLoad(x => x.Employee.Chief)
+                    .LoadWith(x => x.Employees)
+                    .ThenLoad(x => x.Employee.Subordinates)
+                    .AsQueryable()
+                    .SingleAsync(x => x.Name == companyName, ct);
+
+                loadedCompany.Id.Is(company.Id);
+                loadedCompany.Name.Is(company.Name);
+                loadedCompany.Metadata.Is(metadata);
+            }
         );
     }
 }

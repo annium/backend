@@ -30,6 +30,7 @@ internal class BaseServicePack : ServicePackBase
     /// <param name="container">The service container to register services with</param>
     /// <param name="provider">The service provider for dependency resolution</param>
     /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous registration.</returns>
     public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         // register and setup services
@@ -52,6 +53,7 @@ internal class BaseServicePack : ServicePackBase
     /// </summary>
     /// <param name="provider">The service provider containing registered services</param>
     /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous setup.</returns>
     public override Task SetupAsync(IServiceProvider provider, CancellationToken ct)
     {
         provider.UseLogging(route => route.UseTestOutput());

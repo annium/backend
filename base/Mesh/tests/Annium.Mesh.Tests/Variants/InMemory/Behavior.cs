@@ -49,6 +49,10 @@ public class Behavior : IBehavior
         _server = server;
     }
 
+    /// <summary>
+    /// Starts the in-memory mesh server by launching its run loop, storing the resulting task for later awaiting.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> that completes immediately after the server task is started.</returns>
     public ValueTask InitializeAsync()
     {
         _serverTask = _server.RunAsync(_serverCts.Token);
@@ -56,6 +60,10 @@ public class Behavior : IBehavior
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Stops the in-memory mesh server by suppressing finalization, canceling the server cancellation token, and awaiting the server run task.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> that completes when the server task has finished.</returns>
     public async ValueTask DisposeAsync()
     {
         global::System.GC.SuppressFinalize(this);
