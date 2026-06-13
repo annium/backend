@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;
 using Annium.Serialization.Abstractions;
@@ -16,9 +18,11 @@ public class LibServicePack : ServicePackBase
     /// </summary>
     /// <param name="container">The service container to register services with.</param>
     /// <param name="provider">The service provider for resolving dependencies.</param>
-    public override void Register(IServiceContainer container, IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddTime().WithManagedTime().SetDefault();
         container.AddSerializers().WithJson(opts => opts.UseCamelCaseNamingPolicy());
+        return Task.CompletedTask;
     }
 }

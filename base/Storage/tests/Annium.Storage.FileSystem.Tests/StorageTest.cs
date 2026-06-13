@@ -46,6 +46,7 @@ public class StorageTest : StorageTestBase, IAsyncDisposable
     /// <returns>A completed ValueTask.</returns>
     public ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         Directory.Delete(_directory, true);
         return ValueTask.CompletedTask;
     }

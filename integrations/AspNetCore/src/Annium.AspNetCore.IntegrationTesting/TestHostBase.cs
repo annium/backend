@@ -46,6 +46,7 @@ public abstract class TestHostBase<TEntryPoint> : ITestHost, ILogSubject
 
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         this.Trace("stopping");
         await HandleStopAsync();
 

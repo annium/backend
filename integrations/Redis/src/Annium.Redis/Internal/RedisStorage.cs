@@ -34,10 +34,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         // VSTHRD011: Lazy<Task<T>> deadlock risk doesn't apply — ConnectionMultiplexer.ConnectAsync
         // doesn't capture the constructing thread's SynchronizationContext.
 #pragma warning disable VSTHRD011
-        _redisLazy = new Lazy<Task<ConnectionMultiplexer>>(
-            ConnectAsync,
-            LazyThreadSafetyMode.ExecutionAndPublication
-        );
+        _redisLazy = new Lazy<Task<ConnectionMultiplexer>>(ConnectAsync, LazyThreadSafetyMode.ExecutionAndPublication);
 #pragma warning restore VSTHRD011
     }
 
@@ -67,7 +64,12 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     }
 
     /// <inheritdoc />
-    public async Task<bool> SetAsync(string key, string value, Duration expires = default, CancellationToken ct = default)
+    public async Task<bool> SetAsync(
+        string key,
+        string value,
+        Duration expires = default,
+        CancellationToken ct = default
+    )
     {
         var redis = await GetMultiplexerAsync().WaitAsync(ct);
         var result = await redis
@@ -110,10 +112,11 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
 
     // Centralized lazy access. VSTHRD011 doesn't apply: the inner ConnectionMultiplexer.ConnectAsync
     // doesn't capture the constructing thread's SynchronizationContext, so the deadlock pattern the
-    // analyzer warns about is unreachable.
-#pragma warning disable VSTHRD011
+    // analyzer warns about is unreachable. VSTHRD003 (foreign-Task) is likewise a non-issue: the
+    // returned Task is produced by this type's own AsyncLazy field, not awaited from outside.
+#pragma warning disable VSTHRD011, VSTHRD003
     private Task<ConnectionMultiplexer> GetMultiplexerAsync() => _redisLazy.Value;
-#pragma warning restore VSTHRD011
+#pragma warning restore VSTHRD011, VSTHRD003
 
     private Task<ConnectionMultiplexer> ConnectAsync() =>
         ConnectionMultiplexer.ConnectAsync(_config.GetConnectionString());

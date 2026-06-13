@@ -32,14 +32,14 @@ public static class DataOptionsExtensions
                     switch (lvl)
                     {
                         case TraceLevel.Error:
-                            logger.Error(msg ?? string.Empty);
+                            logger.Error<string>("{message}", msg ?? string.Empty);
                             break;
                         case TraceLevel.Warning:
-                            logger.Warn(msg ?? string.Empty);
+                            logger.Warn<string>("{message}", msg ?? string.Empty);
                             break;
                         // all other levels are handled as Debug by design (at the moment linq2db traces with Info level)
                         default:
-                            logger.Debug(msg ?? string.Empty);
+                            logger.Debug<string>("{message}", msg ?? string.Empty);
                             break;
                     }
                 }

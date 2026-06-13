@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Architecture.CQRS;
 using Annium.Architecture.Http;
 using Annium.AspNetCore.Extensions;
@@ -27,7 +29,8 @@ internal class BaseServicePack : ServicePackBase
     /// </summary>
     /// <param name="container">The service container to register services with</param>
     /// <param name="provider">The service provider for dependency resolution</param>
-    public override void Register(IServiceContainer container, IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         // register and setup services
         container.AddRuntime(GetType().Assembly);
@@ -41,15 +44,18 @@ internal class BaseServicePack : ServicePackBase
         container.Collection.AddControllers();
         container.Collection.AddCors();
         container.Collection.AddMvc().AddDefaultJsonOptions();
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Sets up logging configuration for the test server
     /// </summary>
     /// <param name="provider">The service provider containing registered services</param>
-    public override void Setup(IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override Task SetupAsync(IServiceProvider provider, CancellationToken ct)
     {
         provider.UseLogging(route => route.UseTestOutput());
+        return Task.CompletedTask;
     }
 
     /// <summary>

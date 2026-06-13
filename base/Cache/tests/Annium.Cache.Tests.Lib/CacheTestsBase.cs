@@ -183,8 +183,7 @@ public class CacheTestsBase : TestBase
         var ct = TestContext.Current.CancellationToken;
 
         // act + assert: first call faults with the factory exception
-        var ex = await Wrap
-            .It(async () =>
+        var ex = await Wrap.It(async () =>
                 await cache.GetOrCreateAsync(
                     key,
                     static (_, _) => ValueTask.FromException<Page>(new InvalidOperationException("boom")),
@@ -272,11 +271,10 @@ public class CacheTestsBase : TestBase
         var key = Guid.NewGuid();
         var options = CacheOptions.WithSlidingExpiration(Duration.FromMinutes(1));
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // act + assert
-        await Wrap
-            .It(async () => await cache.GetOrCreateAsync(key, GetPageAsync, options, cts.Token))
+        await Wrap.It(async () => await cache.GetOrCreateAsync(key, GetPageAsync, options, cts.Token))
             .ThrowsAsync<OperationCanceledException>();
 
         _factoryCounter.Is(0);
@@ -308,8 +306,11 @@ public class CacheTestsBase : TestBase
         await Task.Delay(100, ct);
 
         // act 1: cancel caller 1 — its await should throw, factory continues
-        cts1.Cancel();
+        await cts1.CancelAsync();
+        // task1 is created locally above via .AsTask(); awaiting it here is safe (not a foreign task)
+#pragma warning disable VSTHRD003
         await Wrap.It(async () => await task1).ThrowsAsync<OperationCanceledException>();
+#pragma warning restore VSTHRD003
 
         // act 2: release the factory; caller 2 receives the value
         factoryGate.TrySetResult(new Page(key));
@@ -329,7 +330,7 @@ public class CacheTestsBase : TestBase
         var cache = Get<ICache<Guid, Page>>();
         var key = Guid.NewGuid();
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
         // act + assert
         await Wrap.It(async () => await cache.RemoveAsync(key, cts.Token)).ThrowsAsync<OperationCanceledException>();

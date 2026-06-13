@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.linq2db.PostgreSql.Tests.Db;
 using Annium.linq2db.Tests.Lib.Db;
@@ -15,21 +17,22 @@ internal class ServicePack : ServicePackBase
     /// </summary>
     /// <param name="container">Service container for dependency registration</param>
     /// <param name="provider">Service provider for dependency resolution</param>
-    public override void Register(IServiceContainer container, IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddPostgreSql<Connection>();
         container.Add<Database>().AsSelf().Singleton();
         container.Add(sp => sp.Resolve<Database>().Config).AsSelf().Singleton();
+        return Task.CompletedTask;
     }
 
     /// <summary>
     /// Sets up the test environment by initializing the PostgreSQL database container
     /// </summary>
     /// <param name="provider">Service provider for dependency resolution</param>
-    public override void Setup(IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override async Task SetupAsync(IServiceProvider provider, CancellationToken ct)
     {
-#pragma warning disable VSTHRD002
-        provider.Resolve<Database>().InitAsync().GetAwaiter().GetResult();
-#pragma warning restore VSTHRD002
+        await provider.Resolve<Database>().InitAsync();
     }
 }

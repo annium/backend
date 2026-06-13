@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 
 namespace Annium.Cache.Redis.Tests;
@@ -13,8 +15,10 @@ public class ServicePack : ServicePackBase
     /// </summary>
     /// <param name="container">The service container to register services with.</param>
     /// <param name="provider">The service provider for resolving dependencies.</param>
-    public override void Register(IServiceContainer container, IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddRedisCache(ServiceLifetime.Singleton);
+        return Task.CompletedTask;
     }
 }

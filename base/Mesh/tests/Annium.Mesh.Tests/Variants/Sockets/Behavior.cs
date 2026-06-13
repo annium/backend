@@ -63,6 +63,7 @@ public class Behavior : IBehavior, ILogSubject
 
     public ValueTask DisposeAsync()
     {
+        global::System.GC.SuppressFinalize(this);
         return _server.DisposeAsync();
     }
 }

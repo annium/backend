@@ -116,7 +116,7 @@ internal class ConnectionTracker : IAsyncDisposable, ILogSubject
                 () =>
                 {
                     cnRef.Release(_isDisposing);
-                    return Task.CompletedTask;
+                    return ValueTask.CompletedTask;
                 }
             );
 

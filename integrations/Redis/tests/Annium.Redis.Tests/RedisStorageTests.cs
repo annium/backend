@@ -118,10 +118,9 @@ public class RedisStorageTests : TestBase
     {
         var storage = Get<IRedisStorage>();
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        await Wrap
-            .It(async () => await storage.SetAsync(Guid.NewGuid().ToString(), "v", ct: cts.Token))
+        await Wrap.It(async () => await storage.SetAsync(Guid.NewGuid().ToString(), "v", ct: cts.Token))
             .ThrowsAsync<OperationCanceledException>();
     }
 
@@ -134,10 +133,9 @@ public class RedisStorageTests : TestBase
     {
         var storage = Get<IRedisStorage>();
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        await Wrap
-            .It(async () => await storage.GetAsync(Guid.NewGuid().ToString(), cts.Token))
+        await Wrap.It(async () => await storage.GetAsync(Guid.NewGuid().ToString(), cts.Token))
             .ThrowsAsync<OperationCanceledException>();
     }
 
@@ -150,10 +148,9 @@ public class RedisStorageTests : TestBase
     {
         var storage = Get<IRedisStorage>();
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        await Wrap
-            .It(async () => await storage.DeleteAsync(Guid.NewGuid().ToString(), cts.Token))
+        await Wrap.It(async () => await storage.DeleteAsync(Guid.NewGuid().ToString(), cts.Token))
             .ThrowsAsync<OperationCanceledException>();
     }
 
@@ -166,11 +163,9 @@ public class RedisStorageTests : TestBase
     {
         var storage = Get<IRedisStorage>();
         using var cts = new CancellationTokenSource();
-        cts.Cancel();
+        await cts.CancelAsync();
 
-        await Wrap
-            .It(async () => await storage.GetKeysAsync(ct: cts.Token))
-            .ThrowsAsync<OperationCanceledException>();
+        await Wrap.It(async () => await storage.GetKeysAsync(ct: cts.Token)).ThrowsAsync<OperationCanceledException>();
     }
 
     /// <summary>

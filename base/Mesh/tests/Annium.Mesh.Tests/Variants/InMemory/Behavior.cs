@@ -58,6 +58,7 @@ public class Behavior : IBehavior
 
     public async ValueTask DisposeAsync()
     {
+        global::System.GC.SuppressFinalize(this);
         await _serverCts.CancelAsync();
 #pragma warning disable VSTHRD003
         await _serverTask;

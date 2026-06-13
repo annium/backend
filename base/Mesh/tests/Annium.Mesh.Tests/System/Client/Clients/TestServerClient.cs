@@ -63,5 +63,9 @@ public class TestServerClient : IAsyncDisposable
     /// Disposes the client and releases all resources asynchronously.
     /// </summary>
     /// <returns>A value task representing the asynchronous disposal operation.</returns>
-    public ValueTask DisposeAsync() => _client.DisposeAsync();
+    public ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        return _client.DisposeAsync();
+    }
 }
