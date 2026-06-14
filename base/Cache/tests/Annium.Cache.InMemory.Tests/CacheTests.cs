@@ -118,4 +118,114 @@ public class CacheTests : CacheTestsBase
     {
         await RemoveAsync_PreCancelledCt_Throws_Base();
     }
+
+    /// <summary>
+    /// Verifies sliding expiration is prolonged on each hit so an accessed entry survives its original window.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_SlidingExpiration_AccessWithinWindowProlongs()
+    {
+        await GetOrCreateAsync_SlidingExpiration_AccessWithinWindowProlongs_Base();
+    }
+
+    /// <summary>
+    /// Verifies first-writer-wins option semantics: a later caller's different options are ignored for a live key.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_FirstWriterWins_LaterCallerOptionsIgnored()
+    {
+        await GetOrCreateAsync_FirstWriterWins_LaterCallerOptionsIgnored_Base();
+    }
+
+    /// <summary>
+    /// Verifies a factory that completes after its entry expired causes cancellation and eviction.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_FactoryCompletesAfterExpiry_CancelsAndEvicts()
+    {
+        await GetOrCreateAsync_FactoryCompletesAfterExpiry_CancelsAndEvicts_Base();
+    }
+
+    /// <summary>
+    /// Verifies the context-carrying GetOrCreateAsync overload forwards the supplied context to the factory.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_WithContext_ContextPassedToFactory()
+    {
+        await GetOrCreateAsync_WithContext_ContextPassedToFactory_Base();
+    }
+
+    /// <summary>
+    /// Verifies that cache operations on a disposed in-memory cache throw instead of hanging.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_AfterDispose_Throws()
+    {
+        await GetOrCreateAsync_AfterDispose_Throws_Base();
+    }
+
+    /// <summary>
+    /// Verifies that disposing the in-memory cache while a factory is in-flight drains cleanly.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task DisposeAsync_WhileFactoryInFlight_DrainsAndCallerCompletes()
+    {
+        await DisposeAsync_WhileFactoryInFlight_DrainsAndCallerCompletes_Base();
+    }
+
+    /// <summary>
+    /// Verifies concurrent access across many distinct keys runs each key's factory exactly once.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_ConcurrentDistinctKeys_EachFactoryOnce()
+    {
+        await GetOrCreateAsync_ConcurrentDistinctKeys_EachFactoryOnce_Base();
+    }
+
+    /// <summary>
+    /// Verifies that removing a non-existent key from the in-memory cache is a silent no-op.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task RemoveAsync_NonExistentKey_CompletesWithoutException()
+    {
+        await RemoveAsync_NonExistentKey_CompletesWithoutException_Base();
+    }
+
+    /// <summary>
+    /// Verifies an expired in-flight factory does not evict a concurrently-created replacement entry.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_ExpiredFactoryAfterReplacement_ReplacementSurvives()
+    {
+        await GetOrCreateAsync_ExpiredFactoryAfterReplacement_ReplacementSurvives_Base();
+    }
+
+    /// <summary>
+    /// Verifies a throwing in-flight factory does not evict a concurrently-created replacement entry.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_ThrowingFactoryAfterReplacement_ReplacementSurvives()
+    {
+        await GetOrCreateAsync_ThrowingFactoryAfterReplacement_ReplacementSurvives_Base();
+    }
+
+    /// <summary>
+    /// Verifies RemoveAsync during an in-flight factory still delivers the value and purges the entry.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task RemoveAsync_WhileFactoryInFlight_CallerGetsValueThenReinvokes()
+    {
+        await RemoveAsync_WhileFactoryInFlight_CallerGetsValueThenReinvokes_Base();
+    }
 }

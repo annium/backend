@@ -40,9 +40,18 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>
     /// </summary>
     /// <param name="key">The cache key to remove</param>
     /// <param name="ct">Cancellation token</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A value task that represents the asynchronous remove operation</returns>
     public ValueTask RemoveAsync(TKey key, CancellationToken ct = default)
     {
         throw new NotImplementedException();
+    }
+
+    /// <summary>
+    /// Disposes the cache. No-op until the Redis cache is implemented (the stub owns no resources).
+    /// </summary>
+    /// <returns>A completed task.</returns>
+    public ValueTask DisposeAsync()
+    {
+        return ValueTask.CompletedTask;
     }
 }

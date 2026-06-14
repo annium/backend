@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 namespace Annium.Cache.Abstractions;
 
 /// <summary>
-/// Generic cache interface for storing and retrieving values by key
+/// Generic cache interface for storing and retrieving values by key. Extends
+/// <see cref="IAsyncDisposable"/> so the cache's background lifecycle (e.g. the InMemory
+/// executor) is part of the abstraction and the DI container disposes it on teardown.
 /// </summary>
 /// <typeparam name="TKey">The type of cache keys</typeparam>
 /// <typeparam name="TValue">The type of cached values</typeparam>
-public interface ICache<TKey, TValue>
+public interface ICache<TKey, TValue> : IAsyncDisposable
     where TKey : IEquatable<TKey>
     where TValue : notnull
 {
@@ -36,6 +38,6 @@ public interface ICache<TKey, TValue>
     /// </summary>
     /// <param name="key">The cache key to remove</param>
     /// <param name="ct">Cancellation token</param>
-    /// <returns>A task that represents the asynchronous operation</returns>
+    /// <returns>A value task that represents the asynchronous remove operation</returns>
     ValueTask RemoveAsync(TKey key, CancellationToken ct = default);
 }
