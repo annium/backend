@@ -14,14 +14,14 @@ public static class CacheOptionsExtensions
     /// <param name="options">The cache options</param>
     /// <param name="now">The current time</param>
     /// <returns>The calculated absolute expiration time</returns>
+    /// <exception cref="InvalidOperationException">Thrown when <paramref name="options"/> has an unrecognized expiration <see cref="CacheOptions.Mode"/>.</exception>
     public static Instant GetExpiresAt(this CacheOptions options, Instant now)
     {
-        if (options.Moment != Instant.MinValue)
-            return options.Moment;
-
-        if (options.Lifetime != Duration.Zero)
-            return now + options.Lifetime;
-
-        throw new InvalidOperationException($"Failed to determine expiration time for options: {options}");
+        return options.Mode switch
+        {
+            CacheExpirationMode.Absolute => options.Moment,
+            CacheExpirationMode.Sliding => now + options.Lifetime,
+            _ => throw new InvalidOperationException($"Failed to determine expiration time for options: {options}"),
+        };
     }
 }
