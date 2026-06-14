@@ -7,9 +7,11 @@ using Testcontainers.PostgreSql;
 namespace Annium.linq2db.PostgreSql.Tests.Db;
 
 /// <summary>
-/// Test database setup for PostgreSQL integration tests using Testcontainers
+/// Test database setup for PostgreSQL integration tests using Testcontainers. Implements
+/// <see cref="IAsyncDisposable"/> so the started container is stopped and removed when the
+/// owning test provider is torn down, rather than lingering until the Ryuk reaper at process exit.
 /// </summary>
-public class Database
+public class Database : IAsyncDisposable
 {
     /// <summary>
     /// Gets the PostgreSQL configuration for test connections
@@ -58,5 +60,14 @@ public class Database
             .PerformUpgrade();
         if (!result.Successful)
             throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+    }
+
+    /// <summary>
+    /// Stops and removes the PostgreSQL test container.
+    /// </summary>
+    /// <returns>A value task that completes when the container has been disposed.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        await _db.DisposeAsync();
     }
 }
