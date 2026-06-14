@@ -58,6 +58,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// <returns>A read-only set of key names that matched the pattern across all servers.</returns>
     public async Task<IReadOnlyCollection<string>> GetKeysAsync(string pattern = "", CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         var redis = await GetMultiplexerAsync().WaitAsync(ct);
         var keyPattern = string.IsNullOrWhiteSpace(pattern) ? default : new RedisValue(pattern);
         var keys = new HashSet<string>();
@@ -79,6 +80,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// <returns>The stored string value, or <see langword="null"/> if the key is absent.</returns>
     public async Task<string?> GetAsync(string key, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         var redis = await GetMultiplexerAsync().WaitAsync(ct);
         var value = await redis.GetDatabase().StringGetAsync(key);
 
@@ -101,6 +103,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         CancellationToken ct = default
     )
     {
+        ct.ThrowIfCancellationRequested();
         var redis = await GetMultiplexerAsync().WaitAsync(ct);
         var result = await redis
             .GetDatabase()
@@ -117,6 +120,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// <returns><see langword="true"/> if the key existed and was deleted; <see langword="false"/> if the key was not found.</returns>
     public async Task<bool> DeleteAsync(string key, CancellationToken ct = default)
     {
+        ct.ThrowIfCancellationRequested();
         var redis = await GetMultiplexerAsync().WaitAsync(ct);
         var result = await redis.GetDatabase().KeyDeleteAsync(key);
 
