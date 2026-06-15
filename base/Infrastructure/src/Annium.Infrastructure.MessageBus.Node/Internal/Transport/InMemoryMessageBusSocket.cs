@@ -44,6 +44,11 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     private readonly ILogger _logger;
 
     /// <summary>
+    /// Guards against repeated disposal (the container disposes the socket more than once).
+    /// </summary>
+    private bool _isDisposed;
+
+    /// <summary>
     /// Initializes a new instance of the InMemoryMessageBusSocket class.
     /// </summary>
     /// <param name="logger">The logger to use for this socket.</param>
@@ -121,9 +126,15 @@ internal class InMemoryMessageBusSocket : IMessageBusSocket
     /// <returns>A task that represents the asynchronous disposal operation.</returns>
     public async ValueTask DisposeAsync()
     {
+        if (_isDisposed)
+            return;
+        _isDisposed = true;
+
         await _observableCts.CancelAsync();
         await _observable.WhenCompletedAsync(_logger);
 
         await _disposable.DisposeAsync();
+
+        _observableCts.Dispose();
     }
 }

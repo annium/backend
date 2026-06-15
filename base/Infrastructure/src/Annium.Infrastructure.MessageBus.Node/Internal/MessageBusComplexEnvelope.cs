@@ -65,7 +65,7 @@ internal static class MessageBusComplexEnvelope
     /// <param name="error">The error message to include in the envelope.</param>
     /// <returns>A complex envelope containing the final error marked as final.</returns>
     public static MessageBusComplexEnvelope<T> End<T>(Guid id, string error) =>
-        new(id, EnvelopeType.Data | EnvelopeType.Final, default!, error);
+        new(id, EnvelopeType.Error | EnvelopeType.Final, default!, error);
 }
 
 /// <summary>

@@ -47,6 +47,11 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     private readonly ILogger _logger;
 
     /// <summary>
+    /// Guards against repeated disposal (the container disposes the socket more than once).
+    /// </summary>
+    private bool _isDisposed;
+
+    /// <summary>
     /// Initializes a new instance of the NetMQMessageBusSocket class.
     /// </summary>
     /// <param name="cfg">The network configuration containing endpoints and serializer.</param>
@@ -126,10 +131,16 @@ internal class NetMQMessageBusSocket : IMessageBusSocket
     /// <returns>A task that represents the asynchronous disposal operation.</returns>
     public async ValueTask DisposeAsync()
     {
+        if (_isDisposed)
+            return;
+        _isDisposed = true;
+
         await _observableCts.CancelAsync();
         await _observable.WhenCompletedAsync(_logger);
 
         await _disposable.DisposeAsync();
+
+        _observableCts.Dispose();
     }
 
     #endregion
