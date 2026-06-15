@@ -82,6 +82,41 @@ public class InMemoryMessageBusTest : TestBase
     }
 
     /// <summary>
+    /// Tests that Listen&lt;T&gt;() delivers only messages whose runtime type matches T, excluding messages of
+    /// sibling types that share the same base interface.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
+    [Fact]
+    public async Task Listen_SpecificType_ReceivesOnlyMatchingMessages()
+    {
+        // arrange
+        var node = Get<IMessageBusNode>();
+        var sinkA = new List<A>();
+        var sinkB = new List<B>();
+        node.Listen<A>().Subscribe(sinkA.Add);
+        node.Listen<B>().Subscribe(sinkB.Add);
+
+        // act
+        await node.Send<IX>(new A(1));
+        await node.Send<IX>(new B(2));
+
+        await Expect.ToAsync(
+            () =>
+            {
+                sinkA.Has(1);
+                sinkB.Has(1);
+            },
+            3000
+        );
+
+        // assert
+        sinkA.Has(1);
+        sinkA.At(0).Is(new A(1));
+        sinkB.Has(1);
+        sinkB.At(0).Is(new B(2));
+    }
+
+    /// <summary>
     /// Test record implementing IX interface for message bus testing.
     /// </summary>
     private record A : IX
