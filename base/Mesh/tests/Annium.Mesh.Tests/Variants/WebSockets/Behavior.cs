@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
@@ -67,7 +68,7 @@ public class Behavior : IBehavior, ILogSubject
     /// <returns>A <see cref="ValueTask"/> that completes when the server has been fully disposed.</returns>
     public ValueTask DisposeAsync()
     {
-        global::System.GC.SuppressFinalize(this);
+        GC.SuppressFinalize(this);
         return _server.DisposeAsync();
     }
 }
