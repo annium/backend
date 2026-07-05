@@ -5,26 +5,28 @@ using Annium.MessageBus.Abstractions;
 using Annium.Testing;
 using Xunit;
 
-namespace Annium.MessageBus.InMemory.Tests;
+namespace Annium.MessageBus.Tests.Shared;
 
 /// <summary>
-/// Basic publish/subscribe and in-subject ordering (AC1, AC4).
+/// Conformance: basic publish/subscribe, in-subject ordering, batch, and read-loop resilience.
 /// </summary>
-public class InMemoryPubSubTests : MessageBusTestBase
+/// <typeparam name="TTransport">The transport seam under test.</typeparam>
+public abstract class PubSubConformanceTests<TTransport> : MessageBusConformanceTestBase<TTransport>
+    where TTransport : class, IMessageBusTestTransport, new()
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="InMemoryPubSubTests"/> class.
+    /// Initializes a new instance of the <see cref="PubSubConformanceTests{TTransport}"/> class.
     /// </summary>
     /// <param name="outputHelper">The test output helper.</param>
-    public InMemoryPubSubTests(ITestOutputHelper outputHelper)
+    protected PubSubConformanceTests(ITestOutputHelper outputHelper)
         : base(outputHelper) { }
 
     /// <summary>
-    /// AC1: a message published to a subject is delivered to a subscriber and deserialized.
+    /// A message published to a subject is delivered to a subscriber and deserialized.
     /// </summary>
     /// <returns>A task representing the test.</returns>
     [Fact]
-    public async Task PublishSubscribe_DeliversAndDeserializes()
+    public virtual async Task PublishSubscribe_DeliversAndDeserializes()
     {
         var received = new List<Order>();
         await SubscribeAsync<Order>(
@@ -40,16 +42,16 @@ public class InMemoryPubSubTests : MessageBusTestBase
 
         await Publisher.PublishAsync("orders.created", new Order(42));
 
-        await Expect.ToAsync(() => received.Has(1), 3000);
+        await Expect.ToAsync(() => received.Has(1), Timeout);
         received.At(0).Is(new Order(42));
     }
 
     /// <summary>
-    /// AC4: with the default Concurrency=1, messages on a subject are processed in publish order.
+    /// With the default Concurrency=1, messages on a subject are processed in publish order.
     /// </summary>
     /// <returns>A task representing the test.</returns>
     [Fact]
-    public async Task Concurrency1_PreservesSubjectOrder()
+    public virtual async Task Concurrency1_PreservesSubjectOrder()
     {
         const int count = 20;
         var received = new List<int>();
@@ -67,16 +69,16 @@ public class InMemoryPubSubTests : MessageBusTestBase
         for (var i = 0; i < count; i++)
             await Publisher.PublishAsync("orders.created", new Order(i));
 
-        await Expect.ToAsync(() => received.Has(count), 3000);
+        await Expect.ToAsync(() => received.Has(count), Timeout);
         received.SequenceEqual(Enumerable.Range(0, count)).Is(true);
     }
 
     /// <summary>
-    /// AC1: a batch publish delivers every message in the batch.
+    /// A batch publish delivers every message in the batch.
     /// </summary>
     /// <returns>A task representing the test.</returns>
     [Fact]
-    public async Task PublishBatch_DeliversAll()
+    public virtual async Task PublishBatch_DeliversAll()
     {
         var received = new List<int>();
         await SubscribeAsync<Order>(
@@ -92,7 +94,7 @@ public class InMemoryPubSubTests : MessageBusTestBase
 
         await Publisher.PublishBatchAsync("orders.created", new[] { new Order(1), new Order(2), new Order(3) });
 
-        await Expect.ToAsync(() => received.Has(3), 3000);
+        await Expect.ToAsync(() => received.Has(3), Timeout);
         received.OrderBy(x => x).SequenceEqual([1, 2, 3]).Is(true);
     }
 
@@ -102,7 +104,7 @@ public class InMemoryPubSubTests : MessageBusTestBase
     /// </summary>
     /// <returns>A task representing the test.</returns>
     [Fact]
-    public async Task HandlerContractViolation_LoopSurvives()
+    public virtual async Task HandlerContractViolation_LoopSurvives()
     {
         var received = new List<int>();
         await SubscribeAsync<Order>(
@@ -123,7 +125,7 @@ public class InMemoryPubSubTests : MessageBusTestBase
         await Publisher.PublishAsync("orders.created", new Order(1));
         await Publisher.PublishAsync("orders.created", new Order(2));
 
-        await Expect.ToAsync(() => received.Has(2), 3000);
+        await Expect.ToAsync(() => received.Has(2), Timeout);
         received.OrderBy(x => x).SequenceEqual([1, 2]).Is(true);
     }
 }

@@ -1,0 +1,17 @@
+using Annium.MessageBus.Tests.Shared;
+using Xunit;
+
+namespace Annium.MessageBus.InMemory.Tests;
+
+/// <summary>
+/// Runs the shared publish/subscribe conformance suite against the in-memory transport.
+/// </summary>
+public sealed class PubSubTests : PubSubConformanceTests<TestTransport>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PubSubTests"/> class.
+    /// </summary>
+    /// <param name="outputHelper">The test output helper.</param>
+    public PubSubTests(ITestOutputHelper outputHelper)
+        : base(outputHelper) { }
+}

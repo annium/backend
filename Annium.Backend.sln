@@ -173,6 +173,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MessageBus.InMemory"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MessageBus.InMemory.Tests", "base\MessageBus\tests\Annium.MessageBus.InMemory.Tests\Annium.MessageBus.InMemory.Tests.csproj", "{DF224AB2-6EE7-4C84-BAF5-6F01CA5F1E7C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MessageBus.Tests.Shared", "base\MessageBus\tests\Annium.MessageBus.Tests.Shared\Annium.MessageBus.Tests.Shared.csproj", "{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -819,6 +821,18 @@ Global
 		{DF224AB2-6EE7-4C84-BAF5-6F01CA5F1E7C}.Release|x64.Build.0 = Release|Any CPU
 		{DF224AB2-6EE7-4C84-BAF5-6F01CA5F1E7C}.Release|x86.ActiveCfg = Release|Any CPU
 		{DF224AB2-6EE7-4C84-BAF5-6F01CA5F1E7C}.Release|x86.Build.0 = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|x64.Build.0 = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Debug|x86.Build.0 = Debug|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|x64.ActiveCfg = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|x64.Build.0 = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|x86.ActiveCfg = Release|Any CPU
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -907,5 +921,6 @@ Global
 		{CA5E106E-0130-4DDA-800A-922F3D88C029} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
 		{43DACC1C-1C94-4CCD-B814-3A41FC7A8F91} = {4434BC8A-2F7E-E64B-37EB-9383E9BFF630}
 		{DF224AB2-6EE7-4C84-BAF5-6F01CA5F1E7C} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
+		{47BB4FCF-0ACD-46C7-A2FC-B33F35B4F34F} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
 	EndGlobalSection
 EndGlobal
