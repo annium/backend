@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Annium.Infrastructure.MessageBus.Abstractions;
 
 /// <summary>
-/// The context of a single received message. Exactly one of <see cref="AckAsync"/> / <see cref="NackAsync"/> must
-/// be called per message (on all paths, including exceptions). Failing to do so, or calling more than once, is a
-/// contract violation.
+/// The context of a single received message. Exactly one of <see cref="Ack"/> / <see cref="Nack"/> must be called
+/// per message (on all paths, including exceptions). Failing to do so, or calling more than once, is a contract
+/// violation. Both only record the intended disposition; the pipeline performs the transport-level ack/commit after
+/// the handler returns, so neither is asynchronous.
 /// </summary>
 /// <typeparam name="T">The deserialized message payload type.</typeparam>
 public interface IMessageContext<out T>
@@ -33,16 +33,14 @@ public interface IMessageContext<out T>
     T Payload { get; }
 
     /// <summary>
-    /// Acknowledges successful processing (commit/ack).
+    /// Acknowledges successful processing (records the intent to commit/ack).
     /// </summary>
-    /// <returns>A task that completes when the acknowledgement is recorded.</returns>
-    Task AckAsync();
+    void Ack();
 
     /// <summary>
     /// Rejects the message. When <paramref name="requeue"/> is true the message is retriable (retry policy,
     /// then dead-letter); when false it is dead-lettered immediately.
     /// </summary>
     /// <param name="requeue">Whether the failure is retriable.</param>
-    /// <returns>A task that completes when the rejection is recorded.</returns>
-    Task NackAsync(bool requeue = true);
+    void Nack(bool requeue = true);
 }

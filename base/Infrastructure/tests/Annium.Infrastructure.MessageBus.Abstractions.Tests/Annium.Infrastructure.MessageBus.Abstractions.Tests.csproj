@@ -11,6 +11,7 @@
     <ProjectReference Include="../../src/Annium.Infrastructure.MessageBus.Abstractions/Annium.Infrastructure.MessageBus.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Annium.Serialization.Json" />
     <PackageReference Include="Annium.Testing" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
