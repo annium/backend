@@ -25,7 +25,7 @@ public class AckContractTests : MessageBusTestBase
     [Fact]
     public async Task Ack_CommitsExactlyOnce()
     {
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {
@@ -48,7 +48,7 @@ public class AckContractTests : MessageBusTestBase
     [Fact]
     public async Task NoDisposition_Throws_AndLeavesUnconfirmed()
     {
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (_, _) => Task.CompletedTask
         );
@@ -69,7 +69,7 @@ public class AckContractTests : MessageBusTestBase
     public async Task HandlerThrows_LogsAndAbandons_WithoutRetry()
     {
         var invocations = 0;
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (_, _) =>
             {
@@ -94,7 +94,7 @@ public class AckContractTests : MessageBusTestBase
     [Fact]
     public async Task DoubleAck_Throws()
     {
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {
@@ -116,7 +116,7 @@ public class AckContractTests : MessageBusTestBase
     [Fact]
     public async Task AckThenNack_Throws()
     {
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {

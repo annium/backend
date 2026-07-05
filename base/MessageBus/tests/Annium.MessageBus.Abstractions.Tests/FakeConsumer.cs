@@ -24,7 +24,7 @@ public sealed class FakeConsumer : ITransportConsumer
     /// <summary>
     /// The pipeline callback, once started.
     /// </summary>
-    private Func<ITransportIncomingMessage, CancellationToken, Task>? _onMessage;
+    private Func<TransportDelivery, CancellationToken, Task>? _onMessage;
 
     /// <summary>
     /// Whether the consumer has started and may receive messages.
@@ -43,10 +43,24 @@ public sealed class FakeConsumer : ITransportConsumer
     }
 
     /// <inheritdoc />
-    public Task StartAsync(Func<ITransportIncomingMessage, CancellationToken, Task> onMessage, CancellationToken ct)
+    public Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
         _started = true;
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task CompleteAsync(TransportDelivery delivery)
+    {
+        _transport.OnCompleted();
+        return Task.CompletedTask;
+    }
+
+    /// <inheritdoc />
+    public Task AbandonAsync(TransportDelivery delivery)
+    {
+        _transport.OnAbandoned();
         return Task.CompletedTask;
     }
 
@@ -68,10 +82,9 @@ public sealed class FakeConsumer : ITransportConsumer
         if (handler is null)
             return;
 
-        var incoming = new FakeIncomingMessage(_transport, message.Subject, message.Body, message.Headers);
         try
         {
-            await handler(incoming, CancellationToken.None);
+            await handler(new TransportDelivery(message), CancellationToken.None);
         }
         catch (Exception e)
         {

@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;
@@ -46,6 +50,39 @@ public abstract class MessageBusTestBase : TestBase
     /// Gets the resolved string serializer.
     /// </summary>
     protected ISerializer<string> Serializer => Get<ISerializer<string>>();
+
+    /// <summary>
+    /// The subscriptions created via <see cref="SubscribeAsync{T}"/>, disposed on teardown.
+    /// </summary>
+    private readonly List<IAsyncDisposable> _subscriptions = new();
+
+    /// <summary>
+    /// Subscribes via the resolved subscriber and tracks the subscription for disposal on teardown.
+    /// </summary>
+    /// <typeparam name="T">The payload type.</typeparam>
+    /// <param name="options">The subscription options.</param>
+    /// <param name="handler">The message handler.</param>
+    /// <returns>The subscription handle (also disposed automatically on teardown).</returns>
+    private protected async Task<IAsyncDisposable> SubscribeAsync<T>(
+        SubscriptionOptions options,
+        Func<IMessageContext<T>, CancellationToken, Task> handler
+    )
+        where T : notnull
+    {
+        var subscription = await Subscriber.SubscribeAsync(options, handler);
+        _subscriptions.Add(subscription);
+        return subscription;
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask DisposeAsync()
+    {
+        // dispose subscriptions (idempotent) before the container disposes the transport
+        for (var i = _subscriptions.Count - 1; i >= 0; i--)
+            await _subscriptions[i].DisposeAsync();
+
+        await base.DisposeAsync();
+    }
 }
 
 /// <summary>

@@ -32,7 +32,7 @@ public class ConcurrencyDispatchTests : MessageBusTestBase
         var max = 0;
         var order = new List<int>();
 
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             async (ctx, _) =>
             {
@@ -45,7 +45,7 @@ public class ConcurrencyDispatchTests : MessageBusTestBase
                 lock (lockObj)
                 {
                     current--;
-                    order.Add(ctx.Payload.Id);
+                    order.Add(ctx.Body.Id);
                 }
                 ctx.Ack();
             }
@@ -72,7 +72,7 @@ public class ConcurrencyDispatchTests : MessageBusTestBase
         var current = 0;
         var max = 0;
 
-        var subscription = await Subscriber.SubscribeAsync<Order>(
+        var subscription = await SubscribeAsync<Order>(
             new SubscriptionOptions
             {
                 Subject = "orders.created",

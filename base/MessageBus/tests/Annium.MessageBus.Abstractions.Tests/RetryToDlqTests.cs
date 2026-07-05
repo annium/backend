@@ -40,7 +40,7 @@ public class RetryToDlqTests : MessageBusTestBase
     public async Task NackRequeue_RetriesThenDeadLetters()
     {
         var invocations = 0;
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created", Retry = FastRetry(3) },
             (ctx, _) =>
             {
@@ -74,7 +74,7 @@ public class RetryToDlqTests : MessageBusTestBase
     public async Task NackNoRequeue_DeadLettersImmediately()
     {
         var invocations = 0;
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created", Retry = FastRetry(5) },
             (ctx, _) =>
             {

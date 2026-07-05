@@ -125,21 +125,21 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
     /// inline (Concurrency == 1, which preserves order) or on a tracked background task (Concurrency &gt; 1). The
     /// processing task is tracked in both cases so graceful drain honors it.
     /// </summary>
-    /// <param name="incomingMessage">The received message.</param>
+    /// <param name="delivery">The received delivery.</param>
     /// <param name="ct">The transport cancellation token.</param>
     /// <returns>A task that completes when the message has been accepted for (Concurrency &gt; 1) or has finished
     /// (Concurrency == 1) processing.</returns>
-    private async Task OnIncomingAsync(ITransportIncomingMessage incomingMessage, CancellationToken ct)
+    private async Task OnIncomingAsync(TransportDelivery delivery, CancellationToken ct)
     {
         if (_isDisposed)
         {
-            await incomingMessage.AbandonAsync();
+            await _consumer.AbandonAsync(delivery);
             return;
         }
 
         await _gate.WaitAsync(_cts.Token);
 
-        var task = ProcessAndReleaseAsync(incomingMessage);
+        var task = ProcessAndReleaseAsync(delivery);
         Track(task);
 
         // Concurrency == 1: await inline so the transport delivers strictly sequentially and in order, and so that
@@ -151,13 +151,17 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
     /// <summary>
     /// Runs <see cref="ProcessAsync"/> and always releases the concurrency gate afterwards.
     /// </summary>
-    /// <param name="incomingMessage">The received message.</param>
+    /// <param name="delivery">The received delivery.</param>
     /// <returns>A task that completes when processing has finished and the gate has been released.</returns>
-    private async Task ProcessAndReleaseAsync(ITransportIncomingMessage incomingMessage)
+    private async Task ProcessAndReleaseAsync(TransportDelivery delivery)
     {
+        // Yield first so the caller registers this task in the in-flight set (Track) before the handler runs;
+        // otherwise a handler side effect could be observed while a concurrent DisposeAsync snapshots an empty set,
+        // dropping the message from the graceful drain.
+        await Task.Yield();
         try
         {
-            await ProcessAsync(incomingMessage);
+            await ProcessAsync(delivery);
         }
         finally
         {
@@ -169,27 +173,28 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
     /// Runs the full processing algorithm for a single message: deserialize, retry loop, ack-contract enforcement,
     /// and dead-letter fallback.
     /// </summary>
-    /// <param name="incomingMessage">The received message.</param>
+    /// <param name="delivery">The received delivery.</param>
     /// <returns>A task that completes when the message has been fully handled.</returns>
     /// <exception cref="InvalidOperationException">Thrown when the handler returns without an explicit disposition,
     /// or records more than one disposition.</exception>
-    private async Task ProcessAsync(ITransportIncomingMessage incomingMessage)
+    private async Task ProcessAsync(TransportDelivery delivery)
     {
-        var id = incomingMessage.Headers.GetValueOrDefault(EnvelopeHeaders.Id) ?? string.Empty;
-        var timestamp = ParseTimestamp(incomingMessage.Headers);
-        var payload = _serializer.Deserialize<T>(incomingMessage.Body);
+        var message = delivery.Message;
+        var id = message.Headers.GetValueOrDefault(EnvelopeHeaders.Id) ?? string.Empty;
+        var timestamp = ParseTimestamp(message.Headers);
+        var payload = _serializer.Deserialize<T>(message.Body);
 
         DateTimeOffset? firstFailedAt = null;
         var attempt = 0;
         while (true)
         {
             attempt++;
-            var context = new MessageContext<T>(id, incomingMessage.Headers, timestamp, payload);
-            using var activity = Diagnostics.StartConsume(incomingMessage.Subject, id);
+            var context = new MessageContext<T>(id, message.Headers, timestamp, payload);
+            using var activity = Diagnostics.StartConsume(message.Subject, id);
             var startedAt = Stopwatch.GetTimestamp();
             try
             {
-                Diagnostics.RecordConsume(incomingMessage.Subject);
+                Diagnostics.RecordConsume(message.Subject);
                 await _handler(context, _cts.Token);
             }
             catch (Exception e) when (context.Disposition == Disposition.None)
@@ -197,7 +202,7 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
                 // Handler faulted without acking/nacking: log the original exception and leave the message
                 // unconfirmed (raw redelivery by the transport). The retry policy is deliberately NOT engaged.
                 this.Error(e);
-                await incomingMessage.AbandonAsync();
+                await _consumer.AbandonAsync(delivery);
                 return;
             }
             catch (Exception e)
@@ -205,13 +210,13 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
                 // Handler recorded a disposition and then threw (duplicate ack/nack, or a fault after acking):
                 // abandon to avoid leaving the message in limbo, then rethrow so the violation surfaces / is observed.
                 this.Error(e);
-                await incomingMessage.AbandonAsync();
+                await _consumer.AbandonAsync(delivery);
                 throw;
             }
             finally
             {
                 Diagnostics.RecordConsumeLatency(
-                    incomingMessage.Subject,
+                    message.Subject,
                     Stopwatch.GetElapsedTime(startedAt).TotalMilliseconds
                 );
             }
@@ -219,30 +224,30 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
             switch (context.Disposition)
             {
                 case Disposition.Ack:
-                    await incomingMessage.CompleteAsync();
-                    Diagnostics.RecordAck(incomingMessage.Subject);
+                    await _consumer.CompleteAsync(delivery);
+                    Diagnostics.RecordAck(message.Subject);
                     return;
 
                 case Disposition.Nack:
-                    Diagnostics.RecordNack(incomingMessage.Subject);
+                    Diagnostics.RecordNack(message.Subject);
                     firstFailedAt ??= DateTimeOffset.UtcNow;
                     if (context.NackRequeue && attempt < _retry.MaxAttempts)
                     {
-                        Diagnostics.RecordRetry(incomingMessage.Subject);
+                        Diagnostics.RecordRetry(message.Subject);
                         await Task.Delay(GetBackoff(attempt), _cts.Token);
                         continue;
                     }
 
-                    await PublishDlqAsync(incomingMessage, attempt, firstFailedAt.Value);
-                    await incomingMessage.CompleteAsync();
-                    Diagnostics.RecordDlq(incomingMessage.Subject);
+                    await PublishDlqAsync(message, attempt, firstFailedAt.Value);
+                    await _consumer.CompleteAsync(delivery);
+                    Diagnostics.RecordDlq(message.Subject);
                     return;
 
                 default:
                     // Handler returned normally without recording a disposition: contract violation.
-                    await incomingMessage.AbandonAsync();
+                    await _consumer.AbandonAsync(delivery);
                     throw new InvalidOperationException(
-                        $"Handler for message '{id}' on '{incomingMessage.Subject}' returned without calling Ack/Nack."
+                        $"Handler for message '{id}' on '{message.Subject}' returned without calling Ack/Nack."
                     );
             }
         }
@@ -251,25 +256,21 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
     /// <summary>
     /// Publishes the message to its dead-letter subject (<c>&lt;subject&gt;.dlq</c>) with diagnostic headers.
     /// </summary>
-    /// <param name="incomingMessage">The original message.</param>
+    /// <param name="message">The original message.</param>
     /// <param name="attempts">The number of processing attempts made.</param>
     /// <param name="firstFailedAt">The timestamp of the first failure.</param>
     /// <returns>A task that completes when the dead-letter message has been produced.</returns>
-    private async Task PublishDlqAsync(
-        ITransportIncomingMessage incomingMessage,
-        int attempts,
-        DateTimeOffset firstFailedAt
-    )
+    private async Task PublishDlqAsync(TransportMessage message, int attempts, DateTimeOffset firstFailedAt)
     {
-        var headers = new Dictionary<string, string>(incomingMessage.Headers, StringComparer.Ordinal)
+        var headers = new Dictionary<string, string>(message.Headers, StringComparer.Ordinal)
         {
             [EnvelopeHeaders.DeathReason] = $"Nacked after {attempts} attempt(s).",
-            [EnvelopeHeaders.OriginalSubject] = incomingMessage.Subject,
+            [EnvelopeHeaders.OriginalSubject] = message.Subject,
             [EnvelopeHeaders.Attempts] = attempts.ToString(CultureInfo.InvariantCulture),
             [EnvelopeHeaders.FirstFailedAt] = firstFailedAt.ToString("O", CultureInfo.InvariantCulture),
         };
 
-        var dlqMessage = new TransportMessage($"{incomingMessage.Subject}.dlq", incomingMessage.Body, headers, null);
+        var dlqMessage = new TransportMessage($"{message.Subject}.dlq", message.Body, headers, null);
         await _producer.ProduceAsync(dlqMessage, _cts.Token);
     }
 
@@ -342,7 +343,9 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
         if (inFlight.Length > 0)
             await Task.WhenAny(Task.WhenAll(inFlight), Task.Delay(_options.StopTimeout));
 
+        // Hard-cancel any straggler handler that slipped past the drain snapshot. The source is intentionally NOT
+        // disposed: such a straggler may still read _cts.Token, and a cancelled-but-live token merely surfaces a
+        // handled OperationCanceledException, whereas a disposed one would throw ObjectDisposedException.
         await _cts.CancelAsync();
-        _cts.Dispose();
     }
 }

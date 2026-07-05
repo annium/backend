@@ -30,7 +30,7 @@ public interface IMessageContext<out T>
     /// <summary>
     /// Gets the deserialized message payload.
     /// </summary>
-    T Payload { get; }
+    T Body { get; }
 
     /// <summary>
     /// Acknowledges successful processing (records the intent to commit/ack).

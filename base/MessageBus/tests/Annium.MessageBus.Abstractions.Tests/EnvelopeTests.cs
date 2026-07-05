@@ -116,11 +116,11 @@ public class EnvelopeTests : MessageBusTestBase
     {
         Order? received = null;
         string? id = null;
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {
-                received = ctx.Payload;
+                received = ctx.Body;
                 id = ctx.Id;
                 ctx.Ack();
                 return Task.CompletedTask;

@@ -36,7 +36,7 @@ public class PipelineLifecycleTests : MessageBusTestBase
             Concurrency = concurrency,
         };
 
-        await Wrap.It(async () => await Subscriber.SubscribeAsync<Order>(options, (_, _) => Task.CompletedTask))
+        await Wrap.It(async () => await SubscribeAsync<Order>(options, (_, _) => Task.CompletedTask))
             .ThrowsAsync<ArgumentException>();
     }
 
@@ -47,7 +47,7 @@ public class PipelineLifecycleTests : MessageBusTestBase
     [Fact]
     public async Task DoubleDispose_IsSafe()
     {
-        var subscription = await Subscriber.SubscribeAsync<Order>(
+        var subscription = await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {

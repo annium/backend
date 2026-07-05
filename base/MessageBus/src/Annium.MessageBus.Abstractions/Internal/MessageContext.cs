@@ -24,7 +24,7 @@ internal sealed class MessageContext<T> : IMessageContext<T>
         Id = id;
         Headers = headers;
         Timestamp = timestamp;
-        Payload = payload;
+        Body = payload;
     }
 
     /// <inheritdoc />
@@ -37,7 +37,7 @@ internal sealed class MessageContext<T> : IMessageContext<T>
     public DateTimeOffset Timestamp { get; }
 
     /// <inheritdoc />
-    public T Payload { get; }
+    public T Body { get; }
 
     /// <summary>
     /// Gets the recorded disposition for this attempt.

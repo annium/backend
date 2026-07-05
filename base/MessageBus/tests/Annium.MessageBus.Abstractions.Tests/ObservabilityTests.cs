@@ -59,7 +59,7 @@ public class ObservabilityTests : MessageBusTestBase
         ActivitySource.AddActivityListener(activityListener);
 
         // consume with ack → consume/ack counters, latency, consumer span; publish → publish counter + producer span
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions { Subject = "orders.created" },
             (ctx, _) =>
             {
@@ -70,7 +70,7 @@ public class ObservabilityTests : MessageBusTestBase
         await Publisher.PublishAsync("orders.created", new Order(1));
 
         // consume with nack → retry → dlq on another subject → nack/retry/dlq counters
-        await Subscriber.SubscribeAsync<Order>(
+        await SubscribeAsync<Order>(
             new SubscriptionOptions
             {
                 Subject = "orders.failed",
