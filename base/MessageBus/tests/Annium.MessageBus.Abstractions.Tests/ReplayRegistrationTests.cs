@@ -24,7 +24,13 @@ public abstract class ReplayRegistrationTestsBase(ITestOutputHelper outputHelper
         Register(container =>
         {
             container.AddSerializers().WithJson(isDefault: true);
-            container.Add<FakeTransport>().AsSelf().AsInterfaces().Singleton();
+            // the keyed core resolves the transport SPI under the default key, so expose the fake transport there
+            container
+                .Add<FakeTransport>()
+                .AsSelf()
+                .AsKeyed<ITransportProducer>(MessageBusKeys.Default)
+                .AsKeyed<ITransportConsumerFactory>(MessageBusKeys.Default)
+                .Singleton();
             container.AddMessageBusCore(options => options.SupportsReplay = supportsReplay);
         });
     }

@@ -14,7 +14,7 @@ namespace Annium.MessageBus.Kafka.Internal;
 /// The Kafka transport: a shared producer plus a consumer factory implementing the transport SPI over Confluent.Kafka.
 /// Registered as a singleton by <c>AddKafkaMessageBus</c>. Canonical subjects map 1:1 to Kafka topics (dots are legal
 /// in topic names); the canonical envelope headers map to Kafka message headers (UTF-8). Admin operations live in
-/// <see cref="IKafkaAdmin"/>, which consumers resolve lazily.
+/// <see cref="IKafkaAdmin"/>, which the transport injects into each consumer it creates.
 /// </summary>
 internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFactory, IAsyncDisposable, ILogSubject
 {
@@ -27,9 +27,9 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
     private readonly KafkaConfiguration _config;
 
     /// <summary>
-    /// The service provider consumers resolve <see cref="IKafkaAdmin"/> from (lazily, guarded against disposal).
+    /// The admin (topic ensure + partition lookup) passed to each consumer this transport creates.
     /// </summary>
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IKafkaAdmin _admin;
 
     /// <summary>
     /// The shared producer (thread-safe). The key is nullable — a message with no partition key produces a null key.
@@ -45,12 +45,12 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
     /// Initializes a new instance of the <see cref="KafkaTransport"/> class.
     /// </summary>
     /// <param name="config">The adapter configuration.</param>
-    /// <param name="serviceProvider">The service provider passed to consumers for lazy admin resolution.</param>
+    /// <param name="admin">The admin passed to each created consumer.</param>
     /// <param name="logger">The logger passed to consumers.</param>
-    public KafkaTransport(KafkaConfiguration config, IServiceProvider serviceProvider, ILogger logger)
+    public KafkaTransport(KafkaConfiguration config, IKafkaAdmin admin, ILogger logger)
     {
         _config = config;
-        _serviceProvider = serviceProvider;
+        _admin = admin;
         Logger = logger;
         var bootstrapServers = BootstrapServersParser.Format(config.BootstrapServers);
         _producer = new ProducerBuilder<string?, string>(
@@ -95,7 +95,7 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
         // Same Group → shared Kafka consumer group (competing); Group=null → a unique group so every subscriber gets
         // every message (fan-out).
         var groupId = options.Group ?? $"__fanout-{Guid.NewGuid():N}";
-        return new KafkaConsumer(_serviceProvider, options, groupId, _config, Logger);
+        return new KafkaConsumer(_admin, options, groupId, _config, Logger);
     }
 
     /// <summary>

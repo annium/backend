@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.MessageBus.Abstractions;
 using Confluent.Kafka;
@@ -30,9 +29,9 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
     public ILogger Logger { get; }
 
     /// <summary>
-    /// The service provider used to lazily resolve <see cref="IKafkaAdmin"/> (topic ensure + partition lookup).
+    /// The admin used for topic ensure + partition lookup at subscribe time.
     /// </summary>
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IKafkaAdmin _admin;
 
     /// <summary>
     /// The subscription options.
@@ -105,20 +104,20 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
     /// <summary>
     /// Initializes a new instance of the <see cref="KafkaConsumer"/> class.
     /// </summary>
-    /// <param name="serviceProvider">The service provider for lazy <see cref="IKafkaAdmin"/> resolution.</param>
+    /// <param name="admin">The admin for topic ensure + partition lookup.</param>
     /// <param name="options">The subscription options.</param>
     /// <param name="groupId">The resolved Kafka consumer group id.</param>
     /// <param name="config">The adapter configuration.</param>
     /// <param name="logger">The logger.</param>
     public KafkaConsumer(
-        IServiceProvider serviceProvider,
+        IKafkaAdmin admin,
         SubscriptionOptions options,
         string groupId,
         KafkaConfiguration config,
         ILogger logger
     )
     {
-        _serviceProvider = serviceProvider;
+        _admin = admin;
         _options = options;
         _atLeastOnce = options.Delivery == DeliveryMode.AtLeastOnce;
         // Plain subscriptions are not ReplaySubscriptionOptions — default to "New" (a hard cast would throw here).
@@ -183,17 +182,24 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
         _onMessage = onMessage;
 
         // Ensure the literal topic exists so assignment (readiness) is deterministic; wildcards discover topics later.
-        // The admin is resolved lazily and may be unavailable if the container is being disposed (shutdown) — then we
-        // skip the pre-ensure and fall back to per-partition watermark resolution at assignment time.
-        if (_isLiteral && TryResolveAdmin() is { } admin)
+        // The admin is a shared singleton disposed with the container; a subscribe racing shutdown may find it disposed,
+        // so degrade gracefully (skip the pre-ensure and fall back to per-partition watermark resolution at assignment).
+        if (_isLiteral)
         {
-            await admin.EnsureTopicAsync(_options.Subject);
+            try
+            {
+                await _admin.EnsureTopicAsync(_options.Subject);
 
-            // Capture the end offset per partition now (subscribe time), before any publish, as the "New" floor.
-            var partitions = admin.GetPartitions(_options.Subject);
-            lock (_lock)
-                foreach (var tp in partitions)
-                    _subscribeEnds[tp] = _consumer.QueryWatermarkOffsets(tp, TimeSpan.FromSeconds(10)).High;
+                // Capture the end offset per partition now (subscribe time), before any publish, as the "New" floor.
+                var partitions = _admin.GetPartitions(_options.Subject);
+                lock (_lock)
+                    foreach (var tp in partitions)
+                        _subscribeEnds[tp] = _consumer.QueryWatermarkOffsets(tp, TimeSpan.FromSeconds(10)).High;
+            }
+            catch (ObjectDisposedException)
+            {
+                this.Error<string>("admin disposed; skipping topic ensure for {target}", _target);
+            }
         }
 
         lock (_lock)
@@ -215,24 +221,6 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
             {
                 this.Error<string>("consumer for {target} was not assigned within the readiness timeout", _target);
             }
-        }
-    }
-
-    /// <summary>
-    /// Resolves <see cref="IKafkaAdmin"/> from the service provider, returning null when the provider has been disposed
-    /// (container shutdown) rather than throwing.
-    /// </summary>
-    /// <returns>The admin service, or null if unavailable.</returns>
-    private IKafkaAdmin? TryResolveAdmin()
-    {
-        try
-        {
-            return _serviceProvider.Resolve<IKafkaAdmin>();
-        }
-        catch (ObjectDisposedException)
-        {
-            this.Error<string>("service provider disposed; skipping topic ensure for {target}", _target);
-            return null;
         }
     }
 
