@@ -41,7 +41,7 @@ internal sealed class InMemoryTransport : ITransportProducer, ITransportConsumer
         // one write per matching subscription: competing within a group's channel, fan-out across subscriptions.
         foreach (var subscription in targets)
             if (!subscription.Writer.TryWrite(message))
-                this.Trace("dropped message on {subject}: subscription channel closed", (object)message.Subject);
+                this.Trace<string>("dropped message on {subject}: subscription channel closed", message.Subject);
 
         return Task.CompletedTask;
     }

@@ -1,3 +1,4 @@
+using System;
 using Annium.Core.DependencyInjection;
 using Annium.MessageBus.Abstractions.Internal;
 
@@ -15,11 +16,26 @@ public static class ServiceContainerExtensions
     /// <c>ISerializer&lt;string&gt;</c> must be available in the container).
     /// </summary>
     /// <param name="container">The service container to add services to.</param>
+    /// <param name="configure">Configures the core options (e.g. <see cref="MessageBusCoreOptions.SupportsReplay"/>).</param>
     /// <returns>The service container for method chaining.</returns>
-    public static IServiceContainer AddMessageBusCore(this IServiceContainer container)
+    public static IServiceContainer AddMessageBusCore(
+        this IServiceContainer container,
+        Action<MessageBusCoreOptions>? configure = null
+    )
     {
+        var options = new MessageBusCoreOptions();
+        configure?.Invoke(options);
+
         container.Add<IMessagePublisher, MessageBusPublisher>().Singleton();
-        container.Add<IMessageSubscriber, MessageBusSubscriber>().Singleton();
+
+        if (options.SupportsReplay)
+            container
+                .Add<ReplayableMessageBusSubscriber>()
+                .As<IMessageSubscriber>()
+                .As<IReplayableMessageSubscriber>()
+                .Singleton();
+        else
+            container.Add<IMessageSubscriber, MessageBusSubscriber>().Singleton();
 
         return container;
     }

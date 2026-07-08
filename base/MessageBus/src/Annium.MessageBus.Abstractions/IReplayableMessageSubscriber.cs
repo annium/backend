@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 namespace Annium.MessageBus.Abstractions;
 
 /// <summary>
-/// Implemented by subscribers whose transport supports replay (starting consumption from a chosen position).
-/// Detect via <c>is</c>/<c>as</c>; transports without replay (e.g. RabbitMQ) do not implement it.
+/// A message subscriber whose transport also supports replay (starting consumption from a chosen position). Extends
+/// <see cref="IMessageSubscriber"/>, so injecting it grants both plain and replay subscribes; transports without replay
+/// (e.g. RabbitMQ) do not register it. Can also be discovered opportunistically via <c>is</c>/<c>as</c> from an
+/// <see cref="IMessageSubscriber"/>.
 /// </summary>
-public interface ISupportsReplay
+public interface IReplayableMessageSubscriber : IMessageSubscriber
 {
     /// <summary>
     /// Subscribes with a start position (replay). See <see cref="IMessageSubscriber.SubscribeAsync{T}"/> for

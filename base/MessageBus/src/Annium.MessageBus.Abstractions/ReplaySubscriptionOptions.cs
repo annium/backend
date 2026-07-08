@@ -2,7 +2,7 @@ namespace Annium.MessageBus.Abstractions;
 
 /// <summary>
 /// Subscription settings for replay-capable transports, adding a start position. Accepted only by
-/// <see cref="ISupportsReplay"/>.
+/// <see cref="IReplayableMessageSubscriber"/>.
 /// </summary>
 public sealed record ReplaySubscriptionOptions : SubscriptionOptions
 {

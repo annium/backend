@@ -66,9 +66,9 @@ internal sealed class InMemoryConsumer : ITransportConsumer, ILogSubject
     {
         // raw redelivery under at-least-once; drop under at-most-once
         if (_subscription.Delivery == DeliveryMode.AtLeastOnce && !_subscription.Writer.TryWrite(delivery.Message))
-            this.Warn(
+            this.Error<string>(
                 "failed to redeliver message on {subject}: subscription channel closed",
-                (object)delivery.Message.Subject
+                delivery.Message.Subject
             );
 
         return Task.CompletedTask;

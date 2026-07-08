@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.MessageBus.Abstractions;
 using Annium.Serialization.Abstractions;
 using Annium.Serialization.Json;

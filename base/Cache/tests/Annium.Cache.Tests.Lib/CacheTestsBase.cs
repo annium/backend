@@ -495,7 +495,7 @@ public class CacheTestsBase : TestBase
         var key = Guid.NewGuid();
         var options = CacheOptions.WithSlidingExpiration(Duration.FromMinutes(1));
         var ct = TestContext.Current.CancellationToken;
-        await ((IAsyncDisposable)cache).DisposeAsync();
+        await cache.DisposeAsync();
 
         // act + assert: both operations observe disposal and throw instead of scheduling work that never completes
         await Wrap.It(async () => await cache.GetOrCreateAsync(key, GetPageAsync, options, ct))
@@ -523,7 +523,7 @@ public class CacheTestsBase : TestBase
 
         // act: start a call whose factory is gated (in-flight on the executor), then begin disposing
         var task = cache.GetOrCreateAsync(key, GatedFactory, options, ct).AsTask();
-        var disposeTask = ((IAsyncDisposable)cache).DisposeAsync();
+        var disposeTask = cache.DisposeAsync();
 
         // release the factory so the in-flight work — and the executor drain — can complete
         factoryGate.TrySetResult(new Page(key));

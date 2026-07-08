@@ -5,7 +5,7 @@ namespace Annium.MessageBus.Abstractions;
 /// <summary>
 /// Where a replay-capable subscription starts consuming from. Closed union — construct via the factory members
 /// and consume via <see cref="Match{T}"/> / <see cref="Switch"/> (concrete cases are intentionally private).
-/// Only meaningful for transports implementing <see cref="ISupportsReplay"/>.
+/// Only meaningful for transports implementing <see cref="IReplayableMessageSubscriber"/>.
 /// </summary>
 public abstract record StartPosition
 {
