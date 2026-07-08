@@ -40,10 +40,12 @@
     <PackageVersion Include="NodaTime" Version="3.3.2" />
     <PackageVersion Include="Npgsql" Version="10.0.3" />
     <PackageVersion Include="Npgsql.NodaTime" Version="10.0.3" />
+    <PackageVersion Include="RabbitMQ.Client" Version="7.2.1" />
     <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="Testcontainers.Kafka" Version="4.12.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.12.0" />
+    <PackageVersion Include="Testcontainers.RabbitMq" Version="4.12.0" />
     <PackageVersion Include="Testcontainers.Redis" Version="4.12.0" />
     <PackageVersion Include="coverlet.collector" Version="10.0.1" />
     <PackageVersion Include="dbup-core" Version="6.1.1" />

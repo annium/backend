@@ -77,6 +77,7 @@ public abstract class MessageBusTestBase : TestBase
     /// <inheritdoc />
     public override async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         // dispose subscriptions (idempotent) before the container disposes the transport
         for (var i = _subscriptions.Count - 1; i >= 0; i--)
             await _subscriptions[i].DisposeAsync();
