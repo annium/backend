@@ -264,6 +264,10 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
     {
         var headers = new Dictionary<string, string>(message.Headers, StringComparer.Ordinal)
         {
+            // A dead-lettered message is a new publication: give it a fresh id so a deduplicating transport (e.g. a
+            // JetStream stream that also captures the .dlq subject) does not treat it as a duplicate of the original
+            // and silently drop it.
+            [EnvelopeHeaders.Id] = Guid.NewGuid().ToString(),
             [EnvelopeHeaders.DeathReason] = $"Nacked after {attempts} attempt(s).",
             [EnvelopeHeaders.OriginalSubject] = message.Subject,
             [EnvelopeHeaders.Attempts] = attempts.ToString(CultureInfo.InvariantCulture),
