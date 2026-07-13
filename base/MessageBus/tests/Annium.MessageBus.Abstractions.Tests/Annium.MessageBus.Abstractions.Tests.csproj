@@ -9,6 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Annium.MessageBus.Abstractions/Annium.MessageBus.Abstractions.csproj" />
+    <ProjectReference Include="../Annium.MessageBus.Tests.Load.Shared/Annium.MessageBus.Tests.Load.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Annium.Serialization.Json" />

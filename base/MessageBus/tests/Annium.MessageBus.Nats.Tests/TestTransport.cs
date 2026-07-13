@@ -30,7 +30,15 @@ public sealed class TestTransport : IMessageBusTestTransport
     /// <summary>
     /// The subjects captured by the provisioned stream.
     /// </summary>
-    public static readonly string[] StreamSubjects = ["orders.>", "payments.>", "replay.>", "dedup.>", "validated.>"];
+    public static readonly string[] StreamSubjects =
+    [
+        "orders.>",
+        "payments.>",
+        "replay.>",
+        "dedup.>",
+        "validated.>",
+        "load.>",
+    ];
 
     /// <summary>
     /// The name of a second stream dedicated to the sequence-replay test, so its stream sequence is isolated (a single
