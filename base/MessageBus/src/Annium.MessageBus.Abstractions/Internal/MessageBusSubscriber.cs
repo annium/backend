@@ -54,7 +54,15 @@ internal class MessageBusSubscriber : IMessageSubscriber
         _logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Subscribes to a subject. The framework runs the consumption loop and invokes <paramref name="handler"/>
+    /// per message (up to <see cref="SubscriptionOptions.Concurrency"/> concurrently). The handler must
+    /// acknowledge each message via <see cref="IMessageContext{T}"/>.
+    /// </summary>
+    /// <typeparam name="T">The message payload type.</typeparam>
+    /// <param name="options">The subscription settings.</param>
+    /// <param name="handler">The per-message handler.</param>
+    /// <returns>A task yielding a disposable that stops the subscription (graceful drain on dispose).</returns>
     public Task<IAsyncDisposable> SubscribeAsync<T>(
         SubscriptionOptions options,
         Func<IMessageContext<T>, CancellationToken, Task> handler

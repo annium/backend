@@ -47,10 +47,19 @@ internal sealed class InMemoryConsumer : ITransportConsumer, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the logger used for diagnostic output by this consumer.
+    /// </summary>
     public ILogger Logger { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Launches the background read loop over the subscription channel, invoking <paramref name="onMessage"/> for
+    /// each delivered message. The loop runs fire-and-forget and is stopped via <see cref="DisposeAsync"/> rather
+    /// than through cancellation of this call.
+    /// </summary>
+    /// <param name="onMessage">The pipeline callback invoked per received delivery.</param>
+    /// <param name="ct">Unused; the read loop is cancelled via <see cref="DisposeAsync"/> instead.</param>
+    /// <returns>A completed task; the read loop has been launched but runs independently.</returns>
     public Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         // fire-and-forget: the loop observes its own faults (logs handler errors, swallows cancellation)
@@ -58,10 +67,19 @@ internal sealed class InMemoryConsumer : ITransportConsumer, ILogSubject
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op: the in-memory transport has no acknowledgement mechanism, so completion is always a no-op.
+    /// </summary>
+    /// <param name="delivery">The delivery to acknowledge (unused).</param>
+    /// <returns>A completed task.</returns>
     public Task CompleteAsync(TransportDelivery delivery) => Task.CompletedTask;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Abandons the delivery: under <see cref="DeliveryMode.AtLeastOnce"/> the message is written back onto the
+    /// subscription channel for raw redelivery; under <see cref="DeliveryMode.AtMostOnce"/> it is dropped.
+    /// </summary>
+    /// <param name="delivery">The delivery to abandon.</param>
+    /// <returns>A completed task.</returns>
     public Task AbandonAsync(TransportDelivery delivery)
     {
         // raw redelivery under at-least-once; drop under at-most-once
@@ -107,7 +125,11 @@ internal sealed class InMemoryConsumer : ITransportConsumer, ILogSubject
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Stops the read loop and releases this consumer's hold on the subscription, completing the subscription
+    /// channel once the last consumer has left.
+    /// </summary>
+    /// <returns>A task that completes once the read loop has been cancelled and the subscription released.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

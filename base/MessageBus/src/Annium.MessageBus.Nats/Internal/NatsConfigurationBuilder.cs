@@ -13,7 +13,12 @@ internal sealed class NatsConfigurationBuilder : INatsConfigurationBuilder
     /// </summary>
     private Uri? _url;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Sets the NATS server URL, parsing and validating it eagerly (must be an absolute URI with scheme
+    /// <c>nats</c>, <c>tls</c>, <c>ws</c> or <c>wss</c>).
+    /// </summary>
+    /// <param name="url">The server URL.</param>
+    /// <returns>The builder for method chaining.</returns>
     public INatsConfigurationBuilder Url(string url)
     {
         if (string.IsNullOrWhiteSpace(url))

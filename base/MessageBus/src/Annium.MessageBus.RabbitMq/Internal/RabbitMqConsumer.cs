@@ -25,7 +25,9 @@ namespace Annium.MessageBus.RabbitMq.Internal;
 /// </remarks>
 internal sealed class RabbitMqConsumer : ITransportConsumer, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this consumer.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -83,7 +85,10 @@ internal sealed class RabbitMqConsumer : ITransportConsumer, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Cancels the broker consumer, closes the consumer channel, and stops delivering messages.
+    /// </summary>
+    /// <returns>A task that completes when the consumer has been released.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
@@ -117,7 +122,12 @@ internal sealed class RabbitMqConsumer : ITransportConsumer, ILogSubject
         // a disposed source risks an ObjectDisposedException.
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts delivering messages, invoking <paramref name="onMessage"/> for each one.
+    /// </summary>
+    /// <param name="onMessage">The callback invoked per received delivery.</param>
+    /// <param name="ct">A token to cancel startup.</param>
+    /// <returns>A task that completes once consumption has started.</returns>
     public async Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
@@ -183,7 +193,11 @@ internal sealed class RabbitMqConsumer : ITransportConsumer, ILogSubject
         );
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Acknowledges/commits the delivery at the transport level, marking it as successfully consumed.
+    /// </summary>
+    /// <param name="delivery">The delivery to acknowledge.</param>
+    /// <returns>A task that completes when the acknowledgement is recorded.</returns>
     public async Task CompleteAsync(TransportDelivery delivery)
     {
         // At-most-once was auto-acked on delivery; nothing to confirm.
@@ -203,7 +217,12 @@ internal sealed class RabbitMqConsumer : ITransportConsumer, ILogSubject
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Abandons the delivery. Under at-least-once the transport redelivers it (raw redelivery); under at-most-once it
+    /// is dropped. Used when the handler faults without an explicit disposition; the retry policy is not engaged.
+    /// </summary>
+    /// <param name="delivery">The delivery to abandon.</param>
+    /// <returns>A task that completes when the abandonment is recorded.</returns>
     public async Task AbandonAsync(TransportDelivery delivery)
     {
         // At-most-once already advanced (autoAck) → the message is dropped.

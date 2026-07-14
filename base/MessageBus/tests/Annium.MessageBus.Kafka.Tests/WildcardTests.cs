@@ -24,7 +24,11 @@ public sealed class WildcardTests : WildcardConformanceTests<TestTransport>
     public WildcardTests(ITestOutputHelper outputHelper)
         : base(outputHelper) { }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// A single-token wildcard (<c>*</c>) matches three-token subjects with that shape and rejects others, using a
+    /// per-test unique subject namespace so the shared run-scoped broker does not accumulate history across tests.
+    /// </summary>
+    /// <returns>A task representing the test.</returns>
     public override async Task SingleTokenWildcard_MatchesShape()
     {
         var ns = UniqueNamespace();
@@ -40,7 +44,11 @@ public sealed class WildcardTests : WildcardConformanceTests<TestTransport>
         received.OrderBy(x => x).SequenceEqual([1, 2]).Is(true);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// A multi-token wildcard (<c>&gt;</c>) matches any subject under the namespace and rejects others, using a
+    /// per-test unique subject namespace so the shared run-scoped broker does not accumulate history across tests.
+    /// </summary>
+    /// <returns>A task representing the test.</returns>
     public override async Task MultiTokenWildcard_MatchesTail()
     {
         var ns = UniqueNamespace();

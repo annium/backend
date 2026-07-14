@@ -22,7 +22,9 @@ namespace Annium.MessageBus.RabbitMq.Internal;
 /// </remarks>
 internal sealed class RabbitMqTransport : ITransportProducer, ITransportConsumerFactory, IAsyncDisposable, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this transport and the consumers it creates.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -57,7 +59,10 @@ internal sealed class RabbitMqTransport : ITransportProducer, ITransportConsumer
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Closes and disposes the shared publish channel, if one was created.
+    /// </summary>
+    /// <returns>A task that completes when the publish channel has been released.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
@@ -81,7 +86,12 @@ internal sealed class RabbitMqTransport : ITransportProducer, ITransportConsumer
         _publishGate.Dispose();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces a single message to the transport.
+    /// </summary>
+    /// <param name="message">The message to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes when the message has been handed to the transport.</returns>
     public async Task ProduceAsync(TransportMessage message, CancellationToken ct)
     {
         var properties = ToProperties(message);
@@ -133,7 +143,12 @@ internal sealed class RabbitMqTransport : ITransportProducer, ITransportConsumer
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces a batch of messages to the transport.
+    /// </summary>
+    /// <param name="messages">The messages to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes when all messages have been handed to the transport.</returns>
     public async Task ProduceBatchAsync(IReadOnlyCollection<TransportMessage> messages, CancellationToken ct)
     {
         // Serialize on the single publish channel; each publish awaits its own confirm.
@@ -141,7 +156,11 @@ internal sealed class RabbitMqTransport : ITransportProducer, ITransportConsumer
             await ProduceAsync(message, ct);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a consumer bound to the given subscription options (subject, group, delivery mode, flow control).
+    /// </summary>
+    /// <param name="options">The subscription options.</param>
+    /// <returns>A new transport consumer.</returns>
     public ITransportConsumer CreateConsumer(SubscriptionOptions options) =>
         new RabbitMqConsumer(_connection, options, Logger);
 

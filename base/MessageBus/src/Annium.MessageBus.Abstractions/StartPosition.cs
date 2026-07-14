@@ -82,8 +82,20 @@ public abstract record StartPosition
             }
         );
 
+    /// <summary>
+    /// The "new messages only" case: consumes only messages produced after subscription (no history).
+    /// </summary>
     private sealed record NewPosition : StartPosition
     {
+        /// <summary>
+        /// Invokes <paramref name="onNew"/> for this case and returns its result.
+        /// </summary>
+        /// <typeparam name="T">The result type.</typeparam>
+        /// <param name="onNew">Called for the "new messages only" case.</param>
+        /// <param name="onEarliest">Unused for this case.</param>
+        /// <param name="onTimestamp">Unused for this case.</param>
+        /// <param name="onPosition">Unused for this case.</param>
+        /// <returns>The value produced by <paramref name="onNew"/>.</returns>
         public override T Match<T>(
             Func<T> onNew,
             Func<T> onEarliest,
@@ -92,8 +104,20 @@ public abstract record StartPosition
         ) => onNew();
     }
 
+    /// <summary>
+    /// The "earliest retained" case: consumes from the earliest retained message.
+    /// </summary>
     private sealed record EarliestPosition : StartPosition
     {
+        /// <summary>
+        /// Invokes <paramref name="onEarliest"/> for this case and returns its result.
+        /// </summary>
+        /// <typeparam name="T">The result type.</typeparam>
+        /// <param name="onNew">Unused for this case.</param>
+        /// <param name="onEarliest">Called for the "earliest retained" case.</param>
+        /// <param name="onTimestamp">Unused for this case.</param>
+        /// <param name="onPosition">Unused for this case.</param>
+        /// <returns>The value produced by <paramref name="onEarliest"/>.</returns>
         public override T Match<T>(
             Func<T> onNew,
             Func<T> onEarliest,
@@ -102,8 +126,20 @@ public abstract record StartPosition
         ) => onEarliest();
     }
 
+    /// <summary>
+    /// The timestamp-based case: consumes from the first message at or after a given timestamp.
+    /// </summary>
     private sealed record TimestampPosition(DateTimeOffset Timestamp) : StartPosition
     {
+        /// <summary>
+        /// Invokes <paramref name="onTimestamp"/> with this case's timestamp and returns its result.
+        /// </summary>
+        /// <typeparam name="T">The result type.</typeparam>
+        /// <param name="onNew">Unused for this case.</param>
+        /// <param name="onEarliest">Unused for this case.</param>
+        /// <param name="onTimestamp">Called for the timestamp case, with its timestamp.</param>
+        /// <param name="onPosition">Unused for this case.</param>
+        /// <returns>The value produced by <paramref name="onTimestamp"/>.</returns>
         public override T Match<T>(
             Func<T> onNew,
             Func<T> onEarliest,
@@ -112,8 +148,20 @@ public abstract record StartPosition
         ) => onTimestamp(Timestamp);
     }
 
+    /// <summary>
+    /// The position-based case: consumes from a given transport sequence/offset.
+    /// </summary>
     private sealed record PositionPosition(long Value) : StartPosition
     {
+        /// <summary>
+        /// Invokes <paramref name="onPosition"/> with this case's value and returns its result.
+        /// </summary>
+        /// <typeparam name="T">The result type.</typeparam>
+        /// <param name="onNew">Unused for this case.</param>
+        /// <param name="onEarliest">Unused for this case.</param>
+        /// <param name="onTimestamp">Unused for this case.</param>
+        /// <param name="onPosition">Called for the sequence/offset case, with its value.</param>
+        /// <returns>The value produced by <paramref name="onPosition"/>.</returns>
         public override T Match<T>(
             Func<T> onNew,
             Func<T> onEarliest,

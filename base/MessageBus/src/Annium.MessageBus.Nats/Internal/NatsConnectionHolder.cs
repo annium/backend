@@ -16,7 +16,9 @@ namespace Annium.MessageBus.Nats.Internal;
 /// </summary>
 internal sealed class NatsConnectionHolder : IAsyncDisposable, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this connection holder.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -103,7 +105,11 @@ internal sealed class NatsConnectionHolder : IAsyncDisposable, ILogSubject
         return _jetStream!;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes the shared connection, if one was created. Idempotent; a failed connection dispose is logged rather
+    /// than thrown.
+    /// </summary>
+    /// <returns>A task that completes when disposal has finished.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

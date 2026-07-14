@@ -64,7 +64,10 @@ public abstract class MessageBusConformanceTestBase<TTransport> : TestBase
     /// </summary>
     protected int Timeout => _transport.DefaultTimeoutMs;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Brings up the transport's broker before the DI container is built, then completes base initialization.
+    /// </summary>
+    /// <returns>A task that completes when initialization has finished.</returns>
     public override async ValueTask InitializeAsync()
     {
         // bring the broker up before the DI container is built, so Configure can read its connection
@@ -72,7 +75,10 @@ public abstract class MessageBusConformanceTestBase<TTransport> : TestBase
         await base.InitializeAsync();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes tracked subscriptions in reverse order, then disposes the transport and completes base teardown.
+    /// </summary>
+    /// <returns>A task that completes when teardown has finished.</returns>
     public override async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);

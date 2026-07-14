@@ -14,7 +14,9 @@ namespace Annium.MessageBus.InMemory.Internal;
 /// </summary>
 internal sealed class InMemoryTransport : ITransportProducer, ITransportConsumerFactory, IAsyncDisposable, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the logger used for diagnostic output by this transport and the consumers it creates.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -31,7 +33,14 @@ internal sealed class InMemoryTransport : ITransportProducer, ITransportConsumer
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Writes <paramref name="message"/> onto every subscription channel whose pattern matches its subject: one
+    /// write per matching subscription, so consumers fan out across subscriptions but compete within a shared
+    /// group channel.
+    /// </summary>
+    /// <param name="message">The message to produce.</param>
+    /// <param name="ct">Unused; production is synchronous and cannot be cancelled.</param>
+    /// <returns>A completed task.</returns>
     public Task ProduceAsync(TransportMessage message, CancellationToken ct)
     {
         InMemorySubscription[] targets;
@@ -46,14 +55,25 @@ internal sealed class InMemoryTransport : ITransportProducer, ITransportConsumer
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces each message in <paramref name="messages"/> sequentially via <see cref="ProduceAsync"/>.
+    /// </summary>
+    /// <param name="messages">The messages to produce.</param>
+    /// <param name="ct">Forwarded to each produced message; unused by the in-memory transport.</param>
+    /// <returns>A task that completes once all messages have been produced.</returns>
     public async Task ProduceBatchAsync(IReadOnlyCollection<TransportMessage> messages, CancellationToken ct)
     {
         foreach (var message in messages)
             await ProduceAsync(message, ct);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a consumer for the given subscription options, joining an existing subscription with the same group
+    /// and subject if one exists (so grouped consumers compete over a shared channel), or creating a new one
+    /// otherwise.
+    /// </summary>
+    /// <param name="options">The subscription options.</param>
+    /// <returns>A new transport consumer bound to the resolved subscription.</returns>
     public ITransportConsumer CreateConsumer(SubscriptionOptions options)
     {
         var pattern = SubjectPattern.Parse(options.Subject);
@@ -99,7 +119,10 @@ internal sealed class InMemoryTransport : ITransportProducer, ITransportConsumer
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Completes every live subscription's channel and clears the subscription list, releasing all consumers.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask DisposeAsync()
     {
         lock (_subscriptions)

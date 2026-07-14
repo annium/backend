@@ -23,7 +23,12 @@ internal sealed class RabbitMqConfigurationBuilder : IRabbitMqConfigurationBuild
     /// </summary>
     private string _exchange = DefaultExchange;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Sets the AMQP connection URI (<c>amqp://user:pass@host:port/vhost</c>). Only the <c>amqp</c>/<c>amqps</c>
+    /// schemes are accepted.
+    /// </summary>
+    /// <param name="uri">The connection URI.</param>
+    /// <returns>The builder for method chaining.</returns>
     public IRabbitMqConfigurationBuilder ConnectionUri(string uri)
     {
         if (string.IsNullOrWhiteSpace(uri))
@@ -40,7 +45,11 @@ internal sealed class RabbitMqConfigurationBuilder : IRabbitMqConfigurationBuild
         return this;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Overrides the topic exchange name (defaults to <c>annium.messagebus</c>).
+    /// </summary>
+    /// <param name="exchange">The exchange name.</param>
+    /// <returns>The builder for method chaining.</returns>
     public IRabbitMqConfigurationBuilder Exchange(string exchange)
     {
         if (string.IsNullOrWhiteSpace(exchange))

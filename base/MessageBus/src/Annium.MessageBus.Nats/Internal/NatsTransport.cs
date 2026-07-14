@@ -20,7 +20,9 @@ namespace Annium.MessageBus.Nats.Internal;
 /// </remarks>
 internal sealed class NatsTransport : ITransportProducer, ITransportConsumerFactory, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this transport, passed on to created consumers.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -39,7 +41,13 @@ internal sealed class NatsTransport : ITransportProducer, ITransportConsumerFact
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Publishes a single message via JetStream, waiting for the stream's acknowledgement (zero-loss) and applying
+    /// <c>Nats-Msg-Id</c> deduplication.
+    /// </summary>
+    /// <param name="message">The message to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes once the stream has acknowledged the write.</returns>
     public async Task ProduceAsync(TransportMessage message, CancellationToken ct)
     {
         var jetStream = await _connection.GetJetStreamAsync(ct);
@@ -48,7 +56,13 @@ internal sealed class NatsTransport : ITransportProducer, ITransportConsumerFact
         await jetStream.PublishAsync(message.Subject, message.Body, headers: headers, cancellationToken: ct);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Publishes a batch of messages via JetStream by firing all <see cref="ProduceAsync"/> calls concurrently and
+    /// awaiting them together, so each message's stream acknowledgement is awaited in parallel rather than serially.
+    /// </summary>
+    /// <param name="messages">The messages to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes once every message's stream acknowledgement has been received.</returns>
     public async Task ProduceBatchAsync(IReadOnlyCollection<TransportMessage> messages, CancellationToken ct)
     {
         // Fire all publishes then await together; each awaits its own stream ack, so parallel avoids serializing the
@@ -57,7 +71,13 @@ internal sealed class NatsTransport : ITransportProducer, ITransportConsumerFact
         await Task.WhenAll(tasks);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a consumer bound to the given subscription options: a JetStream pull consumer for at-least-once or
+    /// replay delivery (persistence, acknowledgement, positioned start), or a Core NATS subscription for plain
+    /// at-most-once delivery (fire-and-forget, no redelivery).
+    /// </summary>
+    /// <param name="options">The subscription options.</param>
+    /// <returns>A new transport consumer.</returns>
     public ITransportConsumer CreateConsumer(SubscriptionOptions options)
     {
         // At-least-once and replay require JetStream (persistence, acknowledgement, positioned start); plain

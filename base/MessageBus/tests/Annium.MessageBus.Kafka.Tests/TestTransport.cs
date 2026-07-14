@@ -28,7 +28,11 @@ public sealed class TestTransport : IMessageBusTestTransport
     /// </summary>
     private string _bootstrapServers = string.Empty;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts the shared Kafka container on first call (guarded so concurrent test-class construction only starts it
+    /// once) and resolves this instance's bootstrap servers from it.
+    /// </summary>
+    /// <returns>A task that completes once the bootstrap servers are resolved.</returns>
     public async ValueTask StartAsync()
     {
         await _gate.WaitAsync();
@@ -50,13 +54,21 @@ public sealed class TestTransport : IMessageBusTestTransport
         _bootstrapServers = _container.GetBootstrapAddress();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Registers the Kafka message bus into the container, pointed at the started container's bootstrap servers.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
     public void Configure(IServiceContainer container) =>
         container.AddKafkaMessageBus(builder => builder.BootstrapServers(_bootstrapServers));
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the eventual-assertion timeout (ms) suited to the Kafka container's broker latency.
+    /// </summary>
     public int DefaultTimeoutMs => 15000;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op; the shared container is reaped by the Testcontainers Ryuk sidecar at process exit.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }

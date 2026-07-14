@@ -40,7 +40,10 @@ public sealed class RabbitKeyedExchangeTests : TestBase
         });
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Brings up the shared RabbitMQ container before the DI container is built, then completes base initialization.
+    /// </summary>
+    /// <returns>A task that completes when initialization has finished.</returns>
     public override async ValueTask InitializeAsync()
     {
         // bring the broker up before the container is built, so the keyed registrations can read its connection string

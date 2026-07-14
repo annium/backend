@@ -35,7 +35,13 @@ internal sealed class KafkaAdmin : IKafkaAdmin, IDisposable
         );
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Ensures a topic exists (idempotent), so a literal-subject consumer's partition assignment — and therefore
+    /// readiness — happens deterministically.
+    /// </summary>
+    /// <param name="topic">The topic name.</param>
+    /// <param name="numPartitions">The partition count to create the topic with when absent.</param>
+    /// <returns>A task that completes when the topic exists.</returns>
     public async Task EnsureTopicAsync(string topic, int numPartitions = 1)
     {
         try
@@ -55,7 +61,11 @@ internal sealed class KafkaAdmin : IKafkaAdmin, IDisposable
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Returns the partitions of a topic (falling back to a single partition when metadata is unavailable).
+    /// </summary>
+    /// <param name="topic">The topic name.</param>
+    /// <returns>The topic's partitions.</returns>
     public IReadOnlyList<TopicPartition> GetPartitions(string topic)
     {
         var metadata = _adminClient.Value.GetMetadata(topic, TimeSpan.FromSeconds(10));
@@ -66,7 +76,9 @@ internal sealed class KafkaAdmin : IKafkaAdmin, IDisposable
         return topicMetadata.Partitions.Select(p => new TopicPartition(topic, new Partition(p.PartitionId))).ToList();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes the admin client, if it was created.
+    /// </summary>
     public void Dispose()
     {
         if (_isDisposed)

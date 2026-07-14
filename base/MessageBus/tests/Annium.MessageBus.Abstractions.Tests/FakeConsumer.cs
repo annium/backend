@@ -42,7 +42,13 @@ public sealed class FakeConsumer : ITransportConsumer
         _pattern = SubjectPattern.Parse(options.Subject);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Records <paramref name="onMessage"/> as the pipeline callback and marks this consumer as started, so it can
+    /// begin matching and receiving produced subjects. Completes immediately (no real subscription is opened).
+    /// </summary>
+    /// <param name="onMessage">The callback to invoke for each delivered message.</param>
+    /// <param name="ct">Unused; accepted to satisfy the interface.</param>
+    /// <returns>A task that is already completed.</returns>
     public Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
@@ -50,14 +56,24 @@ public sealed class FakeConsumer : ITransportConsumer
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Records a transport-level completion on the owning <see cref="FakeTransport"/> for assertions; the
+    /// <paramref name="delivery"/> itself is not inspected.
+    /// </summary>
+    /// <param name="delivery">The delivery being acknowledged.</param>
+    /// <returns>A task that is already completed.</returns>
     public Task CompleteAsync(TransportDelivery delivery)
     {
         _transport.OnCompleted();
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Records a transport-level abandonment on the owning <see cref="FakeTransport"/> for assertions; the
+    /// <paramref name="delivery"/> itself is not redelivered or dropped.
+    /// </summary>
+    /// <param name="delivery">The delivery being abandoned.</param>
+    /// <returns>A task that is already completed.</returns>
     public Task AbandonAsync(TransportDelivery delivery)
     {
         _transport.OnAbandoned();
@@ -93,7 +109,11 @@ public sealed class FakeConsumer : ITransportConsumer
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Marks the consumer as stopped (so it no longer matches produced subjects) and removes it from the owning
+    /// <see cref="FakeTransport"/>'s routing list.
+    /// </summary>
+    /// <returns>A task that is already completed.</returns>
     public ValueTask DisposeAsync()
     {
         _started = false;

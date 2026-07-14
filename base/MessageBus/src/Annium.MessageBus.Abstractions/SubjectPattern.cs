@@ -10,7 +10,14 @@ namespace Annium.MessageBus.Abstractions;
 /// </summary>
 public sealed class SubjectPattern
 {
+    /// <summary>
+    /// The single-token wildcard marker (<c>*</c>), matching exactly one subject token.
+    /// </summary>
     private const string SingleWildcard = "*";
+
+    /// <summary>
+    /// The multi-token trailing wildcard marker (<c>&gt;</c>), matching one or more trailing subject tokens.
+    /// </summary>
     private const string MultiWildcard = ">";
 
     private SubjectPattern(IReadOnlyList<string> tokens, bool hasMultiWildcard)

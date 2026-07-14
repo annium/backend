@@ -18,7 +18,9 @@ namespace Annium.MessageBus.Kafka.Internal;
 /// </summary>
 internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFactory, IAsyncDisposable, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this transport, passed on to created consumers.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -60,13 +62,24 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
             .Build();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces a single message to the transport, using the canonical subject as the Kafka topic.
+    /// </summary>
+    /// <param name="message">The message to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes when the message has been handed to the transport.</returns>
     public async Task ProduceAsync(TransportMessage message, CancellationToken ct)
     {
         await _producer.ProduceAsync(message.Subject, ToKafkaMessage(message), ct);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces a batch of messages to the transport. All produces are fired before any are awaited, so with
+    /// <c>Acks.All</c> the batch is not serialized into one broker round-trip per message.
+    /// </summary>
+    /// <param name="messages">The messages to produce.</param>
+    /// <param name="ct">A token to cancel the operation.</param>
+    /// <returns>A task that completes when all messages have been handed to the transport.</returns>
     public async Task ProduceBatchAsync(IReadOnlyCollection<TransportMessage> messages, CancellationToken ct)
     {
         // Fire all produces, then await together: with Acks.All, awaiting each sequentially would serialize a batch
@@ -89,7 +102,13 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
             Headers = ToKafkaHeaders(message.Headers),
         };
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a consumer bound to the given subscription options. A shared <see cref="SubscriptionOptions.Group"/>
+    /// maps to a shared Kafka consumer group (competing consumers); an unset group generates a unique group so every
+    /// subscriber receives every message (fan-out).
+    /// </summary>
+    /// <param name="options">The subscription options.</param>
+    /// <returns>A new transport consumer.</returns>
     public ITransportConsumer CreateConsumer(SubscriptionOptions options)
     {
         // Same Group → shared Kafka consumer group (competing); Group=null → a unique group so every subscriber gets
@@ -111,7 +130,10 @@ internal sealed class KafkaTransport : ITransportProducer, ITransportConsumerFac
         return kafkaHeaders;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Flushes and disposes the shared producer.
+    /// </summary>
+    /// <returns>A completed task, since flushing and disposal are synchronous.</returns>
     public ValueTask DisposeAsync()
     {
         if (_isDisposed)

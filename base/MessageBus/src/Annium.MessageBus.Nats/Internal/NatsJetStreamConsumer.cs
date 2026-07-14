@@ -20,7 +20,9 @@ namespace Annium.MessageBus.Nats.Internal;
 /// </summary>
 internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this consumer.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -69,7 +71,14 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Resolves the externally-provisioned JetStream stream capturing the subject, creates a pull consumer (a shared
+    /// durable for a queue group, or an ephemeral consumer for fan-out) positioned at the configured start position,
+    /// and launches the background loop that dispatches received messages to <paramref name="onMessage"/>.
+    /// </summary>
+    /// <param name="onMessage">The callback invoked per received delivery.</param>
+    /// <param name="ct">A token to cancel startup.</param>
+    /// <returns>A task that completes once the consumer has been created.</returns>
     public async Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
@@ -86,7 +95,12 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
         _ = Task.Run(() => RunLoopAsync(consumer, _stopCts.Token), CancellationToken.None);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Acknowledges the delivery to JetStream (acks the underlying message token), marking it as durably consumed.
+    /// A no-op once the consumer has been disposed.
+    /// </summary>
+    /// <param name="delivery">The delivery to acknowledge.</param>
+    /// <returns>A task that completes when the acknowledgement has been sent, or immediately if skipped.</returns>
     public async Task CompleteAsync(TransportDelivery delivery)
     {
         if (_isDisposed || delivery.Token is not INatsJSMsg<string> msg)
@@ -103,7 +117,12 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Negatively acknowledges the delivery to JetStream (naks the underlying message token), triggering immediate
+    /// raw redelivery. A no-op once the consumer has been disposed.
+    /// </summary>
+    /// <param name="delivery">The delivery to abandon.</param>
+    /// <returns>A task that completes when the negative acknowledgement has been sent, or immediately if skipped.</returns>
     public async Task AbandonAsync(TransportDelivery delivery)
     {
         if (_isDisposed || delivery.Token is not INatsJSMsg<string> msg)
@@ -272,7 +291,11 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
         return sb.ToString();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Stops the consume loop. Idempotent. An ephemeral consumer is reaped by the server after its inactivity
+    /// threshold; a durable (queue-group) consumer persists for peers.
+    /// </summary>
+    /// <returns>A task that completes when the stop signal has been sent.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

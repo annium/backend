@@ -48,7 +48,13 @@ public sealed class FakeTransport : ITransportProducer, ITransportConsumerFactor
     /// </summary>
     public Exception? LastConsumerError { get; private set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Records <paramref name="message"/> in <see cref="Produced"/>, then synchronously delivers it to every
+    /// started consumer whose subscription subject matches, awaiting each delivery in turn.
+    /// </summary>
+    /// <param name="message">The message to produce.</param>
+    /// <param name="ct">Unused; accepted to satisfy the interface.</param>
+    /// <returns>A task that completes once the message has been recorded and delivered to matching consumers.</returns>
     public async Task ProduceAsync(TransportMessage message, CancellationToken ct)
     {
         lock (Produced)
@@ -62,14 +68,23 @@ public sealed class FakeTransport : ITransportProducer, ITransportConsumerFactor
             await consumer.DeliverAsync(message);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Produces each of <paramref name="messages"/> in sequence via <see cref="ProduceAsync"/>.
+    /// </summary>
+    /// <param name="messages">The messages to produce.</param>
+    /// <param name="ct">Forwarded to each individual <see cref="ProduceAsync"/> call.</param>
+    /// <returns>A task that completes once all messages have been produced.</returns>
     public async Task ProduceBatchAsync(IReadOnlyCollection<TransportMessage> messages, CancellationToken ct)
     {
         foreach (var message in messages)
             await ProduceAsync(message, ct);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new <see cref="FakeConsumer"/> bound to <paramref name="options"/> and registers it for routing.
+    /// </summary>
+    /// <param name="options">The subscription options the consumer is bound to.</param>
+    /// <returns>The newly created consumer.</returns>
     public ITransportConsumer CreateConsumer(SubscriptionOptions options)
     {
         var consumer = new FakeConsumer(this, options);

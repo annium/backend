@@ -30,7 +30,14 @@ internal sealed class ReplayableMessageBusSubscriber : MessageBusSubscriber, IRe
     )
         : base(consumerFactory, producer, serializer, logger) { }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Subscribes with a start position (replay). See <see cref="IMessageSubscriber.SubscribeAsync{T}"/> for
+    /// consumption and acknowledgement semantics.
+    /// </summary>
+    /// <typeparam name="T">The message payload type.</typeparam>
+    /// <param name="options">The replay subscription settings, including the start position.</param>
+    /// <param name="handler">The per-message handler.</param>
+    /// <returns>A task yielding a disposable that stops the subscription (graceful drain on dispose).</returns>
     public Task<IAsyncDisposable> SubscribeAsync<T>(
         ReplaySubscriptionOptions options,
         Func<IMessageContext<T>, CancellationToken, Task> handler

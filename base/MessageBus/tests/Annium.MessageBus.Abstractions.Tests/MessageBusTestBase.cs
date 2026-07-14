@@ -80,7 +80,11 @@ public abstract class MessageBusTestBase : TestBase
         return subscription;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes tracked subscriptions (idempotent, most-recently-created first) before delegating to the base
+    /// <c>TestBase.DisposeAsync</c>, which tears down the DI container (and the transport) itself.
+    /// </summary>
+    /// <returns>A task that completes once teardown has finished.</returns>
     public override async ValueTask DisposeAsync()
     {
         GC.SuppressFinalize(this);

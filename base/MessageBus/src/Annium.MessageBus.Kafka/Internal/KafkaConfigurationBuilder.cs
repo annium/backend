@@ -15,7 +15,11 @@ internal sealed class KafkaConfigurationBuilder : IKafkaConfigurationBuilder
     /// </summary>
     private IReadOnlyList<KafkaEndpoint>? _bootstrapServers;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Sets the Kafka bootstrap servers (comma-separated <c>host:port</c> list).
+    /// </summary>
+    /// <param name="servers">The bootstrap servers.</param>
+    /// <returns>The builder for method chaining.</returns>
     public IKafkaConfigurationBuilder BootstrapServers(string servers)
     {
         _bootstrapServers = BootstrapServersParser.Parse(servers);

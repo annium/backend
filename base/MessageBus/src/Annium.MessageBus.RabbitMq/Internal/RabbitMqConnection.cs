@@ -14,7 +14,9 @@ namespace Annium.MessageBus.RabbitMq.Internal;
 /// </summary>
 internal sealed class RabbitMqConnection : IAsyncDisposable, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this connection.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -54,7 +56,10 @@ internal sealed class RabbitMqConnection : IAsyncDisposable, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Closes and disposes the shared connection, if one was created.
+    /// </summary>
+    /// <returns>A task that completes when the connection has been released.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

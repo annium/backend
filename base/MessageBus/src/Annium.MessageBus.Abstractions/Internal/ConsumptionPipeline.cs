@@ -110,7 +110,9 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the logger used to record pipeline diagnostics and processing errors.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -333,7 +335,11 @@ internal sealed class ConsumptionPipeline<T> : IAsyncDisposable, ILogSubject
         );
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes the pipeline: stops the transport consumer first, then drains in-flight handlers up to
+    /// <see cref="SubscriptionOptions.StopTimeout"/>, and finally hard-cancels any stragglers.
+    /// </summary>
+    /// <returns>A task that completes once disposal has finished.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

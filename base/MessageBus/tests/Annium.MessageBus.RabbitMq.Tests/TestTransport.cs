@@ -34,7 +34,11 @@ public sealed class TestTransport : IMessageBusTestTransport
     /// </summary>
     public static RabbitMqContainer Container => _container!;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts the shared RabbitMQ container if it has not been started yet, then captures its connection string for
+    /// this instance's DI configuration.
+    /// </summary>
+    /// <returns>A task that completes when the container is running and the connection string has been captured.</returns>
     public async ValueTask StartAsync()
     {
         await _gate.WaitAsync();
@@ -55,14 +59,24 @@ public sealed class TestTransport : IMessageBusTestTransport
         _connectionString = _container.GetConnectionString();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Registers the RabbitMQ message bus in the given DI container, configured against the started broker's
+    /// connection string.
+    /// </summary>
+    /// <param name="container">The DI container.</param>
     public void Configure(IServiceContainer container) =>
         container.AddRabbitMqMessageBus(builder => builder.ConnectionUri(_connectionString));
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the eventual-assertion timeout (ms) for this transport.
+    /// </summary>
     public int DefaultTimeoutMs => 15000;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Disposes the transport seam. The shared container outlives this instance and is reaped by the Testcontainers
+    /// Ryuk sidecar at process exit, so there is nothing to dispose here.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     /// <summary>

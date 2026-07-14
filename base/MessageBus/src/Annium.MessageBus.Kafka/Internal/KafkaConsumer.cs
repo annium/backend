@@ -25,7 +25,9 @@ namespace Annium.MessageBus.Kafka.Internal;
 /// </remarks>
 internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this consumer.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -147,7 +149,10 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
             .Build();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Stops the poll loop and closes and disposes the underlying Confluent consumer.
+    /// </summary>
+    /// <returns>A task that completes once the consumer has been closed and disposed.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
@@ -176,7 +181,14 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
         // canceled-but-live token merely reports IsCancellationRequested, whereas a disposed source risks a throw.
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts delivering messages, invoking <paramref name="onMessage"/> for each one. For a literal subject, ensures
+    /// the topic exists, captures the subscribe-time end offset per partition, subscribes, and waits (up to a
+    /// readiness timeout) for the initial partition assignment before returning, so a subsequent publish is captured.
+    /// </summary>
+    /// <param name="onMessage">The callback invoked per received delivery.</param>
+    /// <param name="ct">A token to cancel startup.</param>
+    /// <returns>A task that completes once consumption has started.</returns>
     public async Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
@@ -224,7 +236,13 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Acknowledges the delivery. Under at-least-once, stores the largest contiguous completed offset for the
+    /// delivery's partition; under at-most-once the offset was already stored before the handler ran, so this is a
+    /// no-op.
+    /// </summary>
+    /// <param name="delivery">The delivery to acknowledge.</param>
+    /// <returns>A task that completes when the acknowledgement is recorded.</returns>
     public Task CompleteAsync(TransportDelivery delivery)
     {
         // At-most-once already stored the offset before the handler ran.
@@ -244,7 +262,13 @@ internal sealed class KafkaConsumer : ITransportConsumer, ILogSubject
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Abandons the delivery. Under at-least-once, seeks the partition back to the delivery's offset so the poll loop
+    /// re-reads it (raw redelivery); under at-most-once the offset was already advanced before the handler ran, so the
+    /// message is dropped.
+    /// </summary>
+    /// <param name="delivery">The delivery to abandon.</param>
+    /// <returns>A task that completes when the abandonment is recorded.</returns>
     public Task AbandonAsync(TransportDelivery delivery)
     {
         // At-most-once: the offset was already advanced (commit-before-process) → the message is dropped.

@@ -26,16 +26,24 @@ internal sealed class MessageContext<T> : IMessageContext<T>
         Body = payload;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the message identifier (used for idempotency/tracing). Auto-generated on publish if not supplied.
+    /// </summary>
     public string Id { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the message headers.
+    /// </summary>
     public IReadOnlyDictionary<string, string> Headers { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the publication timestamp.
+    /// </summary>
     public DateTimeOffset Timestamp { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the deserialized message payload.
+    /// </summary>
     public T Body { get; }
 
     /// <summary>
@@ -49,14 +57,20 @@ internal sealed class MessageContext<T> : IMessageContext<T>
     /// </summary>
     public bool NackRequeue { get; private set; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Acknowledges successful processing (records the intent to commit/ack).
+    /// </summary>
     public void Ack()
     {
         EnsureUndecided();
         Disposition = Disposition.Ack;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Rejects the message. When <paramref name="requeue"/> is true the message is retriable (retry policy,
+    /// then dead-letter); when false it is dead-lettered immediately.
+    /// </summary>
+    /// <param name="requeue">Whether the failure is retriable.</param>
     public void Nack(bool requeue = true)
     {
         EnsureUndecided();

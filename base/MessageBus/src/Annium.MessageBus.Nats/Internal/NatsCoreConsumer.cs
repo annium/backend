@@ -15,7 +15,9 @@ namespace Annium.MessageBus.Nats.Internal;
 /// </summary>
 internal sealed class NatsCoreConsumer : ITransportConsumer, ILogSubject
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// The logger for this consumer.
+    /// </summary>
     public ILogger Logger { get; }
 
     /// <summary>
@@ -62,7 +64,14 @@ internal sealed class NatsCoreConsumer : ITransportConsumer, ILogSubject
         Logger = logger;
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts a Core NATS subscription on the configured subject (queue group if one is set, otherwise a plain
+    /// fan-out subscription) and launches the background loop that dispatches received messages to
+    /// <paramref name="onMessage"/>.
+    /// </summary>
+    /// <param name="onMessage">The callback invoked per received delivery.</param>
+    /// <param name="ct">A token to cancel startup.</param>
+    /// <returns>A task that completes once the subscription is established.</returns>
     public async Task StartAsync(Func<TransportDelivery, CancellationToken, Task> onMessage, CancellationToken ct)
     {
         _onMessage = onMessage;
@@ -82,10 +91,19 @@ internal sealed class NatsCoreConsumer : ITransportConsumer, ILogSubject
         _ = Task.Run(() => RunLoopAsync(_sub, _stopCts.Token), CancellationToken.None);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op: Core NATS has no acknowledgement or redelivery, so a delivery is already at-most-once by the time it
+    /// reaches the pipeline.
+    /// </summary>
+    /// <param name="delivery">The delivery to acknowledge.</param>
+    /// <returns>A completed task.</returns>
     public Task CompleteAsync(TransportDelivery delivery) => Task.CompletedTask;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op: Core NATS has no acknowledgement or redelivery, so there is nothing to abandon.
+    /// </summary>
+    /// <param name="delivery">The delivery to abandon.</param>
+    /// <returns>A completed task.</returns>
     public Task AbandonAsync(TransportDelivery delivery) => Task.CompletedTask;
 
     /// <summary>
@@ -138,7 +156,11 @@ internal sealed class NatsCoreConsumer : ITransportConsumer, ILogSubject
         return new TransportDelivery(message, Token: null);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Stops the read loop and disposes the underlying Core subscription. Idempotent; a failed subscription dispose
+    /// is logged rather than thrown.
+    /// </summary>
+    /// <returns>A task that completes when disposal has finished.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)

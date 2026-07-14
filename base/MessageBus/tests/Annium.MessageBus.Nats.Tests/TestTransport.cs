@@ -71,7 +71,11 @@ public sealed class TestTransport : IMessageBusTestTransport
     /// </summary>
     public static NatsContainer Container => _container!;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Starts the shared NATS container and provisions the shared streams on first call (guarded so concurrent
+    /// test-class construction only does either once), and resolves this instance's connection string from it.
+    /// </summary>
+    /// <returns>A task that completes once the connection string is resolved.</returns>
     public async ValueTask StartAsync()
     {
         await _gate.WaitAsync();
@@ -98,14 +102,22 @@ public sealed class TestTransport : IMessageBusTestTransport
         _connectionString = _container.GetConnectionString();
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Registers the NATS message bus into the container, pointed at the started container's connection string.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
     public void Configure(IServiceContainer container) =>
         container.AddNatsMessageBus(builder => builder.Url(_connectionString));
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Gets the eventual-assertion timeout (ms) suited to the NATS container's broker latency.
+    /// </summary>
     public int DefaultTimeoutMs => 15000;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op; the shared container is reaped by the Testcontainers Ryuk sidecar at process exit.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 
     /// <summary>

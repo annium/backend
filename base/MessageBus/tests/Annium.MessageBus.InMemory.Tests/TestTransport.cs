@@ -9,12 +9,21 @@ namespace Annium.MessageBus.InMemory.Tests;
 /// </summary>
 public sealed class TestTransport : IMessageBusTestTransport
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Registers the in-memory message bus into the container.
+    /// </summary>
+    /// <param name="container">The service container to add services to.</param>
     public void Configure(IServiceContainer container) => container.AddInMemoryMessageBus();
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op; the in-memory transport has no broker lifecycle to start.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask StartAsync() => ValueTask.CompletedTask;
 
-    /// <inheritdoc />
+    /// <summary>
+    /// No-op; the in-memory transport has no broker resources to release.
+    /// </summary>
+    /// <returns>A completed task.</returns>
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
 }
