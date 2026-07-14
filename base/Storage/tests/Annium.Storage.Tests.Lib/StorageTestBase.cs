@@ -79,6 +79,37 @@ public abstract class StorageTestBase
     }
 
     /// <summary>
+    /// Tests that uploading over an item that is already stored replaces it, rather than keeping
+    /// what was there or storing both.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
+    [Fact]
+    public async Task Upload_ExistingKey_OverwritesValue()
+    {
+        // arrange
+        var storage = GetStorage();
+        await storage.UploadAsync(new MemoryStream(GenerateBlob()), "upload_existing");
+
+        // act: shorter than what it replaces, so a write that fails to truncate leaves a tail behind
+        var blob = "brief"u8.ToArray();
+        await storage.UploadAsync(new MemoryStream(blob), "upload_existing");
+
+        // assert
+        byte[] result;
+        using (var ms = new MemoryStream())
+        {
+            await (await storage.DownloadAsync("upload_existing")).CopyToAsync(
+                ms,
+                TestContext.Current.CancellationToken
+            );
+            result = ms.ToArray();
+        }
+
+        result.SequenceEqual(blob).IsTrue();
+        (await storage.ListAsync("upload_existing")).Has(1);
+    }
+
+    /// <summary>
     /// Tests that attempting to download a non-existent item throws a KeyNotFoundException.
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>

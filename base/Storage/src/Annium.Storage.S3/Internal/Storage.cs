@@ -185,31 +185,44 @@ internal class Storage : IStorage, ILogSubject
     /// <returns>A configured AmazonS3Client instance</returns>
     private AmazonS3Client GetClient()
     {
-        if (string.IsNullOrWhiteSpace(_configuration.AccessKey))
-            throw new ArgumentException("Access key is required");
-
-        if (string.IsNullOrWhiteSpace(_configuration.AccessSecret))
-            throw new ArgumentException("Access secret is required");
-
-        if (string.IsNullOrWhiteSpace(_configuration.Bucket))
-            throw new ArgumentException("Bucket name is required");
-
-        var s3Cfg = new AmazonS3Config
-        {
-            RegionEndpoint = RegionEndpoint.GetBySystemName(_configuration.Region),
-            RetryMode = RequestRetryMode.Adaptive,
-            ForcePathStyle = _configuration.ForcePathStyle,
-        };
-        if (!string.IsNullOrWhiteSpace(_configuration.Server))
-        {
-            // ServiceURL and RegionEndpoint are mutually exclusive; keep Region as the signing region
-            s3Cfg.ServiceURL = _configuration.Server;
-            s3Cfg.AuthenticationRegion = _configuration.Region;
-        }
+        var s3Cfg = GetClientConfig(_configuration);
 
         var credentials = new BasicAWSCredentials(_configuration.AccessKey, _configuration.AccessSecret);
 
         return new AmazonS3Client(credentials, s3Cfg);
+    }
+
+    /// <summary>
+    /// Builds the client configuration from the storage configuration, without contacting the server —
+    /// so the endpoint choice is decidable on its own, including the AWS path no test server exercises
+    /// </summary>
+    /// <param name="configuration">The configuration containing S3 connection details</param>
+    /// <returns>A configured AmazonS3Config instance</returns>
+    internal static AmazonS3Config GetClientConfig(Configuration configuration)
+    {
+        if (string.IsNullOrWhiteSpace(configuration.AccessKey))
+            throw new ArgumentException("Access key is required");
+
+        if (string.IsNullOrWhiteSpace(configuration.AccessSecret))
+            throw new ArgumentException("Access secret is required");
+
+        if (string.IsNullOrWhiteSpace(configuration.Bucket))
+            throw new ArgumentException("Bucket name is required");
+
+        var s3Cfg = new AmazonS3Config
+        {
+            RegionEndpoint = RegionEndpoint.GetBySystemName(configuration.Region),
+            RetryMode = RequestRetryMode.Adaptive,
+            ForcePathStyle = configuration.ForcePathStyle,
+        };
+        if (!string.IsNullOrWhiteSpace(configuration.Server))
+        {
+            // ServiceURL and RegionEndpoint are mutually exclusive; keep Region as the signing region
+            s3Cfg.ServiceURL = configuration.Server;
+            s3Cfg.AuthenticationRegion = configuration.Region;
+        }
+
+        return s3Cfg;
     }
 
     /// <summary>

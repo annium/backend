@@ -1,11 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime;
-using Annium.Logging.InMemory;
-using Annium.Logging.Shared;
 using Annium.Storage.Abstractions;
+using Annium.Storage.Tests.Lib;
 using Annium.Testing;
 using Xunit;
 
@@ -103,14 +100,6 @@ public class ConfigurationTest
             Directory = configuration.Directory == string.Empty ? "/" : configuration.Directory,
         };
 
-        var services = new ServiceContainer();
-        services.AddLogging();
-        services.AddTime().WithManagedTime().SetDefault();
-        services.AddS3Storage("default", (_, _) => config, true);
-
-        var provider = services.BuildServiceProvider();
-        provider.UseLogging(x => x.UseInMemory());
-
-        return provider.Resolve<IStorage>();
+        return TestServices.BuildStorage(services => services.AddS3Storage("default", (_, _) => config, true));
     }
 }

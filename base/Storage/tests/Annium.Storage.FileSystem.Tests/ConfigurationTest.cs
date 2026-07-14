@@ -1,9 +1,6 @@
 using System;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime;
-using Annium.Logging.InMemory;
-using Annium.Logging.Shared;
 using Annium.Storage.Abstractions;
+using Annium.Storage.Tests.Lib;
 using Annium.Testing;
 using Xunit;
 
@@ -50,16 +47,8 @@ public class ConfigurationTest
     /// </summary>
     /// <param name="directory">The root directory under test.</param>
     /// <returns>A configured file system storage instance.</returns>
-    private static IStorage GetStorage(string directory)
-    {
-        var services = new ServiceContainer();
-        services.AddLogging();
-        services.AddTime().WithManagedTime().SetDefault();
-        services.AddFileSystemStorage("default", (_, _) => new Configuration { Directory = directory }, true);
-
-        var provider = services.BuildServiceProvider();
-        provider.UseLogging(x => x.UseInMemory());
-
-        return provider.Resolve<IStorage>();
-    }
+    private static IStorage GetStorage(string directory) =>
+        TestServices.BuildStorage(services =>
+            services.AddFileSystemStorage("default", (_, _) => new Configuration { Directory = directory }, true)
+        );
 }

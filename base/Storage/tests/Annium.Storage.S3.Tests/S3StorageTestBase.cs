@@ -1,14 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime;
-using Annium.Logging.InMemory;
-using Annium.Logging.Shared;
 using Annium.Storage.Abstractions;
 using Annium.Storage.Tests.Lib;
 using Annium.Testing;
@@ -119,11 +116,6 @@ public abstract class S3StorageTestBase : StorageTestBase, IAsyncLifetime
     }
 
     /// <summary>
-    /// Creates and configures an S3 storage instance for testing.
-    /// Sets up dependency injection container with S3 storage provider and the MinIO-backed configuration.
-    /// </summary>
-    /// <returns>A configured S3 storage instance.</returns>
-    /// <summary>
     /// Tests that a failed download request surfaces as itself, rather than being reported as a
     /// missing item — the caller must be able to tell "not there" from "the request did not work".
     /// </summary>
@@ -154,6 +146,40 @@ public abstract class S3StorageTestBase : StorageTestBase, IAsyncLifetime
     }
 
     /// <summary>
+    /// Tests that a bucket that is not there reads as the item being absent, the same as a missing
+    /// item in a bucket that exists — the caller asked for something that is not in storage either way.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
+    [Fact]
+    public async Task Download_MissingBucket_ThrowsKeyNotFoundException()
+    {
+        // arrange: a bucket no suite provisions
+        var storage = GetStorage(_configuration with { Bucket = "missing-bucket-never-provisioned" });
+
+        // assert
+        await Wrap.It(async () => await storage.DownloadAsync("download_missing_bucket"))
+            .ThrowsAsync<KeyNotFoundException>();
+    }
+
+    /// <summary>
+    /// Tests that deleting from a bucket that is not there reports nothing was deleted, rather than
+    /// surfacing the absent bucket as a failed request.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation.</returns>
+    [Fact]
+    public async Task Delete_MissingBucket_ReturnsFalse()
+    {
+        // arrange: a bucket no suite provisions
+        var storage = GetStorage(_configuration with { Bucket = "missing-bucket-never-provisioned" });
+
+        // act
+        var result = await storage.DeleteAsync("delete_missing_bucket");
+
+        // assert
+        result.IsFalse();
+    }
+
+    /// <summary>
     /// Creates and configures an S3 storage instance for testing, using this suite's MinIO-backed configuration.
     /// </summary>
     /// <returns>A configured S3 storage instance.</returns>
@@ -164,20 +190,8 @@ public abstract class S3StorageTestBase : StorageTestBase, IAsyncLifetime
     /// </summary>
     /// <param name="configuration">The configuration to build the storage from.</param>
     /// <returns>A configured S3 storage instance.</returns>
-    private static IStorage GetStorage(Configuration configuration)
-    {
-        var config = configuration;
-
-        var services = new ServiceContainer();
-        services.AddLogging();
-        services.AddTime().WithManagedTime().SetDefault();
-        services.AddS3Storage("default", (_, _) => config, true);
-
-        var provider = services.BuildServiceProvider();
-        provider.UseLogging(x => x.UseInMemory());
-
-        return provider.Resolve<IStorage>();
-    }
+    private static IStorage GetStorage(Configuration configuration) =>
+        TestServices.BuildStorage(services => services.AddS3Storage("default", (_, _) => configuration, true));
 
     /// <summary>
     /// Cleans up all test data from this suite's bucket, so each test observes only what it stored.
