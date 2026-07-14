@@ -113,7 +113,7 @@ internal class MessageHandler : ILogSubject
 
         // execute and resolve result data
         this.Trace<string>("execute handler {handlerType}", route.HandlerType.FriendlyName());
-        var resultTask = route.HandleMethod.Invoke(handler, new[] { request, ct })!;
+        var resultTask = route.HandleMethod.Invoke(handler, [request, ct])!;
         await (Task)resultTask;
 
         var dataType = route.ResultProperty.PropertyType;

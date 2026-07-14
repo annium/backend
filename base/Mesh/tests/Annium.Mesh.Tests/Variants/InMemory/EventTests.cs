@@ -21,7 +21,7 @@ public class EventTests : EventTestsBase<Behavior>
     /// Tests analytics event handling using in-memory transport.
     /// </summary>
     /// <returns>A task representing the asynchronous test operation.</returns>
-    [Fact]
+    [Fact(Skip = "broadcast and event feature not wired (dark WIP): handlers commented out, body is a no-op")]
     public async Task Analytics()
     {
         this.Trace("start");

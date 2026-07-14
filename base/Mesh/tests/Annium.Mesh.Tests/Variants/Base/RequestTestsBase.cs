@@ -1,11 +1,14 @@
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Logging;
 using Annium.Mesh.Tests.System.Domain;
+using Annium.Mesh.Transport.Abstractions;
 using Annium.Testing;
 using Xunit;
 
@@ -81,6 +84,182 @@ public abstract class RequestTestsBase<TBehavior> : TestBase<TBehavior>
         set.Has(range.Length);
         foreach (var x in range)
             set.Contains(x).IsTrue();
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies a handler returning a non-Ok status result surfaces that status and its errors to the caller.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Fail_ReturnsNonOkStatus_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+
+        // act
+        var response = await client.Demo.FailAsync(new EchoRequest("ignored"));
+
+        // assert
+        response.Status.Is(OperationStatus.NotFound);
+        response.HasErrors.IsTrue();
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies cancelling the caller token before a response arrives yields an Aborted status rather than hanging.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Cancel_ReturnsAborted_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+        using var cts = new CancellationTokenSource();
+
+        // act
+        var task = client.Demo.HangAsync(new EchoRequest("ignored"), cts.Token);
+        await cts.CancelAsync();
+        var response = await task;
+
+        // assert
+        response.Status.Is(OperationStatus.Aborted);
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies a request whose handler throws does not fault the connection: a subsequent request still succeeds.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Throw_KeepsConnectionAlive_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+
+        // act — the throwing handler never responds; bound the wait so the test stays fast
+        using (var cts = new CancellationTokenSource(TimeSpan.FromMilliseconds(500)))
+        {
+            var failed = await client.Demo.ThrowAsync(new EchoRequest("boom"), cts.Token);
+            failed.Status.IsNotEqual(OperationStatus.Ok);
+        }
+
+        // assert — the same connection still serves a normal request
+        var response = await client.Demo.EchoAsync(new EchoRequest("alive"));
+        response.Status.Is(OperationStatus.Ok);
+        response.Data.Is("alive");
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies disposing an already-disposed client is idempotent and does not throw.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Dispose_Twice_DoesNotThrow_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        var client = await GetClient();
+
+        // act + assert — a second dispose must complete without throwing
+        await client.DisposeAsync();
+        await client.DisposeAsync();
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies an explicit client disconnect raises OnDisconnected with a local-close status.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Disconnect_FiresOnDisconnected_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+        var tcs = new TaskCompletionSource<ConnectionCloseStatus>(TaskCreationOptions.RunContinuationsAsynchronously);
+        client.OnDisconnected += status => tcs.TrySetResult(status);
+
+        // act
+        client.Disconnect();
+        var status = await tcs.Task.WaitAsync(TimeSpan.FromSeconds(5));
+
+        // assert
+        status.Is(ConnectionCloseStatus.ClosedLocal);
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies a no-response-data request (SendAsync path via an IRequestHandler) returns an Ok status.
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task Send_ReturnsOkStatus_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+
+        // act
+        var response = await client.Demo.NotifyAsync(new EchoRequest("notify"));
+
+        // assert
+        response.Status.Is(OperationStatus.Ok);
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies the FetchAsync default-value overload returns the actual response data on success (not the default).
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task FetchWithDefault_Success_ReturnsData_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+
+        // act
+        var response = await client.Demo.EchoAsync(new EchoRequest("actual"), "fallback");
+
+        // assert
+        response.Status.Is(OperationStatus.Ok);
+        response.Data.Is("actual");
+
+        this.Trace("done");
+    }
+
+    /// <summary>
+    /// Verifies the FetchAsync default-value overload returns the default when no response arrives (null-response fallback).
+    /// </summary>
+    /// <returns>A task representing the asynchronous test operation.</returns>
+    protected async Task FetchWithDefault_Cancelled_ReturnsDefault_Base()
+    {
+        this.Trace("start");
+
+        // arrange
+        await using var client = await GetClient();
+        using var cts = new CancellationTokenSource();
+
+        // act — cancel before any response; the fallback default must be returned
+        var task = client.Demo.HangAsync(new EchoRequest("ignored"), "fallback", cts.Token);
+        await cts.CancelAsync();
+        var response = await task;
+
+        // assert
+        response.Status.Is(OperationStatus.Aborted);
+        response.Data.Is("fallback");
 
         this.Trace("done");
     }

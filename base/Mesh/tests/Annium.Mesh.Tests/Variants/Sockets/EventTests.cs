@@ -21,7 +21,7 @@ public class EventTests : EventTestsBase<Behavior>
     /// Tests analytics event messaging.
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
-    [Fact]
+    [Fact(Skip = "broadcast and event feature not wired (dark WIP): handlers commented out, body is a no-op")]
     public async Task Analytics()
     {
         this.Trace("start");

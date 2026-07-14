@@ -24,7 +24,7 @@ public class SubscriptionPerfTests : SubscriptionTestsBase<Behavior>
     /// </summary>
     /// <param name="index">The test iteration index.</param>
     /// <returns>A task that represents the asynchronous test operation.</returns>
-    [Theory]
+    [Theory(Skip = "subscription feature not wired (dark WIP): handlers commented out, body is a no-op")]
     [MemberData(nameof(GetPerfRange))]
     public async Task Subscription(int index)
     {
