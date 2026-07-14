@@ -43,7 +43,20 @@ internal class Storage : IStorage, ILogSubject
     /// <returns>Array of file paths matching the prefix</returns>
     public Task<string[]> ListAsync(string prefix = "")
     {
+        // besides rejecting malformed prefixes, this keeps an absolute prefix from escaping the
+        // root: Path.Combine discards the root when the prefix it is combined with is absolute
+        VerifyPrefix(prefix);
+
         var root = prefix == "" ? _directory : Path.Combine(_directory, prefix);
+
+        // a prefix naming a file matches that file, as it does in the other storages, where nothing
+        // distinguishes an item from the directory-like prefix leading to it
+        if (File.Exists(root))
+            return Task.FromResult<string[]>([prefix]);
+
+        if (!Directory.Exists(root))
+            return Task.FromResult<string[]>([]);
+
         var files = Directory
             .GetFiles(root, "*", SearchOption.AllDirectories)
             .Select(e => Path.GetRelativePath(_directory, e))

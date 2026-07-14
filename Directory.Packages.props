@@ -44,6 +44,7 @@
     <PackageVersion Include="StackExchange.Redis" Version="2.13.17" />
     <PackageVersion Include="System.Reactive" Version="6.1.0" />
     <PackageVersion Include="Testcontainers.Kafka" Version="4.12.0" />
+    <PackageVersion Include="Testcontainers.Minio" Version="4.12.0" />
     <PackageVersion Include="Testcontainers.Nats" Version="4.12.0" />
     <PackageVersion Include="Testcontainers.PostgreSql" Version="4.12.0" />
     <PackageVersion Include="Testcontainers.RabbitMq" Version="4.12.0" />

@@ -9,10 +9,12 @@ namespace Annium.Storage.Abstractions;
 public static class StorageHelper
 {
     /// <summary>
-    /// Regular expression for validating path component names
+    /// Regular expression for validating path component names. Spelled A-Za-z rather than A-z, which
+    /// would span the punctuation between Z and a — notably the backslash a part must never contain,
+    /// since it separates directories on Windows
     /// </summary>
     private static readonly Regex _nameRe = new(
-        @"^(?:[A-z0-9]+|\.?[A-z0-9]+[A-z0-9-_.]*[A-z0-9]+)$",
+        @"^(?:[A-Za-z0-9_]+|\.?[A-Za-z0-9_]+[A-Za-z0-9-_.]*[A-Za-z0-9_]+)$",
         RegexOptions.Compiled | RegexOptions.Singleline
     );
 

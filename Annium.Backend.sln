@@ -189,6 +189,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MessageBus.RabbitMq.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.MessageBus.Nats.Load", "base\MessageBus\tests\Annium.MessageBus.Nats.Load\Annium.MessageBus.Nats.Load.csproj", "{99143831-DD85-40D9-ADA4-2C4CD2CF5994}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.Abstractions.Tests", "base\Storage\tests\Annium.Storage.Abstractions.Tests\Annium.Storage.Abstractions.Tests.csproj", "{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -943,6 +945,18 @@ Global
 		{99143831-DD85-40D9-ADA4-2C4CD2CF5994}.Release|x64.Build.0 = Release|Any CPU
 		{99143831-DD85-40D9-ADA4-2C4CD2CF5994}.Release|x86.ActiveCfg = Release|Any CPU
 		{99143831-DD85-40D9-ADA4-2C4CD2CF5994}.Release|x86.Build.0 = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|x64.Build.0 = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Debug|x86.Build.0 = Debug|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|x64.ActiveCfg = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|x64.Build.0 = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|x86.ActiveCfg = Release|Any CPU
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1039,5 +1053,6 @@ Global
 		{26D8F386-BFCC-4B9D-9D4F-42DA7196B72A} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
 		{4AA425A9-3679-4F94-9E23-B38CFCDC4D4C} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
 		{99143831-DD85-40D9-ADA4-2C4CD2CF5994} = {93295A56-520B-BCE0-CD6E-B21CE57A429B}
+		{FC603ED6-6DA7-4F3F-885C-4AE709AC9B6A} = {3D6022F9-44DC-89AC-7A81-1480EB1EC0F6}
 	EndGlobalSection
 EndGlobal
