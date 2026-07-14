@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Solutions>Annium.Backend</Solutions>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <NoWarn>$(NoWarn);NETSDK1206</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../src/Annium.MessageBus.Nats/Annium.MessageBus.Nats.csproj" />
+    <ProjectReference Include="../Annium.MessageBus.Tests.Load.Shared/Annium.MessageBus.Tests.Load.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Core.Runtime" />
+    <PackageReference Include="Annium.Logging.InMemory" />
+    <PackageReference Include="Annium.Serialization.Json" />
+    <PackageReference Include="NATS.Net" />
+    <PackageReference Include="Testcontainers.Nats" />
+  </ItemGroup>
+</Project>

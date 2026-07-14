@@ -45,6 +45,7 @@ public class Database : IAsyncDisposable
     /// <returns>A value task that completes when the container has been disposed.</returns>
     public async ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         await _db.DisposeAsync();
     }
 }

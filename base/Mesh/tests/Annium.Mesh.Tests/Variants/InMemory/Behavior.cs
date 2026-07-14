@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
@@ -66,7 +67,7 @@ public class Behavior : IBehavior
     /// <returns>A <see cref="ValueTask"/> that completes when the server task has finished.</returns>
     public async ValueTask DisposeAsync()
     {
-        global::System.GC.SuppressFinalize(this);
+        GC.SuppressFinalize(this);
         await _serverCts.CancelAsync();
 #pragma warning disable VSTHRD003
         await _serverTask;
