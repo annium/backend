@@ -2,7 +2,6 @@ using System;
 using System.Net.WebSockets;
 using System.Threading;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
 using Annium.Logging;
 using Annium.Mesh.Transport.Abstractions;
 using Annium.Net.Servers.Web;
@@ -12,7 +11,7 @@ namespace Annium.Mesh.Server.Web.Internal;
 /// <summary>
 /// Handles incoming WebSocket connections for the mesh server by creating connection wrappers and delegating to the coordinator.
 /// </summary>
-public class Handler : IWebSocketHandler, ILogSubject
+internal class Handler : IWebSocketHandler, ILogSubject
 {
     /// <summary>
     /// Gets the logger for this handler.
@@ -32,12 +31,14 @@ public class Handler : IWebSocketHandler, ILogSubject
     /// <summary>
     /// Initializes a new instance of the <see cref="Handler"/> class.
     /// </summary>
-    /// <param name="sp">The service provider for resolving dependencies.</param>
-    public Handler(IServiceProvider sp)
+    /// <param name="connectionFactory">The factory for creating server connections from WebSockets.</param>
+    /// <param name="coordinator">The coordinator for managing connection lifecycle.</param>
+    /// <param name="logger">The logger for this handler.</param>
+    public Handler(IServerConnectionFactory<WebSocket> connectionFactory, ICoordinator coordinator, ILogger logger)
     {
-        Logger = sp.Resolve<ILogger>();
-        _connectionFactory = sp.Resolve<IServerConnectionFactory<WebSocket>>();
-        _coordinator = sp.Resolve<ICoordinator>();
+        Logger = logger;
+        _connectionFactory = connectionFactory;
+        _coordinator = coordinator;
     }
 
     /// <summary>

@@ -354,8 +354,9 @@ internal abstract class ClientBase : IClientBase
         var id = Guid.NewGuid();
         var tcs = new TaskCompletionSource<object>();
         using var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
-        // external token - operation canceled
-        ct.Register(() =>
+        // external token - operation canceled; dispose the registration when the request completes so
+        // callbacks don't accumulate on a long-lived, reused caller token
+        await using var ctRegistration = ct.Register(() =>
         {
             // if not arrived and not expired - cancel
             if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)

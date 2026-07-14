@@ -14,4 +14,24 @@ public enum Action
     /// Counter action that manages and updates counter values.
     /// </summary>
     Counter,
+
+    /// <summary>
+    /// Action whose handler returns a non-Ok operation status with errors.
+    /// </summary>
+    Fail,
+
+    /// <summary>
+    /// Action whose handler never completes until cancelled, used to exercise caller-side cancellation.
+    /// </summary>
+    Hang,
+
+    /// <summary>
+    /// Action whose handler throws, used to verify a faulting handler does not tear down the connection.
+    /// </summary>
+    Throw,
+
+    /// <summary>
+    /// Action handled by a no-response-data request handler, used to exercise the SendAsync path.
+    /// </summary>
+    Notify,
 }

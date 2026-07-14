@@ -80,6 +80,7 @@ internal class Channel
         {
             if (!_isConnected)
                 return;
+            _isConnected = false;
         }
 
         OnDisconnected(side);
