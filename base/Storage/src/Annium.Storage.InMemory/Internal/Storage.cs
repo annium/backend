@@ -52,7 +52,7 @@ internal class Storage(ILogger logger) : IStorage, ILogSubject
         VerifyPath(path);
 
         using var ms = new MemoryStream();
-        ms.Position = 0;
+        source.Position = 0;
         await source.CopyToAsync(ms);
 
         _storage[path] = ms.ToArray();
@@ -82,6 +82,8 @@ internal class Storage(ILogger logger) : IStorage, ILogSubject
     {
         VerifyPath(path);
 
-        return Task.FromResult(_storage.Remove(path, out _));
+        // TryRemove, not the IDictionary Remove extension, which reads then removes non-atomically
+        // and so reports success to every racing caller
+        return Task.FromResult(_storage.TryRemove(path, out _));
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.Runtime;
@@ -56,22 +57,35 @@ internal class Storage : IStorage, ILogSubject
     {
         VerifyPrefix(prefix);
 
-        var listRequest = new ListObjectsRequest
+        var listRequest = new ListObjectsV2Request
         {
             BucketName = _configuration.Bucket,
-            MaxKeys = 100,
+            MaxKeys = _configuration.PageSize,
             Prefix = _directory == "" ? prefix : $"{_directory}/{prefix}",
         };
 
         using var s3 = GetClient();
 
-        var objects = (await s3.ListObjectsAsync(listRequest)).S3Objects;
+        var objects = new List<S3Object>();
+        ListObjectsV2Response response;
+        do
+        {
+            response = await s3.ListObjectsV2Async(listRequest);
+            // an empty listing yields a null collection, not an empty one
+            objects.AddRange(response.S3Objects ?? []);
+            // a listing is returned one page at a time; keep asking until the last page
+            listRequest.ContinuationToken = response.NextContinuationToken;
+        } while (response.IsTruncated ?? false);
 
-        if (_directory == "")
-            return objects.Select(x => x.Key).ToArray();
+        var shift = _directory == "" ? 0 : _directory.Length + 1;
+        var keys = objects.Select(x => x.Key[shift..]);
 
-        var shift = _directory.Length + 1;
-        return objects.Select(x => x.Key[shift..]).ToArray();
+        // the request prefix matches raw characters, so narrow it to whole path segments and keep
+        // the prefix meaning the same here as in the other storages
+        if (prefix != "")
+            keys = keys.Where(x => x == prefix || x.StartsWith($"{prefix}/"));
+
+        return keys.ToArray();
     }
 
     /// <summary>
@@ -119,7 +133,7 @@ internal class Storage : IStorage, ILogSubject
 
             return ms;
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception e) when (IsNotFound(e))
         {
             throw new KeyNotFoundException($"{path} not found in storage");
         }
@@ -136,13 +150,14 @@ internal class Storage : IStorage, ILogSubject
 
         using var s3 = GetClient();
 
-        var getRequest = new GetObjectRequest { BucketName = _configuration.Bucket, Key = GetKey(path) };
+        // a HEAD answers whether the object is there without fetching its contents
+        var headRequest = new GetObjectMetadataRequest { BucketName = _configuration.Bucket, Key = GetKey(path) };
 
         try
         {
-            await s3.GetObjectAsync(getRequest);
+            await s3.GetObjectMetadataAsync(headRequest);
         }
-        catch (AmazonS3Exception)
+        catch (AmazonS3Exception e) when (IsNotFound(e))
         {
             return false;
         }
@@ -151,6 +166,17 @@ internal class Storage : IStorage, ILogSubject
         await s3.DeleteObjectAsync(deleteRequest);
 
         return true;
+    }
+
+    /// <summary>
+    /// Determines whether a failure means the object is absent, as opposed to the request itself failing
+    /// (denied, throttled, server error) — which must surface rather than read as a missing object
+    /// </summary>
+    /// <param name="e">The exception raised by the S3 request</param>
+    /// <returns>True if the object is absent</returns>
+    private static bool IsNotFound(AmazonS3Exception e)
+    {
+        return e.StatusCode == HttpStatusCode.NotFound || e.ErrorCode is "NoSuchKey" or "NoSuchBucket" or "NotFound";
     }
 
     /// <summary>
@@ -172,9 +198,14 @@ internal class Storage : IStorage, ILogSubject
         {
             RegionEndpoint = RegionEndpoint.GetBySystemName(_configuration.Region),
             RetryMode = RequestRetryMode.Adaptive,
+            ForcePathStyle = _configuration.ForcePathStyle,
         };
         if (!string.IsNullOrWhiteSpace(_configuration.Server))
+        {
+            // ServiceURL and RegionEndpoint are mutually exclusive; keep Region as the signing region
             s3Cfg.ServiceURL = _configuration.Server;
+            s3Cfg.AuthenticationRegion = _configuration.Region;
+        }
 
         var credentials = new BasicAWSCredentials(_configuration.AccessKey, _configuration.AccessSecret);
 
