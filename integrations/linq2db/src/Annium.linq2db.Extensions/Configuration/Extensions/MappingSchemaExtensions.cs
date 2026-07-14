@@ -42,11 +42,11 @@ public static class MappingSchemaExtensions
         var serializer = sp.ResolveKeyed<ISerializer<string>>(serializerKey);
         var serialize = typeof(ISerializer<string>).GetMethod(
             nameof(ISerializer<>.Serialize),
-            new[] { typeof(Type), typeof(object) }
+            [typeof(Type), typeof(object)]
         )!;
         var deserialize = typeof(ISerializer<string>).GetMethod(
             nameof(ISerializer<>.Deserialize),
-            new[] { typeof(Type), typeof(string) }
+            [typeof(Type), typeof(string)]
         )!;
 
         return schema.Configure(
@@ -61,7 +61,7 @@ public static class MappingSchemaExtensions
                 {
                     var entityMappingBuilder = entityMappingBuilderFactory
                         .MakeGenericMethod(table.Type)
-                        .Invoke(mappingBuilder, new object?[] { null })!;
+                        .Invoke(mappingBuilder, [null])!;
                     var getPropertyMappingBuilder = entityMappingBuilder
                         .GetType()
                         .GetMethod(nameof(EntityMappingBuilder<>.Property))!;
@@ -76,13 +76,12 @@ public static class MappingSchemaExtensions
                             .MakeGenericMethod(column.Type)
                             .Invoke(
                                 entityMappingBuilder,
-                                new object[]
-                                {
+                                [
                                     Expression.Lambda(
                                         Expression.PropertyOrField(typeParameter, column.Member.Name),
                                         typeParameter
                                     ),
-                                }
+                                ]
                             )!;
                         var hasConversionFunc = propertyMappingBuilder
                             .GetType()
@@ -95,7 +94,7 @@ public static class MappingSchemaExtensions
                                 Expression.Call(
                                     instance,
                                     serialize,
-                                    new Expression[] { Expression.Constant(column.Type), serializeValue }
+                                    [Expression.Constant(column.Type), serializeValue]
                                 ),
                                 serializeValue
                             )
@@ -111,10 +110,7 @@ public static class MappingSchemaExtensions
                                 deserializeValue
                             )
                             .Compile();
-                        hasConversionFunc.Invoke(
-                            propertyMappingBuilder,
-                            new object[] { serializeFn, deserializeFn, false }
-                        );
+                        hasConversionFunc.Invoke(propertyMappingBuilder, [serializeFn, deserializeFn, false]);
                     }
                 }
 

@@ -63,7 +63,7 @@ internal static class MappingSchemaExtensions
                 {
                     var entityMappingBuilder = entityMappingBuilderFactory
                         .MakeGenericMethod(table.Type)
-                        .Invoke(mappingBuilder, new object?[] { null })!;
+                        .Invoke(mappingBuilder, [null])!;
                     var getPropertyMappingBuilder = entityMappingBuilder
                         .GetType()
                         .GetMethod(nameof(EntityMappingBuilder<>.Property))!;
@@ -78,18 +78,17 @@ internal static class MappingSchemaExtensions
                             .MakeGenericMethod(column.Type)
                             .Invoke(
                                 entityMappingBuilder,
-                                new object[]
-                                {
+                                [
                                     Expression.Lambda(
                                         Expression.PropertyOrField(typeParameter, column.Member.Name),
                                         typeParameter
                                     ),
-                                }
+                                ]
                             )!;
                         var isNotColumn = propertyMappingBuilder
                             .GetType()
                             .GetMethod(nameof(PropertyMappingBuilder<,>.IsNotColumn))!;
-                        isNotColumn.Invoke(propertyMappingBuilder, Array.Empty<object>());
+                        isNotColumn.Invoke(propertyMappingBuilder, []);
                     }
                 }
 
