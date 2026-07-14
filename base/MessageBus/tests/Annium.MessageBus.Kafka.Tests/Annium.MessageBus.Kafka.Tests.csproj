@@ -9,8 +9,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../src/Annium.MessageBus.Kafka/Annium.MessageBus.Kafka.csproj" />
-    <ProjectReference Include="../Annium.MessageBus.Tests.Shared/Annium.MessageBus.Tests.Shared.csproj" />
     <ProjectReference Include="../Annium.MessageBus.Tests.Load.Shared/Annium.MessageBus.Tests.Load.Shared.csproj" />
+    <ProjectReference Include="../Annium.MessageBus.Tests.Shared/Annium.MessageBus.Tests.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Annium.Serialization.Json" />
