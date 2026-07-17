@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Annium.AspNetCore.Extensions.DynamicControllers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Annium.AspNetCore.Extensions.Internal.DynamicControllers;

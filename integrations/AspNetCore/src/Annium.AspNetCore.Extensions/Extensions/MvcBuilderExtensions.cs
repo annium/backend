@@ -1,4 +1,5 @@
 using System;
+using Annium.AspNetCore.Extensions.DynamicControllers;
 using Annium.AspNetCore.Extensions.Internal.DynamicControllers;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;

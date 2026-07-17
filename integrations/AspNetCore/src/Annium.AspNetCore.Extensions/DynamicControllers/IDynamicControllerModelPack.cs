@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Annium.AspNetCore.Extensions.Internal.DynamicControllers;
+namespace Annium.AspNetCore.Extensions.DynamicControllers;
 
 /// <summary>
 /// Interface for configuring dynamic controller model packs

@@ -11,12 +11,12 @@ namespace Annium.AspNetCore.Extensions;
 public static class WebHostBuilderExtensions
 {
     /// <summary>
-    /// Configures Kestrel with default settings including optional HTTPS support
+    /// Configures Kestrel with default settings including optional HTTPS support. The listen port and
+    /// certificate are taken from the DI-registered <see cref="WebHostConfiguration" />.
     /// </summary>
     /// <param name="builder">The web host builder to configure</param>
-    /// <param name="port">The default port to use if not specified in configuration</param>
     /// <returns>The configured web host builder</returns>
-    public static IWebHostBuilder UseKestrelDefaults(this IWebHostBuilder builder, int port = 5000) =>
+    public static IWebHostBuilder UseKestrelDefaults(this IWebHostBuilder builder) =>
         builder.UseKestrel(server =>
         {
             var cfg = server.ApplicationServices.Resolve<WebHostConfiguration>();

@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Annium.AspNetCore.TestServer;
 using Annium.Infrastructure.Hosting;
 using Microsoft.Extensions.Hosting;
@@ -8,7 +7,8 @@ namespace Annium.AspNetCore.IntegrationTesting.Tests;
 
 /// <summary>
 /// Test host for the <c>Annium.AspNetCore.IntegrationTesting.Tests</c> suite. Configures the ASP.NET Core
-/// test server with <see cref="TestServicePack" /> and provides no-op start/stop lifecycle hooks.
+/// test server with <see cref="TestServicePack" />; no host-specific start/stop work is required, so the
+/// base class's lifecycle hooks are left as-is.
 /// </summary>
 internal class TestHost : TestHostBase<Program>
 {
@@ -26,25 +26,5 @@ internal class TestHost : TestHostBase<Program>
     protected override void ConfigureHost(IHostBuilder builder)
     {
         builder.UseServicePack<TestServicePack>();
-    }
-
-    /// <summary>
-    /// Called after the underlying host has started. No additional start-up work is required for
-    /// this test host.
-    /// </summary>
-    /// <returns>A completed <see cref="ValueTask" />.</returns>
-    protected override ValueTask HandleStartAsync()
-    {
-        return ValueTask.CompletedTask;
-    }
-
-    /// <summary>
-    /// Called before the underlying host is stopped. No additional teardown work is required for
-    /// this test host.
-    /// </summary>
-    /// <returns>A completed <see cref="ValueTask" />.</returns>
-    protected override ValueTask HandleStopAsync()
-    {
-        return ValueTask.CompletedTask;
     }
 }

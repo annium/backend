@@ -54,37 +54,86 @@ internal class ExceptionMiddleware : ILogSubject
     /// <returns>A task that represents the asynchronous operation</returns>
     public async Task InvokeAsync(HttpContext context)
     {
+        HttpStatusCode status;
+        IResultBase result;
+
         try
         {
             await _next(context);
+            return;
         }
         catch (ValidationException e)
         {
-            await _helper.WriteResponseAsync(context, HttpStatusCode.BadRequest, e.Result);
+            status = HttpStatusCode.BadRequest;
+            result = e.Result;
+
+            if (WriteFailedSilently(context, e))
+                return;
         }
         catch (ForbiddenException e)
         {
-            await _helper.WriteResponseAsync(context, HttpStatusCode.Forbidden, e.Result);
+            status = HttpStatusCode.Forbidden;
+            result = e.Result;
+
+            if (WriteFailedSilently(context, e))
+                return;
         }
         catch (NotFoundException e)
         {
-            await _helper.WriteResponseAsync(context, HttpStatusCode.NotFound, e.Result);
+            status = HttpStatusCode.NotFound;
+            result = e.Result;
+
+            if (WriteFailedSilently(context, e))
+                return;
         }
         catch (ConflictException e)
         {
-            await _helper.WriteResponseAsync(context, HttpStatusCode.Conflict, e.Result);
+            status = HttpStatusCode.Conflict;
+            result = e.Result;
+
+            if (WriteFailedSilently(context, e))
+                return;
         }
         catch (ServerException e)
         {
             this.Error(e);
 
-            await _helper.WriteResponseAsync(context, HttpStatusCode.InternalServerError, e.Result);
+            status = HttpStatusCode.InternalServerError;
+            result = e.Result;
+
+            if (context.Response.HasStarted)
+                return;
         }
         catch (Exception e)
         {
             this.Error(e);
-            var result = Result.Status(OperationStatus.UncaughtError).Error(e.ToString());
-            await _helper.WriteResponseAsync(context, HttpStatusCode.InternalServerError, result);
+
+            status = HttpStatusCode.InternalServerError;
+            result = Result.Status(OperationStatus.UncaughtError).Error(e.ToString());
+
+            if (context.Response.HasStarted)
+                return;
         }
+
+        await _helper.WriteResponseAsync(context, status, result);
+    }
+
+    /// <summary>
+    /// Checks whether the response has already started for the given exception; if so, logs the exception
+    /// (since the typed branches above don't otherwise log their cause) and reports that the caller should
+    /// return without attempting to write an HTTP status/body, which would throw a secondary
+    /// <see cref="InvalidOperationException" /> masking this one.
+    /// </summary>
+    /// <param name="context">The HTTP context for the current request</param>
+    /// <param name="e">The exception that would otherwise be written as a response</param>
+    /// <returns><c>true</c> if the response has already started and the exception was logged instead</returns>
+    private bool WriteFailedSilently(HttpContext context, Exception e)
+    {
+        if (!context.Response.HasStarted)
+            return false;
+
+        this.Error(e);
+
+        return true;
     }
 }

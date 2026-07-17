@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Net.Mime;
 using System.Net.WebSockets;
+using System.Threading;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Data.Operations;
@@ -96,10 +97,14 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
             return;
         }
 
+        // tracks the accepted socket (if any) so the catch block below can close it gracefully; null until
+        // AcceptWebSocketAsync returns, i.e. only unset if the accept itself is what failed
+        WebSocket? webSocket = null;
+
         try
         {
             this.Trace("accept");
-            var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+            webSocket = await context.WebSockets.AcceptWebSocketAsync();
 
             this.Trace("create connection");
             var connection = await _connectionFactory.CreateAsync(webSocket);
@@ -110,6 +115,36 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
         catch (Exception ex)
         {
             this.Error(ex);
+
+            // once the WebSocket upgrade has completed, the HTTP response has already started (the 101 was
+            // already sent), so setting a status code here would throw a secondary InvalidOperationException
+            // that would mask the original failure just logged above — close the socket instead in that case
+            if (context.Response.HasStarted)
+            {
+                if (webSocket is not null)
+                {
+                    // a server-initiated close awaits the client's close-frame ack; against a dead/unresponsive
+                    // peer that ack never arrives, so bound the wait and force-tear-down the socket on timeout
+                    // instead of hanging indefinitely
+                    using var closeCts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+                    try
+                    {
+                        await webSocket.CloseAsync(
+                            WebSocketCloseStatus.InternalServerError,
+                            "WebSocket unhandled failure",
+                            closeCts.Token
+                        );
+                    }
+                    catch (Exception closeEx)
+                    {
+                        this.Error(closeEx);
+                        webSocket.Abort();
+                    }
+                }
+
+                return;
+            }
+
             await _helper.WriteResponseAsync(
                 context,
                 HttpStatusCode.InternalServerError,
