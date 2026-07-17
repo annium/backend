@@ -113,8 +113,12 @@ internal class PushContext<TMessage> : IPushContext<TMessage>, IAsyncDisposable,
     private void SendInternal(TMessage msg)
     {
         this.Trace("cn {id}: schedule send of {message}", _cid, msg);
-        _executor.Schedule(async () =>
-            await _sender.SendAsync(_cid, _cn, _actionKey, MessageType.Push, msg, _ct).ConfigureAwait(false)
+        // Schedule with the executor's own cancellation token (the CT-aware overload) rather than the
+        // externally-supplied _ct. DisposeAsync cancels that token *before* draining, so an in-flight send
+        // that is blocked on a backpressured/closing connection is cancelled and the drain can complete —
+        // otherwise a stuck push send would make _executor.DisposeAsync() (and connection teardown) hang.
+        _executor.Schedule(async ct =>
+            await _sender.SendAsync(_cid, _cn, _actionKey, MessageType.Push, msg, ct).ConfigureAwait(false)
         );
     }
 }

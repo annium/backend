@@ -29,7 +29,7 @@ public class Behavior : IBehavior, ILogSubject
         container.AddMeshWebSocketsServerTransport(_ => new ServerTransportConfiguration());
         container.AddWebServerMeshHandler();
 
-        container.AddTestServerClient(x => x.WithResponseTimeout(6000));
+        container.AddTestServerClient(x => x.WithResponseTimeout(30));
     }
 
     /// <summary>

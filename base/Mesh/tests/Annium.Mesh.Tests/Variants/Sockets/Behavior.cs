@@ -36,7 +36,7 @@ public class Behavior : IBehavior, ILogSubject
         });
         container.AddSocketServerMeshHandler();
 
-        container.AddTestServerClient(x => x.WithResponseTimeout(6000));
+        container.AddTestServerClient(x => x.WithResponseTimeout(30));
     }
 
     /// <summary>
