@@ -1,3 +1,4 @@
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using Annium.AspNetCore.IntegrationTesting;
@@ -84,6 +85,113 @@ public class ServerControllerTests : TestBase
         // assert
         response.StatusCode.Is(HttpStatusCode.OK);
         response.Data.IsEqual(Result.Create());
+    }
+
+    /// <summary>
+    /// Tests that command endpoint returns Forbidden status when handler reports a forbidden status
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task Command_Forbidden_Works()
+    {
+        // arrange
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
+        _testHost = testHost;
+
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
+        // act
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command/forbidden")
+            .JsonContent(new DemoForbiddenCommand())
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
+
+        // assert
+        response.StatusCode.Is(HttpStatusCode.Forbidden);
+        response.Data.IsEqual(Result.Create().Error("Forbidden"));
+    }
+
+    /// <summary>
+    /// Tests that command endpoint returns Conflict status when handler reports a conflict status
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task Command_Conflict_Works()
+    {
+        // arrange
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
+        _testHost = testHost;
+
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
+        // act
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command/conflict")
+            .JsonContent(new DemoConflictCommand())
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
+
+        // assert
+        response.StatusCode.Is(HttpStatusCode.Conflict);
+        response.Data.IsEqual(Result.Create().Error("Conflict"));
+    }
+
+    /// <summary>
+    /// Tests that command endpoint returns InternalServerError status when handler reports an
+    /// uncaught-error status, which the HTTP status pipe handler maps to a ServerException
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task Command_ServerError_Works()
+    {
+        // arrange
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
+        _testHost = testHost;
+
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
+        // act
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command/server-error")
+            .JsonContent(new DemoServerErrorCommand())
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
+
+        // assert
+        response.StatusCode.Is(HttpStatusCode.InternalServerError);
+        response.Data.IsEqual(Result.Create().Error("Server error"));
+    }
+
+    /// <summary>
+    /// Tests that command endpoint returns InternalServerError status and an uncaught-error payload
+    /// carrying the exception's own text when the handler throws a plain, unmapped exception
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task Command_UnhandledException_Works()
+    {
+        // arrange
+        await using var testHost = await new TestHost(OutputHelper).StartAsync();
+        _testHost = testHost;
+
+        var httpRequestFactory = Get<IHttpRequestFactory>();
+
+        // act
+        var response = await httpRequestFactory
+            .New()
+            .Post("/command/throw")
+            .JsonContent(new DemoThrowingCommand())
+            .AsResponseAsync<IResult>(TestContext.Current.CancellationToken);
+
+        // assert
+        response.StatusCode.Is(HttpStatusCode.InternalServerError);
+        // Data is always populated here: the middleware writes a serialized error body for every 500 response.
+        var data = response.Data!;
+        data.HasErrors.IsTrue();
+        var error = data.PlainErrors.At(0);
+        error.IsContaining(nameof(InvalidOperationException));
+        error.IsContaining("boom");
     }
 
     /// <summary>

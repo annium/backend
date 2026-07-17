@@ -22,7 +22,7 @@ public class Behavior : IBehavior
         container.AddMeshInMemoryTransport();
         container.AddMeshInMemoryServer();
 
-        container.AddTestServerClient(x => x.WithResponseTimeout(6000));
+        container.AddTestServerClient(x => x.WithResponseTimeout(30));
     }
 
     /// <summary>
