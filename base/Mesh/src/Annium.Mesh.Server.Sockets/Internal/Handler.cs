@@ -57,7 +57,7 @@ internal class Handler : IHandler, ILogSubject
             var connection = await _connectionFactory.CreateAsync(socket);
 
             this.Trace("handle connection");
-            await _coordinator.HandleAsync(connection);
+            await _coordinator.HandleAsync(connection, ct);
 
             this.Trace("done");
         }

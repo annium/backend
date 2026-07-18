@@ -110,7 +110,9 @@ internal class WebSocketsMiddleware : IMiddleware, ILogSubject
             var connection = await _connectionFactory.CreateAsync(webSocket);
 
             this.Trace("handle");
-            await _coordinator.HandleAsync(connection);
+            // RequestAborted is cancelled on client disconnect and on host shutdown, so the mesh
+            // connection (and its push handlers) are cancelled instead of blocking teardown.
+            await _coordinator.HandleAsync(connection, context.RequestAborted);
         }
         catch (Exception ex)
         {

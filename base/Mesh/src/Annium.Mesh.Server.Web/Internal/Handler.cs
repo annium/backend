@@ -57,7 +57,7 @@ internal class Handler : IWebSocketHandler, ILogSubject
             var connection = await _connectionFactory.CreateAsync(ctx.WebSocket);
 
             this.Trace("handle connection");
-            await _coordinator.HandleAsync(connection);
+            await _coordinator.HandleAsync(connection, ct);
 
             this.Trace("done");
         }

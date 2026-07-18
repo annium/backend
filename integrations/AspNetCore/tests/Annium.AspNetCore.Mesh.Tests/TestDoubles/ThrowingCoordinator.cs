@@ -38,8 +38,9 @@ internal sealed class ThrowingCoordinator : ICoordinator
     /// coordinator failure occurring after the connection has already been created.
     /// </summary>
     /// <param name="connection">The connection that was handed off before the failure.</param>
+    /// <param name="ct">The transport/server cancellation token (unused by this test double).</param>
     /// <returns>Never returns: this method always throws <see cref="InvalidOperationException" />.</returns>
-    public Task HandleAsync(IServerConnection connection)
+    public Task HandleAsync(IServerConnection connection, CancellationToken ct)
     {
         _invoked.TrySetResult(connection);
         throw new InvalidOperationException(Message);

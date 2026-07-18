@@ -50,8 +50,9 @@ internal sealed class RecordingCoordinator : ICoordinator
     /// is called, simulating an in-progress connection being handled.
     /// </summary>
     /// <param name="connection">The connection to handle.</param>
+    /// <param name="ct">The transport/server cancellation token (unused by this test double).</param>
     /// <returns>A task that completes once <see cref="Release" /> has been called.</returns>
-    public async Task HandleAsync(IServerConnection connection)
+    public async Task HandleAsync(IServerConnection connection, CancellationToken ct)
     {
         _handled.TrySetResult(connection);
         await _release.Task;
