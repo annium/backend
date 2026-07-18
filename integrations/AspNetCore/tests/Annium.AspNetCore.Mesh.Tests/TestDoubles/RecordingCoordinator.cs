@@ -55,7 +55,10 @@ internal sealed class RecordingCoordinator : ICoordinator
     public async Task HandleAsync(IServerConnection connection, CancellationToken ct)
     {
         _handled.TrySetResult(connection);
+        // VSTHRD003: _release is this double's own TCS, released by the test via Release() — not alien work.
+#pragma warning disable VSTHRD003
         await _release.Task;
+#pragma warning restore VSTHRD003
     }
 
     /// <summary>

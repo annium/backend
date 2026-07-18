@@ -51,15 +51,31 @@ public class Database : IAsyncDisposable
         await _db.StartAsync();
         Config.Host = _db.Hostname;
         Config.Port = _db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
-        var result = DeployChanges
-            .To.PostgresqlDatabase(_db.GetConnectionString())
-            .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
-            .WithTransactionPerScript()
-            .LogToConsole()
-            .Build()
-            .PerformUpgrade();
-        if (!result.Successful)
-            throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+
+        // The container readiness probe can pass while PostgreSQL is still finishing its first-boot
+        // startup (it briefly accepts, then drops, connections), so under load the first migration
+        // connection can fail mid-handshake ("Attempted to read past the end of the stream"). Retry the
+        // upgrade — DbUp tracks executed scripts and the failure occurs at connection open before any
+        // script runs, so a retry is idempotent.
+        const int maxAttempts = 10;
+        for (var attempt = 1; ; attempt++)
+        {
+            var result = DeployChanges
+                .To.PostgresqlDatabase(_db.GetConnectionString())
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
+                .WithTransactionPerScript()
+                .LogToConsole()
+                .Build()
+                .PerformUpgrade();
+
+            if (result.Successful)
+                return;
+
+            if (attempt >= maxAttempts)
+                throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+
+            await Task.Delay(500);
+        }
     }
 
     /// <summary>
