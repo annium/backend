@@ -52,10 +52,13 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
     /// </summary>
     private sealed class NeverConnectingClient : IClient
     {
+        /// <summary>Gets the logger for the stub client.</summary>
         public ILogger Logger { get; }
 
+        /// <summary>Gets the connect timeout the stub reports to the bounded connect wait.</summary>
         public Duration ConnectTimeout { get; }
 
+        /// <summary>Gets whether <c>Disconnect</c> was called (the connect-timeout path invokes it).</summary>
         public bool DisconnectCalled { get; private set; }
 
         public event Action OnConnected = delegate { };
@@ -68,6 +71,7 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
             ConnectTimeout = connectTimeout;
         }
 
+        /// <summary>Never raises OnConnected — simulates a server that cannot be reached.</summary>
         public void Connect()
         {
             // intentionally never raises OnConnected — simulates a server that can't be reached
@@ -76,10 +80,20 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
             _ = OnError;
         }
 
+        /// <summary>Records that a disconnect was requested.</summary>
         public void Disconnect() => DisconnectCalled = true;
 
+        /// <summary>Not supported by the stub.</summary>
+        /// <typeparam name="TNotification">The notification type.</typeparam>
+        /// <returns>Never returns; always throws.</returns>
         public IObservable<TNotification> Listen<TNotification>() => throw new NotSupportedException();
 
+        /// <summary>Not supported by the stub.</summary>
+        /// <param name="version">The API version.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="request">The request payload.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>Never returns; always throws.</returns>
         public Task<IStatusResult<OperationStatus>> SendAsync(
             ushort version,
             Enum action,
@@ -87,6 +101,13 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
             CancellationToken ct = default
         ) => throw new NotSupportedException();
 
+        /// <summary>Not supported by the stub.</summary>
+        /// <typeparam name="TData">The expected response data type.</typeparam>
+        /// <param name="version">The API version.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="request">The request payload.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>Never returns; always throws.</returns>
         public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
             ushort version,
             Enum action,
@@ -95,6 +116,14 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
         )
             where TData : notnull => throw new NotSupportedException();
 
+        /// <summary>Not supported by the stub.</summary>
+        /// <typeparam name="TData">The expected response data type.</typeparam>
+        /// <param name="version">The API version.</param>
+        /// <param name="action">The action.</param>
+        /// <param name="request">The request payload.</param>
+        /// <param name="defaultValue">The fallback value.</param>
+        /// <param name="ct">The cancellation token.</param>
+        /// <returns>Never returns; always throws.</returns>
         public Task<IStatusResult<OperationStatus, TData?>> FetchAsync<TData>(
             ushort version,
             Enum action,
@@ -104,6 +133,8 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
         )
             where TData : notnull => throw new NotSupportedException();
 
+        /// <summary>Completes immediately; the stub owns no resources.</summary>
+        /// <returns>A completed <see cref="ValueTask"/>.</returns>
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }
