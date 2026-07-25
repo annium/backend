@@ -40,6 +40,11 @@ internal class Server : IServer, ILogSubject
     private int _isListening;
 
     /// <summary>
+    /// The server run token; linked into each connection so server shutdown cancels active connections.
+    /// </summary>
+    private CancellationToken _ct;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="Server"/> class.
     /// </summary>
     /// <param name="hub">The connection hub for managing in-memory connections.</param>
@@ -65,6 +70,8 @@ internal class Server : IServer, ILogSubject
 
         if (Interlocked.CompareExchange(ref _isListening, 1, 0) == 1)
             throw new InvalidOperationException("Server is already started");
+
+        _ct = ct;
 
         this.Trace("start executor");
         _executor.Start(ct);
@@ -108,7 +115,7 @@ internal class Server : IServer, ILogSubject
                 this.Trace("start");
 
                 this.Trace("handle connection");
-                await _coordinator.HandleAsync(connection);
+                await _coordinator.HandleAsync(connection, _ct);
 
                 this.Trace("done");
             }

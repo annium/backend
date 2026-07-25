@@ -3,6 +3,9 @@ using LinqToDB.Internal.SqlQuery;
 
 namespace Annium.linq2db.Extensions.Internal.Extensions;
 
+/// <summary>
+/// Extension methods for searching a collection of linq2db <see cref="LinqToDB.Internal.SqlQuery.SqlSetExpression"/> items by target SQL field.
+/// </summary>
 internal static class SqlSetExpressionsExtensions
 {
     /// <summary>
@@ -14,7 +17,7 @@ internal static class SqlSetExpressionsExtensions
     public static SqlSetExpression? FindField(this IEnumerable<SqlSetExpression> expressions, SqlField field)
     {
         foreach (var expression in expressions)
-            if (expression.Column is SqlField f && f != null! && f.PhysicalName == field.PhysicalName)
+            if (expression.Column is SqlField f && f.PhysicalName == field.PhysicalName)
                 return expression;
 
         return null;

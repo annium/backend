@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.linq2db.Extensions;
 using Annium.Logging;
@@ -178,7 +179,7 @@ file sealed record MappingSchemaContainer<TConnection>(MappingSchema Schema);
 /// </summary>
 /// <typeparam name="TConnection">The connection type</typeparam>
 // ReSharper disable once UnusedTypeParameter
-file sealed record DataSourceContainer<TConnection> : IDisposable, ILogSubject
+file sealed record DataSourceContainer<TConnection> : IDisposable, IAsyncDisposable, ILogSubject
 {
     /// <summary>
     /// Gets the Npgsql data source
@@ -208,6 +209,16 @@ file sealed record DataSourceContainer<TConnection> : IDisposable, ILogSubject
     public void Dispose()
     {
         DataSource.Dispose();
+        this.Trace("disposed");
+    }
+
+    /// <summary>
+    /// Asynchronously disposes the data source (tearing down the connection pool without blocking) and logs the disposal.
+    /// </summary>
+    /// <returns>A value task that completes when the data source has been disposed.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        await DataSource.DisposeAsync();
         this.Trace("disposed");
     }
 }

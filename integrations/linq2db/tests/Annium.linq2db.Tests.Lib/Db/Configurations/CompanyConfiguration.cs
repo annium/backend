@@ -22,8 +22,6 @@ internal class CompanyConfiguration
         this.ConfigureId(builder);
         this.ConfigureAutoCreatedUpdatedTime(builder);
         builder.HasTableName("companies");
-        builder.HasPrimaryKey(x => x.Id);
-        builder.Property(x => x.Id).IsColumn();
         builder.Property(x => x.Name).IsColumn();
         builder.Property(x => x.Metadata).IsColumn().HasDbType("jsonb").HasDataType(DataType.Json);
         builder.Association(x => x.Employees, x => x.Id, x => x.CompanyId, false);

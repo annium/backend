@@ -34,10 +34,10 @@ public record RedisConfiguration
         sb.AppendJoin(',', Hosts.Select(x => x.ToString()));
 
         if (!string.IsNullOrWhiteSpace(User))
-            sb.Append($"user={User}");
+            sb.Append($",user={User}");
 
         if (!string.IsNullOrWhiteSpace(Password))
-            sb.Append($"password={Password}");
+            sb.Append($",password={Password}");
 
         return sb.ToString();
     }

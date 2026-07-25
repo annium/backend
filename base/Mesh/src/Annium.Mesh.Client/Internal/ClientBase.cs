@@ -12,6 +12,7 @@ using Annium.Logging;
 using Annium.Mesh.Domain;
 using Annium.Mesh.Serialization.Abstractions;
 using Annium.Mesh.Transport.Abstractions;
+using NodaTime;
 
 namespace Annium.Mesh.Client.Internal;
 
@@ -24,6 +25,11 @@ internal abstract class ClientBase : IClientBase
     /// Gets the logger instance for diagnostics
     /// </summary>
     public ILogger Logger { get; }
+
+    /// <summary>
+    /// Gets the overall timeout for establishing the initial connection.
+    /// </summary>
+    public Duration ConnectTimeout => _configuration.ConnectTimeout;
 
     /// <summary>
     /// The underlying connection for sending and receiving messages
@@ -93,9 +99,15 @@ internal abstract class ClientBase : IClientBase
         _disposable += _messages
             .Where(x => x.Type is MessageType.ConnectionReady)
             .Subscribe(_ => HandleConnectionReady());
+        // Subscribe synchronously (NOT SubscribeOn): _messages is a hot Publish().RefCount() stream
+        // whose source connects on the first (ConnectionReady) subscription in this ctor. Deferring
+        // this attach to the (potentially starved) thread pool opens a window where a response arriving
+        // before the attach is fanned out to zero response subscribers and silently lost — the request
+        // then hangs until its ResponseTimeout. Connect() runs strictly after this ctor, so a synchronous
+        // attach cannot miss any message. Handler work stays off the receive-loop thread because the
+        // request future's TaskCompletionSource completes with RunContinuationsAsynchronously.
         _disposable += _messages
             .Where(x => x.Type is MessageType.Response or MessageType.SubscriptionConfirm)
-            .SubscribeOn(TaskPoolScheduler.Default)
             .Subscribe(HandleResponseMessage);
         this.Trace("done");
     }
@@ -115,7 +127,10 @@ internal abstract class ClientBase : IClientBase
                 return _serializer.DeserializeData(typeof(TNotification), x.Data);
             })!
             .OfType<TNotification>()
-            .SubscribeOn(TaskPoolScheduler.Default);
+            // ObserveOn (NOT SubscribeOn): marshal notification delivery to the pool while attaching the
+            // subscription to the hot _messages stream synchronously. SubscribeOn would defer the attach
+            // to the pool, letting pushes that arrive in the gap be lost off the RefCount source.
+            .ObserveOn(TaskPoolScheduler.Default);
     }
 
     // // event
@@ -352,10 +367,14 @@ internal abstract class ClientBase : IClientBase
         where TResponse : notnull
     {
         var id = Guid.NewGuid();
-        var tcs = new TaskCompletionSource<object>();
+        // RunContinuationsAsynchronously: the response is dispatched on the transport receive-loop thread
+        // (HandleResponseMessage now runs synchronously there). Without this, TrySetResult would run the
+        // awaiting FetchRawAsync continuation inline on that thread, stalling further receives.
+        var tcs = new TaskCompletionSource<object>(TaskCreationOptions.RunContinuationsAsynchronously);
         using var cts = new CancellationTokenSource(_configuration.ResponseTimeout.ToTimeSpan());
-        // external token - operation canceled
-        ct.Register(() =>
+        // external token - operation canceled; dispose the registration when the request completes so
+        // callbacks don't accumulate on a long-lived, reused caller token
+        await using var ctRegistration = ct.Register(() =>
         {
             // if not arrived and not expired - cancel
             if (!tcs.Task.IsCompleted && !cts.IsCancellationRequested)

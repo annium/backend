@@ -61,8 +61,9 @@ internal class Coordinator : ICoordinator, ILogSubject
     /// Handles an incoming server connection by setting up its context and managing its lifecycle.
     /// </summary>
     /// <param name="connection">The server connection to handle.</param>
+    /// <param name="ct">The transport/server cancellation token linked into the connection lifetime.</param>
     /// <returns>A task representing the asynchronous connection handling operation.</returns>
-    public async Task HandleAsync(IServerConnection connection)
+    public async Task HandleAsync(IServerConnection connection, CancellationToken ct)
     {
         var cid = _connectionTracker.Track(connection);
         this.Trace("Start for {id}", cid);
@@ -70,7 +71,10 @@ internal class Coordinator : ICoordinator, ILogSubject
         await using var scope = _sp.CreateAsyncScope();
         var sp = scope.ServiceProvider;
         var ctx = sp.Resolve<ConnectionContext>();
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping);
+        // Link to BOTH the server lifetime (Stopping) and the transport/server token (ct). Without ct,
+        // a server shutdown that cancels its own token but hasn't yet run lifetimeManager.Stop() would
+        // drain in-flight connections whose push handlers never stop — deadlocking teardown.
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(_lifetimeManager.Stopping, ct);
         ctx.Init(cid, connection, cts);
 
         connection.OnDisconnected += status =>

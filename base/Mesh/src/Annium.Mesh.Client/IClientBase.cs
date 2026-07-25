@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Annium.Architecture.Base;
 using Annium.Data.Operations;
 using Annium.Logging;
+using NodaTime;
 
 namespace Annium.Mesh.Client;
 
@@ -12,6 +13,11 @@ namespace Annium.Mesh.Client;
 /// </summary>
 public interface IClientBase : ILogSubject
 {
+    /// <summary>
+    /// Gets the overall timeout for establishing the initial connection.
+    /// </summary>
+    Duration ConnectTimeout { get; }
+
     /// <summary>
     /// Creates an observable stream for listening to broadcast/push notifications of the specified type
     /// </summary>

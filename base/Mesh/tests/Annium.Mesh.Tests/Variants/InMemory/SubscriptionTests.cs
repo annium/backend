@@ -21,7 +21,7 @@ public class SubscriptionTests : SubscriptionTestsBase<Behavior>
     /// Tests subscription messaging.
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation.</returns>
-    [Fact]
+    [Fact(Skip = "subscription feature not wired (dark WIP): handlers commented out, body is a no-op")]
     public async Task Subscription()
     {
         this.Trace("start");

@@ -1,10 +1,6 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using Annium.Core.DependencyInjection;
-using Annium.Core.Runtime;
-using Annium.Logging.InMemory;
-using Annium.Logging.Shared;
 using Annium.Storage.Abstractions;
 using Annium.Storage.Tests.Lib;
 
@@ -28,16 +24,11 @@ public class StorageTest : StorageTestBase, IAsyncDisposable
     /// <returns>A configured file system storage instance.</returns>
     protected override IStorage GetStorage()
     {
-        var services = new ServiceContainer();
-        services.AddLogging();
-        services.AddTime().WithManagedTime().SetDefault();
         Directory.CreateDirectory(_directory);
-        services.AddFileSystemStorage("default", (_, _) => new Configuration { Directory = _directory }, true);
 
-        var provider = services.BuildServiceProvider();
-        provider.UseLogging(x => x.UseInMemory());
-
-        return provider.Resolve<IStorage>();
+        return TestServices.BuildStorage(services =>
+            services.AddFileSystemStorage("default", (_, _) => new Configuration { Directory = _directory }, true)
+        );
     }
 
     /// <summary>
@@ -46,6 +37,7 @@ public class StorageTest : StorageTestBase, IAsyncDisposable
     /// <returns>A completed ValueTask.</returns>
     public ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         Directory.Delete(_directory, true);
         return ValueTask.CompletedTask;
     }

@@ -69,6 +69,9 @@ public abstract class PushTestsBase<TBehavior> : TestBase<TBehavior>
                 var sample = new PushSample<TBehavior>(Get<ITestOutputHelper>());
                 try
                 {
+                    // manually-constructed TestBase subclass: xUnit does not drive its
+                    // IAsyncLifetime, so build its provider explicitly before use.
+                    await sample.InitializeAsync();
                     await sample.RunAsync();
                 }
                 finally

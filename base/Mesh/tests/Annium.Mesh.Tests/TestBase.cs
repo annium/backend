@@ -52,9 +52,15 @@ public abstract class TestBase<TBehavior> : TestBase, IAsyncDisposable
     /// Disposes the test by stopping the mesh server and cleaning up resources.
     /// </summary>
     /// <returns>A value task representing the asynchronous disposal.</returns>
-    public ValueTask DisposeAsync()
+    public override async ValueTask DisposeAsync()
     {
-        return _behavior.Value.DisposeAsync();
+        GC.SuppressFinalize(this);
+        // only dispose the behavior if it was actually materialized — accessing
+        // _behavior.Value here would otherwise run Get<TBehavior>() (and touch Provider)
+        // on an instance whose InitializeAsync never completed.
+        if (_behavior.IsValueCreated)
+            await _behavior.Value.DisposeAsync();
+        await base.DisposeAsync();
     }
 
     /// <summary>

@@ -18,5 +18,6 @@ public interface IBehavior : IAsyncDisposable
     /// <summary>
     /// Initializes behavior instance
     /// </summary>
+    /// <returns>A task that represents the asynchronous initialization.</returns>
     ValueTask InitializeAsync();
 }

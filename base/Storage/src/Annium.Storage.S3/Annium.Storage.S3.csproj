@@ -11,4 +11,7 @@
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" />
   </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Annium.Storage.S3.Tests" />
+  </ItemGroup>
 </Project>

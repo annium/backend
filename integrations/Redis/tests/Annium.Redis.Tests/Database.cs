@@ -1,12 +1,15 @@
+using System;
 using System.Threading.Tasks;
 using Testcontainers.Redis;
 
 namespace Annium.Redis.Tests;
 
 /// <summary>
-/// Test database setup for Redis integration tests using Testcontainers
+/// Test database setup for Redis integration tests using Testcontainers. Implements
+/// <see cref="IAsyncDisposable"/> so the started container is stopped and removed when the
+/// owning test provider is torn down, rather than lingering until the Ryuk reaper at process exit.
 /// </summary>
-public class Database
+public class Database : IAsyncDisposable
 {
     /// <summary>
     /// Gets the Redis configuration for test connections
@@ -34,5 +37,15 @@ public class Database
     {
         await _db.StartAsync();
         Config.Hosts = [new RedisHost(_db.Hostname, _db.GetMappedPublicPort(RedisBuilder.RedisPort))];
+    }
+
+    /// <summary>
+    /// Stops and removes the Redis test container.
+    /// </summary>
+    /// <returns>A value task that completes when the container has been disposed.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        await _db.DisposeAsync();
     }
 }

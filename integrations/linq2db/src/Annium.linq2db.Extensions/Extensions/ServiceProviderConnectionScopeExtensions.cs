@@ -1,5 +1,6 @@
 using System;
 using Annium.Core.DependencyInjection;
+using Annium.linq2db.Extensions.Internal.Extensions;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,16 +21,33 @@ public static class ServiceProviderConnectionScopeExtensions
     public static ConnectionScope<T> GetConnectionScope<T>(this IServiceProvider sp)
         where T : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new ConnectionScope<T>(true);
+        }
+
+        try
+        {
             var cn = scope.ServiceProvider.Resolve<T>();
 
             return new ConnectionScope<T>(scope, cn);
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new ConnectionScope<T>(true);
+        }
+        catch
+        {
+            // resolution failed after the scope was created — dispose it so the scope and any
+            // already-resolved scoped connection don't leak, then propagate
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -44,9 +62,18 @@ public static class ServiceProviderConnectionScopeExtensions
         where T1 : DataConnection
         where T2 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new ConnectionScope<T1, T2>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var cn2 = scope.ServiceProvider.Resolve<T2>();
 
@@ -54,7 +81,13 @@ public static class ServiceProviderConnectionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new ConnectionScope<T1, T2>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -71,9 +104,18 @@ public static class ServiceProviderConnectionScopeExtensions
         where T2 : DataConnection
         where T3 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new ConnectionScope<T1, T2, T3>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var cn2 = scope.ServiceProvider.Resolve<T2>();
             var cn3 = scope.ServiceProvider.Resolve<T3>();
@@ -82,7 +124,13 @@ public static class ServiceProviderConnectionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new ConnectionScope<T1, T2, T3>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -101,9 +149,18 @@ public static class ServiceProviderConnectionScopeExtensions
         where T3 : DataConnection
         where T4 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new ConnectionScope<T1, T2, T3, T4>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var cn2 = scope.ServiceProvider.Resolve<T2>();
             var cn3 = scope.ServiceProvider.Resolve<T3>();
@@ -113,7 +170,13 @@ public static class ServiceProviderConnectionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new ConnectionScope<T1, T2, T3, T4>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 }

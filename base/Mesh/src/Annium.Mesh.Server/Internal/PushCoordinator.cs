@@ -78,12 +78,16 @@ internal class PushCoordinator : ILogSubject
 
         var contextType = typeof(PushContext<>).MakeGenericType(route.MessageType);
         this.Trace<string>("create context {contextType}", contextType.FriendlyName());
-        var context = Activator.CreateInstance(contextType, _sender, actionKey, cid, cn, ct, Logger);
+        var context = Activator.CreateInstance(contextType, _sender, actionKey, cid, cn, ct, Logger).NotNull();
 
-        // execute and resolve result data
+        // execute and resolve result data; the context owns a started executor, so dispose it
+        // (draining pending sends) once the handler completes or throws
         this.Trace<string>("execute handler {handlerType}", route.HandlerType.FriendlyName());
-        var resultTask = route.HandleMethod.Invoke(handler, new[] { context, ct })!;
-        await (Task)resultTask;
+        await using ((IAsyncDisposable)context)
+        {
+            var resultTask = route.HandleMethod.Invoke(handler, [context, ct]).NotNull();
+            await (Task)resultTask;
+        }
 
         this.Trace("done");
     }

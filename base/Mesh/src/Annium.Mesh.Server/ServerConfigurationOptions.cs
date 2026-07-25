@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;
-using Annium.Mesh.Domain;
 using Annium.Mesh.Server.Internal.Routing;
 using Annium.Reflection;
 
@@ -98,10 +97,24 @@ public class ServerConfigurationOptions
     /// <param name="implementation">The handler implementation type.</param>
     private void RegisterHandler(ActionKey actionKey, Type implementation)
     {
-        if (RegisterRequestHandler(actionKey, implementation))
+        if (
+            RegisterRequestRoute(
+                actionKey,
+                implementation,
+                typeof(IRequestHandler<,>),
+                nameof(IRequestHandler<,>.HandleAsync)
+            )
+        )
             return;
 
-        if (RegisterRequestResponseHandler(actionKey, implementation))
+        if (
+            RegisterRequestRoute(
+                actionKey,
+                implementation,
+                typeof(IRequestResponseHandler<,,>),
+                nameof(IRequestResponseHandler<,,>.HandleAsync)
+            )
+        )
             return;
 
         if (RegisterPushHandler(actionKey, implementation))
@@ -113,51 +126,19 @@ public class ServerConfigurationOptions
     }
 
     /// <summary>
-    /// Attempts to register a request handler implementation.
+    /// Attempts to register a request or request-response handler implementation into the request routes.
     /// </summary>
     /// <param name="actionKey">The action key identifying the handler.</param>
     /// <param name="implementation">The handler implementation type.</param>
-    /// <returns>True if the handler was successfully registered as a request handler; otherwise, false.</returns>
-    private bool RegisterRequestHandler(ActionKey actionKey, Type implementation)
+    /// <param name="targetType">The handler interface to match (IRequestHandler&lt;,&gt; or IRequestResponseHandler&lt;,,&gt;).</param>
+    /// <param name="handleName">The name of the handle method on the matched interface.</param>
+    /// <returns>True if the handler was successfully registered as a request route; otherwise, false.</returns>
+    private bool RegisterRequestRoute(ActionKey actionKey, Type implementation, Type targetType, string handleName)
     {
-        if (
-            !TryResolveHandler(
-                implementation,
-                typeof(IRequestHandler<,>),
-                nameof(IRequestHandler<,>.HandleAsync),
-                out var info
-            )
-        )
+        if (!TryResolveHandler(implementation, targetType, handleName, out var info))
             return false;
 
-        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<>.Result))!;
-        _routeStore.RequestRoutes.Register(
-            actionKey,
-            new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)
-        );
-
-        return true;
-    }
-
-    /// <summary>
-    /// Attempts to register a request-response handler implementation.
-    /// </summary>
-    /// <param name="actionKey">The action key identifying the handler.</param>
-    /// <param name="implementation">The handler implementation type.</param>
-    /// <returns>True if the handler was successfully registered as a request-response handler; otherwise, false.</returns>
-    private bool RegisterRequestResponseHandler(ActionKey actionKey, Type implementation)
-    {
-        if (
-            !TryResolveHandler(
-                implementation,
-                typeof(IRequestResponseHandler<,,>),
-                nameof(IRequestResponseHandler<,,>.HandleAsync),
-                out var info
-            )
-        )
-            return false;
-
-        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<>.Result))!;
+        var resultProperty = info.Handle.ReturnType.GetProperty(nameof(Task<>.Result)).NotNull();
         _routeStore.RequestRoutes.Register(
             actionKey,
             new RequestRoute(implementation, info.Handle, info.Args[1], resultProperty)

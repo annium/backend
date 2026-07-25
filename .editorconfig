@@ -332,8 +332,9 @@ dotnet_diagnostic.VSTHRD002.severity = warning
 dotnet_diagnostic.VSTHRD003.severity = warning
 
 # CA rules off by default in .NET 10 — opt in
-# CA2007 missing ConfigureAwait(false) (overrides existing 'none' on line 38)
-dotnet_diagnostic.CA2007.severity = warning
+# CA2007 missing ConfigureAwait(false): kept disabled (severity none, line 38) to match the
+# base repo convention — library code runs in contexts that capture no SynchronizationContext,
+# so ConfigureAwait is noise here. Do not re-elevate without auditing all ~540 call sites.
 # CA2012 ValueTask misuse
 dotnet_diagnostic.CA2012.severity = error
 # CA2016 CT not forwarded

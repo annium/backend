@@ -1,4 +1,6 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Core.Runtime;
 using Annium.Mesh.Transport.WebSockets;
@@ -23,9 +25,12 @@ public class TestServicePack : ServicePackBase
     /// </summary>
     /// <param name="container">The service container to register services with</param>
     /// <param name="provider">The service provider for dependency resolution</param>
-    public override void Register(IServiceContainer container, IServiceProvider provider)
+    /// <param name="ct">The cancellation token.</param>
+    /// <returns>A task that represents the asynchronous registration.</returns>
+    public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddTime().WithRelativeTime().SetDefault();
         container.AddMeshWebSocketsClientTransport(_ => new ClientTransportConfiguration());
+        return Task.CompletedTask;
     }
 }

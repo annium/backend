@@ -7,9 +7,11 @@ using Testcontainers.PostgreSql;
 namespace Annium.linq2db.PostgreSql.Tests.Db;
 
 /// <summary>
-/// Test database setup for PostgreSQL integration tests using Testcontainers
+/// Test database setup for PostgreSQL integration tests using Testcontainers. Implements
+/// <see cref="IAsyncDisposable"/> so the started container is stopped and removed when the
+/// owning test provider is torn down, rather than lingering until the Ryuk reaper at process exit.
 /// </summary>
-public class Database
+public class Database : IAsyncDisposable
 {
     /// <summary>
     /// Gets the PostgreSQL configuration for test connections
@@ -49,14 +51,40 @@ public class Database
         await _db.StartAsync();
         Config.Host = _db.Hostname;
         Config.Port = _db.GetMappedPublicPort(PostgreSqlBuilder.PostgreSqlPort);
-        var result = DeployChanges
-            .To.PostgresqlDatabase(_db.GetConnectionString())
-            .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
-            .WithTransactionPerScript()
-            .LogToConsole()
-            .Build()
-            .PerformUpgrade();
-        if (!result.Successful)
-            throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+
+        // The container readiness probe can pass while PostgreSQL is still finishing its first-boot
+        // startup (it briefly accepts, then drops, connections), so under load the first migration
+        // connection can fail mid-handshake ("Attempted to read past the end of the stream"). Retry the
+        // upgrade — DbUp tracks executed scripts and the failure occurs at connection open before any
+        // script runs, so a retry is idempotent.
+        const int maxAttempts = 10;
+        for (var attempt = 1; ; attempt++)
+        {
+            var result = DeployChanges
+                .To.PostgresqlDatabase(_db.GetConnectionString())
+                .WithScriptsEmbeddedInAssembly(Assembly.GetExecutingAssembly(), x => x.Contains(".Migrations."))
+                .WithTransactionPerScript()
+                .LogToConsole()
+                .Build()
+                .PerformUpgrade();
+
+            if (result.Successful)
+                return;
+
+            if (attempt >= maxAttempts)
+                throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+
+            await Task.Delay(500);
+        }
+    }
+
+    /// <summary>
+    /// Stops and removes the PostgreSQL test container.
+    /// </summary>
+    /// <returns>A value task that completes when the container has been disposed.</returns>
+    public async ValueTask DisposeAsync()
+    {
+        GC.SuppressFinalize(this);
+        await _db.DisposeAsync();
     }
 }

@@ -257,7 +257,7 @@ internal class ConnectionHandler : IAsyncDisposable, ILogSubject
         catch (Exception e)
         {
             this.Warn("Failed to parse msg of size {size} bytes", raw.Length);
-            this.Warn(e.ToString());
+            this.Warn("{e}", e);
             return default;
         }
     }

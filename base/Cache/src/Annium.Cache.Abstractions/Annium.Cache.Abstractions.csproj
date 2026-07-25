@@ -7,5 +7,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Annium.Core.DependencyInjection" />
+    <PackageReference Include="NodaTime" />
   </ItemGroup>
 </Project>

@@ -52,6 +52,22 @@ test:
     @echo "=== $0 ==="
     dotnet test -c Release --no-build --nologo --logger "trx;LogFilePrefix=test-results.trx"
 
+# load (MessageBus throughput / zero-loss / ordering harness; needs Docker; NOT part of CI)
+
+load-kafka:
+    @echo "=== $0 ==="
+    dotnet run -c Release --project base/MessageBus/tests/Annium.MessageBus.Kafka.Load
+
+load-rabbitmq:
+    @echo "=== $0 ==="
+    dotnet run -c Release --project base/MessageBus/tests/Annium.MessageBus.RabbitMq.Load
+
+load-nats:
+    @echo "=== $0 ==="
+    dotnet run -c Release --project base/MessageBus/tests/Annium.MessageBus.Nats.Load
+
+load: load-kafka load-rabbitmq load-nats
+
 pack:
     #!/usr/bin/env bash
     set -e
@@ -101,6 +117,7 @@ ci-merge-request-short:
     just ensure-no-changes
     just clean
     just build
+    just docs-lint
 
 ci-merge-request-full:
     #!/usr/bin/env bash
@@ -111,6 +128,7 @@ ci-merge-request-full:
     just ensure-no-changes
     just clean
     just build
+    just docs-lint
     just test
 
 ci-release apiKey repository githubToken:

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Annium.Core.DependencyInjection;
 using Annium.Logging;
@@ -28,7 +29,7 @@ public class Behavior : IBehavior, ILogSubject
         container.AddMeshWebSocketsServerTransport(_ => new ServerTransportConfiguration());
         container.AddWebServerMeshHandler();
 
-        container.AddTestServerClient(x => x.WithResponseTimeout(6000));
+        container.AddTestServerClient(x => x.WithResponseTimeout(30));
     }
 
     /// <summary>
@@ -36,6 +37,9 @@ public class Behavior : IBehavior, ILogSubject
     /// </summary>
     public ILogger Logger { get; }
 
+    /// <summary>
+    /// The managed Mesh WebSocket server instance used by this test behavior.
+    /// </summary>
     private readonly IServer _server;
 
     /// <summary>
@@ -49,13 +53,22 @@ public class Behavior : IBehavior, ILogSubject
         _server = server;
     }
 
+    /// <summary>
+    /// Performs no additional setup, as the WebSocket server is started during service registration.
+    /// </summary>
+    /// <returns>A completed <see cref="ValueTask"/>.</returns>
     public ValueTask InitializeAsync()
     {
         return ValueTask.CompletedTask;
     }
 
+    /// <summary>
+    /// Suppresses finalization and disposes the underlying WebSocket server, releasing all active connections and listeners.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> that completes when the server has been fully disposed.</returns>
     public ValueTask DisposeAsync()
     {
+        GC.SuppressFinalize(this);
         return _server.DisposeAsync();
     }
 }
