@@ -21,7 +21,7 @@ public interface IRedisStorage
     /// <summary>
     /// Retrieves all keys matching the specified pattern.
     /// </summary>
-    /// <param name="pattern">The pattern to match keys against (empty string matches all keys).</param>
+    /// <param name="pattern">The pattern to match keys against (an empty or whitespace-only string matches all keys).</param>
     /// <param name="ct">Cancellation token observed at the connection gate and during keyspace enumeration.</param>
     /// <returns>A collection of matching keys.</returns>
     Task<IReadOnlyCollection<string>> GetKeysAsync(string pattern = "", CancellationToken ct = default);
