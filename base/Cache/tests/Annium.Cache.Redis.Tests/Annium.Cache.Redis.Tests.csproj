@@ -5,14 +5,19 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ThreadPoolMinThreads>256</ThreadPoolMinThreads>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="../../../../integrations/Redis/src/Annium.Redis/Annium.Redis.csproj" />
     <ProjectReference Include="../../src/Annium.Cache.Redis/Annium.Cache.Redis.csproj" />
     <ProjectReference Include="../Annium.Cache.Tests.Lib/Annium.Cache.Tests.Lib.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Annium.Serialization.Json" />
+    <PackageReference Include="Annium.Testing" />
     <PackageReference Include="coverlet.collector" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Testcontainers.Redis" />
     <PackageReference Include="xunit.runner.visualstudio" />
     <PackageReference Include="xunit.v3" />
   </ItemGroup>

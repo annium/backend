@@ -377,10 +377,10 @@ public class CacheTestsBase : TestBase
         timeManager.SetNow(timeProvider.Now + Duration.FromSeconds(30));
         var third = await cache.GetOrCreateAsync(key, GetPageAsync, options, ct);
 
-        // assert: the item survived via prolongation — factory ran exactly once, same instance throughout
+        // assert: the item survived via prolongation — factory ran exactly once, same cached entry throughout
         _factoryCounter.Is(1);
-        ReferenceEquals(second, first).IsTrue();
-        ReferenceEquals(third, first).IsTrue();
+        AssertCachedInstance(second, first);
+        AssertCachedInstance(third, first);
     }
 
     /// <summary>
@@ -411,16 +411,18 @@ public class CacheTestsBase : TestBase
         timeManager.SetNow(timeProvider.Now + Duration.FromSeconds(30));
         var third = await cache.GetOrCreateAsync(key, GetPageAsync, shortOptions, ct);
 
-        // assert: not evicted by the later caller's 1s window — factory ran once, same instance
+        // assert: not evicted by the later caller's 1s window — factory ran once, same cached entry
         _factoryCounter.Is(1);
-        ReferenceEquals(second, first).IsTrue();
-        ReferenceEquals(third, first).IsTrue();
+        AssertCachedInstance(second, first);
+        AssertCachedInstance(third, first);
     }
 
     /// <summary>
     /// Verifies the post-factory expiry guard: when a slow factory completes AFTER its entry has expired,
     /// the cache discards the result (TrySetCanceled) and evicts the entry so a later call recreates it.
     /// </summary>
+    /// <remarks>⚠ InMemory-only: asserts the in-process TCS/executor expiry-race mechanics; not applicable to a
+    /// distributed backend (Redis) whose expiry is server-side and single-flight is in-process. Do NOT wire as a Redis [Fact].</remarks>
     /// <returns>A task that represents the asynchronous test operation</returns>
     protected async Task GetOrCreateAsync_FactoryCompletesAfterExpiry_CancelsAndEvicts_Base()
     {
@@ -583,6 +585,8 @@ public class CacheTestsBase : TestBase
     /// Verifies the expiry-path eviction is identity-guarded: a slow factory that completes AFTER its entry
     /// expired AND after a replacement entry was created for the same key must NOT evict the replacement.
     /// </summary>
+    /// <remarks>⚠ InMemory-only: asserts identity-guarded eviction of an in-process entry; not applicable to a
+    /// distributed backend (Redis). Do NOT wire as a Redis [Fact].</remarks>
     /// <returns>A task that represents the asynchronous test operation</returns>
     protected async Task GetOrCreateAsync_ExpiredFactoryAfterReplacement_ReplacementSurvives_Base()
     {
@@ -630,6 +634,8 @@ public class CacheTestsBase : TestBase
     /// Verifies the exception-path eviction is identity-guarded: a factory that throws AFTER its entry was
     /// removed and a replacement created for the same key must NOT evict the replacement.
     /// </summary>
+    /// <remarks>⚠ InMemory-only: asserts identity-guarded eviction of an in-process entry; not applicable to a
+    /// distributed backend (Redis). Do NOT wire as a Redis [Fact].</remarks>
     /// <returns>A task that represents the asynchronous test operation</returns>
     protected async Task GetOrCreateAsync_ThrowingFactoryAfterReplacement_ReplacementSurvives_Base()
     {
@@ -694,7 +700,19 @@ public class CacheTestsBase : TestBase
     }
 
     /// <summary>
-    /// Validates that the cached items meet expected criteria including factory call count, item count, and reference equality.
+    /// Asserts that two cached items returned for the same key represent the same cached entry.
+    /// Default: value-equality — a distributed backend (Redis) deserializes a fresh instance per read,
+    /// so identity cannot hold. The InMemory suite overrides this with <c>ReferenceEquals</c> because its
+    /// contract is one shared instance per key.
+    /// </summary>
+    /// <typeparam name="T">The reference type of the cached items.</typeparam>
+    /// <param name="actual">The item under test.</param>
+    /// <param name="expected">The reference item to compare against.</param>
+    protected virtual void AssertCachedInstance<T>(T actual, T expected)
+        where T : class => actual.Is(expected);
+
+    /// <summary>
+    /// Validates that the cached items meet expected criteria including factory call count, item count, and equality.
     /// </summary>
     /// <param name="counter">The expected number of times the factory method should have been called.</param>
     /// <param name="key">The cache key used for item creation.</param>
@@ -706,7 +724,7 @@ public class CacheTestsBase : TestBase
         items.Has(count);
         items[0].Is(new Page(key));
         foreach (var item in items)
-            ReferenceEquals(item, items[0]).IsTrue();
+            AssertCachedInstance(item, items[0]);
     }
 
     /// <summary>
@@ -730,12 +748,18 @@ public class CacheTestsBase : TestBase
         /// <summary>
         /// Gets the title of the page.
         /// </summary>
-        public string Title { get; }
+        public string Title { get; init; } = string.Empty;
 
         /// <summary>
         /// Gets the content of the page.
         /// </summary>
-        public string Content { get; }
+        public string Content { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Page"/> record. Parameterless ctor enables
+        /// serializer round-tripping (Redis) via the init properties.
+        /// </summary>
+        public Page() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Page"/> record.
