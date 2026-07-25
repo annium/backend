@@ -33,11 +33,11 @@ public abstract class GroupFanoutConformanceTests<TTransport> : MessageBusConfor
         var b = new List<int>();
 
         await SubscribeAsync<Order>(
-            new SubscriptionOptions { Subject = "orders.created", Group = "workers" },
+            new SubscriptionOptions { Subject = "orders.created", Group = Group },
             (ctx, _) => Collect(a, ctx)
         );
         await SubscribeAsync<Order>(
-            new SubscriptionOptions { Subject = "orders.created", Group = "workers" },
+            new SubscriptionOptions { Subject = "orders.created", Group = Group },
             (ctx, _) => Collect(b, ctx)
         );
 
@@ -98,11 +98,11 @@ public abstract class GroupFanoutConformanceTests<TTransport> : MessageBusConfor
         var b = new List<int>();
 
         await SubscribeAsync<Order>(
-            new SubscriptionOptions { Subject = "orders.a", Group = "workers" },
+            new SubscriptionOptions { Subject = "orders.a", Group = Group },
             (ctx, _) => Collect(a, ctx)
         );
         await SubscribeAsync<Order>(
-            new SubscriptionOptions { Subject = "orders.b", Group = "workers" },
+            new SubscriptionOptions { Subject = "orders.b", Group = Group },
             (ctx, _) => Collect(b, ctx)
         );
 
@@ -131,7 +131,7 @@ public abstract class GroupFanoutConformanceTests<TTransport> : MessageBusConfor
         const int count = 8;
         var a = new List<int>();
         var b = new List<int>();
-        var options = new SubscriptionOptions { Subject = "orders.created", Group = "workers" };
+        var options = new SubscriptionOptions { Subject = "orders.created", Group = Group };
 
         var subA = await SubscribeAsync<Order>(options, (ctx, _) => Collect(a, ctx));
         await SubscribeAsync<Order>(options, (ctx, _) => Collect(b, ctx));

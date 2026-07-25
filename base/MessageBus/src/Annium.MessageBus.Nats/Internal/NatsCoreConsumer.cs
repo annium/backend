@@ -174,6 +174,12 @@ internal sealed class NatsCoreConsumer : ITransportConsumer, ILogSubject
             try
             {
                 await sub.DisposeAsync();
+
+                // Round-trip a ping so the UNSUB frame is processed server-side before dispose returns; the server then
+                // stops routing to this member — otherwise a queue group would keep handing messages to a subscription
+                // that is already gone, and at-most-once drops them.
+                var connection = await _connection.GetConnectionAsync(CancellationToken.None);
+                await connection.PingAsync();
             }
             catch (Exception e)
             {
