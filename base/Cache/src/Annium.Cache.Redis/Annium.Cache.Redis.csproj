@@ -7,5 +7,11 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj" />
+    <ProjectReference Include="../../../../integrations/Redis/src/Annium.Redis/Annium.Redis.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Annium.Core.DependencyInjection" />
+    <PackageReference Include="Annium.Core.Runtime" />
+    <PackageReference Include="Annium.Serialization.Abstractions" />
   </ItemGroup>
 </Project>
