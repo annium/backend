@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using Annium.Cache.Tests.Lib;
+using Annium.Testing;
 using Xunit;
 
 namespace Annium.Cache.InMemory.Tests;
@@ -18,6 +19,14 @@ public class CacheTests : CacheTestsBase
     {
         RegisterServicePack<ServicePack>();
     }
+
+    /// <summary>
+    /// InMemory contract: one shared instance per key — assert strict reference identity.
+    /// </summary>
+    /// <typeparam name="T">The reference type of the cached items.</typeparam>
+    /// <param name="actual">The item under test.</param>
+    /// <param name="expected">The reference item to compare against.</param>
+    protected override void AssertCachedInstance<T>(T actual, T expected) => ReferenceEquals(actual, expected).IsTrue();
 
     /// <summary>
     /// Tests the default behavior of GetOrCreateAsync for the in-memory cache implementation.
