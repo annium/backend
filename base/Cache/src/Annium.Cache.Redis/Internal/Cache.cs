@@ -137,6 +137,15 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// Runs the factory for the single-flight winner detached from any caller, always settling the shared
     /// task and unpoisoning the in-flight slot so a later call re-reads / re-creates.
     /// </summary>
+    /// <typeparam name="TContext">The type of the context object passed to the factory.</typeparam>
+    /// <param name="k">The prefixed Redis key.</param>
+    /// <param name="key">The cache key.</param>
+    /// <param name="factory">Factory function to create the value.</param>
+    /// <param name="context">Context object passed to the factory function.</param>
+    /// <param name="options">Cache options including expiration settings.</param>
+    /// <param name="flight">The in-flight holder for this key (carries the shared task and the invalidation flag).</param>
+    /// <param name="tcs">The task completion source that all callers await.</param>
+    /// <returns>A task that completes when the factory run has settled the shared task.</returns>
     private async Task RunFactoryAsync<TContext>(
         string k,
         TKey key,
@@ -231,6 +240,14 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// The single-flight winner's work: re-check the store, invoke the factory, and write the value with
     /// its expiry envelope. The factory runs detached from any single caller's cancellation.
     /// </summary>
+    /// <typeparam name="TContext">The type of the context object passed to the factory.</typeparam>
+    /// <param name="k">The prefixed Redis key.</param>
+    /// <param name="key">The cache key.</param>
+    /// <param name="factory">Factory function to create the value.</param>
+    /// <param name="context">Context object passed to the factory function.</param>
+    /// <param name="options">Cache options including expiration settings.</param>
+    /// <param name="flight">The in-flight holder; its invalidation flag suppresses the write-back after a concurrent remove.</param>
+    /// <returns>A task that resolves to the cached or newly created value.</returns>
     private async Task<TValue> CreateAsync<TContext>(
         string k,
         TKey key,
