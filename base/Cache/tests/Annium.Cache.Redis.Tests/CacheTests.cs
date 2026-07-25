@@ -218,5 +218,55 @@ public class CacheTests : CacheTestsBase
         await GetOrCreateAsync_FirstWriterWins_LaterCallerOptionsIgnored_Base();
     }
 
-    // ── Deferred: poison/cancel/drain in-flight grани (Task 5) ───────────────────────────
+    // ── Single-flight edges: poison / cancel / drain (Task 5) ────────────────────────────
+
+    /// <summary>
+    /// Verifies a factory exception surfaces to the awaiting caller and the slot is unpoisoned.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_FactoryThrows_PropagatesAndUnpoisons()
+    {
+        await GetOrCreateAsync_FactoryThrows_PropagatesAndUnpoisons_Base();
+    }
+
+    /// <summary>
+    /// Verifies all concurrent callers observe the deduplicated factory exception (no hang).
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_FactoryThrows_ConcurrentCallersAllSeeException()
+    {
+        await GetOrCreateAsync_FactoryThrows_ConcurrentCallersAllSeeException_Base();
+    }
+
+    /// <summary>
+    /// Verifies one caller's cancellation does not fault the shared task for other awaiters.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_CancelDuringFactory_OneAwaiterCancelsOthersContinue()
+    {
+        await GetOrCreateAsync_CancelDuringFactory_OneAwaiterCancelsOthersContinue_Base();
+    }
+
+    /// <summary>
+    /// Verifies RemoveAsync during an in-flight factory delivers the value then re-invokes on the next call.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task RemoveAsync_WhileFactoryInFlight_CallerGetsValueThenReinvokes()
+    {
+        await RemoveAsync_WhileFactoryInFlight_CallerGetsValueThenReinvokes_Base();
+    }
+
+    /// <summary>
+    /// Verifies disposing while a factory is in-flight drains cleanly and the caller still completes.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task DisposeAsync_WhileFactoryInFlight_DrainsAndCallerCompletes()
+    {
+        await DisposeAsync_WhileFactoryInFlight_DrainsAndCallerCompletes_Base();
+    }
 }

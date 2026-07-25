@@ -6,8 +6,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="../Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj" />
     <ProjectReference Include="../../../../integrations/Redis/src/Annium.Redis/Annium.Redis.csproj" />
+    <ProjectReference Include="../Annium.Cache.Abstractions/Annium.Cache.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Annium.Core.DependencyInjection" />

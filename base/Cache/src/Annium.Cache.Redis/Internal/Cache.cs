@@ -58,7 +58,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// <summary>
     /// In-process single-flight map: concurrent callers for the same key share one factory run.
     /// </summary>
-    private readonly ConcurrentDictionary<string, Task<TValue>> _inflight = new();
+    private readonly ConcurrentDictionary<string, Flight> _inflight = new();
 
     /// <summary>
     /// Disposal flag that ensures <see cref="DisposeAsync"/> is idempotent (0 = live, 1 = disposed).
@@ -112,38 +112,56 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
 
         var k = Key(key);
 
-        // fast path: return a live stored value without entering single-flight
-        var (hit, value) = await ReadLiveAsync(k, ct);
-        if (hit)
-            return value;
-
-        // miss → in-process single-flight: the caller that installs the TCS runs the factory,
-        // everyone else awaits the same task (per-caller cancellation via WaitAsync).
+        // in-process single-flight: install the shared Flight SYNCHRONOUSLY (before any await) so a
+        // concurrent RemoveAsync deterministically observes an in-flight creation and can invalidate it.
+        // The caller that installed it runs the read+factory DETACHED (so its own cancellation doesn't
+        // block the shared work); every caller — winner and losers alike — awaits the shared task via
+        // WaitAsync, observing per-caller cancellation. The read (hit / cross-process / sliding refresh)
+        // happens inside the winner's CreateAsync, so a hit still avoids invoking the factory.
         var tcs = new TaskCompletionSource<TValue>(TaskCreationOptions.RunContinuationsAsynchronously);
-        var task = _inflight.GetOrAdd(k, tcs.Task);
-        if (task == tcs.Task)
+        var flight = new Flight { Task = tcs.Task };
+        var existing = _inflight.GetOrAdd(k, flight);
+        if (existing == flight)
         {
-            try
-            {
-                tcs.TrySetResult(await CreateAsync(k, key, factory, context, options));
-            }
-            catch (Exception ex)
-            {
-                this.Trace("Factory failed for {key}", key);
-                this.Error(ex);
-                tcs.TrySetException(ex);
-            }
-            finally
-            {
-                // unpoison: the shared task is settled, so a later call re-reads / re-creates
-                _inflight.TryRemove(new KeyValuePair<string, Task<TValue>>(k, tcs.Task));
-            }
+            // fire-and-forget: RunFactoryAsync always settles the tcs, so no exception is unobserved.
+            _ = RunFactoryAsync(k, key, factory, context, options, flight, tcs);
         }
 
-        // VSTHRD003: `task` is this cache's own single-flight task (installed above), not a foreign one.
+        // VSTHRD003: the shared task is this cache's own single-flight task, not a foreign one.
 #pragma warning disable VSTHRD003
-        return await task.WaitAsync(ct);
+        return await existing.Task.WaitAsync(ct);
 #pragma warning restore VSTHRD003
+    }
+
+    /// <summary>
+    /// Runs the factory for the single-flight winner detached from any caller, always settling the shared
+    /// task and unpoisoning the in-flight slot so a later call re-reads / re-creates.
+    /// </summary>
+    private async Task RunFactoryAsync<TContext>(
+        string k,
+        TKey key,
+        Func<TKey, TContext, CancellationToken, ValueTask<TValue>> factory,
+        TContext context,
+        CacheOptions options,
+        Flight flight,
+        TaskCompletionSource<TValue> tcs
+    )
+        where TContext : notnull
+    {
+        try
+        {
+            tcs.TrySetResult(await CreateAsync(k, key, factory, context, options, flight));
+        }
+        catch (Exception ex)
+        {
+            this.Trace("Factory failed for {key}", key);
+            this.Error(ex);
+            tcs.TrySetException(ex);
+        }
+        finally
+        {
+            _inflight.TryRemove(new KeyValuePair<string, Flight>(k, flight));
+        }
     }
 
     /// <summary>
@@ -157,7 +175,14 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
         ct.ThrowIfCancellationRequested();
 
-        await _storage.DeleteAsync(Key(key), ct);
+        var k = Key(key);
+
+        // invalidate any in-flight creation for this key so its (post-factory) write is suppressed —
+        // a remove during creation must purge the entry, not race a stale write back in.
+        if (_inflight.TryGetValue(k, out var flight))
+            flight.Invalidated = true;
+
+        await _storage.DeleteAsync(k, ct);
     }
 
     /// <summary>
@@ -211,17 +236,24 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
         TKey key,
         Func<TKey, TContext, CancellationToken, ValueTask<TValue>> factory,
         TContext context,
-        CacheOptions options
+        CacheOptions options,
+        Flight flight
     )
         where TContext : notnull
     {
-        // double-check: another process may have written between our fast-path read and here
+        // read: return a live stored value (own earlier write, a cross-process write, or a sliding hit
+        // which ReadLiveAsync also refreshes) without invoking the factory.
         var (hit, value) = await ReadLiveAsync(k, CancellationToken.None);
         if (hit)
             return value;
 
         this.Trace("Create item for {key}", key);
         value = await factory(key, context, CancellationToken.None);
+
+        // A RemoveAsync that ran while the factory was in flight invalidated this creation — return the
+        // produced value to the awaiting callers but do NOT write it back, so the key stays purged.
+        if (flight.Invalidated)
+            return value;
 
         var now = _timeProvider.Now;
         var expiresAt = options.GetExpiresAt(now);
@@ -240,7 +272,29 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
 
         await _storage.SetAsync(k, _serializer.Serialize(envelope), ttl, CancellationToken.None);
 
+        // a RemoveAsync that landed during the write (after the pre-write check above, before the SET
+        // completed) must still win — delete the just-written entry so a concurrent remove is not lost.
+        if (flight.Invalidated)
+            await _storage.DeleteAsync(k, CancellationToken.None);
+
         return value;
+    }
+
+    /// <summary>
+    /// A single in-flight factory run for a key. Carries the shared task all callers await, plus an
+    /// invalidation flag set by <see cref="RemoveAsync"/> to suppress a post-factory write-back.
+    /// </summary>
+    private sealed class Flight
+    {
+        /// <summary>
+        /// Gets the shared task that resolves to the created value (or faults with the factory's exception).
+        /// </summary>
+        public required Task<TValue> Task { get; init; }
+
+        /// <summary>
+        /// Whether a concurrent remove invalidated this creation; when set, the winner skips the write-back.
+        /// </summary>
+        public volatile bool Invalidated;
     }
 
     /// <summary>
