@@ -748,12 +748,18 @@ public class CacheTestsBase : TestBase
         /// <summary>
         /// Gets the title of the page.
         /// </summary>
-        public string Title { get; }
+        public string Title { get; init; } = string.Empty;
 
         /// <summary>
         /// Gets the content of the page.
         /// </summary>
-        public string Content { get; }
+        public string Content { get; init; } = string.Empty;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Page"/> record. Parameterless ctor enables
+        /// serializer round-tripping (Redis) via the init properties.
+        /// </summary>
+        public Page() { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Page"/> record.
