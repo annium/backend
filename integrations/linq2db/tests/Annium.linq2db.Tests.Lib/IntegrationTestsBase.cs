@@ -60,7 +60,6 @@ public class IntegrationTestsBase : TestBase
             .AsQueryable()
             .SingleAsync(x => x.Name == companyName);
         company.Name.Is(companyName);
-        // company.CreatedAt.Is(createdAt);
         company.Metadata.Is(metadata);
         company.Employees.Has(2);
         // chief

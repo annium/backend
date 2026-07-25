@@ -17,7 +17,7 @@ internal static class SqlSetExpressionsExtensions
     public static SqlSetExpression? FindField(this IEnumerable<SqlSetExpression> expressions, SqlField field)
     {
         foreach (var expression in expressions)
-            if (expression.Column is SqlField f && f != null! && f.PhysicalName == field.PhysicalName)
+            if (expression.Column is SqlField f && f.PhysicalName == field.PhysicalName)
                 return expression;
 
         return null;

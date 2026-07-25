@@ -81,6 +81,7 @@ public static class MappingSchemaExtensionsBase
     /// <param name="schema">The mapping schema to configure.</param>
     /// <param name="sp">The service provider containing entity configurations.</param>
     /// <returns>The configured mapping schema with all entity configurations applied.</returns>
+    /// <exception cref="InvalidOperationException">Thrown when a registered configuration doesn't implement <see cref="IEntityConfiguration{TEntity}"/>.</exception>
     public static MappingSchema ApplyConfigurations(this MappingSchema schema, IServiceProvider sp)
     {
         var entityMappingBuilderFactory = typeof(FluentMappingBuilder).GetMethod(nameof(FluentMappingBuilder.Entity))!;
