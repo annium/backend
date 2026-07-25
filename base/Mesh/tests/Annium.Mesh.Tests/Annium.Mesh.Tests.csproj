@@ -5,6 +5,7 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <ThreadPoolMinThreads>256</ThreadPoolMinThreads>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../../../Mesh/src/Annium.Mesh.Client/Annium.Mesh.Client.csproj" />
