@@ -69,8 +69,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     )
         where TContext : notnull
     {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
-        ct.ThrowIfCancellationRequested();
+        EnsureUsable(ct);
 
         var entry = GetOrCreateEntry(key, factory, context, options);
         // VSTHRD003: Tcs.Task is the cache's own shared per-key work, not a foreign task; awaiting it
@@ -88,13 +87,22 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// <returns>A value task that represents the asynchronous remove operation</returns>
     public ValueTask RemoveAsync(TKey key, CancellationToken ct = default)
     {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
-        ct.ThrowIfCancellationRequested();
+        EnsureUsable(ct);
 
         lock (_data)
             _data.Remove(key);
 
         return ValueTask.CompletedTask;
+    }
+
+    /// <summary>
+    /// Throws if the cache is disposed or the caller's token is already cancelled.
+    /// </summary>
+    /// <param name="ct">The caller's cancellation token.</param>
+    private void EnsureUsable(CancellationToken ct)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        ct.ThrowIfCancellationRequested();
     }
 
     /// <summary>

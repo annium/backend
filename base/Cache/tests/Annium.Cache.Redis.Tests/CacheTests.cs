@@ -59,7 +59,7 @@ public class CacheTests : CacheTestsBase
         var cache = Get<ICache<Guid, string>>();
         var storage = Get<IRedisStorage>();
         var key = Guid.NewGuid();
-        var prefixed = $"test:{key}";
+        var prefixed = RedisTestKeys.Prefixed<string>(key);
 
         await storage.SetAsync(prefixed, "v", ct: ct);
         (await storage.GetAsync(prefixed, ct)).IsNotDefault();

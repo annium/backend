@@ -107,8 +107,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     )
         where TContext : notnull
     {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
-        ct.ThrowIfCancellationRequested();
+        EnsureUsable(ct);
 
         var k = Key(key);
 
@@ -181,8 +180,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// <returns>A value task that represents the asynchronous remove operation.</returns>
     public async ValueTask RemoveAsync(TKey key, CancellationToken ct = default)
     {
-        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
-        ct.ThrowIfCancellationRequested();
+        EnsureUsable(ct);
 
         var k = Key(key);
 
@@ -208,11 +206,15 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
 
     /// <summary>
     /// Reads the stored entry for a key and returns it only if it is logically live (not past its deadline).
+    /// On a sliding hit it prolongs the entry; if a concurrent <see cref="RemoveAsync"/> invalidated this
+    /// in-flight creation while the prolongation write was in flight, the refreshed entry is compensating-deleted
+    /// so the remove still wins (symmetric with the post-write guard in <see cref="CreateAsync"/>).
     /// </summary>
     /// <param name="k">The prefixed Redis key.</param>
+    /// <param name="flight">The in-flight holder; its invalidation flag suppresses a sliding-refresh resurrection after a concurrent remove.</param>
     /// <param name="ct">Cancellation token.</param>
     /// <returns>A tuple of (hit, value); <c>hit</c> is false on a missing or logically-expired entry.</returns>
-    private async Task<(bool Hit, TValue Value)> ReadLiveAsync(string k, CancellationToken ct)
+    private async Task<(bool Hit, TValue Value)> ReadLiveAsync(string k, Flight flight, CancellationToken ct)
     {
         var raw = await _storage.GetAsync(k, ct);
         if (raw is null)
@@ -231,6 +233,11 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
             var lifetime = Duration.FromMilliseconds(lifetimeMs);
             var refreshed = env with { ExpiresAtMs = (now + lifetime).ToUnixTimeMilliseconds() };
             await _storage.SetAsync(k, _serializer.Serialize(refreshed), lifetime, ct);
+
+            // a RemoveAsync that landed during the refresh (after the GET above, before the SET completed)
+            // invalidated this creation — delete the just-refreshed entry so the remove is not resurrected.
+            if (flight.Invalidated)
+                await _storage.DeleteAsync(k, ct);
         }
 
         return (true, env.Value);
@@ -260,7 +267,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     {
         // read: return a live stored value (own earlier write, a cross-process write, or a sliding hit
         // which ReadLiveAsync also refreshes) without invoking the factory.
-        var (hit, value) = await ReadLiveAsync(k, CancellationToken.None);
+        var (hit, value) = await ReadLiveAsync(k, flight, CancellationToken.None);
         if (hit)
             return value;
 
@@ -315,9 +322,28 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     }
 
     /// <summary>
-    /// Builds the namespaced Redis key for a cache key by prepending the configured prefix.
+    /// Throws if the cache is disposed or the caller's token is already cancelled.
+    /// </summary>
+    /// <param name="ct">The caller's cancellation token.</param>
+    private void EnsureUsable(CancellationToken ct)
+    {
+        ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
+        ct.ThrowIfCancellationRequested();
+    }
+
+    /// <summary>
+    /// Per-value-type discriminator folded into every Redis key. Distinct <see cref="Cache{TKey,TValue}"/>
+    /// closed generics resolved from one registration share a single <see cref="RedisCacheOptions"/> and one
+    /// Redis instance; unlike InMemory (which isolates by instance), Redis has a single shared store, so the
+    /// value type must be part of the key — otherwise e.g. <c>ICache&lt;Guid,User&gt;</c> and
+    /// <c>ICache&lt;Guid,Order&gt;</c> would collide on identical keys.
+    /// </summary>
+    private static readonly string _typeDiscriminator = (typeof(TValue).FullName ?? typeof(TValue).Name) + ":";
+
+    /// <summary>
+    /// Builds the namespaced Redis key: configured prefix + value-type discriminator + the cache key.
     /// </summary>
     /// <param name="key">The cache key.</param>
-    /// <returns>The prefixed Redis key string.</returns>
-    private string Key(TKey key) => _options.KeyPrefix + key;
+    /// <returns>The prefixed, value-type-scoped Redis key string.</returns>
+    private string Key(TKey key) => _options.KeyPrefix + _typeDiscriminator + key;
 }
