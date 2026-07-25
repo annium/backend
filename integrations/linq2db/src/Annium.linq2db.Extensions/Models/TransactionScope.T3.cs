@@ -131,7 +131,8 @@ public readonly struct TransactionScope<T1, T2, T3> : IAsyncDisposable
     /// <summary>
     /// Asynchronously disposes all managed transactions and connections with automatic rollback.
     /// All transactions are rolled back before disposing their connections and the service scope.
-    /// Safe to call multiple times - subsequent calls are ignored.
+    /// Disposing a disposed-state scope (returned by the factory when the provider was already
+    /// disposed) is a no-op; a live scope is expected to be disposed exactly once (via <c>await using</c>).
     /// </summary>
     /// <returns>A ValueTask representing the asynchronous dispose operation</returns>
     public async ValueTask DisposeAsync()
@@ -139,19 +140,25 @@ public readonly struct TransactionScope<T1, T2, T3> : IAsyncDisposable
         if (IsDisposed)
             return;
 
-        // cn 1
-        await Txn1.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
-        await Cn1.DisposeAsync();
+        try
+        {
+            // cn 1
+            await Txn1.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
+            await Cn1.DisposeAsync();
 
-        // cn 2
-        await Txn2.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
-        await Cn2.DisposeAsync();
+            // cn 2
+            await Txn2.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
+            await Cn2.DisposeAsync();
 
-        // cn 3
-        await Txn3.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
-        await Cn3.DisposeAsync();
-
-        // scope
-        await _scope.DisposeAsync();
+            // cn 3
+            await Txn3.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
+            await Cn3.DisposeAsync();
+        }
+        finally
+        {
+            // always dispose the scope (which disposes the scoped connections, cascading rollbacks)
+            // even if an explicit rollback/dispose above threw, so nothing leaks
+            await _scope.DisposeAsync();
+        }
     }
 }

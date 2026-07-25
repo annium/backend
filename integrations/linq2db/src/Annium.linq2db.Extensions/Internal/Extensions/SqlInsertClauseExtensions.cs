@@ -13,7 +13,7 @@ internal static class SqlInsertClauseExtensions
     /// </summary>
     /// <param name="clause">The SQL insert clause.</param>
     /// <param name="desc">The column descriptor.</param>
-    /// <param name="value">The current time instant.</param>
+    /// <param name="value">The value to set the column to.</param>
     public static void SetValue<T>(this SqlInsertClause clause, ColumnDescriptor desc, T value)
     {
         var field = clause.Into.NotNull().FindFieldByMemberName(desc.MemberName).NotNull();

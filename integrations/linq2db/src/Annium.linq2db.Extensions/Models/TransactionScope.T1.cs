@@ -91,7 +91,8 @@ public readonly struct TransactionScope<T> : IAsyncDisposable
     /// <summary>
     /// Asynchronously disposes the managed transaction and connection with automatic rollback.
     /// The transaction is rolled back before disposing the connection and service scope.
-    /// Safe to call multiple times - subsequent calls are ignored.
+    /// Disposing a disposed-state scope (returned by the factory when the provider was already
+    /// disposed) is a no-op; a live scope is expected to be disposed exactly once (via <c>await using</c>).
     /// </summary>
     /// <returns>A ValueTask representing the asynchronous dispose operation</returns>
     public async ValueTask DisposeAsync()
@@ -99,11 +100,17 @@ public readonly struct TransactionScope<T> : IAsyncDisposable
         if (IsDisposed)
             return;
 
-        // cn
-        await Txn.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
-        await Cn.DisposeAsync();
-
-        // scope
-        await _scope.DisposeAsync();
+        try
+        {
+            // cn
+            await Txn.RollbackAsync(); // relies on linq2db internal transaction nullifying on commit
+            await Cn.DisposeAsync();
+        }
+        finally
+        {
+            // always dispose the scope (which disposes the scoped connection, cascading a rollback)
+            // even if the explicit rollback/dispose above threw, so nothing leaks
+            await _scope.DisposeAsync();
+        }
     }
 }

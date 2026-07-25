@@ -22,6 +22,9 @@ internal class ServicePack : ServicePackBase
     public override Task RegisterAsync(IServiceContainer container, IServiceProvider provider, CancellationToken ct)
     {
         container.AddPostgreSql<Connection>();
+        container.AddPostgreSql<ConnectionB>();
+        container.AddPostgreSql<ConnectionC>();
+        container.AddPostgreSql<ConnectionD>();
         container.Add<Database>().AsSelf().Singleton();
         container.Add(sp => sp.Resolve<Database>().Config).AsSelf().Singleton();
         return Task.CompletedTask;

@@ -38,6 +38,7 @@ public static class TableSaveExtensions
     /// <param name="table">The table to update</param>
     /// <param name="value">The entity to update</param>
     /// <returns>The number of affected rows</returns>
+    /// <exception cref="System.InvalidOperationException">Thrown when the entity type has no primary-key columns configured.</exception>
     public static Task<int> UpdateAsync<T>(this ITable<T> table, T value)
         where T : notnull
     {
@@ -77,16 +78,31 @@ public static class TableSaveExtensions
     private static Expression<Func<T>> BuildInsertSetter<T>(TableMetadata table, T value)
         where T : notnull
     {
-        var bindings = table
-            .Columns.Values.Where(c => c.Association is null)
+        var bindings = BuildBindings(table, value, c => c.Association is null);
+
+        return Expression.Lambda<Func<T>>(Expression.MemberInit(Expression.New(typeof(T)), bindings));
+    }
+
+    /// <summary>
+    /// Builds the member bindings for the columns matching the given predicate, reading each column's
+    /// value from the entity.
+    /// </summary>
+    /// <typeparam name="T">The entity type.</typeparam>
+    /// <param name="table">The table metadata.</param>
+    /// <param name="value">The entity value to extract column values from.</param>
+    /// <param name="predicate">The column filter (e.g. exclude associations, or associations and primary keys).</param>
+    /// <returns>The member bindings for the selected columns.</returns>
+    private static MemberBinding[] BuildBindings<T>(TableMetadata table, T value, Func<ColumnMetadata, bool> predicate)
+        where T : notnull
+    {
+        return table
+            .Columns.Values.Where(predicate)
             .Select<ColumnMetadata, MemberBinding>(c =>
             {
                 var memberValue = c.Member.GetPropertyOrFieldValue(value);
                 return Expression.Bind(c.Member, Expression.Constant(memberValue, c.Type));
             })
             .ToArray();
-
-        return Expression.Lambda<Func<T>>(Expression.MemberInit(Expression.New(typeof(T)), bindings));
     }
 
     /// <summary>
@@ -127,14 +143,7 @@ public static class TableSaveExtensions
     private static Expression<Func<TIn, TOut>> BuildUpdateSetter<TIn, TOut>(TableMetadata table, TIn value)
         where TIn : notnull
     {
-        var bindings = table
-            .Columns.Values.Where(c => c.Association is null && !c.Attribute.IsPrimaryKey)
-            .Select<ColumnMetadata, MemberBinding>(c =>
-            {
-                var memberValue = c.Member.GetPropertyOrFieldValue(value);
-                return Expression.Bind(c.Member, Expression.Constant(memberValue, c.Type));
-            })
-            .ToArray();
+        var bindings = BuildBindings(table, value, c => c.Association is null && c.PrimaryKey is null);
 
         return Expression.Lambda<Func<TIn, TOut>>(
             Expression.MemberInit(Expression.New(typeof(TIn)), bindings),

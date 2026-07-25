@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using Annium.Core.DependencyInjection;
+using Annium.linq2db.Extensions.Internal.Extensions;
 using LinqToDB.Data;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,9 +26,18 @@ public static class ServiceProviderTransactionScopeExtensions
     )
         where T : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new TransactionScope<T>(true);
+        }
+
+        try
+        {
             var cn = scope.ServiceProvider.Resolve<T>();
             var txn = cn.BeginTransaction(isolationLevel);
 
@@ -35,7 +45,15 @@ public static class ServiceProviderTransactionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new TransactionScope<T>(true);
+        }
+        catch
+        {
+            // resolution / begin-transaction failed after the scope was created — dispose it so the
+            // scope and any already-opened connection/transaction are cleaned up, then propagate
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -54,9 +72,18 @@ public static class ServiceProviderTransactionScopeExtensions
         where T1 : DataConnection
         where T2 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new TransactionScope<T1, T2>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var txn1 = cn1.BeginTransaction(isolationLevel);
             var cn2 = scope.ServiceProvider.Resolve<T2>();
@@ -66,7 +93,13 @@ public static class ServiceProviderTransactionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new TransactionScope<T1, T2>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -87,9 +120,18 @@ public static class ServiceProviderTransactionScopeExtensions
         where T2 : DataConnection
         where T3 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new TransactionScope<T1, T2, T3>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var txn1 = cn1.BeginTransaction(isolationLevel);
             var cn2 = scope.ServiceProvider.Resolve<T2>();
@@ -101,7 +143,13 @@ public static class ServiceProviderTransactionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new TransactionScope<T1, T2, T3>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 
@@ -124,9 +172,18 @@ public static class ServiceProviderTransactionScopeExtensions
         where T3 : DataConnection
         where T4 : DataConnection
     {
+        AsyncServiceScope scope;
         try
         {
-            var scope = sp.CreateAsyncScope();
+            scope = sp.CreateAsyncScope();
+        }
+        catch (ObjectDisposedException)
+        {
+            return new TransactionScope<T1, T2, T3, T4>(true);
+        }
+
+        try
+        {
             var cn1 = scope.ServiceProvider.Resolve<T1>();
             var txn1 = cn1.BeginTransaction(isolationLevel);
             var cn2 = scope.ServiceProvider.Resolve<T2>();
@@ -140,7 +197,13 @@ public static class ServiceProviderTransactionScopeExtensions
         }
         catch (ObjectDisposedException)
         {
+            scope.DisposeSafely();
             return new TransactionScope<T1, T2, T3, T4>(true);
+        }
+        catch
+        {
+            scope.DisposeSafely();
+            throw;
         }
     }
 }

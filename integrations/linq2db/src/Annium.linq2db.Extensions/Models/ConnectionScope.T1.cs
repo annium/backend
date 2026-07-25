@@ -69,7 +69,8 @@ public readonly struct ConnectionScope<T> : IAsyncDisposable
 
     /// <summary>
     /// Asynchronously disposes the managed connection and service scope.
-    /// Safe to call multiple times - subsequent calls are ignored.
+    /// Disposing a disposed-state scope (returned by the factory when the provider was already
+    /// disposed) is a no-op; a live scope is expected to be disposed exactly once (via <c>await using</c>).
     /// </summary>
     /// <returns>A ValueTask representing the asynchronous dispose operation</returns>
     public async ValueTask DisposeAsync()
@@ -77,7 +78,15 @@ public readonly struct ConnectionScope<T> : IAsyncDisposable
         if (IsDisposed)
             return;
 
-        await Cn.DisposeAsync();
-        await _scope.DisposeAsync();
+        try
+        {
+            await Cn.DisposeAsync();
+        }
+        finally
+        {
+            // always dispose the scope even if the connection disposal above threw, so the scope
+            // and its pooled connection cannot leak
+            await _scope.DisposeAsync();
+        }
     }
 }
