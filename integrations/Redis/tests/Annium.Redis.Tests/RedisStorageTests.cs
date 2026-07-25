@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Annium.Testing;
@@ -107,6 +108,51 @@ public class RedisStorageTests : TestBase
 
         // ensure no data
         await EnsureDataIsEmpty(storage, key, ct);
+    }
+
+    /// <summary>
+    /// Tests that deleting a key that was never set reports false, per the documented contract
+    /// ("false if it didn't exist").
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task DeleteAsync_KeyAbsent_ReturnsFalse()
+    {
+        // arrange
+        var storage = Get<IRedisStorage>();
+        var key = Guid.NewGuid().ToString();
+        var ct = TestContext.Current.CancellationToken;
+
+        // act
+        var result = await storage.DeleteAsync(key, ct);
+
+        // assert
+        result.IsFalse();
+    }
+
+    /// <summary>
+    /// Tests that GetKeysAsync with an empty pattern matches all keys, per the documented contract
+    /// ("empty string matches all keys"), by asserting known keys are present among the results.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetKeysAsync_EmptyPattern_ReturnsAllKeys()
+    {
+        // arrange
+        var storage = Get<IRedisStorage>();
+        var keyA = Guid.NewGuid().ToString();
+        var keyB = Guid.NewGuid().ToString();
+        var ct = TestContext.Current.CancellationToken;
+
+        await storage.SetAsync(keyA, "a", ct: ct);
+        await storage.SetAsync(keyB, "b", ct: ct);
+
+        // act
+        var keys = await storage.GetKeysAsync(ct: ct);
+
+        // assert
+        keys.Contains(keyA).IsTrue();
+        keys.Contains(keyB).IsTrue();
     }
 
     /// <summary>
@@ -240,6 +286,17 @@ public class RedisStorageTests : TestBase
         CancellationToken ct
     )
     {
+        // key[2..10] extracts an 8-char slice from the middle of the key to build a
+        // substring glob. This assumes every caller passes a Guid.NewGuid().ToString()
+        // key (36 chars, hyphenated) — the slice is a stable, collision-unlikely fragment
+        // for match-by-pattern. Guard the assumption so a non-GUID key fails loudly here
+        // rather than silently building a nonsensical pattern.
+        if (key.Length < 10)
+            throw new ArgumentException(
+                $"LoadData expects a GUID-format key; got '{key}' (length {key.Length}).",
+                nameof(key)
+            );
+
         var pattern = $"*{key[2..10]}*";
 
         // find keys and try get value

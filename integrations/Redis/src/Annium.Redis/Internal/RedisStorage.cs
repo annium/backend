@@ -53,13 +53,12 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// Enumerates all keys across every connected Redis server whose names match the given glob pattern.
     /// An empty or whitespace <paramref name="pattern"/> matches every key.
     /// </summary>
-    /// <param name="pattern">Glob pattern used to filter keys (e.g. <c>session:*</c>). Pass an empty string to match all keys.</param>
+    /// <param name="pattern">Glob pattern used to filter keys (e.g. <c>session:*</c>). Pass an empty or whitespace-only string to match all keys.</param>
     /// <param name="ct">Cancellation token that cancels the key-scan operation.</param>
     /// <returns>A read-only set of key names that matched the pattern across all servers.</returns>
     public async Task<IReadOnlyCollection<string>> GetKeysAsync(string pattern = "", CancellationToken ct = default)
     {
-        ct.ThrowIfCancellationRequested();
-        var redis = await GetMultiplexerAsync().WaitAsync(ct);
+        var redis = await GetConnectedMultiplexerAsync(ct);
         var keyPattern = string.IsNullOrWhiteSpace(pattern) ? default : new RedisValue(pattern);
         var keys = new HashSet<string>();
 
@@ -80,8 +79,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// <returns>The stored string value, or <see langword="null"/> if the key is absent.</returns>
     public async Task<string?> GetAsync(string key, CancellationToken ct = default)
     {
-        ct.ThrowIfCancellationRequested();
-        var redis = await GetMultiplexerAsync().WaitAsync(ct);
+        var redis = await GetConnectedMultiplexerAsync(ct);
         var value = await redis.GetDatabase().StringGetAsync(key);
 
         return value.IsNull ? null : value.ToString();
@@ -103,8 +101,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
         CancellationToken ct = default
     )
     {
-        ct.ThrowIfCancellationRequested();
-        var redis = await GetMultiplexerAsync().WaitAsync(ct);
+        var redis = await GetConnectedMultiplexerAsync(ct);
         var result = await redis
             .GetDatabase()
             .StringSetAsync(key, value, expires == Duration.Zero ? null : expires.ToTimeSpan(), When.Always);
@@ -120,8 +117,7 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
     /// <returns><see langword="true"/> if the key existed and was deleted; <see langword="false"/> if the key was not found.</returns>
     public async Task<bool> DeleteAsync(string key, CancellationToken ct = default)
     {
-        ct.ThrowIfCancellationRequested();
-        var redis = await GetMultiplexerAsync().WaitAsync(ct);
+        var redis = await GetConnectedMultiplexerAsync(ct);
         var result = await redis.GetDatabase().KeyDeleteAsync(key);
 
         return result;
@@ -162,6 +158,19 @@ internal class RedisStorage : IRedisStorage, IAsyncDisposable
 #pragma warning disable VSTHRD011, VSTHRD003
     private Task<ConnectionMultiplexer> GetMultiplexerAsync() => _redisLazy.Value;
 #pragma warning restore VSTHRD011, VSTHRD003
+
+    /// <summary>
+    /// Observes the supplied token at the lazy-connection gate, then returns the shared
+    /// <see cref="ConnectionMultiplexer"/> — the connection wait itself is cancellable via
+    /// <paramref name="ct"/>. Centralizes the connection-gate preamble shared by every public operation.
+    /// </summary>
+    /// <param name="ct">Cancellation token observed at the connection gate.</param>
+    /// <returns>A <see cref="Task{TResult}"/> that resolves to the shared <see cref="ConnectionMultiplexer"/>.</returns>
+    private async Task<ConnectionMultiplexer> GetConnectedMultiplexerAsync(CancellationToken ct)
+    {
+        ct.ThrowIfCancellationRequested();
+        return await GetMultiplexerAsync().WaitAsync(ct);
+    }
 
     /// <summary>
     /// Opens a new <see cref="ConnectionMultiplexer"/> connection using the configuration supplied at construction time.
