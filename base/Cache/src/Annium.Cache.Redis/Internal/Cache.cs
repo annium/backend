@@ -185,8 +185,19 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
             return (false, default!);
 
         var env = _serializer.Deserialize<CacheEnvelope<TValue>>(raw);
-        if (_timeProvider.Now.ToUnixTimeMilliseconds() >= env.ExpiresAtMs)
+        var now = _timeProvider.Now;
+        if (now.ToUnixTimeMilliseconds() >= env.ExpiresAtMs)
             return (false, default!);
+
+        // sliding refresh: prolong the window on access using the STORED lifetime (first-writer-wins —
+        // a later caller's options must not change the entry's strategy). No atomic GETEX on IRedisStorage,
+        // so this is a GET (above) + SET (2 RTT); a benign race between concurrent readers prolongs alike.
+        if (env.Mode == CacheExpirationMode.Sliding && env.LifetimeMs is { } lifetimeMs)
+        {
+            var lifetime = Duration.FromMilliseconds(lifetimeMs);
+            var refreshed = env with { ExpiresAtMs = (now + lifetime).ToUnixTimeMilliseconds() };
+            await _storage.SetAsync(k, _serializer.Serialize(refreshed), lifetime, ct);
+        }
 
         return (true, env.Value);
     }

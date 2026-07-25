@@ -186,15 +186,37 @@ public class CacheTests : CacheTestsBase
         await GetOrCreateAsync_ConcurrentDistinctKeys_EachFactoryOnce_Base();
     }
 
-    // ── Deferred: Sliding + FirstWriterWins (Task 4); poison/cancel/drain (Task 5) ───────
+    // ── Sliding + FirstWriterWins (Task 4) ──────────────────────────────────────────────
 
     /// <summary>
-    /// Tests GetOrCreateAsync with sliding expiration (prolongation on access) — implemented in Task 4.
+    /// Tests GetOrCreateAsync with sliding expiration (recreated after the window elapses without access).
     /// </summary>
     /// <returns>A task that represents the asynchronous test operation</returns>
-    [Fact(Skip = "sliding refresh — Task 4")]
+    [Fact]
     public async Task GetOrCreateAsync_SlidingExpiration()
     {
         await GetOrCreateAsync_SlidingExpiration_Base();
     }
+
+    /// <summary>
+    /// Verifies sliding expiration is prolonged on each hit so an accessed entry survives its original window.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_SlidingExpiration_AccessWithinWindowProlongs()
+    {
+        await GetOrCreateAsync_SlidingExpiration_AccessWithinWindowProlongs_Base();
+    }
+
+    /// <summary>
+    /// Verifies first-writer-wins: a later caller's different (shorter) options are ignored for a live key.
+    /// </summary>
+    /// <returns>A task that represents the asynchronous test operation</returns>
+    [Fact]
+    public async Task GetOrCreateAsync_FirstWriterWins_LaterCallerOptionsIgnored()
+    {
+        await GetOrCreateAsync_FirstWriterWins_LaterCallerOptionsIgnored_Base();
+    }
+
+    // ── Deferred: poison/cancel/drain in-flight grани (Task 5) ───────────────────────────
 }
