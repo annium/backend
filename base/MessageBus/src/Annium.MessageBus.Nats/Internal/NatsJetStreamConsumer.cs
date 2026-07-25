@@ -51,6 +51,12 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
     private Func<TransportDelivery, CancellationToken, Task>? _onMessage;
 
     /// <summary>
+    /// The background consume loop, started in <see cref="StartAsync"/> and awaited on dispose so the pull
+    /// subscription is torn down before disposal returns.
+    /// </summary>
+    private Task _loop = Task.CompletedTask;
+
+    /// <summary>
     /// Guards against repeated disposal and blocks ack/nack once stopping (a draining handler may still ack after the
     /// consumer is stopped).
     /// </summary>
@@ -92,7 +98,7 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
 
         // The consumer's start position is pinned at creation, so messages published after StartAsync returns are
         // captured (and buffered by JetStream) even before the consume loop begins pulling — no readiness race, no loss.
-        _ = Task.Run(() => RunLoopAsync(consumer, _stopCts.Token), CancellationToken.None);
+        _loop = Task.Run(() => RunLoopAsync(consumer, _stopCts.Token), CancellationToken.None);
     }
 
     /// <summary>
@@ -292,10 +298,11 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
     }
 
     /// <summary>
-    /// Stops the consume loop. Idempotent. An ephemeral consumer is reaped by the server after its inactivity
-    /// threshold; a durable (queue-group) consumer persists for peers.
+    /// Stops the consume loop, waits for it to exit (so the pull subscription is torn down) and flushes that teardown
+    /// to the server, so no delivery is routed to this member once disposal returns. Idempotent. An ephemeral consumer
+    /// is reaped by the server after its inactivity threshold; a durable (queue-group) consumer persists for peers.
     /// </summary>
-    /// <returns>A task that completes when the stop signal has been sent.</returns>
+    /// <returns>A task that completes when the consumer has stopped receiving.</returns>
     public async ValueTask DisposeAsync()
     {
         if (_isDisposed)
@@ -304,8 +311,38 @@ internal sealed class NatsJetStreamConsumer : ITransportConsumer, ILogSubject
 
         await _stopCts.CancelAsync();
 
+        // Wait for the loop to exit: disposing its enumerator unsubscribes the pull inbox. Until that happens the
+        // server still sees interest on this member's outstanding pull request and keeps routing messages into it —
+        // messages nobody dispatches or acks, which only come back after AckWait and meanwhile consume the group's
+        // MaxAckPending window (at Prefetch 1, a single such message stalls every peer). Bounded by StopTimeout: an
+        // inline handler (Concurrency 1) runs on this loop, and the pipeline's own drain follows this call.
+        try
+        {
+            await _loop.WaitAsync(_options.StopTimeout);
+        }
+        catch (TimeoutException)
+        {
+            this.Trace("nats consume loop did not stop within stop timeout");
+        }
+        catch (Exception e)
+        {
+            this.Error(e);
+        }
+
+        // Flush so the unsubscribe is processed server-side before disposal returns: the server drops a waiting pull
+        // request whose reply inbox has no interest, handing its messages to the surviving group members at once.
+        try
+        {
+            var connection = await _connection.GetConnectionAsync(CancellationToken.None);
+            await connection.PingAsync();
+        }
+        catch (Exception e)
+        {
+            this.Trace<string>("nats flush on dispose skipped: {error}", e.Message);
+        }
+
         // _stopCts is intentionally NOT disposed: its token was handed to the pipeline callback and a straggling
-        // handler may still read it after this returns. The consume loop stops on cancellation; an ephemeral consumer
-        // is reaped by the server after its inactivity threshold, a durable (queue-group) consumer persists for peers.
+        // handler may still read it after this returns. An ephemeral consumer is reaped by the server after its
+        // inactivity threshold, a durable (queue-group) consumer persists for peers.
     }
 }

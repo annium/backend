@@ -65,6 +65,14 @@ public abstract class MessageBusConformanceTestBase<TTransport> : TestBase
     protected int Timeout => _transport.DefaultTimeoutMs;
 
     /// <summary>
+    /// Gets a consumer group name unique to this test. A group maps to broker-side state that outlives the
+    /// subscriptions using it (a JetStream durable, a Kafka consumer group, a RabbitMQ queue), so a fixed name would
+    /// carry position and backlog from one test into the next — every message the rest of the suite publishes to the
+    /// shared subject while no member is attached piles up for whoever attaches next.
+    /// </summary>
+    private protected string Group { get; } = $"workers-{Guid.NewGuid():N}";
+
+    /// <summary>
     /// Brings up the transport's broker before the DI container is built, then completes base initialization.
     /// </summary>
     /// <returns>A task that completes when initialization has finished.</returns>

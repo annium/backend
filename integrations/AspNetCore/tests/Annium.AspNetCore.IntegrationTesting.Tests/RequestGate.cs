@@ -1,4 +1,3 @@
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Annium.AspNetCore.IntegrationTesting.Tests;
@@ -33,7 +32,10 @@ public sealed class RequestGate
     public Task WaitForReleaseAsync()
     {
         _started.TrySetResult();
+        // VSTHRD003: _release is this gate's own TCS, completed by Release() — not alien work.
+#pragma warning disable VSTHRD003
         return _release.Task;
+#pragma warning restore VSTHRD003
     }
 
     /// <summary>

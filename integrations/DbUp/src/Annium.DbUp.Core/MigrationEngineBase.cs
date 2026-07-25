@@ -93,6 +93,7 @@ public abstract class MigrationEngineBase<T>
     /// <summary>
     /// Executes the database migration by running initialization scripts first, followed by migration scripts
     /// </summary>
+    /// <exception cref="ApplicationException">Thrown when a script fails to apply; the message carries the failing script and the underlying DbUp error.</exception>
     public void Execute()
     {
         ExecuteBuilder(InitBuilder);
@@ -102,7 +103,9 @@ public abstract class MigrationEngineBase<T>
         {
             var result = builder.Build().PerformUpgrade();
             if (!result.Successful)
-                throw new ApplicationException($"{result.ErrorScript}: {result.Error}");
+                // ErrorScript.Name is the failing script's identity; ErrorScript itself renders as its
+                // type name ("DbUp.Engine.SqlScript"), which is useless for diagnosing which script failed.
+                throw new ApplicationException($"{result.ErrorScript?.Name}: {result.Error}");
         }
     }
 }
