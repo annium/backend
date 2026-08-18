@@ -12,6 +12,7 @@ namespace Annium.Storage.InMemory.Internal;
 /// <summary>
 /// In-memory implementation of the IStorage interface that stores files in memory using a concurrent dictionary
 /// </summary>
+/// <param name="logger">Logger used for tracing.</param>
 internal class Storage(ILogger logger) : IStorage, ILogSubject
 {
     /// <summary>

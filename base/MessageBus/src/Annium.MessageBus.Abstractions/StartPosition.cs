@@ -9,6 +9,9 @@ namespace Annium.MessageBus.Abstractions;
 /// </summary>
 public abstract record StartPosition
 {
+    /// <summary>
+    /// Prevents external derivation — the union is closed over the private cases declared below.
+    /// </summary>
     private StartPosition() { }
 
     /// <summary>
@@ -129,6 +132,7 @@ public abstract record StartPosition
     /// <summary>
     /// The timestamp-based case: consumes from the first message at or after a given timestamp.
     /// </summary>
+    /// <param name="Timestamp">The moment to start consuming from; the first message at or after it.</param>
     private sealed record TimestampPosition(DateTimeOffset Timestamp) : StartPosition
     {
         /// <summary>
@@ -151,6 +155,7 @@ public abstract record StartPosition
     /// <summary>
     /// The position-based case: consumes from a given transport sequence/offset.
     /// </summary>
+    /// <param name="Value">The transport sequence / offset to start consuming from.</param>
     private sealed record PositionPosition(long Value) : StartPosition
     {
         /// <summary>

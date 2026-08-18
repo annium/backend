@@ -79,8 +79,10 @@ public static class DataConnectionExtensions
         ITimeProvider timeProvider
     )
     {
-        // get data type
-        var dataType = statement.Update.Table?.ObjectType;
+        // get data type; linq2db 6.4 widened SqlUpdateClause.Table to ISqlNamedTable, and only a
+        // plain SqlTable carries the mapped entity type — anything else (CTE, derived table) is
+        // not timestamp-processable and falls through the null check below
+        var dataType = (statement.Update.Table as SqlTable)?.ObjectType;
 
         // weird, but possible according to nullability spec
         if (dataType is null)

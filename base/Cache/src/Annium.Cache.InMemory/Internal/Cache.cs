@@ -43,6 +43,11 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// </summary>
     private int _disposed;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Cache{TKey, TValue}"/> class.
+    /// </summary>
+    /// <param name="timeProvider">Time provider used to evaluate entry expiration.</param>
+    /// <param name="logger">Logger used for tracing.</param>
     public Cache(ITimeProvider timeProvider, ILogger logger)
     {
         _timeProvider = timeProvider;

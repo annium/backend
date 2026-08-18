@@ -13,21 +13,28 @@ namespace Annium.AspNetCore.Mesh.Tests.TestDoubles;
 /// </summary>
 internal sealed class FakeServerConnection : IServerConnection
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Event triggered when the connection is disconnected
+    /// </summary>
     public event Action<ConnectionCloseStatus> OnDisconnected
     {
         add { }
         remove { }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event triggered when an error occurs on the connection
+    /// </summary>
     public event Action<Exception> OnError
     {
         add { }
         remove { }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event is invoked, when message is received.
+    /// Message must be processed synchronously due to possible buffer overwriting in implementing transports
+    /// </summary>
     public event Action<ReadOnlyMemory<byte>> OnReceived
     {
         add { }

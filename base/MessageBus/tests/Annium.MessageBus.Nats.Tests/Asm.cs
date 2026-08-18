@@ -1,7 +1,8 @@
 using Annium.Core.Runtime.Types;
-using Xunit;
+using Xunit.Sdk;
+using Xunit.v3;
 
 [assembly: AutoScanned]
 // The whole run shares one NATS broker (and one JetStream stream) and reuses subjects across tests; run serially to
 // avoid cross-test interference.
-[assembly: CollectionBehavior(DisableTestParallelization = true)]
+[assembly: Parallelization(Mode = ParallelMode.None)]

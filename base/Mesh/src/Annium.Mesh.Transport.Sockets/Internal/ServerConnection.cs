@@ -17,13 +17,20 @@ internal sealed class ServerConnection : IServerConnection, ILogSubject
     /// </summary>
     public ILogger Logger { get; }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event triggered when the connection is disconnected
+    /// </summary>
     public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event triggered when an error occurs on the connection
+    /// </summary>
     public event Action<Exception> OnError = delegate { };
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Event is invoked, when message is received.
+    /// Message must be processed synchronously due to possible buffer overwriting in implementing transports
+    /// </summary>
     public event Action<ReadOnlyMemory<byte>> OnReceived = delegate { };
 
     /// <summary>

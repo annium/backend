@@ -22,6 +22,10 @@ namespace Annium.AspNetCore.Extensions.Tests;
 /// </summary>
 internal class DynamicControllersTestHost : TestHostBase<DynamicControllersEntryPoint>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DynamicControllersTestHost"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the host logs through.</param>
     public DynamicControllersTestHost(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {

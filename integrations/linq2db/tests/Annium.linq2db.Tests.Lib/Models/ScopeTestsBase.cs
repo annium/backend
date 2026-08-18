@@ -21,6 +21,10 @@ namespace Annium.linq2db.Tests.Lib.Models;
 /// </summary>
 public class ScopeTestsBase : TestBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ScopeTestsBase"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the test host logs through.</param>
     protected ScopeTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {

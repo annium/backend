@@ -1,56 +1,19 @@
 set shell := ["bash", "-cu"]
 set positional-arguments
+# lib.just is copied in by the umbrella repo's `just copy-ci`; recipes redefined below
+# override the shared ones.
+set allow-duplicate-recipes := true
 
-[private]
-default:
-    @just --list
+import 'lib.just'
 
-# base
+# overrides
 
-setup:
-    @echo "=== $0 ==="
-    dotnet tool restore
-
-format:
-    @echo "=== $0 ==="
-    dotnet tool run csharpier format . --config-path $(pwd)/.editorconfig
-    dotnet tool run xs format -sc -ic
-
-format-full: format
-    @echo "=== $0 ==="
-    dotnet format style
-    dotnet format analyzers
-
-ensure-no-changes:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== ensure-no-changes ==="
-    if [[ -n "$(git status --porcelain)" ]]; then
-        echo "Changes detected:"
-        git status
-        git --no-pager diff --no-color --exit-code
-    fi
-
-update:
-    @echo "=== $0 ==="
-    dotnet tool list --format json | jq -r '.data[] | "\(.packageId)"' | xargs -I% dotnet tool install %
-    dotnet tool run xs update all -sc -ic
-
-clean:
-    @echo "=== $0 ==="
-    dotnet tool run xs clean -sc -ic
-    find . -type f -name '*.nupkg' | xargs -I% rm %
-
-build:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== build ==="
-    packageVersion=$(dotnet tool run versioning get-version -v $(cat version))
-    dotnet build -c Release --nologo -v q -p:PackageVersion=$packageVersion
-
+# Every suite here is container-backed (Kafka, RabbitMQ, NATS, Redis, Mongo, Postgres, S3), so test
+# modules run one at a time. MTP parallelises modules by default, unlike the VSTest runner this
+# replaced; on a CI runner that starves the containers and Npgsql times out opening connections.
 test:
     @echo "=== $0 ==="
-    dotnet test -c Release --no-build --nologo --logger "trx;LogFilePrefix=test-results.trx"
+    dotnet test -c Release --no-build --report-xunit-trx --max-parallel-test-modules 1
 
 # load (MessageBus throughput / zero-loss / ordering harness; needs Docker; NOT part of CI)
 
@@ -67,95 +30,3 @@ load-nats:
     dotnet run -c Release --project base/MessageBus/tests/Annium.MessageBus.Nats.Load
 
 load: load-kafka load-rabbitmq load-nats
-
-pack:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== pack ==="
-    packageVersion=$(dotnet tool run versioning get-version -v $(cat version))
-    dotnet pack --no-build -o . -c Release -p:SymbolPackageFormat=snupkg -p:PackageVersion=$packageVersion
-
-publish apiKey:
-    @echo "=== $0 ==="
-    dotnet nuget push "*.nupkg" --source https://api.nuget.org/v3/index.json --api-key "$1"
-    find . -type f -name '*.nupkg' | xargs -I% rm %
-
-# docs
-
-docs-lint:
-    @echo "=== $0 ==="
-    dotnet tool run doclint lint -w . -i '**/*.cs' -e '**/obj/**/*.cs'
-
-docs-clean:
-    @echo "=== $0 ==="
-    rm -rf _site api
-
-docs-metadata:
-    @echo "=== $0 ==="
-    dotnet tool run docfx metadata docfx.json
-
-docs-build:
-    @echo "=== $0 ==="
-    dotnet tool run docfx docfx.json
-
-docs-serve:
-    @echo "=== $0 ==="
-    dotnet tool run docfx serve _site
-
-docs-watch:
-    @echo "=== $0 ==="
-    dotnet tool run docfx docfx.json --serve
-
-# ci
-
-ci-merge-request-short:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== ci-merge-request-short ==="
-    just setup
-    just format
-    just ensure-no-changes
-    just clean
-    just build
-    just docs-lint
-
-ci-merge-request-full:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== ci-merge-request-full ==="
-    just setup
-    just format
-    just ensure-no-changes
-    just clean
-    just build
-    just docs-lint
-    just test
-
-ci-release apiKey repository githubToken:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== ci-release ==="
-    just setup
-    just format
-    just ensure-no-changes
-    just ci-set-package-version
-    just clean
-    just build
-    just pack
-    just publish "$1"
-    just ci-push-tag "$2" "$3"
-    echo "Release complete"
-
-ci-set-package-version:
-    @echo "=== $0 ==="
-    git config user.name "it"
-    git config user.email "it@annium.com"
-    dotnet tool run versioning set-version -v $(cat version)
-
-ci-push-tag repository githubToken:
-    #!/usr/bin/env bash
-    set -e
-    echo "=== ci-push-tag ==="
-    packageVersion=$(dotnet tool run versioning get-version -v $(cat version))
-    git remote set-url origin https://x-access-token:"$2"@github.com/"$1".git
-    git push origin v$packageVersion

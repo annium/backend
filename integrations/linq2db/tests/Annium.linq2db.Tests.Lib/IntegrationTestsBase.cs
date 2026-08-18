@@ -18,6 +18,10 @@ namespace Annium.linq2db.Tests.Lib;
 /// </summary>
 public class IntegrationTestsBase : TestBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="IntegrationTestsBase"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the test host logs through.</param>
     protected IntegrationTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {
