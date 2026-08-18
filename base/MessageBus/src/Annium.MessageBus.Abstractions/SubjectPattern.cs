@@ -20,6 +20,11 @@ public sealed class SubjectPattern
     /// </summary>
     private const string MultiWildcard = ">";
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SubjectPattern"/> class; construct through the parse members.
+    /// </summary>
+    /// <param name="tokens">The pattern split into subject tokens.</param>
+    /// <param name="hasMultiWildcard">Whether the pattern ends with the multi-level wildcard.</param>
     private SubjectPattern(IReadOnlyList<string> tokens, bool hasMultiWildcard)
     {
         Tokens = tokens;

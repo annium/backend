@@ -50,6 +50,10 @@ public abstract class TestHostBase<TEntryPoint> : ITestHost, ILogSubject
     /// </summary>
     private readonly Lazy<ILogger> _logger;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestHostBase{TEntryPoint}"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the host logs through.</param>
     protected TestHostBase(ITestOutputHelper outputHelper)
     {
         _outputHelper = outputHelper;

@@ -13,6 +13,10 @@ namespace Annium.AspNetCore.Extensions.Tests;
 /// </summary>
 internal class TestHost : TestHostBase<Program>
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TestHost"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the host logs through.</param>
     public TestHost(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {

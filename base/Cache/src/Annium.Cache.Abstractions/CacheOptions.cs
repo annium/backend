@@ -67,6 +67,12 @@ public sealed record CacheOptions
     /// </summary>
     public Duration Lifetime { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CacheOptions"/> class; construct through the factory members.
+    /// </summary>
+    /// <param name="mode">How the entry expires.</param>
+    /// <param name="moment">Absolute expiration moment; meaningful for the absolute mode.</param>
+    /// <param name="lifetime">Relative lifetime; meaningful for the sliding mode.</param>
     private CacheOptions(CacheExpirationMode mode, Instant moment, Duration lifetime)
     {
         Mode = mode;

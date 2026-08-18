@@ -36,6 +36,13 @@ internal class PushCoordinator : ILogSubject
     /// </summary>
     private readonly IReadOnlyCollection<KeyValuePair<ActionKey, PushRoute>> _routes;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="PushCoordinator"/> class.
+    /// </summary>
+    /// <param name="sp">Service provider used to resolve push handlers per route.</param>
+    /// <param name="sender">Sender the produced push messages are written to.</param>
+    /// <param name="routeStore">Store the push routes are read from.</param>
+    /// <param name="logger">Logger used for tracing.</param>
     public PushCoordinator(IServiceProvider sp, IMessageSender sender, RouteStore routeStore, ILogger logger)
     {
         _sp = sp;

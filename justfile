@@ -10,7 +10,7 @@ import 'lib.just'
 
 test:
     @echo "=== $0 ==="
-    dotnet test -c Release --no-build --nologo --logger "trx;LogFilePrefix=test-results.trx"
+    dotnet test -c Release --no-build --report-xunit-trx
 
 # load (MessageBus throughput / zero-loss / ordering harness; needs Docker; NOT part of CI)
 

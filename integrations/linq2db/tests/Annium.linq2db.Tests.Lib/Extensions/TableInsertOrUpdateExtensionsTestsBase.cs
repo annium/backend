@@ -17,6 +17,10 @@ namespace Annium.linq2db.Tests.Lib.Extensions;
 /// </summary>
 public class TableInsertOrUpdateExtensionsTestsBase : TestBase
 {
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TableInsertOrUpdateExtensionsTestsBase"/> class.
+    /// </summary>
+    /// <param name="outputHelper">xUnit test output helper the test host logs through.</param>
     protected TableInsertOrUpdateExtensionsTestsBase(ITestOutputHelper outputHelper)
         : base(outputHelper)
     {

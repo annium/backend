@@ -61,10 +61,20 @@ public class ConnectTimeoutTests : Annium.Testing.TestBase
         /// <summary>Gets whether <c>Disconnect</c> was called (the connect-timeout path invokes it).</summary>
         public bool DisconnectCalled { get; private set; }
 
+        /// <summary>Never raised — the stub deliberately never completes a connection.</summary>
         public event Action OnConnected = delegate { };
+
+        /// <summary>Never raised by the stub; declared to satisfy the connection contract.</summary>
         public event Action<ConnectionCloseStatus> OnDisconnected = delegate { };
+
+        /// <summary>Never raised by the stub; declared to satisfy the connection contract.</summary>
         public event Action<Exception> OnError = delegate { };
 
+        /// <summary>
+        /// Initializes a new instance of the stub client.
+        /// </summary>
+        /// <param name="logger">Logger used for tracing.</param>
+        /// <param name="connectTimeout">Timeout the stub reports to the bounded connect wait.</param>
         public NeverConnectingClient(ILogger logger, Duration connectTimeout)
         {
             Logger = logger;
