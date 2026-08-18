@@ -8,9 +8,12 @@ import 'lib.just'
 
 # overrides
 
+# Every suite here is container-backed (Kafka, RabbitMQ, NATS, Redis, Mongo, Postgres, S3), so test
+# modules run one at a time. MTP parallelises modules by default, unlike the VSTest runner this
+# replaced; on a CI runner that starves the containers and Npgsql times out opening connections.
 test:
     @echo "=== $0 ==="
-    dotnet test -c Release --no-build --report-xunit-trx
+    dotnet test -c Release --no-build --report-xunit-trx --max-parallel-test-modules 1
 
 # load (MessageBus throughput / zero-loss / ordering harness; needs Docker; NOT part of CI)
 
