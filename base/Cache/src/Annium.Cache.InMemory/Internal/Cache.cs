@@ -59,6 +59,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// <summary>
     /// Gets an existing item from cache or creates a new one using the provided factory
     /// </summary>
+    /// <typeparam name="TContext">Type of the state the factory receives, so creating a value needs no closure</typeparam>
     /// <param name="key">The cache key</param>
     /// <param name="factory">Factory function to create the value if not found in cache</param>
     /// <param name="context">Context object passed to the factory function</param>
@@ -127,6 +128,7 @@ internal class Cache<TKey, TValue> : ICache<TKey, TValue>, ILogSubject
     /// in the background executor and is not bound to any single caller's CancellationToken;
     /// per-caller cancellation is enforced by Task.WaitAsync(ct) in GetOrCreateAsync.
     /// </summary>
+    /// <typeparam name="TContext">Type of the state the factory receives, so creating a value needs no closure</typeparam>
     /// <param name="key">The cache key</param>
     /// <param name="factory">Factory function to create the value</param>
     /// <param name="context">Context object passed to the factory function</param>

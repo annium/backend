@@ -12,6 +12,7 @@ internal static class SqlStatementExtensions
     /// </summary>
     /// <param name="stmt">The original SQL statement.</param>
     /// <returns>A cloned SQL statement.</returns>
+    /// <typeparam name="T">Concrete statement type, preserved by the clone.</typeparam>
     public static T CloneWithoutParams<T>(this T stmt)
         where T : SqlStatement
     {

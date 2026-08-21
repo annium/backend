@@ -12,6 +12,8 @@ public static class CacheExtensions
     /// <summary>
     /// Gets an existing item from cache or creates a new one using the provided factory
     /// </summary>
+    /// <typeparam name="TKey">Type of the cache key</typeparam>
+    /// <typeparam name="TValue">Type of the cached value</typeparam>
     /// <param name="cache">The cache instance</param>
     /// <param name="key">The cache key</param>
     /// <param name="factory">Factory function to create the value if not found in cache</param>
