@@ -14,6 +14,7 @@ internal static class SqlInsertClauseExtensions
     /// <param name="clause">The SQL insert clause.</param>
     /// <param name="desc">The column descriptor.</param>
     /// <param name="value">The value to set the column to.</param>
+    /// <typeparam name="T">Type of the column value, used as the SQL value's declared type.</typeparam>
     public static void SetValue<T>(this SqlInsertClause clause, ColumnDescriptor desc, T value)
     {
         var field = clause.Into.NotNull().FindFieldByMemberName(desc.MemberName).NotNull();
