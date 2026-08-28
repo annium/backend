@@ -19,11 +19,14 @@ public static class ModelBuilderExtensions
     public static void ApplyConfigurations<TContext>(this ModelBuilder builder)
         where TContext : DbContext
     {
+        // deduplicated after the context's own assembly is added, not before: a context implementing an
+        // interface declared beside it named that assembly twice, and a configuration applied twice
+        // repeats whatever it does - seed data included, where the repeat is a duplicate key
         var configurationAssemblies = typeof(TContext)
             .GetOwnInterfaces()
             .Select(x => x.Assembly)
-            .Distinct()
             .Append(typeof(TContext).Assembly)
+            .Distinct()
             .ToArray();
 
         foreach (var assembly in configurationAssemblies)
@@ -91,6 +94,23 @@ public static class ModelBuilderExtensions
     {
         foreach (var entity in builder.Model.GetEntityTypes())
         foreach (var key in entity.GetForeignKeys())
+        {
+            // an owned type exists only as part of its owner, so its link to that owner has to keep
+            // cascading - anything else leaves the owned row behind when the owner goes. Nothing rejects
+            // the change while the model is built, which is what makes setting it a silent way to strand rows
+            if (key.IsOwnership)
+                continue;
+
+            // a required relationship has nowhere to put a null, and this is refused when the row is
+            // deleted rather than now - naming the relationship here beats a constraint violation later
+            if (behavior is DeleteBehavior.SetNull or DeleteBehavior.ClientSetNull && key.IsRequired)
+                throw new ArgumentException(
+                    $"Cannot apply {behavior} to required relationship {entity.DisplayName()} -> "
+                        + $"{key.PrincipalEntityType.DisplayName()}: it has nowhere to put a null.",
+                    nameof(behavior)
+                );
+
             key.DeleteBehavior = behavior;
+        }
     }
 }
