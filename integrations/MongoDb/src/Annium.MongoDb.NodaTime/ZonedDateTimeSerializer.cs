@@ -26,5 +26,5 @@ public class ZonedDateTimeSerializer : PatternSerializer<ZonedDateTime>
     /// Initializes a new instance of the ZonedDateTimeSerializer class
     /// </summary>
     public ZonedDateTimeSerializer()
-        : base(_pattern) { }
+        : base(_pattern, d => d.WithCalendar(CalendarSystem.Iso)) { }
 }

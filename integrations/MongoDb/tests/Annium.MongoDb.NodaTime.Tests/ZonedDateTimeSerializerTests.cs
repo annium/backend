@@ -91,6 +91,30 @@ public class ZonedDateTimeSerializerTests
     }
 
     /// <summary>
+    /// A value in another calendar is written in the ISO calendar, as its three siblings that carry a
+    /// calendar already do. The pattern has no calendar-id component, so whatever digits are written are
+    /// read back as ISO ones: a Persian date written unchanged comes back as an instant centuries away.
+    /// </summary>
+    [Fact]
+    public void ConvertsToIsoCalendarWhenSerializing()
+    {
+        // arrange
+        var value = new ZonedDateTime(
+            Instant.FromUtc(2015, 6, 15, 3, 4, 5),
+            DateTimeZone.Utc,
+            CalendarSystem.PersianSimple
+        );
+        var obj = new Test { ZonedDateTime = value };
+
+        // act
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        // assert - the same moment in time, expressed in the ISO calendar
+        obj.ZonedDateTime.ToInstant().Is(value.ToInstant(), "the instant must survive the round trip");
+        obj.ZonedDateTime.Is(value.WithCalendar(CalendarSystem.Iso));
+    }
+
+    /// <summary>
     /// Tests that deserialization throws FormatException for invalid ZonedDateTime strings and null values
     /// </summary>
     [Fact]
