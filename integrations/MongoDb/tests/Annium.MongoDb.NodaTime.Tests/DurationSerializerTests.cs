@@ -38,12 +38,16 @@ public class DurationSerializerTests
     }
 
     /// <summary>
-    /// Tests that deserialization throws FormatException for invalid Duration strings
+    /// Tests that deserialization throws FormatException for invalid Duration strings and null values
     /// </summary>
     [Fact]
     public void ThrowsWhenValueIsInvalid()
     {
         Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", "bleh"))))
+            .Throws<FormatException>();
+
+        // a value type cannot hold the null, and every sibling serializer pins this; Duration did not
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", BsonNull.Value))))
             .Throws<FormatException>();
     }
 
