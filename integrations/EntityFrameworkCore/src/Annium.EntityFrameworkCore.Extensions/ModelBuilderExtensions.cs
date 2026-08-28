@@ -80,9 +80,17 @@ public static class ModelBuilderExtensions
                 .GetProperties()
                 .Where(x => (Nullable.GetUnderlyingType(x.ClrType) ?? x.ClrType) == typeof(DateTime))
         )
+        {
+            // a conversion the caller configured for this property stays: this runs over the whole model,
+            // usually after the per-entity configurations, so replacing what it finds would undo a
+            // deliberate choice - store it as ticks, as a string, encrypted - with nothing said
+            if (property.GetValueConverter() is not null || property.GetProviderClrType() is not null)
+                continue;
+
             property.SetValueConverter(
                 new ValueConverter<DateTime, DateTime>(x => x, x => DateTime.SpecifyKind(x, DateTimeKind.Utc))
             );
+        }
     }
 
     /// <summary>

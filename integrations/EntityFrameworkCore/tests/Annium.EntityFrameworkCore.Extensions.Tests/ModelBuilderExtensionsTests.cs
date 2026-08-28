@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Annium.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Xunit;
 
 namespace Annium.EntityFrameworkCore.Extensions.Tests;
@@ -113,6 +114,25 @@ public class ModelBuilderExtensionsTests
     }
 
     /// <summary>
+    /// A conversion the caller configured for a property is left alone. This convention runs over the
+    /// whole model, usually after the per-entity configurations, so replacing what it finds means a
+    /// deliberate choice - store this as ticks, as a string, encrypted - is undone with nothing said.
+    /// </summary>
+    [Fact]
+    public void UseDateTimeUtc_LeavesAConfiguredConversionAlone()
+    {
+        // arrange & act
+        using var context = new ConvertedContext();
+        var entity = context.Model.FindEntityType(typeof(Converted))!;
+
+        // assert
+        entity
+            .GetProperty(nameof(Converted.At))
+            .GetValueConverter()!
+            .ProviderClrType.Is(typeof(string), "the caller's own conversion must survive");
+    }
+
+    /// <summary>
     /// Context whose model exercises the conventions: a hierarchy sharing one table, and both a required
     /// and an optional timestamp.
     /// </summary>
@@ -221,6 +241,51 @@ public class ModelBuilderExtensionsTests
 
             builder.UseDeleteBehavior(DeleteBehavior.Restrict);
         }
+    }
+
+    /// <summary>
+    /// Context configuring its own conversion for a timestamp before the convention runs.
+    /// </summary>
+    private class ConvertedContext : DbContext
+    {
+        /// <summary>
+        /// Points the context at an in-memory SQLite database.
+        /// </summary>
+        /// <param name="options">The options builder to configure.</param>
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
+        {
+            options.UseSqlite("Data Source=:memory:");
+        }
+
+        /// <summary>
+        /// Configures a conversion, then applies the convention over the whole model.
+        /// </summary>
+        /// <param name="builder">The model builder to configure.</param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder
+                .Entity<Converted>()
+                .Property(x => x.At)
+                .HasConversion(new ValueConverter<DateTime, string>(x => x.ToString("O"), x => DateTime.Parse(x)));
+
+            builder.UseDateTimeUtc();
+        }
+    }
+
+    /// <summary>
+    /// Entity whose timestamp is stored the caller's way.
+    /// </summary>
+    private class Converted
+    {
+        /// <summary>
+        /// Gets or sets the key.
+        /// </summary>
+        public int Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets a timestamp with a conversion of its own.
+        /// </summary>
+        public DateTime At { get; set; }
     }
 
     /// <summary>
