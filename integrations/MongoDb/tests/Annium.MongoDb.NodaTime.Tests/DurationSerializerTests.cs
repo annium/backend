@@ -59,6 +59,20 @@ public class DurationSerializerTests
     }
 
     /// <summary>
+    /// A stored value of a type these serializers never write is refused rather than read as something.
+    /// The branch lives in the base class every pattern-based serializer here shares, so this covers all
+    /// seven of them; only the Instant serializer, which has its own switch, was pinning it before.
+    /// </summary>
+    [Fact]
+    public void ThrowsForUnsupportedBsonType()
+    {
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", true))))
+            .Throws<FormatException>();
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Duration", 1))))
+            .Throws<FormatException>();
+    }
+
+    /// <summary>
     /// Test class containing Duration properties for serialization testing
     /// </summary>
     private class Test
