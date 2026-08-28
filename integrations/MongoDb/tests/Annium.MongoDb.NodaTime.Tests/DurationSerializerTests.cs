@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class DurationSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the Duration serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the Duration serializer
     /// </summary>
     static DurationSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new DurationSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -26,11 +29,12 @@ public class DurationSerializerTests
     [Fact]
     public void CanConvertValue()
     {
-        var obj = new Test { Duration = Duration.FromSeconds(34) };
+        var value = Duration.FromSeconds(34);
+        var obj = new Test { Duration = value };
         obj.ToTestJson().Contains("'Duration' : '0:00:00:34'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Duration.Is(obj.Duration);
+        obj.Duration.Is(value, "the round trip must return the value that was written");
     }
 
     /// <summary>

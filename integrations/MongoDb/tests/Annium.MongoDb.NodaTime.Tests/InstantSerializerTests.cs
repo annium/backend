@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class InstantSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the Instant serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the Instant serializer
     /// </summary>
     static InstantSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new InstantSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>

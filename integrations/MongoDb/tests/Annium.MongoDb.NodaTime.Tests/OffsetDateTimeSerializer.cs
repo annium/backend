@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class OffsetDateTimeSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the OffsetDateTime serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the OffsetDateTime serializer
     /// </summary>
     static OffsetDateTimeSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new OffsetDateTimeSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -26,11 +29,12 @@ public class OffsetDateTimeSerializerTests
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
-        var obj = new Test { OffsetDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithOffset(Offset.FromHours(1)) };
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithOffset(Offset.FromHours(1));
+        var obj = new Test { OffsetDateTime = value };
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.OffsetDateTime.Is(obj.OffsetDateTime);
+        obj.OffsetDateTime.Is(value, "the round trip must return the value that was written");
     }
 
     /// <summary>
@@ -39,16 +43,17 @@ public class OffsetDateTimeSerializerTests
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
-        var obj = new Test
-        {
-            OffsetDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5)
-                .WithOffset(Offset.FromHours(1))
-                .WithCalendar(CalendarSystem.PersianSimple),
-        };
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5)
+            .WithOffset(Offset.FromHours(1))
+            .WithCalendar(CalendarSystem.PersianSimple);
+        var obj = new Test { OffsetDateTime = value };
         obj.ToTestJson().Contains("'OffsetDateTime' : '2015-01-02T03:04:05+01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.OffsetDateTime.Is(obj.OffsetDateTime.WithCalendar(CalendarSystem.Iso));
+        obj.OffsetDateTime.Is(
+            value.WithCalendar(CalendarSystem.Iso),
+            "the round trip must return what was written, in the ISO calendar"
+        );
     }
 
     /// <summary>

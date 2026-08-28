@@ -20,11 +20,14 @@ public class ZonedDateTimeSerializerTests
     )!;
 
     /// <summary>
-    /// Static constructor to register the ZonedDateTime serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the ZonedDateTime serializer
     /// </summary>
     static ZonedDateTimeSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new ZonedDateTimeSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -38,7 +41,6 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-01T22:04:05 America/New_York (-05)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.Is(obj.ZonedDateTime);
         obj.ZonedDateTime.Is(dateTime);
         obj.ZonedDateTime.Zone.Is(_easternTimezone);
     }
@@ -54,7 +56,6 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-02T03:04:05 UTC (+00)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.Is(obj.ZonedDateTime);
         obj.ZonedDateTime.Is(dateTime);
         obj.ZonedDateTime.Zone.Is(DateTimeZone.Utc);
     }
