@@ -79,7 +79,11 @@ public class PeriodSerializerTests
     }
 
     /// <summary>
-    /// Tests that Period properties can handle null BSON values when defaulted to Period.Zero
+    /// A stored null gives back a null Period, rather than throwing as it does for every other type here.
+    /// Period is NodaTime's one reference type, and a nullable reference is the same runtime type as a
+    /// non-nullable one - so refusing null would make a nullable Period property impossible to represent.
+    /// The value types differ because the driver unwraps their nullability before this serializer is
+    /// reached, so by the time it sees a null there is nowhere for it to go.
     /// </summary>
     [Fact]
     public void CanParseNullable()
