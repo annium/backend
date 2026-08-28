@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class LocalDateTimeSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the LocalDateTime serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the LocalDateTime serializer
     /// </summary>
     static LocalDateTimeSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new LocalDateTimeSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -26,11 +29,12 @@ public class LocalDateTimeSerializerTests
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
-        var obj = new Test { LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5) };
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5);
+        var obj = new Test { LocalDateTime = value };
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalDateTime.Is(obj.LocalDateTime);
+        obj.LocalDateTime.Is(value, "the round trip must return the value that was written");
     }
 
     /// <summary>
@@ -39,14 +43,15 @@ public class LocalDateTimeSerializerTests
     [Fact]
     public void ConvertsToIsoCalendarWhenSerializing()
     {
-        var obj = new Test
-        {
-            LocalDateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple),
-        };
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5).WithCalendar(CalendarSystem.PersianSimple);
+        var obj = new Test { LocalDateTime = value };
         obj.ToTestJson().Contains("'LocalDateTime' : '2015-01-02T03:04:05'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalDateTime.Is(obj.LocalDateTime.WithCalendar(CalendarSystem.Iso));
+        obj.LocalDateTime.Is(
+            value.WithCalendar(CalendarSystem.Iso),
+            "the round trip must return what was written, in the ISO calendar"
+        );
     }
 
     /// <summary>
@@ -72,6 +77,21 @@ public class LocalDateTimeSerializerTests
         BsonSerializer
             .Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalDateTime", BsonNull.Value)))
             .NullableLocalDateTime.IsDefault();
+    }
+
+    /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5).PlusNanoseconds(123456789);
+        var obj = new Test { LocalDateTime = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.LocalDateTime.Is(value, "the fraction of a second must survive the round trip");
     }
 
     /// <summary>

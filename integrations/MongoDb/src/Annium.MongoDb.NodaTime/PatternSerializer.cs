@@ -57,6 +57,11 @@ public abstract class PatternSerializer<TValue> : SerializerBase<TValue>
             case BsonType.String:
                 return _valueConverter(_pattern.CheckedParse(context.Reader.ReadString()));
             case BsonType.Null:
+                // a value type reaching here cannot hold the null: the driver unwraps nullability before
+                // this serializer is called, so a null against a value type is a document that does not
+                // match the type it is being read into. A reference type - Period, the only one here -
+                // can hold it, and refusing it would make a nullable Period property unrepresentable,
+                // since a nullable reference is the same runtime type as a non-nullable one
                 if (typeof(TValue).GetTypeInfo().IsValueType)
                     throw new InvalidOperationException(
                         $"{typeof(TValue).Name} is a value type, but the BsonValue is null."

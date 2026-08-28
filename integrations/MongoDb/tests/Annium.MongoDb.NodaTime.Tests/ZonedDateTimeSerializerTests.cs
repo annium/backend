@@ -20,11 +20,14 @@ public class ZonedDateTimeSerializerTests
     )!;
 
     /// <summary>
-    /// Static constructor to register the ZonedDateTime serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the ZonedDateTime serializer
     /// </summary>
     static ZonedDateTimeSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new ZonedDateTimeSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -38,7 +41,6 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-01T22:04:05 America/New_York (-05)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.Is(obj.ZonedDateTime);
         obj.ZonedDateTime.Is(dateTime);
         obj.ZonedDateTime.Zone.Is(_easternTimezone);
     }
@@ -54,9 +56,62 @@ public class ZonedDateTimeSerializerTests
         obj.ToTestJson().Contains("'ZonedDateTime' : '2015-01-02T03:04:05 UTC (+00)'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.ZonedDateTime.Is(obj.ZonedDateTime);
         obj.ZonedDateTime.Is(dateTime);
         obj.ZonedDateTime.Zone.Is(DateTimeZone.Utc);
+    }
+
+    /// <summary>
+    /// A sub-second ZonedDateTime keeps its fraction. Its siblings - OffsetDateTime, LocalDateTime -
+    /// serialize through extended ISO patterns that carry fractional seconds; dropping them here meant a
+    /// value came back as a different instant, with nothing to say it had been rounded.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var dateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).PlusNanoseconds(123456789).InUtc();
+        var obj = new Test { ZonedDateTime = dateTime };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.ZonedDateTime.Is(dateTime, "the fraction of a second must survive the round trip");
+    }
+
+    /// <summary>
+    /// A value stored before fractional seconds were carried still reads back: the fraction is optional
+    /// in the pattern, so documents written by the earlier format parse unchanged.
+    /// </summary>
+    [Fact]
+    public void CanParseValueWithoutFraction()
+    {
+        var stored = new BsonDocument(new BsonElement("ZonedDateTime", "2015-01-02T03:04:05 UTC (+00)"));
+
+        var obj = BsonSerializer.Deserialize<Test>(stored);
+
+        obj.ZonedDateTime.Is(new LocalDateTime(2015, 1, 2, 3, 4, 5).InUtc());
+    }
+
+    /// <summary>
+    /// A value in another calendar is written in the ISO calendar, as its three siblings that carry a
+    /// calendar already do. The pattern has no calendar-id component, so whatever digits are written are
+    /// read back as ISO ones: a Persian date written unchanged comes back as an instant centuries away.
+    /// </summary>
+    [Fact]
+    public void ConvertsToIsoCalendarWhenSerializing()
+    {
+        // arrange
+        var value = new ZonedDateTime(
+            Instant.FromUtc(2015, 6, 15, 3, 4, 5),
+            DateTimeZone.Utc,
+            CalendarSystem.PersianSimple
+        );
+        var obj = new Test { ZonedDateTime = value };
+
+        // act
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        // assert - the same moment in time, expressed in the ISO calendar
+        obj.ZonedDateTime.ToInstant().Is(value.ToInstant(), "the instant must survive the round trip");
+        obj.ZonedDateTime.Is(value.WithCalendar(CalendarSystem.Iso));
     }
 
     /// <summary>

@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class LocalTimeSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the LocalTime serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the LocalTime serializer
     /// </summary>
     static LocalTimeSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new LocalTimeSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -26,11 +29,12 @@ public class LocalTimeSerializerTests
     [Fact]
     public void CanRoundTripValueWithIsoCalendar()
     {
-        var obj = new Test { LocalTime = new LocalTime(13, 25, 1) };
+        var value = new LocalTime(13, 25, 1);
+        var obj = new Test { LocalTime = value };
         obj.ToTestJson().Contains("'LocalTime' : '13:25:01'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.LocalTime.Is(obj.LocalTime);
+        obj.LocalTime.Is(value, "the round trip must return the value that was written");
     }
 
     /// <summary>
@@ -54,6 +58,21 @@ public class LocalTimeSerializerTests
         BsonSerializer
             .Deserialize<Test>(new BsonDocument(new BsonElement("NullableLocalTime", BsonNull.Value)))
             .NullableLocalTime.IsDefault();
+    }
+
+    /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = new LocalTime(3, 4, 5).PlusNanoseconds(123456789);
+        var obj = new Test { LocalTime = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.LocalTime.Is(value, "the fraction of a second must survive the round trip");
     }
 
     /// <summary>

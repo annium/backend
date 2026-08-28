@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class PeriodSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the Period serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the Period serializer
     /// </summary>
     static PeriodSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new PeriodSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -30,7 +33,39 @@ public class PeriodSerializerTests
         obj.ToTestJson().Contains("'Period' : 'PT34S'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Period.Is(obj.Period);
+        obj.Period.Is(Period.FromSeconds(34));
+    }
+
+    /// <summary>
+    /// A period keeps the units it was built from. Period equality is unit-wise - ninety minutes and one
+    /// hour thirty are different periods, and applying them to a date can give different answers - so a
+    /// round trip that re-expresses the value in other units returns something that is not what went in.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_KeepingItsUnits()
+    {
+        var period = Period.FromMinutes(90);
+        var obj = new Test { Period = period };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(period, "the period must come back in the units it was written in");
+    }
+
+    /// <summary>
+    /// A period too large to express as a single nanosecond count still writes. Normalizing summed the
+    /// time components before formatting, so a value the caller was allowed to construct threw on the way
+    /// to storage rather than being stored.
+    /// </summary>
+    [Fact]
+    public void CanWriteValue_TooLargeToNormalize()
+    {
+        var period = Period.FromHours(long.MaxValue / 2);
+        var obj = new Test { Period = period };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(period);
     }
 
     /// <summary>
@@ -44,7 +79,11 @@ public class PeriodSerializerTests
     }
 
     /// <summary>
-    /// Tests that Period properties can handle null BSON values when defaulted to Period.Zero
+    /// A stored null gives back a null Period, rather than throwing as it does for every other type here.
+    /// Period is NodaTime's one reference type, and a nullable reference is the same runtime type as a
+    /// non-nullable one - so refusing null would make a nullable Period property impossible to represent.
+    /// The value types differ because the driver unwraps their nullability before this serializer is
+    /// reached, so by the time it sees a null there is nowhere for it to go.
     /// </summary>
     [Fact]
     public void CanParseNullable()
@@ -52,6 +91,21 @@ public class PeriodSerializerTests
         BsonSerializer
             .Deserialize<Test>(new BsonDocument(new BsonElement("Period", BsonNull.Value)))
             .Period.IsDefault();
+    }
+
+    /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = Period.FromSeconds(5) + Period.FromNanoseconds(123456789);
+        var obj = new Test { Period = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(value, "the fraction of a second must survive the round trip");
     }
 
     /// <summary>

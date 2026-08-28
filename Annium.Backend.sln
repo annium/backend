@@ -203,6 +203,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.S3.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.Storage.Tests.Lib", "base\Storage\tests\Annium.Storage.Tests.Lib\Annium.Storage.Tests.Lib.csproj", "{563A03D6-20AC-4C24-AF66-48666A2A8281}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{64FC8D48-B404-A6C1-A1CF-9B9954D2A656}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Annium.EntityFrameworkCore.Extensions.Tests", "integrations\EntityFrameworkCore\tests\Annium.EntityFrameworkCore.Extensions.Tests\Annium.EntityFrameworkCore.Extensions.Tests.csproj", "{438685F0-BC10-463B-9A35-B99A605BFD96}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -1017,6 +1021,18 @@ Global
 		{563A03D6-20AC-4C24-AF66-48666A2A8281}.Release|x64.Build.0 = Release|Any CPU
 		{563A03D6-20AC-4C24-AF66-48666A2A8281}.Release|x86.ActiveCfg = Release|Any CPU
 		{563A03D6-20AC-4C24-AF66-48666A2A8281}.Release|x86.Build.0 = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|x64.Build.0 = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Debug|x86.Build.0 = Debug|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|Any CPU.Build.0 = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|x64.ActiveCfg = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|x64.Build.0 = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|x86.ActiveCfg = Release|Any CPU
+		{438685F0-BC10-463B-9A35-B99A605BFD96}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1120,5 +1136,7 @@ Global
 		{CA820184-FFF7-4B01-A104-E71F9039F6F7} = {946EEAD0-D974-A70E-78EF-E58B339FE00D}
 		{54CC4998-3394-4971-974C-CE25A4159ED1} = {3D6022F9-44DC-89AC-7A81-1480EB1EC0F6}
 		{563A03D6-20AC-4C24-AF66-48666A2A8281} = {3D6022F9-44DC-89AC-7A81-1480EB1EC0F6}
+		{64FC8D48-B404-A6C1-A1CF-9B9954D2A656} = {ABB2DBCD-B185-269B-BF95-B96A464DC5FA}
+		{438685F0-BC10-463B-9A35-B99A605BFD96} = {64FC8D48-B404-A6C1-A1CF-9B9954D2A656}
 	EndGlobalSection
 EndGlobal

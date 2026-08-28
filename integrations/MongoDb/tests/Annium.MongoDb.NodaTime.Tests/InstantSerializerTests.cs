@@ -13,11 +13,14 @@ namespace Annium.MongoDb.NodaTime.Tests;
 public class InstantSerializerTests
 {
     /// <summary>
-    /// Static constructor to register the Instant serializer
+    /// Static constructor registering the package's serializers, the same way a consumer does. The
+    /// registry is process-wide, so every class here goes through the one entry point rather than
+    /// registering its own - two classes registering different instances for one type is a conflict.
+    /// Registers the Instant serializer
     /// </summary>
     static InstantSerializerTests()
     {
-        BsonSerializer.RegisterSerializer(new InstantSerializer());
+        NodaTimeSerializers.Register();
     }
 
     /// <summary>
@@ -109,6 +112,60 @@ public class InstantSerializerTests
         BsonSerializer
             .Deserialize<Test>(new BsonDocument(new BsonElement("InstantNullable", BsonNull.Value)))
             .InstantNullable.IsDefault();
+    }
+
+    /// <summary>
+    /// An instant is stored as a BSON date, which is a count of milliseconds - so anything finer is not
+    /// kept. This is a property of the storage type rather than of the conversion: writing instants as
+    /// strings instead would preserve the fraction but stop them being comparable, sortable and indexable
+    /// as dates on the server, which is what storing them as dates is for. Pinned so the limit is visible
+    /// and cannot change unnoticed.
+    /// </summary>
+    [Fact]
+    public void RoundTrip_KeepsMilliseconds_AndNoFiner()
+    {
+        var whole = Instant.FromUtc(2015, 1, 2, 3, 4) + Duration.FromMilliseconds(567);
+        var finer = whole + Duration.FromNanoseconds(123456);
+
+        var wholeBack = BsonSerializer.Deserialize<Test>(new Test { Instant = whole }.ToBson()).Instant;
+        var finerBack = BsonSerializer.Deserialize<Test>(new Test { Instant = finer }.ToBson()).Instant;
+
+        wholeBack.Is(whole, "millisecond precision must survive");
+        finerBack.Is(whole, "anything finer than a millisecond is dropped by the storage type");
+    }
+
+    /// <summary>
+    /// An instant before 1970 is dropped to the millisecond below it, the same direction as one after.
+    /// Dividing the tick count truncates towards zero rather than downwards, which moves a pre-epoch
+    /// value forwards instead of back - so the same instant is rounded one way on one side of 1970 and
+    /// the other way on the other, and a stored ordering between two close values can invert.
+    /// </summary>
+    [Fact]
+    public void RoundTrip_BeforeEpoch_RoundsDownLikeEverythingElse()
+    {
+        // arrange - half a millisecond either side of the epoch
+        var before = Instant.FromUnixTimeTicks(-5000);
+        var after = Instant.FromUnixTimeTicks(5000);
+
+        // act
+        var beforeBack = BsonSerializer.Deserialize<Test>(new Test { Instant = before }.ToBson()).Instant;
+        var afterBack = BsonSerializer.Deserialize<Test>(new Test { Instant = after }.ToBson()).Instant;
+
+        // assert
+        afterBack.Is(Instant.FromUnixTimeMilliseconds(0), "after the epoch, the fraction is dropped");
+        beforeBack.Is(Instant.FromUnixTimeMilliseconds(-1), "before it, the fraction must be dropped too");
+    }
+
+    /// <summary>
+    /// A stored string that is not an instant is refused. This serializer is the only one here that reads
+    /// two BSON types, and the string branch - the one that parses - had no test for what it does with a
+    /// value it cannot parse, though every other serializer pins exactly that.
+    /// </summary>
+    [Fact]
+    public void ThrowsForInvalidString()
+    {
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Instant", "bleh"))))
+            .Throws<FormatException>();
     }
 
     /// <summary>
