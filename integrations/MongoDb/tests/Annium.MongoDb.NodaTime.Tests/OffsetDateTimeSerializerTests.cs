@@ -82,6 +82,21 @@ public class OffsetDateTimeSerializerTests
     }
 
     /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = new LocalDateTime(2015, 1, 2, 3, 4, 5).PlusNanoseconds(123456789).WithOffset(Offset.FromHours(1));
+        var obj = new Test { OffsetDateTime = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.OffsetDateTime.Is(value, "the fraction of a second must survive the round trip");
+    }
+
+    /// <summary>
     /// Test class containing OffsetDateTime properties for serialization testing
     /// </summary>
     private class Test

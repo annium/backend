@@ -157,6 +157,18 @@ public class InstantSerializerTests
     }
 
     /// <summary>
+    /// A stored string that is not an instant is refused. This serializer is the only one here that reads
+    /// two BSON types, and the string branch - the one that parses - had no test for what it does with a
+    /// value it cannot parse, though every other serializer pins exactly that.
+    /// </summary>
+    [Fact]
+    public void ThrowsForInvalidString()
+    {
+        Wrap.It(() => BsonSerializer.Deserialize<Test>(new BsonDocument(new BsonElement("Instant", "bleh"))))
+            .Throws<FormatException>();
+    }
+
+    /// <summary>
     /// Test class containing Instant properties for serialization testing
     /// </summary>
     private class Test

@@ -77,6 +77,21 @@ public class DurationSerializerTests
     }
 
     /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = Duration.FromHours(2) + Duration.FromNanoseconds(123456789);
+        var obj = new Test { Duration = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Duration.Is(value, "the fraction of a second must survive the round trip");
+    }
+
+    /// <summary>
     /// Test class containing Duration properties for serialization testing
     /// </summary>
     private class Test

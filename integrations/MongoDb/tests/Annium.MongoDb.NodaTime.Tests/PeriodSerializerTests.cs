@@ -94,6 +94,21 @@ public class PeriodSerializerTests
     }
 
     /// <summary>
+    /// A fraction of a second survives the round trip. The pattern carries one, but nothing checked that
+    /// it does - and the two defects found in this area were both a pattern quietly dropping precision.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var value = Period.FromSeconds(5) + Period.FromNanoseconds(123456789);
+        var obj = new Test { Period = value };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(value, "the fraction of a second must survive the round trip");
+    }
+
+    /// <summary>
     /// Test class containing Period properties for serialization testing
     /// </summary>
     private class Test
