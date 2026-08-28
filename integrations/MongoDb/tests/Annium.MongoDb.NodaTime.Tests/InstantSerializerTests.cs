@@ -135,6 +135,28 @@ public class InstantSerializerTests
     }
 
     /// <summary>
+    /// An instant before 1970 is dropped to the millisecond below it, the same direction as one after.
+    /// Dividing the tick count truncates towards zero rather than downwards, which moves a pre-epoch
+    /// value forwards instead of back - so the same instant is rounded one way on one side of 1970 and
+    /// the other way on the other, and a stored ordering between two close values can invert.
+    /// </summary>
+    [Fact]
+    public void RoundTrip_BeforeEpoch_RoundsDownLikeEverythingElse()
+    {
+        // arrange - half a millisecond either side of the epoch
+        var before = Instant.FromUnixTimeTicks(-5000);
+        var after = Instant.FromUnixTimeTicks(5000);
+
+        // act
+        var beforeBack = BsonSerializer.Deserialize<Test>(new Test { Instant = before }.ToBson()).Instant;
+        var afterBack = BsonSerializer.Deserialize<Test>(new Test { Instant = after }.ToBson()).Instant;
+
+        // assert
+        afterBack.Is(Instant.FromUnixTimeMilliseconds(0), "after the epoch, the fraction is dropped");
+        beforeBack.Is(Instant.FromUnixTimeMilliseconds(-1), "before it, the fraction must be dropped too");
+    }
+
+    /// <summary>
     /// Test class containing Instant properties for serialization testing
     /// </summary>
     private class Test

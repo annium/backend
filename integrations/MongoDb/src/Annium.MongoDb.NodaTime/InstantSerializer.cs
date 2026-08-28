@@ -42,6 +42,9 @@ public class InstantSerializer : SerializerBase<Instant>
     /// <param name="value">The Instant value to serialize</param>
     public override void Serialize(BsonSerializationContext context, BsonSerializationArgs args, Instant value)
     {
-        context.Writer.WriteDateTime(value.ToUnixTimeTicks() / NodaConstants.TicksPerMillisecond);
+        // NodaTime's own conversion rather than dividing the tick count: integer division truncates
+        // towards zero, which moves an instant before 1970 forwards while one after it moves back, so the
+        // same fraction of a millisecond was rounded in opposite directions either side of the epoch
+        context.Writer.WriteDateTime(value.ToUnixTimeMilliseconds());
     }
 }
