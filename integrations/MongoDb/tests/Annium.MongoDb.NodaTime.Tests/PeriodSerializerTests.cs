@@ -30,7 +30,39 @@ public class PeriodSerializerTests
         obj.ToTestJson().Contains("'Period' : 'PT34S'").IsTrue();
 
         obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
-        obj.Period.Is(obj.Period);
+        obj.Period.Is(Period.FromSeconds(34));
+    }
+
+    /// <summary>
+    /// A period keeps the units it was built from. Period equality is unit-wise - ninety minutes and one
+    /// hour thirty are different periods, and applying them to a date can give different answers - so a
+    /// round trip that re-expresses the value in other units returns something that is not what went in.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_KeepingItsUnits()
+    {
+        var period = Period.FromMinutes(90);
+        var obj = new Test { Period = period };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(period, "the period must come back in the units it was written in");
+    }
+
+    /// <summary>
+    /// A period too large to express as a single nanosecond count still writes. Normalizing summed the
+    /// time components before formatting, so a value the caller was allowed to construct threw on the way
+    /// to storage rather than being stored.
+    /// </summary>
+    [Fact]
+    public void CanWriteValue_TooLargeToNormalize()
+    {
+        var period = Period.FromHours(long.MaxValue / 2);
+        var obj = new Test { Period = period };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.Period.Is(period);
     }
 
     /// <summary>

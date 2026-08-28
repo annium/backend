@@ -60,6 +60,36 @@ public class ZonedDateTimeSerializerTests
     }
 
     /// <summary>
+    /// A sub-second ZonedDateTime keeps its fraction. Its siblings - OffsetDateTime, LocalDateTime -
+    /// serialize through extended ISO patterns that carry fractional seconds; dropping them here meant a
+    /// value came back as a different instant, with nothing to say it had been rounded.
+    /// </summary>
+    [Fact]
+    public void CanRoundTripValue_SubSecond()
+    {
+        var dateTime = new LocalDateTime(2015, 1, 2, 3, 4, 5).PlusNanoseconds(123456789).InUtc();
+        var obj = new Test { ZonedDateTime = dateTime };
+
+        obj = BsonSerializer.Deserialize<Test>(obj.ToBson());
+
+        obj.ZonedDateTime.Is(dateTime, "the fraction of a second must survive the round trip");
+    }
+
+    /// <summary>
+    /// A value stored before fractional seconds were carried still reads back: the fraction is optional
+    /// in the pattern, so documents written by the earlier format parse unchanged.
+    /// </summary>
+    [Fact]
+    public void CanParseValueWithoutFraction()
+    {
+        var stored = new BsonDocument(new BsonElement("ZonedDateTime", "2015-01-02T03:04:05 UTC (+00)"));
+
+        var obj = BsonSerializer.Deserialize<Test>(stored);
+
+        obj.ZonedDateTime.Is(new LocalDateTime(2015, 1, 2, 3, 4, 5).InUtc());
+    }
+
+    /// <summary>
     /// Tests that deserialization throws FormatException for invalid ZonedDateTime strings and null values
     /// </summary>
     [Fact]

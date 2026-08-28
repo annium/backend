@@ -112,6 +112,26 @@ public class InstantSerializerTests
     }
 
     /// <summary>
+    /// An instant is stored as a BSON date, which is a count of milliseconds - so anything finer is not
+    /// kept. This is a property of the storage type rather than of the conversion: writing instants as
+    /// strings instead would preserve the fraction but stop them being comparable, sortable and indexable
+    /// as dates on the server, which is what storing them as dates is for. Pinned so the limit is visible
+    /// and cannot change unnoticed.
+    /// </summary>
+    [Fact]
+    public void RoundTrip_KeepsMilliseconds_AndNoFiner()
+    {
+        var whole = Instant.FromUtc(2015, 1, 2, 3, 4) + Duration.FromMilliseconds(567);
+        var finer = whole + Duration.FromNanoseconds(123456);
+
+        var wholeBack = BsonSerializer.Deserialize<Test>(new Test { Instant = whole }.ToBson()).Instant;
+        var finerBack = BsonSerializer.Deserialize<Test>(new Test { Instant = finer }.ToBson()).Instant;
+
+        wholeBack.Is(whole, "millisecond precision must survive");
+        finerBack.Is(whole, "anything finer than a millisecond is dropped by the storage type");
+    }
+
+    /// <summary>
     /// Test class containing Instant properties for serialization testing
     /// </summary>
     private class Test
